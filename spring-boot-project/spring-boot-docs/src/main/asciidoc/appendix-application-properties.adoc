@@ -987,7 +987,12 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is "COUNT" or "COUNT_TIME".
 	spring.kafka.listener.ack-mode= # Listener AckMode. See the spring-kafka documentation.
 	spring.kafka.listener.ack-time= # Time between offset commits when ackMode is "TIME" or "COUNT_TIME".
+	spring.kafka.listener.client-id= # Prefix for the listener's consumer client.id property.
 	spring.kafka.listener.concurrency= # Number of threads to run in the listener containers.
+	spring.kafka.listener.idle-event-interval= # Interval (ms) between publishing idle consumer events (no data received).
+	spring.kafka.listener.log-container-config= # When true, log the container configuration during initialization (INFO level).
+	spring.kafka.listener.monitor-interval= # Interval (seconds) between checks for non-responsive consumers.
+	spring.kafka.listener.no-poll-threshold= # Multiplier applied to pollTimeout to determine if a consumer is non-responsive.
 	spring.kafka.listener.poll-timeout= # Timeout to use when polling the consumer.
 	spring.kafka.listener.type=single # Listener type.
 	spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.

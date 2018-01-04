@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -818,6 +818,31 @@ public class KafkaProperties {
 		 */
 		private Duration ackTime;
 
+		/**
+		 * Prefix for the listener's consumer client.id property.
+		 */
+		private String clientId;
+
+		/**
+		 * Interval (ms) between publishing idle consumer events (no data received).
+		 */
+		private Long idleEventInterval;
+
+		/**
+		 * Interval (seconds) between checks for non-responsive consumers.
+		 */
+		private Integer monitorInterval;
+
+		/**
+		 * Multiplier applied to pollTimeout to determine if a consumer is non-responsive.
+		 */
+		private Float noPollThreshold;
+
+		/**
+		 * When true, log the container configuration during initialization (INFO level).
+		 */
+		private Boolean logContainerConfig;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -864,6 +889,46 @@ public class KafkaProperties {
 
 		public void setAckTime(Duration ackTime) {
 			this.ackTime = ackTime;
+		}
+
+		public String getClientId() {
+			return this.clientId;
+		}
+
+		public void setClientId(String clientId) {
+			this.clientId = clientId;
+		}
+
+		public Long getIdleEventInterval() {
+			return this.idleEventInterval;
+		}
+
+		public void setIdleEventInterval(Long idleEventInterval) {
+			this.idleEventInterval = idleEventInterval;
+		}
+
+		public Integer getMonitorInterval() {
+			return this.monitorInterval;
+		}
+
+		public void setMonitorInterval(Integer monitorInterval) {
+			this.monitorInterval = monitorInterval;
+		}
+
+		public Float getNoPollThreshold() {
+			return this.noPollThreshold;
+		}
+
+		public void setNoPollThreshold(Float noPollThreshold) {
+			this.noPollThreshold = noPollThreshold;
+		}
+
+		public Boolean getLogContainerConfig() {
+			return this.logContainerConfig;
+		}
+
+		public void setLogContainerConfig(Boolean logContainerConfig) {
+			this.logContainerConfig = logContainerConfig;
 		}
 
 	}
