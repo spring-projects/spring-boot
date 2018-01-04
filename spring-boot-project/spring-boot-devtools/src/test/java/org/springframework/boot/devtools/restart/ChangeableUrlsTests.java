@@ -64,6 +64,12 @@ public class ChangeableUrlsTests {
 	}
 
 	@Test
+	public void httpsUrl() throws Exception {
+		URL url = new URL("https://spring.io");
+		assertThat(ChangeableUrls.fromUrls(url)).isEmpty();
+	}
+
+	@Test
 	public void skipsUrls() throws Exception {
 		ChangeableUrls urls = ChangeableUrls.fromUrls(makeUrl("spring-boot"),
 				makeUrl("spring-boot-autoconfigure"), makeUrl("spring-boot-actuator"),

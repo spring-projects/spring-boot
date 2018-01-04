@@ -96,7 +96,7 @@ public class RootUriRequestExpectationManagerTests {
 	public void validateRequestWhenUriDoesNotStartWithRootUriShouldDelegateToExpectationManager()
 			throws Exception {
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
-		given(request.getURI()).willReturn(new URI("http://spring.io/test"));
+		given(request.getURI()).willReturn(new URI("https://spring.io/test"));
 		this.manager.validateRequest(request);
 		verify(this.delegate).validateRequest(request);
 	}
@@ -184,8 +184,8 @@ public class RootUriRequestExpectationManagerTests {
 		server.expect(requestTo("/hello")).andRespond(withSuccess());
 		this.thrown.expect(AssertionError.class);
 		this.thrown.expectMessage(
-				"expected:<http://example.com/hello> but was:<http://spring.io/hello>");
-		restTemplate.getForEntity("http://spring.io/hello", String.class);
+				"expected:<http://example.com/hello> but was:<https://spring.io/hello>");
+		restTemplate.getForEntity("https://spring.io/hello", String.class);
 	}
 
 }
