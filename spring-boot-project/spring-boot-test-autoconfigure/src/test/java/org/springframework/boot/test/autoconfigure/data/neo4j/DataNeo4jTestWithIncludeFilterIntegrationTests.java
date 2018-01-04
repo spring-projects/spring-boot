@@ -44,7 +44,7 @@ public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 	@ClassRule
 	public static DockerTestContainer<GenericContainer> genericContainer = new DockerTestContainer<>((Supplier<GenericContainer>) () -> new FixedHostPortGenericContainer("neo4j:latest")
 			.withFixedExposedPort(7687, 7687)
-			.waitingFor(new DataNeo4jTestIntegrationTests.AdditionalSleepWaitStrategy()).withEnv("NEO4J_AUTH", "none"));
+			.waitingFor(new DataNeo4jTestIntegrationTests.ConnectionVerifyingWaitStrategy()).withEnv("NEO4J_AUTH", "none"));
 
 	@Autowired
 	private ExampleService service;

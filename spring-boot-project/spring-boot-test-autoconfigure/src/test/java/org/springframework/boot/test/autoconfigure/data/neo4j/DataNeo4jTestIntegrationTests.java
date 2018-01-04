@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.junit.ClassRule;
@@ -23,7 +25,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.session.Session;
+import org.neo4j.ogm.session.SessionFactory;
+import org.rnorth.ducttape.TimeoutException;
+import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.HostPortWaitStrategy;
@@ -49,7 +55,7 @@ public class DataNeo4jTestIntegrationTests {
 	@ClassRule
 	public static DockerTestContainer<GenericContainer> genericContainer = new DockerTestContainer<>((Supplier<GenericContainer>) () -> new FixedHostPortGenericContainer("neo4j:latest")
 			.withFixedExposedPort(7687, 7687)
-			.waitingFor(new AdditionalSleepWaitStrategy()).withEnv("NEO4J_AUTH", "none"));
+			.waitingFor(new ConnectionVerifyingWaitStrategy()).withEnv("NEO4J_AUTH", "none"));
 
 
 	@Rule
@@ -80,17 +86,34 @@ public class DataNeo4jTestIntegrationTests {
 		this.applicationContext.getBean(ExampleService.class);
 	}
 
-	static class AdditionalSleepWaitStrategy extends HostPortWaitStrategy {
+	static class ConnectionVerifyingWaitStrategy extends HostPortWaitStrategy {
 
 		@Override
 		protected void waitUntilReady() {
 			super.waitUntilReady();
+			Configuration configuration = new Configuration.Builder()
+					.uri("bolt://localhost:7687").build();
+			SessionFactory sessionFactory = new SessionFactory(configuration,
+					"org.springframework.boot.test.autoconfigure.data.neo4j");
 			try {
-				Thread.sleep(5000);
+				Unreliables.retryUntilTrue((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
+						checkConnection(sessionFactory));
 			}
-			catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
+			catch (TimeoutException e) {
+				throw new IllegalStateException();
 			}
+		}
+
+		private Callable<Boolean> checkConnection(SessionFactory sessionFactory) {
+			return () -> {
+				try {
+					sessionFactory.openSession().beginTransaction().close();
+					return true;
+				}
+				catch (Exception ex) {
+					return false;
+				}
+			};
 		}
 	}
 
