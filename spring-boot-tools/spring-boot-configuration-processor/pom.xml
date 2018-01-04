@@ -18,12 +18,7 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
- 		<!-- Compile (should stick to the bare minimum) -->
- 		<dependency>
-			<groupId>com.vaadin.external.google</groupId>
-			<artifactId>android-json</artifactId>
-		</dependency>
-		<!-- Test -->
+ 		<!-- Test -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
