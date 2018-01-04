@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,6 +101,11 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 				.to(container::setAckTime);
 		map.from(properties::getPollTimeout).whenNonNull().as(Duration::toMillis)
 				.to(container::setPollTimeout);
+		map.from(properties::getClientId).whenNonNull().to(container::setClientId);
+		map.from(properties::getIdleEventInterval).whenNonNull().to(container::setIdleEventInterval);
+		map.from(properties::getMonitorInterval).whenNonNull().to(container::setMonitorInterval);
+		map.from(properties::getNoPollThreshold).whenNonNull().to(container::setNoPollThreshold);
+		map.from(properties::getLogContainerConfig).whenNonNull().to(container::setLogContainerConfig);
 	}
 
 }
