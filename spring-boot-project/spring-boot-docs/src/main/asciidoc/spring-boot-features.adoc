@@ -4383,7 +4383,6 @@ TIP: It is also possible to transparently
 {spring-reference}integration.html#cache-annotations-put[update] or
 {spring-reference}integration.html#cache-annotations-evict[evict] data from the cache.
 
-// TODO Updating and evicting should be a section (or two) with samples.
 
 NOTE: If you use the cache infrastructure with beans that are not interface-based, make
 sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
@@ -4396,7 +4395,7 @@ materialized by the `org.springframework.cache.Cache` and
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 `cacheResolver` (see
-{spring-framework-javadoc}cache/annotation/CachingConfigurer.html[`CachingConfigurer`]),
+{spring-javadoc}cache/annotation/CachingConfigurer.html[`CachingConfigurer`]),
 Spring Boot tries to detect the following providers (in the indicated order):
 
 . <<boot-features-caching-provider-generic,Generic>>
@@ -5738,9 +5737,6 @@ as constraints or predicates).
 We generally find these common libraries to be useful when writing tests. If these
 libraries do not suit your needs, you can add additional test dependencies of your own.
 
-// TODO Describe how to add additional test dependencies. That content should be a new
-// heading, with a link here.
-
 
 
 [[boot-features-testing-spring-applications]]
@@ -6795,9 +6791,6 @@ this issue.
 TIP: If this is not an option for you, you can create a `@SpringBootConfiguration`
 somewhere in the hierarchy of your test so that it is used instead. Alternatively, you
 can specify a source for your test, which disables the behavior of finding a default one.
-
-// TODO We should describe how to specify a test in a new section and link to it from this
-// tip.
 
 
 

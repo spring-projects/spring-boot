@@ -2567,10 +2567,8 @@ NOTE: Doing so only works if your Maven project inherits (directly or indirectly
 own `dependencyManagement` section with `<scope>import</scope>`, you have to redefine
 the artifact yourself instead of overriding the property.
 
-WARNING: Each Spring Boot release is designed and tested against a specific set of
+WARNING: Each Spring Boot release is designed and tested against this specific set of
 third-party dependencies. Overriding versions may cause compatibility issues.
-
-// TODO: Where can the reader see those dependencies?
 
 
 

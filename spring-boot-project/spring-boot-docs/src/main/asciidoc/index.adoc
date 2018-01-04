@@ -49,7 +49,6 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-security-oauth2-reference: http://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-webservices-reference: http://docs.spring.io/spring-ws/docs/{spring-webservices-docs-version}/reference/
 :spring-javadoc: http://docs.spring.io/spring/docs/{spring-docs-version}/javadoc-api/org/springframework
-:spring-framework-javadoc: https://docs.spring.io/spring-framework/docs/{spring-docs-version}/javadoc-api/org/springframework/
 :spring-amqp-javadoc: http://docs.spring.io/spring-amqp/docs/current/api/org/springframework/amqp
 :spring-batch-javadoc: http://docs.spring.io/spring-batch/apidocs/org/springframework/batch
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa

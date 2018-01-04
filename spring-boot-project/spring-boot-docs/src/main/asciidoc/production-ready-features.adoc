@@ -92,9 +92,6 @@ classes and the reasons why they did or did not match.
 |`loggers`
 |Shows and modifies the configuration of loggers in the application.
 
-// TODO "and modifies"? Why would the endpoint modify the configuration? Do we mean "shows
-// any modifications"?
-
 |`liquibase`
 |Shows any Liquibase database migrations that have been applied.
 
@@ -1134,8 +1131,6 @@ publishes events (by default, "`authentication success`", "`failure`" and
 implementing a lock-out policy based on authentication failures. To customize published
 security events, you can provide your own implementations of
 `AbstractAuthenticationAuditListener` and `AbstractAuthorizationAuditListener`.
-
-// TODO A sample showing how to customize published security events would be good.
 
 You can also use the audit services for your own business events. To do so, either inject
 the existing `AuditEventRepository` into your own components and use that directly or
