@@ -77,16 +77,19 @@ public class JpaPropertiesTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical"
-				).run(assertJpaProperties((properties) -> {
-			Map<String, Object> hibernateProperties = properties
-					.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
-			assertThat(hibernateProperties).contains(
-					entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
-					entry("hibernate.physical_naming_strategy", "com.example.Physical"));
-			assertThat(hibernateProperties)
-					.doesNotContainKeys("hibernate.ejb.naming_strategy");
-		}));
+						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+				.run(assertJpaProperties((properties) -> {
+					Map<String, Object> hibernateProperties = properties
+							.getHibernateProperties(
+									new HibernateSettings().ddlAuto("none"));
+					assertThat(hibernateProperties).contains(
+							entry("hibernate.implicit_naming_strategy",
+									"com.example.Implicit"),
+							entry("hibernate.physical_naming_strategy",
+									"com.example.Physical"));
+					assertThat(hibernateProperties)
+							.doesNotContainKeys("hibernate.ejb.naming_strategy");
+				}));
 	}
 
 	@Test
@@ -111,54 +114,62 @@ public class JpaPropertiesTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical"
-				).run(assertJpaProperties((properties) -> {
-			ImplicitNamingStrategy implicitStrategy = mock(ImplicitNamingStrategy.class);
-			PhysicalNamingStrategy physicalStrategy = mock(PhysicalNamingStrategy.class);
-			Map<String, Object> hibernateProperties = properties
-					.getHibernateProperties(new HibernateSettings().ddlAuto("none")
-							.implicitNamingStrategy(implicitStrategy)
-							.physicalNamingStrategy(physicalStrategy));
-			assertThat(hibernateProperties).contains(
-					entry("hibernate.implicit_naming_strategy", implicitStrategy),
-					entry("hibernate.physical_naming_strategy", physicalStrategy));
-			assertThat(hibernateProperties)
-					.doesNotContainKeys("hibernate.ejb.naming_strategy");
-		}));
+						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+				.run(assertJpaProperties((properties) -> {
+					ImplicitNamingStrategy implicitStrategy = mock(
+							ImplicitNamingStrategy.class);
+					PhysicalNamingStrategy physicalStrategy = mock(
+							PhysicalNamingStrategy.class);
+					Map<String, Object> hibernateProperties = properties
+							.getHibernateProperties(
+									new HibernateSettings().ddlAuto("none")
+											.implicitNamingStrategy(implicitStrategy)
+											.physicalNamingStrategy(physicalStrategy));
+					assertThat(hibernateProperties).contains(
+							entry("hibernate.implicit_naming_strategy", implicitStrategy),
+							entry("hibernate.physical_naming_strategy",
+									physicalStrategy));
+					assertThat(hibernateProperties)
+							.doesNotContainKeys("hibernate.ejb.naming_strategy");
+				}));
 	}
-
 
 	@Test
 	public void hibernatePropertiesCustomizerTakePrecedenceOverStrategyInstancesAndNamingStrategyProperties() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical"
-				).run(assertJpaProperties((properties) -> {
-			ImplicitNamingStrategy implicitStrategy = mock(ImplicitNamingStrategy.class);
-			PhysicalNamingStrategy physicalStrategy = mock(PhysicalNamingStrategy.class);
-			ImplicitNamingStrategy effectiveImplicitStrategy = mock(
-					ImplicitNamingStrategy.class);
-			PhysicalNamingStrategy effectivePhysicalStrategy = mock(
-					PhysicalNamingStrategy.class);
-			HibernatePropertiesCustomizer customizer = (hibernateProperties) -> {
-				hibernateProperties.put("hibernate.implicit_naming_strategy",
-						effectiveImplicitStrategy);
-				hibernateProperties.put("hibernate.physical_naming_strategy",
-						effectivePhysicalStrategy);
-			};
-			Map<String, Object> hibernateProperties = properties
-					.getHibernateProperties(new HibernateSettings().ddlAuto("none")
-							.implicitNamingStrategy(implicitStrategy)
-							.physicalNamingStrategy(physicalStrategy)
-							.hibernatePropertiesCustomizers(
-									Collections.singleton(customizer)));
-			assertThat(hibernateProperties).contains(
-					entry("hibernate.implicit_naming_strategy", effectiveImplicitStrategy),
-					entry("hibernate.physical_naming_strategy", effectivePhysicalStrategy));
-			assertThat(hibernateProperties)
-					.doesNotContainKeys("hibernate.ejb.naming_strategy");
-		}));
+						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+				.run(assertJpaProperties((properties) -> {
+					ImplicitNamingStrategy implicitStrategy = mock(
+							ImplicitNamingStrategy.class);
+					PhysicalNamingStrategy physicalStrategy = mock(
+							PhysicalNamingStrategy.class);
+					ImplicitNamingStrategy effectiveImplicitStrategy = mock(
+							ImplicitNamingStrategy.class);
+					PhysicalNamingStrategy effectivePhysicalStrategy = mock(
+							PhysicalNamingStrategy.class);
+					HibernatePropertiesCustomizer customizer = (hibernateProperties) -> {
+						hibernateProperties.put("hibernate.implicit_naming_strategy",
+								effectiveImplicitStrategy);
+						hibernateProperties.put("hibernate.physical_naming_strategy",
+								effectivePhysicalStrategy);
+					};
+					Map<String, Object> hibernateProperties = properties
+							.getHibernateProperties(
+									new HibernateSettings().ddlAuto("none")
+											.implicitNamingStrategy(implicitStrategy)
+											.physicalNamingStrategy(physicalStrategy)
+											.hibernatePropertiesCustomizers(
+													Collections.singleton(customizer)));
+					assertThat(hibernateProperties).contains(
+							entry("hibernate.implicit_naming_strategy",
+									effectiveImplicitStrategy),
+							entry("hibernate.physical_naming_strategy",
+									effectivePhysicalStrategy));
+					assertThat(hibernateProperties)
+							.doesNotContainKeys("hibernate.ejb.naming_strategy");
+				}));
 	}
 
 	@Test
@@ -166,17 +177,20 @@ public class JpaPropertiesTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
-						"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical"
-				).run(assertJpaProperties((properties) -> {
-			Map<String, Object> hibernateProperties = properties
-					.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
-			// You can override them as we don't provide any default
-			assertThat(hibernateProperties).contains(
-					entry("hibernate.implicit_naming_strategy", "com.example.Implicit"),
-					entry("hibernate.physical_naming_strategy", "com.example.Physical"));
-			assertThat(hibernateProperties)
-					.doesNotContainKeys("hibernate.ejb.naming_strategy");
-		}));
+						"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
+				.run(assertJpaProperties((properties) -> {
+					Map<String, Object> hibernateProperties = properties
+							.getHibernateProperties(
+									new HibernateSettings().ddlAuto("none"));
+					// You can override them as we don't provide any default
+					assertThat(hibernateProperties).contains(
+							entry("hibernate.implicit_naming_strategy",
+									"com.example.Implicit"),
+							entry("hibernate.physical_naming_strategy",
+									"com.example.Physical"));
+					assertThat(hibernateProperties)
+							.doesNotContainKeys("hibernate.ejb.naming_strategy");
+				}));
 	}
 
 	@Test
@@ -184,8 +198,8 @@ public class JpaPropertiesTests {
 		this.contextRunner.run(assertJpaProperties((properties) -> {
 			Map<String, Object> hibernateProperties = properties
 					.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
-			assertThat(hibernateProperties)
-					.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+			assertThat(hibernateProperties).containsEntry(
+					AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 		}));
 	}
 
@@ -193,19 +207,19 @@ public class JpaPropertiesTests {
 	public void useNewIdGeneratorMappingsFalse() {
 		this.contextRunner
 				.withPropertyValues(
-						"spring.jpa.hibernate.use-new-id-generator-mappings:false"
-				).run(assertJpaProperties((properties) -> {
-			Map<String, Object> hibernateProperties = properties
-					.getHibernateProperties(new HibernateSettings().ddlAuto("none"));
-			assertThat(hibernateProperties)
-					.containsEntry(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
-		}));
+						"spring.jpa.hibernate.use-new-id-generator-mappings:false")
+				.run(assertJpaProperties((properties) -> {
+					Map<String, Object> hibernateProperties = properties
+							.getHibernateProperties(
+									new HibernateSettings().ddlAuto("none"));
+					assertThat(hibernateProperties).containsEntry(
+							AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
+				}));
 	}
 
 	@Test
 	public void determineDatabaseNoCheckIfDatabaseIsSet() {
-		this.contextRunner
-				.withPropertyValues("spring.jpa.database=postgresql")
+		this.contextRunner.withPropertyValues("spring.jpa.database=postgresql")
 				.run(assertJpaProperties((properties) -> {
 					DataSource dataSource = mockStandaloneDataSource();
 					Database database = properties.determineDatabase(dataSource);
@@ -230,8 +244,7 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void determineDatabaseWithKnownUrlAndUserConfig() {
-		this.contextRunner
-				.withPropertyValues("spring.jpa.database=mysql")
+		this.contextRunner.withPropertyValues("spring.jpa.database=mysql")
 				.run(assertJpaProperties((properties) -> {
 					Database database = properties
 							.determineDatabase(mockDataSource("jdbc:h2:mem:testdb"));

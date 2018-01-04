@@ -123,7 +123,8 @@ public class FailureAnalyzersTests {
 
 	}
 
-	interface AwareFailureAnalyzer extends BeanFactoryAware, EnvironmentAware, FailureAnalyzer {
+	interface AwareFailureAnalyzer
+			extends BeanFactoryAware, EnvironmentAware, FailureAnalyzer {
 
 	}
 

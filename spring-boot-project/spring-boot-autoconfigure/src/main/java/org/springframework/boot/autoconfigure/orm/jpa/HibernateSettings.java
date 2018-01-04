@@ -69,8 +69,8 @@ public class HibernateSettings {
 
 	public HibernateSettings hibernatePropertiesCustomizers(
 			Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
-		this.hibernatePropertiesCustomizers = new ArrayList<>();
-		this.hibernatePropertiesCustomizers.addAll(hibernatePropertiesCustomizers);
+		this.hibernatePropertiesCustomizers = new ArrayList<>(
+				hibernatePropertiesCustomizers);
 		return this;
 	}
 

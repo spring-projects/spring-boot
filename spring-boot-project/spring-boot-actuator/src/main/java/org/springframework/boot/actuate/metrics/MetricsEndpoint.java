@@ -131,8 +131,7 @@ public class MetricsEndpoint {
 		return availableTags;
 	}
 
-	private void mergeAvailableTags(Map<String, Set<String>> availableTags,
-			Meter meter) {
+	private void mergeAvailableTags(Map<String, Set<String>> availableTags, Meter meter) {
 		meter.getId().getTags().forEach((tag) -> {
 			Set<String> value = Collections.singleton(tag.getValue());
 			availableTags.merge(tag.getKey(), value, this::merge);

@@ -299,14 +299,18 @@ public class KafkaAutoConfigurationTests {
 					assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
 					assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
 							.isEqualTo(2000L);
-					assertThat(dfa.getPropertyValue("containerProperties.noPollThreshold"))
-							.isEqualTo(2.5f);
-					assertThat(dfa.getPropertyValue("containerProperties.idleEventInterval"))
-							.isEqualTo(1000L);
-					assertThat(dfa.getPropertyValue("containerProperties.monitorInterval"))
-							.isEqualTo(45);
-					assertThat(dfa.getPropertyValue("containerProperties.logContainerConfig"))
-							.isEqualTo(Boolean.TRUE);
+					assertThat(
+							dfa.getPropertyValue("containerProperties.noPollThreshold"))
+									.isEqualTo(2.5f);
+					assertThat(
+							dfa.getPropertyValue("containerProperties.idleEventInterval"))
+									.isEqualTo(1000L);
+					assertThat(
+							dfa.getPropertyValue("containerProperties.monitorInterval"))
+									.isEqualTo(45);
+					assertThat(dfa
+							.getPropertyValue("containerProperties.logContainerConfig"))
+									.isEqualTo(Boolean.TRUE);
 					assertThat(dfa.getPropertyValue("batchListener")).isEqualTo(true);
 					assertThat(
 							context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))

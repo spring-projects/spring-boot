@@ -467,7 +467,9 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void connectTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder
+				.requestFactory(
+						() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setConnectTimeout(1234).build();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
 				.isEqualTo(1234);
@@ -476,7 +478,9 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void readTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder
+				.requestFactory(
+						() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setReadTimeout(1234).build();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
 				.isEqualTo(1234);
@@ -486,7 +490,8 @@ public class RestTemplateBuilderTests {
 	public void unwrappingDoesNotAffectRequestFactoryThatIsSetOnTheBuiltTemplate() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		RestTemplate template = this.builder
-				.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
+				.requestFactory(
+						() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.build();
 		assertThat(template.getRequestFactory())
 				.isInstanceOf(BufferingClientHttpRequestFactory.class);

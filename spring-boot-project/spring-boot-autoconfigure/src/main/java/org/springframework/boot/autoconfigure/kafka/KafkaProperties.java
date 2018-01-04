@@ -815,7 +815,8 @@ public class KafkaProperties {
 		private Duration pollTimeout;
 
 		/**
-		 * Multiplier applied to "pollTimeout" to determine if a consumer is non-responsive.
+		 * Multiplier applied to "pollTimeout" to determine if a consumer is
+		 * non-responsive.
 		 */
 		private Float noPollThreshold;
 

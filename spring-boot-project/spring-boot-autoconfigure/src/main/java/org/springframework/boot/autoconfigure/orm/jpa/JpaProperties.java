@@ -224,11 +224,10 @@ public class JpaProperties {
 			else {
 				result.remove("hibernate.hbm2ddl.auto");
 			}
-			Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers =
-					settings.getHibernatePropertiesCustomizers();
-			if (!ObjectUtils.isEmpty(hibernatePropertiesCustomizers)) {
-				hibernatePropertiesCustomizers.forEach((customizer)
-						-> customizer.customize(result));
+			Collection<HibernatePropertiesCustomizer> customizers = settings
+					.getHibernatePropertiesCustomizers();
+			if (!ObjectUtils.isEmpty(customizers)) {
+				customizers.forEach((customizer) -> customizer.customize(result));
 			}
 			return result;
 		}

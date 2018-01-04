@@ -88,10 +88,10 @@ public class CustomHibernateJpaAutoConfigurationTests {
 							.getVendorProperties();
 					assertThat(hibernateProperties
 							.get("hibernate.implicit_naming_strategy")).isEqualTo(
-							NamingStrategyConfiguration.implicitNamingStrategy);
+									NamingStrategyConfiguration.implicitNamingStrategy);
 					assertThat(hibernateProperties
 							.get("hibernate.physical_naming_strategy")).isEqualTo(
-							NamingStrategyConfiguration.physicalNamingStrategy);
+									NamingStrategyConfiguration.physicalNamingStrategy);
 				});
 	}
 

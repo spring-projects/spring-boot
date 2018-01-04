@@ -87,7 +87,8 @@ public class DataNeo4jTestIntegrationTests {
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
 			TestPropertyValues
-					.of("spring.data.neo4j.uri=bolt://localhost:" + neo4j.getMappedPort(7687))
+					.of("spring.data.neo4j.uri=bolt://localhost:"
+							+ neo4j.getMappedPort(7687))
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 
