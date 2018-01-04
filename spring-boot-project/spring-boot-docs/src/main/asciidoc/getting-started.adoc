@@ -3,7 +3,7 @@
 
 [partintro]
 --
-If you are getting started with Spring Boot, or "Spring" in general, start by reading
+If you are getting started with Spring Boot, or "`Spring`" in general, start by reading
 this section. It answers the basic "`what?`", "`how?`" and "`why?`" questions. It
 includes an introduction to Spring Boot, along with installation instructions. We then
 walk you through building your first Spring Boot application, discussing some core
@@ -14,7 +14,7 @@ principles as we go.
 
 [[getting-started-introducing-spring-boot]]
 == Introducing Spring Boot
-Spring Boot makes it easy to create stand-alone, production-grade Spring based
+Spring Boot makes it easy to create stand-alone, production-grade Spring-based
 Applications that you can run. We take an opinionated view of the Spring platform and
 third-party libraries, so that you can get started with minimum fuss. Most Spring Boot
 applications need very little Spring configuration.
@@ -25,7 +25,7 @@ runs "`spring scripts`".
 
 Our primary goals are:
 
-* Provide a radically faster and widely accessible getting started experience for all
+* Provide a radically faster and widely accessible getting-started experience for all
 Spring development.
 * Be opinionated out of the box but get out of the way quickly as requirements start to
 diverge from the defaults.
@@ -38,15 +38,15 @@ configuration).
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires http://www.java.com[Java 8] and Spring
-Framework {spring-version} or above. Explicit build support is provided for Maven 3.2+
-and Gradle 4.
+Spring Boot {spring-boot-version} requires http://www.java.com[Java 8] and
+{spring-reference}[Spring Framework {spring-version}] or above. Explicit build support is
+provided for Maven 3.2+ and Gradle 4.
 
 
 
 [[getting-started-system-requirements-servlet-containers]]
 === Servlet Containers
-The following embedded servlet containers are supported out of the box:
+Spring Boot supports the following embedded servlet containers:
 
 |===
 |Name |Servlet Version
@@ -78,7 +78,7 @@ begin, you should check your current Java installation by using the following co
 
 If you are new to Java development or if you want to experiment with Spring Boot, you
 might want to try the <<getting-started-installing-the-cli, Spring Boot CLI>> (Command
-Line Interface) first, otherwise, read on for "`classic`" installation instructions.
+Line Interface) first. Otherwise, read on for "`classic`" installation instructions.
 
 
 
@@ -102,8 +102,8 @@ Maven installed, you can follow the instructions at http://maven.apache.org.
 
 TIP: On many operating systems, Maven can be installed with a package manager. If you use
 OSX Homebrew, try `brew install maven`. Ubuntu users can run
-`sudo apt-get install maven`. Windows users with Chocolatey can run `choco install maven`
-from an elevated (administrator) prompt.
+`sudo apt-get install maven`. Windows users with https://chocolatey.org/[Chocolatey] can
+run `choco install maven` from an elevated (administrator) prompt.
 
 Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically, your
 Maven POM file inherits from the `spring-boot-starter-parent` project and declares
@@ -298,7 +298,7 @@ commands:
 	Spring Boot v{spring-boot-version}
 ----
 
-If you are developing features for the CLI and want easy access to the version you built,
+If you develop features for the CLI and want easy access to the version you built,
 use the following commands:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -372,8 +372,8 @@ http://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also 
 `spring`) in any shell or put it in your personal or system-wide bash completion
 initialization. On a Debian system, the system-wide scripts are in
 `/shell-completion/bash` and all scripts in that directory are executed when a new shell
-starts. For example, to run the script manually if you have installed using SDKMAN!, use
-the following commands:
+starts. For example, to run the script manually if you have installed by using SDKMAN!,
+use the following commands:
 
 [indent=0]
 ----
@@ -415,7 +415,7 @@ Then run it from a shell, as follows:
 NOTE: The first run of your application is slow, as dependencies are downloaded.
 Subsequent runs are much quicker.
 
-Open http://localhost:8080 in your favorite web browser. You should see the following
+Open `http://localhost:8080` in your favorite web browser. You should see the following
 output:
 
 [indent=0]
@@ -427,13 +427,13 @@ output:
 
 [[getting-started-upgrading-from-an-earlier-version]]
 === Upgrading from an Earlier Version of Spring Boot
-If you are upgrading from an earlier release of Spring Boot check the "`release notes`"
-hosted on the {github-wiki}[project wiki]. You'll find upgrade instructions along with a
+If you are upgrading from an earlier release of Spring Boot, check the "`release notes`"
+hosted on the {github-wiki}[project wiki]. You can find upgrade instructions along with a
 list of "`new and noteworthy`" features for each release.
 
-To upgrade an existing CLI installation use the appropriate package manager command (for
+To upgrade an existing CLI installation, use the appropriate package manager command (for
 example, `brew upgrade`) or, if you manually installed the CLI, follow the
-<<getting-started-manual-cli-installation, standard instructions>> remembering to update
+<<getting-started-manual-cli-installation, standard instructions>>, remembering to update
 your `PATH` environment variable to remove any older references.
 
 
@@ -477,7 +477,7 @@ valid versions of Java and Maven installed:
 ----
 
 NOTE: This sample needs to be created in its own folder. Subsequent instructions assume
-that you have created a suitable folder and that it is your "`current directory`".
+that you have created a suitable folder and that it is your current directory.
 
 
 
@@ -646,7 +646,7 @@ accordingly.
 ****
 Auto-configuration is designed to work well with "`Starters`", but the two concepts are
 not directly tied. You are free to pick and choose jar dependencies outside of the
-starters and Spring Boot still does its best to auto-configure your application.
+starters. Spring Boot still does its best to auto-configure your application.
 ****
 
 
@@ -687,7 +687,7 @@ application. You should see output similar to the following:
 	........ Started Example in 2.222 seconds (JVM running for 6.514)
 ----
 
-If you open a web browser to http://localhost:8080, you should see the following output:
+If you open a web browser to `http://localhost:8080`, you should see the following output:
 
 [indent=0]
 ----
@@ -718,7 +718,7 @@ can also be problematic if the same filename is used (but with different content
 multiple jars.
 
 Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different
-approach>> and allows you to actually nest jars directly.
+approach>> and lets you actually nest jars directly.
 ****
 
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our

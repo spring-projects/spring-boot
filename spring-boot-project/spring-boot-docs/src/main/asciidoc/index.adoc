@@ -39,6 +39,12 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin/
 :spring-boot-gradle-plugin: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin/
 :spring-reference: http://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/
+:spring-rest-docs: http://projects.spring.io/spring-restdocs/
+:spring-integration: http://projects.spring.io/spring-integration/
+:spring-session: https://projects.spring.io/spring-session/
+:spring-framework: http://projects.spring.io/spring-framework/
+:spring-security: http://projects.spring.io/spring-security/
+:spring-data-jpa: http://projects.spring.io/spring-data-jpa/
 :spring-security-reference: http://docs.spring.io/spring-security/site/docs/{spring-security-docs-version}/reference/htmlsingle
 :spring-security-oauth2-reference: http://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-webservices-reference: http://docs.spring.io/spring-ws/docs/{spring-webservices-docs-version}/reference/
@@ -48,6 +54,8 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
 :spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
 :spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
+:spring-data-mongo: http://projects.spring.io/spring-data-mongodb/
+:spring-data: http://projects.spring.io/spring-data/
 :spring-data-rest-javadoc: http://docs.spring.io/spring-data/rest/docs/current/api/org/springframework/data/rest
 :gradle-userguide: http://www.gradle.org/docs/current/userguide
 :propdeps-plugin: https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
