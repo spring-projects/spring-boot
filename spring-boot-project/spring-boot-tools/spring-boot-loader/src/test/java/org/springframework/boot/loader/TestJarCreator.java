@@ -39,6 +39,10 @@ public abstract class TestJarCreator {
 	}
 
 	public static void createTestJar(File file, boolean unpackNested) throws Exception {
+		createTestJar(file, unpackNested, false);
+	}
+
+	public static void createTestJar(File file, boolean unpackNested, boolean extended) throws Exception {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
 			writeManifest(jarOutputStream, "j1");
@@ -51,13 +55,30 @@ public abstract class TestJarCreator {
 
 			writeNestedEntry("nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("another-nested.jar", unpackNested, jarOutputStream);
+			if (extended) {
+				writeNestingNestedEntry("nesting-nested.jar", "nested.jar", unpackNested, false, jarOutputStream);
+				writeNestingNestedEntry("nesting nested.jar", "nested.jar", unpackNested, false, jarOutputStream);
+				writeNestingNestedEntry("nesting nested 2.jar", "nested 2.jar", unpackNested, false, jarOutputStream);
+				writeNestingNestedEntry("nesting$nested.jar", "nested.jar", unpackNested, false, jarOutputStream);
+				writeNestingNestedEntry("nesting+nested.jar", "nested.jar", unpackNested, false, jarOutputStream);
+				writeNestingNestedEntry("n123456789012345678901234567890.jar", "nested.jar", unpackNested, true, jarOutputStream);
+			}
 		}
 	}
 
 	private static void writeNestedEntry(String name, boolean unpackNested,
 			JarOutputStream jarOutputStream) throws Exception {
+		writeNestedEntry(name, unpackNested, getNestedJarData(), jarOutputStream);
+	}
+
+	private static void writeNestingNestedEntry(String outerName, String innerName, boolean unpackNested,
+			boolean createNestedEmpty, JarOutputStream jarOutputStream) throws Exception {
+		writeNestedEntry(outerName, unpackNested, getNestingNestedJarData(innerName, createNestedEmpty), jarOutputStream);
+	}
+
+	private static void writeNestedEntry(String name, boolean unpackNested,
+			byte[] nestedJarData, JarOutputStream jarOutputStream) throws Exception {
 		JarEntry nestedEntry = new JarEntry(name);
-		byte[] nestedJarData = getNestedJarData();
 		nestedEntry.setSize(nestedJarData.length);
 		nestedEntry.setCompressedSize(nestedJarData.length);
 		if (unpackNested) {
@@ -80,6 +101,23 @@ public abstract class TestJarCreator {
 		writeEntry(jarOutputStream, "3.dat", 3);
 		writeEntry(jarOutputStream, "4.dat", 4);
 		writeEntry(jarOutputStream, "\u00E4.dat", '\u00E4');
+		jarOutputStream.close();
+		return byteArrayOutputStream.toByteArray();
+	}
+
+	private static byte[] getEmptyJarData() throws Exception {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		JarOutputStream jarOutputStream = new JarOutputStream(byteArrayOutputStream);
+		writeManifest(jarOutputStream, "j2e");
+		jarOutputStream.close();
+		return byteArrayOutputStream.toByteArray();
+	}
+
+	private static byte[] getNestingNestedJarData(String innerName, boolean createNestedEmpty) throws Exception {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		JarOutputStream jarOutputStream = new JarOutputStream(byteArrayOutputStream);
+		writeManifest(jarOutputStream, "j2-2");
+		writeNestedEntry(innerName, false, createNestedEmpty ? getEmptyJarData() : getNestedJarData(), jarOutputStream);
 		jarOutputStream.close();
 		return byteArrayOutputStream.toByteArray();
 	}

@@ -17,7 +17,10 @@
 package org.springframework.boot.loader;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -87,6 +90,109 @@ public class LaunchedURLClassLoaderTests {
 	}
 
 	@Test
+	public void resolveFromDoublyNestedJarUsingUriAsResourceName() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(file, false, true);
+		JarFile jarFile = new JarFile(file);
+		JarFile nestingJarFile = jarFile.getNestedJarFile(jarFile.getEntry("nesting-nested.jar"));
+		JarFile otherJarFile = jarFile.getNestedJarFile(jarFile.getEntry("n123456789012345678901234567890.jar"));
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+				new URL[] {
+						otherJarFile.getUrl(),
+						nestingJarFile.getUrl() },
+				null);
+		System.out.println(otherJarFile.getUrl());
+		System.out.println(nestingJarFile.getUrl());
+		String absolutePath = nestingJarFile.getUrl() + "nested.jar!/3.dat";
+		URL resource = loader.getResource(absolutePath);
+		System.out.println("Looked for: " + absolutePath);
+		System.out.println("Found resource: " + resource);
+		assertThat(resource.toString()).isEqualTo(absolutePath);
+		assertThat(resource.openConnection().getInputStream().read()).isEqualTo(3);
+	}
+
+	@Test
+	public void resolveFromDoublyNestedJarUsingUriAsResourceNameHavingSpace() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(file, false, true);
+		JarFile jarFile = new JarFile(file);
+		JarFile nestingJarFile = jarFile.getNestedJarFile(jarFile.getEntry("nesting nested.jar"));
+		JarFile otherJarFile = jarFile.getNestedJarFile(jarFile.getEntry("n123456789012345678901234567890.jar"));
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+				new URL[] {
+						otherJarFile.getUrl(),
+						nestingJarFile.getUrl() },
+				null);
+		String absolutePath = nestingJarFile.getUrl() + "nested.jar!/3.dat";
+		URL resource = loader.getResource(absolutePath);
+		System.out.println("Looked for: " + absolutePath);
+		System.out.println("Found resource: " + resource);
+		assertThat(resource.toString()).isEqualTo(absolutePath.replace(" ", "%20"));
+		assertThat(resource.openConnection().getInputStream().read()).isEqualTo(3);
+	}
+
+	@Test
+	public void resolveFromDoublyNestedJarUsingUriAsResourceNameHavingTwoSpaces() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(file, false, true);
+		JarFile jarFile = new JarFile(file);
+		JarFile nestingJarFile = jarFile.getNestedJarFile(jarFile.getEntry("nesting nested 2.jar"));
+		JarFile otherJarFile = jarFile.getNestedJarFile(jarFile.getEntry("n123456789012345678901234567890.jar"));
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+				new URL[] {
+						otherJarFile.getUrl(),
+						nestingJarFile.getUrl() },
+				null);
+		String absolutePath = nestingJarFile.getUrl() + "nested 2.jar!/3.dat";
+		URL resource = loader.getResource(absolutePath);
+		System.out.println("Looked for: " + absolutePath);
+		System.out.println("Found resource: " + resource);
+		assertThat(resource.toString()).isEqualTo(absolutePath.replace(" ", "%20"));
+		assertThat(resource.openConnection().getInputStream().read()).isEqualTo(3);
+	}
+
+	@Test
+	public void resolveFromDoublyNestedJarUsingUriAsResourceNameHavingDollarSign() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(file, false, true);
+		JarFile jarFile = new JarFile(file);
+		JarFile nestingJarFile = jarFile.getNestedJarFile(jarFile.getEntry("nesting$nested.jar"));
+		JarFile otherJarFile = jarFile.getNestedJarFile(jarFile.getEntry("n123456789012345678901234567890.jar"));
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+				new URL[] {
+						otherJarFile.getUrl(),
+						nestingJarFile.getUrl() },
+				null);
+		String absolutePath = nestingJarFile.getUrl() + "nested.jar!/3.dat";
+		URL resource = loader.getResource(absolutePath);
+		System.out.println("Looked for: " + absolutePath);
+		System.out.println("Found resource: " + resource);
+		assertThat(resource.toString()).isEqualTo(absolutePath);
+		assertThat(resource.openConnection().getInputStream().read()).isEqualTo(3);
+	}
+
+	@Test
+	public void resolveFromDoublyNestedJarHavingSpace() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(file, false, true);
+		JarFile jarFile = new JarFile(file);
+		JarFile nestingJarFile = jarFile.getNestedJarFile(jarFile.getEntry("nesting nested 2.jar"));
+		JarFile otherJarFile = jarFile.getNestedJarFile(jarFile.getEntry("n123456789012345678901234567890.jar"));
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
+				new URL[] {
+						otherJarFile.getUrl(),
+						nestingJarFile.getUrl() },
+				null);
+		String relativePath = "nested 2.jar!/3.dat";
+		URL resource = loader.getResource(relativePath);
+		System.out.println("Looked for: " + relativePath);
+		System.out.println("Found resource: " + resource);
+		// TODO review the following line
+		assertThat(resource.toString()).isEqualTo(decodedUrl(nestingJarFile) + relativePath.replace(" ", "%20"));
+		assertThat(resource.openConnection().getInputStream().read()).isEqualTo(3);
+	}
+
+	@Test
 	public void resolveFromNestedWhileThreadIsInterrupted() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(file);
@@ -105,4 +211,12 @@ public class LaunchedURLClassLoaderTests {
 		}
 	}
 
+	private String decodedUrl(JarFile jarFile) throws MalformedURLException {
+		try {
+			return URLDecoder.decode(jarFile.getUrl().toString(), "utf-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException(e);
+		}
+	}
 }
