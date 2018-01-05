@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.springframework.validation.Validator;
  * {@link PropertySource}.
  *
  * @author Stephane Nicoll
- * @see ConfigurationPropertiesBinderBuilder
  */
 class ConfigurationPropertiesBinder {
 
@@ -50,6 +49,8 @@ class ConfigurationPropertiesBinder {
 
 	private Iterable<ConfigurationPropertySource> configurationSources;
 
+	private final Binder binder;
+
 	ConfigurationPropertiesBinder(Iterable<PropertySource<?>> propertySources,
 			ConversionService conversionService, Validator validator) {
 		Assert.notNull(propertySources, "PropertySources must not be null");
@@ -57,6 +58,10 @@ class ConfigurationPropertiesBinder {
 		this.conversionService = conversionService;
 		this.validator = validator;
 		this.configurationSources = ConfigurationPropertySources.from(propertySources);
+		this.binder = new Binder(this.configurationSources,
+				new PropertySourcesPlaceholdersResolver(this.propertySources),
+				this.conversionService);
+
 	}
 
 	/**
@@ -67,14 +72,11 @@ class ConfigurationPropertiesBinder {
 	 * @throws ConfigurationPropertiesBindingException if the binding failed
 	 */
 	void bind(Object target, ConfigurationProperties annotation) {
-		Binder binder = new Binder(this.configurationSources,
-				new PropertySourcesPlaceholdersResolver(this.propertySources),
-				this.conversionService);
 		Validator validator = determineValidator(target);
 		BindHandler handler = getBindHandler(annotation, validator);
 		Bindable<?> bindable = Bindable.ofInstance(target);
 		try {
-			binder.bind(annotation.prefix(), bindable, handler);
+			this.binder.bind(annotation.prefix(), bindable, handler);
 		}
 		catch (Exception ex) {
 			String message = "Could not bind properties to '"
