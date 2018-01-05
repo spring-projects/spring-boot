@@ -16,34 +16,22 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.Valid;
 
-import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -58,6 +46,7 @@ import org.springframework.web.server.ServerWebExchange;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 
 /**
@@ -67,174 +56,170 @@ import static org.hamcrest.Matchers.not;
  */
 public class DefaultErrorWebExceptionHandlerIntegrationTests {
 
-	private ConfigurableApplicationContext context;
+	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerAutoConfiguration.class,
+					HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
+					ErrorWebFluxAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class, MustacheAutoConfiguration.class))
+			.withPropertyValues("spring.main.web-application-type=reactive", "server.port=0")
+			.withUserConfiguration(Application.class);
 
-	private WebTestClient webTestClient;
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	@After
-	public void closeContext() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
-
 	@Test
 	public void jsonError() throws Exception {
-		load();
-		this.webTestClient.get().uri("/").exchange().expectStatus()
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
-				.jsonPath("status").isEqualTo("500").jsonPath("error")
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-				.jsonPath("path").isEqualTo(("/")).jsonPath("message")
-				.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
-				.jsonPath("trace").doesNotExist();
-		this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
-				containsString("IllegalStateException")));
+		this.contextRunner.run(context -> {
+			WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+			client.get().uri("/").exchange().expectStatus()
+					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
+					.jsonPath("status").isEqualTo("500").jsonPath("error")
+					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+					.jsonPath("path").isEqualTo(("/")).jsonPath("message")
+					.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
+					.jsonPath("trace").doesNotExist();
+			this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
+					containsString("IllegalStateException")));
+		});
 	}
 
 	@Test
 	public void notFound() throws Exception {
-		load();
-		this.webTestClient.get().uri("/notFound").exchange().expectStatus()
-				.isEqualTo(HttpStatus.NOT_FOUND).expectBody().jsonPath("status")
-				.isEqualTo("404").jsonPath("error")
-				.isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase()).jsonPath("path")
-				.isEqualTo(("/notFound")).jsonPath("exception").doesNotExist();
+		this.contextRunner.run(context -> {
+			WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+			client.get().uri("/notFound").exchange().expectStatus()
+					.isEqualTo(HttpStatus.NOT_FOUND).expectBody().jsonPath("status")
+					.isEqualTo("404").jsonPath("error")
+					.isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase()).jsonPath("path")
+					.isEqualTo(("/notFound")).jsonPath("exception").doesNotExist();
+		});
 	}
 
 	@Test
 	public void htmlError() throws Exception {
-		load();
-		String body = this.webTestClient.get().uri("/").accept(MediaType.TEXT_HTML)
-				.exchange().expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectHeader().contentType(MediaType.TEXT_HTML).expectBody(String.class)
-				.returnResult().getResponseBody();
-		assertThat(body).contains("status: 500").contains("message: Expected!");
-		this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
-				containsString("IllegalStateException")));
+		this.contextRunner.run(context -> {
+			WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+			String body = client.get().uri("/").accept(MediaType.TEXT_HTML)
+					.exchange().expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+					.expectHeader().contentType(MediaType.TEXT_HTML).expectBody(String.class)
+					.returnResult().getResponseBody();
+			assertThat(body).contains("status: 500").contains("message: Expected!");
+			this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
+					containsString("IllegalStateException")));
+		});
 	}
 
 	@Test
 	public void bindingResultError() throws Exception {
-		load();
-		this.webTestClient.post().uri("/bind").contentType(MediaType.APPLICATION_JSON)
-				.syncBody("{}").exchange().expectStatus()
-				.isEqualTo(HttpStatus.BAD_REQUEST).expectBody().jsonPath("status")
-				.isEqualTo("400").jsonPath("error")
-				.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path")
-				.isEqualTo(("/bind")).jsonPath("exception").doesNotExist()
-				.jsonPath("errors").isArray().jsonPath("message").isNotEmpty();
-
+		this.contextRunner.run(context -> {
+			WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+			client.post().uri("/bind").contentType(MediaType.APPLICATION_JSON)
+					.syncBody("{}").exchange().expectStatus()
+					.isEqualTo(HttpStatus.BAD_REQUEST).expectBody().jsonPath("status")
+					.isEqualTo("400").jsonPath("error")
+					.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path")
+					.isEqualTo(("/bind")).jsonPath("exception").doesNotExist()
+					.jsonPath("errors").isArray().jsonPath("message").isNotEmpty();
+		});
 	}
 
 	@Test
 	public void includeStackTraceOnParam() throws Exception {
-		load("--server.error.include-exception=true",
-				"--server.error.include-stacktrace=on-trace-param");
-		this.webTestClient.get().uri("/?trace=true").exchange().expectStatus()
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
-				.jsonPath("status").isEqualTo("500").jsonPath("error")
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-				.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
-				.jsonPath("trace").exists();
+		this.contextRunner
+				.withPropertyValues("server.error.include-exception=true",
+						"server.error.include-stacktrace=on-trace-param")
+				.run(context -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+					client.get().uri("/?trace=true").exchange().expectStatus()
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
+							.jsonPath("status").isEqualTo("500").jsonPath("error")
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+							.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
+							.jsonPath("trace").exists();
+				});
 	}
 
 	@Test
 	public void alwaysIncludeStackTrace() throws Exception {
-		load("--server.error.include-exception=true",
-				"--server.error.include-stacktrace=always");
-		this.webTestClient.get().uri("/?trace=false").exchange().expectStatus()
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
-				.jsonPath("status").isEqualTo("500").jsonPath("error")
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-				.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
-				.jsonPath("trace").exists();
+		this.contextRunner
+				.withPropertyValues("server.error.include-exception=true",
+						"server.error.include-stacktrace=always")
+				.run(context -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+					client.get().uri("/?trace=false").exchange().expectStatus()
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
+							.jsonPath("status").isEqualTo("500").jsonPath("error")
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+							.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
+							.jsonPath("trace").exists();
+				});
 	}
 
 	@Test
 	public void neverIncludeStackTrace() throws Exception {
-		load("--server.error.include-exception=true",
-				"--server.error.include-stacktrace=never");
-		this.webTestClient.get().uri("/?trace=true").exchange().expectStatus()
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
-				.jsonPath("status").isEqualTo("500").jsonPath("error")
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-				.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
-				.jsonPath("trace").doesNotExist();
+		this.contextRunner
+				.withPropertyValues("server.error.include-exception=true",
+						"server.error.include-stacktrace=never")
+				.run(context -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+					client.get().uri("/?trace=true").exchange().expectStatus()
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
+							.jsonPath("status").isEqualTo("500").jsonPath("error")
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+							.jsonPath("exception").isEqualTo(IllegalStateException.class.getName())
+							.jsonPath("trace").doesNotExist();
+
+				});
 	}
 
 	@Test
 	public void statusException() throws Exception {
-		load("--server.error.include-exception=true");
-		this.webTestClient.get().uri("/badRequest").exchange().expectStatus()
-				.isEqualTo(HttpStatus.BAD_REQUEST).expectBody().jsonPath("status")
-				.isEqualTo("400").jsonPath("error")
-				.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("exception")
-				.isEqualTo(ResponseStatusException.class.getName());
-		this.output.expect(not(containsString("ResponseStatusException")));
+		this.contextRunner
+				.withPropertyValues("server.error.include-exception=true")
+				.run(context -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+					client.get().uri("/badRequest").exchange().expectStatus()
+							.isEqualTo(HttpStatus.BAD_REQUEST).expectBody().jsonPath("status")
+							.isEqualTo("400").jsonPath("error")
+							.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("exception")
+							.isEqualTo(ResponseStatusException.class.getName());
+					this.output.expect(not(containsString("ResponseStatusException")));
+				});
 	}
 
 	@Test
 	public void defaultErrorView() throws Exception {
-		load("--spring.mustache.prefix=classpath:/unknown/");
-		String body = this.webTestClient.get().uri("/").accept(MediaType.TEXT_HTML)
-				.exchange().expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectHeader().contentType(MediaType.TEXT_HTML).expectBody(String.class)
-				.returnResult().getResponseBody();
-		assertThat(body).contains("Whitelabel Error Page")
-				.contains("<div>Expected!</div>");
-		this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
-				containsString("IllegalStateException")));
+		this.contextRunner
+				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/")
+				.run(context -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+					String body = client.get().uri("/").accept(MediaType.TEXT_HTML)
+							.exchange().expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+							.expectHeader().contentType(MediaType.TEXT_HTML).expectBody(String.class)
+							.returnResult().getResponseBody();
+					assertThat(body).contains("Whitelabel Error Page")
+							.contains("<div>Expected!</div>");
+					this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
+							containsString("IllegalStateException")));
+				});
 	}
 
 	@Test
-	@Ignore
 	public void responseCommitted() throws Exception {
-		load();
-		this.webTestClient.get().uri("/commit").exchange().expectStatus()
-				.isEqualTo(HttpStatus.OK).expectBody().isEmpty();
-		this.output
-				.expect(not(containsString("java.lang.UnsupportedOperationException")));
-		this.output.expect(
-				containsString("java.lang.IllegalStateException: already committed!"));
-	}
-
-	private void load(String... arguments) {
-		List<String> args = new ArrayList<>();
-		args.add("--server.port=0");
-		if (arguments != null) {
-			args.addAll(Arrays.asList(arguments));
-		}
-		SpringApplication application = new SpringApplication(Application.class);
-		application.setWebApplicationType(WebApplicationType.REACTIVE);
-		this.context = application.run(args.toArray(new String[args.size()]));
-		this.webTestClient = WebTestClient.bindToApplicationContext(this.context).build();
-	}
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@Import({ ReactiveWebServerAutoConfiguration.class,
-			HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
-			ErrorWebFluxAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
-	private @interface MinimalWebConfiguration {
-
+		this.contextRunner.run(context -> {
+			WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+			this.thrown.expectCause(instanceOf(IllegalStateException.class));
+			this.thrown.expectMessage("already committed!");
+			client.get().uri("/commit").exchange().expectStatus()
+					.isEqualTo(HttpStatus.OK).expectBody().isEmpty();
+		});
 	}
 
 	@Configuration
-	@MinimalWebConfiguration
-	@Import(MustacheAutoConfiguration.class)
 	public static class Application {
-
-		public static void main(String[] args) {
-			SpringApplication application = new SpringApplication(Application.class);
-			application.setWebApplicationType(WebApplicationType.REACTIVE);
-			application.run(args);
-		}
 
 		@RestController
 		protected static class ErrorController {
