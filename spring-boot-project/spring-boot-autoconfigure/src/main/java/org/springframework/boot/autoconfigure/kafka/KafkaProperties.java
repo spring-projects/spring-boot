@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -798,6 +800,11 @@ public class KafkaProperties {
 		private AckMode ackMode;
 
 		/**
+		 * Prefix for the listener's consumer client.id property.
+		 */
+		private String clientId;
+
+		/**
 		 * Number of threads to run in the listener containers.
 		 */
 		private Integer concurrency;
@@ -806,6 +813,11 @@ public class KafkaProperties {
 		 * Timeout to use when polling the consumer.
 		 */
 		private Duration pollTimeout;
+
+		/**
+		 * Multiplier applied to "pollTimeout" to determine if a consumer is non-responsive.
+		 */
+		private Float noPollThreshold;
 
 		/**
 		 * Number of records between offset commits when ackMode is "COUNT" or
@@ -817,6 +829,23 @@ public class KafkaProperties {
 		 * Time between offset commits when ackMode is "TIME" or "COUNT_TIME".
 		 */
 		private Duration ackTime;
+
+		/**
+		 * Time between publishing idle consumer events (no data received).
+		 */
+		private Duration idleEventInterval;
+
+		/**
+		 * Time between checks for non-responsive consumers. If a duration suffix is not
+		 * specified, seconds will be used.
+		 */
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		private Duration monitorInterval;
+
+		/**
+		 * Whether to log the container configuration during initialization (INFO level).
+		 */
+		private Boolean logContainerConfig;
 
 		public Type getType() {
 			return this.type;
@@ -832,6 +861,14 @@ public class KafkaProperties {
 
 		public void setAckMode(AckMode ackMode) {
 			this.ackMode = ackMode;
+		}
+
+		public String getClientId() {
+			return this.clientId;
+		}
+
+		public void setClientId(String clientId) {
+			this.clientId = clientId;
 		}
 
 		public Integer getConcurrency() {
@@ -850,6 +887,14 @@ public class KafkaProperties {
 			this.pollTimeout = pollTimeout;
 		}
 
+		public Float getNoPollThreshold() {
+			return this.noPollThreshold;
+		}
+
+		public void setNoPollThreshold(Float noPollThreshold) {
+			this.noPollThreshold = noPollThreshold;
+		}
+
 		public Integer getAckCount() {
 			return this.ackCount;
 		}
@@ -864,6 +909,30 @@ public class KafkaProperties {
 
 		public void setAckTime(Duration ackTime) {
 			this.ackTime = ackTime;
+		}
+
+		public Duration getIdleEventInterval() {
+			return this.idleEventInterval;
+		}
+
+		public void setIdleEventInterval(Duration idleEventInterval) {
+			this.idleEventInterval = idleEventInterval;
+		}
+
+		public Duration getMonitorInterval() {
+			return this.monitorInterval;
+		}
+
+		public void setMonitorInterval(Duration monitorInterval) {
+			this.monitorInterval = monitorInterval;
+		}
+
+		public Boolean getLogContainerConfig() {
+			return this.logContainerConfig;
+		}
+
+		public void setLogContainerConfig(Boolean logContainerConfig) {
+			this.logContainerConfig = logContainerConfig;
 		}
 
 	}
