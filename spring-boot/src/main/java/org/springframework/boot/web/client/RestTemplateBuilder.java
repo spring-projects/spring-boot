@@ -337,6 +337,8 @@ public class RestTemplateBuilder {
 	/**
 	 * Set the {@link ClientHttpRequestFactory} that should be used with the
 	 * {@link RestTemplate}.
+   * <p>Note that this request factory will be shared with all builder instances
+   * derived from that point.
 	 * @param requestFactory the request factory to use
 	 * @return a new builder instance
 	 */
