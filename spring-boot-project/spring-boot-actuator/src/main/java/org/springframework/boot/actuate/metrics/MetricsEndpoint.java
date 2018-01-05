@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package org.springframework.boot.actuate.metrics;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +67,8 @@ public class MetricsEndpoint {
 		if (registry instanceof CompositeMeterRegistry) {
 			((CompositeMeterRegistry) registry).getRegistries()
 					.forEach((member) -> collectNames(names, member));
-		} else {
+		}
+		else {
 			registry.getMeters().stream().map(this::getName).forEach(names::add);
 		}
 	}
@@ -102,7 +108,8 @@ public class MetricsEndpoint {
 		if (registry instanceof CompositeMeterRegistry) {
 			((CompositeMeterRegistry) registry).getRegistries()
 					.forEach((member) -> collectMeters(meters, member, name, tags));
-		} else {
+		}
+		else {
 			meters.addAll(registry.find(name).tags(tags).meters());
 		}
 	}
@@ -124,7 +131,7 @@ public class MetricsEndpoint {
 		return availableTags;
 	}
 
-	private void mergeAvailableTags(Map<String, List<String>> availableTags,
+	private void mergeAvailableTags(Map<String, Set<String>> availableTags,
 			Meter meter) {
 		meter.getId().getTags().forEach((tag) -> {
 			Set<String> value = Collections.singleton(tag.getValue());
