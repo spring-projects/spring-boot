@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
-public class SampleTestNoMockitoApplicationTest {
+public class SampleTestNoMockitoApplicationTests {
 
 	// gh-7065
 
