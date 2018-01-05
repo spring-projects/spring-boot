@@ -957,7 +957,7 @@ for all requests. Alternatively, when set to `false`, you can enable instrumenta
 adding `@Timed` to a request-handling method.
 
 By default, metrics are generated with the name, `http.server.requests`. The name can be
-customized by setting the `management.metrics.web.server.requests-metrics-name` property.
+customized by setting the `management.metrics.web.server.requests-metric-name` property.
 
 
 
@@ -980,7 +980,7 @@ controllers. You can also use a helper class, `RouterFunctionMetrics`, to instru
 applications that use WebFlux's functional programming model.
 
 By default, metrics are generated with the name `http.server.requests`. You can customize
-the name by setting the `management.metrics.web.server.requests-metrics-name` property.
+the name by setting the `management.metrics.web.server.requests-metric-name` property.
 
 
 
@@ -1015,7 +1015,7 @@ instrumentation of its requests. `MetricsRestTemplateCustomizer` can be used to 
 your own `RestTemplate` instances.
 
 By default, metrics are generated with the name, `http.client.requests`. The name can be
-customized by setting the `management.metrics.web.client.requests-metrics-name` property.
+customized by setting the `management.metrics.web.client.requests-metric-name` property.
 
 
 

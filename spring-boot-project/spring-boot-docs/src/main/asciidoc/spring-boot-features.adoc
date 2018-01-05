@@ -4391,7 +4391,7 @@ materialized by the `org.springframework.cache.Cache` and
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 `cacheResolver` (see
-{spring-javadoc}cache/annotation/CachingConfigurer.html[`CachingConfigurer`]),
+{spring-javadoc}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]),
 Spring Boot tries to detect the following providers (in the indicated order):
 
 . <<boot-features-caching-provider-generic,Generic>>
@@ -5406,7 +5406,7 @@ property with a different value for each instance of your application.
 
 [[boot-features-jta-bitronix]]
 === Using a Bitronix Transaction Manager
-https://github.com/bitronix/btm[Bitronix] is a  spopular open-source JTA transaction
+https://github.com/bitronix/btm[Bitronix] is a popular open-source JTA transaction
 manager implementation. You can use the `spring-boot-starter-jta-bitronix` starter to add
 the appropriate Bitronix dependencies to your project. As with Atomikos, Spring Boot
 automatically configures Bitronix and post-processes your beans to ensure that startup and
@@ -6158,7 +6158,7 @@ A list of the auto-configuration settings that are enabled by `@WebMvcTest` can 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-webflux-tests]]
 ==== Auto-configured Spring WebFlux Tests
-To test that {spring-reference}html/web-reactive.html[Spring WebFlux] controllers are
+To test that {spring-reference}/web-reactive.html[Spring WebFlux] controllers are
 working as expected, you can use the `@WebFluxTest` annotation. `@WebFluxTest`
 auto-configures the Spring WebFlux infrastructure and limits scanned beans to
 `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, and
@@ -6444,7 +6444,7 @@ configures Spring Data Neo4j repositories. Regular `@Component` beans are not lo
 the `ApplicationContext`. (For more about using Neo4J with Spring Boot, see
 "<<boot-features-neo4j>>", earlier in this chapter.)
 
-The followig example shows a typical setup for using Neo4J tests in Spring Boot:
+The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
 [source,java,indent=0]
 ----

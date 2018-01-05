@@ -36,7 +36,7 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 			"org.junit.jupiter.api.extension.ExtendWith" };
 
 	private static final String[] METHOD_ANNOTATIONS = { "org.junit.Test",
-			"org.junit.platform.commons.annotation.Testable", };
+			"org.junit.platform.commons.annotation.Testable" };
 
 	@Override
 	public boolean match(MetadataReader metadataReader,

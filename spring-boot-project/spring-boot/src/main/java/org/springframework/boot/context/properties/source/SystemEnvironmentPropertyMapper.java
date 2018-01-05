@@ -46,7 +46,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		}
 		return new PropertyMapping[] {
 				new PropertyMapping(name, configurationPropertyName),
-				new PropertyMapping(legacyName, configurationPropertyName), };
+				new PropertyMapping(legacyName, configurationPropertyName) };
 	}
 
 	@Override
