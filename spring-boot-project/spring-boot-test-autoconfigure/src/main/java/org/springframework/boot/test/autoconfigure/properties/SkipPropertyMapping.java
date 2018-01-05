@@ -37,6 +37,6 @@ public enum SkipPropertyMapping {
 	/**
 	 * Don't skip mapping the property.
 	 */
-	NO,
+	NO
 
 }
