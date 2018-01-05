@@ -138,7 +138,7 @@ jobs:
     - task: build-project
       timeout: 1h30m
       image: spring-boot-ci-image
-      file: git-repo/ci/tasks/build-project.yml
+      file: git-repo/ci/tasks/build-pr-project.yml
     - aggregate:
       - task: build-samples
         timeout: 1h30m
