@@ -1787,6 +1787,11 @@ In addition, all properties in `+spring.jpa.properties.*+` are passed through as
 JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
 created.
 
+TIP: if you need to apply advanced customization to Hibernate properties, consider
+registering a `HibernatePropertiesCustomizer` bean that will be invoked prior to creating
+the `EntityManagerFactory`. This takes precedence to anything that is applied by the
+auto-configuration.
+
 
 
 [[howto-configure-hibernate-naming-strategy]]

@@ -87,13 +87,16 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private final ImplicitNamingStrategy implicitNamingStrategy;
 
+	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
+
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
 			ObjectProvider<List<SchemaManagementProvider>> providers,
 			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
-			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy) {
+			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy,
+			ObjectProvider<List<HibernatePropertiesCustomizer>> hibernatePropertiesCustomizers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
 		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
@@ -102,6 +105,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				metadataProviders.getIfAvailable());
 		this.physicalNamingStrategy = physicalNamingStrategy.getIfAvailable();
 		this.implicitNamingStrategy = implicitNamingStrategy.getIfAvailable();
+		this.hibernatePropertiesCustomizers = hibernatePropertiesCustomizers
+				.getIfAvailable(() -> Collections.EMPTY_LIST);
 	}
 
 	@Override
@@ -111,14 +116,13 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	@Override
 	protected Map<String, Object> getVendorProperties() {
-		Map<String, Object> vendorProperties = new LinkedHashMap<>();
 		String defaultDdlMode = this.defaultDdlAutoProvider
 				.getDefaultDdlAuto(getDataSource());
-		vendorProperties.putAll(getProperties()
+		return new LinkedHashMap<>(getProperties()
 				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlMode)
 						.implicitNamingStrategy(this.implicitNamingStrategy)
-						.physicalNamingStrategy(this.physicalNamingStrategy)));
-		return vendorProperties;
+						.physicalNamingStrategy(this.physicalNamingStrategy)
+						.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
 	}
 
 	@Override

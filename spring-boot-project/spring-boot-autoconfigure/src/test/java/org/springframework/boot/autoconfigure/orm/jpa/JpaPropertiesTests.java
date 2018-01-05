@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -121,6 +122,40 @@ public class JpaPropertiesTests {
 			assertThat(hibernateProperties).contains(
 					entry("hibernate.implicit_naming_strategy", implicitStrategy),
 					entry("hibernate.physical_naming_strategy", physicalStrategy));
+			assertThat(hibernateProperties)
+					.doesNotContainKeys("hibernate.ejb.naming_strategy");
+		}));
+	}
+
+
+	@Test
+	public void hibernatePropertiesCustomizerTakePrecedenceOverStrategyInstancesAndNamingStrategyProperties() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
+						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical"
+				).run(assertJpaProperties((properties) -> {
+			ImplicitNamingStrategy implicitStrategy = mock(ImplicitNamingStrategy.class);
+			PhysicalNamingStrategy physicalStrategy = mock(PhysicalNamingStrategy.class);
+			ImplicitNamingStrategy effectiveImplicitStrategy = mock(
+					ImplicitNamingStrategy.class);
+			PhysicalNamingStrategy effectivePhysicalStrategy = mock(
+					PhysicalNamingStrategy.class);
+			HibernatePropertiesCustomizer customizer = (hibernateProperties) -> {
+				hibernateProperties.put("hibernate.implicit_naming_strategy",
+						effectiveImplicitStrategy);
+				hibernateProperties.put("hibernate.physical_naming_strategy",
+						effectivePhysicalStrategy);
+			};
+			Map<String, Object> hibernateProperties = properties
+					.getHibernateProperties(new HibernateSettings().ddlAuto("none")
+							.implicitNamingStrategy(implicitStrategy)
+							.physicalNamingStrategy(physicalStrategy)
+							.hibernatePropertiesCustomizers(
+									Collections.singleton(customizer)));
+			assertThat(hibernateProperties).contains(
+					entry("hibernate.implicit_naming_strategy", effectiveImplicitStrategy),
+					entry("hibernate.physical_naming_strategy", effectivePhysicalStrategy));
 			assertThat(hibernateProperties)
 					.doesNotContainKeys("hibernate.ejb.naming_strategy");
 		}));

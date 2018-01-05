@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 
 package org.springframework.boot.autoconfigure.orm.jpa;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
@@ -32,6 +35,8 @@ public class HibernateSettings {
 	private ImplicitNamingStrategy implicitNamingStrategy;
 
 	private PhysicalNamingStrategy physicalNamingStrategy;
+
+	private Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
 	public HibernateSettings ddlAuto(String ddlAuto) {
 		this.ddlAuto = ddlAuto;
@@ -60,6 +65,17 @@ public class HibernateSettings {
 
 	public PhysicalNamingStrategy getPhysicalNamingStrategy() {
 		return this.physicalNamingStrategy;
+	}
+
+	public HibernateSettings hibernatePropertiesCustomizers(
+			Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
+		this.hibernatePropertiesCustomizers = new ArrayList<>();
+		this.hibernatePropertiesCustomizers.addAll(hibernatePropertiesCustomizers);
+		return this;
+	}
+
+	public Collection<HibernatePropertiesCustomizer> getHibernatePropertiesCustomizers() {
+		return this.hibernatePropertiesCustomizers;
 	}
 
 }
