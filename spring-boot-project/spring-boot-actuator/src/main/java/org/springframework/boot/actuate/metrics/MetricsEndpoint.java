@@ -16,10 +16,6 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,8 +62,7 @@ public class MetricsEndpoint {
 		if (registry instanceof CompositeMeterRegistry) {
 			((CompositeMeterRegistry) registry).getRegistries()
 					.forEach((member) -> collectNames(names, member));
-		}
-		else {
+		} else {
 			registry.getMeters().stream().map(this::getName).forEach(names::add);
 		}
 	}
@@ -88,7 +83,7 @@ public class MetricsEndpoint {
 			return null;
 		}
 		Map<Statistic, Double> samples = getSamples(meters);
-		Map<String, List<String>> availableTags = getAvailableTags(meters);
+		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
 		return new MetricResponse(requiredMetricName,
 				asList(samples, MetricResponse.Sample::new),
@@ -107,8 +102,7 @@ public class MetricsEndpoint {
 		if (registry instanceof CompositeMeterRegistry) {
 			((CompositeMeterRegistry) registry).getRegistries()
 					.forEach((member) -> collectMeters(meters, member, name, tags));
-		}
-		else {
+		} else {
 			meters.addAll(registry.find(name).tags(tags).meters());
 		}
 	}
@@ -124,8 +118,8 @@ public class MetricsEndpoint {
 				measurement.getValue(), Double::sum));
 	}
 
-	private Map<String, List<String>> getAvailableTags(List<Meter> meters) {
-		Map<String, List<String>> availableTags = new HashMap<>();
+	private Map<String, Set<String>> getAvailableTags(List<Meter> meters) {
+		Map<String, Set<String>> availableTags = new HashMap<>();
 		meters.forEach((meter) -> mergeAvailableTags(availableTags, meter));
 		return availableTags;
 	}
@@ -133,15 +127,15 @@ public class MetricsEndpoint {
 	private void mergeAvailableTags(Map<String, List<String>> availableTags,
 			Meter meter) {
 		meter.getId().getTags().forEach((tag) -> {
-			List<String> value = Collections.singletonList(tag.getValue());
+			Set<String> value = Collections.singleton(tag.getValue());
 			availableTags.merge(tag.getKey(), value, this::merge);
 		});
 	}
 
-	private <T> List<T> merge(List<T> list1, List<T> list2) {
-		List<T> result = new ArrayList<>(list1.size() + list2.size());
-		result.addAll(list1);
-		result.addAll(list2);
+	private <T> Set<T> merge(Set<T> set1, Set<T> set2) {
+		Set<T> result = new HashSet<>(set1.size() + set2.size());
+		result.addAll(set1);
+		result.addAll(set2);
 		return result;
 	}
 
@@ -204,9 +198,9 @@ public class MetricsEndpoint {
 
 			private final String tag;
 
-			private final List<String> values;
+			private final Set<String> values;
 
-			AvailableTag(String tag, List<String> values) {
+			AvailableTag(String tag, Set<String> values) {
 				this.tag = tag;
 				this.values = values;
 			}
@@ -215,7 +209,7 @@ public class MetricsEndpoint {
 				return this.tag;
 			}
 
-			public List<String> getValues() {
+			public Set<String> getValues() {
 				return this.values;
 			}
 		}
