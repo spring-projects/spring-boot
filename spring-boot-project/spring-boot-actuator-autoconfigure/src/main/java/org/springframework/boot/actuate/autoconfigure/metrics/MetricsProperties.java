@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("management.metrics")
 public class MetricsProperties {
 
-	private Web web = new Web();
+	private final Web web = new Web();
 
 	/**
 	 * Whether auto-configured MeterRegistry implementations should be bound to the global
@@ -50,24 +50,16 @@ public class MetricsProperties {
 
 	public static class Web {
 
-		private Client client = new Client();
+		private final Client client = new Client();
 
-		private Server server = new Server();
+		private final Server server = new Server();
 
 		public Client getClient() {
 			return this.client;
 		}
 
-		public void setClient(Client client) {
-			this.client = client;
-		}
-
 		public Server getServer() {
 			return this.server;
-		}
-
-		public void setServer(Server server) {
-			this.server = server;
 		}
 
 		public static class Client {

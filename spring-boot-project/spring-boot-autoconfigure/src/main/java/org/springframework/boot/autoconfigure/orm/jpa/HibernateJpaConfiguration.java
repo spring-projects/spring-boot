@@ -77,7 +77,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	 */
 	private static final String[] WEBSPHERE_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
-			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
+			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform" };
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 

@@ -303,7 +303,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface MetaImportAutoConfiguration {
 
-		@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
+		@AliasFor(annotation = ImportAutoConfiguration.class)
 		Class<?>[] exclude() default {};
 
 	}

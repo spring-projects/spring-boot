@@ -109,13 +109,13 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Servlet properties.
 	 */
-	public class Servlet {
+	public static class Servlet {
 
 		/**
 		 * Management endpoint context-path. For instance, '/management'. Requires a
 		 * custom management.server.port.
 		 */
-		private String contextPath  = "";
+		private String contextPath = "";
 
 		/**
 		 * Return the context path with no trailing slash (i.e. the '/' root context is

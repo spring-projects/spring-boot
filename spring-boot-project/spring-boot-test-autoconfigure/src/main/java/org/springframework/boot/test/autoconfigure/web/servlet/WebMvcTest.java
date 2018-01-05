@@ -130,7 +130,7 @@ public @interface WebMvcTest {
 	 * on the classpath. Defaults to {@code true}.
 	 * @return if Spring Security's MockMvc support is auto-configured
 	 */
-	@AliasFor(annotation = AutoConfigureMockMvc.class, attribute = "secure")
+	@AliasFor(annotation = AutoConfigureMockMvc.class)
 	boolean secure() default true;
 
 	/**
