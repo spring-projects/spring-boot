@@ -139,10 +139,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.profiles.include= # Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML).
 
 	# QUARTZ SCHEDULER ({sc-spring-boot-autoconfigure}/quartz/QuartzProperties.{sc-ext}[QuartzProperties])
-	spring.quartz.job-store-type=memory # Quartz job store type.
-	spring.quartz.properties.*= # Additional Quartz Scheduler properties.
 	spring.quartz.jdbc.initialize-schema=embedded # Database schema initialization mode.
 	spring.quartz.jdbc.schema=classpath:org/quartz/impl/jdbcjobstore/tables_@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
+	spring.quartz.job-store-type=memory # Quartz job store type.
+	spring.quartz.properties.*= # Additional Quartz Scheduler properties.
 
 	# REACTOR ({sc-spring-boot-autoconfigure}/reactor/core/ReactorCoreProperties.{sc-ext}[ReactorCoreProperties])
 	spring.reactor.stacktrace-mode.enabled=false # Whether Reactor should collect stacktrace information at runtime.
@@ -1085,7 +1085,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response. Requires a custom management.server.port.
 	management.server.address= # Network address that to which the management endpoints should bind. Requires a custom management.server.port.
 	management.server.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
-	management.server.servlet.context-path= # Management endpoint context-path. For instance, `/management`. Requires a custom management.server.port
+	management.server.servlet.context-path= # Management endpoint context-path. For instance, `/management`. Requires a custom management.server.port.
 	management.server.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
 	management.server.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.server.port.
 	management.server.ssl.enabled= # Whether to enable SSL support. Requires a custom management.server.port.

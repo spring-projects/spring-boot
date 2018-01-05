@@ -224,7 +224,7 @@ public class ServerProperties {
 	/**
 	 * Servlet properties.
 	 */
-	public class Servlet {
+	public static class Servlet {
 
 		/**
 		 * Servlet context init parameters.

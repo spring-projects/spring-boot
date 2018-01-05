@@ -354,7 +354,7 @@ public class AnnotationsPropertySourceTests {
 	@AliasedAttributeAnnotation
 	static @interface AttributeWithAliasAnnotation {
 
-		@AliasFor(annotation = AliasedAttributeAnnotation.class, attribute = "value")
+		@AliasFor(annotation = AliasedAttributeAnnotation.class)
 		String value() default "foo";
 
 		String someOtherAttribute() default "shouldNotBeMapped";

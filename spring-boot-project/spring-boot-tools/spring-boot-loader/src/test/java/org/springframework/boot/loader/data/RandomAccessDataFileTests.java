@@ -102,10 +102,11 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void fileExists() {
+		File file = new File("/does/not/exist");
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage(String.format("File %s must exist",
-				new File("/does/not/exist").getAbsolutePath()));
-		new RandomAccessDataFile(new File("/does/not/exist"));
+				file.getAbsolutePath()));
+		new RandomAccessDataFile(file);
 	}
 
 	@Test
@@ -117,10 +118,11 @@ public class RandomAccessDataFileTests {
 
 	@Test
 	public void fileExistsWithConcurrentReads() {
+		File file = new File("/does/not/exist");
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage(String.format("File %s must exist",
-				new File("/does/not/exist").getAbsolutePath()));
-		new RandomAccessDataFile(new File("/does/not/exist"), 1);
+				file.getAbsolutePath()));
+		new RandomAccessDataFile(file, 1);
 	}
 
 	@Test
