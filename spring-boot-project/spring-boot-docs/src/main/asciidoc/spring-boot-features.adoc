@@ -2997,19 +2997,15 @@ In other words, the two configurations in the following example use the Google p
 
 [[boot-features-security-actuator]]
 === Actuator Security
-If the Actuator is also in use:
+For security purposes, all actuators other than `/health` and `/info` are disabled by default.
+The `management.endpoints.web.expose` flag can be used to enable the actuators.
+If Spring Security is on the classpath and no other WebSecurityConfigurerAdapter is present,
+the actuators are secured by Spring Boot auto-config. If you define a custom `WebSecurityConfigurerAdapter`,
+Spring Boot auto-config will back off and you will be in full control of actuator access rules.
 
-* The management endpoints are secure even if the application endpoints are insecure.
-* Security events are transformed into `AuditEvent` instances and published to the
-`AuditEventRepository`.
-* The default user has the `ACTUATOR` role as well as the `USER` role.
-
-The Actuator security features can be modified by using external properties
-(`+management.security.*+`). To override the application access rules but not the
-actuator access rules, add a `@Bean` of type `WebSecurityConfigurerAdapter` and use
-`@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`. Use
-`@Order(ManagementServerProperties.ACCESS_OVERRIDE_ORDER)` if you _do_ want to override
-the application access rules and the actuator access rules.
+NOTE: Before setting the `management.endpoints.web.expose`, ensure that the exposed actuators
+do not contain sensitive information and/or are secured by placing them behind a firewall or by
+something like Spring Security.
 
 
 

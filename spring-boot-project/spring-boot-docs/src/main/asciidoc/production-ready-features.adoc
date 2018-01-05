@@ -181,8 +181,9 @@ register an `EndpointFilter` bean.
 [[production-ready-endpoints-security]]
 === Securing HTTP Endpoints
 You should take care to secure HTTP endpoints in the same way that you would any other
-sensitive URL. Spring Boot does not apply any security on your behalf. However, it does
-provide some convenient RequestMatcher` objects that can be used in combination with
+sensitive URL. If Spring Security is present, endpoints are secured by default using Spring Security’s
+content-negotiation strategy. If you wish to configure custom security for HTTP endpoints, for example, only allow users
+with a certain role to access them, Spring Boot provides some convenient `RequestMatcher` objects that can be used in combination with
 Spring Security.
 
 A typical Spring Security configuration might look something like the following example:
@@ -217,6 +218,23 @@ endpoints can be accessed without requiring authentication. You can do so by cha
 [source,properties,indent=0]
 ----
 	management.endpoints.web.expose=*
+----
+
+Additionally, if Spring Security is present, you would need to add custom security configuration
+that allows unauthenticated access to the endpoints. For example,
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
+				.anyRequest().permitAll()
+		}
+
+	}
 ----
 
 
@@ -714,20 +732,6 @@ the following example:
 ----
 	management.server.port=8081
 ----
-
-Since your management port is often protected by a firewall and not exposed to the
-public, you might not need security on the management endpoints, even if your main
-application is secure. In that case, you should have Spring Security on the classpath,
-and you can disable management security, as follows:
-
-[source,properties,indent=0]
-----
-	management.security.enabled=false
-----
-
-CAUTION: If you do not have Spring Security on the classpath, there is no need to
-explicitly disable the management security in this way. Doing so might even break the
-application.
 
 
 
