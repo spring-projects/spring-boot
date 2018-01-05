@@ -38,8 +38,10 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link KafkaHealthIndicator}
+ *
+ * @author Juan Rada
  */
-public class KafkaHealthIndicatorTest {
+public class KafkaHealthIndicatorTests {
 
 	private static final Long RESPONSE_TIME = 10L;
 	private static final String CLUSTER_ID = "abc_123";

@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.kafka.KafkaHealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * External configuration properties for {@link KafkaHealthIndicator}.
+ * Configuration properties for {@link KafkaHealthIndicator}.
  *
  * @author Juan Rada
  */

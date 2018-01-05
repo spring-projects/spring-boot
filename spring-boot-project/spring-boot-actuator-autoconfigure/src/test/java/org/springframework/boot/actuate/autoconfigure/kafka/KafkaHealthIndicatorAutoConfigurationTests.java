@@ -23,7 +23,6 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAuto
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.kafka.KafkaHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +58,6 @@ public class KafkaHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Configuration
-	@AutoConfigureBefore(KafkaHealthIndicatorAutoConfiguration.class)
 	protected static class KafkaConfiguration {
 
 		@Bean
