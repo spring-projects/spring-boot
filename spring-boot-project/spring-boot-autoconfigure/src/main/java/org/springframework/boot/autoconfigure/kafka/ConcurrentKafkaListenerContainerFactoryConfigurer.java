@@ -96,15 +96,17 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		PropertyMapper map = PropertyMapper.get();
 		Listener properties = this.properties.getListener();
 		map.from(properties::getAckMode).whenNonNull().to(container::setAckMode);
+		map.from(properties::getClientId).whenNonNull().to(container::setClientId);
 		map.from(properties::getAckCount).whenNonNull().to(container::setAckCount);
 		map.from(properties::getAckTime).whenNonNull().as(Duration::toMillis)
 				.to(container::setAckTime);
 		map.from(properties::getPollTimeout).whenNonNull().as(Duration::toMillis)
 				.to(container::setPollTimeout);
-		map.from(properties::getClientId).whenNonNull().to(container::setClientId);
-		map.from(properties::getIdleEventInterval).whenNonNull().to(container::setIdleEventInterval);
-		map.from(properties::getMonitorInterval).whenNonNull().to(container::setMonitorInterval);
 		map.from(properties::getNoPollThreshold).whenNonNull().to(container::setNoPollThreshold);
+		map.from(properties::getIdleEventInterval).whenNonNull().as(Duration::toMillis)
+				.to(container::setIdleEventInterval);
+		map.from(properties::getMonitorInterval).whenNonNull().as(Duration::getSeconds)
+				.as(Number::intValue).to(container::setMonitorInterval);
 		map.from(properties::getLogContainerConfig).whenNonNull().to(container::setLogContainerConfig);
 	}
 
