@@ -409,12 +409,7 @@ public final class ConfigurationPropertyName
 	}
 
 	private static boolean isIndexed(CharSequence element) {
-		int length = element.length();
-		return charAt(element, 0) == '[' && charAt(element, length - 1) == ']';
-	}
-
-	private static char charAt(CharSequence element, int index) {
-		return (index < element.length() ? element.charAt(index) : 0);
+		return element.charAt(0) == '[' && element.charAt(element.length() - 1) == ']';
 	}
 
 	/**
