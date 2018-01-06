@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -409,12 +409,7 @@ public final class ConfigurationPropertyName
 	}
 
 	private static boolean isIndexed(CharSequence element) {
-		int length = element.length();
-		return charAt(element, 0) == '[' && charAt(element, length - 1) == ']';
-	}
-
-	private static char charAt(CharSequence element, int index) {
-		return (index < element.length() ? element.charAt(index) : 0);
+		return element.charAt(0) == '[' && element.charAt(element.length() - 1) == ']';
 	}
 
 	/**
