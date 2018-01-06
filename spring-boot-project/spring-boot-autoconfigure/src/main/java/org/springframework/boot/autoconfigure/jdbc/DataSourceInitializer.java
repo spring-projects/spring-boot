@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.context.config.ResourceNotFoundException;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -166,7 +166,8 @@ class DataSourceInitializer {
 					resources.add(resource);
 				}
 				else if (validate) {
-					throw new ResourceNotFoundException(propertyName, resource);
+					throw new InvalidConfigurationPropertyValueException(propertyName,
+							resource, "the specified resource does not exist");
 				}
 			}
 		}
