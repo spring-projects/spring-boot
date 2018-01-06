@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
 
+import org.apache.kafka.clients.admin.AdminClient;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -138,4 +140,9 @@ public class KafkaAutoConfiguration {
 		return kafkaAdmin;
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(AdminClient.class)
+	public AdminClient adminClient() {
+		return AdminClient.create(this.properties.buildAdminProperties());
+	}
 }
