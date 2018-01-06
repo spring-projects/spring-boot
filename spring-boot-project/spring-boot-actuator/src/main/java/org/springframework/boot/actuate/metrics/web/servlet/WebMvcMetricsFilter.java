@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -47,14 +48,14 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	private static final Logger logger = LoggerFactory
 			.getLogger(WebMvcMetricsFilter.class);
 
-	private final WebMvcMetrics webMvcMetrics;
+	private final ApplicationContext context;
 
-	private final HandlerMappingIntrospector mappingIntrospector;
+	private volatile WebMvcMetrics webMvcMetrics;
 
-	public WebMvcMetricsFilter(WebMvcMetrics webMvcMetrics,
-			HandlerMappingIntrospector mappingIntrospector) {
-		this.webMvcMetrics = webMvcMetrics;
-		this.mappingIntrospector = mappingIntrospector;
+	private volatile HandlerMappingIntrospector mappingIntrospector;
+
+	public WebMvcMetricsFilter(ApplicationContext context) {
+		this.context = context;
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private HandlerExecutionChain getHandlerExecutionChain(HttpServletRequest request) {
 		try {
-			MatchableHandlerMapping matchableHandlerMapping = this.mappingIntrospector
+			MatchableHandlerMapping matchableHandlerMapping = getMappingIntrospector()
 					.getMatchableHandlerMapping(request);
 			return (matchableHandlerMapping == null ? null
 					: matchableHandlerMapping.getHandler(request));
@@ -90,19 +91,35 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	private void filterWithMetrics(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain, Object handler)
 					throws IOException, ServletException {
-		this.webMvcMetrics.preHandle(request, handler);
+		WebMvcMetrics metrics = getWebMvcMetrics();
+		metrics.preHandle(request, handler);
 		try {
 			filterChain.doFilter(request, response);
 			// When an async operation is complete, the whole filter gets called again
 			// with isAsyncStarted = false
 			if (!request.isAsyncStarted()) {
-				this.webMvcMetrics.record(request, response, null);
+				metrics.record(request, response, null);
 			}
 		}
 		catch (NestedServletException ex) {
-			this.webMvcMetrics.record(request, response, ex.getCause());
+			metrics.record(request, response, ex.getCause());
 			throw ex;
 		}
+	}
+
+	private HandlerMappingIntrospector getMappingIntrospector() {
+		if (this.mappingIntrospector == null) {
+			this.mappingIntrospector = this.context
+					.getBean(HandlerMappingIntrospector.class);
+		}
+		return this.mappingIntrospector;
+	}
+
+	private WebMvcMetrics getWebMvcMetrics() {
+		if (this.webMvcMetrics == null) {
+			this.webMvcMetrics = this.context.getBean(WebMvcMetrics.class);
+		}
+		return this.webMvcMetrics;
 	}
 
 }
