@@ -79,7 +79,7 @@
 		<javax-mail.version>1.6.0</javax-mail.version>
 		<javax-money.version>1.0.1</javax-money.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
-		<javax-validation.version>2.0.0.Final</javax-validation.version>
+		<javax-validation.version>2.0.1.Final</javax-validation.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<jaybird.version>3.0.2</jaybird.version>
 		<jboss-logging.version>3.3.1.Final</jboss-logging.version>
