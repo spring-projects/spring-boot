@@ -3655,9 +3655,10 @@ should be used to provide all of the configuration.
 TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used. You
 could delete this line from the example shown earlier.
 
-TIP: If you do not use Spring Data Mongo, you can inject `com.mongodb.Mongo` beans
+TIP: If you do not use Spring Data Mongo, you can inject `com.mongodb.MongoClient` beans
 instead of using `MongoDbFactory`. If you want to take complete control of establishing
-the MongoDB connection, you can also declare your own `MongoDbFactory` or `Mongo` bean.
+the MongoDB connection, you can also declare your own `MongoDbFactory` or `MongoClient`
+bean.
 
 
 
