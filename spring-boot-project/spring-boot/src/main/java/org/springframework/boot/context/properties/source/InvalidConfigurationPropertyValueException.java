@@ -23,8 +23,7 @@ package org.springframework.boot.context.properties.source;
  * @since 2.0.0
  */
 @SuppressWarnings("serial")
-public class InvalidConfigurationPropertyValueException
-		extends RuntimeException {
+public class InvalidConfigurationPropertyValueException extends RuntimeException {
 
 	private final String name;
 
@@ -34,8 +33,7 @@ public class InvalidConfigurationPropertyValueException
 
 	public InvalidConfigurationPropertyValueException(String name, Object value,
 			String reason) {
-		super(String.format("Property %s with value '%s' is invalid: %s", name,
-				value, reason));
+		super("Property " + name + " with value '" + value + "' is invalid: " + reason);
 		this.name = name;
 		this.value = value;
 		this.reason = reason;

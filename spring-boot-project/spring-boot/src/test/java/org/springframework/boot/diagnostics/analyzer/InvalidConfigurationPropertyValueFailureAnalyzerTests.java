@@ -53,7 +53,8 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	public void analysisWithKnownProperty() {
 		MapPropertySource source = new MapPropertySource("test",
 				Collections.singletonMap("test.property", "invalid"));
-		this.environment.getPropertySources().addFirst(new OriginCapablePropertySource(source));
+		this.environment.getPropertySources()
+				.addFirst(OriginCapablePropertySource.get(source));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", "this is not valid");
 		FailureAnalysis analysis = performAnalysis(failure);
@@ -68,13 +69,13 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	public void analysisWithKnownPropertyAndNoReason() {
 		MapPropertySource source = new MapPropertySource("test",
 				Collections.singletonMap("test.property", "invalid"));
-		this.environment.getPropertySources().addFirst(new OriginCapablePropertySource(source));
+		this.environment.getPropertySources()
+				.addFirst(OriginCapablePropertySource.get(source));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", null);
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertCommonParts(failure, analysis);
-		assertThat(analysis.getDescription())
-				.contains("No reason was provided.")
+		assertThat(analysis.getDescription()).contains("No reason was provided.")
 				.doesNotContain("Additionally, this property is also set");
 	}
 
@@ -86,17 +87,20 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 				Collections.singletonMap("test.property", "valid"));
 		MapPropertySource another = new MapPropertySource("another",
 				Collections.singletonMap("test.property", "test"));
-		this.environment.getPropertySources().addFirst(new OriginCapablePropertySource(source));
+		this.environment.getPropertySources()
+				.addFirst(OriginCapablePropertySource.get(source));
 		this.environment.getPropertySources().addLast(additional);
-		this.environment.getPropertySources().addLast(another);
+		this.environment.getPropertySources()
+				.addLast(OriginCapablePropertySource.get(another));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", "this is not valid");
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getDescription())
-				.contains("Additionally, this property is also set in the following " +
-						"property sources:")
-				.contains("additional: valid").contains("another: test");
+				.contains("Additionally, this property is also set in the following "
+						+ "property sources:")
+				.contains("In 'additional' with the value 'valid'").contains(
+						"In 'another' with the value 'test' (originating from 'TestOrigin test.property')");
 	}
 
 	@Test
@@ -115,7 +119,6 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		assertThat(analysis.getCause()).isSameAs(failure);
 	}
 
-
 	private FailureAnalysis performAnalysis(
 			InvalidConfigurationPropertyValueException failure) {
 		InvalidConfigurationPropertyValueFailureAnalyzer analyzer = new InvalidConfigurationPropertyValueFailureAnalyzer();
@@ -127,8 +130,8 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		return analysis;
 	}
 
-	private static class OriginCapablePropertySource<T>
-			extends EnumerablePropertySource<T> implements OriginLookup<String> {
+	static class OriginCapablePropertySource<T> extends EnumerablePropertySource<T>
+			implements OriginLookup<String> {
 
 		private final EnumerablePropertySource<T> propertySource;
 
@@ -157,6 +160,11 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 				}
 
 			};
+		}
+
+		static <T> OriginCapablePropertySource<T> get(
+				EnumerablePropertySource<T> propertySource) {
+			return new OriginCapablePropertySource<>(propertySource);
 		}
 
 	}

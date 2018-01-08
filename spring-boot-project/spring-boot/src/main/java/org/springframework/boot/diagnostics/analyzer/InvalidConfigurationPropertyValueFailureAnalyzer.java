@@ -16,16 +16,18 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -36,7 +38,7 @@ import org.springframework.util.StringUtils;
 /**
  * A {@link FailureAnalyzer} that performs analysis of failures caused by a
  * {@link InvalidConfigurationPropertyValueException}.
-
+ *
  * @author Stephane Nicoll
  */
 class InvalidConfigurationPropertyValueFailureAnalyzer
@@ -53,92 +55,112 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			InvalidConfigurationPropertyValueException cause) {
-		List<PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(cause.getName());
+		List<Descriptor> descriptors = getDescriptors(cause.getName());
 		if (descriptors.isEmpty()) {
 			return null;
 		}
-		PropertyValueDescriptor main = descriptors.get(0);
-		StringBuilder message = new StringBuilder();
-		message.append(String.format("The value '%s'", main.value));
-		if (main.origin != null) {
-			message.append(String.format(" from origin '%s'", main.origin));
-		}
-		message.append(String.format(" of configuration property '%s' was invalid. ",
-				cause.getName()));
+		StringBuilder description = new StringBuilder();
+		appendDetails(description, cause, descriptors);
+		appendReason(description, cause);
+		appendAdditionalProperties(description, descriptors);
+		return new FailureAnalysis(description.toString(), getAction(cause), cause);
+	}
+
+	private List<Descriptor> getDescriptors(String propertyName) {
+		return getPropertySources()
+				.filter((source) -> source.containsProperty(propertyName))
+				.map((source) -> Descriptor.get(source, propertyName))
+				.collect(Collectors.toList());
+	}
+
+	private Stream<PropertySource<?>> getPropertySources() {
+		Iterable<PropertySource<?>> sources = (this.environment == null
+				? Collections.emptyList() : this.environment.getPropertySources());
+		return StreamSupport.stream(sources.spliterator(), false)
+				.filter((source) -> !ConfigurationPropertySources
+						.isAttachedConfigurationPropertySource(source));
+	}
+
+	private void appendDetails(StringBuilder message,
+			InvalidConfigurationPropertyValueException cause,
+			List<Descriptor> descriptors) {
+		Descriptor mainDescriptor = descriptors.get(0);
+		message.append("Invalid value '" + mainDescriptor.getValue()
+				+ "' for configuration property '" + cause.getName() + "'");
+		mainDescriptor.appendOrigin(message);
+		message.append(".");
+	}
+
+	private void appendReason(StringBuilder message,
+			InvalidConfigurationPropertyValueException cause) {
 		if (StringUtils.hasText(cause.getReason())) {
-			message.append(String.format(
-					"Validation failed for the following reason:%n%n"));
+			message.append(" Validation failed for the following reason\n\n");
 			message.append(cause.getReason());
 		}
 		else {
-			message.append("No reason was provided.");
+			message.append(" No reason was provided.");
 		}
-		List<PropertyValueDescriptor> others = descriptors.subList(1, descriptors.size());
+	}
+
+	private void appendAdditionalProperties(StringBuilder message,
+			List<Descriptor> descriptors) {
+		List<Descriptor> others = descriptors.subList(1, descriptors.size());
 		if (!others.isEmpty()) {
 			message.append(String.format(
 					"%n%nAdditionally, this property is also set in the following "
 							+ "property %s:%n%n",
 					others.size() > 1 ? "sources" : "source"));
-			for (PropertyValueDescriptor other : others) {
-				message.append(String.format("\t- %s: %s%n", other.propertySource,
-						other.value));
+			for (Descriptor other : others) {
+				message.append("\t- In '" + other.getPropertySource() + "'");
+				message.append(" with the value '" + other.getValue() + "'");
+				other.appendOrigin(message);
+				message.append(".\n");
 			}
 		}
+	}
+
+	private String getAction(InvalidConfigurationPropertyValueException cause) {
 		StringBuilder action = new StringBuilder();
 		action.append("Review the value of the property");
 		if (cause.getReason() != null) {
 			action.append(" with the provided reason");
 		}
 		action.append(".");
-		return new FailureAnalysis(message.toString(), action.toString(), cause);
+		return action.toString();
 	}
 
-	private List<PropertyValueDescriptor> getPropertySourceDescriptors(
-			String propertyName) {
-		List<PropertyValueDescriptor> propertySources = new ArrayList<>();
-		getPropertySourcesAsMap()
-				.forEach((sourceName, source) -> {
-					if (source.containsProperty(propertyName)) {
-						propertySources.add(describeValueOf(propertyName, source));
-					}
-				});
-		return propertySources;
-	}
-
-	private Map<String, PropertySource<?>> getPropertySourcesAsMap() {
-		Map<String, PropertySource<?>> map = new LinkedHashMap<>();
-		if (this.environment != null) {
-			for (PropertySource<?> source : this.environment.getPropertySources()) {
-				if (!ConfigurationPropertySources
-						.isAttachedConfigurationPropertySource(source)) {
-					map.put(source.getName(), source);
-				}
-			}
-		}
-		return map;
-	}
-
-	private PropertyValueDescriptor describeValueOf(String name,
-			PropertySource<?> source) {
-		Object value = source.getProperty(name);
-		String origin = (source instanceof OriginLookup)
-				? ((OriginLookup<Object>) source).getOrigin(name).toString() : null;
-		return new PropertyValueDescriptor(source.getName(), value, origin);
-	}
-
-	private static class PropertyValueDescriptor {
+	private static final class Descriptor {
 
 		private final String propertySource;
 
 		private final Object value;
 
-		private final String origin;
+		private final Origin origin;
 
-		PropertyValueDescriptor(String propertySource,
-				Object value, String origin) {
+		private Descriptor(String propertySource, Object value, Origin origin) {
 			this.propertySource = propertySource;
 			this.value = value;
 			this.origin = origin;
+		}
+
+		public String getPropertySource() {
+			return this.propertySource;
+		}
+
+		public Object getValue() {
+			return this.value;
+		}
+
+		public void appendOrigin(StringBuilder message) {
+			if (this.origin != null) {
+				message.append(" (originating from '" + this.origin + "')");
+			}
+		}
+
+		static Descriptor get(PropertySource<?> source, String propertyName) {
+			Object value = source.getProperty(propertyName);
+			Origin origin = OriginLookup.getOrigin(source, propertyName);
+			return new Descriptor(source.getName(), value, origin);
 		}
 
 	}
