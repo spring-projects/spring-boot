@@ -158,7 +158,7 @@
 		<spring-session.version>2.0.0.RC2</spring-session.version>
 		<spring-session-data-mongodb.version>2.0.0.RC2</spring-session-data-mongodb.version>
 		<spring-ws.version>3.0.0.RELEASE</spring-ws.version>
-		<sqlite-jdbc.version>3.21.0</sqlite-jdbc.version>
+		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>
