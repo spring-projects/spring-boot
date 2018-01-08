@@ -427,9 +427,11 @@ output:
 
 [[getting-started-upgrading-from-an-earlier-version]]
 === Upgrading from an Earlier Version of Spring Boot
-If you are upgrading from an earlier release of Spring Boot, check the "`release notes`"
-hosted on the {github-wiki}[project wiki]. You can find upgrade instructions along with a
-list of "`new and noteworthy`" features for each release.
+If you are upgrading from an earlier release of Spring Boot, check the
+{github-wiki}/Spring-Boot-2.0-Migration-Guide["`migration guide`" on the project wiki]
+that provides detailed upgrade instructions. Check also the
+{github-wiki}["`release notes`"] for a list of "`new and noteworthy`" features for each
+release.
 
 To upgrade an existing CLI installation, use the appropriate package manager command (for
 example, `brew upgrade`) or, if you manually installed the CLI, follow the
