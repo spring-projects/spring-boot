@@ -109,19 +109,20 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 		@Override
 		protected void waitUntilReady() {
 			super.waitUntilReady();
-			Cluster cluster = Cluster.builder().addContactPoint("localhost").build();
+
 			try {
 				Unreliables.retryUntilTrue((int) this.startupTimeout.getSeconds(),
-						TimeUnit.SECONDS, checkConnection(cluster));
+						TimeUnit.SECONDS, checkConnection());
 			}
-			catch (TimeoutException e) {
-				throw new IllegalStateException();
+			catch (TimeoutException ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 
-		private Callable<Boolean> checkConnection(Cluster cluster) {
+		private Callable<Boolean> checkConnection() {
 			return () -> {
-				try {
+				try (Cluster cluster = Cluster.builder().addContactPoint("localhost")
+						.build()) {
 					cluster.connect();
 					return true;
 				}
@@ -130,6 +131,7 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 				}
 			};
 		}
+
 	}
 
 }
