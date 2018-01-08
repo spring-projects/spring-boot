@@ -403,11 +403,10 @@ public class SysVinitLaunchScriptIT {
 
 		@Override
 		protected Void execute(CopyToContainerCmd command) {
-			try {
-				InputStream streamToUpload = new FileInputStream(CompressArchiveUtil
-						.archiveTARFiles(command.getFile().getParentFile(),
-								Arrays.asList(command.getFile()),
-								command.getFile().getName()));
+			try (InputStream streamToUpload = new FileInputStream(CompressArchiveUtil
+					.archiveTARFiles(command.getFile().getParentFile(),
+							Arrays.asList(command.getFile()),
+							command.getFile().getName()))) {
 				WebTarget webResource = getBaseResource().path("/containers/{id}/archive")
 						.resolveTemplate("id", command.getContainer());
 				webResource.queryParam("path", ".")
