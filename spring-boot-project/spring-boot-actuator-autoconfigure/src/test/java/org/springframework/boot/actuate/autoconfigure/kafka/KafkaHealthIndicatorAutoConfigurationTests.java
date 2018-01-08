@@ -16,19 +16,16 @@
 
 package org.springframework.boot.actuate.autoconfigure.kafka;
 
-import org.apache.kafka.clients.admin.AdminClient;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.kafka.KafkaHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link KafkaHealthIndicatorAutoConfiguration}.
@@ -38,7 +35,7 @@ import static org.mockito.Mockito.mock;
 public class KafkaHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(KafkaConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class,
 					KafkaHealthIndicatorAutoConfiguration.class,
 					HealthIndicatorAutoConfiguration.class));
 
@@ -55,15 +52,5 @@ public class KafkaHealthIndicatorAutoConfigurationTests {
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(KafkaHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
-	}
-
-	@Configuration
-	protected static class KafkaConfiguration {
-
-		@Bean
-		public AdminClient kafkaAdminClient() {
-			return mock(AdminClient.class);
-		}
-
 	}
 }

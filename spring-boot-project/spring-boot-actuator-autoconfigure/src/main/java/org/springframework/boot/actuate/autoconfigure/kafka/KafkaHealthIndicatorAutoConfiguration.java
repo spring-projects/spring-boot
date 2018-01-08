@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.kafka;
 import java.time.Duration;
 import java.util.Map;
 
-import org.apache.kafka.clients.admin.AdminClient;
-
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
@@ -35,6 +33,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.KafkaAdmin;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link KafkaHealthIndicator}.
@@ -48,16 +47,16 @@ import org.springframework.context.annotation.Configuration;
 public class KafkaHealthIndicatorAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnBean(AdminClient.class)
+	@ConditionalOnBean(KafkaAdmin.class)
 	@EnableConfigurationProperties(KafkaHealthIndicatorProperties.class)
 	static class KafkaClientHealthIndicatorConfiguration extends
-			CompositeHealthIndicatorConfiguration<KafkaHealthIndicator, AdminClient> {
+			CompositeHealthIndicatorConfiguration<KafkaHealthIndicator, KafkaAdmin> {
 
-		private final Map<String, AdminClient> admins;
+		private final Map<String, KafkaAdmin> admins;
 
 		private final KafkaHealthIndicatorProperties properties;
 
-		KafkaClientHealthIndicatorConfiguration(Map<String, AdminClient> admins,
+		KafkaClientHealthIndicatorConfiguration(Map<String, KafkaAdmin> admins,
 				KafkaHealthIndicatorProperties properties) {
 			this.admins = admins;
 			this.properties = properties;
@@ -70,7 +69,7 @@ public class KafkaHealthIndicatorAutoConfiguration {
 		}
 
 		@Override
-		protected KafkaHealthIndicator createHealthIndicator(AdminClient source) {
+		protected KafkaHealthIndicator createHealthIndicator(KafkaAdmin source) {
 			Duration responseTimeout = this.properties.getResponseTimeout();
 
 			return new KafkaHealthIndicator(source,

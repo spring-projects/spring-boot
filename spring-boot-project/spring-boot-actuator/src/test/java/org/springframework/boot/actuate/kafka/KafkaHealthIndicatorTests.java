@@ -16,25 +16,20 @@
 
 package org.springframework.boot.actuate.kafka;
 
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.DescribeClusterOptions;
-import org.apache.kafka.clients.admin.DescribeClusterResult;
-import org.apache.kafka.common.KafkaFuture;
+import java.util.Collections;
+
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.assertj.core.data.MapEntry;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.kafka.test.rule.KafkaEmbedded;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link KafkaHealthIndicator}
@@ -43,48 +38,34 @@ import static org.mockito.Mockito.verify;
  */
 public class KafkaHealthIndicatorTests {
 
-	private static final Long RESPONSE_TIME = 10L;
-	private static final String CLUSTER_ID = "abc_123";
+	private static final Long RESPONSE_TIME = 1000L;
 
-	@Mock
-	private AdminClient adminClient;
+	@Rule
+	public KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1, true);
 
-	@Mock
-	private DescribeClusterResult describeClusterResult;
-
-	@Mock
-	private KafkaFuture<String> clusterIdFuture;
-
-	@Captor
-	private ArgumentCaptor<DescribeClusterOptions> describeOptionsCaptor;
-
-	private KafkaHealthIndicator healthIndicator;
+	private KafkaAdmin kafkaAdmin;
 
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
-		this.healthIndicator = new KafkaHealthIndicator(this.adminClient, RESPONSE_TIME);
-		given(this.describeClusterResult.clusterId()).willReturn(this.clusterIdFuture);
+		this.kafkaAdmin = new KafkaAdmin(Collections.singletonMap(
+				ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaEmbedded.getBrokersAsString()));
 	}
 
 	@Test
-	public void kafkaIsUp() throws Exception {
-		given(this.adminClient.describeCluster(any(DescribeClusterOptions.class)))
-				.willReturn(this.describeClusterResult);
-		given(this.clusterIdFuture.get()).willReturn(CLUSTER_ID);
-		Health health = this.healthIndicator.health();
+	public void kafkaIsUp() {
+		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin, RESPONSE_TIME);
+		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(MapEntry.entry("clusterId", CLUSTER_ID));
-		verify(this.adminClient).describeCluster(this.describeOptionsCaptor.capture());
-		assertThat(this.describeOptionsCaptor.getValue().timeoutMs()).isEqualTo(RESPONSE_TIME.intValue());
+		assertThat(health.getDetails()).containsOnly(MapEntry.entry(
+				"clusterId", this.kafkaEmbedded.getKafkaServer(0).clusterId()));
 	}
 
 	@Test
-	public void kafkaIsDown() {
-		given(this.adminClient.describeCluster(any(DescribeClusterOptions.class)))
-				.willThrow(new IllegalStateException("test, expected"));
-		Health health = this.healthIndicator.health();
+	public void kafkaIsDown() throws Exception {
+		this.kafkaEmbedded.destroy();
+		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin, RESPONSE_TIME);
+		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error")).contains("test, expected");
+		assertThat((String) health.getDetails().get("error")).isNotEmpty();
 	}
 }

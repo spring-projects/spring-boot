@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator JDBC concerns.
+ * Auto-configuration for actuator kafka support.
  */
 package org.springframework.boot.actuate.autoconfigure.kafka;

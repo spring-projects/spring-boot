@@ -23,6 +23,7 @@ import org.apache.kafka.clients.admin.DescribeClusterResult;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.util.Assert;
 
 /**
@@ -32,26 +33,30 @@ import org.springframework.util.Assert;
  */
 public class KafkaHealthIndicator extends AbstractHealthIndicator {
 
-	private final AdminClient adminClient;
+	private final KafkaAdmin kafkaAdmin;
 	private final DescribeClusterOptions describeOptions;
 
 	/**
 	 * Create a new {@link KafkaHealthIndicator} instance.
 	 *
-	 * @param adminClient the kafka admin client
+	 * @param kafkaAdmin the kafka admin
 	 * @param responseTimeout the describe cluster request timeout in milliseconds
 	 */
-	public KafkaHealthIndicator(AdminClient adminClient, long responseTimeout) {
-		Assert.notNull(adminClient, "KafkaAdmin must not be null");
+	public KafkaHealthIndicator(KafkaAdmin kafkaAdmin, long responseTimeout) {
+		Assert.notNull(kafkaAdmin, "KafkaAdmin must not be null");
 
-		this.adminClient = adminClient;
-		this.describeOptions = new DescribeClusterOptions().timeoutMs((int) responseTimeout);
+		this.kafkaAdmin = kafkaAdmin;
+		this.describeOptions = new DescribeClusterOptions()
+				.timeoutMs((int) responseTimeout);
 	}
 
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
-		DescribeClusterResult result = this.adminClient.describeCluster(this.describeOptions);
-		builder.up().withDetail("clusterId", result.clusterId().get());
+		try (AdminClient adminClient = AdminClient.create(this.kafkaAdmin.getConfig())) {
+			DescribeClusterResult result = adminClient
+					.describeCluster(this.describeOptions);
+			builder.up().withDetail("clusterId", result.clusterId().get());
+		}
 	}
 }
 
