@@ -48,6 +48,9 @@ The following example registers `ProjectConstraintViolationFailureAnalyzer`:
 	com.example.ProjectConstraintViolationFailureAnalyzer
 ----
 
+NOTE: If you need access to the `BeanFactory` or the `Environment`, your `FailureAnalyzer`
+can simply implement `BeanFactoryAware` or `EnvironmentAware` respectively.
+
 
 
 [[howto-troubleshoot-auto-configuration]]
