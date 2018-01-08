@@ -31,10 +31,10 @@ import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.wait.HostPortWaitStrategy;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
-import org.springframework.boot.autoconfigure.DockerTestContainer;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;

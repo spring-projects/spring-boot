@@ -19,15 +19,16 @@ package org.springframework.boot.autoconfigure.data.redis;
 import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.autoconfigure.DockerTestContainer;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.alt.redis.CityRedisRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.redis.city.City;
 import org.springframework.boot.autoconfigure.data.redis.city.CityRepository;
+import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
+import org.springframework.boot.testsupport.testcontainers.TestContainers;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
@@ -42,9 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RedisRepositoriesAutoConfigurationTests {
 
 	@ClassRule
-	public static DockerTestContainer<FixedHostPortGenericContainer<?>> redis = new DockerTestContainer<>(
-			() -> new FixedHostPortGenericContainer<>("redis:latest")
-					.withFixedExposedPort(6379, 6379));
+	public static DockerTestContainer<GenericContainer<?>> redis = new DockerTestContainer<>(
+			() -> TestContainers.redis());
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 

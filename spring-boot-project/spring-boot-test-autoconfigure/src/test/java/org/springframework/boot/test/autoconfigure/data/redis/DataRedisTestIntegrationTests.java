@@ -28,7 +28,7 @@ import org.testcontainers.containers.FixedHostPortGenericContainer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.DockerTestContainer;
+import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;

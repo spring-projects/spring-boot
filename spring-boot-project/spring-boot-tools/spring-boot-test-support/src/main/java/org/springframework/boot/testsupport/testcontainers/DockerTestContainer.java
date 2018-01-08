@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.testsupport.testcontainers;
 
 import java.util.function.Supplier;
 
@@ -34,7 +34,9 @@ import org.testcontainers.containers.GenericContainer;
  */
 public class DockerTestContainer<T extends GenericContainer<?>> implements TestRule {
 
-	private Supplier<T> containerSupplier;
+	private final Supplier<T> containerSupplier;
+
+	private T container;
 
 	public DockerTestContainer(Supplier<T> containerSupplier) {
 		this.containerSupplier = containerSupplier;
@@ -44,11 +46,16 @@ public class DockerTestContainer<T extends GenericContainer<?>> implements TestR
 	public Statement apply(Statement base, Description description) {
 		try {
 			DockerClientFactory.instance().client();
-			return this.containerSupplier.get().apply(base, description);
 		}
 		catch (Throwable t) {
 			return new SkipStatement();
 		}
+		this.container = this.containerSupplier.get();
+		return this.container.apply(base, description);
+	}
+
+	public int getMappedPort(int originalPort) {
+		return this.container.getMappedPort(originalPort);
 	}
 
 	private static class SkipStatement extends Statement {
@@ -60,4 +67,5 @@ public class DockerTestContainer<T extends GenericContainer<?>> implements TestR
 		}
 
 	}
+
 }

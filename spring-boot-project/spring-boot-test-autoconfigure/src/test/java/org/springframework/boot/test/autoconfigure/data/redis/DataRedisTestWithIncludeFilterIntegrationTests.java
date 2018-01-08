@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.DockerTestContainer;
+import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;

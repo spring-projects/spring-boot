@@ -34,7 +34,7 @@ import org.testcontainers.containers.wait.HostPortWaitStrategy;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.DockerTestContainer;
+import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
