@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -74,6 +76,9 @@ public class MapBinderTests {
 
 	private static final Bindable<Map<String, String[]>> STRING_ARRAY_MAP = Bindable
 			.mapOf(String.class, String[].class);
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -532,7 +537,6 @@ public class MapBinderTests {
 		DefaultConversionService conversionService = new DefaultConversionService();
 		conversionService.addConverter(new MapConverter());
 		Binder binder = new Binder(this.sources, null, conversionService);
-
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "a,b");
 		this.sources.add(source);
@@ -546,8 +550,8 @@ public class MapBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "a,b");
 		this.sources.add(source);
-		BindResult<Map<String, String>> result = this.binder.bind("foo", STRING_STRING_MAP);
-		assertThat(result.isBound()).isFalse();
+		this.thrown.expect(BindException.class);
+		this.binder.bind("foo", STRING_STRING_MAP);
 	}
 
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
@@ -603,12 +607,14 @@ public class MapBinderTests {
 	}
 
 	static class MapConverter implements Converter<String, Map<String, String>> {
+
 		@Override
 		public Map<String, String> convert(String s) {
 			Map<String, String> map = new HashMap<>();
 			StringUtils.commaDelimitedListToSet(s).forEach(k -> map.put(k, ""));
 			return map;
 		}
+
 	}
 
 }

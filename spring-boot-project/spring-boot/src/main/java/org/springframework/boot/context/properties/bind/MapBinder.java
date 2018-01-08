@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -58,9 +57,12 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
-				Object converted = convertIfFound(name, source, resolvedTarget);
-				if (converted != null) {
-					return converted;
+				ConfigurationProperty property = source.getConfigurationProperty(name);
+				if (property != null) {
+					Object value = getContext().getPlaceholdersResolver()
+							.resolvePlaceholders(property.getValue());
+					return ResolvableTypeDescriptor.forType(target.getType())
+							.convert(getContext().getConversionService(), value);
 				}
 				source = source.filter(name::isAncestorOf);
 			}
@@ -75,20 +77,6 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			return STRING_STRING_MAP;
 		}
 		return target;
-	}
-
-	private Object convertIfFound(ConfigurationPropertyName name, ConfigurationPropertySource source, Bindable<?> target) {
-		ConfigurationProperty configurationProperty = source.getConfigurationProperty(name);
-		if (configurationProperty != null) {
-			try {
-				return ResolvableTypeDescriptor.forType(target.getType())
-						.convert(getContext().getConversionService(), configurationProperty.getValue());
-			}
-			catch (ConverterNotFoundException ex) {
-
-			}
-		}
-		return null;
 	}
 
 	@Override
