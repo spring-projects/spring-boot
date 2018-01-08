@@ -23,80 +23,77 @@ import java.util.List;
 // Note: this class was written without inspecting the non-free org.json sourcecode.
 
 /**
- * Implements {@link JSONObject#toString} and {@link JSONArray#toString}. Most
- * application developers should use those methods directly and disregard this
- * API. For example:<pre>
+ * Implements {@link JSONObject#toString} and {@link JSONArray#toString}. Most application
+ * developers should use those methods directly and disregard this API. For example:<pre>
  * JSONObject object = ...
  * String json = object.toString();</pre>
- *
- * <p>Stringers only encode well-formed JSON strings. In particular:
+ * <p>
+ * Stringers only encode well-formed JSON strings. In particular:
  * <ul>
- *   <li>The stringer must have exactly one top-level array or object.
- *   <li>Lexical scopes must be balanced: every call to {@link #array} must
- *       have a matching call to {@link #endArray} and every call to {@link
- *       #object} must have a matching call to {@link #endObject}.
- *   <li>Arrays may not contain keys (property names).
- *   <li>Objects must alternate keys (property names) and values.
- *   <li>Values are inserted with either literal {@link #value(Object) value}
- *       calls, or by nesting arrays or objects.
+ * <li>The stringer must have exactly one top-level array or object.
+ * <li>Lexical scopes must be balanced: every call to {@link #array} must have a matching
+ * call to {@link #endArray} and every call to {@link #object} must have a matching call
+ * to {@link #endObject}.
+ * <li>Arrays may not contain keys (property names).
+ * <li>Objects must alternate keys (property names) and values.
+ * <li>Values are inserted with either literal {@link #value(Object) value} calls, or by
+ * nesting arrays or objects.
  * </ul>
  * Calls that would result in a malformed JSON string will fail with a
  * {@link JSONException}.
- *
- * <p>This class provides no facility for pretty-printing (ie. indenting)
- * output. To encode indented output, use {@link JSONObject#toString(int)} or
+ * <p>
+ * This class provides no facility for pretty-printing (ie. indenting) output. To encode
+ * indented output, use {@link JSONObject#toString(int)} or
  * {@link JSONArray#toString(int)}.
- *
- * <p>Some implementations of the API support at most 20 levels of nesting.
- * Attempts to create more than 20 levels of nesting may fail with a {@link
- * JSONException}.
- *
- * <p>Each stringer may be used to encode a single top level value. Instances of
- * this class are not thread safe. Although this class is nonfinal, it was not
- * designed for inheritance and should not be subclassed. In particular,
- * self-use by overrideable methods is not specified. See <i>Effective Java</i>
- * Item 17, "Design and Document or inheritance or else prohibit it" for further
- * information.
+ * <p>
+ * Some implementations of the API support at most 20 levels of nesting. Attempts to
+ * create more than 20 levels of nesting may fail with a {@link JSONException}.
+ * <p>
+ * Each stringer may be used to encode a single top level value. Instances of this class
+ * are not thread safe. Although this class is nonfinal, it was not designed for
+ * inheritance and should not be subclassed. In particular, self-use by overrideable
+ * methods is not specified. See <i>Effective Java</i> Item 17,
+ * "Design and Document or inheritance or else prohibit it" for further information.
  */
 public class JSONStringer {
 
-	/** The output data, containing at most one top-level array or object. */
+	/**
+	 * The output data, containing at most one top-level array or object.
+	 */
 	final StringBuilder out = new StringBuilder();
 
 	/**
-	 * Lexical scoping elements within this stringer, necessary to insert the
-	 * appropriate separator characters (ie. commas and colons) and to detect
-	 * nesting errors.
+	 * Lexical scoping elements within this stringer, necessary to insert the appropriate
+	 * separator characters (ie. commas and colons) and to detect nesting errors.
 	 */
 	enum Scope {
 
 		/**
-		 * An array with no elements requires no separators or newlines before
-		 * it is closed.
+		 * An array with no elements requires no separators or newlines before it is
+		 * closed.
 		 */
 		EMPTY_ARRAY,
 
 		/**
-		 * A array with at least one value requires a comma and newline before
-		 * the next element.
+		 * A array with at least one value requires a comma and newline before the next
+		 * element.
 		 */
 		NONEMPTY_ARRAY,
 
 		/**
-		 * An object with no keys or values requires no separators or newlines
-		 * before it is closed.
+		 * An object with no keys or values requires no separators or newlines before it
+		 * is closed.
 		 */
 		EMPTY_OBJECT,
 
 		/**
-		 * An object whose most recent element is a key. The next element must
-		 * be a value.
+		 * An object whose most recent element is a key. The next element must be a value.
 		 */
 		DANGLING_KEY,
 
 		/**
-		 * An object with at least one name/value pair requires a comma and
-		 * newline before the next element.
+		 * An object with at least one name/value pair requires a comma and newline before
+		 * the next element.
 		 */
 		NONEMPTY_OBJECT,
 
@@ -104,18 +101,19 @@ public class JSONStringer {
 		 * A special bracketless array needed by JSONStringer.join() and
 		 * JSONObject.quote() only. Not used for JSON encoding.
 		 */
-		NULL,
+		NULL
+
 	}
 
 	/**
-	 * Unlike the original implementation, this stack isn't limited to 20
-	 * levels of nesting.
+	 * Unlike the original implementation, this stack isn't limited to 20 levels of
+	 * nesting.
 	 */
 	private final List<Scope> stack = new ArrayList<Scope>();
 
 	/**
-	 * A string containing a full set of spaces for a single level of
-	 * indentation, or null for no pretty printing.
+	 * A string containing a full set of spaces for a single level of indentation, or null
+	 * for no pretty printing.
 	 */
 	private final String indent;
 
@@ -130,9 +128,8 @@ public class JSONStringer {
 	}
 
 	/**
-	 * Begins encoding a new array. Each call to this method must be paired with
-	 * a call to {@link #endArray}.
-	 *
+	 * Begins encoding a new array. Each call to this method must be paired with a call to
+	 * {@link #endArray}.
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
 	 */
@@ -142,7 +139,6 @@ public class JSONStringer {
 
 	/**
 	 * Ends encoding the current array.
-	 *
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
 	 */
@@ -151,9 +147,8 @@ public class JSONStringer {
 	}
 
 	/**
-	 * Begins encoding a new object. Each call to this method must be paired
-	 * with a call to {@link #endObject}.
-	 *
+	 * Begins encoding a new object. Each call to this method must be paired with a call
+	 * to {@link #endObject}.
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
 	 */
@@ -163,7 +158,6 @@ public class JSONStringer {
 
 	/**
 	 * Ends encoding the current object.
-	 *
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
 	 */
@@ -172,8 +166,7 @@ public class JSONStringer {
 	}
 
 	/**
-	 * Enters a new scope by appending any necessary whitespace and the given
-	 * bracket.
+	 * Enters a new scope by appending any necessary whitespace and the given bracket.
 	 * @param empty any necessary whitespace
 	 * @param openBracket the open bracket
 	 * @return this object
@@ -190,14 +183,16 @@ public class JSONStringer {
 	}
 
 	/**
-	 * Closes the current scope by appending any necessary whitespace and the
-	 * given bracket.
+	 * Closes the current scope by appending any necessary whitespace and the given
+	 * bracket.
 	 * @param empty any necessary whitespace
 	 * @param nonempty the current scope
 	 * @param closeBracket the close bracket
+	 * @return the JSON stringer
 	 * @throws JSONException if processing of json failed
 	 */
-	JSONStringer close(Scope empty, Scope nonempty, String closeBracket) throws JSONException {
+	JSONStringer close(Scope empty, Scope nonempty, String closeBracket)
+			throws JSONException {
 		Scope context = peek();
 		if (context != nonempty && context != empty) {
 			throw new JSONException("Nesting problem");
@@ -233,10 +228,9 @@ public class JSONStringer {
 
 	/**
 	 * Encodes {@code value}.
-	 *
-	 * @param value a {@link JSONObject}, {@link JSONArray}, String, Boolean,
-	 *     Integer, Long, Double or null. May not be {@link Double#isNaN() NaNs}
-	 *     or {@link Double#isInfinite() infinities}.
+	 * @param value a {@link JSONObject}, {@link JSONArray}, String, Boolean, Integer,
+	 * Long, Double or null. May not be {@link Double#isNaN() NaNs} or
+	 * {@link Double#isInfinite() infinities}.
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
 	 */
@@ -257,9 +251,7 @@ public class JSONStringer {
 
 		beforeValue();
 
-		if (value == null
-				|| value instanceof Boolean
-				|| value == JSONObject.NULL) {
+		if (value == null || value instanceof Boolean || value == JSONObject.NULL) {
 			this.out.append(value);
 
 		}
@@ -276,7 +268,6 @@ public class JSONStringer {
 
 	/**
 	 * Encodes {@code value} to this stringer.
-	 *
 	 * @param value the value to encode
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
@@ -292,9 +283,8 @@ public class JSONStringer {
 
 	/**
 	 * Encodes {@code value} to this stringer.
-	 *
 	 * @param value a finite value. May not be {@link Double#isNaN() NaNs} or
-	 *     {@link Double#isInfinite() infinities}.
+	 * {@link Double#isInfinite() infinities}.
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
 	 */
@@ -309,7 +299,6 @@ public class JSONStringer {
 
 	/**
 	 * Encodes {@code value} to this stringer.
-	 *
 	 * @param value the value to encode
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
@@ -329,46 +318,45 @@ public class JSONStringer {
 			char c = value.charAt(i);
 
 			/*
-			 * From RFC 4627, "All Unicode characters may be placed within the
-			 * quotation marks except for the characters that must be escaped:
-			 * quotation mark, reverse solidus, and the control characters
-			 * (U+0000 through U+001F)."
+			 * From RFC 4627, "All Unicode characters may be placed within the quotation
+			 * marks except for the characters that must be escaped: quotation mark,
+			 * reverse solidus, and the control characters (U+0000 through U+001F)."
 			 */
 			switch (c) {
-				case '"':
-				case '\\':
-				case '/':
-					this.out.append('\\').append(c);
-					break;
+			case '"':
+			case '\\':
+			case '/':
+				this.out.append('\\').append(c);
+				break;
 
-				case '\t':
-					this.out.append("\\t");
-					break;
+			case '\t':
+				this.out.append("\\t");
+				break;
 
-				case '\b':
-					this.out.append("\\b");
-					break;
+			case '\b':
+				this.out.append("\\b");
+				break;
 
-				case '\n':
-					this.out.append("\\n");
-					break;
+			case '\n':
+				this.out.append("\\n");
+				break;
 
-				case '\r':
-					this.out.append("\\r");
-					break;
+			case '\r':
+				this.out.append("\\r");
+				break;
 
-				case '\f':
-					this.out.append("\\f");
-					break;
+			case '\f':
+				this.out.append("\\f");
+				break;
 
-				default:
-					if (c <= 0x1F) {
-						this.out.append(String.format("\\u%04x", (int) c));
-					}
-					else {
-						this.out.append(c);
-					}
-					break;
+			default:
+				if (c <= 0x1F) {
+					this.out.append(String.format("\\u%04x", (int) c));
+				}
+				else {
+					this.out.append(c);
+				}
+				break;
 			}
 
 		}
@@ -388,7 +376,6 @@ public class JSONStringer {
 
 	/**
 	 * Encodes the key (property name) to this stringer.
-	 *
 	 * @param name the name of the forthcoming value. May not be null.
 	 * @return this stringer.
 	 * @throws JSONException if processing of json failed
@@ -403,8 +390,8 @@ public class JSONStringer {
 	}
 
 	/**
-	 * Inserts any necessary separators and whitespace before a name. Also
-	 * adjusts the stack to expect the key's value.
+	 * Inserts any necessary separators and whitespace before a name. Also adjusts the
+	 * stack to expect the key's value.
 	 * @throws JSONException if processing of json failed
 	 */
 	private void beforeKey() throws JSONException {
@@ -420,9 +407,9 @@ public class JSONStringer {
 	}
 
 	/**
-	 * Inserts any necessary separators and whitespace before a literal value,
-	 * inline array, or inline object. Also adjusts the stack to expect either a
-	 * closing bracket or another element.
+	 * Inserts any necessary separators and whitespace before a literal value, inline
+	 * array, or inline object. Also adjusts the stack to expect either a closing bracket
+	 * or another element.
 	 * @throws JSONException if processing of json failed
 	 */
 	private void beforeValue() throws JSONException {
@@ -450,17 +437,17 @@ public class JSONStringer {
 
 	/**
 	 * Returns the encoded JSON string.
-	 *
-	 * <p>If invoked with unterminated arrays or unclosed objects, this method's
-	 * return value is undefined.
-	 *
-	 * <p><strong>Warning:</strong> although it contradicts the general contract
-	 * of {@link Object#toString}, this method returns null if the stringer
-	 * contains no data.
+	 * <p>
+	 * If invoked with unterminated arrays or unclosed objects, this method's return value
+	 * is undefined.
+	 * <p>
+	 * <strong>Warning:</strong> although it contradicts the general contract of
+	 * {@link Object#toString}, this method returns null if the stringer contains no data.
 	 * @return the encoded JSON string.
 	 */
 	@Override
 	public String toString() {
 		return this.out.length() == 0 ? null : this.out.toString();
 	}
+
 }
