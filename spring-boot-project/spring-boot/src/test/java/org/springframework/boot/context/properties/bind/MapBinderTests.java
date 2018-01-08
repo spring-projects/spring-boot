@@ -38,8 +38,11 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -524,6 +527,29 @@ public class MapBinderTests {
 		assertThat(foo.get().getFoos().get("foo2").getValue()).isEqualTo("three");
 	}
 
+	@Test
+	public void bindToMapWithCustomConverter() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new MapConverter());
+		Binder binder = new Binder(this.sources, null, conversionService);
+
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "a,b");
+		this.sources.add(source);
+		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(map.get("a")).isNotNull();
+		assertThat(map.get("b")).isNotNull();
+	}
+
+	@Test
+	public void bindToMapWithNoConverterForValue() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "a,b");
+		this.sources.add(source);
+		BindResult<Map<String, String>> result = this.binder.bind("foo", STRING_STRING_MAP);
+		assertThat(result.isBound()).isFalse();
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
 			ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
@@ -574,6 +600,15 @@ public class MapBinderTests {
 			this.value = value;
 		}
 
+	}
+
+	static class MapConverter implements Converter<String, Map<String, String>> {
+		@Override
+		public Map<String, String> convert(String s) {
+			Map<String, String> map = new HashMap<>();
+			StringUtils.commaDelimitedListToSet(s).forEach(k -> map.put(k, ""));
+			return map;
+		}
 	}
 
 }
