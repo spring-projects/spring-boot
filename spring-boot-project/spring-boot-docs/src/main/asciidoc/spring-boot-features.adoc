@@ -3660,7 +3660,9 @@ instead of using `MongoDbFactory`. If you want to take complete control of estab
 the MongoDB connection, you can also declare your own `MongoDbFactory` or `MongoClient`
 bean.
 
-
+NOTE: If you are using the reactive driver, Netty is required for SSL. The
+auto-configuration configures this factory automatically if Netty is available and the
+factory to use hasn't been customized already.
 
 [[boot-features-mongo-template]]
 ==== MongoTemplate

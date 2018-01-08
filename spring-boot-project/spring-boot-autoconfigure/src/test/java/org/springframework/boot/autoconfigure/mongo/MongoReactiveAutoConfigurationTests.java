@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@ import java.util.concurrent.TimeUnit;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.async.client.MongoClientSettings;
+import com.mongodb.connection.AsynchronousSocketChannelStreamFactoryFactory;
 import com.mongodb.connection.SocketSettings;
 import com.mongodb.connection.StreamFactory;
 import com.mongodb.connection.StreamFactoryFactory;
+import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.Test;
 
@@ -87,6 +89,16 @@ public class MongoReactiveAutoConfigurationTests {
 	}
 
 	@Test
+	public void nettyStreamFactoryFactoryIsConfiguredAutomatically() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(MongoClient.class);
+			assertThat(context.getBean(MongoClient.class).getSettings()
+					.getStreamFactoryFactory())
+					.isInstanceOf(NettyStreamFactoryFactory.class);
+		});
+	}
+
+	@Test
 	public void customizerOverridesAutoConfig() {
 		this.contextRunner
 				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
@@ -95,6 +107,8 @@ public class MongoReactiveAutoConfigurationTests {
 			MongoClient client = context.getBean(MongoClient.class);
 			assertThat(client.getSettings().getApplicationName())
 					.isEqualTo("overridden-name");
+			assertThat(client.getSettings().getStreamFactoryFactory())
+					.isEqualTo(SimpleCustomizerConfig.streamFactoryFactory);
 		});
 	}
 
@@ -133,10 +147,14 @@ public class MongoReactiveAutoConfigurationTests {
 	@Configuration
 	static class SimpleCustomizerConfig {
 
+		private static final StreamFactoryFactory streamFactoryFactory =
+				new AsynchronousSocketChannelStreamFactoryFactory();
+
 		@Bean
 		public MongoClientSettingsBuilderCustomizer customizer() {
 			return (clientSettingsBuilder) -> clientSettingsBuilder
-					.applicationName("overridden-name");
+					.applicationName("overridden-name")
+					.streamFactoryFactory(streamFactoryFactory);
 		}
 
 	}
