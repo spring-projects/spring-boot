@@ -96,7 +96,7 @@
 		<joda-time.version>2.9.9</joda-time.version>
 		<jolokia.version>1.3.7</jolokia.version>
 		<johnzon-jsonb.version>1.1.5</johnzon-jsonb.version>
-		<jooq.version>3.10.1</jooq.version>
+		<jooq.version>3.10.3</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
 		<javax-json.version>1.1.2</javax-json.version>
 		<javax-jsonb.version>1.0</javax-jsonb.version>
