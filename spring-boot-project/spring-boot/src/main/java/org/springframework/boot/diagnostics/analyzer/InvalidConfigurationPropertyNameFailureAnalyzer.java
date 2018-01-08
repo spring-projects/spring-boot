@@ -28,9 +28,8 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * {@link InvalidConfigurationPropertyNameException}.
  *
  * @author Madhura Bhave
- * @since 2.0.0
  */
-public class InvalidConfigurationPropertyNameFailureAnalyzer
+class InvalidConfigurationPropertyNameFailureAnalyzer
 		extends AbstractFailureAnalyzer<InvalidConfigurationPropertyNameException> {
 
 	@Override
