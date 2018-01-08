@@ -629,6 +629,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
 	spring.data.rest.base-path= # Base path to be used by Spring Data REST to expose repository resources.
+	spring.data.rest.default-media-type= # Content type to use as a default when none is specified.
 	spring.data.rest.default-page-size= # Default size of pages.
 	spring.data.rest.detection-strategy=default # Strategy to use to determine which repositories get exposed.
 	spring.data.rest.enable-enum-translation= # Whether to enable enum value translation through the Spring Data REST default resource bundle.
