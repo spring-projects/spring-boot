@@ -16,25 +16,20 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.rnorth.ducttape.TimeoutException;
-import org.rnorth.ducttape.unreliables.Unreliables;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
-import org.testcontainers.containers.wait.HostPortWaitStrategy;
+import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
+import org.springframework.boot.testsupport.testcontainers.TestContainers;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -50,12 +45,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CassandraDataAutoConfigurationIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<FixedHostPortGenericContainer<?>> cassandra = new DockerTestContainer<>(
-			() -> new FixedHostPortGenericContainer<>("cassandra:latest")
-					.withFixedExposedPort(9042, 9042)
-					.waitingFor(new ConnectionVerifyingWaitStrategy()));
+	public static DockerTestContainer<GenericContainer<?>> cassandra = new DockerTestContainer<>(
+			TestContainers::cassandra);
 
 	private AnnotationConfigApplicationContext context;
+
+	@Before
+	public void setUp() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues
+				.of("spring.data.cassandra.port=" + cassandra.getMappedPort(9042))
+				.applyTo(this.context.getEnvironment());
+	}
 
 	@After
 	public void close() {
@@ -66,7 +67,6 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 
 	@Test
 	public void hasDefaultSchemaActionSet() {
-		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
 		this.context.register(CassandraAutoConfiguration.class,
@@ -81,7 +81,6 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	@Test
 	public void hasRecreateSchemaActionSet() {
 		createTestKeyspaceIfNotExists();
-		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
 		TestPropertyValues
@@ -97,41 +96,12 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	private void createTestKeyspaceIfNotExists() {
-		Cluster cluster = Cluster.builder().addContactPoint("localhost").build();
+		Cluster cluster = Cluster.builder().withPort(cassandra.getMappedPort(9042))
+				.addContactPoint("localhost").build();
 		try (Session session = cluster.connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
 					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
 		}
-	}
-
-	static class ConnectionVerifyingWaitStrategy extends HostPortWaitStrategy {
-
-		@Override
-		protected void waitUntilReady() {
-			super.waitUntilReady();
-
-			try {
-				Unreliables.retryUntilTrue((int) this.startupTimeout.getSeconds(),
-						TimeUnit.SECONDS, checkConnection());
-			}
-			catch (TimeoutException ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-
-		private Callable<Boolean> checkConnection() {
-			return () -> {
-				try (Cluster cluster = Cluster.builder().addContactPoint("localhost")
-						.build()) {
-					cluster.connect();
-					return true;
-				}
-				catch (NoHostAvailableException ex) {
-					return false;
-				}
-			};
-		}
-
 	}
 
 }

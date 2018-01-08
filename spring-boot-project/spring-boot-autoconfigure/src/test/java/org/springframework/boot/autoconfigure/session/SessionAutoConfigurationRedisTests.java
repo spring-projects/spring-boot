@@ -49,7 +49,7 @@ public class SessionAutoConfigurationRedisTests
 
 	@ClassRule
 	public static DockerTestContainer<GenericContainer<?>> redis = new DockerTestContainer<>(
-			() -> TestContainers.redis());
+			TestContainers::redis);
 
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));

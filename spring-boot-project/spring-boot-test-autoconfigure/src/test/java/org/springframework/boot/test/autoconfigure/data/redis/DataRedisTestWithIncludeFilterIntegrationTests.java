@@ -19,12 +19,17 @@ package org.springframework.boot.test.autoconfigure.data.redis;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
+import org.springframework.boot.testsupport.testcontainers.TestContainers;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,13 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jayaram Pradhan
  */
 @RunWith(SpringRunner.class)
+@ContextConfiguration(initializers = DataRedisTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataRedisTest(includeFilters = @Filter(Service.class))
 public class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<FixedHostPortGenericContainer<?>> redis = new DockerTestContainer<>(
-			() -> new FixedHostPortGenericContainer<>("redis:latest")
-					.withFixedExposedPort(6379, 6379));
+	public static DockerTestContainer<GenericContainer<?>> redis = new DockerTestContainer<>(
+			TestContainers::redis);
 
 	@Autowired
 	private ExampleRepository exampleRepository;
@@ -56,6 +61,19 @@ public class DataRedisTestWithIncludeFilterIntegrationTests {
 		assertThat(personHash.getId()).isNull();
 		PersonHash savedEntity = this.exampleRepository.save(personHash);
 		assertThat(this.service.hasRecord(savedEntity)).isTrue();
+	}
+
+	static class Initializer
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+		@Override
+		public void initialize(
+				ConfigurableApplicationContext configurableApplicationContext) {
+			TestPropertyValues
+					.of("spring.redis.port=" + redis.getMappedPort(6379))
+					.applyTo(configurableApplicationContext.getEnvironment());
+		}
+
 	}
 
 }
