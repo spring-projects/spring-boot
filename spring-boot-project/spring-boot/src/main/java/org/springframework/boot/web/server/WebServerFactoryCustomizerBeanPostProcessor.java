@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ import org.springframework.util.Assert;
  */
 public class WebServerFactoryCustomizerBeanPostProcessor
 		implements BeanPostProcessor, BeanFactoryAware {
+
+	private static final Log logger = LogFactory.getLog(WebServerFactoryCustomizerBeanPostProcessor.class);
 
 	private ListableBeanFactory beanFactory;
 
@@ -92,8 +94,8 @@ public class WebServerFactoryCustomizerBeanPostProcessor
 		catch (ClassCastException ex) {
 			String msg = ex.getMessage();
 			if (msg == null || msg.startsWith(webServerFactory.getClass().getName())) {
-				// Possibly a lambda-defined listener which we could not resolve the
-				// generic event type for
+				// Possibly a lambda-defined WebServerFactoryCustomizer which we could not resolve the
+				// generic WebServerFactory type for
 				logLambdaDebug(customizer, ex);
 			}
 			else {
@@ -104,9 +106,8 @@ public class WebServerFactoryCustomizerBeanPostProcessor
 
 	private void logLambdaDebug(WebServerFactoryCustomizer<?> customizer,
 			ClassCastException ex) {
-		Log logger = LogFactory.getLog(getClass());
 		if (logger.isDebugEnabled()) {
-			logger.debug("Non-matching factory type for customizer: " + customizer, ex);
+			logger.debug("Non-matching WebServerFactory type for WebServerFactoryCustomizer: " + customizer, ex);
 		}
 	}
 

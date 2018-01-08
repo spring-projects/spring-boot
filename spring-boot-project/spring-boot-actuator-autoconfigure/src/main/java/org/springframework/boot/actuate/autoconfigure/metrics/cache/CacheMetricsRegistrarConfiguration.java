@@ -38,7 +38,6 @@ import org.springframework.util.StringUtils;
  * caches}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
 @Configuration
 @ConditionalOnBean(CacheMeterBinderProvider.class)
@@ -59,8 +58,8 @@ class CacheMetricsRegistrarConfiguration {
 			Collection<CacheMeterBinderProvider<?>> binderProviders,
 			Map<String, CacheManager> cacheManagers) {
 		this.registry = registry;
-		this.binderProviders = binderProviders;
 		this.properties = properties;
+		this.binderProviders = binderProviders;
 		this.cacheManagers = cacheManagers;
 	}
 
