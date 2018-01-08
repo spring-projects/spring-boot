@@ -28,6 +28,7 @@ import org.springframework.cache.Cache;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
+@FunctionalInterface
 public interface CacheMeterBinderProvider<C extends Cache> {
 
 	/**

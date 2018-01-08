@@ -106,7 +106,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		this.physicalNamingStrategy = physicalNamingStrategy.getIfAvailable();
 		this.implicitNamingStrategy = implicitNamingStrategy.getIfAvailable();
 		this.hibernatePropertiesCustomizers = hibernatePropertiesCustomizers
-				.getIfAvailable(() -> Collections.EMPTY_LIST);
+				.getIfAvailable(() -> Collections.emptyList());
 	}
 
 	@Override
@@ -122,7 +122,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlMode)
 						.implicitNamingStrategy(this.implicitNamingStrategy)
 						.physicalNamingStrategy(this.physicalNamingStrategy)
-						.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
+						.hibernatePropertiesCustomizers(
+								this.hibernatePropertiesCustomizers)));
 	}
 
 	@Override

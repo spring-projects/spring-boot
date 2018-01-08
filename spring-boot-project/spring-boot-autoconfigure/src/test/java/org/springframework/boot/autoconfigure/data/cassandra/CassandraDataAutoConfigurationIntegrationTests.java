@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
@@ -29,7 +28,6 @@ import org.junit.Test;
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.HostPortWaitStrategy;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
@@ -52,10 +50,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CassandraDataAutoConfigurationIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<GenericContainer> genericContainer = new DockerTestContainer<>((Supplier<GenericContainer>) () -> new FixedHostPortGenericContainer("cassandra:latest")
-			.withFixedExposedPort(9042, 9042)
-			.waitingFor(new ConnectionVerifyingWaitStrategy()));
-
+	public static DockerTestContainer<FixedHostPortGenericContainer<?>> cassandra = new DockerTestContainer<>(
+			() -> new FixedHostPortGenericContainer<>("cassandra:latest")
+					.withFixedExposedPort(9042, 9042)
+					.waitingFor(new ConnectionVerifyingWaitStrategy()));
 
 	private AnnotationConfigApplicationContext context;
 
@@ -113,8 +111,8 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 			super.waitUntilReady();
 			Cluster cluster = Cluster.builder().addContactPoint("localhost").build();
 			try {
-				Unreliables.retryUntilTrue((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
-						checkConnection(cluster));
+				Unreliables.retryUntilTrue((int) this.startupTimeout.getSeconds(),
+						TimeUnit.SECONDS, checkConnection(cluster));
 			}
 			catch (TimeoutException e) {
 				throw new IllegalStateException();

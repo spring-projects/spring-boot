@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,7 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
-				"test");
+		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "test");
 	}
 
 	@Test
@@ -86,8 +85,7 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
-				"foo");
+		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "foo");
 	}
 
 	@Test
@@ -97,8 +95,7 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
-				"foo");
+		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "foo");
 	}
 
 	@Test
@@ -111,9 +108,8 @@ public class ReactiveMongoClientFactoryTests {
 		assertThat(allAddresses).hasSize(2);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
-		List<MongoCredential> credentialsList = extractMongoCredentials(client);
-		assertThat(credentialsList).hasSize(1);
-		assertMongoCredential(credentialsList.get(0), "user", "secret", "test");
+		MongoCredential credential = extractMongoCredentials(client);
+		assertMongoCredential(credential, "user", "secret", "test");
 	}
 
 	@Test
@@ -197,9 +193,9 @@ public class ReactiveMongoClientFactoryTests {
 		return clusterSettings.getHosts();
 	}
 
-	private List<MongoCredential> extractMongoCredentials(MongoClient client) {
+	private MongoCredential extractMongoCredentials(MongoClient client) {
 		MongoClientSettings settings = client.getSettings();
-		return settings.getCredentialList();
+		return settings.getCredential();
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,

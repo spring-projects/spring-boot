@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,10 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
-import java.util.function.Supplier;
-
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
-import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.DockerTestContainer;
@@ -42,9 +39,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<GenericContainer> genericContainer = new DockerTestContainer<>((Supplier<GenericContainer>) () -> new FixedHostPortGenericContainer("neo4j:latest")
-			.withFixedExposedPort(7687, 7687)
-			.waitingFor(new DataNeo4jTestIntegrationTests.ConnectionVerifyingWaitStrategy()).withEnv("NEO4J_AUTH", "none"));
+	public static DockerTestContainer<FixedHostPortGenericContainer<?>> neo4j = new DockerTestContainer<>(
+			() -> new FixedHostPortGenericContainer<>("neo4j:latest")
+					.withFixedExposedPort(7687, 7687)
+					.waitingFor(
+							new DataNeo4jTestIntegrationTests.ConnectionVerifyingWaitStrategy())
+					.withEnv("NEO4J_AUTH", "none"));
 
 	@Autowired
 	private ExampleService service;

@@ -26,12 +26,13 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 
 /**
- * {@link TestRule} for working with an optional Docker environment. Spins up a {@link GenericContainer}
- * if a valid docker environment is found.
+ * {@link TestRule} for working with an optional Docker environment. Spins up a
+ * {@link GenericContainer} if a valid docker environment is found.
  *
+ * @param <T> the type of the container
  * @author Madhura Bhave
  */
-public class DockerTestContainer<T extends GenericContainer> implements TestRule {
+public class DockerTestContainer<T extends GenericContainer<?>> implements TestRule {
 
 	private Supplier<T> containerSupplier;
 
@@ -60,4 +61,3 @@ public class DockerTestContainer<T extends GenericContainer> implements TestRule
 
 	}
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class AuthenticationManagerConfigurationTests {
 	@Test
 	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
 		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class,
-				AuthenticationManagerConfiguration.class).run((context -> {
+				AuthenticationManagerConfiguration.class).run(((context) -> {
 					InMemoryUserDetailsManager userDetailsService = context
 							.getBean(InMemoryUserDetailsManager.class);
 					String password = userDetailsService.loadUserByUsername("user")
@@ -73,7 +73,7 @@ public class AuthenticationManagerConfigurationTests {
 				.withUserConfiguration(configClass,
 						AuthenticationManagerConfiguration.class)
 				.withPropertyValues("spring.security.user.password=" + providedPassword)
-				.run((context -> {
+				.run(((context) -> {
 					InMemoryUserDetailsManager userDetailsService = context
 							.getBean(InMemoryUserDetailsManager.class);
 					String password = userDetailsService.loadUserByUsername("user")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -31,7 +30,6 @@ import org.neo4j.ogm.session.SessionFactory;
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.HostPortWaitStrategy;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -53,10 +51,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataNeo4jTestIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<GenericContainer> genericContainer = new DockerTestContainer<>((Supplier<GenericContainer>) () -> new FixedHostPortGenericContainer("neo4j:latest")
-			.withFixedExposedPort(7687, 7687)
-			.waitingFor(new ConnectionVerifyingWaitStrategy()).withEnv("NEO4J_AUTH", "none"));
-
+	public static DockerTestContainer<FixedHostPortGenericContainer<?>> neo4j = new DockerTestContainer<>(
+			() -> new FixedHostPortGenericContainer<>("neo4j:latest")
+					.withFixedExposedPort(7687, 7687)
+					.waitingFor(new ConnectionVerifyingWaitStrategy())
+					.withEnv("NEO4J_AUTH", "none"));
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -96,8 +95,8 @@ public class DataNeo4jTestIntegrationTests {
 			SessionFactory sessionFactory = new SessionFactory(configuration,
 					"org.springframework.boot.test.autoconfigure.data.neo4j");
 			try {
-				Unreliables.retryUntilTrue((int) startupTimeout.getSeconds(), TimeUnit.SECONDS,
-						checkConnection(sessionFactory));
+				Unreliables.retryUntilTrue((int) this.startupTimeout.getSeconds(),
+						TimeUnit.SECONDS, checkConnection(sessionFactory));
 			}
 			catch (TimeoutException e) {
 				throw new IllegalStateException();
