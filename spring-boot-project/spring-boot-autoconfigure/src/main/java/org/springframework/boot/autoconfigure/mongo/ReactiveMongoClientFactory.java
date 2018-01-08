@@ -142,7 +142,9 @@ public class ReactiveMongoClientFactory {
 		builder.clusterSettings(getClusterSettings(connection));
 		builder.connectionPoolSettings(getConnectionPoolSettings(connection));
 		builder.serverSettings(getServerSettings(connection));
-		builder.credential(connection.getCredential());
+		if (connection.getCredential() != null) {
+			builder.credential(connection.getCredential());
+		}
 		builder.sslSettings(getSslSettings(connection));
 		builder.socketSettings(getSocketSettings(connection));
 		if (connection.getReadPreference() != null) {
