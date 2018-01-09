@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientBuilderCustomizer;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.StringUtils;
 
 /**
- * A customizer that configures Spring REST Docs with WebTestClient.
+ * A {@WebTestClientBuilderCustomizer} that configures Spring REST Docs.
  *
- * @author Eddú Meléndez
  * @author Roman Zaynetdinov
+ * @author Andy Wilkinson
  */
-class RestDocsWebTestClientBuilderCustomizer implements InitializingBean, WebTestClientBuilderCustomizer {
+class RestDocsWebTestClientBuilderCustomizer implements WebTestClientBuilderCustomizer {
 
 	private final WebTestClientRestDocumentationConfigurer delegate;
 
@@ -38,7 +37,8 @@ class RestDocsWebTestClientBuilderCustomizer implements InitializingBean, WebTes
 
 	private Integer uriPort;
 
-	RestDocsWebTestClientBuilderCustomizer(WebTestClientRestDocumentationConfigurer delegate) {
+	RestDocsWebTestClientBuilderCustomizer(
+			WebTestClientRestDocumentationConfigurer delegate) {
 		this.delegate = delegate;
 	}
 
@@ -67,24 +67,27 @@ class RestDocsWebTestClientBuilderCustomizer implements InitializingBean, WebTes
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
-	}
-
-	@Override
 	public void customize(WebTestClient.Builder builder) {
-		if (StringUtils.hasText(this.uriScheme) && StringUtils.hasText(this.uriHost)) {
-			String baseUrl = this.uriScheme + "://" + this.uriHost;
-
-			if (this.uriPort == 80 && this.uriScheme.equals("http")) {
-				// Don't add default port
-			} else if (this.uriPort == 443 && this.uriScheme.equals("https")) {
-				// Don't add default port
-			} else if (this.uriPort != null) {
-				baseUrl += ":" + this.uriPort;
-			}
-
-			builder.baseUrl(baseUrl);
-		}
+		customizeBaseUrl(builder);
 		builder.filter(this.delegate);
 	}
+
+	private void customizeBaseUrl(WebTestClient.Builder builder) {
+		String scheme = StringUtils.hasText(this.uriScheme) ? this.uriScheme : "http";
+		String host = StringUtils.hasText(this.uriHost) ? this.uriHost : "localhost";
+		String baseUrl = scheme + "://" + host;
+		if (!isStandardPort()) {
+			baseUrl += ":" + this.uriPort;
+		}
+		builder.baseUrl(baseUrl);
+	}
+
+	private boolean isStandardPort() {
+		if (this.uriPort == null) {
+			return true;
+		}
+		return this.uriScheme.equals("http") && this.uriPort == 80
+				|| this.uriScheme.equals("https") && this.uriPort.equals(443);
+	}
+
 }

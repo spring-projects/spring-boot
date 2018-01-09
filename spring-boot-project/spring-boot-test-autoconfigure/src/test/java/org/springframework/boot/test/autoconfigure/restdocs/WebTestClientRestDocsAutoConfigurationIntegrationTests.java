@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 /**
- * Integration tests for {@link RestDocsAutoConfiguration} with WebClientTest.
+ * Integration tests for {@link RestDocsAutoConfiguration} with {@link WebTestClient}.
  *
- * @author Andy Wilkinson
  * @author Roman Zaynetdinov
  */
 @RunWith(SpringRunner.class)
@@ -54,8 +52,8 @@ public class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 
 	@Test
 	public void defaultSnippetsAreWritten() throws Exception {
-		this.webTestClient.get().uri("/").exchange()
-			.expectBody().consumeWith(document("default-snippets"));
+		this.webTestClient.get().uri("/").exchange().expectBody()
+				.consumeWith(document("default-snippets"));
 		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))
