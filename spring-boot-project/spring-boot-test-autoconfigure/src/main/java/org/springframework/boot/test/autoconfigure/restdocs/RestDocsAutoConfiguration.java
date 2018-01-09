@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,13 +46,13 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
  * @since 1.4.0
  */
 @Configuration
-@EnableConfigurationProperties
 @ConditionalOnWebApplication
 public class RestDocsAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(MockMvcRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsMockMvcAutoConfiguration {
 
 		@Bean
@@ -72,11 +71,11 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.test.restdocs")
 		public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(
+				RestDocsProperties properties,
 				MockMvcRestDocumentationConfigurer configurer,
 				ObjectProvider<RestDocumentationResultHandler> resultHandler) {
-			return new RestDocsMockMvcBuilderCustomizer(configurer,
+			return new RestDocsMockMvcBuilderCustomizer(properties, configurer,
 					resultHandler.getIfAvailable());
 		}
 
@@ -85,6 +84,7 @@ public class RestDocsAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ RequestSpecification.class,
 			RestAssuredRestDocumentation.class })
+	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsRestAssuredAutoConfiguration {
 
 		@Bean
@@ -103,10 +103,9 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.test.restdocs")
 		public RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(
-				RequestSpecification configurer) {
-			return new RestDocsRestAssuredBuilderCustomizer(configurer);
+				RestDocsProperties properties, RequestSpecification configurer) {
+			return new RestDocsRestAssuredBuilderCustomizer(properties, configurer);
 		}
 
 	}
@@ -114,6 +113,7 @@ public class RestDocsAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(WebTestClientRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsWebTestClientAutoConfiguration {
 
 		@Bean
@@ -132,10 +132,10 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.test.restdocs")
 		public RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(
+				RestDocsProperties properties,
 				WebTestClientRestDocumentationConfigurer configurer) {
-			return new RestDocsWebTestClientBuilderCustomizer(configurer);
+			return new RestDocsWebTestClientBuilderCustomizer(properties, configurer);
 		}
 
 	}

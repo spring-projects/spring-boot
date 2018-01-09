@@ -29,41 +29,14 @@ import org.springframework.util.StringUtils;
  */
 class RestDocsWebTestClientBuilderCustomizer implements WebTestClientBuilderCustomizer {
 
+	private final RestDocsProperties properties;
+
 	private final WebTestClientRestDocumentationConfigurer delegate;
 
-	private String uriScheme;
-
-	private String uriHost;
-
-	private Integer uriPort;
-
-	RestDocsWebTestClientBuilderCustomizer(
+	RestDocsWebTestClientBuilderCustomizer(RestDocsProperties properties,
 			WebTestClientRestDocumentationConfigurer delegate) {
+		this.properties = properties;
 		this.delegate = delegate;
-	}
-
-	public String getUriScheme() {
-		return this.uriScheme;
-	}
-
-	public void setUriScheme(String uriScheme) {
-		this.uriScheme = uriScheme;
-	}
-
-	public String getUriHost() {
-		return this.uriHost;
-	}
-
-	public void setUriHost(String uriHost) {
-		this.uriHost = uriHost;
-	}
-
-	public Integer getUriPort() {
-		return this.uriPort;
-	}
-
-	public void setUriPort(Integer uriPort) {
-		this.uriPort = uriPort;
 	}
 
 	@Override
@@ -73,21 +46,23 @@ class RestDocsWebTestClientBuilderCustomizer implements WebTestClientBuilderCust
 	}
 
 	private void customizeBaseUrl(WebTestClient.Builder builder) {
-		String scheme = StringUtils.hasText(this.uriScheme) ? this.uriScheme : "http";
-		String host = StringUtils.hasText(this.uriHost) ? this.uriHost : "localhost";
-		String baseUrl = scheme + "://" + host;
-		if (!isStandardPort()) {
-			baseUrl += ":" + this.uriPort;
+		String scheme = this.properties.getUriScheme();
+		String host = this.properties.getUriHost();
+		String baseUrl = (StringUtils.hasText(scheme) ? scheme : "http") + "://"
+				+ (StringUtils.hasText(host) ? host : "localhost");
+		Integer port = this.properties.getUriPort();
+		if (!isStandardPort(scheme, port)) {
+			baseUrl += ":" + port;
 		}
 		builder.baseUrl(baseUrl);
 	}
 
-	private boolean isStandardPort() {
-		if (this.uriPort == null) {
+	private boolean isStandardPort(String scheme, Integer port) {
+		if (port == null) {
 			return true;
 		}
-		return this.uriScheme.equals("http") && this.uriPort == 80
-				|| this.uriScheme.equals("https") && this.uriPort.equals(443);
+		return (scheme.equals("http") && port == 80)
+				|| (scheme.equals("https") && port == 443);
 	}
 
 }
