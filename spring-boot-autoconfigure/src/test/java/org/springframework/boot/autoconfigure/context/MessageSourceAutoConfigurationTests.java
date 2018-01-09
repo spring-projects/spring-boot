@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,17 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMessageSourceCreated() throws Exception {
+	public void propertiesBundleWithSlashIsDetected() {
 		load("spring.messages.basename:test/messages");
+		assertThat(this.context.getBeansOfType(MessageSource.class)).hasSize(1);
+		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("bar");
+	}
+
+	@Test
+	public void propertiesBundleWithDotIsDetected() {
+		load("spring.messages.basename:test.messages");
+		assertThat(this.context.getBeansOfType(MessageSource.class)).hasSize(1);
 		assertThat(this.context.getMessage("foo", null, "Foo message", Locale.UK))
 				.isEqualTo("bar");
 	}

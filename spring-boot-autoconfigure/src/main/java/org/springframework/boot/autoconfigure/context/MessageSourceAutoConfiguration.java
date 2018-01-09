@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,9 +59,10 @@ public class MessageSourceAutoConfiguration {
 	private static final Resource[] NO_RESOURCES = {};
 
 	/**
-	 * Comma-separated list of basenames, each following the ResourceBundle convention.
-	 * Essentially a fully-qualified classpath location. If it doesn't contain a package
-	 * qualifier (such as "org.mypackage"), it will be resolved from the classpath root.
+	 * Comma-separated list of basenames (essentially a fully-qualified classpath
+	 * location), each following the ResourceBundle convention with relaxed support for
+	 * slash based locations. If it doesn't contain a package qualifier (such as
+	 * "org.mypackage"), it will be resolved from the classpath root.
 	 */
 	private String basename = "messages";
 
@@ -180,9 +181,10 @@ public class MessageSourceAutoConfiguration {
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {
+			String target = name.replace('.', '/');
 			try {
 				return new PathMatchingResourcePatternResolver(classLoader)
-						.getResources("classpath*:" + name + ".properties");
+						.getResources("classpath*:" + target + ".properties");
 			}
 			catch (Exception ex) {
 				return NO_RESOURCES;
