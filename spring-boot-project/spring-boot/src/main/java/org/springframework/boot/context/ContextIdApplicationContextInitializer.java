@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -24,72 +26,18 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationContextInitializer} that set the Spring
- * {@link ApplicationContext#getId() ApplicationContext ID}. The following environment
- * properties will be consulted to create the ID:
- * <ul>
- * <li>spring.application.name</li>
- * <li>vcap.application.name</li>
- * <li>spring.config.name</li>
- * </ul>
- * If no property is set the ID 'application' will be used.
- *
- * <p>
- * In addition the following environment properties will be consulted to append a relevant
- * port or index:
- *
- * <ul>
- * <li>spring.application.index</li>
- * <li>vcap.application.instance_index</li>
- * <li>PORT</li>
- * </ul>
+ * {@link ApplicationContextInitializer} that sets the Spring
+ * {@link ApplicationContext#getId() ApplicationContext ID}. The
+ * {@code spring.application.name} property is used to create the ID. If the property is
+ * not set {@code application} is used.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class ContextIdApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-	/**
-	 * Placeholder pattern to resolve for application name. The following order is used to
-	 * find the name:
-	 * <ul>
-	 * <li>{@code spring.application.name}</li>
-	 * <li>{@code vcap.application.name}</li>
-	 * <li>{@code spring.config.name}</li>
-	 * </ul>
-	 * This order allows the user defined name to take precedence over the platform
-	 * defined name. If no property is defined {@code 'application'} will be used.
-	 */
-	private static final String NAME_PATTERN = "${spring.application.name:${vcap.application.name:${spring.config.name:application}}}";
-
-	/**
-	 * Placeholder pattern to resolve for application index. The following order is used
-	 * to find the name:
-	 * <ul>
-	 * <li>{@code vcap.application.instance_index}</li>
-	 * <li>{@code spring.application.index}</li>
-	 * <li>{@code server.port}</li>
-	 * <li>{@code PORT}</li>
-	 * </ul>
-	 * This order favors a platform defined index over any user defined value.
-	 */
-	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
-
-	private final String name;
-
 	private int order = Ordered.LOWEST_PRECEDENCE - 10;
-
-	public ContextIdApplicationContextInitializer() {
-		this(NAME_PATTERN);
-	}
-
-	/**
-	 * Create a new {@link ContextIdApplicationContextInitializer} instance.
-	 * @param name the name of the application (can include placeholders)
-	 */
-	public ContextIdApplicationContextInitializer(String name) {
-		this.name = name;
-	}
 
 	public void setOrder(int order) {
 		this.order = order;
@@ -102,21 +50,46 @@ public class ContextIdApplicationContextInitializer implements
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.setId(getApplicationId(applicationContext.getEnvironment()));
+		ContextId contextId = getContextId(applicationContext);
+		applicationContext.setId(contextId.getId());
+		applicationContext.getBeanFactory().registerSingleton(ContextId.class.getName(),
+				contextId);
+	}
+
+	private ContextId getContextId(ConfigurableApplicationContext applicationContext) {
+		ApplicationContext parent = applicationContext.getParent();
+		if (parent != null && parent.containsBean(ContextId.class.getName())) {
+			return parent.getBean(ContextId.class).createChildId();
+		}
+		return new ContextId(getApplicationId(applicationContext.getEnvironment()));
 	}
 
 	private String getApplicationId(ConfigurableEnvironment environment) {
-		String name = environment.resolvePlaceholders(this.name);
-		String index = environment.resolvePlaceholders(INDEX_PATTERN);
-		String profiles = StringUtils
-				.arrayToCommaDelimitedString(environment.getActiveProfiles());
-		if (StringUtils.hasText(profiles)) {
-			name = name + ":" + profiles;
+		String name = environment.getProperty("spring.application.name");
+		return StringUtils.hasText(name) ? name : "application";
+	}
+
+	/**
+	 * The ID of a context.
+	 */
+	class ContextId {
+
+		private final AtomicLong children = new AtomicLong(0);
+
+		private final String id;
+
+		ContextId(String id) {
+			this.id = id;
 		}
-		if (!"null".equals(index)) {
-			name = name + ":" + index;
+
+		ContextId createChildId() {
+			return new ContextId(this.id + "-" + this.children.incrementAndGet());
 		}
-		return name;
+
+		String getId() {
+			return this.id;
+		}
+
 	}
 
 }

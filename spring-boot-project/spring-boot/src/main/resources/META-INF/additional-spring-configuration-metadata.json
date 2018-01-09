@@ -144,12 +144,6 @@
       "description": "Application name."
     },
     {
-      "name": "spring.application.index",
-      "type": "java.lang.Integer",
-      "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
-      "description": "Application index."
-    },
-    {
       "name": "spring.beaninfo.ignore",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
