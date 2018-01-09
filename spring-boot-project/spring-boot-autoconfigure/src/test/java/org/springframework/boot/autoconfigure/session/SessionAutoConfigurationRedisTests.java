@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.session;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -48,7 +47,7 @@ public class SessionAutoConfigurationRedisTests
 		extends AbstractSessionAutoConfigurationTests {
 
 	@ClassRule
-	public static DockerTestContainer<GenericContainer<?>> redis = new DockerTestContainer<>(
+	public static DockerTestContainer redis = new DockerTestContainer(
 			TestContainers::redis);
 
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()

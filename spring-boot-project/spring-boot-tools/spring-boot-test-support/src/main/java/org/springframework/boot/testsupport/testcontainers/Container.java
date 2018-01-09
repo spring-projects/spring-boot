@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testsupport.testcontainers;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.junit.AssumptionViolatedException;
@@ -29,17 +30,31 @@ import org.testcontainers.containers.GenericContainer;
  * {@link TestRule} for working with an optional Docker environment. Spins up a
  * {@link GenericContainer} if a valid docker environment is found.
  *
- * @param <T> the type of the container
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
-public class DockerTestContainer<T extends GenericContainer<?>> implements TestRule {
+class Container implements TestRule {
 
-	private final Supplier<T> containerSupplier;
+	private final int port;
 
-	private T container;
+	private final Supplier<GenericContainer<?>> containerFactory;
 
-	public DockerTestContainer(Supplier<T> containerSupplier) {
-		this.containerSupplier = containerSupplier;
+	private GenericContainer<?> container;
+
+	<T extends GenericContainer<T>> Container(String dockerImageName, int port) {
+		this(dockerImageName, port, null);
+	}
+
+	@SuppressWarnings({ "unchecked", "resource" })
+	<T extends GenericContainer<T>> Container(String dockerImageName, int port,
+			Consumer<T> customizer) {
+		this.port = port;
+		this.containerFactory = () -> {
+			T container = (T) new GenericContainer<>(dockerImageName)
+					.withExposedPorts(port);
+			customizer.accept(container);
+			return container;
+		};
 	}
 
 	@Override
@@ -50,12 +65,12 @@ public class DockerTestContainer<T extends GenericContainer<?>> implements TestR
 		catch (Throwable t) {
 			return new SkipStatement();
 		}
-		this.container = this.containerSupplier.get();
+		this.container = this.containerFactory.get();
 		return this.container.apply(base, description);
 	}
 
-	public int getMappedPort(int originalPort) {
-		return this.container.getMappedPort(originalPort);
+	public int getMappedPort() {
+		return this.container.getMappedPort(this.port);
 	}
 
 	private static class SkipStatement extends Statement {

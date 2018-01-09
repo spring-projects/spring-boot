@@ -22,13 +22,11 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.neo4j.ogm.session.Session;
-import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
-import org.springframework.boot.testsupport.testcontainers.TestContainers;
+import org.springframework.boot.testsupport.testcontainers.Neo4jContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -49,8 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataNeo4jTestIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<GenericContainer<?>> neo4j = new DockerTestContainer<>(
-			TestContainers::neo4j);
+	public static Neo4jContainer neo4j = new Neo4jContainer();
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -87,8 +84,7 @@ public class DataNeo4jTestIntegrationTests {
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
 			TestPropertyValues
-					.of("spring.data.neo4j.uri=bolt://localhost:"
-							+ neo4j.getMappedPort(7687))
+					.of("spring.data.neo4j.uri=bolt://localhost:" + neo4j.getMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

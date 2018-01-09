@@ -19,8 +19,6 @@ package org.springframework.boot.testsupport.testcontainers;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.session.SessionFactory;
 import org.rnorth.ducttape.TimeoutException;
@@ -29,69 +27,26 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.HostPortWaitStrategy;
 
 /**
- * Provides utility methods that allow creation of docker containers for
- * tests.
+ * A {@link GenericContainer} for Neo4J.
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-public abstract class TestContainers {
+public class Neo4jContainer extends Container {
 
-	@SuppressWarnings("resource")
-	public static GenericContainer<?> redis() {
-		return new GenericContainer<>("redis:4.0.6").withExposedPorts(6379);
+	public Neo4jContainer() {
+		super("neo4j:3.3.1", 7687, (container) -> container.waitingFor(new WaitStrategy())
+				.withEnv("NEO4J_AUTH", "none"));
 	}
 
-	@SuppressWarnings("resource")
-	public static GenericContainer<?> cassandra() {
-		return new GenericContainer<>("cassandra:3.11.1").withExposedPorts(9042)
-				.waitingFor(new CassandraConnectionVerifyingWaitStrategy());
-	}
-
-	public static GenericContainer<?> neo4j() {
-		return new GenericContainer<>("neo4j:3.3.1").withExposedPorts(7687)
-				.waitingFor(new Neo4jConnectionVerifyingWaitStrategy())
-				.withEnv("NEO4J_AUTH", "none");
-	}
-
-	private static class CassandraConnectionVerifyingWaitStrategy extends HostPortWaitStrategy {
-
-		@Override
-		protected void waitUntilReady() {
-			super.waitUntilReady();
-
-			try {
-				Unreliables.retryUntilTrue((int) this.startupTimeout.getSeconds(),
-						TimeUnit.SECONDS, checkConnection());
-			}
-			catch (TimeoutException ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-
-		private Callable<Boolean> checkConnection() {
-			return () -> {
-				try (Cluster cluster = Cluster.builder().withPort(this.container.getMappedPort(9042))
-						.addContactPoint("localhost")
-						.build()) {
-					cluster.connect();
-					return true;
-				}
-				catch (IllegalArgumentException | NoHostAvailableException ex) {
-					return false;
-				}
-			};
-		}
-
-	}
-
-	private static class Neo4jConnectionVerifyingWaitStrategy extends HostPortWaitStrategy {
+	private static class WaitStrategy extends HostPortWaitStrategy {
 
 		@Override
 		protected void waitUntilReady() {
 			super.waitUntilReady();
 			Configuration configuration = new Configuration.Builder()
-					.uri("bolt://localhost:" + this.container.getMappedPort(7687)).build();
+					.uri("bolt://localhost:" + this.container.getMappedPort(7687))
+					.build();
 			SessionFactory sessionFactory = new SessionFactory(configuration,
 					"org.springframework.boot.test.autoconfigure.data.neo4j");
 			try {
@@ -114,6 +69,7 @@ public abstract class TestContainers {
 				}
 			};
 		}
+
 	}
 
 }

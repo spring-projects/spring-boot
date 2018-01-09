@@ -19,12 +19,10 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
-import org.springframework.boot.testsupport.testcontainers.TestContainers;
+import org.springframework.boot.testsupport.testcontainers.Neo4jContainer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -45,8 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<GenericContainer<?>> neo4j = new DockerTestContainer<>(
-			TestContainers::neo4j);
+	public static Neo4jContainer neo4j = new Neo4jContainer();
 
 	@Autowired
 	private ExampleService service;
@@ -63,7 +60,7 @@ public class DataNeo4jTestWithIncludeFilterIntegrationTests {
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
 			TestPropertyValues
-					.of("spring.data.neo4j.uri=bolt://localhost:" + neo4j.getMappedPort(7687))
+					.of("spring.data.neo4j.uri=bolt://localhost:" + neo4j.getMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

@@ -24,13 +24,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
-import org.springframework.boot.testsupport.testcontainers.TestContainers;
+import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -52,8 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataRedisTestIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<GenericContainer<?>> redis = new DockerTestContainer<>(
-			TestContainers::redis);
+	public static RedisContainer redis = new RedisContainer();
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -93,8 +90,7 @@ public class DataRedisTestIntegrationTests {
 		@Override
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.redis.port=" + redis.getMappedPort(6379))
+			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 

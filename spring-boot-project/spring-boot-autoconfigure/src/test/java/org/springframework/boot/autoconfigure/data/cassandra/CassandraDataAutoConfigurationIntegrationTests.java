@@ -22,14 +22,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.DockerTestContainer;
-import org.springframework.boot.testsupport.testcontainers.TestContainers;
+import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -45,16 +43,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CassandraDataAutoConfigurationIntegrationTests {
 
 	@ClassRule
-	public static DockerTestContainer<GenericContainer<?>> cassandra = new DockerTestContainer<>(
-			TestContainers::cassandra);
+	public static CassandraContainer cassandra = new CassandraContainer();
 
 	private AnnotationConfigApplicationContext context;
 
 	@Before
 	public void setUp() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("spring.data.cassandra.port=" + cassandra.getMappedPort(9042))
+		TestPropertyValues.of("spring.data.cassandra.port=" + cassandra.getMappedPort())
 				.applyTo(this.context.getEnvironment());
 	}
 
@@ -96,7 +92,7 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	private void createTestKeyspaceIfNotExists() {
-		Cluster cluster = Cluster.builder().withPort(cassandra.getMappedPort(9042))
+		Cluster cluster = Cluster.builder().withPort(cassandra.getMappedPort())
 				.addContactPoint("localhost").build();
 		try (Session session = cluster.connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
