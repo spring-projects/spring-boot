@@ -96,8 +96,8 @@ public class CacheMetricsRegistrar {
 				catch (ClassCastException ex) {
 					String msg = ex.getMessage();
 					if (msg == null || msg.startsWith(cache.getClass().getName())) {
-						// Possibly a lambda-defined CacheMeterBinderProvider which we could not resolve
-						// the generic Cache type for
+						// Possibly a lambda-defined CacheMeterBinderProvider which we
+						// could not resolve the generic Cache type for
 						if (logger.isDebugEnabled()) {
 							logger.debug(
 									"Non-matching Cache type for CacheMeterBinderProvider: "

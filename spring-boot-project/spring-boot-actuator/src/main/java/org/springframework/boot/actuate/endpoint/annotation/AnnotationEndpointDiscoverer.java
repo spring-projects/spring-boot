@@ -63,7 +63,8 @@ import org.springframework.util.StringUtils;
 public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		implements EndpointDiscoverer<T> {
 
-	private static final Log logger = LogFactory.getLog(AnnotationEndpointDiscoverer.class);
+	private static final Log logger = LogFactory
+			.getLog(AnnotationEndpointDiscoverer.class);
 
 	private final ApplicationContext applicationContext;
 
@@ -280,7 +281,9 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 				// Possibly a lambda-defined EndpointFilter which we could not resolve the
 				// generic EndpointInfo type for
 				if (logger.isDebugEnabled()) {
-					logger.debug("Non-matching EndpointInfo for EndpointFilter: " + filter, ex);
+					logger.debug(
+							"Non-matching EndpointInfo for EndpointFilter: " + filter,
+							ex);
 				}
 				return false;
 			}

@@ -45,7 +45,8 @@ import org.springframework.util.Assert;
 public class WebServerFactoryCustomizerBeanPostProcessor
 		implements BeanPostProcessor, BeanFactoryAware {
 
-	private static final Log logger = LogFactory.getLog(WebServerFactoryCustomizerBeanPostProcessor.class);
+	private static final Log logger = LogFactory
+			.getLog(WebServerFactoryCustomizerBeanPostProcessor.class);
 
 	private ListableBeanFactory beanFactory;
 
@@ -94,7 +95,8 @@ public class WebServerFactoryCustomizerBeanPostProcessor
 		catch (ClassCastException ex) {
 			String msg = ex.getMessage();
 			if (msg == null || msg.startsWith(webServerFactory.getClass().getName())) {
-				// Possibly a lambda-defined WebServerFactoryCustomizer which we could not resolve the
+				// Possibly a lambda-defined WebServerFactoryCustomizer which we could not
+				// resolve the
 				// generic WebServerFactory type for
 				logLambdaDebug(customizer, ex);
 			}
@@ -107,7 +109,10 @@ public class WebServerFactoryCustomizerBeanPostProcessor
 	private void logLambdaDebug(WebServerFactoryCustomizer<?> customizer,
 			ClassCastException ex) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("Non-matching WebServerFactory type for WebServerFactoryCustomizer: " + customizer, ex);
+			logger.debug(
+					"Non-matching WebServerFactory type for WebServerFactoryCustomizer: "
+							+ customizer,
+					ex);
 		}
 	}
 
