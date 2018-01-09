@@ -340,6 +340,19 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jackson.serialization.*= # Jackson on/off features that affect the way Java objects are serialized.
 	spring.jackson.time-zone= #  Time zone used when formatting dates. For instance, "America/Los_Angeles" or "GMT+10".
 
+	# GSON ({sc-spring-boot-autoconfigure}/gson/GsonProperties.{sc-ext}[GsonProperties])
+	spring.gson.date-format= # The format to use when serializing Date objects.
+	spring.gson.disable-html-escaping= # Whether to disable the escaping of HTML characters such as '<' '>' etc.
+	spring.gson.disable-inner-class-serialization= # Whether to exclude inner classes during serialization.
+	spring.gson.enable-complex-map-key-serialization= # Whether to enabled serialization of complex map keys (i.e. non-primitives).
+	spring.gson.exclude-fields-without-expose-annotation= # Whether to exclude all fields from consideration for serialization or deserialization that do not have the "Expose" annotation.
+	spring.gson.field-naming-policy= # The naming policy that should be applied to an object's field during serialization and deserialization.
+	spring.gson.generate-non-executable-json= # Whether to generate non executable JSON by prefixing the output with some special text.
+	spring.gson.lenient= # Whether to be lenient about parsing JSON that doesn't conform to RFC 4627.
+	spring.gson.long-serialization-policy= # Serialization policy for Long and long types.
+	spring.gson.pretty-printing= # Whether to output serialized JSON that fits in a page for pretty printing.
+	spring.gson.serialize-nulls= # Whether to to serialize null fields.
+
 	# JERSEY ({sc-spring-boot-autoconfigure}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
 	spring.jersey.application-path= # Path that serves as the base URI for the application. If specified, overrides the value of "@ApplicationPath".
 	spring.jersey.filter.order=0 # Jersey filter chain order.
