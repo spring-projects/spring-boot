@@ -16,15 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.SessionCookieConfig;
-
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Servlet.Session;
 import org.springframework.boot.autoconfigure.web.embedded.jetty.JettyCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.undertow.UndertowCustomizer;
@@ -33,9 +25,7 @@ import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerF
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.InitParameterConfiguringServletContextInitializer;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
@@ -89,11 +79,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		if (this.serverProperties.getDisplayName() != null) {
 			factory.setDisplayName(this.serverProperties.getDisplayName());
 		}
-		if (this.serverProperties.getServlet().getSession().getTimeout() != null) {
-			factory.setSessionTimeout(this.serverProperties.getServlet().getSession().getTimeout());
-		}
-		factory.setPersistSession(this.serverProperties.getServlet().getSession().isPersistent());
-		factory.setSessionStoreDir(this.serverProperties.getServlet().getSession().getStoreDir());
+		factory.setSession(this.serverProperties.getServlet().getSession());
 		if (this.serverProperties.getSsl() != null) {
 			factory.setSsl(this.serverProperties.getSsl());
 		}
@@ -109,8 +95,10 @@ public class DefaultServletWebServerFactoryCustomizer
 		factory.setServerHeader(this.serverProperties.getServerHeader());
 		if (factory instanceof TomcatServletWebServerFactory) {
 			TomcatServletWebServerFactory tomcatFactory = (TomcatServletWebServerFactory) factory;
-			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment, tomcatFactory);
-			TomcatServletCustomizer.customizeTomcat(this.serverProperties, this.environment, tomcatFactory);
+			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,
+					tomcatFactory);
+			TomcatServletCustomizer.customizeTomcat(this.serverProperties,
+					this.environment, tomcatFactory);
 		}
 		if (factory instanceof JettyServletWebServerFactory) {
 			JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
@@ -120,71 +108,8 @@ public class DefaultServletWebServerFactoryCustomizer
 			UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
 					(UndertowServletWebServerFactory) factory);
 		}
-		factory.addInitializers(
-				new SessionConfiguringInitializer(this.serverProperties.getServlet().getSession()));
-		factory.addInitializers(new InitParameterConfiguringServletContextInitializer(
-				this.serverProperties.getServlet().getContextParameters()));
-	}
-
-	/**
-	 * {@link ServletContextInitializer} to apply appropriate parts of the {@link Session}
-	 * configuration.
-	 */
-	private static class SessionConfiguringInitializer
-			implements ServletContextInitializer {
-
-		private final Session session;
-
-		SessionConfiguringInitializer(Session session) {
-			this.session = session;
-		}
-
-		@Override
-		public void onStartup(ServletContext servletContext) throws ServletException {
-			if (this.session.getTrackingModes() != null) {
-				servletContext
-						.setSessionTrackingModes(unwrap(this.session.getTrackingModes()));
-			}
-			configureSessionCookie(servletContext.getSessionCookieConfig());
-		}
-
-		private void configureSessionCookie(SessionCookieConfig config) {
-			Session.Cookie cookie = this.session.getCookie();
-			if (cookie.getName() != null) {
-				config.setName(cookie.getName());
-			}
-			if (cookie.getDomain() != null) {
-				config.setDomain(cookie.getDomain());
-			}
-			if (cookie.getPath() != null) {
-				config.setPath(cookie.getPath());
-			}
-			if (cookie.getComment() != null) {
-				config.setComment(cookie.getComment());
-			}
-			if (cookie.getHttpOnly() != null) {
-				config.setHttpOnly(cookie.getHttpOnly());
-			}
-			if (cookie.getSecure() != null) {
-				config.setSecure(cookie.getSecure());
-			}
-			if (cookie.getMaxAge() != null) {
-				config.setMaxAge((int) cookie.getMaxAge().getSeconds());
-			}
-		}
-
-		private Set<javax.servlet.SessionTrackingMode> unwrap(
-				Set<Session.SessionTrackingMode> modes) {
-			if (modes == null) {
-				return null;
-			}
-			Set<javax.servlet.SessionTrackingMode> result = new LinkedHashSet<>();
-			for (Session.SessionTrackingMode mode : modes) {
-				result.add(javax.servlet.SessionTrackingMode.valueOf(mode.name()));
-			}
-			return result;
-		}
-
+		factory.setInitParameters(
+				this.serverProperties.getServlet().getContextParameters());
 	}
 
 	private static class TomcatServletCustomizer {
@@ -213,7 +138,8 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeUseRelativeRedirects(
-				ConfigurableTomcatWebServerFactory factory, boolean useRelativeRedirects) {
+				ConfigurableTomcatWebServerFactory factory,
+				boolean useRelativeRedirects) {
 			factory.addContextCustomizers(
 					(context) -> context.setUseRelativeRedirects(useRelativeRedirects));
 		}

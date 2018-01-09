@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ package org.springframework.boot.web.servlet.server;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.ServletContext;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
@@ -59,23 +60,32 @@ public interface ConfigurableServletWebServerFactory
 	void setDisplayName(String displayName);
 
 	/**
-	 * The session timeout in seconds (default 30 minutes). If {@code null} then sessions
-	 * never expire.
-	 * @param sessionTimeout the session timeout
+	 * Sets the configuration that will be applied to the container's HTTP session
+	 * support.
+	 *
+	 * @param session the session configuration
 	 */
-	void setSessionTimeout(Duration sessionTimeout);
+	void setSession(Session session);
 
-	/**
-	 * Sets if session data should be persisted between restarts.
-	 * @param persistSession {@code true} if session data should be persisted
-	 */
-	void setPersistSession(boolean persistSession);
-
-	/**
-	 * Set the directory used to store serialized session data.
-	 * @param sessionStoreDir the directory or {@code null} to use a default location.
-	 */
-	void setSessionStoreDir(File sessionStoreDir);
+	// /**
+	// * The session timeout in seconds (default 30 minutes). If {@code null} then
+	// sessions
+	// * never expire.
+	// * @param sessionTimeout the session timeout
+	// */
+	// void setSessionTimeout(Duration sessionTimeout);
+	//
+	// /**
+	// * Sets if session data should be persisted between restarts.
+	// * @param persistSession {@code true} if session data should be persisted
+	// */
+	// void setPersistSession(boolean persistSession);
+	//
+	// /**
+	// * Set the directory used to store serialized session data.
+	// * @param sessionStoreDir the directory or {@code null} to use a default location.
+	// */
+	// void setSessionStoreDir(File sessionStoreDir);
 
 	/**
 	 * Set if the DefaultServlet should be registered. Defaults to {@code true} so that
@@ -127,5 +137,13 @@ public interface ConfigurableServletWebServerFactory
 	 * @param localeCharsetMappings the Locale to Charset mappings
 	 */
 	void setLocaleCharsetMappings(Map<Locale, Charset> localeCharsetMappings);
+
+	/**
+	 * Sets the init parameters that are applied to the container's
+	 * {@link ServletContext}.
+	 *
+	 * @param initParameters the init parameters
+	 */
+	void setInitParameters(Map<String, String> initParameters);
 
 }

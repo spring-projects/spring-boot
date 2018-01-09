@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -37,6 +36,7 @@ import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Jsp;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -319,195 +319,7 @@ public class ServerProperties {
 			return result;
 		}
 
-		/**
-		 * Session properties.
-		 */
-		public static class Session {
-
-			/**
-			 * Session timeout. If a duration suffix is not specified, seconds will be used.
-			 */
-			@DefaultDurationUnit(ChronoUnit.SECONDS)
-			private Duration timeout;
-
-			/**
-			 * Session tracking modes (one or more of the following: "cookie", "url", "ssl").
-			 */
-			private Set<SessionTrackingMode> trackingModes;
-
-			/**
-			 * Whether to persist session data between restarts.
-			 */
-			private boolean persistent;
-
-			/**
-			 * Directory used to store session data.
-			 */
-			private File storeDir;
-
-			private final Cookie cookie = new Cookie();
-
-			public Cookie getCookie() {
-				return this.cookie;
-			}
-
-			public Duration getTimeout() {
-				return this.timeout;
-			}
-
-			public void setTimeout(Duration timeout) {
-				this.timeout = timeout;
-			}
-
-			public Set<SessionTrackingMode> getTrackingModes() {
-				return this.trackingModes;
-			}
-
-			public void setTrackingModes(Set<SessionTrackingMode> trackingModes) {
-				this.trackingModes = trackingModes;
-			}
-
-			public boolean isPersistent() {
-				return this.persistent;
-			}
-
-			public void setPersistent(boolean persistent) {
-				this.persistent = persistent;
-			}
-
-			public File getStoreDir() {
-				return this.storeDir;
-			}
-
-			public void setStoreDir(File storeDir) {
-				this.storeDir = storeDir;
-			}
-
-			/**
-			 * Cookie properties.
-			 */
-			public static class Cookie {
-
-				/**
-				 * Session cookie name.
-				 */
-				private String name;
-
-				/**
-				 * Domain for the session cookie.
-				 */
-				private String domain;
-
-				/**
-				 * Path of the session cookie.
-				 */
-				private String path;
-
-				/**
-				 * Comment for the session cookie.
-				 */
-				private String comment;
-
-				/**
-				 * "HttpOnly" flag for the session cookie.
-				 */
-				private Boolean httpOnly;
-
-				/**
-				 * "Secure" flag for the session cookie.
-				 */
-				private Boolean secure;
-
-				/**
-				 * Maximum age of the session cookie.
-				 */
-				@DefaultDurationUnit(ChronoUnit.SECONDS)
-				private Duration maxAge;
-
-				public String getName() {
-					return this.name;
-				}
-
-				public void setName(String name) {
-					this.name = name;
-				}
-
-				public String getDomain() {
-					return this.domain;
-				}
-
-				public void setDomain(String domain) {
-					this.domain = domain;
-				}
-
-				public String getPath() {
-					return this.path;
-				}
-
-				public void setPath(String path) {
-					this.path = path;
-				}
-
-				public String getComment() {
-					return this.comment;
-				}
-
-				public void setComment(String comment) {
-					this.comment = comment;
-				}
-
-				public Boolean getHttpOnly() {
-					return this.httpOnly;
-				}
-
-				public void setHttpOnly(Boolean httpOnly) {
-					this.httpOnly = httpOnly;
-				}
-
-				public Boolean getSecure() {
-					return this.secure;
-				}
-
-				public void setSecure(Boolean secure) {
-					this.secure = secure;
-				}
-
-				public Duration getMaxAge() {
-					return this.maxAge;
-				}
-
-				public void setMaxAge(Duration maxAge) {
-					this.maxAge = maxAge;
-				}
-
-			}
-
-			/**
-			 * Available session tracking modes (mirrors
-			 * {@link javax.servlet.SessionTrackingMode}.
-			 */
-			public enum SessionTrackingMode {
-
-				/**
-				 * Send a cookie in response to the client's first request.
-				 */
-				COOKIE,
-
-				/**
-				 * Rewrite the URL to append a session ID.
-				 */
-				URL,
-
-				/**
-				 * Use SSL build-in mechanism to track the session.
-				 */
-				SSL
-
-			}
-
-		}
 	}
-
 
 	/**
 	 * Tomcat properties.

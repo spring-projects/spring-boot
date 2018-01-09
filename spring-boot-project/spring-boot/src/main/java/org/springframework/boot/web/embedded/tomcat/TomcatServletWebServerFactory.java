@@ -362,7 +362,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
-		if (isPersistSession()) {
+		if (getSession().isPersistent()) {
 			Manager manager = context.getManager();
 			if (manager == null) {
 				manager = new StandardManager();
@@ -385,7 +385,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private long getSessionTimeoutInMinutes() {
-		Duration sessionTimeout = getSessionTimeout();
+		Duration sessionTimeout = getSession().getTimeout();
 		if (sessionTimeout == null || sessionTimeout.isNegative()
 				|| sessionTimeout.isZero()) {
 			return 0;
@@ -516,8 +516,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	/**
-	 * Set {@link LifecycleListener}s that should be applied to the Tomcat {@link Context}.
-	 * Calling this method will replace any existing listeners.
+	 * Set {@link LifecycleListener}s that should be applied to the Tomcat
+	 * {@link Context}. Calling this method will replace any existing listeners.
 	 * @param contextLifecycleListeners the listeners to set
 	 */
 	public void setContextLifecycleListeners(

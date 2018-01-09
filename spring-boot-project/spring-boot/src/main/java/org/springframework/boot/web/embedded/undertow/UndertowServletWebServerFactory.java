@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -239,8 +240,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider())
 				.customize(builder);
 		if (getHttp2() != null) {
-			builder.setServerOption(UndertowOptions.ENABLE_HTTP2,
-					getHttp2().isEnabled());
+			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().isEnabled());
 		}
 	}
 
@@ -274,7 +274,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		if (isAccessLogEnabled()) {
 			configureAccessLog(deployment);
 		}
-		if (isPersistSession()) {
+		if (getSession().isPersistent()) {
 			File dir = getValidSessionStoreDir();
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
 		}
@@ -282,9 +282,10 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
-		int sessionTimeout = (getSessionTimeout() == null || getSessionTimeout().isZero()
-				|| getSessionTimeout().isNegative() ? -1
-						: (int) getSessionTimeout().getSeconds());
+		Duration timeoutDuration = getSession().getTimeout();
+		int sessionTimeout = (timeoutDuration == null || timeoutDuration.isZero()
+				|| timeoutDuration.isNegative() ? -1
+						: (int) timeoutDuration.getSeconds());
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
 	}

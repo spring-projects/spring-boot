@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,10 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
@@ -57,12 +51,12 @@ import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.Session;
+import org.springframework.boot.web.servlet.server.Session.Cookie;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -224,21 +218,19 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(
 				ConfigurableServletWebServerFactory.class);
-		ServletContext servletContext = mock(ServletContext.class);
-		SessionCookieConfig sessionCookieConfig = mock(SessionCookieConfig.class);
-		given(servletContext.getSessionCookieConfig()).willReturn(sessionCookieConfig);
 		this.customizer.customize(factory);
-		triggerInitializers(factory, servletContext);
-		verify(factory).setSessionTimeout(Duration.ofSeconds(123));
-		verify(servletContext).setSessionTrackingModes(
-				EnumSet.of(SessionTrackingMode.COOKIE, SessionTrackingMode.URL));
-		verify(sessionCookieConfig).setName("testname");
-		verify(sessionCookieConfig).setDomain("testdomain");
-		verify(sessionCookieConfig).setPath("/testpath");
-		verify(sessionCookieConfig).setComment("testcomment");
-		verify(sessionCookieConfig).setHttpOnly(true);
-		verify(sessionCookieConfig).setSecure(true);
-		verify(sessionCookieConfig).setMaxAge(60);
+		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
+		verify(factory).setSession(sessionCaptor.capture());
+		assertThat(sessionCaptor.getValue().getTimeout())
+				.isEqualTo(Duration.ofSeconds(123));
+		Cookie cookie = sessionCaptor.getValue().getCookie();
+		assertThat(cookie.getName()).isEqualTo("testname");
+		assertThat(cookie.getDomain()).isEqualTo("testdomain");
+		assertThat(cookie.getPath()).isEqualTo("/testpath");
+		assertThat(cookie.getComment()).isEqualTo("testcomment");
+		assertThat(cookie.getHttpOnly()).isTrue();
+		assertThat(cookie.getMaxAge()).isEqualTo(Duration.ofSeconds(60));
+
 	}
 
 	@Test
@@ -540,7 +532,10 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		JettyServletWebServerFactory factory = spy(new JettyServletWebServerFactory());
 		this.customizer.customize(factory);
-		verify(factory).setSessionStoreDir(new File("myfolder"));
+		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
+		verify(factory).setSession(sessionCaptor.capture());
+		assertThat(sessionCaptor.getValue().getStoreDir())
+				.isEqualTo(new File("myfolder"));
 	}
 
 	@Test
@@ -635,21 +630,6 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		}
 		finally {
 			server.stop();
-		}
-	}
-
-	private void triggerInitializers(ConfigurableServletWebServerFactory factory,
-			ServletContext servletContext) throws ServletException {
-		verify(factory, atLeastOnce()).addInitializers(this.initializersCaptor.capture());
-		for (Object initializers : this.initializersCaptor.getAllValues()) {
-			if (initializers instanceof ServletContextInitializer) {
-				((ServletContextInitializer) initializers).onStartup(servletContext);
-			}
-			else {
-				for (ServletContextInitializer initializer : (ServletContextInitializer[]) initializers) {
-					initializer.onStartup(servletContext);
-				}
-			}
 		}
 	}
 

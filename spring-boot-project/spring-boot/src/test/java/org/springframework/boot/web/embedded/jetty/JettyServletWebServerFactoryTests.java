@@ -99,14 +99,14 @@ public class JettyServletWebServerFactoryTests
 	@Test
 	public void sessionTimeout() {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(Duration.ofSeconds(10));
+		factory.getSession().setTimeout(Duration.ofSeconds(10));
 		assertTimeout(factory, 10);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(Duration.ofMinutes(1));
+		factory.getSession().setTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 60);
 	}
 

@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -231,10 +232,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private void configureSession(WebAppContext context) {
 		SessionHandler handler = context.getSessionHandler();
+		Duration sessionTimeout = getSession().getTimeout();
 		handler.setMaxInactiveInterval(
-				(getSessionTimeout() == null || getSessionTimeout().isNegative()) ? -1
-						: (int) getSessionTimeout().getSeconds());
-		if (isPersistSession()) {
+				(sessionTimeout == null || sessionTimeout.isNegative()) ? -1
+						: (int) sessionTimeout.getSeconds());
+		if (getSession().isPersistent()) {
 			DefaultSessionCache cache = new DefaultSessionCache(handler);
 			FileSessionDataStore store = new FileSessionDataStore();
 			store.setStoreDir(getValidSessionStoreDir());
