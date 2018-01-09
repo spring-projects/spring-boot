@@ -30,9 +30,10 @@ import java.time.Duration;
 public class MessageSourceProperties {
 
 	/**
-	 * Comma-separated list of basenames, each following the ResourceBundle convention.
-	 * Essentially a fully-qualified classpath location. If it doesn't contain a package
-	 * qualifier (such as "org.mypackage"), it will be resolved from the classpath root.
+	 * Comma-separated list of basenames (essentially a fully-qualified classpath
+	 * location), each following the ResourceBundle convention with relaxed support for
+	 * slash based locations. If it doesn't contain a package qualifier (such as
+	 * "org.mypackage"), it will be resolved from the classpath root.
 	 */
 	private String basename = "messages";
 

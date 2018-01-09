@@ -55,11 +55,24 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMessageSourceCreated() {
+	public void propertiesBundleWithSlashIsDetected() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
-				.run((context) -> assertThat(
-						context.getMessage("foo", null, "Foo message", Locale.UK))
-								.isEqualTo("bar"));
+				.run((context) -> {
+					assertThat(context).hasSingleBean(MessageSource.class); assertThat(
+							context.getMessage("foo", null, "Foo message", Locale.UK))
+							.isEqualTo("bar");
+				});
+	}
+
+	@Test
+	public void propertiesBundleWithDotIsDetected() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test.messages")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(MessageSource.class);
+					assertThat(
+							context.getMessage("foo", null, "Foo message", Locale.UK))
+							.isEqualTo("bar");
+				});
 	}
 
 	@Test
