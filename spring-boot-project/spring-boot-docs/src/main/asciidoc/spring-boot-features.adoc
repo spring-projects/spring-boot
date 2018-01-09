@@ -2390,7 +2390,10 @@ actual handling of the requests, as shown in the following example:
 ----
 
 WebFlux is part of the Spring Framework. and detailed information is available in its
-{spring-reference}web.html#web-reactive[reference documentation].
+{spring-reference}web-reactive.html#webflux-fn[reference documentation].
+
+TIP: You can define as many `RouterFunction` beans as you like to modularize the
+definition of the router. Beans can be ordered if you need to apply a precedence.
 
 To get started, add the `spring-boot-starter-webflux` module to your application.
 
