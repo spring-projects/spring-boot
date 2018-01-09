@@ -55,7 +55,7 @@ public final class EndpointRequest {
 	 * Returns a matcher that includes all {@link Endpoint actuator endpoints}. The
 	 * {@link EndpointRequestMatcher#excluding(Class...) excluding} method can be used to
 	 * further remove specific endpoints if required. For example: <pre class="code">
-	 * EndpointRequestMatcher.toAnyEndpoint().excluding(ShutdownEndpoint.class)
+	 * EndpointRequest.toAnyEndpoint().excluding(ShutdownEndpoint.class)
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
 	 */
@@ -66,7 +66,7 @@ public final class EndpointRequest {
 	/**
 	 * Returns a matcher that includes the specified {@link Endpoint actuator endpoints}.
 	 * For example: <pre class="code">
-	 * EndpointRequestMatcher.to(ShutdownEndpoint.class, HealthEndpoint.class)
+	 * EndpointRequest.to(ShutdownEndpoint.class, HealthEndpoint.class)
 	 * </pre>
 	 * @param endpoints the endpoints to include
 	 * @return the configured {@link RequestMatcher}
@@ -78,7 +78,7 @@ public final class EndpointRequest {
 	/**
 	 * Returns a matcher that includes the specified {@link Endpoint actuator endpoints}.
 	 * For example: <pre class="code">
-	 * EndpointRequestMatcher.to("shutdown", "health")
+	 * EndpointRequest.to("shutdown", "health")
 	 * </pre>
 	 * @param endpoints the endpoints to include
 	 * @return the configured {@link RequestMatcher}
