@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.gson;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.LongSerializationPolicy;
-import com.google.gson.annotations.Expose;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -33,109 +32,103 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GsonProperties {
 
 	/**
-	 * Makes the output JSON non-executable in Javascript by prefixing the generated JSON
-	 * with some special text.
+	 * Whether to generate non executable JSON by prefixing the output with some special
+	 * text.
 	 */
-	private boolean generateNonExecutableJson;
+	private Boolean generateNonExecutableJson;
 
 	/**
-	 * Configures {@link Gson} to exclude all fields from consideration for serialization
-	 * or deserialization that do not have the {@link Expose} annotation.
+	 * Whether to exclude all fields from consideration for serialization or
+	 * deserialization that do not have the "Expose" annotation.
 	 */
-	private boolean excludeFieldsWithoutExposeAnnotation;
+	private Boolean excludeFieldsWithoutExposeAnnotation;
 
 	/**
-	 * Configure {@link Gson} to serialize null fields.
+	 * Whether to to serialize null fields.
 	 */
-	private boolean serializeNulls;
+	private Boolean serializeNulls;
 
 	/**
-	 * Enabling this feature will only change the serialized form if the map key is a
-	 * complex type (i.e. non-primitive) in its serialized JSON form
+	 * Whether to enabled serialization of complex map keys (i.e. non-primitives).
 	 */
-	private boolean enableComplexMapKeySerialization;
+	private Boolean enableComplexMapKeySerialization;
 
 	/**
-	 * Configures {@link Gson} to exclude inner classes during serialization.
+	 * Whether to exclude inner classes during serialization.
 	 */
-	private boolean disableInnerClassSerialization;
+	private Boolean disableInnerClassSerialization;
 
 	/**
-	 * Configures {@link Gson} to apply a specific serialization policy for Long and long
-	 * objects.
+	 * Serialization policy for Long and long types.
 	 */
 	private LongSerializationPolicy longSerializationPolicy;
 
 	/**
-	 * Configures {@link Gson} to apply a specific naming policy to an object's field
-	 * during serialization and deserialization.
+	 * The naming policy that should be applied to an object's field during serialization
+	 * and deserialization.
 	 */
 	private FieldNamingPolicy fieldNamingPolicy;
 
 	/**
-	 * Configures {@link Gson} to output Json that fits in a page for pretty printing.
-	 * This option only affects Json serialization.
+	 * Whether to output serialized JSON that fits in a page for pretty printing.
 	 */
-	private boolean prettyPrinting;
+	private Boolean prettyPrinting;
 
 	/**
-	 * By default, {@link Gson} is strict and only accepts JSON as specified by RFC 4627.
-	 * This option makes the parser liberal in what it accepts.
+	 * Whether to be lenient about parsing JSON that doesn't conform to RFC 4627.
 	 */
-	private boolean lenient;
+	private Boolean lenient;
 
 	/**
-	 * By default, {@link Gson} escapes HTML characters such as < > etc. Use this option
-	 * to configure Gson to pass-through HTML characters as is.
+	 * Whether to disable the escaping of HTML characters such as '<' '>' etc.
 	 */
-	private boolean disableHtmlEscaping;
+	private Boolean disableHtmlEscaping;
 
 	/**
-	 * Configures {@link Gson} to serialize Date objects according to the pattern
-	 * provided.
+	 * The format to use when serializing Date objects.
 	 */
 	private String dateFormat;
 
-	public boolean isGenerateNonExecutableJson() {
+	public Boolean getGenerateNonExecutableJson() {
 		return this.generateNonExecutableJson;
 	}
 
-	public void setGenerateNonExecutableJson(boolean generateNonExecutableJson) {
+	public void setGenerateNonExecutableJson(Boolean generateNonExecutableJson) {
 		this.generateNonExecutableJson = generateNonExecutableJson;
 	}
 
-	public boolean isExcludeFieldsWithoutExposeAnnotation() {
+	public Boolean getExcludeFieldsWithoutExposeAnnotation() {
 		return this.excludeFieldsWithoutExposeAnnotation;
 	}
 
 	public void setExcludeFieldsWithoutExposeAnnotation(
-			boolean excludeFieldsWithoutExposeAnnotation) {
+			Boolean excludeFieldsWithoutExposeAnnotation) {
 		this.excludeFieldsWithoutExposeAnnotation = excludeFieldsWithoutExposeAnnotation;
 	}
 
-	public boolean isSerializeNulls() {
+	public Boolean getSerializeNulls() {
 		return this.serializeNulls;
 	}
 
-	public void setSerializeNulls(boolean serializeNulls) {
+	public void setSerializeNulls(Boolean serializeNulls) {
 		this.serializeNulls = serializeNulls;
 	}
 
-	public boolean isEnableComplexMapKeySerialization() {
+	public Boolean getEnableComplexMapKeySerialization() {
 		return this.enableComplexMapKeySerialization;
 	}
 
 	public void setEnableComplexMapKeySerialization(
-			boolean enableComplexMapKeySerialization) {
+			Boolean enableComplexMapKeySerialization) {
 		this.enableComplexMapKeySerialization = enableComplexMapKeySerialization;
 	}
 
-	public boolean isDisableInnerClassSerialization() {
+	public Boolean getDisableInnerClassSerialization() {
 		return this.disableInnerClassSerialization;
 	}
 
 	public void setDisableInnerClassSerialization(
-			boolean disableInnerClassSerialization) {
+			Boolean disableInnerClassSerialization) {
 		this.disableInnerClassSerialization = disableInnerClassSerialization;
 	}
 
@@ -156,27 +149,27 @@ public class GsonProperties {
 		this.fieldNamingPolicy = fieldNamingPolicy;
 	}
 
-	public boolean isPrettyPrinting() {
+	public Boolean getPrettyPrinting() {
 		return this.prettyPrinting;
 	}
 
-	public void setPrettyPrinting(boolean prettyPrinting) {
+	public void setPrettyPrinting(Boolean prettyPrinting) {
 		this.prettyPrinting = prettyPrinting;
 	}
 
-	public boolean isLenient() {
+	public Boolean getLenient() {
 		return this.lenient;
 	}
 
-	public void setLenient(boolean lenient) {
+	public void setLenient(Boolean lenient) {
 		this.lenient = lenient;
 	}
 
-	public boolean isDisableHtmlEscaping() {
+	public Boolean getDisableHtmlEscaping() {
 		return this.disableHtmlEscaping;
 	}
 
-	public void setDisableHtmlEscaping(boolean disableHtmlEscaping) {
+	public void setDisableHtmlEscaping(Boolean disableHtmlEscaping) {
 		this.disableHtmlEscaping = disableHtmlEscaping;
 	}
 
@@ -187,4 +180,5 @@ public class GsonProperties {
 	public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
 	}
+
 }

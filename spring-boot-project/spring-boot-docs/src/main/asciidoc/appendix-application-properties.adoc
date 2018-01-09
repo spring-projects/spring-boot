@@ -340,18 +340,18 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jackson.serialization.*= # Jackson on/off features that affect the way Java objects are serialized.
 	spring.jackson.time-zone= #  Time zone used when formatting dates. For instance, "America/Los_Angeles" or "GMT+10".
 
-    # GSON ({sc-spring-boot-autoconfigure}/gson/GsonProperties.{sc-ext}[GsonProperties])
-    spring.gson.date-format= # Configures Gson to serialize Date objects according to the pattern provided.
-    spring.gson.disable-html-escaping=false # By default, Gson escapes HTML characters such as < > etc. Use this option to configure Gson to pass-through HTML characters as is.
-    spring.gson.disable-inner-class-serialization=false # Configures Gson to exclude inner classes during serialization.
-    spring.gson.enable-complex-map-key-serialization=false # Enabling this feature will only change the serialized form if the map key is a complex type (i.e. non-primitive) in its serialized JSON form
-    spring.gson.exclude-fields-without-expose-annotation=false # Configures Gson to exclude all fields from consideration for serialization or deserialization that do not have the Expose  annotation.
-    spring.gson.field-naming-policy= # Configures Gson to apply a specific naming policy to an object's field during serialization and deserialization.
-    spring.gson.generate-non-executable-json=false # Makes the output JSON non-executable in Javascript by prefixing the generated JSON with some special text.
-    spring.gson.lenient=false # By default, Gson is strict and only accepts JSON as specified by RFC 4627. This option makes the parser liberal in what it accepts.
-    spring.gson.long-serialization-policy= # Configures Gson to apply a specific serialization policy for Long and long objects.
-    spring.gson.pretty-printing=false # Configures Gson to output Json that fits in a page for pretty printing. This option only affects Json serialization.
-    spring.gson.serialize-nulls=false # Configure Gson to serialize null fields.
+	# GSON ({sc-spring-boot-autoconfigure}/gson/GsonProperties.{sc-ext}[GsonProperties])
+	spring.gson.date-format= # The format to use when serializing Date objects.
+	spring.gson.disable-html-escaping= # Whether to disable the escaping of HTML characters such as '<' '>' etc.
+	spring.gson.disable-inner-class-serialization= # Whether to exclude inner classes during serialization.
+	spring.gson.enable-complex-map-key-serialization= # Whether to enabled serialization of complex map keys (i.e. non-primitives).
+	spring.gson.exclude-fields-without-expose-annotation= # Whether to exclude all fields from consideration for serialization or deserialization that do not have the "Expose" annotation.
+	spring.gson.field-naming-policy= # The naming policy that should be applied to an object's field during serialization and deserialization.
+	spring.gson.generate-non-executable-json= # Whether to generate non executable JSON by prefixing the output with some special text.
+	spring.gson.lenient= # Whether to be lenient about parsing JSON that doesn't conform to RFC 4627.
+	spring.gson.long-serialization-policy= # Serialization policy for Long and long types.
+	spring.gson.pretty-printing= # Whether to output serialized JSON that fits in a page for pretty printing.
+	spring.gson.serialize-nulls= # Whether to to serialize null fields.
 
 	# JERSEY ({sc-spring-boot-autoconfigure}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
 	spring.jersey.application-path= # Path that serves as the base URI for the application. If specified, overrides the value of "@ApplicationPath".
