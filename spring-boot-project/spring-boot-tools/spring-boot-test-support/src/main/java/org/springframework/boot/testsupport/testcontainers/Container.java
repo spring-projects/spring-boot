@@ -52,7 +52,9 @@ class Container implements TestRule {
 		this.containerFactory = () -> {
 			T container = (T) new GenericContainer<>(dockerImageName)
 					.withExposedPorts(port);
-			customizer.accept(container);
+			if (customizer != null) {
+				customizer.accept(container);
+			}
 			return container;
 		};
 	}
