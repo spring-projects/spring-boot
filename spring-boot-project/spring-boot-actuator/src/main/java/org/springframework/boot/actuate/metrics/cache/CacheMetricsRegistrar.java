@@ -39,6 +39,8 @@ import org.springframework.core.ResolvableType;
  */
 public class CacheMetricsRegistrar {
 
+	private static final Log logger = LogFactory.getLog(CacheMetricsRegistrar.class);
+
 	private final MeterRegistry registry;
 
 	private final String metricName;
@@ -94,12 +96,11 @@ public class CacheMetricsRegistrar {
 				catch (ClassCastException ex) {
 					String msg = ex.getMessage();
 					if (msg == null || msg.startsWith(cache.getClass().getName())) {
-						// Possibly a lambda-defined listener which we could not resolve
-						// the generic event type for
-						Log logger = LogFactory.getLog(getClass());
+						// Possibly a lambda-defined CacheMeterBinderProvider which we could not resolve
+						// the generic Cache type for
 						if (logger.isDebugEnabled()) {
 							logger.debug(
-									"Non-matching event type for CacheMeterBinderProvider: "
+									"Non-matching Cache type for CacheMeterBinderProvider: "
 											+ binderProvider,
 									ex);
 						}
