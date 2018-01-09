@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ import org.springframework.util.StringUtils;
 public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		implements EndpointDiscoverer<T> {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory.getLog(AnnotationEndpointDiscoverer.class);
 
 	private final ApplicationContext applicationContext;
 
@@ -277,10 +277,10 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		catch (ClassCastException ex) {
 			String msg = ex.getMessage();
 			if (msg == null || msg.startsWith(endpointInfo.getClass().getName())) {
-				// Possibly a lambda-defined listener which we could not resolve the
-				// generic event type for
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug("Non-matching info type for filter: " + filter, ex);
+				// Possibly a lambda-defined EndpointFilter which we could not resolve the
+				// generic EndpointInfo type for
+				if (logger.isDebugEnabled()) {
+					logger.debug("Non-matching EndpointInfo for EndpointFilter: " + filter, ex);
 				}
 				return false;
 			}

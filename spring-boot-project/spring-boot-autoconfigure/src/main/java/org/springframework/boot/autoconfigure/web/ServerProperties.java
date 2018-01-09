@@ -98,7 +98,7 @@ public class ServerProperties {
 	 */
 	private Duration connectionTimeout;
 
-	private Session session = new Session();
+	private final Session session = new Session();
 
 	@NestedConfigurationProperty
 	private Ssl ssl;
@@ -109,7 +109,7 @@ public class ServerProperties {
 	@NestedConfigurationProperty
 	private final Http2 http2 = new Http2();
 
-	private Servlet servlet = new Servlet();
+	private final Servlet servlet = new Servlet();
 
 	private final Tomcat tomcat = new Tomcat();
 
@@ -181,10 +181,6 @@ public class ServerProperties {
 		return this.session;
 	}
 
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
 	public Ssl getSsl() {
 		return this.ssl;
 	}
@@ -203,10 +199,6 @@ public class ServerProperties {
 
 	public Servlet getServlet() {
 		return this.servlet;
-	}
-
-	public void setServlet(Servlet servlet) {
-		this.servlet = servlet;
 	}
 
 	public Tomcat getTomcat() {
@@ -242,7 +234,7 @@ public class ServerProperties {
 		private String path = "/";
 
 		@NestedConfigurationProperty
-		private Jsp jsp = new Jsp();
+		private final Jsp jsp = new Jsp();
 
 		public String getContextPath() {
 			return this.contextPath;
@@ -274,10 +266,6 @@ public class ServerProperties {
 
 		public Jsp getJsp() {
 			return this.jsp;
-		}
-
-		public void setJsp(Jsp jsp) {
-			this.jsp = jsp;
 		}
 
 		public String getServletMapping() {
@@ -359,7 +347,7 @@ public class ServerProperties {
 		 */
 		private File storeDir;
 
-		private Cookie cookie = new Cookie();
+		private final Cookie cookie = new Cookie();
 
 		public Cookie getCookie() {
 			return this.cookie;

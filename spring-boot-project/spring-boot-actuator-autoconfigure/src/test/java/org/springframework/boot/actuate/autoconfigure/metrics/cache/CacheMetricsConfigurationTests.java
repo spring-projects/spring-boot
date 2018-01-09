@@ -39,13 +39,12 @@ public class CacheMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(RegistryConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, CacheAutoConfiguration.class))
 			.withPropertyValues("management.metrics.use-global-registry=false");
 
 	@Test
 	public void autoConfiguredCacheManagerIsInstrumented() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class))
 				.withPropertyValues("spring.cache.type=caffeine",
 						"spring.cache.cache-names=cache1,cache2")
 				.run((context) -> {
@@ -60,7 +59,6 @@ public class CacheMetricsConfigurationTests {
 	@Test
 	public void autoConfiguredCacheManagerWithCustomMetricName() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class))
 				.withPropertyValues(
 						"management.metrics.cache.cache-metric-name=custom.name",
 						"spring.cache.type=caffeine", "spring.cache.cache-names=cache1")
@@ -76,7 +74,6 @@ public class CacheMetricsConfigurationTests {
 	@Test
 	public void autoConfiguredNonSupportedCacheManagerIsIgnored() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class))
 				.withPropertyValues("spring.cache.type=simple",
 						"spring.cache.cache-names=cache1,cache2")
 				.run((context) -> {
@@ -91,7 +88,6 @@ public class CacheMetricsConfigurationTests {
 	@Test
 	public void cacheInstrumentationCanBeDisabled() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class))
 				.withPropertyValues("management.metrics.cache.instrument-cache=false",
 						"spring.cache.type=caffeine", "spring.cache.cache-names=cache1")
 				.run((context) -> {
