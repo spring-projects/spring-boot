@@ -35,12 +35,15 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation;
 import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation;
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring REST Docs.
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Roman Zaynetdinov
  * @since 1.4.0
  */
 @Configuration
@@ -104,6 +107,35 @@ public class RestDocsAutoConfiguration {
 		public RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(
 				RequestSpecification configurer) {
 			return new RestDocsRestAssuredBuilderCustomizer(configurer);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(WebTestClientRestDocumentation.class)
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	static class RestDocsWebTestClientAutoConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(WebTestClientRestDocumentationConfigurer.class)
+		public WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
+				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizerProvider,
+				RestDocumentationContextProvider contextProvider) {
+			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
+					.documentationConfiguration(contextProvider);
+			RestDocsWebTestClientConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
+					.getIfAvailable();
+			if (configurationCustomizer != null) {
+				configurationCustomizer.customize(configurer);
+			}
+			return configurer;
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.test.restdocs")
+		public RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(
+				WebTestClientRestDocumentationConfigurer configurer) {
+			return new RestDocsWebTestClientBuilderCustomizer(configurer);
 		}
 
 	}
