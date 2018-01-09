@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security;
+package org.springframework.boot.security.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,7 +53,7 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 	}
 
 	@Override
-	public boolean matches(HttpServletRequest request) {
+	public final boolean matches(HttpServletRequest request) {
 		return matches(request, getContext(request));
 	}
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.security;
+package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,10 +28,9 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.security.ApplicationContextRequestMatcher;
+import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -170,16 +169,6 @@ public final class EndpointRequest {
 		private List<RequestMatcher> getDelegateMatchers(Set<String> paths) {
 			return paths.stream().map((path) -> new AntPathRequestMatcher(path + "/**"))
 					.collect(Collectors.toList());
-		}
-
-		@Override
-		public boolean matches(HttpServletRequest request) {
-			try {
-				return super.matches(request);
-			}
-			catch (BeanCreationException ex) {
-				return false;
-			}
 		}
 
 		@Override

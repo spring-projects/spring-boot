@@ -16,7 +16,7 @@
 
 package sample.actuator.customsecurity;
 
-import org.springframework.boot.actuate.autoconfigure.security.EndpointRequest;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.security.StaticResourceRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

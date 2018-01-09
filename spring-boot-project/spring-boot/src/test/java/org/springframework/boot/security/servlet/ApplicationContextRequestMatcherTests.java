@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.security;
+package org.springframework.boot.security.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 

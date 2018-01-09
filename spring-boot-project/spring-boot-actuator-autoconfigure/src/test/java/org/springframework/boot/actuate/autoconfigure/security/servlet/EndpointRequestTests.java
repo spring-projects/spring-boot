@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.security;
+package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import java.util.Arrays;
 import java.util.List;

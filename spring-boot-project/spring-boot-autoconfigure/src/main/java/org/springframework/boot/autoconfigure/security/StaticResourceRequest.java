@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.security.ApplicationContextRequestMatcher;
+import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
