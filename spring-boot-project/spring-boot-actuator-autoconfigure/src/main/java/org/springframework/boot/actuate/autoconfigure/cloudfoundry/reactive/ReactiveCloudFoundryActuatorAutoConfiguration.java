@@ -22,12 +22,19 @@ import java.util.Collections;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -47,13 +54,14 @@ import org.springframework.web.server.WebFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to expose actuator endpoints for
- * cloud foundry to use in a reactive environment.
+ * Cloud Foundry to use in a reactive environment.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 @Configuration
 @ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
+@AutoConfigureAfter(HealthEndpointAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 public class ReactiveCloudFoundryActuatorAutoConfiguration {
@@ -62,6 +70,17 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 
 	ReactiveCloudFoundryActuatorAutoConfiguration(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
+	@ConditionalOnBean({ HealthEndpoint.class,
+			ReactiveHealthEndpointWebExtension.class })
+	public CloudFoundryReactiveHealthEndpointWebExtension cloudFoundryReactiveHealthEndpointWebExtension(
+			ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension) {
+		return new CloudFoundryReactiveHealthEndpointWebExtension(
+				reactiveHealthEndpointWebExtension);
 	}
 
 	@Bean

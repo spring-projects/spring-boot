@@ -6,7 +6,6 @@ org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfigurat
 org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.CloudFoundryActuatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.ReactiveCloudFoundryActuatorAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryHealthWebEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationPropertiesReportEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration,\

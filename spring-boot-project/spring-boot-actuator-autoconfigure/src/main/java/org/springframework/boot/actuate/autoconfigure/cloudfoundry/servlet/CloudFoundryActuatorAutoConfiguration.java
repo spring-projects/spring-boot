@@ -19,15 +19,20 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 import java.util.Arrays;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -48,14 +53,14 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to expose actuator endpoints for
- * cloud foundry to use.
+ * Cloud Foundry to use.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 @Configuration
 @ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter(ServletManagementContextAutoConfiguration.class)
+@AutoConfigureAfter({ ServletManagementContextAutoConfiguration.class, HealthEndpointAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @ConditionalOnBean(DispatcherServlet.class)
@@ -66,6 +71,15 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	CloudFoundryActuatorAutoConfiguration(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
+	@ConditionalOnBean({ HealthEndpoint.class, HealthEndpointWebExtension.class })
+	public CloudFoundryHealthEndpointWebExtension cloudFoundryHealthEndpointWebExtension(
+			HealthEndpointWebExtension healthEndpointWebExtension) {
+		return new CloudFoundryHealthEndpointWebExtension(healthEndpointWebExtension);
 	}
 
 	@Bean
