@@ -21,10 +21,10 @@ import java.util.Collections;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebEndpointDiscoverer;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -84,27 +84,27 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 
 	@Bean
 	public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebFluxEndpointHandlerMapping(
-			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
+			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			WebClient.Builder webClientBuilder) {
-		CloudFoundryWebAnnotationEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebAnnotationEndpointDiscoverer(
+		CloudFoundryWebEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebEndpointDiscoverer(
 				this.applicationContext, parameterMapper, endpointMediaTypes,
-				EndpointPathResolver.useEndpointId(), null, null,
-				CloudFoundryReactiveHealthEndpointWebExtension.class);
-		ReactiveCloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
+				EndpointPathResolver.useEndpointId(), Collections.emptyList(),
+				Collections.emptyList());
+		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
 				webClientBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebFluxEndpointHandlerMapping(
 				new EndpointMapping("/cloudfoundryapplication"),
-				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+				endpointDiscoverer.getEndpoints(), endpointMediaTypes,
 				getCorsConfiguration(), securityInterceptor);
 	}
 
-	private ReactiveCloudFoundrySecurityInterceptor getSecurityInterceptor(
+	private CloudFoundrySecurityInterceptor getSecurityInterceptor(
 			WebClient.Builder restTemplateBuilder, Environment environment) {
 		ReactiveCloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
 				restTemplateBuilder, environment);
 		ReactiveTokenValidator tokenValidator = new ReactiveTokenValidator(
 				cloudfoundrySecurityService);
-		return new ReactiveCloudFoundrySecurityInterceptor(tokenValidator,
+		return new CloudFoundrySecurityInterceptor(tokenValidator,
 				cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
 	}

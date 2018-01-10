@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.HealthEndpointCloudFoundryExtension;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -33,7 +33,7 @@ import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtensio
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@EndpointExtension(filter = CloudFoundryEndpointFilter.class, endpoint = HealthEndpoint.class)
+@HealthEndpointCloudFoundryExtension
 public class CloudFoundryReactiveHealthEndpointWebExtension {
 
 	private final ReactiveHealthEndpointWebExtension delegate;

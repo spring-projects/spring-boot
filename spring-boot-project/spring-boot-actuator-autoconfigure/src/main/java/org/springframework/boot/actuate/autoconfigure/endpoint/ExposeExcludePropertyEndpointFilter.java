@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.Operation;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
@@ -37,14 +35,14 @@ import org.springframework.util.Assert;
  * {@link EndpointFilter} that will filter endpoints based on {@code expose} and
  * {@code exclude} properties.
  *
- * @param <T> The operation type
+ * @param <E> The endpoint type
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class ExposeExcludePropertyEndpointFilter<T extends Operation>
-		implements EndpointFilter<T> {
+public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
+		implements EndpointFilter<E> {
 
-	private final Class<? extends EndpointDiscoverer<T>> discovererType;
+	private final Class<E> endpointType;
 
 	private final Set<String> expose;
 
@@ -52,25 +50,23 @@ public class ExposeExcludePropertyEndpointFilter<T extends Operation>
 
 	private final Set<String> exposeDefaults;
 
-	public ExposeExcludePropertyEndpointFilter(
-			Class<? extends EndpointDiscoverer<T>> discovererType,
+	public ExposeExcludePropertyEndpointFilter(Class<E> endpointType,
 			Environment environment, String prefix, String... exposeDefaults) {
-		Assert.notNull(discovererType, "Discoverer Type must not be null");
+		Assert.notNull(endpointType, "EndpointType must not be null");
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.hasText(prefix, "Prefix must not be empty");
 		Binder binder = Binder.get(environment);
-		this.discovererType = discovererType;
+		this.endpointType = endpointType;
 		this.expose = bind(binder, prefix + ".expose");
 		this.exclude = bind(binder, prefix + ".exclude");
 		this.exposeDefaults = asSet(Arrays.asList(exposeDefaults));
 	}
 
-	public ExposeExcludePropertyEndpointFilter(
-			Class<? extends EndpointDiscoverer<T>> discovererType,
+	public ExposeExcludePropertyEndpointFilter(Class<E> endpointType,
 			Collection<String> expose, Collection<String> exclude,
 			String... exposeDefaults) {
-		Assert.notNull(discovererType, "Discoverer Type must not be null");
-		this.discovererType = discovererType;
+		Assert.notNull(endpointType, "EndpointType Type must not be null");
+		this.endpointType = endpointType;
 		this.expose = asSet(expose);
 		this.exclude = asSet(exclude);
 		this.exposeDefaults = asSet(Arrays.asList(exposeDefaults));
@@ -90,30 +86,30 @@ public class ExposeExcludePropertyEndpointFilter<T extends Operation>
 	}
 
 	@Override
-	public boolean match(EndpointInfo<T> info, EndpointDiscoverer<T> discoverer) {
-		if (this.discovererType.isInstance(discoverer)) {
-			return isExposed(info) && !isExcluded(info);
+	public boolean match(E endpoint) {
+		if (this.endpointType.isInstance(endpoint)) {
+			return isExposed(endpoint) && !isExcluded(endpoint);
 		}
 		return true;
 	}
 
-	private boolean isExposed(EndpointInfo<T> info) {
+	private boolean isExposed(ExposableEndpoint<?> endpoint) {
 		if (this.expose.isEmpty()) {
 			return this.exposeDefaults.contains("*")
-					|| contains(this.exposeDefaults, info);
+					|| contains(this.exposeDefaults, endpoint);
 		}
-		return this.expose.contains("*") || contains(this.expose, info);
+		return this.expose.contains("*") || contains(this.expose, endpoint);
 	}
 
-	private boolean isExcluded(EndpointInfo<T> info) {
+	private boolean isExcluded(ExposableEndpoint<?> endpoint) {
 		if (this.exclude.isEmpty()) {
 			return false;
 		}
-		return this.exclude.contains("*") || contains(this.exclude, info);
+		return this.exclude.contains("*") || contains(this.exclude, endpoint);
 	}
 
-	private boolean contains(Set<String> items, EndpointInfo<T> info) {
-		return items.contains(info.getId().toLowerCase());
+	private boolean contains(Set<String> items, ExposableEndpoint<?> endpoint) {
+		return items.contains(endpoint.getId().toLowerCase());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.management.MBeanServer;
 
@@ -26,14 +28,18 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanRegistrar;
+import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory;
-import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
-import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxAnnotationEndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInvokerAdvisor;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
+import org.springframework.boot.actuate.endpoint.jmx.JacksonJmxOperationResponseMapper;
+import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointExporter;
+import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.jmx.JmxOperationResponseMapper;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -66,34 +72,37 @@ public class JmxEndpointAutoConfiguration {
 	}
 
 	@Bean
-	public JmxAnnotationEndpointDiscoverer jmxAnnotationEndpointDiscoverer(
-			ParameterMapper parameterMapper,
-			Collection<OperationMethodInvokerAdvisor> invokerAdvisors,
-			Collection<EndpointFilter<JmxOperation>> filters) {
-		return new JmxAnnotationEndpointDiscoverer(this.applicationContext,
-				parameterMapper, invokerAdvisors, filters);
+	@ConditionalOnMissingBean(JmxEndpointsSupplier.class)
+	public JmxEndpointDiscoverer jmxAnnotationEndpointDiscoverer(
+			ParameterValueMapper parameterValueMapper,
+			ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
+			ObjectProvider<Collection<EndpointFilter<ExposableJmxEndpoint>>> filters) {
+		return new JmxEndpointDiscoverer(this.applicationContext, parameterValueMapper,
+				invokerAdvisors.getIfAvailable(Collections::emptyList),
+				filters.getIfAvailable(Collections::emptyList));
 	}
 
 	@Bean
 	@ConditionalOnSingleCandidate(MBeanServer.class)
-	public JmxEndpointExporter jmxMBeanExporter(
-			JmxAnnotationEndpointDiscoverer jmxAnnotationEndpointDiscoverer,
-			MBeanServer mBeanServer, JmxAnnotationEndpointDiscoverer endpointDiscoverer,
-			ObjectProvider<ObjectMapper> objectMapper) {
+	public JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer,
+			ObjectProvider<ObjectMapper> objectMapper,
+			JmxEndpointsSupplier jmxEndpointsSupplier) {
+		String contextId = ObjectUtils.getIdentityHexString(this.applicationContext);
 		EndpointObjectNameFactory objectNameFactory = new DefaultEndpointObjectNameFactory(
-				this.properties, mBeanServer,
-				ObjectUtils.getIdentityHexString(this.applicationContext));
-		EndpointMBeanRegistrar registrar = new EndpointMBeanRegistrar(mBeanServer,
-				objectNameFactory);
-		return new JmxEndpointExporter(jmxAnnotationEndpointDiscoverer, registrar,
-				objectMapper.getIfAvailable(ObjectMapper::new));
+				this.properties, mBeanServer, contextId);
+		JmxOperationResponseMapper responseMapper = new JacksonJmxOperationResponseMapper(
+				objectMapper.getIfAvailable());
+		return new JmxEndpointExporter(mBeanServer, objectNameFactory, responseMapper,
+				jmxEndpointsSupplier.getEndpoints());
+
 	}
 
 	@Bean
-	public ExposeExcludePropertyEndpointFilter<JmxOperation> jmxIncludeExcludePropertyEndpointFilter() {
-		return new ExposeExcludePropertyEndpointFilter<>(
-				JmxAnnotationEndpointDiscoverer.class, this.properties.getExpose(),
-				this.properties.getExclude(), "*");
+	public ExposeExcludePropertyEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {
+		Set<String> expose = this.properties.getExpose();
+		Set<String> exclude = this.properties.getExclude();
+		return new ExposeExcludePropertyEndpointFilter<>(ExposableJmxEndpoint.class,
+				expose, exclude, "*");
 	}
 
 }

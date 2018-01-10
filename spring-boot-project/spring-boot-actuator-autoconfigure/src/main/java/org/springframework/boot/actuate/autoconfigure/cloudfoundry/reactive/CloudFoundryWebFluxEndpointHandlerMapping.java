@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,27 +27,18 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping;
 import org.springframework.boot.endpoint.web.EndpointMapping;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -58,45 +47,33 @@ import org.springframework.web.server.ServerWebExchange;
  * Cloud Foundry specific URLs over HTTP using Spring WebFlux.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 class CloudFoundryWebFluxEndpointHandlerMapping
 		extends AbstractWebFluxEndpointHandlerMapping {
 
-	private final Method handleRead = ReflectionUtils
-			.findMethod(ReadOperationHandler.class, "handle", ServerWebExchange.class);
+	private final CloudFoundrySecurityInterceptor securityInterceptor;
 
-	private final Method handleWrite = ReflectionUtils.findMethod(
-			WriteOperationHandler.class, "handle", ServerWebExchange.class, Map.class);
+	private final EndpointLinksResolver linksResolver = new EndpointLinksResolver();
 
-	private final Method links = ReflectionUtils.findMethod(getClass(), "links",
-			ServerWebExchange.class);
-
-	private final EndpointLinksResolver endpointLinksResolver = new EndpointLinksResolver();
-
-	private final ReactiveCloudFoundrySecurityInterceptor securityInterceptor;
-
-	@Override
-	protected Method getLinks() {
-		return this.links;
+	CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
+			Collection<ExposableWebEndpoint> endpoints,
+			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
+			CloudFoundrySecurityInterceptor securityInterceptor) {
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
+		this.securityInterceptor = securityInterceptor;
 	}
 
 	@Override
-	protected void registerMappingForOperation(WebOperation operation) {
-		OperationType operationType = operation.getType();
-		OperationInvoker operationInvoker = operation.getInvoker();
-		if (operation.isBlocking()) {
-			operationInvoker = new ElasticSchedulerOperationInvoker(operationInvoker);
-		}
-		Object handler = (operationType == OperationType.WRITE
-				? new WriteOperationHandler(operationInvoker, operation.getId())
-				: new ReadOperationHandler(operationInvoker, operation.getId()));
-		Method method = (operationType == OperationType.WRITE ? this.handleWrite
-				: this.handleRead);
-		registerMapping(createRequestMappingInfo(operation), handler, method);
+	protected ReactiveWebOperation wrapReactiveWebOperation(ExposableWebEndpoint endpoint,
+			WebOperation operation, ReactiveWebOperation reactiveWebOperation) {
+		return new SecureReactiveWebOperation(reactiveWebOperation,
+				this.securityInterceptor, endpoint.getId());
 	}
 
+	@Override
 	@ResponseBody
-	private Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
+	protected Publisher<ResponseEntity<Object>> links(ServerWebExchange exchange) {
 		ServerHttpRequest request = exchange.getRequest();
 		return this.securityInterceptor.preHandle(exchange, "")
 				.map((securityResponse) -> {
@@ -105,7 +82,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 					}
 					AccessLevel accessLevel = exchange
 							.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
-					Map<String, Link> links = this.endpointLinksResolver
+					Map<String, Link> links = this.linksResolver
 							.resolveLinks(getEndpoints(), request.getURI().toString());
 					return new ResponseEntity<>(
 							Collections.singletonMap("_links",
@@ -126,117 +103,37 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 	}
 
 	/**
-	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
-	 * operations of the given {@code webEndpoints}.
-	 * @param endpointMapping the base mapping for all endpoints
-	 * @param webEndpoints the web endpoints
-	 * @param endpointMediaTypes media types consumed and produced by the endpoints
-	 * @param corsConfiguration the CORS configuration for the endpoints
-	 * @param securityInterceptor the Security Interceptor
+	 * {@link ReactiveWebOperation} wrapper to add security.
 	 */
-	CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebOperation>> webEndpoints,
-			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
-			ReactiveCloudFoundrySecurityInterceptor securityInterceptor) {
-		super(endpointMapping, webEndpoints, endpointMediaTypes, corsConfiguration);
-		this.securityInterceptor = securityInterceptor;
-	}
+	private static class SecureReactiveWebOperation implements ReactiveWebOperation {
 
-	/**
-	 * Base class for handlers for endpoint operations.
-	 */
-	abstract class AbstractOperationHandler {
+		private final ReactiveWebOperation delegate;
 
-		private final OperationInvoker operationInvoker;
+		private final CloudFoundrySecurityInterceptor securityInterceptor;
 
 		private final String endpointId;
 
-		private final ReactiveCloudFoundrySecurityInterceptor securityInterceptor;
-
-		AbstractOperationHandler(OperationInvoker operationInvoker, String endpointId,
-				ReactiveCloudFoundrySecurityInterceptor securityInterceptor) {
-			this.operationInvoker = operationInvoker;
-			this.endpointId = endpointId;
+		SecureReactiveWebOperation(ReactiveWebOperation delegate,
+				CloudFoundrySecurityInterceptor securityInterceptor, String endpointId) {
+			this.delegate = delegate;
 			this.securityInterceptor = securityInterceptor;
+			this.endpointId = endpointId;
 		}
 
-		Publisher<ResponseEntity<Object>> doHandle(ServerWebExchange exchange,
+		@Override
+		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				Map<String, String> body) {
 			return this.securityInterceptor.preHandle(exchange, this.endpointId)
 					.flatMap((securityResponse) -> flatMapResponse(exchange, body,
 							securityResponse));
 		}
 
-		private Mono<? extends ResponseEntity<Object>> flatMapResponse(
-				ServerWebExchange exchange, Map<String, String> body,
-				SecurityResponse securityResponse) {
+		private Mono<ResponseEntity<Object>> flatMapResponse(ServerWebExchange exchange,
+				Map<String, String> body, SecurityResponse securityResponse) {
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				return Mono.just(new ResponseEntity<>(securityResponse.getStatus()));
 			}
-			Map<String, Object> arguments = new HashMap<>(exchange
-					.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
-			if (body != null) {
-				arguments.putAll(body);
-			}
-			exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
-					.put(name, (values.size() == 1 ? values.get(0) : values)));
-			return handleResult((Publisher<?>) this.operationInvoker.invoke(arguments),
-					exchange.getRequest().getMethod());
-		}
-
-		private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result,
-				HttpMethod httpMethod) {
-			return Mono.from(result).map(this::toResponseEntity)
-					.onErrorReturn(ParametersMissingException.class,
-							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
-					.onErrorReturn(ParameterMappingException.class,
-							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
-					.defaultIfEmpty(new ResponseEntity<>(httpMethod == HttpMethod.GET
-							? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));
-		}
-
-		private ResponseEntity<Object> toResponseEntity(Object response) {
-			if (!(response instanceof WebEndpointResponse)) {
-				return new ResponseEntity<>(response, HttpStatus.OK);
-			}
-			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
-			return new ResponseEntity<>(webEndpointResponse.getBody(),
-					HttpStatus.valueOf(webEndpointResponse.getStatus()));
-		}
-
-	}
-
-	/**
-	 * A handler for an endpoint write operation.
-	 */
-	final class WriteOperationHandler extends AbstractOperationHandler {
-
-		WriteOperationHandler(OperationInvoker operationInvoker, String endpointId) {
-			super(operationInvoker, endpointId,
-					CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor);
-		}
-
-		@ResponseBody
-		public Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
-				@RequestBody(required = false) Map<String, String> body) {
-			return doHandle(exchange, body);
-		}
-
-	}
-
-	/**
-	 * A handler for an endpoint write operation.
-	 */
-	final class ReadOperationHandler extends AbstractOperationHandler {
-
-		ReadOperationHandler(OperationInvoker operationInvoker, String endpointId) {
-			super(operationInvoker, endpointId,
-					CloudFoundryWebFluxEndpointHandlerMapping.this.securityInterceptor);
-		}
-
-		@ResponseBody
-		public Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
-			return doHandle(exchange, null);
+			return this.delegate.handle(exchange, body);
 		}
 
 	}

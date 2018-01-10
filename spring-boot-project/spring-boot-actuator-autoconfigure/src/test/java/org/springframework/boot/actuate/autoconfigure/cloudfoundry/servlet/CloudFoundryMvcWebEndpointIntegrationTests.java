@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,15 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.boot.actuate.endpoint.web.WebOperation;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -204,7 +202,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 
 		@Bean
 		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-				EndpointDiscoverer<WebOperation> webEndpointDiscoverer,
+				WebEndpointDiscoverer webEndpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -212,19 +210,19 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
 			return new CloudFoundryWebEndpointServletHandlerMapping(
 					new EndpointMapping("/cfApplication"),
-					webEndpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+					webEndpointDiscoverer.getEndpoints(), endpointMediaTypes,
 					corsConfiguration, interceptor);
 		}
 
 		@Bean
-		public WebAnnotationEndpointDiscoverer webEndpointDiscoverer(
+		public WebEndpointDiscoverer webEndpointDiscoverer(
 				ApplicationContext applicationContext,
 				EndpointMediaTypes endpointMediaTypes) {
-			ParameterMapper parameterMapper = new ConversionServiceParameterMapper(
+			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
-			return new WebAnnotationEndpointDiscoverer(applicationContext,
-					parameterMapper, endpointMediaTypes,
-					EndpointPathResolver.useEndpointId(), null, null);
+			return new WebEndpointDiscoverer(applicationContext, parameterMapper,
+					endpointMediaTypes, EndpointPathResolver.useEndpointId(),
+					Collections.emptyList(), Collections.emptyList());
 		}
 
 		@Bean

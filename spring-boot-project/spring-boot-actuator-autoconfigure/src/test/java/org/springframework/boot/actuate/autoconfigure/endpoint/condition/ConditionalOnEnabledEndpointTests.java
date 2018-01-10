@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.Operation;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -124,11 +122,10 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	static class TestFilter implements EndpointFilter<Operation> {
+	static class TestFilter implements EndpointFilter<ExposableEndpoint<?>> {
 
 		@Override
-		public boolean match(EndpointInfo<Operation> info,
-				EndpointDiscoverer<Operation> discoverer) {
+		public boolean match(ExposableEndpoint<?> endpoint) {
 			return true;
 		}
 

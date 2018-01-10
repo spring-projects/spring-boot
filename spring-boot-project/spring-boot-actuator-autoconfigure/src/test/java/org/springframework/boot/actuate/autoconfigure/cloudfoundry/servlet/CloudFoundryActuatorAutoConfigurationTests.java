@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,11 +28,10 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.reflect.ReflectiveOperationInvoker;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -43,6 +41,7 @@ import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfigu
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -99,8 +98,9 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	public void cloudFoundryPlatformActive() {
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		assertThat(handlerMapping.getEndpointMapping().getPath())
-				.isEqualTo("/cloudfoundryapplication");
+		EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils
+				.getField(handlerMapping, "endpointMapping");
+		assertThat(endpointMapping.getPath()).isEqualTo("/cloudfoundryapplication");
 		CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils
 				.getField(handlerMapping, "corsConfiguration");
 		assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
@@ -217,8 +217,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
-				.getEndpoints();
+		Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
 		assertThat(endpoints.stream()
 				.filter((candidate) -> "test".equals(candidate.getId())).findFirst())
 						.isNotEmpty();
@@ -231,9 +230,8 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
-				.getEndpoints();
-		EndpointInfo<WebOperation> endpoint = endpoints.stream()
+		Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
+		ExposableWebEndpoint endpoint = endpoints.stream()
 				.filter((candidate) -> "test".equals(candidate.getId())).findFirst()
 				.get();
 		Collection<WebOperation> operations = endpoint.getOperations();
@@ -249,14 +247,13 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 						"vcap.application.cf_api:http://my-cloud-controller.com")
 				.applyTo(this.context);
 		this.context.refresh();
-		Collection<EndpointInfo<WebOperation>> endpoints = this.context
+		Collection<ExposableWebEndpoint> endpoints = this.context
 				.getBean("cloudFoundryWebEndpointServletHandlerMapping",
 						CloudFoundryWebEndpointServletHandlerMapping.class)
 				.getEndpoints();
-		EndpointInfo<WebOperation> endpointInfo = endpoints.iterator().next();
-		WebOperation webOperation = endpointInfo.getOperations().iterator().next();
-		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation
-				.getInvoker();
+		ExposableWebEndpoint endpoint = endpoints.iterator().next();
+		WebOperation webOperation = endpoint.getOperations().iterator().next();
+		Object invoker = ReflectionTestUtils.getField(webOperation, "invoker");
 		assertThat(ReflectionTestUtils.getField(invoker, "target"))
 				.isInstanceOf(CloudFoundryHealthEndpointWebExtension.class);
 	}

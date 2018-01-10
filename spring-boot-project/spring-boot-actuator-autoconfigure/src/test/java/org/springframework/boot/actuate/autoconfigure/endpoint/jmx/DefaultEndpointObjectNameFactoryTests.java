@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import javax.management.ObjectName;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
+import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ObjectUtils;
 
@@ -73,7 +73,7 @@ public class DefaultEndpointObjectNameFactoryTests {
 	@Test
 	public void generateObjectNameWithUniqueNames() {
 		this.properties.setUniqueNames(true);
-		EndpointMBean endpoint = endpoint("test");
+		ExposableJmxEndpoint endpoint = endpoint("test");
 		String id = ObjectUtils.getIdentityHexString(endpoint);
 		ObjectName objectName = generateObjectName(endpoint);
 		assertThat(objectName.toString()).isEqualTo(
@@ -105,20 +105,20 @@ public class DefaultEndpointObjectNameFactoryTests {
 
 	}
 
-	private ObjectName generateObjectName(EndpointMBean endpointMBean) {
+	private ObjectName generateObjectName(ExposableJmxEndpoint endpoint) {
 		try {
 			return new DefaultEndpointObjectNameFactory(this.properties, this.mBeanServer,
-					this.contextId).generate(endpointMBean);
+					this.contextId).getObjectName(endpoint);
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new AssertionError("Invalid object name", ex);
 		}
 	}
 
-	private EndpointMBean endpoint(String id) {
-		EndpointMBean endpointMBean = mock(EndpointMBean.class);
-		given(endpointMBean.getEndpointId()).willReturn(id);
-		return endpointMBean;
+	private ExposableJmxEndpoint endpoint(String id) {
+		ExposableJmxEndpoint endpoint = mock(ExposableJmxEndpoint.class);
+		given(endpoint.getId()).willReturn(id);
+		return endpoint;
 	}
 
 }

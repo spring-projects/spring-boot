@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,18 @@ public class EndpointMapping {
 		this.path = normalizePath(path);
 	}
 
+	/**
+	 * Returns the path to which endpoints should be mapped.
+	 * @return the path
+	 */
+	public String getPath() {
+		return this.path;
+	}
+
+	public String createSubPath(String path) {
+		return this.path + normalizePath(path);
+	}
+
 	private static String normalizePath(String path) {
 		if (!StringUtils.hasText(path)) {
 			return path;
@@ -49,18 +61,6 @@ public class EndpointMapping {
 			normalizedPath = normalizedPath.substring(0, normalizedPath.length() - 1);
 		}
 		return normalizedPath;
-	}
-
-	/**
-	 * Returns the path to which endpoints should be mapped.
-	 * @return the path
-	 */
-	public String getPath() {
-		return this.path;
-	}
-
-	public String createSubPath(String path) {
-		return this.path + normalizePath(path);
 	}
 
 }

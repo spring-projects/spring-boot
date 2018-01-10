@@ -21,7 +21,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -44,19 +44,20 @@ import org.springframework.web.reactive.DispatcherHandler;
 @ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
-@ConditionalOnBean(WebAnnotationEndpointDiscoverer.class)
+@ConditionalOnBean(WebEndpointsSupplier.class)
 @EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebFluxEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(
-			WebAnnotationEndpointDiscoverer endpointDiscoverer,
+			WebEndpointsSupplier webEndpointsSupplier,
 			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
-		return new WebFluxEndpointHandlerMapping(
-				new EndpointMapping(webEndpointProperties.getBasePath()),
-				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+		EndpointMapping endpointMapping = new EndpointMapping(
+				webEndpointProperties.getBasePath());
+		return new WebFluxEndpointHandlerMapping(endpointMapping,
+				webEndpointsSupplier.getEndpoints(), endpointMediaTypes,
 				corsProperties.toCorsConfiguration());
 	}
 

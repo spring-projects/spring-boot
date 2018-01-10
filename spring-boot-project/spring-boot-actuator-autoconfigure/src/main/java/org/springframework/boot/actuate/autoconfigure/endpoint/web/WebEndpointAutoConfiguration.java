@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,23 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInvokerAdvisor;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.boot.actuate.endpoint.web.WebOperation;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -78,34 +81,39 @@ public class WebEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebAnnotationEndpointDiscoverer webAnnotationEndpointDiscoverer(
-			ParameterMapper parameterMapper, EndpointPathResolver endpointPathResolver,
-			Collection<OperationMethodInvokerAdvisor> invokerAdvisors,
-			Collection<EndpointFilter<WebOperation>> filters) {
-		return new WebAnnotationEndpointDiscoverer(this.applicationContext,
-				parameterMapper, endpointMediaTypes(), endpointPathResolver,
-				invokerAdvisors, filters);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public EndpointMediaTypes endpointMediaTypes() {
 		return new EndpointMediaTypes(MEDIA_TYPES, MEDIA_TYPES);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public EndpointPathProvider endpointPathProvider(
-			EndpointDiscoverer<WebOperation> endpointDiscoverer,
-			WebEndpointProperties webEndpointProperties) {
-		return new DefaultEndpointPathProvider(endpointDiscoverer, webEndpointProperties);
+	@ConditionalOnMissingBean(WebEndpointsSupplier.class)
+	public WebEndpointDiscoverer webEndpointDiscoverer(
+			ParameterValueMapper parameterValueMapper,
+			EndpointMediaTypes endpointMediaTypes,
+			EndpointPathResolver endpointPathResolver,
+			ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
+			ObjectProvider<Collection<EndpointFilter<ExposableWebEndpoint>>> filters) {
+		return new WebEndpointDiscoverer(this.applicationContext, parameterValueMapper,
+				endpointMediaTypes, endpointPathResolver,
+				invokerAdvisors.getIfAvailable(Collections::emptyList),
+				filters.getIfAvailable(Collections::emptyList));
 	}
 
 	@Bean
-	public ExposeExcludePropertyEndpointFilter<WebOperation> webIncludeExcludePropertyEndpointFilter() {
-		return new ExposeExcludePropertyEndpointFilter<>(
-				WebAnnotationEndpointDiscoverer.class, this.properties.getExpose(),
-				this.properties.getExclude(), "info", "health");
+	@ConditionalOnMissingBean
+	public EndpointPathProvider endpointPathProvider(
+			WebEndpointsSupplier webEndpointsSupplier,
+			WebEndpointProperties webEndpointProperties) {
+		return new DefaultEndpointPathProvider(webEndpointProperties,
+				webEndpointsSupplier.getEndpoints());
+	}
+
+	@Bean
+	public ExposeExcludePropertyEndpointFilter<ExposableWebEndpoint> webIncludeExcludePropertyEndpointFilter() {
+		Set<String> expose = this.properties.getExpose();
+		Set<String> exclude = this.properties.getExclude();
+		return new ExposeExcludePropertyEndpointFilter<>(ExposableWebEndpoint.class,
+				expose, exclude, "info", "health");
 	}
 
 }

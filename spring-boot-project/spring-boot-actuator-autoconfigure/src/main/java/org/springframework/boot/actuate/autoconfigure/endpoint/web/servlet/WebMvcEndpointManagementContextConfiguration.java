@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -40,25 +40,24 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @since 2.0.0
  */
-
 @ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
-@ConditionalOnBean({ DispatcherServlet.class, WebAnnotationEndpointDiscoverer.class })
+@ConditionalOnBean({ DispatcherServlet.class, WebEndpointsSupplier.class })
 @EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebMvcEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(
-			WebAnnotationEndpointDiscoverer endpointDiscoverer,
+			WebEndpointsSupplier webEndpointsSupplier,
 			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
-		WebMvcEndpointHandlerMapping handlerMapping = new WebMvcEndpointHandlerMapping(
-				new EndpointMapping(webEndpointProperties.getBasePath()),
-				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+		EndpointMapping endpointMapping = new EndpointMapping(
+				webEndpointProperties.getBasePath());
+		return new WebMvcEndpointHandlerMapping(endpointMapping,
+				webEndpointsSupplier.getEndpoints(), endpointMediaTypes,
 				corsProperties.toCorsConfiguration());
-		return handlerMapping;
 	}
 
 }

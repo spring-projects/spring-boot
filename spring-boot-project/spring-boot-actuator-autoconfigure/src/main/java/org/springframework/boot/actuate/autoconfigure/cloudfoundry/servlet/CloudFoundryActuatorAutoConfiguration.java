@@ -17,12 +17,13 @@
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Arrays;
+import java.util.Collections;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebEndpointDiscoverer;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -85,18 +86,18 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	@Bean
 	public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
+			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			RestTemplateBuilder restTemplateBuilder) {
-		CloudFoundryWebAnnotationEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebAnnotationEndpointDiscoverer(
+		CloudFoundryWebEndpointDiscoverer discoverer = new CloudFoundryWebEndpointDiscoverer(
 				this.applicationContext, parameterMapper, endpointMediaTypes,
-				EndpointPathResolver.useEndpointId(), null, null,
-				CloudFoundryHealthEndpointWebExtension.class);
+				EndpointPathResolver.useEndpointId(), Collections.emptyList(),
+				Collections.emptyList());
 		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
 				restTemplateBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebEndpointServletHandlerMapping(
 				new EndpointMapping("/cloudfoundryapplication"),
-				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
-				getCorsConfiguration(), securityInterceptor);
+				discoverer.getEndpoints(), endpointMediaTypes, getCorsConfiguration(),
+				securityInterceptor);
 	}
 
 	private CloudFoundrySecurityInterceptor getSecurityInterceptor(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,16 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DefaultEndpointPathProvider}.
@@ -38,9 +35,6 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  */
 public class DefaultEndpointPathProviderTests {
-
-	@Mock
-	private EndpointDiscoverer<WebOperation> discoverer;
 
 	@Before
 	public void setup() {
@@ -78,13 +72,18 @@ public class DefaultEndpointPathProviderTests {
 	}
 
 	private DefaultEndpointPathProvider createProvider(String contextPath) {
-		Collection<EndpointInfo<WebOperation>> endpoints = new ArrayList<>();
-		endpoints.add(new EndpointInfo<>("foo", true, Collections.emptyList()));
-		endpoints.add(new EndpointInfo<>("bar", true, Collections.emptyList()));
-		given(this.discoverer.discoverEndpoints()).willReturn(endpoints);
-		WebEndpointProperties webEndpointProperties = new WebEndpointProperties();
-		webEndpointProperties.setBasePath(contextPath);
-		return new DefaultEndpointPathProvider(this.discoverer, webEndpointProperties);
+		Collection<ExposableWebEndpoint> endpoints = new ArrayList<>();
+		endpoints.add(mockEndpoint("foo"));
+		endpoints.add(mockEndpoint("bar"));
+		WebEndpointProperties properties = new WebEndpointProperties();
+		properties.setBasePath(contextPath);
+		return new DefaultEndpointPathProvider(properties, endpoints);
+	}
+
+	private ExposableWebEndpoint mockEndpoint(String id) {
+		ExposableWebEndpoint endpoint = mock(ExposableWebEndpoint.class);
+		given(endpoint.getId()).willReturn(id);
+		return endpoint;
 	}
 
 }
