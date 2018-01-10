@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.http;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.http.encoding")
 public class HttpEncodingProperties {
 
-	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
 	 * Charset of HTTP requests and responses. Added to the "Content-Type" header if not
@@ -41,23 +42,24 @@ public class HttpEncodingProperties {
 	private Charset charset = DEFAULT_CHARSET;
 
 	/**
-	 * Force the encoding to the configured charset on HTTP requests and responses.
+	 * Whether to force the encoding to the configured charset on HTTP requests and
+	 * responses.
 	 */
 	private Boolean force;
 
 	/**
-	 * Force the encoding to the configured charset on HTTP requests. Defaults to true
-	 * when "force" has not been specified.
+	 * Whether to force the encoding to the configured charset on HTTP requests. Defaults
+	 * to true when "force" has not been specified.
 	 */
 	private Boolean forceRequest;
 
 	/**
-	 * Force the encoding to the configured charset on HTTP responses.
+	 * Whether to force the encoding to the configured charset on HTTP responses.
 	 */
 	private Boolean forceResponse;
 
 	/**
-	 * Locale to Encoding mapping.
+	 * Locale in which to encode mapping.
 	 */
 	private Map<Locale, Charset> mapping;
 

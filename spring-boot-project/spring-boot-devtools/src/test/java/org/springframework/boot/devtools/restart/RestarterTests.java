@@ -73,7 +73,7 @@ public class RestarterTests {
 	}
 
 	@Test
-	public void cantGetInstanceBeforeInitialize() throws Exception {
+	public void cantGetInstanceBeforeInitialize() {
 		Restarter.clearInstance();
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Restarter has not been initialized");
@@ -94,14 +94,14 @@ public class RestarterTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void getOrAddAttributeWithNewAttribute() throws Exception {
+	public void getOrAddAttributeWithNewAttribute() {
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		given(objectFactory.getObject()).willReturn("abc");
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
 		assertThat(attribute).isEqualTo("abc");
 	}
 
-	public void addUrlsMustNotBeNull() throws Exception {
+	public void addUrlsMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Urls must not be null");
 		Restarter.getInstance().addUrls(null);
@@ -120,7 +120,7 @@ public class RestarterTests {
 	}
 
 	@Test
-	public void addClassLoaderFilesMustNotBeNull() throws Exception {
+	public void addClassLoaderFilesMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ClassLoaderFiles must not be null");
 		Restarter.getInstance().addClassLoaderFiles(null);
@@ -141,7 +141,7 @@ public class RestarterTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void getOrAddAttributeWithExistingAttribute() throws Exception {
+	public void getOrAddAttributeWithExistingAttribute() {
 		Restarter.getInstance().getOrAddAttribute("x", () -> "abc");
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
@@ -259,13 +259,13 @@ public class RestarterTests {
 		}
 
 		@Override
-		protected Throwable relaunch(ClassLoader classLoader) throws Exception {
+		protected Throwable relaunch(ClassLoader classLoader) {
 			this.relaunchClassLoader = classLoader;
 			return null;
 		}
 
 		@Override
-		protected void stop() throws Exception {
+		protected void stop() {
 		}
 
 		public ClassLoader getRelaunchClassLoader() {

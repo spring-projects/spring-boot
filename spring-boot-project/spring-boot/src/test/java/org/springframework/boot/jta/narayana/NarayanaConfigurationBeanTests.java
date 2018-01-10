@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jta.narayana;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -100,9 +101,9 @@ public class NarayanaConfigurationBeanTests {
 		NarayanaProperties narayanaProperties = new NarayanaProperties();
 		narayanaProperties.setTransactionManagerId("test-id");
 		narayanaProperties.setLogDir("test-dir");
-		narayanaProperties.setDefaultTimeout(1);
-		narayanaProperties.setPeriodicRecoveryPeriod(2);
-		narayanaProperties.setRecoveryBackoffPeriod(3);
+		narayanaProperties.setDefaultTimeout(Duration.ofSeconds(1));
+		narayanaProperties.setPeriodicRecoveryPeriod(Duration.ofSeconds(2));
+		narayanaProperties.setRecoveryBackoffPeriod(Duration.ofSeconds(3));
 		narayanaProperties.setOnePhaseCommit(false);
 		narayanaProperties.setXaResourceOrphanFilters(
 				Arrays.asList("test-filter-1", "test-filter-2"));

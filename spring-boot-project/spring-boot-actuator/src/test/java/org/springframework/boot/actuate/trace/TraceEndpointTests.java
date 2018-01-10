@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TraceEndpointTests {
 
 	@Test
-	public void trace() throws Exception {
+	public void trace() {
 		TraceRepository repository = new InMemoryTraceRepository();
 		repository.add(Collections.singletonMap("a", "b"));
 		Trace trace = new TraceEndpoint(repository).traces().getTraces().get(0);

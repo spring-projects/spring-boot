@@ -58,7 +58,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void setBeanFactoryWhenNotListableShouldThrowException() throws Exception {
+	public void setBeanFactoryWhenNotListableShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("WebServerCustomizerBeanPostProcessor can only "
 				+ "be used with a ListableBeanFactory");
@@ -66,7 +66,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessBeforeShouldReturnBean() throws Exception {
+	public void postProcessBeforeShouldReturnBean() {
 		addMockBeans(Collections.emptyMap());
 		Object bean = new Object();
 		Object result = this.processor.postProcessBeforeInitialization(bean, "foo");
@@ -74,7 +74,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldReturnBean() throws Exception {
+	public void postProcessAfterShouldReturnBean() {
 		addMockBeans(Collections.emptyMap());
 		Object bean = new Object();
 		Object result = this.processor.postProcessAfterInitialization(bean, "foo");
@@ -82,7 +82,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldCallInterfaceCustomizers() throws Exception {
+	public void postProcessAfterShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactory.class);
@@ -92,8 +92,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryOneShouldCallInterfaceCustomizers()
-			throws Exception {
+	public void postProcessAfterWhenWebServerFactoryOneShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactoryOne.class);
@@ -103,8 +102,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryTwoShouldCallInterfaceCustomizers()
-			throws Exception {
+	public void postProcessAfterWhenWebServerFactoryTwoShouldCallInterfaceCustomizers() {
 		Map<String, Object> beans = addInterfaceBeans();
 		addMockBeans(beans);
 		postProcessBeforeInitialization(WebServerFactoryTwo.class);
@@ -125,7 +123,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterShouldCallLambdaCustomizers() throws Exception {
+	public void postProcessAfterShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactory.class);
@@ -133,8 +131,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryOneShouldCallLambdaCustomizers()
-			throws Exception {
+	public void postProcessAfterWhenWebServerFactoryOneShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactoryOne.class);
@@ -142,8 +139,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessAfterWhenWebServerFactoryTwoShouldCallLambdaCustomizers()
-			throws Exception {
+	public void postProcessAfterWhenWebServerFactoryTwoShouldCallLambdaCustomizers() {
 		List<String> called = new ArrayList<>();
 		addLambdaBeans(called);
 		postProcessBeforeInitialization(WebServerFactoryTwo.class);

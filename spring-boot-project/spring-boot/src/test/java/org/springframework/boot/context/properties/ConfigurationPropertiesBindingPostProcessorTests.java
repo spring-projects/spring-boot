@@ -109,7 +109,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void bindWithValueDefault() throws Exception {
+	public void bindWithValueDefault() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"default.value=foo");
@@ -120,7 +120,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void binderShouldNotInitializeFactoryBeans() throws Exception {
+	public void binderShouldNotInitializeFactoryBeans() {
 		ConfigurationPropertiesWithFactoryBean.factoryBeanInit = false;
 		this.context = new AnnotationConfigApplicationContext() {
 			@Override
@@ -153,7 +153,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void multiplePropertySourcesPlaceholderConfigurer() throws Exception {
+	public void multiplePropertySourcesPlaceholderConfigurer() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MultiplePropertySourcesPlaceholderConfigurer.class);
 		this.context.refresh();
@@ -162,8 +162,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void overridingPropertiesWithPlaceholderResolutionInEnvShouldOverride()
-			throws Exception {
+	public void overridingPropertiesWithPlaceholderResolutionInEnvShouldOverride() {
 		this.context = new AnnotationConfigApplicationContext();
 		ConfigurableEnvironment env = this.context.getEnvironment();
 		MutablePropertySources propertySources = env.getPropertySources();
@@ -180,8 +179,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void unboundElementsFromSystemEnvironmentShouldNotThrowException()
-			throws Exception {
+	public void unboundElementsFromSystemEnvironmentShouldNotThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		ConfigurableEnvironment env = this.context.getEnvironment();
 		MutablePropertySources propertySources = env.getPropertySources();
@@ -197,7 +195,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void rebindableConfigurationProperties() throws Exception {
+	public void rebindableConfigurationProperties() {
 		// gh-9160
 		this.context = new AnnotationConfigApplicationContext();
 		MutablePropertySources sources = this.context.getEnvironment()
@@ -218,8 +216,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void rebindableConfigurationPropertiesWithPropertySourcesPlaceholderConfigurer()
-			throws Exception {
+	public void rebindableConfigurationPropertiesWithPropertySourcesPlaceholderConfigurer() {
 		this.context = new AnnotationConfigApplicationContext();
 		MutablePropertySources sources = this.context.getEnvironment()
 				.getPropertySources();
@@ -451,7 +448,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	static class FactoryBeanTester implements FactoryBean, InitializingBean {
 
 		@Override
-		public Object getObject() throws Exception {
+		public Object getObject() {
 			return Object.class;
 		}
 
@@ -466,7 +463,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 
 		@Override
-		public void afterPropertiesSet() throws Exception {
+		public void afterPropertiesSet() {
 			ConfigurationPropertiesWithFactoryBean.factoryBeanInit = true;
 		}
 

@@ -40,7 +40,7 @@ class MustacheServletWebConfiguration {
 	@ConditionalOnMissingBean(MustacheViewResolver.class)
 	public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
-		this.mustache.applyToViewResolver(resolver);
+		this.mustache.applyToMvcViewResolver(resolver);
 		resolver.setCharset(this.mustache.getCharsetName());
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 		return resolver;

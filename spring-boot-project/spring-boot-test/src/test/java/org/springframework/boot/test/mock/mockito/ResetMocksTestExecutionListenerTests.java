@@ -107,7 +107,7 @@ public class ResetMocksTestExecutionListenerTests {
 	static class BrokenFactoryBean implements FactoryBean<String> {
 
 		@Override
-		public String getObject() throws Exception {
+		public String getObject() {
 			throw new IllegalStateException();
 		}
 

@@ -26,7 +26,6 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
-import org.flywaydb.core.internal.callback.SqlScriptFlywayCallback;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -173,8 +172,7 @@ public class FlywayAutoConfigurationTests {
 	public void checkLocationsAllMissing() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
-						"spring.flyway.locations:classpath:db/missing1,classpath:db/migration2",
-						"spring.flyway.check-location:true")
+						"spring.flyway.locations:classpath:db/missing1,classpath:db/migration2")
 				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure()
@@ -188,8 +186,14 @@ public class FlywayAutoConfigurationTests {
 	public void checkLocationsAllExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
-						"spring.flyway.locations:classpath:db/changelog,classpath:db/migration",
-						"spring.flyway.check-location:true")
+						"spring.flyway.locations:classpath:db/changelog,classpath:db/migration")
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	public void checkLocationsAllExistWithImplicitClasspathPrefix() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.locations:db/changelog,db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
@@ -203,7 +207,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void customFlywayMigrationInitializer() throws Exception {
+	public void customFlywayMigrationInitializer() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				CustomFlywayMigrationInitializer.class).run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -258,6 +262,19 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void useOneLocationWithVendorDirectory() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.flyway.locations=classpath:db/vendors/{vendor}")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getLocations())
+							.containsExactly("classpath:db/vendors/h2");
+				});
+	}
+
+	@Test
 	public void callbacksAreConfiguredAndOrdered() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				CallbackConfiguration.class).run((context) -> {
@@ -267,11 +284,9 @@ public class FlywayAutoConfigurationTests {
 							FlywayCallback.class);
 					FlywayCallback callbackTwo = context.getBean("callbackTwo",
 							FlywayCallback.class);
-					assertThat(flyway.getCallbacks()).hasSize(3);
-					assertThat(flyway.getCallbacks()).startsWith(callbackTwo,
+					assertThat(flyway.getCallbacks()).hasSize(2);
+					assertThat(flyway.getCallbacks()).containsExactly(callbackTwo,
 							callbackOne);
-					assertThat(flyway.getCallbacks()[2])
-							.isInstanceOf(SqlScriptFlywayCallback.class);
 					InOrder orderedCallbacks = inOrder(callbackOne, callbackTwo);
 					orderedCallbacks.verify(callbackTwo)
 							.beforeMigrate(any(Connection.class));

@@ -31,13 +31,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -64,8 +64,8 @@ import org.springframework.session.SessionRepository;
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(SessionProperties.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, HazelcastAutoConfiguration.class,
-		JdbcTemplateAutoConfiguration.class, MongoAutoConfiguration.class,
-		MongoReactiveAutoConfiguration.class, RedisAutoConfiguration.class,
+		JdbcTemplateAutoConfiguration.class, MongoDataAutoConfiguration.class,
+		MongoReactiveDataAutoConfiguration.class, RedisAutoConfiguration.class,
 		RedisReactiveAutoConfiguration.class })
 @AutoConfigureBefore(HttpHandlerAutoConfiguration.class)
 public class SessionAutoConfiguration {
@@ -153,7 +153,7 @@ public class SessionAutoConfiguration {
 	 * Base class for beans used to validate that only one supported implementation is
 	 * available in the classpath when the store-type property is not set.
 	 */
-	static class AbstractSessionRepositoryImplementationValidator {
+	static abstract class AbstractSessionRepositoryImplementationValidator {
 
 		private final List<String> candidates;
 
@@ -233,7 +233,7 @@ public class SessionAutoConfiguration {
 	/**
 	 * Base class for validating that a (reactive) session repository bean exists.
 	 */
-	static class AbstractSessionRepositoryValidator {
+	static abstract class AbstractSessionRepositoryValidator {
 
 		private final SessionProperties sessionProperties;
 
@@ -276,7 +276,7 @@ public class SessionAutoConfiguration {
 	}
 
 	/**
-	 * Bean used to validate that a {@link SessionRepository} exists and provide a
+	 * Bean used to validate that a {@link ReactiveSessionRepository} exists and provide a
 	 * meaningful message if that's not the case.
 	 */
 	static class ReactiveSessionRepositoryValidator

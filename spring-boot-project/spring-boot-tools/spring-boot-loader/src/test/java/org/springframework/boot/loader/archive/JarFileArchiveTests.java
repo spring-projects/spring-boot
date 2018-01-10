@@ -80,7 +80,7 @@ public class JarFileArchiveTests {
 	}
 
 	@Test
-	public void getEntries() throws Exception {
+	public void getEntries() {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
 		assertThat(entries.size()).isEqualTo(10);
 	}

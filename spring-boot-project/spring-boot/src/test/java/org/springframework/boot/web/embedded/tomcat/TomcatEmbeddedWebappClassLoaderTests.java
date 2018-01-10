@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -92,7 +91,7 @@ public class TomcatEmbeddedWebappClassLoaderTests {
 		return "jar:file:" + war.getAbsolutePath() + "!/WEB-INF/classes/";
 	}
 
-	private File createWar() throws IOException, FileNotFoundException {
+	private File createWar() throws IOException {
 		File warFile = this.temp.newFile("test.war");
 		try (JarOutputStream warOut = new JarOutputStream(
 				new FileOutputStream(warFile))) {

@@ -36,10 +36,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
@@ -55,7 +55,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Endpoint(id = "heapdump", exposure = EndpointExposure.WEB)
+@WebEndpoint(id = "heapdump")
 public class HeapDumpWebEndpoint {
 
 	private final long timeout;

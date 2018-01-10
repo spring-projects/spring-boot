@@ -64,7 +64,7 @@ public class MockResetTests {
 	}
 
 	@Test
-	public void apply() throws Exception {
+	public void apply() {
 		ExampleService mock = mock(ExampleService.class,
 				MockReset.apply(MockReset.AFTER, withSettings()));
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.AFTER);

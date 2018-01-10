@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -75,23 +77,36 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	 */
 	private static final String[] WEBSPHERE_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
-			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
+			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform" };
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
+	private final PhysicalNamingStrategy physicalNamingStrategy;
+
+	private final ImplicitNamingStrategy implicitNamingStrategy;
+
+	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
+
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
-			ObjectProvider<List<SchemaManagementProvider>> providers) {
+			ObjectProvider<List<SchemaManagementProvider>> providers,
+			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
+			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy,
+			ObjectProvider<List<HibernatePropertiesCustomizer>> hibernatePropertiesCustomizers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
 		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
 				providers.getIfAvailable(Collections::emptyList));
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
 				metadataProviders.getIfAvailable());
+		this.physicalNamingStrategy = physicalNamingStrategy.getIfAvailable();
+		this.implicitNamingStrategy = implicitNamingStrategy.getIfAvailable();
+		this.hibernatePropertiesCustomizers = hibernatePropertiesCustomizers
+				.getIfAvailable(() -> Collections.emptyList());
 	}
 
 	@Override
@@ -101,11 +116,14 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	@Override
 	protected Map<String, Object> getVendorProperties() {
-		Map<String, Object> vendorProperties = new LinkedHashMap<>();
 		String defaultDdlMode = this.defaultDdlAutoProvider
 				.getDefaultDdlAuto(getDataSource());
-		vendorProperties.putAll(getProperties().getHibernateProperties(defaultDdlMode));
-		return vendorProperties;
+		return new LinkedHashMap<>(getProperties()
+				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlMode)
+						.implicitNamingStrategy(this.implicitNamingStrategy)
+						.physicalNamingStrategy(this.physicalNamingStrategy)
+						.hibernatePropertiesCustomizers(
+								this.hibernatePropertiesCustomizers)));
 	}
 
 	@Override
@@ -154,7 +172,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private boolean runningOnWebSphere() {
 		return ClassUtils.isPresent(
-				"com.ibm.websphere.jtaextensions." + "ExtendedJTATransaction",
+				"com.ibm.websphere.jtaextensions.ExtendedJTATransaction",
 				getClass().getClassLoader());
 	}
 
@@ -175,7 +193,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 		catch (LinkageError ex) {
 			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
-			// containers (e.g. JBoss EAP 6) wraps it in the superclass LinkageError
+			// containers (e.g. JBoss EAP 6) wrap it in the superclass LinkageError
 			if (!isUsingJndi()) {
 				throw new IllegalStateException("Unable to set Hibernate JTA "
 						+ "platform, are you using the correct "

@@ -66,9 +66,13 @@ class ActiveMQConnectionFactoryFactory {
 	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(
 			Class<T> factoryClass) throws Exception {
 		T factory = createConnectionFactoryInstance(factoryClass);
-		factory.setCloseTimeout(this.properties.getCloseTimeout());
+		if (this.properties.getCloseTimeout() != null) {
+			factory.setCloseTimeout((int) this.properties.getCloseTimeout().toMillis());
+		}
 		factory.setNonBlockingRedelivery(this.properties.isNonBlockingRedelivery());
-		factory.setSendTimeout(this.properties.getSendTimeout());
+		if (this.properties.getSendTimeout() != null) {
+			factory.setSendTimeout((int) this.properties.getSendTimeout().toMillis());
+		}
 		Packages packages = this.properties.getPackages();
 		if (packages.getTrustAll() != null) {
 			factory.setTrustAllPackages(packages.getTrustAll());

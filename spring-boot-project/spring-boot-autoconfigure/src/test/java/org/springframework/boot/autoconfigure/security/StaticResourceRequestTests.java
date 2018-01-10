@@ -47,7 +47,7 @@ public class StaticResourceRequestTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void toCommonLocationsShouldMatchCommonLocations() throws Exception {
+	public void toCommonLocationsShouldMatchCommonLocations() {
 		RequestMatcher matcher = StaticResourceRequest.toCommonLocations();
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
@@ -58,7 +58,7 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void toCommonLocationsWithExcludeShouldNotMatchExcluded() throws Exception {
+	public void toCommonLocationsWithExcludeShouldNotMatchExcluded() {
 		RequestMatcher matcher = StaticResourceRequest.toCommonLocations()
 				.excluding(Location.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
@@ -66,14 +66,14 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void toLocationShouldMatchLocation() throws Exception {
+	public void toLocationShouldMatchLocation() {
 		RequestMatcher matcher = StaticResourceRequest.to(Location.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
 	@Test
-	public void toLocationWhenHasServletPathShouldMatchLocation() throws Exception {
+	public void toLocationWhenHasServletPathShouldMatchLocation() {
 		ServerProperties serverProperties = new ServerProperties();
 		serverProperties.getServlet().setPath("/foo");
 		RequestMatcher matcher = StaticResourceRequest.to(Location.CSS);
@@ -82,14 +82,14 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void toLocationsFromSetWhenSetIsNullShouldThrowException() throws Exception {
+	public void toLocationsFromSetWhenSetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Locations must not be null");
 		StaticResourceRequest.to((Set<Location>) null);
 	}
 
 	@Test
-	public void excludeFromSetWhenSetIsNullShouldThrowException() throws Exception {
+	public void excludeFromSetWhenSetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Locations must not be null");
 		StaticResourceRequest.toCommonLocations().excluding((Set<Location>) null);

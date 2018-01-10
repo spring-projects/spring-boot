@@ -98,6 +98,7 @@ public class LocalDevToolsAutoConfiguration {
 	/**
 	 * Local Restart Configuration.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
 	static class RestartConfiguration {
 
@@ -137,6 +138,12 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		public FileSystemWatcherFactory fileSystemWatcherFactory() {
 			return this::newFileSystemWatcher;
+		}
+
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "log-condition-evaluation-delta", matchIfMissing = true)
+		public ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
+			return new ConditionEvaluationDeltaLoggingListener();
 		}
 
 		private FileSystemWatcher newFileSystemWatcher() {

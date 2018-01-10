@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.
@@ -47,6 +48,12 @@ public class Handler extends URLStreamHandler {
 	private static final String FILE_PROTOCOL = "file:";
 
 	private static final String SEPARATOR = "!/";
+
+	private static final String CURRENT_DIR = "/./";
+
+	private static final Pattern CURRENT_DIR_PATTERN = Pattern.compile(CURRENT_DIR);
+
+	private static final String PARENT_DIR = "/../";
 
 	private static final String[] FALLBACK_HANDLERS = {
 			"sun.net.www.protocol.jar.Handler" };
@@ -155,7 +162,7 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected void parseURL(URL context, String spec, int start, int limit) {
-		if (spec.toLowerCase().startsWith(JAR_PROTOCOL)) {
+		if (spec.regionMatches(true, 0, JAR_PROTOCOL, 0, JAR_PROTOCOL.length())) {
 			setFile(context, getFileFromSpec(spec.substring(start, limit)));
 		}
 		else {
@@ -207,6 +214,9 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private String normalize(String file) {
+		if (!file.contains(CURRENT_DIR) && !file.contains(PARENT_DIR)) {
+			return file;
+		}
 		int afterLastSeparatorIndex = file.lastIndexOf(SEPARATOR) + SEPARATOR.length();
 		String afterSeparator = file.substring(afterLastSeparatorIndex);
 		afterSeparator = replaceParentDir(afterSeparator);
@@ -216,7 +226,7 @@ public class Handler extends URLStreamHandler {
 
 	private String replaceParentDir(String file) {
 		int parentDirIndex;
-		while ((parentDirIndex = file.indexOf("/../")) >= 0) {
+		while ((parentDirIndex = file.indexOf(PARENT_DIR)) >= 0) {
 			int precedingSlashIndex = file.lastIndexOf('/', parentDirIndex - 1);
 			if (precedingSlashIndex >= 0) {
 				file = file.substring(0, precedingSlashIndex)
@@ -230,7 +240,7 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private String replaceCurrentDir(String file) {
-		return file.replace("/./", "/");
+		return CURRENT_DIR_PATTERN.matcher(file).replaceAll("/");
 	}
 
 	@Override

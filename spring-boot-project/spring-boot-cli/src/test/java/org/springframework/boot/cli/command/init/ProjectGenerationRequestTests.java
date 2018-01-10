@@ -19,7 +19,7 @@ package org.springframework.boot.cli.command.init;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 
@@ -36,7 +36,7 @@ import org.springframework.util.StreamUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ProjectGenerationRequest}
+ * Tests for {@link ProjectGenerationRequest}.
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
@@ -205,7 +205,7 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void invalidType() throws Exception {
+	public void invalidType() {
 		this.request.setType("does-not-exist");
 		this.thrown.expect(ReportableException.class);
 		this.request.generateUrl(createDefaultMetadata());
@@ -253,7 +253,7 @@ public class ProjectGenerationRequestTests {
 			Resource resource = new ClassPathResource(
 					"metadata/service-metadata-" + version + ".json");
 			String content = StreamUtils.copyToString(resource.getInputStream(),
-					Charset.forName("UTF-8"));
+					StandardCharsets.UTF_8);
 			JSONObject json = new JSONObject(content);
 			return new InitializrServiceMetadata(json);
 		}

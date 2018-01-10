@@ -16,12 +16,15 @@
 
 package org.springframework.boot.jta.narayana;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 /**
  * Subset of Narayana properties which can be configured via Spring configuration. Use
@@ -49,42 +52,47 @@ public class NarayanaProperties {
 	private String transactionManagerId = "1";
 
 	/**
-	 * Enable one phase commit optimization.
+	 * Whether to enable one phase commit optimization.
 	 */
 	private boolean onePhaseCommit = true;
 
 	/**
-	 * Transaction timeout in seconds.
+	 * Transaction timeout. If a duration suffix is not specified, seconds will be used.
 	 */
-	private int defaultTimeout = 60;
+	@DefaultDurationUnit(ChronoUnit.SECONDS)
+	private Duration defaultTimeout = Duration.ofSeconds(60);
 
 	/**
-	 * Interval in which periodic recovery scans are performed in seconds.
+	 * Interval in which periodic recovery scans are performed. If a duration suffix is
+	 * not specified, seconds will be used.
 	 */
-	private int periodicRecoveryPeriod = 120;
+	@DefaultDurationUnit(ChronoUnit.SECONDS)
+	private Duration periodicRecoveryPeriod = Duration.ofSeconds(120);
 
 	/**
-	 * Back off period between first and second phases of the recovery scan in seconds.
+	 * Back off period between first and second phases of the recovery scan. If a duration
+	 * suffix is not specified, seconds will be used.
 	 */
-	private int recoveryBackoffPeriod = 10;
+	@DefaultDurationUnit(ChronoUnit.SECONDS)
+	private Duration recoveryBackoffPeriod = Duration.ofSeconds(10);
 
 	/**
-	 * Database username to be used by recovery manager.
+	 * Database username to be used by the recovery manager.
 	 */
 	private String recoveryDbUser = null;
 
 	/**
-	 * Database password to be used by recovery manager.
+	 * Database password to be used by the recovery manager.
 	 */
 	private String recoveryDbPass = null;
 
 	/**
-	 * JMS username to be used by recovery manager.
+	 * JMS username to be used by the recovery manager.
 	 */
 	private String recoveryJmsUser = null;
 
 	/**
-	 * JMS password to be used by recovery manager.
+	 * JMS password to be used by the recovery manager.
 	 */
 	private String recoveryJmsPass = null;
 
@@ -132,28 +140,28 @@ public class NarayanaProperties {
 		this.onePhaseCommit = onePhaseCommit;
 	}
 
-	public int getDefaultTimeout() {
+	public Duration getDefaultTimeout() {
 		return this.defaultTimeout;
 	}
 
-	public int getPeriodicRecoveryPeriod() {
+	public void setDefaultTimeout(Duration defaultTimeout) {
+		this.defaultTimeout = defaultTimeout;
+	}
+
+	public Duration getPeriodicRecoveryPeriod() {
 		return this.periodicRecoveryPeriod;
 	}
 
-	public void setPeriodicRecoveryPeriod(int periodicRecoveryPeriod) {
+	public void setPeriodicRecoveryPeriod(Duration periodicRecoveryPeriod) {
 		this.periodicRecoveryPeriod = periodicRecoveryPeriod;
 	}
 
-	public int getRecoveryBackoffPeriod() {
+	public Duration getRecoveryBackoffPeriod() {
 		return this.recoveryBackoffPeriod;
 	}
 
-	public void setRecoveryBackoffPeriod(int recoveryBackoffPeriod) {
+	public void setRecoveryBackoffPeriod(Duration recoveryBackoffPeriod) {
 		this.recoveryBackoffPeriod = recoveryBackoffPeriod;
-	}
-
-	public void setDefaultTimeout(int defaultTimeout) {
-		this.defaultTimeout = defaultTimeout;
 	}
 
 	public List<String> getXaResourceOrphanFilters() {

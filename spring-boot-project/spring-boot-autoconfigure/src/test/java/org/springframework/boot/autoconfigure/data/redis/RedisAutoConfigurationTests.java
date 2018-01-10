@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Test;
@@ -26,6 +28,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
@@ -88,7 +91,7 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRedisUrlConfiguration() throws Exception {
+	public void testRedisUrlConfiguration() {
 		load("spring.redis.host:foo",
 				"spring.redis.url:redis://user:password@example:33");
 		LettuceConnectionFactory cf = this.context
@@ -113,7 +116,7 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithPool() throws Exception {
+	public void testRedisConfigurationWithPool() {
 		load("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
 				"spring.redis.lettuce.pool.max-idle:4",
 				"spring.redis.lettuce.pool.max-active:16",
@@ -134,7 +137,7 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithTimeout() throws Exception {
+	public void testRedisConfigurationWithTimeout() {
 		load("spring.redis.host:foo", "spring.redis.timeout:100");
 		LettuceConnectionFactory cf = this.context
 				.getBean(LettuceConnectionFactory.class);
@@ -143,7 +146,7 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithSentinel() throws Exception {
+	public void testRedisConfigurationWithSentinel() {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
 		load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
 				+ StringUtils.collectionToCommaDelimitedString(sentinels));
@@ -152,17 +155,20 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithSentinelAndPassword() throws Exception {
-		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
+	public void testRedisConfigurationWithSentinelAndPassword() {
 		load("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
-				"spring.redis.sentinel.nodes:"
-						+ StringUtils.collectionToCommaDelimitedString(sentinels));
-		assertThat(this.context.getBean(LettuceConnectionFactory.class).getPassword())
-				.isEqualTo("password");
+				"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380");
+		LettuceConnectionFactory connectionFactory = this.context
+				.getBean(LettuceConnectionFactory.class);
+		assertThat(connectionFactory.getPassword()).isEqualTo("password");
+		Set<RedisNode> sentinels = connectionFactory.getSentinelConfiguration()
+				.getSentinels();
+		assertThat(sentinels.stream().map(Object::toString).collect(Collectors.toSet()))
+				.contains("127.0.0.1:26379", "127.0.0.1:26380");
 	}
 
 	@Test
-	public void testRedisConfigurationWithCluster() throws Exception {
+	public void testRedisConfigurationWithCluster() {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
 		load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
 				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
@@ -171,7 +177,7 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRedisConfigurationWithClusterAndPassword() throws Exception {
+	public void testRedisConfigurationWithClusterAndPassword() {
 		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
 		load("spring.redis.password=password",
 				"spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),

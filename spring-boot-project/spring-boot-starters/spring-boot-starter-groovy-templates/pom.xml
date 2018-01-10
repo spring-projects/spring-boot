@@ -41,7 +41,7 @@
 						</goals>
 						<configuration>
 							<ignoredClassPatterns>
-								<ignoredClassPattern>javax.annotation.*</ignoredClassPattern>
+								<ignoredClassPattern>module-info</ignoredClassPattern>
 							</ignoredClassPatterns>
 						</configuration>
 					</execution>

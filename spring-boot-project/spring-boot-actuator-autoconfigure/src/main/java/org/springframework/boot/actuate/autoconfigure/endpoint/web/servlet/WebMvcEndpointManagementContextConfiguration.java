@@ -16,15 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -34,8 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -45,57 +40,25 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @since 2.0.0
  */
+
 @ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
-@ConditionalOnBean(DispatcherServlet.class)
-@EnableConfigurationProperties({ CorsEndpointProperties.class,
-		WebEndpointProperties.class, ManagementServerProperties.class })
+@ConditionalOnBean({ DispatcherServlet.class, WebAnnotationEndpointDiscoverer.class })
+@EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebMvcEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(
-			EndpointProvider<WebEndpointOperation> provider,
+			WebAnnotationEndpointDiscoverer endpointDiscoverer,
 			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
 		WebMvcEndpointHandlerMapping handlerMapping = new WebMvcEndpointHandlerMapping(
 				new EndpointMapping(webEndpointProperties.getBasePath()),
-				provider.getEndpoints(), endpointMediaTypes,
-				getCorsConfiguration(corsProperties));
+				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+				corsProperties.toCorsConfiguration());
 		return handlerMapping;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointPathProvider endpointPathProvider(
-			EndpointProvider<WebEndpointOperation> provider,
-			WebEndpointProperties webEndpointProperties) {
-		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
-	}
-
-	private CorsConfiguration getCorsConfiguration(CorsEndpointProperties properties) {
-		if (CollectionUtils.isEmpty(properties.getAllowedOrigins())) {
-			return null;
-		}
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(properties.getAllowedOrigins());
-		if (!CollectionUtils.isEmpty(properties.getAllowedHeaders())) {
-			configuration.setAllowedHeaders(properties.getAllowedHeaders());
-		}
-		if (!CollectionUtils.isEmpty(properties.getAllowedMethods())) {
-			configuration.setAllowedMethods(properties.getAllowedMethods());
-		}
-		if (!CollectionUtils.isEmpty(properties.getExposedHeaders())) {
-			configuration.setExposedHeaders(properties.getExposedHeaders());
-		}
-		if (properties.getMaxAge() != null) {
-			configuration.setMaxAge(properties.getMaxAge());
-		}
-		if (properties.getAllowCredentials() != null) {
-			configuration.setAllowCredentials(properties.getAllowCredentials());
-		}
-		return configuration;
 	}
 
 }

@@ -51,26 +51,32 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void couchbaseNotAvailable() throws Exception {
+	public void couchbaseNotAvailable() {
 		load(null);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void defaultRepository() throws Exception {
+	public void defaultRepository() {
 		load(DefaultConfiguration.class);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(1);
 	}
 
 	@Test
-	public void disableRepository() {
+	public void reactiveRepositories() {
 		load(DefaultConfiguration.class,
-				"spring.data.couchbase.repositories.enabled=false");
+				"spring.data.couchbase.repositories.type=reactive");
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void noRepositoryAvailable() throws Exception {
+	public void disabledRepositories() {
+		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=none");
+		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
+	}
+
+	@Test
+	public void noRepositoryAvailable() {
 		load(NoRepositoryConfiguration.class);
 		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
 	}

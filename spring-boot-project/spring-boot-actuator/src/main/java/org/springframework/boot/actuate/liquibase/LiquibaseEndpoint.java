@@ -117,7 +117,7 @@ public class LiquibaseEndpoint {
 
 		private final String comments;
 
-		private final ContextExpression contextExpression;
+		private final Set<String> contexts;
 
 		private final Date dateExecuted;
 
@@ -141,8 +141,7 @@ public class LiquibaseEndpoint {
 			this.author = ranChangeSet.getAuthor();
 			this.changeLog = ranChangeSet.getChangeLog();
 			this.comments = ranChangeSet.getComments();
-			this.contextExpression = new ContextExpression(
-					ranChangeSet.getContextExpression().getContexts());
+			this.contexts = ranChangeSet.getContextExpression().getContexts();
 			this.dateExecuted = ranChangeSet.getDateExecuted();
 			this.deploymentId = ranChangeSet.getDeploymentId();
 			this.description = ranChangeSet.getDescription();
@@ -167,8 +166,8 @@ public class LiquibaseEndpoint {
 			return this.comments;
 		}
 
-		public ContextExpression getContextExpression() {
-			return this.contextExpression;
+		public Set<String> getContexts() {
+			return this.contexts;
 		}
 
 		public Date getDateExecuted() {

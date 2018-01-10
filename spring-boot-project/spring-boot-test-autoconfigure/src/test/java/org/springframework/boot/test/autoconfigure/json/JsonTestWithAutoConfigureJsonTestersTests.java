@@ -55,22 +55,22 @@ public class JsonTestWithAutoConfigureJsonTestersTests {
 	private JsonbTester<ExampleBasicObject> jsonbTester;
 
 	@Test
-	public void basicJson() throws Exception {
+	public void basicJson() {
 		assertThat(this.basicJson).isNull();
 	}
 
 	@Test
-	public void jackson() throws Exception {
+	public void jackson() {
 		assertThat(this.jacksonTester).isNull();
 	}
 
 	@Test
-	public void gson() throws Exception {
+	public void gson() {
 		assertThat(this.gsonTester).isNull();
 	}
 
 	@Test
-	public void jsonb() throws Exception {
+	public void jsonb() {
 		assertThat(this.jsonbTester).isNull();
 	}
 

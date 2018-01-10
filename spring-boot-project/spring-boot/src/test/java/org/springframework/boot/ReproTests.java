@@ -42,7 +42,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void enableProfileViaApplicationProperties() throws Exception {
+	public void enableProfileViaApplicationProperties() {
 		// gh-308
 		SpringApplication application = new SpringApplication(Config.class);
 
@@ -55,7 +55,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void activeProfilesWithYamlAndCommandLine() throws Exception {
+	public void activeProfilesWithYamlAndCommandLine() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -65,7 +65,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void activeProfilesWithYamlOnly() throws Exception {
+	public void activeProfilesWithYamlOnly() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -75,7 +75,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void orderActiveProfilesWithYamlOnly() throws Exception {
+	public void orderActiveProfilesWithYamlOnly() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -85,7 +85,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void commandLineBeatsProfilesWithYaml() throws Exception {
+	public void commandLineBeatsProfilesWithYaml() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -95,7 +95,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void orderProfilesWithYaml() throws Exception {
+	public void orderProfilesWithYaml() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -105,7 +105,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void reverseOrderOfProfilesWithYaml() throws Exception {
+	public void reverseOrderOfProfilesWithYaml() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -115,7 +115,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void activeProfilesWithYamlAndCommandLineAndNoOverride() throws Exception {
+	public void activeProfilesWithYamlAndCommandLineAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -125,7 +125,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void activeProfilesWithYamlOnlyAndNoOverride() throws Exception {
+	public void activeProfilesWithYamlOnlyAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -135,7 +135,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void commandLineBeatsProfilesWithYamlAndNoOverride() throws Exception {
+	public void commandLineBeatsProfilesWithYamlAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -145,7 +145,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void orderProfilesWithYamlAndNoOverride() throws Exception {
+	public void orderProfilesWithYamlAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -155,7 +155,7 @@ public class ReproTests {
 	}
 
 	@Test
-	public void reverseOrderOfProfilesWithYamlAndNoOverride() throws Exception {
+	public void reverseOrderOfProfilesWithYamlAndNoOverride() {
 		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);

@@ -55,7 +55,6 @@ final class CentralDirectoryFileHeader implements FileHeader {
 
 	CentralDirectoryFileHeader(byte[] header, int headerOffset, AsciiBytes name,
 			byte[] extra, AsciiBytes comment, long localHeaderOffset) {
-		super();
 		this.header = header;
 		this.headerOffset = headerOffset;
 		this.name = name;
@@ -102,8 +101,8 @@ final class CentralDirectoryFileHeader implements FileHeader {
 	}
 
 	@Override
-	public boolean hasName(String name, String suffix) {
-		return this.name.equals(new AsciiBytes(suffix == null ? name : name + suffix));
+	public boolean hasName(CharSequence name, char suffix) {
+		return this.name.matches(name, suffix);
 	}
 
 	public boolean isDirectory() {

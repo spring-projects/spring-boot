@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.data.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -52,7 +51,7 @@ public class CassandraReactiveDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ReactiveSession.class)
 	public ReactiveSession reactiveCassandraSession(Session session) {
-		return new DefaultBridgedReactiveSession(session, Schedulers.elastic());
+		return new DefaultBridgedReactiveSession(session);
 	}
 
 	@Bean

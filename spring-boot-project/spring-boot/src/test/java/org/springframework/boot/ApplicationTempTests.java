@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApplicationTempTests {
 
 	@Test
-	public void generatesConsistentTemp() throws Exception {
+	public void generatesConsistentTemp() {
 		ApplicationTemp t1 = new ApplicationTemp();
 		ApplicationTemp t2 = new ApplicationTemp();
 		assertThat(t1.getDir()).isNotNull();
@@ -38,7 +38,7 @@ public class ApplicationTempTests {
 	}
 
 	@Test
-	public void differentBasedOnUserDir() throws Exception {
+	public void differentBasedOnUserDir() {
 		String userDir = System.getProperty("user.dir");
 		try {
 			File t1 = new ApplicationTemp().getDir();
@@ -52,7 +52,7 @@ public class ApplicationTempTests {
 	}
 
 	@Test
-	public void getSubDir() throws Exception {
+	public void getSubDir() {
 		ApplicationTemp temp = new ApplicationTemp();
 		assertThat(temp.getDir("abc")).isEqualTo(new File(temp.getDir(), "abc"));
 	}

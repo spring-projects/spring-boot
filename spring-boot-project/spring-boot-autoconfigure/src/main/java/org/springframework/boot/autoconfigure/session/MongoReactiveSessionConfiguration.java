@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.ReactiveSessionRepository;
+import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.reactive.ReactiveMongoWebSessionConfiguration;
 
 /**
@@ -33,7 +36,8 @@ import org.springframework.session.data.mongo.config.annotation.web.reactive.Rea
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass(ReactiveMongoWebSessionConfiguration.class)
+@ConditionalOnClass({ ReactiveMongoOperations.class,
+		ReactiveMongoOperationsSessionRepository.class })
 @ConditionalOnMissingBean(ReactiveSessionRepository.class)
 @ConditionalOnBean(ReactiveMongoOperations.class)
 @Conditional(ReactiveSessionCondition.class)
@@ -47,9 +51,9 @@ class MongoReactiveSessionConfiguration {
 		@Autowired
 		public void customize(SessionProperties sessionProperties,
 				MongoSessionProperties mongoSessionProperties) {
-			Integer timeout = sessionProperties.getTimeout();
+			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds(timeout);
+				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setCollectionName(mongoSessionProperties.getCollectionName());
 		}

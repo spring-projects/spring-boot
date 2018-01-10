@@ -98,13 +98,26 @@ public class CouchbaseAutoConfiguration {
 			CouchbaseProperties.Endpoints endpoints = properties.getEnv().getEndpoints();
 			CouchbaseProperties.Timeouts timeouts = properties.getEnv().getTimeouts();
 			DefaultCouchbaseEnvironment.Builder builder = DefaultCouchbaseEnvironment
-					.builder().connectTimeout(timeouts.getConnect())
-					.kvEndpoints(endpoints.getKeyValue())
-					.kvTimeout(timeouts.getKeyValue())
-					.queryEndpoints(endpoints.getQuery())
-					.queryTimeout(timeouts.getQuery()).viewEndpoints(endpoints.getView())
-					.socketConnectTimeout(timeouts.getSocketConnect())
-					.viewTimeout(timeouts.getView());
+					.builder();
+			if (timeouts.getConnect() != null) {
+				builder = builder.connectTimeout(timeouts.getConnect().toMillis());
+			}
+			builder = builder.kvEndpoints(endpoints.getKeyValue());
+			if (timeouts.getKeyValue() != null) {
+				builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
+			}
+			builder = builder.queryEndpoints(endpoints.getQuery());
+			if (timeouts.getQuery() != null) {
+				builder = builder.queryTimeout(timeouts.getQuery().toMillis())
+						.viewEndpoints(endpoints.getView());
+			}
+			if (timeouts.getSocketConnect() != null) {
+				builder = builder.socketConnectTimeout(
+						(int) timeouts.getSocketConnect().toMillis());
+			}
+			if (timeouts.getView() != null) {
+				builder = builder.viewTimeout(timeouts.getView().toMillis());
+			}
 			CouchbaseProperties.Ssl ssl = properties.getEnv().getSsl();
 			if (ssl.getEnabled()) {
 				builder.sslEnabled(true);

@@ -38,8 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = { "app.datasource.bar.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
-		"app.datasource.bar.max-total=42" })
+@SpringBootTest(properties = { "app.datasource.second.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
+		"app.datasource.second.max-total=42" })
 @Import(SimpleTwoDataSourcesExample.SimpleDataSourcesConfiguration.class)
 public class SimpleTwoDataSourcesExampleTests {
 
@@ -50,13 +50,13 @@ public class SimpleTwoDataSourcesExampleTests {
 	public void validateConfiguration() throws SQLException {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(2);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(this.context.getBean("fooDataSource")).isSameAs(dataSource);
+		assertThat(this.context.getBean("firstDataSource")).isSameAs(dataSource);
 		assertThat(dataSource.getConnection().getMetaData().getURL())
 				.startsWith("jdbc:h2:mem:");
-		BasicDataSource barDataSource = this.context.getBean("barDataSource",
+		BasicDataSource secondDataSource = this.context.getBean("secondDataSource",
 				BasicDataSource.class);
-		assertThat(barDataSource.getUrl()).isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
-		assertThat(barDataSource.getMaxTotal()).isEqualTo(42);
+		assertThat(secondDataSource.getUrl()).isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
+		assertThat(secondDataSource.getMaxTotal()).isEqualTo(42);
 	}
 
 }

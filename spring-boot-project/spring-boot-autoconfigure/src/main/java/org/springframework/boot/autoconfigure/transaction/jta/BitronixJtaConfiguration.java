@@ -123,6 +123,7 @@ class BitronixJtaConfiguration {
 		return jtaTransactionManager;
 	}
 
+	@Configuration
 	@ConditionalOnClass(Message.class)
 	static class BitronixJtaJmsConfiguration {
 

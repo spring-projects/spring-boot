@@ -63,7 +63,7 @@ public class ElasticsearchAutoConfigurationTests {
 	}
 
 	@Test
-	public void createTransportClient() throws Exception {
+	public void createTransportClient() {
 		this.context = new AnnotationConfigApplicationContext();
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
 			TestPropertyValues

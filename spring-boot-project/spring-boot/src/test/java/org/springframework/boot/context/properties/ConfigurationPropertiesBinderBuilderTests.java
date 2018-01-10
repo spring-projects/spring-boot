@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,11 @@ import org.junit.Test;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -54,27 +53,10 @@ public class ConfigurationPropertiesBinderBuilderTests {
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void useCustomConversionService() {
-		DefaultConversionService conversionService = new DefaultConversionService();
-		conversionService.addConverter(new AddressConverter());
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"test.address=FooStreet 42");
-		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment)
-				.withConversionService(conversionService).build();
-		PropertyWithAddress target = new PropertyWithAddress();
-		binder.bind(target);
-		assertThat(target.getAddress()).isNotNull();
-		assertThat(target.getAddress().streetName).isEqualTo("FooStreet");
-		assertThat(target.getAddress().number).isEqualTo(42);
-	}
-
-	@Test
 	public void detectDefaultConversionService() {
 		this.applicationContext.registerSingleton("conversionService",
 				DefaultConversionService.class);
-		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment).build();
+		ConfigurationPropertiesBinder binder = builderWithSources().build();
 		assertThat(ReflectionTestUtils.getField(binder, "conversionService"))
 				.isSameAs(this.applicationContext.getBean("conversionService"));
 	}
@@ -83,46 +65,40 @@ public class ConfigurationPropertiesBinderBuilderTests {
 	public void bindToJavaTimeDuration() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"test.duration=PT1M");
-		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment).build();
+		ConfigurationPropertiesBinder binder = builderWithSources().build();
 		PropertyWithDuration target = new PropertyWithDuration();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getDuration().getSeconds()).isEqualTo(60);
 	}
 
 	@Test
-	public void useCustomValidator() {
-		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment).withValidator(validator).build();
-		assertThat(ReflectionTestUtils.getField(binder, "validator")).isSameAs(validator);
-	}
-
-	@Test
 	public void detectDefaultValidator() {
-		this.applicationContext.registerSingleton("configurationPropertiesValidator",
+		this.applicationContext.registerSingleton(
+				ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME,
 				LocalValidatorFactoryBean.class);
-		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment).build();
-		assertThat(ReflectionTestUtils.getField(binder, "validator")).isSameAs(
-				this.applicationContext.getBean("configurationPropertiesValidator"));
+		ConfigurationPropertiesBinder binder = builderWithSources().build();
+		assertThat(ReflectionTestUtils.getField(binder, "validator"))
+				.isSameAs(this.applicationContext.getBean(
+						ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME));
 	}
 
 	@Test
 	public void validationWithoutJsr303() {
-		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment).build();
+		ConfigurationPropertiesBinder binder = builderWithSources().build();
 		assertThat(bindWithValidationErrors(binder, new PropertyWithoutJSR303())
 				.getAllErrors()).hasSize(1);
 	}
 
 	@Test
 	public void validationWithJsr303() {
-		ConfigurationPropertiesBinder binder = this.builder
-				.withEnvironment(this.environment).build();
+		ConfigurationPropertiesBinder binder = builderWithSources().build();
 		assertThat(
 				bindWithValidationErrors(binder, new PropertyWithJSR303()).getAllErrors())
 						.hasSize(2);
+	}
+
+	private ConfigurationPropertiesBinderBuilder builderWithSources() {
+		return this.builder.withPropertySources(this.environment.getPropertySources());
 	}
 
 	@Test
@@ -132,7 +108,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithJSR303 target = new PropertyWithJSR303();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getFoo()).isEqualTo("123456");
 		assertThat(target.getBar()).isEqualTo("654321");
 	}
@@ -140,7 +116,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 	private ValidationErrors bindWithValidationErrors(
 			ConfigurationPropertiesBinder binder, Object target) {
 		try {
-			binder.bind(target);
+			bind(binder, target);
 			throw new AssertionError("Should have failed to bind " + target);
 		}
 		catch (ConfigurationPropertiesBindingException ex) {
@@ -150,40 +126,9 @@ public class ConfigurationPropertiesBinderBuilderTests {
 		}
 	}
 
-	@ConfigurationProperties(prefix = "test")
-	public static class PropertyWithAddress {
-
-		private Address address;
-
-		public Address getAddress() {
-			return this.address;
-		}
-
-		public void setAddress(Address address) {
-			this.address = address;
-		}
-
-	}
-
-	private static class Address {
-
-		private String streetName;
-
-		private Integer number;
-
-		Address(String streetName, Integer number) {
-			this.streetName = streetName;
-			this.number = number;
-		}
-
-	}
-
-	private static class AddressConverter implements Converter<String, Address> {
-		@Override
-		public Address convert(String source) {
-			String[] split = StringUtils.split(source, " ");
-			return new Address(split[0], Integer.valueOf(split[1]));
-		}
+	private void bind(ConfigurationPropertiesBinder binder, Object target) {
+		binder.bind(target, AnnotationUtils.findAnnotation(target.getClass(),
+				ConfigurationProperties.class));
 	}
 
 	@ConfigurationProperties(prefix = "test")

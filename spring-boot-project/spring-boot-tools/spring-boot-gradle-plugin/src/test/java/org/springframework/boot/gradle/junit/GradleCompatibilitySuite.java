@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.junit.runners.model.InitializationError;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 /**
- * Custom {@link Suite} that runs tests against multiple version of Gradle. Test classes
+ * Custom {@link Suite} that runs tests against multiple versions of Gradle. Test classes
  * using the suite must have a public {@link GradleBuild} field named {@code gradleBuild}
  * and annotated with {@link Rule}.
  *

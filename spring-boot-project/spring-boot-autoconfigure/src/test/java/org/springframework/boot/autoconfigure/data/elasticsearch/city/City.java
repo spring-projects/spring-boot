@@ -41,7 +41,6 @@ public class City implements Serializable {
 	}
 
 	public City(String name, String country) {
-		super();
 		this.name = name;
 		this.country = country;
 	}

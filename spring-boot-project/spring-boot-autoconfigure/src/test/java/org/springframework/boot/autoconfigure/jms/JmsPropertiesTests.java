@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
+import java.time.Duration;
+
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,7 +74,7 @@ public class JmsPropertiesTests {
 	@Test
 	public void setTimeToLiveEnablesQoS() {
 		JmsProperties properties = new JmsProperties();
-		properties.getTemplate().setTimeToLive(5000L);
+		properties.getTemplate().setTimeToLive(Duration.ofSeconds(5));
 		assertThat(properties.getTemplate().determineQosEnabled()).isTrue();
 	}
 

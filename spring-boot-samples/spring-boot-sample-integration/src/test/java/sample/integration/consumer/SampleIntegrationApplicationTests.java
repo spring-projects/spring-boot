@@ -51,12 +51,12 @@ public class SampleIntegrationApplicationTests {
 	private ConfigurableApplicationContext context;
 
 	@Before
-	public void deleteInputAndOutput() throws InterruptedException {
+	public void deleteInputAndOutput() {
 		deleteIfExists(new File("target/input"));
 		deleteIfExists(new File("target/output"));
 	}
 
-	private void deleteIfExists(File directory) throws InterruptedException {
+	private void deleteIfExists(File directory) {
 		if (directory.exists()) {
 			assertThat(FileSystemUtils.deleteRecursively(directory)).isTrue();
 		}

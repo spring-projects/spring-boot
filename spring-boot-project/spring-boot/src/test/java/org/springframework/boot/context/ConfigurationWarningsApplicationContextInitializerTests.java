@@ -67,31 +67,31 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void noLogIfInRealPackage() throws Exception {
+	public void noLogIfInRealPackage() {
 		load(InRealPackageConfiguration.class);
 		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogWithoutComponentScanAnnotation() throws Exception {
+	public void noLogWithoutComponentScanAnnotation() {
 		load(InDefaultPackageWithoutScanConfiguration.class);
 		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogIfHasValue() throws Exception {
+	public void noLogIfHasValue() {
 		load(InDefaultPackageWithValueConfiguration.class);
 		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogIfHasBasePackages() throws Exception {
+	public void noLogIfHasBasePackages() {
 		load(InDefaultPackageWithBasePackagesConfiguration.class);
 		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
-	public void noLogIfHasBasePackageClasses() throws Exception {
+	public void noLogIfHasBasePackageClasses() {
 		load(InDefaultPackageWithBasePackageClassesConfiguration.class);
 		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
@@ -103,7 +103,7 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	}
 
 	@Test
-	public void logWarningIfScanningProblemPackages() throws Exception {
+	public void logWarningIfScanningProblemPackages() {
 		load(InRealButScanningProblemPackages.class);
 		assertThat(this.output.toString())
 				.contains("Your ApplicationContext is unlikely to start due to a "

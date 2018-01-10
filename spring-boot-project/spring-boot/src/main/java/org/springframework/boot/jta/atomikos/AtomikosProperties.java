@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jta.atomikos;
 
+import java.time.Duration;
 import java.util.Properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,14 +41,14 @@ public class AtomikosProperties {
 	private String service;
 
 	/**
-	 * Maximum timeout (in milliseconds) that can be allowed for transactions.
+	 * Maximum timeout that can be allowed for transactions.
 	 */
-	private long maxTimeout = 300000;
+	private Duration maxTimeout = Duration.ofMillis(300000);
 
 	/**
 	 * Default timeout for JTA transactions.
 	 */
-	private long defaultJtaTimeout = 10000;
+	private Duration defaultJtaTimeout = Duration.ofMillis(10000);
 
 	/**
 	 * Maximum number of active transactions.
@@ -55,31 +56,36 @@ public class AtomikosProperties {
 	private int maxActives = 50;
 
 	/**
-	 * Enable disk logging.
+	 * Whether to enable disk logging.
 	 */
 	private boolean enableLogging = true;
 
 	/**
-	 * Transaction manager's unique name. Defaults to the machine's IP address. If you
+	 * The transaction manager's unique name. Defaults to the machine's IP address. If you
 	 * plan to run more than one transaction manager against one database you must set
 	 * this property to a unique value.
 	 */
 	private String transactionManagerUniqueName;
 
 	/**
-	 * Specify if sub-transactions should be joined when possible.
+	 * Whether sub-transactions should be joined when possible.
 	 */
 	private boolean serialJtaTransactions = true;
 
 	/**
-	 * Specify if sub-transactions are allowed.
+	 * Specify whether sub-transactions are allowed.
 	 */
 	private boolean allowSubTransactions = true;
 
 	/**
-	 * Specify if a VM shutdown should trigger forced shutdown of the transaction core.
+	 * Whether a VM shutdown should trigger forced shutdown of the transaction core.
 	 */
 	private boolean forceShutdownOnVmExit;
+
+	/**
+	 * How long should normal shutdown (no-force) wait for transactions to complete.
+	 */
+	private long defaultMaxWaitTimeOnShutdown = Long.MAX_VALUE;
 
 	/**
 	 * Transactions log file base name.
@@ -99,8 +105,8 @@ public class AtomikosProperties {
 	private long checkpointInterval = 500;
 
 	/**
-	 * Use different (and concurrent) threads for two-phase commit on the participating
-	 * resources.
+	 * Whether to use different (and concurrent) threads for two-phase commit on the
+	 * participating resources.
 	 */
 	private boolean threadedTwoPhaseCommit;
 
@@ -122,17 +128,16 @@ public class AtomikosProperties {
 	}
 
 	/**
-	 * Specifies the maximum timeout (in milliseconds) that can be allowed for
-	 * transactions. Defaults to {@literal 300000}. This means that calls to
-	 * UserTransaction.setTransactionTimeout() with a value higher than configured here
-	 * will be max'ed to this value.
+	 * Specifies the maximum timeout that can be allowed for transactions. Defaults to
+	 * {@literal 300000}. This means that calls to UserTransaction.setTransactionTimeout()
+	 * with a value higher than configured here will be max'ed to this value.
 	 * @param maxTimeout the max timeout
 	 */
-	public void setMaxTimeout(long maxTimeout) {
+	public void setMaxTimeout(Duration maxTimeout) {
 		this.maxTimeout = maxTimeout;
 	}
 
-	public long getMaxTimeout() {
+	public Duration getMaxTimeout() {
 		return this.maxTimeout;
 	}
 
@@ -141,11 +146,11 @@ public class AtomikosProperties {
 	 * ms).
 	 * @param defaultJtaTimeout the default JTA timeout
 	 */
-	public void setDefaultJtaTimeout(long defaultJtaTimeout) {
+	public void setDefaultJtaTimeout(Duration defaultJtaTimeout) {
 		this.defaultJtaTimeout = defaultJtaTimeout;
 	}
 
-	public long getDefaultJtaTimeout() {
+	public Duration getDefaultJtaTimeout() {
 		return this.defaultJtaTimeout;
 	}
 
@@ -205,7 +210,7 @@ public class AtomikosProperties {
 	 * different but related subtransactions. This setting has no effect on resource
 	 * access within one and the same transaction. If you don't use subtransactions then
 	 * this setting can be ignored.
-	 * @param serialJtaTransactions if serial JTA transaction are supported
+	 * @param serialJtaTransactions if serial JTA transactions are supported
 	 */
 	public void setSerialJtaTransactions(boolean serialJtaTransactions) {
 		this.serialJtaTransactions = serialJtaTransactions;
@@ -234,6 +239,19 @@ public class AtomikosProperties {
 
 	public boolean isForceShutdownOnVmExit() {
 		return this.forceShutdownOnVmExit;
+	}
+
+	/**
+	 * Specifies how long should a normal shutdown (no-force) wait for transactions to
+	 * complete. Defaults to {@literal Long.MAX_VALUE}.
+	 * @param defaultMaxWaitTimeOnShutdown the default max wait time on shutdown
+	 */
+	public void setDefaultMaxWaitTimeOnShutdown(long defaultMaxWaitTimeOnShutdown) {
+		this.defaultMaxWaitTimeOnShutdown = defaultMaxWaitTimeOnShutdown;
+	}
+
+	public long getDefaultMaxWaitTimeOnShutdown() {
+		return this.defaultMaxWaitTimeOnShutdown;
 	}
 
 	/**
@@ -316,6 +334,8 @@ public class AtomikosProperties {
 		set(properties, "serial_jta_transactions", isSerialJtaTransactions());
 		set(properties, "allow_subtransactions", isAllowSubTransactions());
 		set(properties, "force_shutdown_on_vm_exit", isForceShutdownOnVmExit());
+		set(properties, "default_max_wait_time_on_shutdown",
+				getDefaultMaxWaitTimeOnShutdown());
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());
@@ -332,8 +352,15 @@ public class AtomikosProperties {
 	private void set(Properties properties, String key, Object value) {
 		String id = "com.atomikos.icatch." + key;
 		if (value != null && !properties.containsKey(id)) {
-			properties.setProperty(id, value.toString());
+			properties.setProperty(id, asString(value));
 		}
+	}
+
+	private String asString(Object value) {
+		if (value instanceof Duration) {
+			return String.valueOf(((Duration) value).toMillis());
+		}
+		return value.toString();
 	}
 
 	/**
@@ -344,12 +371,12 @@ public class AtomikosProperties {
 		/**
 		 * Delay after which recovery can cleanup pending ('orphaned') log entries.
 		 */
-		private long forgetOrphanedLogEntriesDelay = 86400000;
+		private Duration forgetOrphanedLogEntriesDelay = Duration.ofMillis(86400000);
 
 		/**
 		 * Delay between two recovery scans.
 		 */
-		private long delay = 10000;
+		private Duration delay = Duration.ofMillis(10000);
 
 		/**
 		 * Number of retry attempts to commit the transaction before throwing an
@@ -360,21 +387,22 @@ public class AtomikosProperties {
 		/**
 		 * Delay between retry attempts.
 		 */
-		private long retryInterval = 10000;
+		private Duration retryInterval = Duration.ofMillis(10000);
 
-		public long getForgetOrphanedLogEntriesDelay() {
+		public Duration getForgetOrphanedLogEntriesDelay() {
 			return this.forgetOrphanedLogEntriesDelay;
 		}
 
-		public void setForgetOrphanedLogEntriesDelay(long forgetOrphanedLogEntriesDelay) {
+		public void setForgetOrphanedLogEntriesDelay(
+				Duration forgetOrphanedLogEntriesDelay) {
 			this.forgetOrphanedLogEntriesDelay = forgetOrphanedLogEntriesDelay;
 		}
 
-		public long getDelay() {
+		public Duration getDelay() {
 			return this.delay;
 		}
 
-		public void setDelay(long delay) {
+		public void setDelay(Duration delay) {
 			this.delay = delay;
 		}
 
@@ -386,11 +414,11 @@ public class AtomikosProperties {
 			this.maxRetries = maxRetries;
 		}
 
-		public long getRetryInterval() {
+		public Duration getRetryInterval() {
 			return this.retryInterval;
 		}
 
-		public void setRetryInterval(long retryInterval) {
+		public void setRetryInterval(Duration retryInterval) {
 			this.retryInterval = retryInterval;
 		}
 

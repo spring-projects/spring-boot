@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -78,6 +79,11 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 				"org.springframework.boot.autoconfigure.AutoConfigureAfter");
 		annotations.put("AutoConfigureOrder",
 				"org.springframework.boot.autoconfigure.AutoConfigureOrder");
+	}
+
+	@Override
+	public SourceVersion getSupportedSourceVersion() {
+		return SourceVersion.latestSupported();
 	}
 
 	@Override
@@ -160,15 +166,22 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 				Object value = entry.getValue().getValue();
 				if (value instanceof List) {
 					for (AnnotationValue annotationValue : (List<AnnotationValue>) value) {
-						result.add(annotationValue.getValue());
+						result.add(processValue(annotationValue.getValue()));
 					}
 				}
 				else {
-					result.add(value);
+					result.add(processValue(value));
 				}
 			}
 		}
 		return result;
+	}
+
+	private Object processValue(Object value) {
+		if (value instanceof DeclaredType) {
+			return getQualifiedName(((DeclaredType) value).asElement());
+		}
+		return value;
 	}
 
 	private String getQualifiedName(Element element) {

@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "endpoints.logfile")
+@ConfigurationProperties(prefix = "management.endpoint.logfile")
 public class LogFileWebEndpointProperties {
 
 	/**

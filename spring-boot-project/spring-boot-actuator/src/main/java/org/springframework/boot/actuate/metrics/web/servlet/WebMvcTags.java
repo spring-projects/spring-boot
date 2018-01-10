@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -62,9 +63,19 @@ public final class WebMvcTags {
 	 * available, falling back to the request's {@link HttpServletRequest#getPathInfo()
 	 * path info} if necessary.
 	 * @param request the request
+	 * @param response the response
 	 * @return the uri tag derived from the request
 	 */
-	public static Tag uri(HttpServletRequest request) {
+	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
+		if (response != null) {
+			HttpStatus status = extractStatus(response);
+			if (status != null && status.is3xxRedirection()) {
+				return Tag.of("uri", "REDIRECTION");
+			}
+			if (HttpStatus.NOT_FOUND.equals(status)) {
+				return Tag.of("uri", "NOT_FOUND");
+			}
+		}
 		String uri = (String) request
 				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (uri == null) {
@@ -74,6 +85,15 @@ public final class WebMvcTags {
 			uri = "/";
 		}
 		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
+	}
+
+	private static HttpStatus extractStatus(HttpServletResponse response) {
+		try {
+			return HttpStatus.valueOf(response.getStatus());
+		}
+		catch (IllegalArgumentException ex) {
+			return null;
+		}
 	}
 
 	/**

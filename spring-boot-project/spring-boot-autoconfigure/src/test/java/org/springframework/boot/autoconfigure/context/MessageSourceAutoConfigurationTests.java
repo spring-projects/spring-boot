@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,11 +55,23 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMessageSourceCreated() {
+	public void propertiesBundleWithSlashIsDetected() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
-				.run((context) -> assertThat(
-						context.getMessage("foo", null, "Foo message", Locale.UK))
-								.isEqualTo("bar"));
+				.run((context) -> {
+					assertThat(context).hasSingleBean(MessageSource.class);
+					assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
+							.isEqualTo("bar");
+				});
+	}
+
+	@Test
+	public void propertiesBundleWithDotIsDetected() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test.messages")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(MessageSource.class);
+					assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
+							.isEqualTo("bar");
+				});
 	}
 
 	@Test
@@ -128,7 +140,7 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testFormatMessageOn() throws Exception {
+	public void testFormatMessageOn() {
 		this.contextRunner
 				.withPropertyValues("spring.messages.basename:test/messages",
 						"spring.messages.always-use-message-format:true")

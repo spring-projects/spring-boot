@@ -18,6 +18,7 @@ package org.springframework.boot.web.servlet.context;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
@@ -68,6 +69,19 @@ public class AnnotationConfigServletWebServerApplicationContext
 	}
 
 	/**
+	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext} with the
+	 * given {@code DefaultListableBeanFactory}. The context needs to be populated through
+	 * {@link #register} calls and then manually {@linkplain #refresh refreshed}.
+	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 */
+	public AnnotationConfigServletWebServerApplicationContext(
+			DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
+		this.reader = new AnnotatedBeanDefinitionReader(this);
+		this.scanner = new ClassPathBeanDefinitionScanner(this);
+	}
+
+	/**
 	 * Create a new {@link AnnotationConfigServletWebServerApplicationContext}, deriving
 	 * bean definitions from the given annotated classes and automatically refreshing the
 	 * context.
@@ -108,8 +122,8 @@ public class AnnotationConfigServletWebServerApplicationContext
 
 	/**
 	 * Provide a custom {@link BeanNameGenerator} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner}
-	 * , if any.
+	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner},
+	 * if any.
 	 * <p>
 	 * Default is
 	 * {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
@@ -155,9 +169,9 @@ public class AnnotationConfigServletWebServerApplicationContext
 	 * @see #refresh()
 	 */
 	public final void register(Class<?>... annotatedClasses) {
-		this.annotatedClasses = annotatedClasses;
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
+		this.annotatedClasses = annotatedClasses;
 	}
 
 	/**
@@ -168,8 +182,8 @@ public class AnnotationConfigServletWebServerApplicationContext
 	 * @see #refresh()
 	 */
 	public final void scan(String... basePackages) {
-		this.basePackages = basePackages;
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
+		this.basePackages = basePackages;
 	}
 
 	@Override

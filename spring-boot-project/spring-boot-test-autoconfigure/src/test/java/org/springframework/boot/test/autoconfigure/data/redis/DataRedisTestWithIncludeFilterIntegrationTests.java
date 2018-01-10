@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,18 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testsupport.rule.RedisTestServer;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,11 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jayaram Pradhan
  */
 @RunWith(SpringRunner.class)
+@ContextConfiguration(initializers = DataRedisTestWithIncludeFilterIntegrationTests.Initializer.class)
 @DataRedisTest(includeFilters = @Filter(Service.class))
 public class DataRedisTestWithIncludeFilterIntegrationTests {
 
-	@Rule
-	public RedisTestServer redis = new RedisTestServer();
+	@ClassRule
+	public static RedisContainer redis = new RedisContainer();
 
 	@Autowired
 	private ExampleRepository exampleRepository;
@@ -53,6 +58,18 @@ public class DataRedisTestWithIncludeFilterIntegrationTests {
 		assertThat(personHash.getId()).isNull();
 		PersonHash savedEntity = this.exampleRepository.save(personHash);
 		assertThat(this.service.hasRecord(savedEntity)).isTrue();
+	}
+
+	static class Initializer
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+		@Override
+		public void initialize(
+				ConfigurableApplicationContext configurableApplicationContext) {
+			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
+					.applyTo(configurableApplicationContext.getEnvironment());
+		}
+
 	}
 
 }

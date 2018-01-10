@@ -44,7 +44,7 @@ public class AutoConfigureCacheIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void shouldConfigureNoOpCacheManager() throws Exception {
+	public void shouldConfigureNoOpCacheManager() {
 		CacheManager bean = this.applicationContext.getBean(CacheManager.class);
 		assertThat(bean).isInstanceOf(NoOpCacheManager.class);
 	}

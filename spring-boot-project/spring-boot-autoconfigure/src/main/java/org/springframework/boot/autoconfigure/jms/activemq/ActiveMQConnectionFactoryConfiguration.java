@@ -53,6 +53,7 @@ class ActiveMQConnectionFactoryConfiguration {
 						.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
+	@Configuration
 	@ConditionalOnClass(PooledConnectionFactory.class)
 	static class PooledConnectionFactoryConfiguration {
 
@@ -67,19 +68,29 @@ class ActiveMQConnectionFactoryConfiguration {
 									ActiveMQConnectionFactory.class));
 			ActiveMQProperties.Pool pool = properties.getPool();
 			pooledConnectionFactory.setBlockIfSessionPoolIsFull(pool.isBlockIfFull());
-			pooledConnectionFactory
-					.setBlockIfSessionPoolIsFullTimeout(pool.getBlockIfFullTimeout());
+			if (pool.getBlockIfFullTimeout() != null) {
+				pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(
+						pool.getBlockIfFullTimeout().toMillis());
+			}
 			pooledConnectionFactory
 					.setCreateConnectionOnStartup(pool.isCreateConnectionOnStartup());
-			pooledConnectionFactory.setExpiryTimeout(pool.getExpiryTimeout());
-			pooledConnectionFactory.setIdleTimeout(pool.getIdleTimeout());
+			if (pool.getExpiryTimeout() != null) {
+				pooledConnectionFactory
+						.setExpiryTimeout(pool.getExpiryTimeout().toMillis());
+			}
+			if (pool.getIdleTimeout() != null) {
+				pooledConnectionFactory
+						.setIdleTimeout((int) pool.getIdleTimeout().toMillis());
+			}
 			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
 			pooledConnectionFactory.setMaximumActiveSessionPerConnection(
 					pool.getMaximumActiveSessionPerConnection());
 			pooledConnectionFactory
 					.setReconnectOnException(pool.isReconnectOnException());
-			pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
-					pool.getTimeBetweenExpirationCheck());
+			if (pool.getTimeBetweenExpirationCheck() != null) {
+				pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
+						pool.getTimeBetweenExpirationCheck().toMillis());
+			}
 			pooledConnectionFactory
 					.setUseAnonymousProducers(pool.isUseAnonymousProducers());
 			return pooledConnectionFactory;

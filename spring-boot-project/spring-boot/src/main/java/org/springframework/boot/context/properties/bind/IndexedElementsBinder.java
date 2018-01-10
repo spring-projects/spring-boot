@@ -48,6 +48,11 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		super(context);
 	}
 
+	@Override
+	protected boolean isAllowRecursiveBinding(ConfigurationPropertySource source) {
+		return source == null || source instanceof IterableConfigurationPropertySource;
+	}
+
 	protected final void bindIndexed(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
 			ResolvableType aggregateType, ResolvableType elementType) {

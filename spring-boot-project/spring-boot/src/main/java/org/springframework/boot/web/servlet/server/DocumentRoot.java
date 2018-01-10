@@ -17,7 +17,6 @@
 package org.springframework.boot.web.servlet.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -93,23 +92,30 @@ class DocumentRoot {
 	}
 
 	private File getCodeSourceArchive() {
+		return getCodeSourceArchive(getClass().getProtectionDomain().getCodeSource());
+	}
+
+	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
-			CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
 			URL location = (codeSource == null ? null : codeSource.getLocation());
 			if (location == null) {
 				return null;
 			}
-			String path = location.getPath();
+			String path;
 			URLConnection connection = location.openConnection();
 			if (connection instanceof JarURLConnection) {
 				path = ((JarURLConnection) connection).getJarFile().getName();
 			}
-			if (path.indexOf("!/") != -1) {
-				path = path.substring(0, path.indexOf("!/"));
+			else {
+				path = location.toURI().getPath();
+			}
+			int index = path.indexOf("!/");
+			if (index != -1) {
+				path = path.substring(0, index);
 			}
 			return new File(path);
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			return null;
 		}
 	}

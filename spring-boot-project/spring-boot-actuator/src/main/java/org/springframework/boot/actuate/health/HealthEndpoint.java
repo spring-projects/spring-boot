@@ -20,7 +20,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
 /**
- * {@link Endpoint} to expose application health.
+ * {@link Endpoint} to expose application health information.
  *
  * @author Dave Syer
  * @author Christian Dupuis

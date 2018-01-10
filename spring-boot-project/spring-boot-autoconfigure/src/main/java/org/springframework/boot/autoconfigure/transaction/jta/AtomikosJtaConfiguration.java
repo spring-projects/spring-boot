@@ -72,7 +72,7 @@ class AtomikosJtaConfiguration {
 				.getIfAvailable();
 	}
 
-	@Bean(initMethod = "init", destroyMethod = "shutdownForce")
+	@Bean(initMethod = "init", destroyMethod = "shutdownWait")
 	@ConditionalOnMissingBean(UserTransactionService.class)
 	public UserTransactionServiceImp userTransactionService(
 			AtomikosProperties atomikosProperties) {

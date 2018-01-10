@@ -221,7 +221,7 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void embeddedWithPersistentMode() throws IOException, JMSException {
+	public void embeddedWithPersistentMode() throws IOException {
 		File dataFolder = this.folder.newFolder();
 		final String messageId = UUID.randomUUID().toString();
 		// Start the server and post a message to some queue
@@ -335,7 +335,7 @@ public class ArtemisAutoConfigurationTests {
 			checkDestination(name, true, shouldExist);
 		}
 
-		public void checkDestination(final String name, final boolean pubSub,
+		public void checkDestination(String name, final boolean pubSub,
 				final boolean shouldExist) {
 			this.jmsTemplate.execute((SessionCallback<Void>) (session) -> {
 				try {

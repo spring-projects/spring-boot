@@ -61,7 +61,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldCreateBoundBean() throws Exception {
+	public void bindToClassShouldCreateBoundBean() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		source.put("foo.long-value", "34");
@@ -77,7 +77,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoPrefixShouldCreateBoundBean() throws Exception {
+	public void bindToClassWhenHasNoPrefixShouldCreateBoundBean() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("int-value", "12");
 		source.put("long-value", "34");
@@ -93,7 +93,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceShouldBindToInstance() throws Exception {
+	public void bindToInstanceShouldBindToInstance() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		source.put("foo.long-value", "34");
@@ -112,7 +112,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceWithNoPropertiesShouldReturnUnbound() throws Exception {
+	public void bindToInstanceWithNoPropertiesShouldReturnUnbound() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
 		ExampleDefaultsBean bean = new ExampleDefaultsBean();
@@ -124,7 +124,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldLeaveDefaults() throws Exception {
+	public void bindToClassShouldLeaveDefaults() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "999");
 		this.sources.add(source);
@@ -135,7 +135,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToExistingInstanceShouldLeaveDefaults() throws Exception {
+	public void bindToExistingInstanceShouldLeaveDefaults() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "999");
 		this.sources.add(source);
@@ -151,7 +151,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToMap() throws Exception {
+	public void bindToClassShouldBindToMap() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.map.foo-bar", "1");
 		source.put("foo.map.bar-baz", "2");
@@ -163,7 +163,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToList() throws Exception {
+	public void bindToClassShouldBindToList() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[1]", "bar-baz");
@@ -175,8 +175,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToListIfUnboundElementsPresentShouldThrowException()
-			throws Exception {
+	public void bindToListIfUnboundElementsPresentShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[2]", "bar-baz");
@@ -188,7 +187,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToSet() throws Exception {
+	public void bindToClassShouldBindToSet() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.set[0]", "foo-bar");
 		source.put("foo.set[1]", "bar-baz");
@@ -200,7 +199,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToCollection() throws Exception {
+	public void bindToClassShouldBindToCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.collection[0]", "foo-bar");
 		source.put("foo.collection[1]", "bar-baz");
@@ -212,7 +211,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindToMap() throws Exception {
+	public void bindToClassWhenHasNoSetterShouldBindToMap() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.map.foo-bar", "1");
 		source.put("foo.map.bar-baz", "2");
@@ -224,7 +223,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindToList() throws Exception {
+	public void bindToClassWhenHasNoSetterShouldBindToList() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[1]", "bar-baz");
@@ -236,7 +235,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindToSet() throws Exception {
+	public void bindToClassWhenHasNoSetterShouldBindToSet() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.set[0]", "foo-bar");
 		source.put("foo.set[1]", "bar-baz");
@@ -248,7 +247,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindToCollection() throws Exception {
+	public void bindToClassWhenHasNoSetterShouldBindToCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.collection[0]", "foo-bar");
 		source.put("foo.collection[1]", "bar-baz");
@@ -260,7 +259,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindNested() throws Exception {
+	public void bindToClassShouldBindNested() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.string-value", "foo");
@@ -272,8 +271,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenIterableShouldBindNestedBasedOnInstance()
-			throws Exception {
+	public void bindToClassWhenIterableShouldBindNestedBasedOnInstance() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.string-value", "foo");
@@ -287,8 +285,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenNotIterableShouldNotBindNestedBasedOnInstance()
-			throws Exception {
+	public void bindToClassWhenNotIterableShouldNotBindNestedBasedOnInstance() {
 		// If we can't tell that binding will happen, we don't want to randomly invoke
 		// getters on the class and cause side effects
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -301,7 +298,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterShouldBindNested() throws Exception {
+	public void bindToClassWhenHasNoSetterShouldBindNested() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.string-value", "foo");
@@ -313,8 +310,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenHasNoSetterAndImmutableShouldThrowException()
-			throws Exception {
+	public void bindToClassWhenHasNoSetterAndImmutableShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.foo", "bar");
 		this.sources.add(source);
@@ -324,7 +320,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceWhenNoNestedShouldLeaveNestedAsNull() throws Exception {
+	public void bindToInstanceWhenNoNestedShouldLeaveNestedAsNull() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("faf.value-bean.int-value", "123");
 		this.sources.add(source);
@@ -336,7 +332,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenPropertiesMissingShouldReturnUnbound() throws Exception {
+	public void bindToClassWhenPropertiesMissingShouldReturnUnbound() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("faf.int-value", "12");
 		this.sources.add(source);
@@ -346,8 +342,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenNoDefaultConstructorShouldReturnUnbound()
-			throws Exception {
+	public void bindToClassWhenNoDefaultConstructorShouldReturnUnbound() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "bar");
 		this.sources.add(source);
@@ -357,7 +352,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceWhenNoDefaultConstructorShouldBind() throws Exception {
+	public void bindToInstanceWhenNoDefaultConstructorShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "bar");
 		this.sources.add(source);
@@ -371,7 +366,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindHierarchy() throws Exception {
+	public void bindToClassShouldBindHierarchy() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "123");
 		source.put("foo.long-value", "456");
@@ -383,16 +378,14 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenPropertyCannotBeConvertedShouldThrowException()
-			throws Exception {
+	public void bindToClassWhenPropertyCannotBeConvertedShouldThrowException() {
 		this.sources.add(new MockConfigurationPropertySource("foo.int-value", "foo"));
 		this.thrown.expect(BindException.class);
 		this.binder.bind("foo", Bindable.of(ExampleValueBean.class));
 	}
 
 	@Test
-	public void bindToClassWhenPropertyCannotBeConvertedAndIgnoreErrorsShouldNotSetValue()
-			throws Exception {
+	public void bindToClassWhenPropertyCannotBeConvertedAndIgnoreErrorsShouldNotSetValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.int-value", "12");
 		source.put("foo.long-value", "bang");
@@ -409,7 +402,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWhenMismatchedGetSetShouldBind() throws Exception {
+	public void bindToClassWhenMismatchedGetSetShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "123");
 		this.sources.add(source);
@@ -419,7 +412,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldNotInvokeExtraMethods() throws Exception {
+	public void bindToClassShouldNotInvokeExtraMethods() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource(
 				"foo.value", "123");
 		this.sources.add(source.nonIterable());
@@ -429,7 +422,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassWithSelfReferenceShouldBind() throws Exception {
+	public void bindToClassWithSelfReferenceShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "123");
 		this.sources.add(source);
@@ -439,7 +432,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceWithExistingValueShouldReturnUnbound() throws Exception {
+	public void bindToInstanceWithExistingValueShouldReturnUnbound() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
 		ExampleNestedBean existingValue = new ExampleNestedBean();
@@ -451,7 +444,7 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindWithAnnotations() throws Exception {
+	public void bindWithAnnotations() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.date", "2014-04-01");
 		this.sources.add(source);

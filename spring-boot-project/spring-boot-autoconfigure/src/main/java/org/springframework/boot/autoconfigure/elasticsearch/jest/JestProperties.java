@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +39,7 @@ public class JestProperties {
 			Collections.singletonList("http://localhost:9200"));
 
 	/**
-	 * Login user.
+	 * Login username.
 	 */
 	private String username;
 
@@ -48,19 +49,19 @@ public class JestProperties {
 	private String password;
 
 	/**
-	 * Enable connection requests from multiple execution threads.
+	 * Whether to enable connection requests from multiple execution threads.
 	 */
 	private boolean multiThreaded = true;
 
 	/**
-	 * Connection timeout in milliseconds.
+	 * Connection timeout.
 	 */
-	private int connectionTimeout = 3000;
+	private Duration connectionTimeout = Duration.ofSeconds(3);
 
 	/**
-	 * Read timeout in milliseconds.
+	 * Read timeout.
 	 */
-	private int readTimeout = 3000;
+	private Duration readTimeout = Duration.ofSeconds(3);
 
 	/**
 	 * Proxy settings.
@@ -99,19 +100,19 @@ public class JestProperties {
 		this.multiThreaded = multiThreaded;
 	}
 
-	public int getConnectionTimeout() {
+	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
-	public void setConnectionTimeout(int connectionTimeout) {
+	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
-	public int getReadTimeout() {
+	public Duration getReadTimeout() {
 		return this.readTimeout;
 	}
 
-	public void setReadTimeout(int readTimeout) {
+	public void setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
 	}
 

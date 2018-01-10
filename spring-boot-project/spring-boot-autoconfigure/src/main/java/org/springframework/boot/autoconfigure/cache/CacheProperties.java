@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -29,13 +29,14 @@ import org.springframework.util.Assert;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Ryon Day
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.cache")
 public class CacheProperties {
 
 	/**
-	 * Cache type, auto-detected according to the environment by default.
+	 * Cache type. By default, auto-detected according to the environment.
 	 */
 	private CacheType type;
 
@@ -54,6 +55,8 @@ public class CacheProperties {
 	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
+
+	private final Redis redis = new Redis();
 
 	public CacheType getType() {
 		return this.type;
@@ -91,6 +94,10 @@ public class CacheProperties {
 		return this.jcache;
 	}
 
+	public Redis getRedis() {
+		return this.redis;
+	}
+
 	/**
 	 * Resolve the config location if set.
 	 * @param config the config resource
@@ -113,8 +120,8 @@ public class CacheProperties {
 	public static class Caffeine {
 
 		/**
-		 * The spec to use to create caches. Check CaffeineSpec for more details on the
-		 * spec format.
+		 * The spec to use to create caches. See CaffeineSpec for more details on the spec
+		 * format.
 		 */
 		private String spec;
 
@@ -134,24 +141,16 @@ public class CacheProperties {
 	public static class Couchbase {
 
 		/**
-		 * Entry expiration in milliseconds. By default the entries never expire. Note
-		 * that this value is ultimately converted to seconds.
+		 * Entry expiration. By default the entries never expire. Note that this value is
+		 * ultimately converted to seconds.
 		 */
-		private int expiration;
+		private Duration expiration;
 
-		public int getExpiration() {
+		public Duration getExpiration() {
 			return this.expiration;
 		}
 
-		/**
-		 * Return the expiration in seconds.
-		 * @return the expiration in seconds
-		 */
-		public int getExpirationSeconds() {
-			return (int) TimeUnit.MILLISECONDS.toSeconds(this.expiration);
-		}
-
-		public void setExpiration(int expiration) {
+		public void setExpiration(Duration expiration) {
 			this.expiration = expiration;
 		}
 
@@ -210,7 +209,7 @@ public class CacheProperties {
 
 		/**
 		 * Fully qualified name of the CachingProvider implementation to use to retrieve
-		 * the JSR-107 compliant cache manager. Only needed if more than one JSR-107
+		 * the JSR-107 compliant cache manager. Needed only if more than one JSR-107
 		 * implementation is available on the classpath.
 		 */
 		private String provider;
@@ -229,6 +228,65 @@ public class CacheProperties {
 
 		public void setConfig(Resource config) {
 			this.config = config;
+		}
+
+	}
+
+	/**
+	 * Redis-specific cache properties.
+	 */
+	public static class Redis {
+
+		/**
+		 * Entry expiration. By default the entries never expire.
+		 */
+		private Duration timeToLive;
+
+		/**
+		 * Allow caching null values.
+		 */
+		private boolean cacheNullValues = true;
+
+		/**
+		 * Key prefix.
+		 */
+		private String keyPrefix;
+
+		/**
+		 * Whether to use the key prefix when writing to Redis.
+		 */
+		private boolean useKeyPrefix = true;
+
+		public Duration getTimeToLive() {
+			return this.timeToLive;
+		}
+
+		public void setTimeToLive(Duration timeToLive) {
+			this.timeToLive = timeToLive;
+		}
+
+		public boolean isCacheNullValues() {
+			return this.cacheNullValues;
+		}
+
+		public void setCacheNullValues(boolean cacheNullValues) {
+			this.cacheNullValues = cacheNullValues;
+		}
+
+		public String getKeyPrefix() {
+			return this.keyPrefix;
+		}
+
+		public void setKeyPrefix(String keyPrefix) {
+			this.keyPrefix = keyPrefix;
+		}
+
+		public boolean isUseKeyPrefix() {
+			return this.useKeyPrefix;
+		}
+
+		public void setUseKeyPrefix(boolean useKeyPrefix) {
+			this.useKeyPrefix = useKeyPrefix;
 		}
 
 	}

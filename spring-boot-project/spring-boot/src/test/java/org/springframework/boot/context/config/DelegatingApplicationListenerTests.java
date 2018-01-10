@@ -50,7 +50,7 @@ public class DelegatingApplicationListenerTests {
 	}
 
 	@Test
-	public void orderedInitialize() throws Exception {
+	public void orderedInitialize() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"context.listener.classes=" + MockInitB.class.getName() + ","
 						+ MockInitA.class.getName());
@@ -63,13 +63,13 @@ public class DelegatingApplicationListenerTests {
 	}
 
 	@Test
-	public void noInitializers() throws Exception {
+	public void noInitializers() {
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
 				new SpringApplication(), new String[0], this.context.getEnvironment()));
 	}
 
 	@Test
-	public void emptyInitializers() throws Exception {
+	public void emptyInitializers() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"context.listener.classes:");
 		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(

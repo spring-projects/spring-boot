@@ -117,7 +117,7 @@ public class JavaPluginActionIntegrationTests {
 	}
 
 	@Test
-	public void additionalMetadataLocationsCompilerArgumentIsAddedWhenAnnotationProcessorIsOnTheClasspath()
+	public void additionalMetadataLocationsConfiguredWhenProcessorIsPresent()
 			throws IOException {
 		createMinimalMainSource();
 		File libs = new File(this.gradleBuild.getProjectDir(), "libs");
@@ -128,13 +128,14 @@ public class JavaPluginActionIntegrationTests {
 		assertThat(result.task(":compileJava").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains(
-				"compileJava compiler args: [-parameters, -Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
-						+ this.gradleBuild.getProjectDir().getCanonicalPath()
-						+ "/src/main/resources]");
+				"compileJava compiler args: [-parameters, -Aorg.springframework.boot."
+						+ "configurationprocessor.additionalMetadataLocations="
+						+ new File(this.gradleBuild.getProjectDir(), "src/main/resources")
+								.getCanonicalPath());
 	}
 
 	@Test
-	public void additionalMetadataLocationsCompilerArgumentIsNotAddedWhenAnnotationProcessorIsNotOnTheClasspath()
+	public void additionalMetadataLocationsNotConfiguredWhenProcessorIsAbsent()
 			throws IOException {
 		createMinimalMainSource();
 		BuildResult result = this.gradleBuild.build("compileJava");

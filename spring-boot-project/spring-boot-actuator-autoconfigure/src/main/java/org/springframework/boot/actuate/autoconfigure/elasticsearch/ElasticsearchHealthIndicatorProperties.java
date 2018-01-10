@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.elasticsearch;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,9 +39,9 @@ public class ElasticsearchHealthIndicatorProperties {
 	private List<String> indices = new ArrayList<>();
 
 	/**
-	 * Time, in milliseconds, to wait for a response from the cluster.
+	 * Time to wait for a response from the cluster.
 	 */
-	private long responseTimeout = 100L;
+	private Duration responseTimeout = Duration.ofMillis(100);
 
 	public List<String> getIndices() {
 		return this.indices;
@@ -50,11 +51,11 @@ public class ElasticsearchHealthIndicatorProperties {
 		this.indices = indices;
 	}
 
-	public long getResponseTimeout() {
+	public Duration getResponseTimeout() {
 		return this.responseTimeout;
 	}
 
-	public void setResponseTimeout(long responseTimeout) {
+	public void setResponseTimeout(Duration responseTimeout) {
 		this.responseTimeout = responseTimeout;
 	}
 

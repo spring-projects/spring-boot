@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 
 /**
  * Internal strategy used by {@link Binder} to bind aggregates (Maps, Lists, Arrays).
@@ -34,6 +35,14 @@ abstract class AggregateBinder<T> {
 	AggregateBinder(BindContext context) {
 		this.context = context;
 	}
+
+	/**
+	 * Determine if recursive binding is supported.
+	 * @param source the configuration property source or {@code null} for all sources.
+	 * @return if recursive binding is supported
+	 */
+	protected abstract boolean isAllowRecursiveBinding(
+			ConfigurationPropertySource source);
 
 	/**
 	 * Perform binding for the aggregate.

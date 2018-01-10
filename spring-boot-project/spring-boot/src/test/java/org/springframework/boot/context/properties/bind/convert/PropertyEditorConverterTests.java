@@ -52,7 +52,7 @@ public class PropertyEditorConverterTests {
 	}
 
 	@Test
-	public void convertShouldSupportConventionBasedEditors() throws Exception {
+	public void convertShouldSupportConventionBasedEditors() {
 		String source = "org/springframework/boot/context/properties/bind/convert/resource.txt";
 		TypeDescriptor sourceType = TypeDescriptor.forObject(source);
 		TypeDescriptor targetType = TypeDescriptor.valueOf(Resource.class);
@@ -63,7 +63,7 @@ public class PropertyEditorConverterTests {
 	}
 
 	@Test
-	public void convertShouldSupportDefaultEditors() throws Exception {
+	public void convertShouldSupportDefaultEditors() {
 		String source = "en_UK";
 		TypeDescriptor sourceType = TypeDescriptor.forObject(source);
 		TypeDescriptor targetType = TypeDescriptor.valueOf(Locale.class);
@@ -74,7 +74,7 @@ public class PropertyEditorConverterTests {
 	}
 
 	@Test
-	public void matchShouldNotMatchCollection() throws Exception {
+	public void matchShouldNotMatchCollection() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		assertThat(this.converter.matches(sourceType,
 				TypeDescriptor.valueOf(Collection.class))).isFalse();
@@ -85,7 +85,7 @@ public class PropertyEditorConverterTests {
 	}
 
 	@Test
-	public void matchShouldNotMatchMap() throws Exception {
+	public void matchShouldNotMatchMap() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		assertThat(this.converter.matches(sourceType, TypeDescriptor.valueOf(Map.class)))
 				.isFalse();

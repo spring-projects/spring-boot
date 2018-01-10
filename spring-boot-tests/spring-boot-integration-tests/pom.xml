@@ -19,7 +19,6 @@
 		<module>spring-boot-devtools-tests</module>
 		<module>spring-boot-server-tests</module>
 		<module>spring-boot-launch-script-tests</module>
-		<module>spring-boot-security-tests</module>
 	</modules>
 	<build>
 		<plugins>

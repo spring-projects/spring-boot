@@ -121,7 +121,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	public void propertySourceShouldTrackOrigin() throws Exception {
+	public void propertySourceShouldTrackOrigin() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json={\"foo\":\"bar\"}");

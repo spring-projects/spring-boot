@@ -40,14 +40,14 @@ public class FilteredConfigurationPropertiesSourceTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() throws Exception {
+	public void createWhenSourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Source must not be null");
 		new FilteredConfigurationPropertiesSource(null, Objects::nonNull);
 	}
 
 	@Test
-	public void createWhenFilterIsNullShouldThrowException() throws Exception {
+	public void createWhenFilterIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Filter must not be null");
 		new FilteredConfigurationPropertiesSource(new MockConfigurationPropertySource(),
@@ -55,7 +55,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void getValueShouldFilterNames() throws Exception {
+	public void getValueShouldFilterNames() {
 		ConfigurationPropertySource source = createTestSource();
 		ConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("a");
@@ -68,8 +68,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty()
-			throws Exception {
+	public void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
@@ -81,8 +80,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse()
-			throws Exception {
+	public void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
@@ -94,8 +92,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty()
-			throws Exception {
+	public void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));

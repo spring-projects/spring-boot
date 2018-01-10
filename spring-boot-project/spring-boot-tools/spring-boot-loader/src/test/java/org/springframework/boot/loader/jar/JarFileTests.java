@@ -122,7 +122,7 @@ public class JarFileTests {
 	}
 
 	@Test
-	public void getEntries() throws Exception {
+	public void getEntries() {
 		Enumeration<java.util.jar.JarEntry> entries = this.jarFile.entries();
 		assertThat(entries.nextElement().getName()).isEqualTo("META-INF/");
 		assertThat(entries.nextElement().getName()).isEqualTo("META-INF/MANIFEST.MF");
@@ -146,7 +146,7 @@ public class JarFileTests {
 	}
 
 	@Test
-	public void getJarEntry() throws Exception {
+	public void getJarEntry() {
 		java.util.jar.JarEntry entry = this.jarFile.getJarEntry("1.dat");
 		assertThat(entry).isNotNull();
 		assertThat(entry.getName()).isEqualTo("1.dat");
@@ -163,12 +163,12 @@ public class JarFileTests {
 	}
 
 	@Test
-	public void getName() throws Exception {
+	public void getName() {
 		assertThat(this.jarFile.getName()).isEqualTo(this.rootJarFile.getPath());
 	}
 
 	@Test
-	public void getSize() throws Exception {
+	public void getSize() {
 		assertThat(this.jarFile.size()).isEqualTo((int) this.rootJarFile.length());
 	}
 

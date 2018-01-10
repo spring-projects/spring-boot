@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -120,6 +121,9 @@ public class DefaultServletWebServerFactoryCustomizer
 		if (this.serverProperties.getCompression() != null) {
 			factory.setCompression(this.serverProperties.getCompression());
 		}
+		if (this.serverProperties.getHttp2() != null) {
+			factory.setHttp2(this.serverProperties.getHttp2());
+		}
 		factory.setServerHeader(this.serverProperties.getServerHeader());
 		if (factory instanceof TomcatServletWebServerFactory) {
 			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,
@@ -192,7 +196,7 @@ public class DefaultServletWebServerFactoryCustomizer
 				config.setSecure(cookie.getSecure());
 			}
 			if (cookie.getMaxAge() != null) {
-				config.setMaxAge(cookie.getMaxAge());
+				config.setMaxAge((int) cookie.getMaxAge().getSeconds());
 			}
 		}
 
@@ -214,13 +218,14 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		public static void customizeTomcat(ServerProperties serverProperties,
 				Environment environment, TomcatServletWebServerFactory factory) {
-
 			ServerProperties.Tomcat tomcatProperties = serverProperties.getTomcat();
 			if (tomcatProperties.getBasedir() != null) {
 				factory.setBaseDirectory(tomcatProperties.getBasedir());
 			}
-			factory.setBackgroundProcessorDelay(
-					tomcatProperties.getBackgroundProcessorDelay());
+			if (tomcatProperties.getBackgroundProcessorDelay() != null) {
+				factory.setBackgroundProcessorDelay((int) tomcatProperties
+						.getBackgroundProcessorDelay().getSeconds());
+			}
 			customizeRemoteIpValve(serverProperties, environment, factory);
 			if (tomcatProperties.getMaxThreads() > 0) {
 				customizeMaxThreads(factory, tomcatProperties.getMaxThreads());
@@ -251,6 +256,10 @@ public class DefaultServletWebServerFactoryCustomizer
 				customizeRedirectContextRoot(factory,
 						tomcatProperties.getRedirectContextRoot());
 			}
+			if (tomcatProperties.getUseRelativeRedirects() != null) {
+				customizeUseRelativeRedirects(factory,
+						tomcatProperties.getUseRelativeRedirects());
+			}
 			if (tomcatProperties.getMaxConnections() > 0) {
 				customizeMaxConnections(factory, tomcatProperties.getMaxConnections());
 			}
@@ -265,7 +274,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeAcceptCount(TomcatServletWebServerFactory factory,
-				final int acceptCount) {
+				int acceptCount) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
@@ -276,7 +285,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeMaxConnections(TomcatServletWebServerFactory factory,
-				final int maxConnections) {
+				int maxConnections) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
@@ -287,12 +296,12 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeConnectionTimeout(
-				TomcatServletWebServerFactory factory, final int connectionTimeout) {
+				TomcatServletWebServerFactory factory, Duration connectionTimeout) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
 					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-					protocol.setConnectionTimeout(connectionTimeout);
+					protocol.setConnectionTimeout((int) connectionTimeout.toMillis());
 				}
 			});
 		}
@@ -323,7 +332,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		@SuppressWarnings("rawtypes")
 		private static void customizeMaxThreads(TomcatServletWebServerFactory factory,
-				final int maxThreads) {
+				int maxThreads) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
@@ -335,7 +344,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		@SuppressWarnings("rawtypes")
 		private static void customizeMinThreads(TomcatServletWebServerFactory factory,
-				final int minSpareThreads) {
+				int minSpareThreads) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractProtocol) {
@@ -347,7 +356,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 		@SuppressWarnings("rawtypes")
 		private static void customizeMaxHttpHeaderSize(
-				TomcatServletWebServerFactory factory, final int maxHttpHeaderSize) {
+				TomcatServletWebServerFactory factory, int maxHttpHeaderSize) {
 			factory.addConnectorCustomizers((connector) -> {
 				ProtocolHandler handler = connector.getProtocolHandler();
 				if (handler instanceof AbstractHttp11Protocol) {
@@ -358,7 +367,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeMaxHttpPostSize(
-				TomcatServletWebServerFactory factory, final int maxHttpPostSize) {
+				TomcatServletWebServerFactory factory, int maxHttpPostSize) {
 			factory.addConnectorCustomizers(
 					(connector) -> connector.setMaxPostSize(maxHttpPostSize));
 		}
@@ -381,10 +390,15 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeRedirectContextRoot(
-				TomcatServletWebServerFactory factory,
-				final boolean redirectContextRoot) {
+				TomcatServletWebServerFactory factory, boolean redirectContextRoot) {
 			factory.addContextCustomizers((context) -> context
 					.setMapperContextRootRedirectEnabled(redirectContextRoot));
+		}
+
+		private static void customizeUseRelativeRedirects(
+				TomcatServletWebServerFactory factory, boolean useRelativeRedirects) {
+			factory.addContextCustomizers(
+					(context) -> context.setUseRelativeRedirects(useRelativeRedirects));
 		}
 
 		private static void customizeStaticResources(Resource resource,
@@ -395,7 +409,8 @@ public class DefaultServletWebServerFactoryCustomizer
 			factory.addContextCustomizers((context) -> {
 				context.addLifecycleListener((event) -> {
 					if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
-						context.getResources().setCacheTtl(resource.getCacheTtl());
+						long ttl = resource.getCacheTtl().toMillis();
+						context.getResources().setCacheTtl(ttl);
 					}
 				});
 			});
@@ -405,7 +420,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 	private static class UndertowCustomizer {
 
-		protected static void customizeUndertow(final ServerProperties serverProperties,
+		protected static void customizeUndertow(ServerProperties serverProperties,
 				Environment environment, UndertowServletWebServerFactory factory) {
 
 			ServerProperties.Undertow undertowProperties = serverProperties.getUndertow();
@@ -450,19 +465,20 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeConnectionTimeout(
-				UndertowServletWebServerFactory factory, final int connectionTimeout) {
+				UndertowServletWebServerFactory factory, Duration connectionTimeout) {
 			factory.addBuilderCustomizers((builder) -> builder.setSocketOption(
-					UndertowOptions.NO_REQUEST_TIMEOUT, connectionTimeout));
+					UndertowOptions.NO_REQUEST_TIMEOUT,
+					(int) connectionTimeout.toMillis()));
 		}
 
 		private static void customizeMaxHttpHeaderSize(
-				UndertowServletWebServerFactory factory, final int maxHttpHeaderSize) {
+				UndertowServletWebServerFactory factory, int maxHttpHeaderSize) {
 			factory.addBuilderCustomizers((builder) -> builder
 					.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
 		}
 
 		private static void customizeMaxHttpPostSize(
-				UndertowServletWebServerFactory factory, final long maxHttpPostSize) {
+				UndertowServletWebServerFactory factory, long maxHttpPostSize) {
 			factory.addBuilderCustomizers((builder) -> builder
 					.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
 		}
@@ -471,7 +487,7 @@ public class DefaultServletWebServerFactoryCustomizer
 
 	private static class JettyCustomizer {
 
-		public static void customizeJetty(final ServerProperties serverProperties,
+		public static void customizeJetty(ServerProperties serverProperties,
 				Environment environment, JettyServletWebServerFactory factory) {
 			ServerProperties.Jetty jettyProperties = serverProperties.getJetty();
 			factory.setUseForwardHeaders(
@@ -500,19 +516,20 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeConnectionTimeout(
-				JettyServletWebServerFactory factory, final int connectionTimeout) {
+				JettyServletWebServerFactory factory, Duration connectionTimeout) {
 			factory.addServerCustomizers((server) -> {
 				for (org.eclipse.jetty.server.Connector connector : server
 						.getConnectors()) {
 					if (connector instanceof AbstractConnector) {
-						((AbstractConnector) connector).setIdleTimeout(connectionTimeout);
+						((AbstractConnector) connector)
+								.setIdleTimeout(connectionTimeout.toMillis());
 					}
 				}
 			});
 		}
 
 		private static void customizeMaxHttpHeaderSize(
-				JettyServletWebServerFactory factory, final int maxHttpHeaderSize) {
+				JettyServletWebServerFactory factory, int maxHttpHeaderSize) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 
 				@Override
@@ -559,7 +576,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeMaxHttpPostSize(JettyServletWebServerFactory factory,
-				final int maxHttpPostSize) {
+				int maxHttpPostSize) {
 			factory.addServerCustomizers(new JettyServerCustomizer() {
 
 				@Override
@@ -589,7 +606,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 
 		private static void customizeAccessLog(JettyServletWebServerFactory factory,
-				final ServerProperties.Jetty.Accesslog properties) {
+				ServerProperties.Jetty.Accesslog properties) {
 			factory.addServerCustomizers((server) -> {
 				NCSARequestLog log = new NCSARequestLog();
 				if (properties.getFilename() != null) {

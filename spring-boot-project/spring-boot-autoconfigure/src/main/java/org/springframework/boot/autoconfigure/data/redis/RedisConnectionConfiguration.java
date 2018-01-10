@@ -111,8 +111,7 @@ abstract class RedisConnectionConfiguration {
 
 	private List<RedisNode> createSentinels(RedisProperties.Sentinel sentinel) {
 		List<RedisNode> nodes = new ArrayList<>();
-		for (String node : StringUtils
-				.commaDelimitedListToStringArray(sentinel.getNodes())) {
+		for (String node : sentinel.getNodes()) {
 			try {
 				String[] parts = StringUtils.split(node, ":");
 				Assert.state(parts.length == 2, "Must be defined as 'host:port'");

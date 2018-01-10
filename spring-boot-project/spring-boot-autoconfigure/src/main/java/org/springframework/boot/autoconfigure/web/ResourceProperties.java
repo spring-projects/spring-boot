@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,14 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.http.CacheControl;
 
 /**
  * Properties used to configure resource handling.
@@ -25,6 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Brian Clozel
  * @author Dave Syer
  * @author Venil Noronha
+ * @author Kristine Jetzke
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
@@ -41,16 +49,13 @@ public class ResourceProperties {
 	private String[] staticLocations = CLASSPATH_RESOURCE_LOCATIONS;
 
 	/**
-	 * Cache period for the resources served by the resource handler, in seconds.
-	 */
-	private Integer cachePeriod;
-
-	/**
-	 * Enable default resource handling.
+	 * Whether to enable default resource handling.
 	 */
 	private boolean addMappings = true;
 
 	private final Chain chain = new Chain();
+
+	private final Cache cache = new Cache();
 
 	public String[] getStaticLocations() {
 		return this.staticLocations;
@@ -69,14 +74,6 @@ public class ResourceProperties {
 		return normalized;
 	}
 
-	public Integer getCachePeriod() {
-		return this.cachePeriod;
-	}
-
-	public void setCachePeriod(Integer cachePeriod) {
-		this.cachePeriod = cachePeriod;
-	}
-
 	public boolean isAddMappings() {
 		return this.addMappings;
 	}
@@ -89,30 +86,34 @@ public class ResourceProperties {
 		return this.chain;
 	}
 
+	public Cache getCache() {
+		return this.cache;
+	}
+
 	/**
 	 * Configuration for the Spring Resource Handling chain.
 	 */
 	public static class Chain {
 
 		/**
-		 * Enable the Spring Resource Handling chain. Disabled by default unless at least
-		 * one strategy has been enabled.
+		 * Whether to enable the Spring Resource Handling chain. By default, disabled
+		 * unless at least one strategy has been enabled.
 		 */
 		private Boolean enabled;
 
 		/**
-		 * Enable caching in the Resource chain.
+		 * Whether to enable caching in the Resource chain.
 		 */
 		private boolean cache = true;
 
 		/**
-		 * Enable HTML5 application cache manifest rewriting.
+		 * Whether to enable HTML5 application cache manifest rewriting.
 		 */
 		private boolean htmlApplicationCache = false;
 
 		/**
-		 * Enable resolution of already gzipped resources. Checks for a resource name
-		 * variant with the "*.gz" extension.
+		 * Whether to enable resolution of already gzipped resources. Checks for a
+		 * resource name variant with the "*.gz" extension.
 		 */
 		private boolean gzipped = false;
 
@@ -193,12 +194,12 @@ public class ResourceProperties {
 	public static class Content {
 
 		/**
-		 * Enable the content Version Strategy.
+		 * Whether to enable the content Version Strategy.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Comma-separated list of patterns to apply to the Version Strategy.
+		 * Comma-separated list of patterns to apply to the content Version Strategy.
 		 */
 		private String[] paths = new String[] { "/**" };
 
@@ -226,17 +227,17 @@ public class ResourceProperties {
 	public static class Fixed {
 
 		/**
-		 * Enable the fixed Version Strategy.
+		 * Whether to enable the fixed Version Strategy.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Comma-separated list of patterns to apply to the Version Strategy.
+		 * Comma-separated list of patterns to apply to the fixed Version Strategy.
 		 */
 		private String[] paths = new String[] { "/**" };
 
 		/**
-		 * Version string to use for the Version Strategy.
+		 * Version string to use for the fixed Version Strategy.
 		 */
 		private String version;
 
@@ -262,6 +263,236 @@ public class ResourceProperties {
 
 		public void setVersion(String version) {
 			this.version = version;
+		}
+
+	}
+
+	/**
+	 * Cache configuration.
+	 */
+	public static class Cache {
+
+		/**
+		 * Cache period for the resources served by the resource handler. If a duration
+		 * suffix is not specified, seconds will be used. Can be overridden by the
+		 * 'spring.resources.cache.cachecontrol' properties.
+		 */
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		private Duration period;
+
+		/**
+		 * Cache control HTTP headers, only allows valid directive combinations. Overrides
+		 * the 'spring.resources.cache.period' property.
+		 */
+		private final Cachecontrol cachecontrol = new Cachecontrol();
+
+		public Duration getPeriod() {
+			return this.period;
+		}
+
+		public void setPeriod(Duration period) {
+			this.period = period;
+		}
+
+		public Cachecontrol getCachecontrol() {
+			return this.cachecontrol;
+		}
+
+		/**
+		 * Cache Control HTTP header configuration.
+		 */
+		public static class Cachecontrol {
+
+			/**
+			 * Maximum time the response should be cached, in seconds if no duration
+			 * suffix is not specified.
+			 */
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			private Duration maxAge;
+
+			/**
+			 * Indicate that the cached response can be reused only if re-validated with
+			 * the server.
+			 */
+			private Boolean noCache;
+
+			/**
+			 * Indicate to not cache the response in any case.
+			 */
+			private Boolean noStore;
+
+			/**
+			 * Indicate that once it has become stale, a cache must not use the response
+			 * without re-validating it with the server.
+			 */
+			private Boolean mustRevalidate;
+
+			/**
+			 * Indicate intermediaries (caches and others) that they should not transform
+			 * the response content.
+			 */
+			private Boolean noTransform;
+
+			/**
+			 * Indicate that any cache may store the response.
+			 */
+			private Boolean cachePublic;
+
+			/**
+			 * Indicate that the response message is intended for a single user and must
+			 * not be stored by a shared cache.
+			 */
+			private Boolean cachePrivate;
+
+			/**
+			 * Same meaning as the "must-revalidate" directive, except that it does not
+			 * apply to private caches.
+			 */
+			private Boolean proxyRevalidate;
+
+			/**
+			 * Maximum time the response can be served after it becomes stale, in seconds
+			 * if no duration suffix is not specified.
+			 */
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			private Duration staleWhileRevalidate;
+
+			/**
+			 * Maximum time the response may be used when errors are encountered, in
+			 * seconds if no duration suffix is not specified.
+			 */
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			private Duration staleIfError;
+
+			/**
+			 * Maximum time the response should be cached by shared caches, in seconds if
+			 * no duration suffix is not specified.
+			 */
+			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			private Duration sMaxAge;
+
+			public Duration getMaxAge() {
+				return this.maxAge;
+			}
+
+			public void setMaxAge(Duration maxAge) {
+				this.maxAge = maxAge;
+			}
+
+			public Boolean getNoCache() {
+				return this.noCache;
+			}
+
+			public void setNoCache(Boolean noCache) {
+				this.noCache = noCache;
+			}
+
+			public Boolean getNoStore() {
+				return this.noStore;
+			}
+
+			public void setNoStore(Boolean noStore) {
+				this.noStore = noStore;
+			}
+
+			public Boolean getMustRevalidate() {
+				return this.mustRevalidate;
+			}
+
+			public void setMustRevalidate(Boolean mustRevalidate) {
+				this.mustRevalidate = mustRevalidate;
+			}
+
+			public Boolean getNoTransform() {
+				return this.noTransform;
+			}
+
+			public void setNoTransform(Boolean noTransform) {
+				this.noTransform = noTransform;
+			}
+
+			public Boolean getCachePublic() {
+				return this.cachePublic;
+			}
+
+			public void setCachePublic(Boolean cachePublic) {
+				this.cachePublic = cachePublic;
+			}
+
+			public Boolean getCachePrivate() {
+				return this.cachePrivate;
+			}
+
+			public void setCachePrivate(Boolean cachePrivate) {
+				this.cachePrivate = cachePrivate;
+			}
+
+			public Boolean getProxyRevalidate() {
+				return this.proxyRevalidate;
+			}
+
+			public void setProxyRevalidate(Boolean proxyRevalidate) {
+				this.proxyRevalidate = proxyRevalidate;
+			}
+
+			public Duration getStaleWhileRevalidate() {
+				return this.staleWhileRevalidate;
+			}
+
+			public void setStaleWhileRevalidate(Duration staleWhileRevalidate) {
+				this.staleWhileRevalidate = staleWhileRevalidate;
+			}
+
+			public Duration getStaleIfError() {
+				return this.staleIfError;
+			}
+
+			public void setStaleIfError(Duration staleIfError) {
+				this.staleIfError = staleIfError;
+			}
+
+			public Duration getSMaxAge() {
+				return this.sMaxAge;
+			}
+
+			public void setSMaxAge(Duration sMaxAge) {
+				this.sMaxAge = sMaxAge;
+			}
+
+			public CacheControl toHttpCacheControl() {
+				PropertyMapper map = PropertyMapper.get();
+				CacheControl control = createCacheControl();
+				map.from(this::getMustRevalidate).whenTrue()
+						.toCall(control::mustRevalidate);
+				map.from(this::getNoTransform).whenTrue().toCall(control::noTransform);
+				map.from(this::getCachePublic).whenTrue().toCall(control::cachePublic);
+				map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
+				map.from(this::getProxyRevalidate).whenTrue()
+						.toCall(control::proxyRevalidate);
+				map.from(this::getStaleWhileRevalidate).whenNonNull().to(
+						(duration) -> control.staleWhileRevalidate(duration.getSeconds(),
+								TimeUnit.SECONDS));
+				map.from(this::getStaleIfError).whenNonNull().to((duration) -> control
+						.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
+				map.from(this::getSMaxAge).whenNonNull().to((duration) -> control
+						.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
+				return control;
+			}
+
+			private CacheControl createCacheControl() {
+				if (Boolean.TRUE.equals(this.noStore)) {
+					return CacheControl.noStore();
+				}
+				if (Boolean.TRUE.equals(this.noCache)) {
+					return CacheControl.noCache();
+				}
+				if (this.maxAge != null) {
+					return CacheControl.maxAge(this.maxAge.getSeconds(),
+							TimeUnit.SECONDS);
+				}
+				return CacheControl.empty();
+			}
+
 		}
 
 	}

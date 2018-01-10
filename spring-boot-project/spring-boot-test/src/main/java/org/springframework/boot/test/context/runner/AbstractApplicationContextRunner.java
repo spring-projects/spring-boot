@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
-import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssert;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -180,7 +180,7 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * the classpath.
 	 * @param classLoader the classloader to use (can be null to use the default)
 	 * @return a new instance with the updated class loader
-	 * @see HidePackagesClassLoader
+	 * @see FilteredClassLoader
 	 */
 	public SELF withClassLoader(ClassLoader classLoader) {
 		return newInstance(this.contextFactory, this.environmentProperties,

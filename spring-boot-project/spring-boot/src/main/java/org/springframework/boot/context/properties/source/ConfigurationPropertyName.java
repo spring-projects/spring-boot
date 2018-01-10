@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -355,7 +355,7 @@ public final class ConfigurationPropertyName
 		if (obj == this) {
 			return true;
 		}
-		if (obj == null || !obj.getClass().equals(getClass())) {
+		if (obj == null || obj.getClass() != getClass()) {
 			return false;
 		}
 		ConfigurationPropertyName other = (ConfigurationPropertyName) obj;
@@ -409,9 +409,7 @@ public final class ConfigurationPropertyName
 	}
 
 	private static boolean isIndexed(CharSequence element) {
-		int length = element.length();
-		return length > 2 && element.charAt(0) == '['
-				&& element.charAt(length - 1) == ']';
+		return element.charAt(0) == '[' && element.charAt(element.length() - 1) == ']';
 	}
 
 	/**
@@ -496,7 +494,7 @@ public final class ConfigurationPropertyName
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<>(10);
+		List<CharSequence> elements = new ArrayList<>();
 		process(name, separator, (elementValue, start, end, indexed) -> {
 			elementValue = elementValueProcessor.apply(elementValue);
 			if (!isIndexed(elementValue)) {
@@ -656,10 +654,16 @@ public final class ConfigurationPropertyName
 		}
 
 		public static boolean isValidElement(CharSequence elementValue) {
-			return getInvalidChars(elementValue).isEmpty();
+			for (int i = 0; i < elementValue.length(); i++) {
+				char ch = elementValue.charAt(i);
+				if (!isValidChar(ch, i)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
-		private static List<Character> getInvalidChars(CharSequence elementValue) {
+		public static List<Character> getInvalidChars(CharSequence elementValue) {
 			List<Character> chars = new ArrayList<>();
 			for (int i = 0; i < elementValue.length(); i++) {
 				char ch = elementValue.charAt(i);
@@ -671,12 +675,15 @@ public final class ConfigurationPropertyName
 		}
 
 		public static boolean isValidChar(char ch, int index) {
-			boolean isAlpha = ch >= 'a' && ch <= 'z';
-			boolean isNumeric = ch >= '0' && ch <= '9';
-			if (index == 0) {
-				return isAlpha;
-			}
-			return isAlpha || isNumeric || ch == '-';
+			return isAlpha(ch) || (index != 0 && (isNumeric(ch) || ch == '-'));
+		}
+
+		private static boolean isAlpha(char ch) {
+			return ch >= 'a' && ch <= 'z';
+		}
+
+		private static boolean isNumeric(char ch) {
+			return ch >= '0' && ch <= '9';
 		}
 
 	}

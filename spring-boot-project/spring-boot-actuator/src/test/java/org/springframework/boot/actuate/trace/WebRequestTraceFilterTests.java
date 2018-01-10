@@ -136,8 +136,7 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked" })
-	public void filterDoesNotAddRequestCookiesWithCookiesExclude()
-			throws ServletException, IOException {
+	public void filterDoesNotAddRequestCookiesWithCookiesExclude() {
 		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
 				Collections.singleton(Include.REQUEST_HEADERS));
 		MockHttpServletRequest request = spy(new MockHttpServletRequest("GET", "/foo"));
@@ -182,8 +181,7 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked" })
-	public void filterDoesNotAddResponseCookiesWithCookiesExclude()
-			throws ServletException, IOException {
+	public void filterDoesNotAddResponseCookiesWithCookiesExclude() {
 		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
 				Collections.singleton(Include.RESPONSE_HEADERS));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
@@ -267,7 +265,7 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void postProcessRequestHeaders() throws Exception {
+	public void postProcessRequestHeaders() {
 		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository) {
 
 			@Override

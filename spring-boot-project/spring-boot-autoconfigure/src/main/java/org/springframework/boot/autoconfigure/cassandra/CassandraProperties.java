@@ -16,16 +16,22 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
-import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
 import com.datastax.driver.core.policies.ReconnectionPolicy;
 import com.datastax.driver.core.policies.RetryPolicy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 /**
  * Configuration properties for Cassandra.
@@ -50,9 +56,10 @@ public class CassandraProperties {
 	private String clusterName;
 
 	/**
-	 * Comma-separated list of cluster node addresses.
+	 * Cluster node addresses.
 	 */
-	private String contactPoints = "localhost";
+	private final List<String> contactPoints = new ArrayList<>(
+			Collections.singleton("localhost"));
 
 	/**
 	 * Port of the Cassandra server.
@@ -107,12 +114,12 @@ public class CassandraProperties {
 	/**
 	 * Socket option: connection time out.
 	 */
-	private int connectTimeoutMillis = SocketOptions.DEFAULT_CONNECT_TIMEOUT_MILLIS;
+	private Duration connectTimeout;
 
 	/**
 	 * Socket option: read time out.
 	 */
-	private int readTimeoutMillis = SocketOptions.DEFAULT_READ_TIMEOUT_MILLIS;
+	private Duration readTimeout;
 
 	/**
 	 * Schema action to take at startup.
@@ -145,12 +152,8 @@ public class CassandraProperties {
 		this.clusterName = clusterName;
 	}
 
-	public String getContactPoints() {
+	public List<String> getContactPoints() {
 		return this.contactPoints;
-	}
-
-	public void setContactPoints(String contactPoints) {
-		this.contactPoints = contactPoints;
 	}
 
 	public int getPort() {
@@ -235,20 +238,20 @@ public class CassandraProperties {
 		this.retryPolicy = retryPolicy;
 	}
 
-	public int getConnectTimeoutMillis() {
-		return this.connectTimeoutMillis;
+	public Duration getConnectTimeout() {
+		return this.connectTimeout;
 	}
 
-	public void setConnectTimeoutMillis(int connectTimeoutMillis) {
-		this.connectTimeoutMillis = connectTimeoutMillis;
+	public void setConnectTimeout(Duration connectTimeout) {
+		this.connectTimeout = connectTimeout;
 	}
 
-	public int getReadTimeoutMillis() {
-		return this.readTimeoutMillis;
+	public Duration getReadTimeout() {
+		return this.readTimeout;
 	}
 
-	public void setReadTimeoutMillis(int readTimeoutMillis) {
-		this.readTimeoutMillis = readTimeoutMillis;
+	public void setReadTimeout(Duration readTimeout) {
+		this.readTimeout = readTimeout;
 	}
 
 	public boolean isSsl() {
@@ -277,48 +280,51 @@ public class CassandraProperties {
 	public static class Pool {
 
 		/**
-		 * Idle timeout (in seconds) before an idle connection is removed.
+		 * Idle timeout before an idle connection is removed. If a duration suffix is not
+		 * specified, seconds will be used.
 		 */
-		private int idleTimeout = 120;
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		private Duration idleTimeout = Duration.ofSeconds(120);
 
 		/**
-		 * Pool timeout (in milliseconds) when trying to acquire a connection from a
-		 * host's pool.
+		 * Pool timeout when trying to acquire a connection from a host's pool.
 		 */
-		private int poolTimeout = 5000;
+		private Duration poolTimeout = Duration.ofMillis(5000);
 
 		/**
-		 * Heartbeat interval (in seconds) after which a message is sent on an idle
-		 * connection to make sure it's still alive.
+		 * Heartbeat interval after which a message is sent on an idle connection to make
+		 * sure it's still alive. If a duration suffix is not specified, seconds will be
+		 * used.
 		 */
-		private int heartbeatInterval = 30;
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		private Duration heartbeatInterval = Duration.ofSeconds(30);
 
 		/**
-		 * Maximum number of requests that get enqueued if no connection is available.
+		 * Maximum number of requests that get queued if no connection is available.
 		 */
 		private int maxQueueSize = 256;
 
-		public int getIdleTimeout() {
+		public Duration getIdleTimeout() {
 			return this.idleTimeout;
 		}
 
-		public void setIdleTimeout(int idleTimeout) {
+		public void setIdleTimeout(Duration idleTimeout) {
 			this.idleTimeout = idleTimeout;
 		}
 
-		public int getPoolTimeout() {
+		public Duration getPoolTimeout() {
 			return this.poolTimeout;
 		}
 
-		public void setPoolTimeout(int poolTimeout) {
+		public void setPoolTimeout(Duration poolTimeout) {
 			this.poolTimeout = poolTimeout;
 		}
 
-		public int getHeartbeatInterval() {
+		public Duration getHeartbeatInterval() {
 			return this.heartbeatInterval;
 		}
 
-		public void setHeartbeatInterval(int heartbeatInterval) {
+		public void setHeartbeatInterval(Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 

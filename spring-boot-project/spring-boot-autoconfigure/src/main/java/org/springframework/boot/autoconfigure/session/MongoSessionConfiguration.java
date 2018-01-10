@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.http.MongoHttpSessionConfiguration;
 
 /**
@@ -34,7 +37,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnClass(MongoHttpSessionConfiguration.class)
+@ConditionalOnClass({ MongoOperations.class, MongoOperationsSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(MongoOperations.class)
 @Conditional(ServletSessionCondition.class)
@@ -48,9 +51,9 @@ class MongoSessionConfiguration {
 		@Autowired
 		public void customize(SessionProperties sessionProperties,
 				MongoSessionProperties mongoSessionProperties) {
-			Integer timeout = sessionProperties.getTimeout();
+			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds(timeout);
+				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setCollectionName(mongoSessionProperties.getCollectionName());
 		}

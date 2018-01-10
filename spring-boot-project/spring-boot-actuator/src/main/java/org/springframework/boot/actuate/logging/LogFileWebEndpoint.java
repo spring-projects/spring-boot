@@ -21,9 +21,9 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
@@ -37,7 +37,7 @@ import org.springframework.core.io.Resource;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Endpoint(id = "logfile", exposure = EndpointExposure.WEB)
+@WebEndpoint(id = "logfile")
 public class LogFileWebEndpoint {
 
 	private static final Log logger = LogFactory.getLog(LogFileWebEndpoint.class);

@@ -25,8 +25,10 @@ import org.junit.Test;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -60,7 +62,7 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PersonProperties target = new PersonProperties();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.name).isEqualTo("John Smith");
 		assertThat(target.age).isEqualTo(42);
 	}
@@ -73,7 +75,7 @@ public class ConfigurationPropertiesBinderTests {
 				this.environment.getPropertySources(), null, null);
 		PersonProperties target = new PersonProperties();
 		try {
-			binder.bind(target);
+			bind(binder, target);
 			fail("Expected exception");
 		}
 		catch (ConfigurationPropertiesBindingException ex) {
@@ -91,15 +93,8 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithIgnoreInvalidFields target = new PropertyWithIgnoreInvalidFields();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getBar()).isEqualTo(0);
-	}
-
-	@Test
-	public void bindNonAnnotatedObject() {
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		binder.bind("FooBar");
 	}
 
 	@Test
@@ -119,7 +114,7 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithEnum target = new PropertyWithEnum();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getTheValue()).isEqualTo(FooEnum.FOO);
 	}
 
@@ -135,7 +130,7 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithEnum target = new PropertyWithEnum();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getTheValues()).contains(expected);
 	}
 
@@ -146,12 +141,12 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithCharArray target = new PropertyWithCharArray();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getChars()).isEqualTo("word".toCharArray());
 	}
 
 	@Test
-	public void bindToRelaxedPropertyNamesSame() throws Exception {
+	public void bindToRelaxedPropertyNamesSame() {
 		testRelaxedPropertyNames("test.FOO_BAR=test1", "test.FOO_BAR=test2",
 				"test.BAR-B-A-Z=testa", "test.BAR-B-A-Z=testb");
 	}
@@ -162,7 +157,7 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithRelaxedNames target = new PropertyWithRelaxedNames();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getFooBar()).isEqualTo("test2");
 		assertThat(target.getBarBAZ()).isEqualTo("testb");
 	}
@@ -174,7 +169,7 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertyWithNestedValue target = new PropertyWithNestedValue();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getNested().getValue()).isEqualTo("test1");
 	}
 
@@ -185,19 +180,20 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, null);
 		PropertiesWithMap target = new PropertiesWithMap();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getMap()).containsOnly(entry("foo", "bar"));
 	}
 
 	@Test
 	public void bindToMapWithSystemProperties() {
 		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addLast(new SystemEnvironmentPropertySource("system",
+		propertySources.addLast(new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				propertySources, null, null);
 		PropertiesWithComplexMap target = new PropertiesWithComplexMap();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getMap()).containsOnlyKeys("foo");
 		assertThat(target.getMap().get("foo")).containsOnly(entry("bar", "baz"));
 	}
@@ -212,7 +208,7 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				propertySources, null, null);
 		PersonProperties target = new PersonProperties();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.name).isEqualTo("Jane");
 	}
 
@@ -224,7 +220,7 @@ public class ConfigurationPropertiesBinderTests {
 				this.environment.getPropertySources(), null, null);
 		PropertyWithValidatingSetter target = new PropertyWithValidatingSetter();
 		try {
-			binder.bind(target);
+			bind(binder, target);
 			fail("Expected exception");
 		}
 		catch (ConfigurationPropertiesBindingException ex) {
@@ -253,7 +249,7 @@ public class ConfigurationPropertiesBinderTests {
 		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
 				this.environment.getPropertySources(), null, validator);
 		PropertyWithValidatingSetter target = new PropertyWithValidatingSetter();
-		binder.bind(target);
+		bind(binder, target);
 		assertThat(target.getFoo()).isEqualTo("bar");
 		verify(validator, times(0)).validate(eq(target), any(Errors.class));
 	}
@@ -261,7 +257,7 @@ public class ConfigurationPropertiesBinderTests {
 	private ValidationErrors bindWithValidationErrors(
 			ConfigurationPropertiesBinder binder, Object target) {
 		try {
-			binder.bind(target);
+			bind(binder, target);
 			throw new AssertionError("Should have failed to bind " + target);
 		}
 		catch (ConfigurationPropertiesBindingException ex) {
@@ -269,6 +265,11 @@ public class ConfigurationPropertiesBinderTests {
 			assertThat(rootCause).isInstanceOf(BindValidationException.class);
 			return ((BindValidationException) rootCause).getValidationErrors();
 		}
+	}
+
+	private void bind(ConfigurationPropertiesBinder binder, Object target) {
+		binder.bind(target, AnnotationUtils.findAnnotation(target.getClass(),
+				ConfigurationProperties.class));
 	}
 
 	@ConfigurationProperties(value = "person", ignoreUnknownFields = false)

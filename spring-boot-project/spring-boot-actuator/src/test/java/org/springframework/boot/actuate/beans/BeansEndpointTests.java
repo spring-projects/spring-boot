@@ -51,7 +51,7 @@ public class BeansEndpointTests {
 			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
 					.beans();
 			assertThat(result.getParent()).isNull();
-			assertThat(result.getId()).isEqualTo(context.getId());
+			assertThat(result.getContextId()).isEqualTo(context.getId());
 			Map<String, BeanDescriptor> beans = result.getBeans();
 			assertThat(beans.size())
 					.isLessThanOrEqualTo(context.getBeanDefinitionCount());

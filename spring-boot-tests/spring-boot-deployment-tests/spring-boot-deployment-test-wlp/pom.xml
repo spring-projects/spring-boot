@@ -14,7 +14,7 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 		<wlp.version>16.0.0.4</wlp.version>
 		<cargo.container.id>liberty</cargo.container.id>
-		<cargo.container.url>http://central.maven.org/maven2/com/ibm/websphere/appserver/runtime/wlp-webProfile7/${wlp.version}/wlp-webProfile7-${wlp.version}.zip</cargo.container.url>
+		<cargo.container.url>https://repo.maven.apache.org/maven2/com/ibm/websphere/appserver/runtime/wlp-webProfile7/${wlp.version}/wlp-webProfile7-${wlp.version}.zip</cargo.container.url>
 	</properties>
 	<dependencies>
 		<dependency>

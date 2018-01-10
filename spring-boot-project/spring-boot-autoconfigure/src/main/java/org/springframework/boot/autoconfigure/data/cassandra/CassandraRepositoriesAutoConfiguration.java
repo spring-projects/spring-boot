@@ -21,7 +21,8 @@ import com.datastax.driver.core.Session;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.ConditionalOnRepositoryType;
+import org.springframework.boot.autoconfigure.data.RepositoryType;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.cassandra.repository.CassandraRepository;
@@ -38,7 +39,7 @@ import org.springframework.data.cassandra.repository.support.CassandraRepository
  */
 @Configuration
 @ConditionalOnClass({ Session.class, CassandraRepository.class })
-@ConditionalOnProperty(prefix = "spring.data.cassandra.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnRepositoryType(store = "cassandra", type = RepositoryType.IMPERATIVE)
 @ConditionalOnMissingBean(CassandraRepositoryFactoryBean.class)
 @Import(CassandraRepositoriesAutoConfigureRegistrar.class)
 public class CassandraRepositoriesAutoConfiguration {

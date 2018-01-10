@@ -100,8 +100,8 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		if (this.properties.isSsl()) {
 			builder.useSsl();
 		}
-		if (this.properties.getTimeout() != 0) {
-			Duration timeout = Duration.ofMillis(this.properties.getTimeout());
+		if (this.properties.getTimeout() != null) {
+			Duration timeout = this.properties.getTimeout();
 			builder.readTimeout(timeout).connectTimeout(timeout);
 		}
 		return builder;
@@ -117,7 +117,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		config.setMaxTotal(pool.getMaxActive());
 		config.setMaxIdle(pool.getMaxIdle());
 		config.setMinIdle(pool.getMinIdle());
-		config.setMaxWaitMillis(pool.getMaxWait());
+		if (pool.getMaxWait() != null) {
+			config.setMaxWaitMillis(pool.getMaxWait().toMillis());
+		}
 		return config;
 	}
 

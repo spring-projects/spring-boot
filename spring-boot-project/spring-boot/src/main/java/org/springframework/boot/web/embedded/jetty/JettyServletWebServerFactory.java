@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -44,12 +43,9 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
@@ -62,7 +58,6 @@ import org.eclipse.jetty.servlet.ServletMapping;
 import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
@@ -71,18 +66,13 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
-import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -132,7 +122,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * Create a new {@link JettyServletWebServerFactory} instance.
 	 */
 	public JettyServletWebServerFactory() {
-		super();
 	}
 
 	/**
@@ -164,11 +153,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		server.setHandler(addHandlerWrappers(context));
 		this.logger.info("Server initialized with port: " + port);
 		if (getSsl() != null && getSsl().isEnabled()) {
-			SslContextFactory sslContextFactory = new SslContextFactory();
-			configureSsl(sslContextFactory, getSsl());
-			AbstractConnector connector = createSslConnector(server, sslContextFactory,
-					port);
-			server.setConnectors(new Connector[] { connector });
+			customizeSsl(server, port);
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
@@ -197,20 +182,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			}
 		}
 		return connector;
-	}
-
-	private AbstractConnector createSslConnector(Server server,
-			SslContextFactory sslContextFactory, int port) {
-		HttpConfiguration config = new HttpConfiguration();
-		config.setSendServerVersion(false);
-		config.addCustomizer(new SecureRequestCustomizer());
-		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
-		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
-				sslContextFactory, HttpVersion.HTTP_1_1.asString());
-		ServerConnector serverConnector = new ServerConnector(server,
-				sslConnectionFactory, connectionFactory);
-		serverConnector.setPort(port);
-		return serverConnector;
 	}
 
 	private Handler addHandlerWrappers(Handler handler) {
@@ -242,94 +213,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return handler;
 	}
 
-	/**
-	 * Configure the SSL connection.
-	 * @param factory the Jetty {@link SslContextFactory}.
-	 * @param ssl the ssl details.
-	 */
-	protected void configureSsl(SslContextFactory factory, Ssl ssl) {
-		factory.setProtocol(ssl.getProtocol());
-		configureSslClientAuth(factory, ssl);
-		configureSslPasswords(factory, ssl);
-		factory.setCertAlias(ssl.getKeyAlias());
-		if (!ObjectUtils.isEmpty(ssl.getCiphers())) {
-			factory.setIncludeCipherSuites(ssl.getCiphers());
-			factory.setExcludeCipherSuites();
-		}
-		if (ssl.getEnabledProtocols() != null) {
-			factory.setIncludeProtocols(ssl.getEnabledProtocols());
-		}
-		if (getSslStoreProvider() != null) {
-			try {
-				factory.setKeyStore(getSslStoreProvider().getKeyStore());
-				factory.setTrustStore(getSslStoreProvider().getTrustStore());
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Unable to set SSL store", ex);
-			}
-		}
-		else {
-			configureSslKeyStore(factory, ssl);
-			configureSslTrustStore(factory, ssl);
-		}
-	}
-
-	private void configureSslClientAuth(SslContextFactory factory, Ssl ssl) {
-		if (ssl.getClientAuth() == ClientAuth.NEED) {
-			factory.setNeedClientAuth(true);
-			factory.setWantClientAuth(true);
-		}
-		else if (ssl.getClientAuth() == ClientAuth.WANT) {
-			factory.setWantClientAuth(true);
-		}
-	}
-
-	private void configureSslPasswords(SslContextFactory factory, Ssl ssl) {
-		if (ssl.getKeyStorePassword() != null) {
-			factory.setKeyStorePassword(ssl.getKeyStorePassword());
-		}
-		if (ssl.getKeyPassword() != null) {
-			factory.setKeyManagerPassword(ssl.getKeyPassword());
-		}
-	}
-
-	private void configureSslKeyStore(SslContextFactory factory, Ssl ssl) {
-		try {
-			URL url = ResourceUtils.getURL(ssl.getKeyStore());
-			factory.setKeyStoreResource(Resource.newResource(url));
-		}
-		catch (IOException ex) {
-			throw new WebServerException(
-					"Could not find key store '" + ssl.getKeyStore() + "'", ex);
-		}
-		if (ssl.getKeyStoreType() != null) {
-			factory.setKeyStoreType(ssl.getKeyStoreType());
-		}
-		if (ssl.getKeyStoreProvider() != null) {
-			factory.setKeyStoreProvider(ssl.getKeyStoreProvider());
-		}
-	}
-
-	private void configureSslTrustStore(SslContextFactory factory, Ssl ssl) {
-		if (ssl.getTrustStorePassword() != null) {
-			factory.setTrustStorePassword(ssl.getTrustStorePassword());
-		}
-		if (ssl.getTrustStore() != null) {
-			try {
-				URL url = ResourceUtils.getURL(ssl.getTrustStore());
-				factory.setTrustStoreResource(Resource.newResource(url));
-			}
-			catch (IOException ex) {
-				throw new WebServerException(
-						"Could not find trust store '" + ssl.getTrustStore() + "'", ex);
-			}
-		}
-		if (ssl.getTrustStoreType() != null) {
-			factory.setTrustStoreType(ssl.getTrustStoreType());
-		}
-		if (ssl.getTrustStoreProvider() != null) {
-			factory.setTrustStoreProvider(ssl.getTrustStoreProvider());
-		}
+	private void customizeSsl(Server server, int port) {
+		new SslServerCustomizer(port, getSsl(), getSslStoreProvider(), getHttp2())
+				.customize(server);
 	}
 
 	/**
@@ -367,7 +253,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private void configureSession(WebAppContext context) {
 		SessionHandler handler = context.getSessionHandler();
 		handler.setMaxInactiveInterval(
-				getSessionTimeout() > 0 ? getSessionTimeout() : -1);
+				(getSessionTimeout() == null || getSessionTimeout().isNegative()) ? -1
+						: (int) getSessionTimeout().getSeconds());
 		if (isPersistSession()) {
 			DefaultSessionCache cache = new DefaultSessionCache(handler);
 			FileSessionDataStore store = new FileSessionDataStore();
@@ -536,9 +423,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	/**
-	 * Factory method called to create the {@link JettyWebServer} . Subclasses can
-	 * override this method to return a different {@link JettyWebServer} or apply
-	 * additional processing to the Jetty server.
+	 * Factory method called to create the {@link JettyWebServer}. Subclasses can override
+	 * this method to return a different {@link JettyWebServer} or apply additional
+	 * processing to the Jetty server.
 	 * @param server the Jetty server.
 	 * @return a new {@link JettyWebServer} instance
 	 */

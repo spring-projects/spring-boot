@@ -46,9 +46,9 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 
-	private static final String SLASH = "/";
+	private static final char SLASH = '/';
 
-	private static final String NO_SUFFIX = "";
+	private static final char NO_SUFFIX = 0;
 
 	protected static final int ENTRY_CACHE_SIZE = 25;
 
@@ -166,11 +166,11 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return new EntryIterator();
 	}
 
-	public boolean containsEntry(String name) {
+	public boolean containsEntry(CharSequence name) {
 		return getEntry(name, FileHeader.class, true) != null;
 	}
 
-	public JarEntry getEntry(String name) {
+	public JarEntry getEntry(CharSequence name) {
 		return getEntry(name, JarEntry.class, true);
 	}
 
@@ -213,7 +213,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 				+ nameLength + extraLength, entry.getCompressedSize());
 	}
 
-	private <T extends FileHeader> T getEntry(String name, Class<T> type,
+	private <T extends FileHeader> T getEntry(CharSequence name, Class<T> type,
 			boolean cacheEntry) {
 		int hashCode = AsciiBytes.hashCode(name);
 		T entry = getEntry(hashCode, name, NO_SUFFIX, type, cacheEntry);
@@ -224,8 +224,8 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return entry;
 	}
 
-	private <T extends FileHeader> T getEntry(int hashCode, String name, String suffix,
-			Class<T> type, boolean cacheEntry) {
+	private <T extends FileHeader> T getEntry(int hashCode, CharSequence name,
+			char suffix, Class<T> type, boolean cacheEntry) {
 		int index = getFirstIndex(hashCode);
 		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
 			T entry = getEntry(index, type, cacheEntry);

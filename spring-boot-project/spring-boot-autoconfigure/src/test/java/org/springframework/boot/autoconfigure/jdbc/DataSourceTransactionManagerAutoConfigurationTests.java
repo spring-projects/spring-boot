@@ -44,7 +44,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testDataSourceExists() throws Exception {
+	public void testDataSourceExists() {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);
@@ -54,7 +54,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoDataSourceExists() throws Exception {
+	public void testNoDataSourceExists() {
 		this.context.register(DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);
 		this.context.refresh();
@@ -64,7 +64,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	}
 
 	@Test
-	public void testManualConfiguration() throws Exception {
+	public void testManualConfiguration() {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);
@@ -87,7 +87,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMultiDataSource() throws Exception {
+	public void testMultiDataSource() {
 		this.context.register(MultiDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);
@@ -97,7 +97,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMultiDataSourceUsingPrimary() throws Exception {
+	public void testMultiDataSourceUsingPrimary() {
 		this.context.register(MultiDataSourceUsingPrimaryConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				TransactionAutoConfiguration.class);
@@ -108,8 +108,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomizeDataSourceTransactionManagerUsingProperties()
-			throws Exception {
+	public void testCustomizeDataSourceTransactionManagerUsingProperties() {
 		TestPropertyValues
 				.of("spring.transaction.default-timeout:30",
 						"spring.transaction.rollback-on-commit-failure:true")

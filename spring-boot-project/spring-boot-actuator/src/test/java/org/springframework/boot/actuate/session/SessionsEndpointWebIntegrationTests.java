@@ -51,33 +51,40 @@ public class SessionsEndpointWebIntegrationTests {
 	private static WebTestClient client;
 
 	@Test
-	public void sessionsForUsernameWithoutUsernameParam() throws Exception {
-		client.get().uri((builder) -> builder.path("/application/sessions").build())
+	public void sessionsForUsernameWithoutUsernameParam() {
+		client.get().uri((builder) -> builder.path("/actuator/sessions").build())
 				.exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
-	public void sessionsForUsernameNoResults() throws Exception {
+	public void sessionsForUsernameNoResults() {
 		given(repository.findByIndexNameAndIndexValue(
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
 						.willReturn(Collections.emptyMap());
 		client.get()
-				.uri((builder) -> builder.path("/application/sessions")
+				.uri((builder) -> builder.path("/actuator/sessions")
 						.queryParam("username", "user").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("sessions")
 				.isEmpty();
 	}
 
 	@Test
-	public void sessionsForUsernameFound() throws Exception {
+	public void sessionsForUsernameFound() {
 		given(repository.findByIndexNameAndIndexValue(
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
 						.willReturn(Collections.singletonMap(session.getId(), session));
 		client.get()
-				.uri((builder) -> builder.path("/application/sessions")
+				.uri((builder) -> builder.path("/actuator/sessions")
 						.queryParam("username", "user").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("sessions.[*].id")
 				.isEqualTo(new JSONArray().appendElement(session.getId()));
+	}
+
+	@Test
+	public void sessionForIdNotFound() {
+		client.get().uri((builder) -> builder
+				.path("/actuator/sessions/session-id-not-found").build()).exchange()
+				.expectStatus().isNotFound();
 	}
 
 	@Configuration
@@ -86,12 +93,6 @@ public class SessionsEndpointWebIntegrationTests {
 		@Bean
 		public SessionsEndpoint sessionsEndpoint() {
 			return new SessionsEndpoint(repository);
-		}
-
-		@Bean
-		public SessionsWebEndpointExtension sessionsWebEndpointExtension(
-				SessionsEndpoint delegate) {
-			return new SessionsWebEndpointExtension(delegate);
 		}
 
 	}

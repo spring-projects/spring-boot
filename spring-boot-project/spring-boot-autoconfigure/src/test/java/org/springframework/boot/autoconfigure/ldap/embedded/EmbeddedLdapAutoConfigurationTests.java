@@ -59,7 +59,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
-	public void testSetDefaultPort() throws LDAPException {
+	public void testSetDefaultPort() {
 		load("spring.ldap.embedded.port:1234",
 				"spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		InMemoryDirectoryServer server = this.context
@@ -68,7 +68,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRandomPortWithEnvironment() throws LDAPException {
+	public void testRandomPortWithEnvironment() {
 		load("spring.ldap.embedded.base-dn:dc=spring,dc=org");
 		InMemoryDirectoryServer server = this.context
 				.getBean(InMemoryDirectoryServer.class);
@@ -77,7 +77,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
-	public void testRandomPortWithValueAnnotation() throws LDAPException {
+	public void testRandomPortWithValueAnnotation() {
 		TestPropertyValues.of("spring.ldap.embedded.base-dn:dc=spring,dc=org")
 				.applyTo(this.context);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,
@@ -118,7 +118,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
-	public void testQueryEmbeddedLdap() throws LDAPException {
+	public void testQueryEmbeddedLdap() {
 		TestPropertyValues.of("spring.ldap.embedded.base-dn:dc=spring,dc=org")
 				.applyTo(this.context);
 		this.context.register(EmbeddedLdapAutoConfiguration.class,

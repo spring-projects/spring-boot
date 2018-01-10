@@ -34,7 +34,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnBean(ClientRegistrationRepository.class)
 class OAuth2WebSecurityConfiguration {
 
@@ -46,8 +45,8 @@ class OAuth2WebSecurityConfiguration {
 	}
 
 	@Configuration
-	static class OAuth2WebSecurityConfigurationAdapter
-			extends WebSecurityConfigurerAdapter {
+	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
+	static class OAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

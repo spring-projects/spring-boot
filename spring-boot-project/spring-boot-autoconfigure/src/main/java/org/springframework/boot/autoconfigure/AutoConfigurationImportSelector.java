@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,8 @@ public class AutoConfigurationImportSelector
 	private static final Log logger = LogFactory
 			.getLog(AutoConfigurationImportSelector.class);
 
+	private static final String PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE = "spring.autoconfigure.exclude";
+
 	private ConfigurableListableBeanFactory beanFactory;
 
 	private Environment environment;
@@ -106,7 +108,7 @@ public class AutoConfigurationImportSelector
 	}
 
 	protected boolean isEnabled(AnnotationMetadata metadata) {
-		if (getClass().equals(AutoConfigurationImportSelector.class)) {
+		if (getClass() == AutoConfigurationImportSelector.class) {
 			return getEnvironment().getProperty(
 					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class,
 					true);
@@ -213,13 +215,13 @@ public class AutoConfigurationImportSelector
 	}
 
 	private List<String> getExcludeAutoConfigurationsProperty() {
-		String name = "spring.autoconfigure.exclude";
 		if (getEnvironment() instanceof ConfigurableEnvironment) {
 			Binder binder = Binder.get(getEnvironment());
-			return binder.bind(name, String[].class).map(Arrays::asList)
-					.orElse(Collections.emptyList());
+			return binder.bind(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class)
+					.map(Arrays::asList).orElse(Collections.emptyList());
 		}
-		String[] excludes = getEnvironment().getProperty(name, String[].class);
+		String[] excludes = getEnvironment()
+				.getProperty(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class);
 		return (excludes == null ? Collections.emptyList() : Arrays.asList(excludes));
 	}
 

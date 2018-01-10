@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -36,7 +35,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleSecureWebFluxApplicationTests {
 
 	@Autowired
@@ -50,7 +48,7 @@ public class SampleSecureWebFluxApplicationTests {
 
 	@Test
 	public void actuatorsSecureByDefault() {
-		this.webClient.get().uri("/application/status").accept(MediaType.APPLICATION_JSON)
+		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isUnauthorized();
 	}
 
@@ -58,18 +56,18 @@ public class SampleSecureWebFluxApplicationTests {
 	public void userDefinedMappingsAccessibleOnLogin() {
 		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON)
 				.header("Authorization", "basic " + getBasicAuth()).exchange()
-				.expectBody(String.class).isEqualTo("Hello foo");
+				.expectBody(String.class).isEqualTo("Hello user");
 	}
 
 	@Test
 	public void actuatorsAccessibleOnLogin() {
-		this.webClient.get().uri("/application/status").accept(MediaType.APPLICATION_JSON)
+		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
 				.header("Authorization", "basic " + getBasicAuth()).exchange()
 				.expectBody(String.class).isEqualTo("{\"status\":\"UP\"}");
 	}
 
 	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("foo:password").getBytes()));
+		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
 	}
 
 }

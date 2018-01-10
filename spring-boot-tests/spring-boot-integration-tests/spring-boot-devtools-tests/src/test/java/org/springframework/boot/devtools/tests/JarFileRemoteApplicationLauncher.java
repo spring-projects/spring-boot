@@ -76,7 +76,9 @@ public class JarFileRemoteApplicationLauncher extends RemoteApplicationLauncher 
 					file.getAbsolutePath().substring(root.getAbsolutePath().length() + 1)
 							.replace("\\", "/") + (file.isDirectory() ? "/" : "")));
 			if (file.isFile()) {
-				StreamUtils.copy(new FileInputStream(file), output);
+				try (FileInputStream input = new FileInputStream(file)) {
+					StreamUtils.copy(input, output);
+				}
 			}
 			output.closeEntry();
 		}

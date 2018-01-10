@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -39,7 +41,6 @@ import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
-import org.gradle.util.GUtil;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.FileUtils;
@@ -51,6 +52,9 @@ import org.springframework.boot.loader.tools.FileUtils;
  * @author Andy Wilkinson
  */
 class BootZipCopyAction implements CopyAction {
+
+	private static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980,
+			Calendar.FEBRUARY, 1, 0, 0, 0).getTimeInMillis();
 
 	private final File output;
 
@@ -158,20 +162,14 @@ class BootZipCopyAction implements CopyAction {
 
 	private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out)
 			throws IOException {
-		if (!this.preserveFileTimestamps) {
-			entry.setTime(GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES);
-		}
-		entry.setUnixMode(UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
+		prepareEntry(entry, UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
 		out.putArchiveEntry(entry);
 		out.closeArchiveEntry();
 	}
 
 	private void writeClass(ZipArchiveEntry entry, ZipInputStream in,
 			ZipArchiveOutputStream out) throws IOException {
-		if (!this.preserveFileTimestamps) {
-			entry.setTime(GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES);
-		}
-		entry.setUnixMode(UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
+		prepareEntry(entry, UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
 		out.putArchiveEntry(entry);
 		byte[] buffer = new byte[4096];
 		int read;
@@ -179,6 +177,13 @@ class BootZipCopyAction implements CopyAction {
 			out.write(buffer, 0, read);
 		}
 		out.closeArchiveEntry();
+	}
+
+	private void prepareEntry(ZipArchiveEntry entry, int unixMode) {
+		if (!this.preserveFileTimestamps) {
+			entry.setTime(CONSTANT_TIME_FOR_ZIP_ENTRIES);
+		}
+		entry.setUnixMode(unixMode);
 	}
 
 	private void writeLaunchScriptIfNecessary(FileOutputStream fileStream) {
@@ -280,7 +285,7 @@ class BootZipCopyAction implements CopyAction {
 
 		private long getTime(FileCopyDetails details) {
 			return this.preserveFileTimestamps ? details.getLastModified()
-					: GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES;
+					: CONSTANT_TIME_FOR_ZIP_ENTRIES;
 		}
 
 	}

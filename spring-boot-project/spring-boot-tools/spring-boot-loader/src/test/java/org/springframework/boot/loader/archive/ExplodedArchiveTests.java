@@ -106,7 +106,7 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	public void getEntries() throws Exception {
+	public void getEntries() {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
 		assertThat(entries.size()).isEqualTo(10);
 	}
@@ -141,7 +141,7 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	public void getNonRecursiveEntriesForRoot() throws Exception {
+	public void getNonRecursiveEntriesForRoot() {
 		ExplodedArchive archive = new ExplodedArchive(new File("/"), false);
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size()).isGreaterThan(1);

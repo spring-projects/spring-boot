@@ -1,24 +1,24 @@
 [appendix]
 [[configuration-metadata]]
-== Configuration meta-data
-Spring Boot jars are shipped with meta-data files that provide details of all supported
-configuration properties. The files are designed to allow IDE developers to offer
+== Configuration Metadata
+Spring Boot jars include metadata files that provide details of all supported
+configuration properties. The files are designed to let IDE developers offer
 contextual help and "`code completion`" as users are working with `application.properties`
 or `application.yml` files.
 
-The majority of the meta-data file is generated automatically at compile time by
+The majority of the metadata file is generated automatically at compile time by
 processing all items annotated with `@ConfigurationProperties`. However, it is possible
-to <<configuration-metadata-additional-metadata,write part of the meta-data manually>>
+to <<configuration-metadata-additional-metadata,write part of the metadata manually>>
 for corner cases or more advanced use cases.
 
 
 
 [[configuration-metadata-format]]
-=== Meta-data format
-Configuration meta-data files are located inside jars under
+=== Metadata Format
+Configuration metadata files are located inside jars under
 `META-INF/spring-configuration-metadata.json` They use a simple JSON format with items
-categorized under either "`groups`" or "`properties`" and additional values hint
-categorized under "hints":
+categorized under either "`groups`" or "`properties`" and additional values hints
+categorized under "hints", as shown in the following example:
 
 [source,json,indent=0]
 ----
@@ -84,8 +84,8 @@ categorized under "hints":
 ----
 
 Each "`property`" is a configuration item that the user specifies with a given value.
-For example `server.port` and `server.servlet.path` might be specified in
-`application.properties` as follows:
+For example, `server.port` and `server.servlet.path` might be specified in
+`application.properties`, as follows:
 
 [source,properties,indent=0]
 ----
@@ -93,23 +93,25 @@ For example `server.port` and `server.servlet.path` might be specified in
 	server.servlet.path=/home
 ----
 
-The "`groups`" are higher level items that don't themselves specify a value, but instead
-provide a contextual grouping for properties. For example the `server.port` and
+The "`groups`" are higher level items that do not themselves specify a value but instead
+provide a contextual grouping for properties. For example, the `server.port` and
 `server.servlet.path` properties are part of the `server` group.
 
-NOTE: It is not required that every "`property`" has a "`group`", some properties might
-just exist in their own right.
+NOTE: It is not required that every "`property`" has a "`group`". Some properties might
+exist in their own right.
 
 Finally, "`hints`" are additional information used to assist the user in configuring a
-given property. When configuring the `spring.jpa.hibernate.ddl-auto` property, a tool can
-use it to offer some auto-completion help for the `none`, `validate`, `update`, `create`
-and `create-drop` values.
+given property. For example, when a developer is configuring the
+`spring.jpa.hibernate.ddl-auto` property, a tool can use the hints to offer some
+auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop`
+values.
 
 
 
 [[configuration-metadata-group-attributes]]
 ==== Group Attributes
-The JSON object contained in the `groups` array can contain the following attributes:
+The JSON object contained in the `groups` array can contain the attributes shown in the
+following table:
 
 [cols="1,1,4"]
 |===
@@ -121,37 +123,38 @@ The JSON object contained in the `groups` array can contain the following attrib
 
 |`type`
 | String
-| The class name of the data type of the group. For example, if the group was based
-  on a class annotated with `@ConfigurationProperties` the attribute would contain the
-  fully qualified name of that class. If it was based on a `@Bean` method, it would be
-  the return type of that method. The attribute may be omitted if the type is not known.
+| The class name of the data type of the group. For example, if the group were based
+  on a class annotated with `@ConfigurationProperties`, the attribute would contain the
+  fully qualified name of that class. If it were based on a `@Bean` method, it would be
+  the return type of that method. If the type is not known, the attribute may be omitted.
 
 |`description`
 | String
-| A short description of the group that can be displayed to users. May be omitted if no
-  description is available. It is recommended that descriptions are a short paragraphs,
+| A short description of the group that can be displayed to users. If not description is
+  available, it may be omitted. It is recommended that descriptions be short paragraphs,
   with the first line providing a concise summary. The last line in the description should
   end with a period (`.`).
 
 |`sourceType`
 | String
 | The class name of the source that contributed this group. For example, if the group
-  was based on a `@Bean` method annotated with `@ConfigurationProperties` this attribute
-  would contain the fully qualified name of the `@Configuration` class containing the
-  method. The attribute may be omitted if the source type is not known.
+  were based on a `@Bean` method annotated with `@ConfigurationProperties`, this attribute
+  would contain the fully qualified name of the `@Configuration` class that contains the
+  method. If the source type is not known, the attribute may be omitted.
 
 |`sourceMethod`
 | String
 | The full name of the method (include parenthesis and argument types) that contributed
-  this group. For example, the name of a `@ConfigurationProperties` annotated `@Bean`
-  method.  May be omitted if the source method is not known.
+  this group (for example, the name of a `@ConfigurationProperties` annotated `@Bean`
+  method). If the source method is not known, it may be omitted.
 |===
 
 
 
 [[configuration-metadata-property-attributes]]
 ==== Property Attributes
-The JSON object contained in the `properties` array can contain the following attributes:
+The JSON object contained in the `properties` array can contain the attributes described
+in the following table:
 
 [cols="1,1,4"]
 |===
@@ -159,43 +162,44 @@ The JSON object contained in the `properties` array can contain the following at
 
 |`name`
 | String
-| The full name of the property. Names are in lowercase dashed form (e.g.
-  `server.servlet.path`). This attribute is mandatory.
+| The full name of the property. Names are in lower-case period-separated form (for
+  example, `server.servlet.path`). This attribute is mandatory.
 
 |`type`
 | String
-| The full signature of the data type of the property. For example, `java.lang.String`
-  but also a full generic type such as `java.util.Map<java.util.String,acme.MyEnum>`.
-  This attribute can be used to guide the user as to the types of values that they can
-  enter. For consistency, the type of a primitive is specified using its wrapper
-  counterpart, i.e. `boolean` becomes `java.lang.Boolean`. Note that this class may be
-  a complex type that gets converted from a String as values are bound. May be omitted
-  if the type is not known.
+| The full signature of the data type of the property (for example, `java.lang.String`)
+  but also a full generic type (such as `java.util.Map<java.util.String,acme.MyEnum>`).
+  You can use this attribute to guide the user as to the types of values that they can
+  enter. For consistency, the type of a primitive is specified by using its wrapper
+  counterpart (for example, `boolean` becomes `java.lang.Boolean`). Note that this class
+  may be a complex type that gets converted from a `String` as values are bound. If the
+  type is not known, it may be omitted.
 
 |`description`
 | String
-| A short description of the group that can be displayed to users. May be omitted if no
-  description is available. It is recommended that descriptions are a short paragraphs,
+| A short description of the group that can be displayed to users. If no description is
+  available, it may be omitted. It is recommended that descriptions be short paragraphs,
   with the first line providing a concise summary. The last line in the description should
   end with a period (`.`).
 
 |`sourceType`
 | String
 | The class name of the source that contributed this property. For example, if the
-  property was from a class annotated with `@ConfigurationProperties` this attribute
-  would contain the fully qualified name of that class. May be omitted if the source type
-  is not known.
+  property were from a class annotated with `@ConfigurationProperties`, this attribute
+  would contain the fully qualified name of that class. If the source type is unknown, it
+  may be omitted.
 
 |`defaultValue`
 | Object
-| The default value which will be used if the property is not specified. Can also be an
-  array of value(s) if the type of the property is an array. May be omitted if the default
-  value is not known.
+| The default value, which is used if the property is not specified. If the type of the
+  property is an array, it can be an array of value(s). If the default value is unknown,
+  it may be omitted.
 
 |`deprecation`
 | Deprecation
-| Specify if the property is deprecated. May be omitted if the field is not deprecated
-  or if that information is not known. See below for more details.
+| Specify whether the property is deprecated. If the field is not deprecated or if that
+  information is not known, it may be omitted. The next table offers more detail about
+  the `deprecation` attribute.
 |===
 
 The JSON object contained in the `deprecation` attribute of each `properties` element can
@@ -207,22 +211,22 @@ contain the following attributes:
 
 |`level`
 |String
-|The level of deprecation, can be either `warning` (default) or `error`. When a property
- has a `warning` deprecation level it should still be bound in the environment. When it
- has an `error` deprecation level however, the property is no longer managed and will not
- be bound.
+|The level of deprecation, which can be either `warning` (the default) or `error`. When a
+ property has a `warning` deprecation level, it should still be bound in the environment.
+ However, when it has an `error` deprecation level, the property is no longer managed and
+ is not bound.
 
 |`reason`
 |String
-|A short description of the reason why the property was deprecated. May be omitted if no
- reason is available. It is recommended that descriptions are a short paragraphs,
+|A short description of the reason why the property was deprecated. If no reason is
+ available, it may be omitted. It is recommended that descriptions be short paragraphs,
  with the first line providing a concise summary. The last line in the description should
  end with a period (`.`).
 
 |`replacement`
 |String
-|The full name of the property that is _replacing_ this deprecated property. May be omitted
- if there is no replacement for this property.
+|The full name of the property that _replaces_ this deprecated property. If there is no
+ replacement for this property, it may be omitted.
 |===
 
 NOTE: Prior to Spring Boot 1.3, a single `deprecated` boolean attribute can be used
@@ -232,13 +236,13 @@ should no longer be used. If no reason and replacement are available, an empty
 
 Deprecation can also be specified declaratively in code by adding the
 `@DeprecatedConfigurationProperty` annotation to the getter exposing the deprecated
-property. For instance, let's assume the `app.foo.target` property was confusing and
-was renamed to `app.foo.name`
+property. For instance, assume that the `app.acme.target` property was confusing and
+was renamed to `app.acme.name`. The following example shows how to handle that situation:
 
 [source,java,indent=0]
 ----
-	@ConfigurationProperties("app.foo")
-	public class FooProperties {
+	@ConfigurationProperties("app.acme")
+	public class AcmeProperties {
 
 		private String name;
 
@@ -246,7 +250,7 @@ was renamed to `app.foo.name`
 
 		public void setName(String name) { ... }
 
-		@DeprecatedConfigurationProperty(replacement = "app.foo.name")
+		@DeprecatedConfigurationProperty(replacement = "app.acme.name")
 		@Deprecated
 		public String getTarget() {
 			return getName();
@@ -259,21 +263,22 @@ was renamed to `app.foo.name`
 	}
 ----
 
-NOTE: There is no way to set a `level` as `warning` is always assumed since code is still
+NOTE: There is no way to set a `level`. `warning` is always assumed, since code is still
 handling the property.
 
-The code above makes sure that the deprecated property still works (delegating
+The preceding code makes sure that the deprecated property still works (delegating
 to the `name` property behind the scenes). Once the `getTarget` and `setTarget`
 methods can be removed from your public API, the automatic deprecation hint in the
-meta-data will go away as well. If you want to keep a hint, adding manual meta-data with
-an `error` deprecation level ensures that users are still informed about that property and
-is particularly useful when a `replacement` is provided.
+metadata goes away as well. If you want to keep a hint, adding manual metadata with
+an `error` deprecation level ensures that users are still informed about that property.
+Doing so is particularly useful when a `replacement` is provided.
 
 
 
 [[configuration-metadata-hints-attributes]]
 ==== Hint Attributes
-The JSON object contained in the `hints` array can contain the following attributes:
+The JSON object contained in the `hints` array can contain the attributes shown in the
+following table:
 
 [cols="1,1,4"]
 |===
@@ -281,25 +286,26 @@ The JSON object contained in the `hints` array can contain the following attribu
 
 |`name`
 | String
-| The full name of the property that this hint refers to. Names are in lowercase dashed
-  form (e.g. `server.servlet.path`). If the property refers to a map (e.g.
-  `system.contexts`) the hint either applies to the _keys_ of the map (`system.context.keys`)
-   or the values (`system.context.values`). This attribute is mandatory.
+| The full name of the property to which this hint refers. Names are in lower-case
+  period-separated form (such as `server.servlet.path`). If the property refers to a map
+  (such as `system.contexts`), the hint either applies to the _keys_ of the map
+  (`system.context.keys`) or the _values_ (`system.context.values`) of the map. This
+  attribute is mandatory.
 
 |`values`
 | ValueHint[]
-| A list of valid values as defined by the `ValueHint` object (see below). Each entry defines
-  the value and may have a description
+| A list of valid values as defined by the `ValueHint` object (described in the next
+  table). Each entry defines the value and may have a description.
 
 |`providers`
 | ValueProvider[]
-| A list of providers as defined by the `ValueProvider` object (see below). Each entry defines
-  the name of the provider and its parameters, if any.
+| A list of providers as defined by the `ValueProvider` object (described later in this
+  document). Each entry defines the name of the provider and its parameters, if any.
 
 |===
 
-The JSON object contained in the `values` attribute of each `hint` element can contain the
-following attributes:
+The JSON object contained in the `values` attribute of each `hint` element can contain
+the attributes described in the following table:
 
 [cols="1,1,4"]
 |===
@@ -307,19 +313,19 @@ following attributes:
 
 |`value`
 | Object
-| A valid value for the element to which the hint refers to. Can also be an array of value(s)
-  if the type of the property is an array. This attribute is mandatory.
+| A valid value for the element to which the hint refers. If the type of the property is
+  an array, it can also be an array of value(s). This attribute is mandatory.
 
 |`description`
 | String
-| A short description of the value that can be displayed to users. May be omitted if no
-  description is available. It is recommended that descriptions are a short paragraphs,
+| A short description of the value that can be displayed to users. If no description is
+  available, it may be omitted . It is recommended that descriptions be short paragraphs,
   with the first line providing a concise summary. The last line in the description should
   end with a period (`.`).
 |===
 
-The JSON object contained in the `providers` attribute of each `hint` element can contain the
-following attributes:
+The JSON object contained in the `providers` attribute of each `hint` element can contain
+the attributes described in the following table:
 
 [cols="1,1,4"]
 |===
@@ -328,7 +334,7 @@ following attributes:
 |`name`
 | String
 | The name of the provider to use to offer additional content assistance for the element
-  to which the hint refers to.
+  to which the hint refers.
 
 |`parameters`
 | JSON object
@@ -339,127 +345,129 @@ following attributes:
 
 
 [[configuration-metadata-repeated-items]]
-==== Repeated meta-data items
-It is perfectly acceptable for "`property`" and "`group`" objects with the same name to
-appear multiple times within a meta-data file. For example, you could bind two separate
-classes to the same prefix, with each potentially offering overlap of property names.
-While this is not supposed to be a frequent scenario, consumers of meta-data should take
-care to ensure that they support such scenarios.
+==== Repeated Metadata Items
+Objects with the same "`property`" and "`group`" name can appear multiple times within a
+metadata file. For example, you could bind two separate classes to the same prefix, with
+each having potentially overlapping property names. While the same names appearing in the
+metadata multiple times should not be common, consumers of metadata should take care to
+ensure that they support it.
 
 
 
 [[configuration-metadata-providing-manual-hints]]
-=== Providing manual hints
+=== Providing Manual Hints
 To improve the user experience and further assist the user in configuring a given
-property, you can provide additional meta-data that:
+property, you can provide additional metadata that:
 
-1. Describes the list of potential values for a property.
-2. Associates a provider to attach a well-defined semantic to a property so that a tool
-   can discover the list of potential values based on the project's context.
+* Describes the list of potential values for a property.
+* Associates a provider, to attach a well defined semantic to a property, so that a tool
+can discover the list of potential values based on the project's context.
 
 
-==== Value hint
-The `name` attribute of each hint refers to the `name` of a property. In the initial
-example above, we provide 5 values for the `spring.jpa.hibernate.ddl-auto` property:
-`none`, `validate`, `update`, `create` and `create-drop`. Each value may have a
-description as well.
+==== Value Hint
+The `name` attribute of each hint refers to the `name` of a property. In the
+<<configuration-metadata-format,initial example shown earlier>>, we provide five values
+for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`,
+and `create-drop`. Each value may have a description as well.
 
 If your property is of type `Map`, you can provide hints for both the keys and the
 values (but not for the map itself). The special `.keys` and `.values` suffixes must
-be used to refer to the keys and the values respectively.
+refer to the keys and the values, respectively.
 
-Let's assume a `foo.contexts` that maps magic String values to an integer:
+Assume a `sample.contexts` maps magic `String` values to an integer, as shown in the
+following example:
 
 [source,java,indent=0]
 ----
-	@ConfigurationProperties("foo")
-	public class FooProperties {
+	@ConfigurationProperties("sample")
+	public class SampleProperties {
 
 		private Map<String,Integer> contexts;
 		// getters and setters
 	}
 ----
 
-The magic values are foo and bar for instance. In order to offer additional content
-assistance for the keys, you could add the following to
-<<configuration-metadata-additional-metadata,the manual meta-data of the module>>:
+The magic values are (in this example) are `sample1` and `sample2`. In order to offer
+additional content assistance for the keys, you could add the following JSON to
+<<configuration-metadata-additional-metadata,the manual metadata of the module>>:
 
 [source,json,indent=0]
 ----
 	{"hints": [
 		{
-			"name": "foo.contexts.keys",
+			"name": "sample.contexts.keys",
 			"values": [
 				{
-					"value": "foo"
+					"value": "sample1"
 				},
 				{
-					"value": "bar"
+					"value": "sample2"
 				}
 			]
 		}
 	]}
 ----
 
-NOTE: Of course, you should have an `Enum` for those two values instead. This is by far
-the most effective approach to auto-completion if your IDE supports it.
+TIP: We recommend that you use an `Enum` for those two values instead. If your IDE
+supports it, this is by far the most effective approach to auto-completion.
 
 
 
-==== Value provider
-Providers are a powerful way of attaching semantics to a property. We define in the section
-below the official providers that you can use for your own hints. Bare in mind however that
-your favorite IDE may implement some of these or none of them. It could eventually provide
-its own as well.
+==== Value Providers
+Providers are a powerful way to attach semantics to a property. In this section, we
+define the official providers that you can use for your own hints. However, your favorite
+IDE may implement some of these or none of them. Also, it could eventually provide its
+own.
 
-NOTE: As this is a new feature, IDE vendors will have to catch up with this new feature.
+NOTE: As this is a new feature, IDE vendors must catch up with how it works. Adoption
+times naturally vary.
 
-The table below summarizes the list of supported providers:
+The following table summarizes the list of supported providers:
 
 [cols="2,4"]
 |===
 |Name | Description
 
 |`any`
-|Permit any additional value to be provided.
+|Permits any additional value to be provided.
 
 |`class-reference`
-|Auto-complete the classes available in the project. Usually constrained by a base
- class that is specified via the `target` parameter.
+|Auto-completes the classes available in the project. Usually constrained by a base
+ class that is specified by the `target` parameter.
 
 |`handle-as`
-|Handle the property as if it was defined by the type defined via the mandatory `target` parameter.
+|Handles the property as if it were defined by the type defined by the mandatory `target`
+ parameter.
 
 |`logger-name`
-|Auto-complete valid logger names. Typically, package and class names available in
+|Auto-completes valid logger names. Typically, package and class names available in
  the current project can be auto-completed.
 
 |`spring-bean-reference`
-|Auto-complete the available bean names in the current project. Usually constrained
- by a base class that is specified via the `target` parameter.
+|Auto-completes the available bean names in the current project. Usually constrained
+ by a base class that is specified by the `target` parameter.
 
 |`spring-profile-name`
-|Auto-complete the available Spring profile names in the project.
+|Auto-completes the available Spring profile names in the project.
 
 |===
 
-TIP: No more than one provider can be active for a given property but you can specify
-several providers if they can all manage the property _in some ways_. Make sure to place
-the most powerful provider first as the IDE must use the first one in the JSON section it
+TIP: Only one provider can be active for a given property, but you can specify several
+providers if they can all manage the property _in some way_. Make sure to place the most
+powerful provider first, as the IDE must use the first one in the JSON section that it
 can handle. If no provider for a given property is supported, no special content
-assistance is provided either.
+assistance is provided, either.
 
 
 
 ===== Any
-The **any** provider permits any additional values to be provided. Regular value
-validation based on the property type should be applied if this is supported.
+The special **any** provider value permits any additional values to be provided. Regular
+value validation based on the property type should be applied if this is supported.
 
-This provider will be typically used if you have a list of values and any extra values
-are still to be considered as valid.
+This provider is typically used if you have a list of values and any extra values
+should still be considered as valid.
 
-The example below offers `on` and `off` as auto-completion values for `system.state`; any
-other value is also allowed:
+The following example offers `on` and `off` as auto-completion values for `system.state`:
 
 [source,json,indent=0]
 ----
@@ -483,11 +491,11 @@ other value is also allowed:
 	]}
 ----
 
+Note that, in the preceding example, any other value is also allowed.
 
-
-===== Class reference
+===== Class Reference
 The **class-reference** provider auto-completes classes available in the project. This
-provider supports these parameters:
+provider supports the following parameters:
 
 [cols="1,1,2,4"]
 |===
@@ -497,17 +505,17 @@ provider supports these parameters:
 |`String` (`Class`)
 |_none_
 |The fully qualified name of the class that should be assignable to the chosen value.
- Typically used to filter out non candidate classes. Note that this information can
+ Typically used to filter out-non candidate classes. Note that this information can
  be provided by the type itself by exposing a class with the appropriate upper bound.
 
 |`concrete`
 |`boolean`
 |true
-|Specify if only concrete classes are to be considered as valid candidates.
+|Specify whether only concrete classes are to be considered as valid candidates.
 |===
 
 
-The meta-data snippet below corresponds to the standard `server.servlet.jsp.class-name`
+The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name`
 property that defines the `JspServlet` class name to use:
 
 [source,json,indent=0]
@@ -530,10 +538,10 @@ property that defines the `JspServlet` class name to use:
 
 
 ===== Handle As
-The **handle-as** provider allows you to substitute the type of the property to a more
-high-level type. This typically happens when the property has a `java.lang.String` type
-because you don't want your configuration classes to rely on classes that may not be
-on the classpath. This provider supports these parameters:
+The **handle-as** provider lets you substitute the type of the property to a more
+high-level type. This typically happens when the property has a `java.lang.String` type,
+because you do not want your configuration classes to rely on classes that may not be
+on the classpath. This provider supports the following parameters:
 
 [cols="1,1,2,4"]
 |===
@@ -542,27 +550,31 @@ on the classpath. This provider supports these parameters:
 | **`target`**
 | `String` (`Class`)
 |_none_
-|The fully qualified name of the type to consider for the property. This parameter is mandatory.
+|The fully qualified name of the type to consider for the property. This parameter is
+ mandatory.
 |===
 
 The following types can be used:
 
-* Any `java.lang.Enum` that lists the possible values for the property (By all means, try to
-  define the property with the `Enum` type instead as no further hint should be required for
-  the IDE to auto-complete the values).
-* `java.nio.charset.Charset`: auto-completion of charset/encoding values (e.g. `UTF-8`)
-* `java.util.Locale`: auto-completion of locales (e.g. `en_US`)
-* `org.springframework.util.MimeType`: auto-completion of content type values (e.g. `text/plain`)
-* `org.springframework.core.io.Resource`: auto-completion of Spring’s Resource abstraction to
-  refer to a file on the filesystem or on the classpath. (e.g. `classpath:/foo.properties`)
+* Any `java.lang.Enum`: Lists the possible values for the property. (We recommend
+  defining the property with the `Enum` type, as no further hint should be required for
+  the IDE to auto-complete the values.)
+* `java.nio.charset.Charset`: Supports auto-completion of charset/encoding values (such as
+  `UTF-8`)
+* `java.util.Locale`: auto-completion of locales (such as `en_US`)
+* `org.springframework.util.MimeType`: Supports auto-completion of content type values
+  (such as `text/plain`)
+* `org.springframework.core.io.Resource`: Supports auto-completion of Spring’s Resource
+  abstraction to refer to a file on the filesystem or on the classpath. (such as
+  `classpath:/sample.properties`)
 
-NOTE: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE
-about it.
+TIP: If multiple values can be provided, use a `Collection` or _Array_ type to teach the
+IDE about it.
 
-The meta-data snippet below corresponds to the standard `spring.liquibase.change-log`
+The following metadata snippet corresponds to the standard `spring.liquibase.change-log`
 property that defines the path to the changelog to use. It is actually used internally as a
-`org.springframework.core.io.Resource` but cannot be exposed as such as we need to keep the
-original String value to pass it to the Liquibase API.
+`org.springframework.core.io.Resource` but cannot be exposed as such, because we need to
+keep the original String value to pass it to the Liquibase API.
 
 [source,json,indent=0]
 ----
@@ -583,18 +595,18 @@ original String value to pass it to the Liquibase API.
 
 
 
-===== Logger name
+===== Logger Name
 The **logger-name** provider auto-completes valid logger names. Typically, package and
 class names available in the current project can be auto-completed. Specific frameworks
-may have extra magic logger names that could be supported as well.
+may have extra magic logger names that can be supported as well.
 
-Since a logger name can be any arbitrary name, really, this provider should allow any
-value but could highlight valid packages and class names that are not available in the
+Since a logger name can be any arbitrary name, this provider should allow any
+value but could highlight valid package and class names that are not available in the
 project's classpath.
 
-The meta-data snippet below corresponds to the standard `logging.level` property, keys
-are _logger names_ and values correspond to the standard log levels or any custom
-level:
+The following metadata snippet corresponds to the standard `logging.level` property. Keys
+are _logger names_, and values correspond to the standard log levels or any custom
+level.
 
 [source,json,indent=0]
 ----
@@ -650,9 +662,9 @@ level:
 
 
 
-===== Spring bean reference
+===== Spring Bean Reference
 The **spring-bean-reference** provider auto-completes the beans that are defined in
-the configuration of the current project. This provider supports these parameters:
+the configuration of the current project. This provider supports the following parameters:
 
 [cols="1,1,2,4"]
 |===
@@ -662,10 +674,10 @@ the configuration of the current project. This provider supports these parameter
 | `String` (`Class`)
 |_none_
 |The fully qualified name of the bean class that should be assignable to the candidate.
- Typically used to filter out non candidate beans.
+ Typically used to filter out non-candidate beans.
 |===
 
-The meta-data snippet below corresponds to the standard `spring.jmx.server` property
+The following metadata snippet corresponds to the standard `spring.jmx.server` property
 that defines the name of the `MBeanServer` bean to use:
 
 [source,json,indent=0]
@@ -685,17 +697,16 @@ that defines the name of the `MBeanServer` bean to use:
 	]}
 ----
 
-NOTE: The binder is not aware of the meta-data so if you provide that hint, you
-will still need to transform the bean name into an actual Bean reference using
-the `ApplicationContext`.
+NOTE: The binder is not aware of the metadata. If you provide that hint, you still need
+to transform the bean name into an actual Bean reference using by the `ApplicationContext`.
 
 
 
-===== Spring profile name
+===== Spring Profile Name
 The **spring-profile-name** provider auto-completes the Spring profiles that are
 defined in the configuration of the current project.
 
-The meta-data snippet below corresponds to the standard `spring.profiles.active`
+The following metadata snippet corresponds to the standard `spring.profiles.active`
 property that defines the name of the Spring profile(s) to enable:
 
 [source,json,indent=0]
@@ -715,12 +726,12 @@ property that defines the name of the Spring profile(s) to enable:
 
 
 [[configuration-metadata-annotation-processor]]
-=== Generating your own meta-data using the annotation processor
-You can easily generate your own configuration meta-data file from items annotated with
+=== Generating Your Own Metadata by Using the Annotation Processor
+You can easily generate your own configuration metadata file from items annotated with
 `@ConfigurationProperties` by using the `spring-boot-configuration-processor` jar.
 The jar includes a Java annotation processor which is invoked as your project is
-compiled. To use the processor, simply include `spring-boot-configuration-processor` as
-an optional dependency, for example with Maven you would add:
+compiled. To use the processor, include `spring-boot-configuration-processor` as
+an optional dependency. For example, with Maven, you can add:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -732,7 +743,7 @@ an optional dependency, for example with Maven you would add:
 ----
 
 With Gradle, you can use the https://github.com/spring-gradle-plugins/propdeps-plugin[propdeps-plugin]
-and specify:
+and specify the following dependency:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -744,28 +755,29 @@ and specify:
 ----
 
 NOTE: You need to add `compileJava.dependsOn(processResources)` to your build to ensure
-that resources are processed before code is compiled. Without this directive any
-`additional-spring-configuration-metadata.json` files will not be processed.
+that resources are processed before code is compiled. Without this directive, any
+`additional-spring-configuration-metadata.json` files are not processed.
 
-The processor will pick up both classes and methods that are annotated with
+The processor picks up both classes and methods that are annotated with
 `@ConfigurationProperties`. The Javadoc for field values within configuration classes
-will be used to populate the `description` attribute.
+is used to populate the `description` attribute.
 
-NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc since
+NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since
 they are not processed before being added to the JSON.
 
-Properties are discovered via the presence of standard getters and setters with special
-handling for collection types (that will be detected even if only a getter is present). The
-annotation processor also supports the use of the `@Data`, `@Getter` and `@Setter` lombok
-annotations.
+Properties are discovered through the presence of standard getters and setters with
+special handling for collection types (that is detected even if only a getter is present).
+The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter`
+lombok annotations.
 
 [NOTE]
 ====
 If you are using AspectJ in your project, you need to make sure that the annotation
-processor only runs once. There are several ways to do this: with Maven, you can
+processor runs only once. There are several ways to do this. With Maven, you can
 configure the `maven-apt-plugin` explicitly and add the dependency to the annotation
 processor only there. You could also let the AspectJ plugin run all the processing
-and disable annotation processing in the `maven-compiler-plugin` configuration:
+and disable annotation processing in the `maven-compiler-plugin` configuration, as
+follows:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -782,9 +794,9 @@ and disable annotation processing in the `maven-compiler-plugin` configuration:
 
 
 [[configuration-metadata-nested-properties]]
-==== Nested properties
-The annotation processor will automatically consider inner classes as nested properties.
-For example, the following class:
+==== Nested Properties
+The annotation processor automatically considers inner classes as nested properties.
+Consider the following class:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -810,29 +822,29 @@ For example, the following class:
 	}
 ----
 
-Will produce meta-data information for `server.name`, `server.host.ip` and
-`server.host.port` properties. You can use the `@NestedConfigurationProperty`
+The preceding example produces metadata information for `server.name`, `server.host.ip`,
+and `server.host.port` properties. You can use the `@NestedConfigurationProperty`
 annotation on a field to indicate that a regular (non-inner) class should be treated as
 if it were nested.
 
-TIP: This has no effect on collections and maps as those types are automatically
-identified and a single meta-data property is generated for each of them.
+TIP: This has no effect on collections and maps, as those types are automatically
+identified, and a single metadata property is generated for each of them.
 
 
 [[configuration-metadata-additional-metadata]]
-==== Adding additional meta-data
-Spring Boot's configuration file handling is quite flexible; and it is often the case
+==== Adding Additional Metadata
+Spring Boot's configuration file handling is quite flexible, and it is often the case
 that properties may exist that are not bound to a `@ConfigurationProperties` bean. You
-may also need to tune some attributes of an existing key. To support such cases and allow
-you to provide custom "hints", the annotation processor will automatically merge items
-from `META-INF/additional-spring-configuration-metadata.json` into the main meta-data
+may also need to tune some attributes of an existing key. To support such cases and let
+you provide custom "hints", the annotation processor automatically merges items
+from `META-INF/additional-spring-configuration-metadata.json` into the main metadata
 file.
 
 If you refer to a property that has been detected automatically, the description,
-default value and deprecation information are overridden if specified. If the manual
-property declaration is not identified in the current module, it is added as a brand new
+default value, and deprecation information are overridden, if specified. If the manual
+property declaration is not identified in the current module, it is added as a new
 property.
 
 The format of the `additional-spring-configuration-metadata.json` file is exactly the same
 as the regular `spring-configuration-metadata.json`. The additional properties file is
-optional, if you don't have any additional properties, simply don't add it.
+optional. If you do not have any additional properties, do not add the file.

@@ -88,6 +88,13 @@ public abstract class AbstractFieldValuesProcessorTests {
 				.isEqualTo(new Object[] { "c" });
 		assertThat(values.get("integerArray")).isEqualTo(new Object[] { 42, 24 });
 		assertThat(values.get("unknownArray")).isNull();
+		assertThat(values.get("durationNone")).isNull();
+		assertThat(values.get("durationNanos")).isEqualTo("5ns");
+		assertThat(values.get("durationMillis")).isEqualTo("10ms");
+		assertThat(values.get("durationSeconds")).isEqualTo("20s");
+		assertThat(values.get("durationMinutes")).isEqualTo("30m");
+		assertThat(values.get("durationHours")).isEqualTo("40h");
+		assertThat(values.get("durationDays")).isEqualTo("50d");
 	}
 
 	@SupportedAnnotationTypes({

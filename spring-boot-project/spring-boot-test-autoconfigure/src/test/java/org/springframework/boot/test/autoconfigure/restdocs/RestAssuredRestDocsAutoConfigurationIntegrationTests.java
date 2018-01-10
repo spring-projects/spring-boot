@@ -60,7 +60,7 @@ public class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 	private RequestSpecification documentationSpec;
 
 	@Test
-	public void defaultSnippetsAreWritten() throws Exception {
+	public void defaultSnippetsAreWritten() {
 		given(this.documentationSpec)
 				.filter(document("default-snippets",
 						preprocessRequest(modifyUris().scheme("https")

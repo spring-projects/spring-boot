@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLHandshakeException;
 
 import io.undertow.Undertow.Builder;
@@ -43,7 +42,6 @@ import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.boot.web.server.PortInUseException;
-import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -97,7 +95,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void builderCustomizers() throws Exception {
+	public void builderCustomizers() {
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
 		for (int i = 0; i < customizers.length; i++) {
@@ -129,7 +127,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void deploymentInfo() throws Exception {
+	public void deploymentInfo() {
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowDeploymentInfoCustomizer[] customizers = new UndertowDeploymentInfoCustomizer[4];
 		for (int i = 0; i < customizers.length; i++) {
@@ -151,7 +149,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void defaultContextPath() throws Exception {
+	public void defaultContextPath() {
 		UndertowServletWebServerFactory factory = getFactory();
 		final AtomicReference<String> contextPath = new AtomicReference<>();
 		factory.addDeploymentInfoCustomizers(
@@ -204,7 +202,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Override
-	protected void addConnector(final int port, AbstractServletWebServerFactory factory) {
+	protected void addConnector(int port, AbstractServletWebServerFactory factory) {
 		((UndertowServletWebServerFactory) factory).addBuilderCustomizers(
 				(builder) -> builder.addHttpListener(port, "0.0.0.0"));
 	}
@@ -237,18 +235,6 @@ public class UndertowServletWebServerFactoryTests
 	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
-	}
-
-	@Test
-	public void getKeyManagersWhenAliasIsNullShouldNotDecorate() throws Exception {
-		UndertowServletWebServerFactory factory = getFactory();
-		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
-		factory.setSsl(ssl);
-		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(factory,
-				"getKeyManagers");
-		Class<?> name = Class.forName("org.springframework.boot.web.embedded.undertow"
-				+ ".UndertowServletWebServerFactory$ConfigurableAliasKeyManager");
-		assertThat(keyManagers[0]).isNotInstanceOf(name);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.time.Duration;
+
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.web.ResourceProperties.Cache;
 import org.springframework.boot.testsupport.assertj.Matched;
+import org.springframework.http.CacheControl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.endsWith;
@@ -27,6 +31,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
  * Tests for {@link ResourceProperties}.
  *
  * @author Stephane Nicoll
+ * @author Kristine Jetzke
  */
 public class ResourcePropertiesTests {
 
@@ -65,6 +70,40 @@ public class ResourcePropertiesTests {
 		this.properties.setStaticLocations(new String[] { "/foo", "/bar", "/baz/" });
 		String[] actual = this.properties.getStaticLocations();
 		assertThat(actual).containsExactly("/foo/", "/bar/", "/baz/");
+	}
+
+	@Test
+	public void emptyCacheControl() {
+		CacheControl cacheControl = this.properties.getCache().getCachecontrol()
+				.toHttpCacheControl();
+		assertThat(cacheControl.getHeaderValue()).isNull();
+	}
+
+	@Test
+	public void cacheControlAllPropertiesSet() {
+		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
+		properties.setMaxAge(Duration.ofSeconds(4));
+		properties.setCachePrivate(true);
+		properties.setCachePublic(true);
+		properties.setMustRevalidate(true);
+		properties.setNoTransform(true);
+		properties.setProxyRevalidate(true);
+		properties.setSMaxAge(Duration.ofSeconds(5));
+		properties.setStaleIfError(Duration.ofSeconds(6));
+		properties.setStaleWhileRevalidate(Duration.ofSeconds(7));
+		CacheControl cacheControl = properties.toHttpCacheControl();
+		assertThat(cacheControl.getHeaderValue()).isEqualTo(
+				"max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate,"
+						+ " s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
+	}
+
+	@Test
+	public void invalidCacheControlCombination() {
+		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
+		properties.setMaxAge(Duration.ofSeconds(4));
+		properties.setNoStore(true);
+		CacheControl cacheControl = properties.toHttpCacheControl();
+		assertThat(cacheControl.getHeaderValue()).isEqualTo("no-store");
 	}
 
 }

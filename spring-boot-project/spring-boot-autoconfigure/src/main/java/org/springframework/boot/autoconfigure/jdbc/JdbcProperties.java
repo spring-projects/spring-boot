@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
 /**
  * Configuration properties for JDBC.
@@ -51,10 +55,11 @@ public class JdbcProperties {
 		private int maxRows = -1;
 
 		/**
-		 * Query timeout in seconds. Use -1 to use the JDBC driver's default
-		 * configuration.
+		 * Query timeout. Default is to use the JDBC driver's default configuration. If a
+		 * duration suffix is not specified, seconds will be used.
 		 */
-		private int queryTimeout = -1;
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		private Duration queryTimeout;
 
 		public int getFetchSize() {
 			return this.fetchSize;
@@ -72,11 +77,11 @@ public class JdbcProperties {
 			this.maxRows = maxRows;
 		}
 
-		public int getQueryTimeout() {
+		public Duration getQueryTimeout() {
 			return this.queryTimeout;
 		}
 
-		public void setQueryTimeout(int queryTimeout) {
+		public void setQueryTimeout(Duration queryTimeout) {
 			this.queryTimeout = queryTimeout;
 		}
 

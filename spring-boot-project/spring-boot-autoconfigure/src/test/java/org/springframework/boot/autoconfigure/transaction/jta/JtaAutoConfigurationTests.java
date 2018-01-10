@@ -95,7 +95,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void customPlatformTransactionManager() throws Exception {
+	public void customPlatformTransactionManager() {
 		this.context = new AnnotationConfigApplicationContext(
 				CustomTransactionManagerConfig.class, JtaAutoConfiguration.class);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -115,7 +115,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void atomikosSanityCheck() throws Exception {
+	public void atomikosSanityCheck() {
 		this.context = new AnnotationConfigApplicationContext(JtaProperties.class,
 				AtomikosJtaConfiguration.class);
 		this.context.getBean(AtomikosProperties.class);
@@ -129,7 +129,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void bitronixSanityCheck() throws Exception {
+	public void bitronixSanityCheck() {
 		this.context = new AnnotationConfigApplicationContext(JtaProperties.class,
 				BitronixJtaConfiguration.class);
 		this.context.getBean(bitronix.tm.Configuration.class);
@@ -141,7 +141,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void narayanaSanityCheck() throws Exception {
+	public void narayanaSanityCheck() {
 		this.context = new AnnotationConfigApplicationContext(JtaProperties.class,
 				NarayanaJtaConfiguration.class);
 		this.context.getBean(NarayanaConfigurationBean.class);
@@ -164,7 +164,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void customBitronixServerId() throws UnknownHostException {
+	public void customBitronixServerId() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.transactionManagerId:custom")
 				.applyTo(this.context);
@@ -177,7 +177,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultAtomikosTransactionManagerName() throws UnknownHostException {
+	public void defaultAtomikosTransactionManagerName() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.logDir:target/transaction-logs")
 				.applyTo(this.context);
@@ -254,7 +254,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void atomikosCustomizeJtaTransactionManagerUsingProperties() throws Exception {
+	public void atomikosCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.transaction.default-timeout:30",
@@ -270,7 +270,7 @@ public class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	public void bitronixCustomizeJtaTransactionManagerUsingProperties() throws Exception {
+	public void bitronixCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.transaction.default-timeout:30",

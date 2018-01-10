@@ -28,7 +28,6 @@ import org.quartz.Calendar;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -362,8 +361,7 @@ public class QuartzAutoConfigurationTests {
 		private String jobDataKey;
 
 		@Override
-		protected void executeInternal(JobExecutionContext context)
-				throws JobExecutionException {
+		protected void executeInternal(JobExecutionContext context) {
 			System.out.println(this.env.getProperty("test-name", "unknown") + " - "
 					+ this.jobDataKey);
 		}

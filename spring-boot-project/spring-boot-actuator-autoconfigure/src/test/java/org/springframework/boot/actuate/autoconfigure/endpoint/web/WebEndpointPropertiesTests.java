@@ -28,9 +28,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WebEndpointPropertiesTests {
 
 	@Test
-	public void defaultBasePathShouldBeApplication() throws Exception {
+	public void defaultBasePathShouldBeApplication() {
 		WebEndpointProperties properties = new WebEndpointProperties();
-		assertThat(properties.getBasePath()).isEqualTo("/application");
+		assertThat(properties.getBasePath()).isEqualTo("/actuator");
+	}
+
+	@Test
+	public void basePathShouldBeCleaned() {
+		WebEndpointProperties properties = new WebEndpointProperties();
+		properties.setBasePath("/");
+		assertThat(properties.getBasePath()).isEqualTo("");
 	}
 
 }

@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Vedran Pavic
  * @since 2.0.0
  */
 public class LoggingSystemProperties {
@@ -64,9 +65,24 @@ public class LoggingSystemProperties {
 	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
 
 	/**
+	 * The name of the System property that contains the file log max history.
+	 */
+	public static final String FILE_MAX_HISTORY = "LOG_FILE_MAX_HISTORY";
+
+	/**
+	 * The name of the System property that contains the file log max size.
+	 */
+	public static final String FILE_MAX_SIZE = "LOG_FILE_MAX_SIZE";
+
+	/**
 	 * The name of the System property that contains the log level pattern.
 	 */
 	public static final String LOG_LEVEL_PATTERN = "LOG_LEVEL_PATTERN";
+
+	/**
+	 * The name of the System property that contains the log date-format pattern.
+	 */
+	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
 
 	private final Environment environment;
 
@@ -87,10 +103,13 @@ public class LoggingSystemProperties {
 		PropertyResolver resolver = getPropertyResolver();
 		setSystemProperty(resolver, EXCEPTION_CONVERSION_WORD,
 				"exception-conversion-word");
+		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "pattern.console");
 		setSystemProperty(resolver, FILE_LOG_PATTERN, "pattern.file");
+		setSystemProperty(resolver, FILE_MAX_HISTORY, "file.max-history");
+		setSystemProperty(resolver, FILE_MAX_SIZE, "file.max-size");
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "pattern.level");
-		setSystemProperty(PID_KEY, new ApplicationPid().toString());
+		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "pattern.dateformat");
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}

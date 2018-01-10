@@ -70,7 +70,7 @@ public class EmbeddedMongoProperties {
 	public static class Storage {
 
 		/**
-		 * Maximum size of the oplog in megabytes.
+		 * Maximum size of the oplog, in megabytes.
 		 */
 		private Integer oplogSize;
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.template;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,15 +37,15 @@ public abstract class AbstractViewResolverProperties {
 
 	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
 
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * Enable MVC view resolution for this technology.
+	 * Whether to enable MVC view resolution for this technology.
 	 */
 	private boolean enabled = true;
 
 	/**
-	 * Enable template caching.
+	 * Whether to enable template caching.
 	 */
 	private boolean cache;
 
@@ -64,7 +65,7 @@ public abstract class AbstractViewResolverProperties {
 	private String[] viewNames;
 
 	/**
-	 * Check that the templates location exists.
+	 * Whether to check that the templates location exists.
 	 */
 	private boolean checkTemplateLocation = true;
 

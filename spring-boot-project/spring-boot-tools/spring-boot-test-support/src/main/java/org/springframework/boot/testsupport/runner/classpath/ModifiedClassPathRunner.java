@@ -185,7 +185,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 				repositorySystem.newLocalRepositoryManager(session, localRepository));
 		CollectRequest collectRequest = new CollectRequest(null,
 				Arrays.asList(new RemoteRepository.Builder("central", "default",
-						"http://central.maven.org/maven2").build()));
+						"https://repo.maven.apache.org/maven2").build()));
 
 		collectRequest.setDependencies(createDependencies(coordinates));
 		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
@@ -317,7 +317,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 			}
 
 			@Override
-			public Object invokeExplosively(final Object target, final Object... params)
+			public Object invokeExplosively(Object target, Object... params)
 					throws Throwable {
 				return doWithModifiedClassPathThreadContextClassLoader(
 						() -> ModifiedClassPathFrameworkMethod.super.invokeExplosively(

@@ -20,11 +20,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.function.ToDoubleFunction;
 
-import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.FunctionCounter;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.TimeGauge;
 import io.micrometer.core.instrument.binder.MeterBinder;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -60,131 +63,95 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 
 	@Override
 	public void bindTo(MeterRegistry registry) {
-		bindChannelNames(registry);
-		bindHandlerNames(registry);
-		bindSourceNames(registry);
+		registerGauge(registry, this.configurer, this.tags,
+				"spring.integration.channelNames",
+				"The number of spring integration channels",
+				(configurer) -> configurer.getChannelNames().length);
+		registerGauge(registry, this.configurer, this.tags,
+				"spring.integration.handlerNames",
+				"The number of spring integration handlers",
+				(configurer) -> configurer.getHandlerNames().length);
+		registerGauge(registry, this.configurer, this.tags,
+				"spring.integration.sourceNames",
+				"The number of spring integration sources",
+				(configurer) -> configurer.getSourceNames().length);
 		this.registries.add(registry);
 	}
 
-	private void bindChannelNames(MeterRegistry registry) {
-		Id id = registry.createId("spring.integration.channelNames", this.tags,
-				"The number of spring integration channels");
-		registry.gauge(id, this.configurer, (c) -> c.getChannelNames().length);
-	}
-
-	private void bindHandlerNames(MeterRegistry registry) {
-		Id id = registry.createId("spring.integration.handlerNames", this.tags,
-				"The number of spring integration handlers");
-		registry.gauge(id, this.configurer, (c) -> c.getHandlerNames().length);
-	}
-
-	private void bindSourceNames(MeterRegistry registry) {
-		Id id = registry.createId("spring.integration.sourceNames", this.tags,
-				"The number of spring integration sources");
-		registry.gauge(id, this.configurer, (c) -> c.getSourceNames().length);
-	}
-
 	private void addSourceMetrics(MeterRegistry registry) {
-		for (String sourceName : this.configurer.getSourceNames()) {
-			addSourceMetrics(registry, sourceName);
+		for (String source : this.configurer.getSourceNames()) {
+			MessageSourceMetrics sourceMetrics = this.configurer.getSourceMetrics(source);
+			Iterable<Tag> tagsWithSource = Tags.concat(this.tags, "source", source);
+			registerFunctionCounter(registry, sourceMetrics, tagsWithSource,
+					"spring.integration.source.messages",
+					"The number of successful handler calls",
+					MessageSourceMetrics::getMessageCount);
 		}
-	}
-
-	private void addSourceMetrics(MeterRegistry registry, String sourceName) {
-		MessageSourceMetrics sourceMetrics = this.configurer.getSourceMetrics(sourceName);
-		Iterable<Tag> tags = Tags.concat(this.tags, "source", sourceName);
-		Id id = registry.createId("spring.integration.source.messages", tags,
-				"The number of successful handler calls");
-		registry.more().counter(id, sourceMetrics, MessageSourceMetrics::getMessageCount);
 	}
 
 	private void addHandlerMetrics(MeterRegistry registry) {
 		for (String handler : this.configurer.getHandlerNames()) {
-			addHandlerMetrics(registry, handler);
+			MessageHandlerMetrics handlerMetrics = this.configurer
+					.getHandlerMetrics(handler);
+			Iterable<Tag> tagsWithHandler = Tags.concat(this.tags, "handler", handler);
+			registerTimedGauge(registry, handlerMetrics, tagsWithHandler,
+					"spring.integration.handler.duration.max",
+					"The maximum handler duration",
+					MessageHandlerMetrics::getMaxDuration);
+			registerTimedGauge(registry, handlerMetrics, tagsWithHandler,
+					"spring.integration.handler.duration.min",
+					"The minimum handler duration",
+					MessageHandlerMetrics::getMinDuration);
+			registerTimedGauge(registry, handlerMetrics, tagsWithHandler,
+					"spring.integration.handler.duration.mean",
+					"The mean handler duration", MessageHandlerMetrics::getMeanDuration);
+			registerGauge(registry, handlerMetrics, tagsWithHandler,
+					"spring.integration.handler.activeCount",
+					"The number of active handlers",
+					MessageHandlerMetrics::getActiveCount);
 		}
-	}
-
-	private void addHandlerMetrics(MeterRegistry registry, String handler) {
-		MessageHandlerMetrics handlerMetrics = this.configurer.getHandlerMetrics(handler);
-		// FIXME could use improvement to dynamically compute the handler name with its
-		// ID, which can change after
-		// creation as shown in the SpringIntegrationApplication sample.
-		Iterable<Tag> tags = Tags.concat(this.tags, "handler", handler);
-		addDurationMax(registry, handlerMetrics, tags);
-		addDurationMin(registry, handlerMetrics, tags);
-		addDurationMean(registry, handlerMetrics, tags);
-		addActiveCount(registry, handlerMetrics, tags);
-	}
-
-	private void addDurationMax(MeterRegistry registry,
-			MessageHandlerMetrics handlerMetrics, Iterable<Tag> tags) {
-		Id id = registry.createId("spring.integration.handler.duration.max", tags,
-				"The maximum handler duration");
-		registry.more().timeGauge(id, handlerMetrics, TimeUnit.MILLISECONDS,
-				MessageHandlerMetrics::getMaxDuration);
-	}
-
-	private void addDurationMin(MeterRegistry registry,
-			MessageHandlerMetrics handlerMetrics, Iterable<Tag> tags) {
-		Id id = registry.createId("spring.integration.handler.duration.min", tags,
-				"The minimum handler duration");
-		registry.more().timeGauge(id, handlerMetrics, TimeUnit.MILLISECONDS,
-				MessageHandlerMetrics::getMinDuration);
-	}
-
-	private void addDurationMean(MeterRegistry registry,
-			MessageHandlerMetrics handlerMetrics, Iterable<Tag> tags) {
-		Id id = registry.createId("spring.integration.handler.duration.mean", tags,
-				"The mean handler duration");
-		registry.more().timeGauge(id, handlerMetrics, TimeUnit.MILLISECONDS,
-				MessageHandlerMetrics::getMeanDuration);
-	}
-
-	private void addActiveCount(MeterRegistry registry,
-			MessageHandlerMetrics handlerMetrics, Iterable<Tag> tags) {
-		Id id = registry.createId("spring.integration.handler.activeCount", tags,
-				"The number of active handlers");
-		registry.gauge(id, handlerMetrics, MessageHandlerMetrics::getActiveCount);
 	}
 
 	private void addChannelMetrics(MeterRegistry registry) {
 		for (String channel : this.configurer.getChannelNames()) {
-			addChannelMetrics(registry, channel);
+			MessageChannelMetrics channelMetrics = this.configurer
+					.getChannelMetrics(channel);
+			Iterable<Tag> tagsWithChannel = Tags.concat(this.tags, "channel", channel);
+			registerFunctionCounter(registry, channelMetrics, tagsWithChannel,
+					"spring.integration.channel.sendErrors",
+					"The number of failed sends (either throwing an exception or rejected by the channel)",
+					MessageChannelMetrics::getSendErrorCount);
+			registerFunctionCounter(registry, channelMetrics, tagsWithChannel,
+					"spring.integration.channel.sends", "The number of successful sends",
+					MessageChannelMetrics::getSendCount);
+			if (channelMetrics instanceof PollableChannelManagement) {
+				registerFunctionCounter(registry,
+						(PollableChannelManagement) channelMetrics, tagsWithChannel,
+						"spring.integration.receives", "The number of messages received",
+						PollableChannelManagement::getReceiveCount);
+			}
 		}
 	}
 
-	private void addChannelMetrics(MeterRegistry registry, String channel) {
-		Iterable<Tag> tags = Tags.concat(this.tags, "channel", channel);
-		MessageChannelMetrics channelMetrics = this.configurer.getChannelMetrics(channel);
-		addSendErrors(registry, tags, channelMetrics);
-		addChannelSends(registry, tags, channelMetrics);
-		if (channelMetrics instanceof PollableChannelManagement) {
-			addReceives(registry, tags, channelMetrics);
-		}
+	private <T> void registerGauge(MeterRegistry registry, T object, Iterable<Tag> tags,
+			String name, String description, ToDoubleFunction<T> value) {
+		Gauge.Builder<?> builder = Gauge.builder(name, object, value);
+		builder.tags(this.tags).description(description).register(registry);
 	}
 
-	private void addSendErrors(MeterRegistry registry, Iterable<Tag> tags,
-			MessageChannelMetrics channelMetrics) {
-		Id id = registry.createId("spring.integration.channel.sendErrors", tags,
-				"The number of failed sends (either throwing an exception or "
-						+ "rejected by the channel)");
-		registry.more().counter(id, channelMetrics,
-				MessageChannelMetrics::getSendErrorCount);
+	private <T> void registerTimedGauge(MeterRegistry registry, T object,
+			Iterable<Tag> tags, String name, String description,
+			ToDoubleFunction<T> value) {
+		TimeGauge.Builder<?> builder = TimeGauge.builder(name, object,
+				TimeUnit.MILLISECONDS, value);
+		builder.tags(tags).description(description).register(registry);
 	}
 
-	private void addReceives(MeterRegistry registry, Iterable<Tag> tags,
-			MessageChannelMetrics channelMetrics) {
-		Id id = registry.createId("spring.integration.channel.receives", tags,
-				"The number of messages received");
-		registry.more().counter(id, (PollableChannelManagement) channelMetrics,
-				PollableChannelManagement::getReceiveCount);
-	}
-
-	private void addChannelSends(MeterRegistry registry, Iterable<Tag> tags,
-			MessageChannelMetrics channelMetrics) {
-		Id id = registry.createId("spring.integration.channel.sends", tags,
-				"The number of successful sends");
-		registry.more().counter(id, channelMetrics, MessageChannelMetrics::getSendCount);
+	private <T> void registerFunctionCounter(MeterRegistry registry, T object,
+			Iterable<Tag> tags, String name, String description,
+			ToDoubleFunction<T> value) {
+		FunctionCounter.builder(name, object, value).tags(tags).description(description)
+				.register(registry);
 	}
 
 	@Override

@@ -3,7 +3,7 @@ resource_types:
   type: docker-image
   source:
     repository: springio/artifactory-resource
-    tag: 0.0.3-SNAPSHOT
+    tag: 0.0.3
 - name: email
   type: docker-image
   source:
@@ -78,12 +78,14 @@ jobs:
       build: ci-images-git-repo/ci/images/spring-boot-jdk9-ci-image
 - name: build
   serial: true
+  public: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: true
   - do:
     - task: build-project
+      privileged: true
       timeout: 1h30m
       image: spring-boot-ci-image
       file: git-repo/ci/tasks/build-project.yml
@@ -121,6 +123,7 @@ jobs:
           "zip.deployed": "false"
 - name: build-pull-requests
   serial: true
+  public: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
@@ -135,7 +138,7 @@ jobs:
     - task: build-project
       timeout: 1h30m
       image: spring-boot-ci-image
-      file: git-repo/ci/tasks/build-project.yml
+      file: git-repo/ci/tasks/build-pr-project.yml
     - aggregate:
       - task: build-samples
         timeout: 1h30m
@@ -161,12 +164,14 @@ jobs:
         status: failure
 - name: jdk9-build
   serial: true
+  public: true
   plan:
   - get: spring-boot-jdk9-ci-image
   - get: git-repo
     trigger: true
   - do:
     - task: build-project
+      privileged: true
       timeout: 1h30m
       image: spring-boot-jdk9-ci-image
       file: git-repo/ci/tasks/build-project.yml

@@ -39,41 +39,41 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SpringBootContextLoaderTests {
 
 	@Test
-	public void environmentPropertiesSimple() throws Exception {
+	public void environmentPropertiesSimple() {
 		Map<String, Object> config = getEnvironmentProperties(SimpleConfig.class);
 		assertKey(config, "key", "myValue");
 		assertKey(config, "anotherKey", "anotherValue");
 	}
 
 	@Test
-	public void environmentPropertiesSimpleNonAlias() throws Exception {
+	public void environmentPropertiesSimpleNonAlias() {
 		Map<String, Object> config = getEnvironmentProperties(SimpleConfigNonAlias.class);
 		assertKey(config, "key", "myValue");
 		assertKey(config, "anotherKey", "anotherValue");
 	}
 
 	@Test
-	public void environmentPropertiesOverrideDefaults() throws Exception {
+	public void environmentPropertiesOverrideDefaults() {
 		Map<String, Object> config = getEnvironmentProperties(OverrideConfig.class);
 		assertKey(config, "server.port", "2345");
 	}
 
 	@Test
-	public void environmentPropertiesAppend() throws Exception {
+	public void environmentPropertiesAppend() {
 		Map<String, Object> config = getEnvironmentProperties(AppendConfig.class);
 		assertKey(config, "key", "myValue");
 		assertKey(config, "otherKey", "otherValue");
 	}
 
 	@Test
-	public void environmentPropertiesSeparatorInValue() throws Exception {
+	public void environmentPropertiesSeparatorInValue() {
 		Map<String, Object> config = getEnvironmentProperties(SameSeparatorInValue.class);
 		assertKey(config, "key", "my=Value");
 		assertKey(config, "anotherKey", "another:Value");
 	}
 
 	@Test
-	public void environmentPropertiesAnotherSeparatorInValue() throws Exception {
+	public void environmentPropertiesAnotherSeparatorInValue() {
 		Map<String, Object> config = getEnvironmentProperties(
 				AnotherSeparatorInValue.class);
 		assertKey(config, "key", "my:Value");
@@ -82,15 +82,14 @@ public class SpringBootContextLoaderTests {
 
 	@Test
 	@Ignore
-	public void environmentPropertiesNewLineInValue() throws Exception {
+	public void environmentPropertiesNewLineInValue() {
 		// gh-4384
 		Map<String, Object> config = getEnvironmentProperties(NewLineInValue.class);
 		assertKey(config, "key", "myValue");
 		assertKey(config, "variables", "foo=FOO\n bar=BAR");
 	}
 
-	private Map<String, Object> getEnvironmentProperties(Class<?> testClass)
-			throws Exception {
+	private Map<String, Object> getEnvironmentProperties(Class<?> testClass) {
 		TestContext context = new ExposedTestContextManager(testClass)
 				.getExposedTestContext();
 		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils

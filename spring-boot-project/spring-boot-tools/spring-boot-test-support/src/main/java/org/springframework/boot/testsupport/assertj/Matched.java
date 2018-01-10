@@ -39,7 +39,7 @@ public final class Matched<T> extends Condition<T> {
 	}
 
 	@Override
-	public boolean matches(final T value) {
+	public boolean matches(T value) {
 		if (this.matcher.matches(value)) {
 			return true;
 		}

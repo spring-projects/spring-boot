@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -85,11 +86,25 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		if (this.directBuffers != null) {
 			builder.setDirectBuffers(this.directBuffers);
 		}
-		builder.addHttpListener(port, getListenAddress());
+		if (getSsl() != null && getSsl().isEnabled()) {
+			customizeSsl(builder);
+		}
+		else {
+			builder.addHttpListener(port, getListenAddress());
+		}
 		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}
 		return builder;
+	}
+
+	private void customizeSsl(Undertow.Builder builder) {
+		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider())
+				.customize(builder);
+		if (getHttp2() != null) {
+			builder.setServerOption(UndertowOptions.ENABLE_HTTP2,
+					getHttp2().isEnabled());
+		}
 	}
 
 	private String getListenAddress() {

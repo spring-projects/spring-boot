@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -29,24 +30,25 @@ import org.springframework.util.MimeType;
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @author Daniel Fernández
+ * @author Kazuki Shimizu
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.thymeleaf")
 public class ThymeleafProperties {
 
-	private static final Charset DEFAULT_ENCODING = Charset.forName("UTF-8");
+	private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
 	public static final String DEFAULT_SUFFIX = ".html";
 
 	/**
-	 * Check that the template exists before rendering it.
+	 * Whether to check that the template exists before rendering it.
 	 */
 	private boolean checkTemplate = true;
 
 	/**
-	 * Check that the templates location exists.
+	 * Whether to check that the templates location exists.
 	 */
 	private boolean checkTemplateLocation = true;
 
@@ -61,8 +63,7 @@ public class ThymeleafProperties {
 	private String suffix = DEFAULT_SUFFIX;
 
 	/**
-	 * Template mode to be applied to templates. See also
-	 * org.thymeleaf.templatemode.TemplateMode.
+	 * Template mode to be applied to templates. See also Thymeleaf's TemplateMode enum.
 	 */
 	private String mode = "HTML";
 
@@ -72,7 +73,7 @@ public class ThymeleafProperties {
 	private Charset encoding = DEFAULT_ENCODING;
 
 	/**
-	 * Enable template caching.
+	 * Whether to enable template caching.
 	 */
 	private boolean cache = true;
 
@@ -95,7 +96,12 @@ public class ThymeleafProperties {
 	private String[] excludedViewNames;
 
 	/**
-	 * Enable Thymeleaf view resolution for Web frameworks.
+	 * Enable the SpringEL compiler in SpringEL expressions.
+	 */
+	private boolean enableSpringElCompiler;
+
+	/**
+	 * Whether to enable Thymeleaf view resolution for Web frameworks.
 	 */
 	private boolean enabled = true;
 
@@ -191,6 +197,14 @@ public class ThymeleafProperties {
 		this.viewNames = viewNames;
 	}
 
+	public boolean isEnableSpringElCompiler() {
+		return this.enableSpringElCompiler;
+	}
+
+	public void setEnableSpringElCompiler(boolean enableSpringElCompiler) {
+		this.enableSpringElCompiler = enableSpringElCompiler;
+	}
+
 	public Reactive getReactive() {
 		return this.reactive;
 	}
@@ -220,7 +234,7 @@ public class ThymeleafProperties {
 
 		/**
 		 * Maximum size of data buffers used for writing to the response, in bytes.
-		 * Templates will execute in CHUNKED mode by default if this is set a value.
+		 * Templates will execute in CHUNKED mode by default if this is set.
 		 */
 		private int maxChunkSize;
 

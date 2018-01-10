@@ -56,52 +56,52 @@ public class HttpHeaderAccessManagerTests {
 	}
 
 	@Test
-	public void headerNameMustNotBeNull() throws Exception {
+	public void headerNameMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("HeaderName must not be empty");
 		new HttpHeaderAccessManager(null, SECRET);
 	}
 
 	@Test
-	public void headerNameMustNotBeEmpty() throws Exception {
+	public void headerNameMustNotBeEmpty() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("HeaderName must not be empty");
 		new HttpHeaderAccessManager("", SECRET);
 	}
 
 	@Test
-	public void expectedSecretMustNotBeNull() throws Exception {
+	public void expectedSecretMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ExpectedSecret must not be empty");
 		new HttpHeaderAccessManager(HEADER, null);
 	}
 
 	@Test
-	public void expectedSecretMustNotBeEmpty() throws Exception {
+	public void expectedSecretMustNotBeEmpty() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ExpectedSecret must not be empty");
 		new HttpHeaderAccessManager(HEADER, "");
 	}
 
 	@Test
-	public void allowsMatching() throws Exception {
+	public void allowsMatching() {
 		this.request.addHeader(HEADER, SECRET);
 		assertThat(this.manager.isAllowed(this.serverRequest)).isTrue();
 	}
 
 	@Test
-	public void disallowsWrongSecret() throws Exception {
+	public void disallowsWrongSecret() {
 		this.request.addHeader(HEADER, "wrong");
 		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}
 
 	@Test
-	public void disallowsNoSecret() throws Exception {
+	public void disallowsNoSecret() {
 		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}
 
 	@Test
-	public void disallowsWrongHeader() throws Exception {
+	public void disallowsWrongHeader() {
 		this.request.addHeader("X-WRONG", SECRET);
 		assertThat(this.manager.isAllowed(this.serverRequest)).isFalse();
 	}

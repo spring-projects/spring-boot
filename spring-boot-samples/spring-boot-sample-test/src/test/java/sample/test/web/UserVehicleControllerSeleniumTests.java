@@ -47,7 +47,7 @@ public class UserVehicleControllerSeleniumTests {
 	private UserVehicleService userVehicleService;
 
 	@Test
-	public void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
+	public void getVehicleWhenRequestingTextShouldReturnMakeAndModel() {
 		given(this.userVehicleService.getVehicleDetails("sboot"))
 				.willReturn(new VehicleDetails("Honda", "Civic"));
 		this.webDriver.get("/sboot/vehicle.html");

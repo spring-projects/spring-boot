@@ -37,17 +37,17 @@ public class OriginTrackedFieldErrorTests {
 	private static final Origin ORIGIN = MockOrigin.of("afile");
 
 	@Test
-	public void ofWhenFieldErrorIsNullShouldReturnNull() throws Exception {
+	public void ofWhenFieldErrorIsNullShouldReturnNull() {
 		assertThat(OriginTrackedFieldError.of(null, ORIGIN)).isNull();
 	}
 
 	@Test
-	public void ofWhenOriginIsNullShouldReturnFieldErrorWithoutOrigin() throws Exception {
+	public void ofWhenOriginIsNullShouldReturnFieldErrorWithoutOrigin() {
 		assertThat(OriginTrackedFieldError.of(FIELD_ERROR, null)).isSameAs(FIELD_ERROR);
 	}
 
 	@Test
-	public void ofShouldReturnOriginCapableFieldError() throws Exception {
+	public void ofShouldReturnOriginCapableFieldError() {
 		FieldError fieldError = OriginTrackedFieldError.of(FIELD_ERROR, ORIGIN);
 		assertThat(fieldError.getObjectName()).isEqualTo("foo");
 		assertThat(fieldError.getField()).isEqualTo("bar");
@@ -55,7 +55,7 @@ public class OriginTrackedFieldErrorTests {
 	}
 
 	@Test
-	public void toStringShouldAddOrigin() throws Exception {
+	public void toStringShouldAddOrigin() {
 		assertThat(OriginTrackedFieldError.of(FIELD_ERROR, ORIGIN).toString()).isEqualTo(
 				"Field error in object 'foo' on field 'bar': rejected value [null]"
 						+ "; codes []; arguments []; default message [faf]; origin afile");

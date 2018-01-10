@@ -20,11 +20,13 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
@@ -80,9 +82,9 @@ public class WebFluxEndpointIntegrationTests
 	}
 
 	@Override
-	protected ReactiveWebServerApplicationContext createApplicationContext(
+	protected AnnotationConfigReactiveWebServerApplicationContext createApplicationContext(
 			Class<?>... config) {
-		ReactiveWebServerApplicationContext context = new ReactiveWebServerApplicationContext();
+		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
 		context.register(config);
 		return context;
 	}
@@ -111,7 +113,7 @@ public class WebFluxEndpointIntegrationTests
 		@Bean
 		public WebFluxEndpointHandlerMapping webEndpointHandlerMapping(
 				Environment environment,
-				WebAnnotationEndpointDiscoverer endpointDiscoverer,
+				EndpointDiscoverer<WebOperation> endpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));

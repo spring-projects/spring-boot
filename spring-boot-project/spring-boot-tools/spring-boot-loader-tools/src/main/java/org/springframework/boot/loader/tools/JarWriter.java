@@ -108,7 +108,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * @param manifest the manifest to write
 	 * @throws IOException of the manifest cannot be written
 	 */
-	public void writeManifest(final Manifest manifest) throws IOException {
+	public void writeManifest(Manifest manifest) throws IOException {
 		JarArchiveEntry entry = new JarArchiveEntry("META-INF/MANIFEST.MF");
 		writeEntry(entry, manifest::write);
 	}

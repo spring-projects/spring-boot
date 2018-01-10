@@ -41,24 +41,24 @@ public class AnyNestedConditionTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void neither() throws Exception {
+	public void neither() {
 		this.contextRunner.withUserConfiguration(Config.class).run(match(false));
 	}
 
 	@Test
-	public void propertyA() throws Exception {
+	public void propertyA() {
 		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a")
 				.run(match(true));
 	}
 
 	@Test
-	public void propertyB() throws Exception {
+	public void propertyB() {
 		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("b:b")
 				.run(match(true));
 	}
 
 	@Test
-	public void both() throws Exception {
+	public void both() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("a:a", "b:b").run(match(true));
 	}

@@ -40,7 +40,7 @@ public class PoolingConnectionFactoryBeanTests {
 	};
 
 	@Test
-	public void sensibleDefaults() throws Exception {
+	public void sensibleDefaults() {
 		assertThat(this.bean.getMaxPoolSize()).isEqualTo(10);
 		assertThat(this.bean.getTestConnections()).isTrue();
 		assertThat(this.bean.getAutomaticEnlistingEnabled()).isTrue();

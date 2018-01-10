@@ -85,7 +85,7 @@ public class GroovyCompiler {
 	 * Create a new {@link GroovyCompiler} instance.
 	 * @param configuration the compiler configuration
 	 */
-	public GroovyCompiler(final GroovyCompilerConfiguration configuration) {
+	public GroovyCompiler(GroovyCompilerConfiguration configuration) {
 
 		this.configuration = configuration;
 		this.loader = createLoader(configuration);

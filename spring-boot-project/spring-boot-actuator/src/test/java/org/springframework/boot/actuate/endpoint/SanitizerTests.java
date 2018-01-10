@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SanitizerTests {
 
 	@Test
-	public void defaults() throws Exception {
+	public void defaults() {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
@@ -42,7 +42,7 @@ public class SanitizerTests {
 	}
 
 	@Test
-	public void regex() throws Exception {
+	public void regex() {
 		Sanitizer sanitizer = new Sanitizer(".*lock.*");
 		assertThat(sanitizer.sanitize("verylOCkish", "secret")).isEqualTo("******");
 		assertThat(sanitizer.sanitize("veryokish", "secret")).isEqualTo("secret");

@@ -46,7 +46,7 @@ public class SpringPhysicalNamingStrategyTests {
 	private StandardServiceRegistry serviceRegistry;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		this.metadataSources = new MetadataSources();
 		this.metadataSources.addAnnotatedClass(TelephoneNumber.class);
 		this.serviceRegistry = getServiceRegistry(this.metadataSources);
@@ -61,14 +61,14 @@ public class SpringPhysicalNamingStrategyTests {
 	}
 
 	@Test
-	public void tableNameShouldBeLowercaseUnderscore() throws Exception {
+	public void tableNameShouldBeLowercaseUnderscore() {
 		PersistentClass binding = this.metadata
 				.getEntityBinding(TelephoneNumber.class.getName());
 		assertThat(binding.getTable().getQuotedName()).isEqualTo("telephone_number");
 	}
 
 	@Test
-	public void tableNameShouldNotBeLowerCaseIfCaseSensitive() throws Exception {
+	public void tableNameShouldNotBeLowerCaseIfCaseSensitive() {
 		this.metadata = this.metadataSources.getMetadataBuilder(this.serviceRegistry)
 				.applyPhysicalNamingStrategy(new TestSpringPhysicalNamingStrategy())
 				.build();

@@ -55,8 +55,7 @@ public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void shouldCreateInstancesForReactiveAndBlockingRepositories()
-			throws Exception {
+	public void shouldCreateInstancesForReactiveAndBlockingRepositories() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never")
 				.applyTo(this.context);

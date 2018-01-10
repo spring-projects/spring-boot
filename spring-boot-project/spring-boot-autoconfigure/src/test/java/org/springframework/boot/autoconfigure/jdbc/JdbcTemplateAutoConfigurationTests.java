@@ -68,7 +68,7 @@ public class JdbcTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJdbcTemplateWithCustomProperties() throws Exception {
+	public void testJdbcTemplateWithCustomProperties() {
 		load("spring.jdbc.template.fetch-size:100",
 				"spring.jdbc.template.query-timeout:60",
 				"spring.jdbc.template.max-rows:1000");

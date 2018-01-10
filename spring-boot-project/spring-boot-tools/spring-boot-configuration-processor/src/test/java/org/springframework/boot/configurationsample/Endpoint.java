@@ -33,10 +33,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Endpoint {
 
-	String id();
+	String id() default "";
 
-	DefaultEnablement defaultEnablement() default DefaultEnablement.NEUTRAL;
-
-	EndpointExposure[] exposure() default {};
+	boolean enableByDefault() default true;
 
 }

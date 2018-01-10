@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -53,8 +53,6 @@ public class RestartClassLoaderTests {
 			.getName();
 
 	private static final String PACKAGE_PATH = PACKAGE.replace('.', '/');
-
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -89,21 +87,21 @@ public class RestartClassLoaderTests {
 		StreamUtils.copy(getClass().getResourceAsStream("Sample.class"), jarOutputStream);
 		jarOutputStream.closeEntry();
 		jarOutputStream.putNextEntry(new ZipEntry(PACKAGE_PATH + "/Sample.txt"));
-		StreamUtils.copy("fromchild", UTF_8, jarOutputStream);
+		StreamUtils.copy("fromchild", StandardCharsets.UTF_8, jarOutputStream);
 		jarOutputStream.closeEntry();
 		jarOutputStream.close();
 		return file;
 	}
 
 	@Test
-	public void parentMustNotBeNull() throws Exception {
+	public void parentMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Parent must not be null");
 		new RestartClassLoader(null, new URL[] {});
 	}
 
 	@Test
-	public void updatedFilesMustNotBeNull() throws Exception {
+	public void updatedFilesMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("UpdatedFiles must not be null");
 		new RestartClassLoader(this.parentClassLoader, new URL[] {}, null);
@@ -143,14 +141,14 @@ public class RestartClassLoaderTests {
 	}
 
 	@Test
-	public void getDeletedResource() throws Exception {
+	public void getDeletedResource() {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		assertThat(this.reloadClassLoader.getResource(name)).isEqualTo(null);
 	}
 
 	@Test
-	public void getDeletedResourceAsStream() throws Exception {
+	public void getDeletedResourceAsStream() {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		assertThat(this.reloadClassLoader.getResourceAsStream(name)).isEqualTo(null);
@@ -170,7 +168,7 @@ public class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
-		assertThat(resources.size()).isEqualTo(0);
+		assertThat(resources).isEmpty();
 	}
 
 	@Test

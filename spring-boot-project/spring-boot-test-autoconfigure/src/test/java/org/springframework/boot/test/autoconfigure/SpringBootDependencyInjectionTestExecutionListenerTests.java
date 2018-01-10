@@ -53,8 +53,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 	private SpringBootDependencyInjectionTestExecutionListener reportListener = new SpringBootDependencyInjectionTestExecutionListener();
 
 	@Test
-	public void orderShouldBeSameAsDependencyInjectionTestExecutionListener()
-			throws Exception {
+	public void orderShouldBeSameAsDependencyInjectionTestExecutionListener() {
 		Ordered injectionListener = new DependencyInjectionTestExecutionListener();
 		assertThat(this.reportListener.getOrder())
 				.isEqualTo(injectionListener.getOrder());
@@ -74,7 +73,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 		catch (IllegalStateException ex) {
 			// Expected
 		}
-		this.out.expect(containsString("AUTO-CONFIGURATION REPORT"));
+		this.out.expect(containsString("CONDITIONS EVALUATION REPORT"));
 		this.out.expect(containsString("Positive matches"));
 		this.out.expect(containsString("Negative matches"));
 	}

@@ -23,7 +23,6 @@ import java.util.Map;
 import org.assertj.core.api.Condition;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationType;
 
@@ -41,42 +40,41 @@ public class EndpointLinksResolverTests {
 	@Test
 	public void linkResolutionWithTrailingSlashStripsSlashOnSelfLink() {
 		Map<String, Link> links = this.linksResolver.resolveLinks(Collections.emptyList(),
-				"https://api.example.com/application/");
+				"https://api.example.com/actuator/");
 		assertThat(links).hasSize(1);
 		assertThat(links).hasEntrySatisfying("self",
-				linkWithHref("https://api.example.com/application"));
+				linkWithHref("https://api.example.com/actuator"));
 	}
 
 	@Test
 	public void linkResolutionWithoutTrailingSlash() {
 		Map<String, Link> links = this.linksResolver.resolveLinks(Collections.emptyList(),
-				"https://api.example.com/application");
+				"https://api.example.com/actuator");
 		assertThat(links).hasSize(1);
 		assertThat(links).hasEntrySatisfying("self",
-				linkWithHref("https://api.example.com/application"));
+				linkWithHref("https://api.example.com/actuator"));
 	}
 
 	@Test
 	public void resolvedLinksContainsALinkForEachEndpointOperation() {
 		Map<String, Link> links = this.linksResolver
 				.resolveLinks(
-						Arrays.asList(new EndpointInfo<>("alpha",
-								DefaultEnablement.ENABLED,
+						Arrays.asList(new EndpointInfo<>("alpha", true,
 								Arrays.asList(operationWithPath("/alpha", "alpha"),
 										operationWithPath("/alpha/{name}",
 												"alpha-name")))),
-				"https://api.example.com/application");
+				"https://api.example.com/actuator");
 		assertThat(links).hasSize(3);
 		assertThat(links).hasEntrySatisfying("self",
-				linkWithHref("https://api.example.com/application"));
+				linkWithHref("https://api.example.com/actuator"));
 		assertThat(links).hasEntrySatisfying("alpha",
-				linkWithHref("https://api.example.com/application/alpha"));
+				linkWithHref("https://api.example.com/actuator/alpha"));
 		assertThat(links).hasEntrySatisfying("alpha-name",
-				linkWithHref("https://api.example.com/application/alpha/{name}"));
+				linkWithHref("https://api.example.com/actuator/alpha/{name}"));
 	}
 
-	private WebEndpointOperation operationWithPath(String path, String id) {
-		return new WebEndpointOperation(OperationType.READ, null, false,
+	private WebOperation operationWithPath(String path, String id) {
+		return new WebOperation(OperationType.READ, null, false,
 				new OperationRequestPredicate(path, WebEndpointHttpMethod.GET,
 						Collections.emptyList(), Collections.emptyList()),
 				id);

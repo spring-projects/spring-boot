@@ -30,6 +30,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
@@ -57,7 +58,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void securityConfigurerConfiguresOAuth2Login() throws Exception {
+	public void securityConfigurerConfiguresOAuth2Login() {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
 					ClientRegistrationRepository expected = context
@@ -73,8 +74,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	public void securityConfigurerBacksOffWhenClientRegistrationBeanAbsent()
-			throws Exception {
+	public void securityConfigurerBacksOffWhenClientRegistrationBeanAbsent() {
 		this.contextRunner
 				.withUserConfiguration(TestConfig.class,
 						OAuth2WebSecurityConfiguration.class)
@@ -82,18 +82,9 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent()
-			throws Exception {
-		this.contextRunner
-				.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
-						OAuth2WebSecurityConfiguration.class)
-				.run((context) -> assertThat(getAuthCodeFilters(context)).isEmpty());
-	}
-
-	@Test
-	public void configurationRegistersAuthorizedClientServiceBean() throws Exception {
+	public void configurationRegistersAuthorizedClientServiceBean() {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run(context -> {
+				OAuth2WebSecurityConfiguration.class).run((context) -> {
 					OAuth2AuthorizedClientService bean = context
 							.getBean(OAuth2AuthorizedClientService.class);
 					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
@@ -104,11 +95,21 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	public void authorizedClientServiceBeanIsConditionalOnMissingBean() throws Exception {
+	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent() {
+		this.contextRunner.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
+				OAuth2WebSecurityConfiguration.class).run((context) -> {
+					assertThat(getAuthCodeFilters(context)).isEmpty();
+					assertThat(context).getBean(OAuth2AuthorizedClientService.class)
+							.isNotNull();
+				});
+	}
+
+	@Test
+	public void authorizedClientServiceBeanIsConditionalOnMissingBean() {
 		this.contextRunner
 				.withUserConfiguration(OAuth2AuthorizedClientServiceConfiguration.class,
 						OAuth2WebSecurityConfiguration.class)
-				.run(context -> {
+				.run((context) -> {
 					OAuth2AuthorizedClientService bean = context
 							.getBean(OAuth2AuthorizedClientService.class);
 					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
@@ -121,7 +122,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	@SuppressWarnings("unchecked")
 	private List<Filter> getAuthCodeFilters(AssertableApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context
-				.getBean("springSecurityFilterChain");
+				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
 		List<Filter> filters = (List<Filter>) ReflectionTestUtils
 				.getField(filterChains.get(0), "filters");
@@ -142,8 +143,8 @@ public class OAuth2WebSecurityConfigurationTests {
 		result = result && ObjectUtils.nullSafeEquals(reg1.getClientSecret(),
 				reg2.getClientSecret());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getScopes(), reg2.getScopes());
-		result = result && ObjectUtils.nullSafeEquals(reg1.getRedirectUri(),
-				reg2.getRedirectUri());
+		result = result && ObjectUtils.nullSafeEquals(reg1.getRedirectUriTemplate(),
+				reg2.getRedirectUriTemplate());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getRegistrationId(),
 				reg2.getRegistrationId());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getAuthorizationGrantType(),
@@ -191,7 +192,7 @@ public class OAuth2WebSecurityConfigurationTests {
 							org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 					.scope("read").clientSecret("secret")
-					.redirectUri("http://redirect-uri.com")
+					.redirectUriTemplate("http://redirect-uri.com")
 					.authorizationUri("http://authorization-uri.com")
 					.tokenUri("http://token-uri.com").userInfoUri(userInfoUri)
 					.userNameAttributeName("login");

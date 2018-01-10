@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.HideClassesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -61,7 +61,7 @@ public class SessionAutoConfigurationHazelcastTests
 	public void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
 				.withClassLoader(
-						new HideClassesClassLoader(JdbcOperationsSessionRepository.class,
+						new FilteredClassLoader(JdbcOperationsSessionRepository.class,
 								RedisOperationsSessionRepository.class,
 								MongoOperationsSessionRepository.class))
 				.run(this::validateDefaultConfig);

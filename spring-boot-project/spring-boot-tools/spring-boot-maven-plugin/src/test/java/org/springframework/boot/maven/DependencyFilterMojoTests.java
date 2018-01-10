@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 import org.junit.Test;
@@ -153,7 +152,7 @@ public class DependencyFilterMojoTests {
 		}
 
 		@Override
-		public void execute() throws MojoExecutionException, MojoFailureException {
+		public void execute() {
 
 		}
 

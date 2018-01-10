@@ -40,14 +40,14 @@ public class ClassPathChangedEventTests {
 	private Object source = new Object();
 
 	@Test
-	public void changeSetMustNotBeNull() throws Exception {
+	public void changeSetMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ChangeSet must not be null");
 		new ClassPathChangedEvent(this.source, null, false);
 	}
 
 	@Test
-	public void getChangeSet() throws Exception {
+	public void getChangeSet() {
 		Set<ChangedFiles> changeSet = new LinkedHashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.source, changeSet,
 				false);
@@ -55,7 +55,7 @@ public class ClassPathChangedEventTests {
 	}
 
 	@Test
-	public void getRestartRequired() throws Exception {
+	public void getRestartRequired() {
 		Set<ChangedFiles> changeSet = new LinkedHashSet<>();
 		ClassPathChangedEvent event;
 		event = new ClassPathChangedEvent(this.source, changeSet, false);

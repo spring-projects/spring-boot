@@ -42,7 +42,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * {@link org.springframework.core.env.Environment} are reset at the end of every test.
  * This means that {@link TestPropertyValues} can be used in a test without affecting the
  * {@code Environment} of other tests in the same class. The runner always sets the flag
- * `endpoints.default.web.enabled` to true so that web endpoints are enabled.
+ * {@code management.endpoints.web.expose} to {@code *} so that web endpoints are enabled.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb

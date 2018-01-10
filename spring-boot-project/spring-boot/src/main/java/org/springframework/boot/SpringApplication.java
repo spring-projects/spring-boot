@@ -175,7 +175,7 @@ public class SpringApplication {
 	 * environments.
 	 */
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
-			+ "boot.web.reactive.context.ReactiveWebServerApplicationContext";
+			+ "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
 
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.reactive.DispatcherHandler";

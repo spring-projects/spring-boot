@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.ProviderDetails;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,6 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OAuth2ClientPropertiesRegistrationAdapter}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
+ * @author Thiago Hirata
  */
 public class OAuth2ClientPropertiesRegistrationAdapterTests {
 
@@ -41,13 +44,13 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt()
-			throws Exception {
+	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Provider provider = new Provider();
 		provider.setAuthorizationUri("http://example.com/auth");
 		provider.setTokenUri("http://example.com/token");
 		provider.setUserInfoUri("http://example.com/info");
+		provider.setUserNameAttribute("sub");
 		provider.setJwkSetUri("http://example.com/jwk");
 		Registration registration = new Registration();
 		registration.setProvider("provider");
@@ -55,7 +58,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setClientSecret("clientSecret");
 		registration.setClientAuthenticationMethod("post");
 		registration.setAuthorizationGrantType("authorization_code");
-		registration.setRedirectUri("http://example.com/redirect");
+		registration.setRedirectUriTemplate("http://example.com/redirect");
 		registration.setScope(Collections.singleton("scope"));
 		registration.setClientName("clientName");
 		properties.getProvider().put("provider", provider);
@@ -69,6 +72,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adaptedProvider.getTokenUri()).isEqualTo("http://example.com/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("http://example.com/info");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo("sub");
 		assertThat(adaptedProvider.getJwkSetUri()).isEqualTo("http://example.com/jwk");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
 		assertThat(adapted.getClientId()).isEqualTo("clientId");
@@ -77,14 +82,14 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-		assertThat(adapted.getRedirectUri()).isEqualTo("http://example.com/redirect");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("http://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("scope");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUsingCommonProviderShouldAdapt()
-			throws Exception {
+	public void getClientRegistrationsWhenUsingCommonProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		registration.setProvider("google");
@@ -101,6 +106,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo(IdTokenClaimNames.SUB);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
@@ -110,16 +117,15 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-		assertThat(adapted.getRedirectUri()).isEqualTo(
-				"{scheme}://{serverName}:{serverPort}{contextPath}/login/oauth2/code/{registrationId}");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("{baseUrl}/login/oauth2/code/{registrationId}");
 		assertThat(adapted.getScopes()).containsExactly("openid", "profile", "email",
 				"address", "phone");
 		assertThat(adapted.getClientName()).isEqualTo("Google");
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUsingCommonProviderWithOverrideShouldAdapt()
-			throws Exception {
+	public void getClientRegistrationsWhenUsingCommonProviderWithOverrideShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		registration.setProvider("google");
@@ -127,7 +133,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setClientSecret("clientSecret");
 		registration.setClientAuthenticationMethod("post");
 		registration.setAuthorizationGrantType("authorization_code");
-		registration.setRedirectUri("http://example.com/redirect");
+		registration.setRedirectUriTemplate("http://example.com/redirect");
 		registration.setScope(Collections.singleton("scope"));
 		registration.setClientName("clientName");
 		properties.getRegistration().put("registration", registration);
@@ -141,6 +147,8 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
 		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo(IdTokenClaimNames.SUB);
 		assertThat(adaptedProvider.getJwkSetUri())
 				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
 		assertThat(adapted.getRegistrationId()).isEqualTo("registration");
@@ -150,14 +158,14 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-		assertThat(adapted.getRedirectUri()).isEqualTo("http://example.com/redirect");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("http://example.com/redirect");
 		assertThat(adapted.getScopes()).containsExactly("scope");
 		assertThat(adapted.getClientName()).isEqualTo("clientName");
 	}
 
 	@Test
-	public void getClientRegistrationsWhenUnknownProviderShouldThrowException()
-			throws Exception {
+	public void getClientRegistrationsWhenUnknownProviderShouldThrowException() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		registration.setProvider("missing");
@@ -168,8 +176,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenProviderNotSpecifiedShouldUseRegistrationId()
-			throws Exception {
+	public void getClientRegistrationsWhenProviderNotSpecifiedShouldUseRegistrationId() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		registration.setClientId("clientId");
@@ -194,16 +201,15 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
 				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-		assertThat(adapted.getRedirectUri()).isEqualTo(
-				"{scheme}://{serverName}:{serverPort}{contextPath}/login/oauth2/code/{registrationId}");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("{baseUrl}/login/oauth2/code/{registrationId}");
 		assertThat(adapted.getScopes()).containsExactly("openid", "profile", "email",
 				"address", "phone");
 		assertThat(adapted.getClientName()).isEqualTo("Google");
 	}
 
 	@Test
-	public void getClientRegistrationsWhenProviderNotSpecifiedAndUnknownProviderShouldThrowException()
-			throws Exception {
+	public void getClientRegistrationsWhenProviderNotSpecifiedAndUnknownProviderShouldThrowException() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		Registration registration = new Registration();
 		properties.getRegistration().put("missing", registration);

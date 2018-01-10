@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
 
@@ -50,6 +50,7 @@ import org.apache.catalina.WebResourceRoot.ResourceSetType;
 import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
@@ -58,22 +59,13 @@ import org.apache.catalina.util.LifecycleBase;
 import org.apache.catalina.webresources.AbstractResourceSet;
 import org.apache.catalina.webresources.EmptyResource;
 import org.apache.catalina.webresources.StandardRoot;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.coyote.AbstractProtocol;
-import org.apache.coyote.ProtocolHandler;
-import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
-import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.apache.coyote.http11.Http11NioProtocol;
-import org.apache.tomcat.util.net.SSLHostConfig;
+import org.apache.coyote.http2.Http2Protocol;
+import org.apache.tomcat.util.scan.StandardJarScanFilter;
 
-import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
-import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.Ssl.ClientAuth;
-import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
@@ -81,7 +73,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -107,7 +98,7 @@ import org.springframework.util.StringUtils;
 public class TomcatServletWebServerFactory extends AbstractServletWebServerFactory
 		implements ResourceLoaderAware {
 
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
@@ -122,7 +113,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<Valve> contextValves = new ArrayList<>();
 
-	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
+	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>(
+			Collections.singleton(new AprLifecycleListener()));
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<>();
 
@@ -144,7 +136,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * Create a new {@link TomcatServletWebServerFactory} instance.
 	 */
 	public TomcatServletWebServerFactory() {
-		super();
 	}
 
 	/**
@@ -194,7 +185,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File documentRoot = getValidDocumentRoot();
-		final TomcatEmbeddedContext context = new TomcatEmbeddedContext();
+		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		if (documentRoot != null) {
 			context.setResources(new LoaderHidingResourceRoot(context));
 		}
@@ -211,7 +202,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
 		context.setUseRelativeRedirects(false);
-		SkipPatternJarScanner.apply(context, this.tldSkipPatterns);
+		configureTldSkipPatterns(context);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
 		loader.setDelegate(true);
@@ -249,6 +240,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			context.addLocaleEncodingMappingParameter(locale.toString(),
 					charset.toString());
 		}
+	}
+
+	private void configureTldSkipPatterns(TomcatEmbeddedContext context) {
+		StandardJarScanFilter filter = new StandardJarScanFilter();
+		filter.setTldSkip(
+				StringUtils.collectionToCommaDelimitedString(this.tldSkipPatterns));
+		context.getJarScanner().setJarScanFilter(filter);
 	}
 
 	private void addDefaultServlet(Context context) {
@@ -304,17 +302,14 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		if (getUriEncoding() != null) {
 			connector.setURIEncoding(getUriEncoding().name());
 		}
-
-		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
-		// prematurely...
+		// Don't bind to the socket prematurely if ApplicationContext is slow to start
 		connector.setProperty("bindOnInit", "false");
-
 		if (getSsl() != null && getSsl().isEnabled()) {
 			customizeSsl(connector);
 		}
-		if (getCompression() != null && getCompression().getEnabled()) {
-			customizeCompression(connector);
-		}
+		TomcatConnectorCustomizer compression = new CompressionConnectorCustomizer(
+				getCompression());
+		compression.customize(connector);
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
 		}
@@ -327,119 +322,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private void customizeSsl(Connector connector) {
-		ProtocolHandler handler = connector.getProtocolHandler();
-		Assert.state(handler instanceof AbstractHttp11JsseProtocol,
-				"To use SSL, the connector's protocol handler must be an "
-						+ "AbstractHttp11JsseProtocol subclass");
-		configureSsl((AbstractHttp11JsseProtocol<?>) handler, getSsl());
-		connector.setScheme("https");
-		connector.setSecure(true);
-	}
-
-	private void customizeCompression(Connector connector) {
-		ProtocolHandler handler = connector.getProtocolHandler();
-		if (handler instanceof AbstractHttp11Protocol) {
-			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
-			Compression compression = getCompression();
-			protocol.setCompression("on");
-			protocol.setCompressionMinSize(compression.getMinResponseSize());
-			protocol.setCompressibleMimeType(
-					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
-			if (getCompression().getExcludedUserAgents() != null) {
-				protocol.setNoCompressionUserAgents(
-						StringUtils.arrayToCommaDelimitedString(
-								getCompression().getExcludedUserAgents()));
-			}
-		}
-	}
-
-	/**
-	 * Configure Tomcat's {@link AbstractHttp11JsseProtocol} for SSL.
-	 * @param protocol the protocol
-	 * @param ssl the ssl details
-	 */
-	protected void configureSsl(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
-		protocol.setSSLEnabled(true);
-		protocol.setSslProtocol(ssl.getProtocol());
-		configureSslClientAuth(protocol, ssl);
-		protocol.setKeystorePass(ssl.getKeyStorePassword());
-		protocol.setKeyPass(ssl.getKeyPassword());
-		protocol.setKeyAlias(ssl.getKeyAlias());
-		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
-		if (StringUtils.hasText(ciphers)) {
-			protocol.setCiphers(ciphers);
-		}
-		if (ssl.getEnabledProtocols() != null) {
-			for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
-				sslHostConfig.setProtocols(StringUtils
-						.arrayToCommaDelimitedString(ssl.getEnabledProtocols()));
-			}
-		}
-		if (getSslStoreProvider() != null) {
-			TomcatURLStreamHandlerFactory instance = TomcatURLStreamHandlerFactory
-					.getInstance();
-			instance.addUserFactory(
-					new SslStoreProviderUrlStreamHandlerFactory(getSslStoreProvider()));
-			protocol.setKeystoreFile(
-					SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
-			protocol.setTruststoreFile(
-					SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
-		}
-		else {
-			configureSslKeyStore(protocol, ssl);
-			configureSslTrustStore(protocol, ssl);
-		}
-	}
-
-	private void configureSslClientAuth(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
-		if (ssl.getClientAuth() == ClientAuth.NEED) {
-			protocol.setClientAuth(Boolean.TRUE.toString());
-		}
-		else if (ssl.getClientAuth() == ClientAuth.WANT) {
-			protocol.setClientAuth("want");
-		}
-	}
-
-	protected void configureSslStoreProvider(AbstractHttp11JsseProtocol<?> protocol,
-			SslStoreProvider sslStoreProvider) {
-		Assert.isInstanceOf(Http11NioProtocol.class, protocol,
-				"SslStoreProvider can only be used with Http11NioProtocol");
-	}
-
-	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
-		try {
-			protocol.setKeystoreFile(ResourceUtils.getURL(ssl.getKeyStore()).toString());
-		}
-		catch (FileNotFoundException ex) {
-			throw new WebServerException("Could not load key store: " + ex.getMessage(),
-					ex);
-		}
-		if (ssl.getKeyStoreType() != null) {
-			protocol.setKeystoreType(ssl.getKeyStoreType());
-		}
-		if (ssl.getKeyStoreProvider() != null) {
-			protocol.setKeystoreProvider(ssl.getKeyStoreProvider());
-		}
-	}
-
-	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
-
-		if (ssl.getTrustStore() != null) {
-			try {
-				protocol.setTruststoreFile(
-						ResourceUtils.getURL(ssl.getTrustStore()).toString());
-			}
-			catch (FileNotFoundException ex) {
-				throw new WebServerException(
-						"Could not load trust store: " + ex.getMessage(), ex);
-			}
-		}
-		protocol.setTruststorePass(ssl.getTrustStorePassword());
-		if (ssl.getTrustStoreType() != null) {
-			protocol.setTruststoreType(ssl.getTrustStoreType());
-		}
-		if (ssl.getTrustStoreProvider() != null) {
-			protocol.setTruststoreProvider(ssl.getTrustStoreProvider());
+		new SslConnectorCustomizer(getSsl(), getSslStoreProvider()).customize(connector);
+		if (getHttp2() != null && getHttp2().isEnabled()) {
+			connector.addUpgradeProtocol(new Http2Protocol());
 		}
 	}
 
@@ -500,11 +385,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private long getSessionTimeoutInMinutes() {
-		long sessionTimeout = getSessionTimeout();
-		if (sessionTimeout > 0) {
-			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
+		Duration sessionTimeout = getSessionTimeout();
+		if (sessionTimeout == null || sessionTimeout.isNegative()
+				|| sessionTimeout.isZero()) {
+			return 0;
 		}
-		return sessionTimeout;
+		return Math.max(sessionTimeout.toMinutes(), 1);
 	}
 
 	/**
@@ -636,8 +522,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	/**
-	 * Set {@link LifecycleListener}s that should be applied to the Tomcat {@link Context}
-	 * . Calling this method will replace any existing listeners.
+	 * Set {@link LifecycleListener}s that should be applied to the Tomcat {@link Context}.
+	 * Calling this method will replace any existing listeners.
 	 * @param contextLifecycleListeners the listeners to set
 	 */
 	public void setContextLifecycleListeners(
@@ -649,7 +535,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Returns a mutable collection of the {@link LifecycleListener}s that will be applied
-	 * to the Tomcat {@link Context} .
+	 * to the Tomcat {@link Context}.
 	 * @return the context lifecycle listeners that will be applied
 	 */
 	public Collection<LifecycleListener> getContextLifecycleListeners() {
@@ -669,7 +555,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Set {@link TomcatContextCustomizer}s that should be applied to the Tomcat
-	 * {@link Context} . Calling this method will replace any existing customizers.
+	 * {@link Context}. Calling this method will replace any existing customizers.
 	 * @param tomcatContextCustomizers the customizers to set
 	 */
 	public void setTomcatContextCustomizers(
@@ -681,7 +567,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Returns a mutable collection of the {@link TomcatContextCustomizer}s that will be
-	 * applied to the Tomcat {@link Context} .
+	 * applied to the Tomcat {@link Context}.
 	 * @return the listeners that will be applied
 	 */
 	public Collection<TomcatContextCustomizer> getTomcatContextCustomizers() {
@@ -702,7 +588,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Set {@link TomcatConnectorCustomizer}s that should be applied to the Tomcat
-	 * {@link Connector} . Calling this method will replace any existing customizers.
+	 * {@link Connector}. Calling this method will replace any existing customizers.
 	 * @param tomcatConnectorCustomizers the customizers to set
 	 */
 	public void setTomcatConnectorCustomizers(
@@ -726,7 +612,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Returns a mutable collection of the {@link TomcatConnectorCustomizer}s that will be
-	 * applied to the Tomcat {@link Connector} .
+	 * applied to the Tomcat {@link Connector}.
 	 * @return the customizers that will be applied
 	 */
 	public Collection<TomcatConnectorCustomizer> getTomcatConnectorCustomizers() {

@@ -48,7 +48,7 @@ public class SpyBeanOnTestFieldForExistingBeanCacheIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testSpying() throws Exception {
+	public void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say simple");
 		verify(this.caller.getService()).greeting();
 	}

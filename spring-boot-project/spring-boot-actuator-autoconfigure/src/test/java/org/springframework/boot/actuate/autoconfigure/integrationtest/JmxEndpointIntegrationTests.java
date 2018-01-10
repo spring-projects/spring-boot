@@ -54,19 +54,19 @@ public class JmxEndpointIntegrationTests {
 		this.contextRunner.run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer,
-					new String[] { "autoconfig", "beans", "configprops", "env", "health",
-							"info", "mappings", "status", "threaddump", "trace" },
+					new String[] { "beans", "conditions", "configprops", "env", "health",
+							"info", "mappings", "threaddump", "trace" },
 					new String[] { "shutdown" });
 		});
 	}
 
 	@Test
-	public void jmxEndpointsCanBeDisabled() {
-		this.contextRunner.withPropertyValues("endpoints.default.jmx.enabled:false")
+	public void jmxEndpointsCanBeExcluded() {
+		this.contextRunner.withPropertyValues("management.endpoints.jmx.exclude:*")
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[0],
-							new String[] { "autoconfig", "beans", "configprops", "env",
+							new String[] { "beans", "conditions", "configprops", "env",
 									"health", "mappings", "shutdown", "threaddump",
 									"trace" });
 
@@ -74,12 +74,12 @@ public class JmxEndpointIntegrationTests {
 	}
 
 	@Test
-	public void singleJmxEndpointCanBeEnabled() {
-		this.contextRunner.withPropertyValues("endpoints.default.jmx.enabled=false",
-				"endpoints.beans.jmx.enabled=true").run((context) -> {
+	public void singleJmxEndpointCanBeExposed() {
+		this.contextRunner.withPropertyValues("management.endpoints.jmx.expose=beans")
+				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[] { "beans" },
-							new String[] { "autoconfig", "configprops", "env", "health",
+							new String[] { "conditions", "configprops", "env", "health",
 									"mappings", "shutdown", "threaddump", "trace" });
 				});
 	}

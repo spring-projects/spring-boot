@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,10 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
+import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -32,6 +36,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -51,6 +56,7 @@ import static org.mockito.Mockito.mock;
 public class CustomHibernateJpaAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withPropertyValues("spring.datasource.generate-unique-name=true")
 			.withUserConfiguration(TestConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					HibernateJpaAutoConfiguration.class));
@@ -63,10 +69,42 @@ public class CustomHibernateJpaAutoConfigurationTests {
 								+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
 				.run((context) -> {
 					JpaProperties bean = context.getBean(JpaProperties.class);
-					Map<String, String> hibernateProperties = bean
-							.getHibernateProperties("create-drop");
+					Map<String, Object> hibernateProperties = bean.getHibernateProperties(
+							new HibernateSettings().ddlAuto("create-drop"));
 					assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"))
 							.isNull();
+				});
+	}
+
+	@Test
+	public void namingStrategyBeansAreUsed() {
+		this.contextRunner.withUserConfiguration(NamingStrategyConfiguration.class)
+				.withPropertyValues(
+						"spring.datasource.url:jdbc:h2:mem:naming-strategy-beans")
+				.run((context) -> {
+					HibernateJpaConfiguration jpaConfiguration = context
+							.getBean(HibernateJpaConfiguration.class);
+					Map<String, Object> hibernateProperties = jpaConfiguration
+							.getVendorProperties();
+					assertThat(hibernateProperties
+							.get("hibernate.implicit_naming_strategy")).isEqualTo(
+									NamingStrategyConfiguration.implicitNamingStrategy);
+					assertThat(hibernateProperties
+							.get("hibernate.physical_naming_strategy")).isEqualTo(
+									NamingStrategyConfiguration.physicalNamingStrategy);
+				});
+	}
+
+	@Test
+	public void hibernatePropertiesCustomizersAreAppliedInOrder() {
+		this.contextRunner
+				.withUserConfiguration(HibernatePropertiesCustomizerConfiguration.class)
+				.run((context) -> {
+					HibernateJpaConfiguration jpaConfiguration = context
+							.getBean(HibernateJpaConfiguration.class);
+					Map<String, Object> hibernateProperties = jpaConfiguration
+							.getVendorProperties();
+					assertThat(hibernateProperties.get("test.counter")).isEqualTo(2);
 				});
 	}
 
@@ -103,6 +141,42 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				// Do nothing
 			}
 			return dataSource;
+		}
+
+	}
+
+	@Configuration
+	static class NamingStrategyConfiguration {
+
+		static final ImplicitNamingStrategy implicitNamingStrategy = new ImplicitNamingStrategyJpaCompliantImpl();
+
+		static final PhysicalNamingStrategy physicalNamingStrategy = new PhysicalNamingStrategyStandardImpl();
+
+		@Bean
+		public ImplicitNamingStrategy implicitNamingStrategy() {
+			return implicitNamingStrategy;
+		}
+
+		@Bean
+		public PhysicalNamingStrategy physicalNamingStrategy() {
+			return physicalNamingStrategy;
+		}
+
+	}
+
+	@Configuration
+	static class HibernatePropertiesCustomizerConfiguration {
+
+		@Bean
+		@Order(2)
+		public HibernatePropertiesCustomizer sampleCustomizer() {
+			return ((hibernateProperties) -> hibernateProperties.put("test.counter", 2));
+		}
+
+		@Bean
+		@Order(1)
+		public HibernatePropertiesCustomizer anotherCustomizer() {
+			return ((hibernateProperties) -> hibernateProperties.put("test.counter", 1));
 		}
 
 	}

@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HateoasProperties {
 
 	/**
-	 * Specify if application/hal+json responses should be sent to requests that accept
+	 * Whether application/hal+json responses should be sent to requests that accept
 	 * application/json.
 	 */
 	private boolean useHalAsDefaultJsonMediaType = true;

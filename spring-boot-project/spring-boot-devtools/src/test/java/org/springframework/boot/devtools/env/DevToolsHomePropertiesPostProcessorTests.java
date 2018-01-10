@@ -65,7 +65,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	public void ignoresMissingHomeProperties() throws Exception {
+	public void ignoresMissingHomeProperties() {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
 		postProcessor.postProcessEnvironment(environment, null);

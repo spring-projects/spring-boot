@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.data.redis;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;
@@ -30,7 +31,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExampleService {
 
-	private static final Charset CHARSET = Charset.forName("UTF-8");
+	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	private RedisOperations<Object, Object> operations;
 

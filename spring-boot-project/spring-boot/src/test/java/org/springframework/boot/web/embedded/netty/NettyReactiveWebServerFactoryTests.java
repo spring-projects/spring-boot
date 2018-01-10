@@ -45,7 +45,7 @@ public class NettyReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void portInUseExceptionIsThrownWhenPortIsAlreadyInUse() throws Exception {
+	public void portInUseExceptionIsThrownWhenPortIsAlreadyInUse() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setPort(0);
 		this.webServer = factory.getWebServer(new EchoHandler());
@@ -58,13 +58,13 @@ public class NettyReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void nettyCustomizers() throws Exception {
+	public void nettyCustomizers() {
 		NettyReactiveWebServerFactory factory = getFactory();
 		NettyServerCustomizer[] customizers = new NettyServerCustomizer[2];
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(NettyServerCustomizer.class);
 		}
-		factory.setNettyServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		this.webServer = factory.getWebServer(new EchoHandler());
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (NettyServerCustomizer customizer : customizers) {

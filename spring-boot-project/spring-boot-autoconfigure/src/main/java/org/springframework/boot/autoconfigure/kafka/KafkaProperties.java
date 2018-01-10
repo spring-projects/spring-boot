@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -45,6 +48,7 @@ import org.springframework.util.CollectionUtils;
  * @author Gary Russell
  * @author Stephane Nicoll
  * @author Artem Bilan
+ * @author Nakul Mishra
  * @since 1.5.0
  */
 @ConfigurationProperties(prefix = "spring.kafka")
@@ -58,7 +62,7 @@ public class KafkaProperties {
 			Collections.singletonList("localhost:9092"));
 
 	/**
-	 * Id to pass to the server when making requests; used for server-side logging.
+	 * ID to pass to the server when making requests. Used for server-side logging.
 	 */
 	private String clientId;
 
@@ -221,14 +225,14 @@ public class KafkaProperties {
 		private final Ssl ssl = new Ssl();
 
 		/**
-		 * Frequency in milliseconds that the consumer offsets are auto-committed to Kafka
-		 * if 'enable.auto.commit' true.
+		 * Frequency with which the consumer offsets are auto-committed to Kafka if
+		 * 'enable.auto.commit' is set to true.
 		 */
-		private Integer autoCommitInterval;
+		private Duration autoCommitInterval;
 
 		/**
-		 * What to do when there is no initial offset in Kafka or if the current offset
-		 * does not exist any more on the server.
+		 * What to do when there is no initial offset in Kafka or if the current offset no
+		 * longer exists on the server.
 		 */
 		private String autoOffsetReset;
 
@@ -239,36 +243,38 @@ public class KafkaProperties {
 		private List<String> bootstrapServers;
 
 		/**
-		 * Id to pass to the server when making requests; used for server-side logging.
+		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
 		private String clientId;
 
 		/**
-		 * If true the consumer's offset will be periodically committed in the background.
+		 * Whether the consumer's offset is periodically committed in the background.
 		 */
 		private Boolean enableAutoCommit;
 
 		/**
-		 * Maximum amount of time in milliseconds the server will block before answering
-		 * the fetch request if there isn't sufficient data to immediately satisfy the
-		 * requirement given by "fetch.min.bytes".
+		 * Maximum amount of time the server blocks before answering the fetch request if
+		 * there isn't sufficient data to immediately satisfy the requirement given by
+		 * "fetch.min.bytes".
 		 */
-		private Integer fetchMaxWait;
+		private Duration fetchMaxWait;
 
 		/**
-		 * Minimum amount of data the server should return for a fetch request in bytes.
+		 * Minimum amount of data, in bytes, the server should return for a fetch request
+		 * in bytes.
 		 */
 		private Integer fetchMinSize;
 
 		/**
-		 * Unique string that identifies the consumer group this consumer belongs to.
+		 * Unique string that identifies the consumer group to which this consumer belongs
+		 * to.
 		 */
 		private String groupId;
 
 		/**
-		 * Expected time in milliseconds between heartbeats to the consumer coordinator.
+		 * Expected time between heartbeats to the consumer coordinator.
 		 */
-		private Integer heartbeatInterval;
+		private Duration heartbeatInterval;
 
 		/**
 		 * Deserializer class for keys.
@@ -294,11 +300,11 @@ public class KafkaProperties {
 			return this.ssl;
 		}
 
-		public Integer getAutoCommitInterval() {
+		public Duration getAutoCommitInterval() {
 			return this.autoCommitInterval;
 		}
 
-		public void setAutoCommitInterval(Integer autoCommitInterval) {
+		public void setAutoCommitInterval(Duration autoCommitInterval) {
 			this.autoCommitInterval = autoCommitInterval;
 		}
 
@@ -334,11 +340,11 @@ public class KafkaProperties {
 			this.enableAutoCommit = enableAutoCommit;
 		}
 
-		public Integer getFetchMaxWait() {
+		public Duration getFetchMaxWait() {
 			return this.fetchMaxWait;
 		}
 
-		public void setFetchMaxWait(Integer fetchMaxWait) {
+		public void setFetchMaxWait(Duration fetchMaxWait) {
 			this.fetchMaxWait = fetchMaxWait;
 		}
 
@@ -358,11 +364,11 @@ public class KafkaProperties {
 			this.groupId = groupId;
 		}
 
-		public Integer getHeartbeatInterval() {
+		public Duration getHeartbeatInterval() {
 			return this.heartbeatInterval;
 		}
 
-		public void setHeartbeatInterval(Integer heartbeatInterval) {
+		public void setHeartbeatInterval(Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
@@ -398,7 +404,7 @@ public class KafkaProperties {
 			Map<String, Object> properties = new HashMap<>();
 			if (this.autoCommitInterval != null) {
 				properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,
-						this.autoCommitInterval);
+						(int) this.autoCommitInterval.toMillis());
 			}
 			if (this.autoOffsetReset != null) {
 				properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
@@ -417,7 +423,7 @@ public class KafkaProperties {
 			}
 			if (this.fetchMaxWait != null) {
 				properties.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG,
-						this.fetchMaxWait);
+						(int) this.fetchMaxWait.toMillis());
 			}
 			if (this.fetchMinSize != null) {
 				properties.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, this.fetchMinSize);
@@ -427,7 +433,7 @@ public class KafkaProperties {
 			}
 			if (this.heartbeatInterval != null) {
 				properties.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG,
-						this.heartbeatInterval);
+						(int) this.heartbeatInterval.toMillis());
 			}
 			if (this.keyDeserializer != null) {
 				properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
@@ -495,7 +501,7 @@ public class KafkaProperties {
 		private Long bufferMemory;
 
 		/**
-		 * Id to pass to the server when making requests; used for server-side logging.
+		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
 		private String clientId;
 
@@ -518,6 +524,11 @@ public class KafkaProperties {
 		 * When greater than zero, enables retrying of failed sends.
 		 */
 		private Integer retries;
+
+		/**
+		 * When non empty, enables transaction support for producer.
+		 */
+		private String transactionIdPrefix;
 
 		/**
 		 * Additional producer-specific properties used to configure the client.
@@ -600,6 +611,14 @@ public class KafkaProperties {
 			this.retries = retries;
 		}
 
+		public String getTransactionIdPrefix() {
+			return this.transactionIdPrefix;
+		}
+
+		public void setTransactionIdPrefix(String transactionIdPrefix) {
+			this.transactionIdPrefix = transactionIdPrefix;
+		}
+
 		public Map<String, String> getProperties() {
 			return this.properties;
 		}
@@ -668,7 +687,7 @@ public class KafkaProperties {
 		private final Ssl ssl = new Ssl();
 
 		/**
-		 * Id to pass to the server when making requests; used for server-side logging.
+		 * ID to pass to the server when making requests. Used for server-side logging.
 		 */
 		private String clientId;
 
@@ -678,7 +697,7 @@ public class KafkaProperties {
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
-		 * Fail fast if the broker is not available on startup.
+		 * Whether to fail fast if the broker is not available on startup.
 		 */
 		private boolean failFast;
 
@@ -740,7 +759,7 @@ public class KafkaProperties {
 	public static class Template {
 
 		/**
-		 * Default topic to which messages will be sent.
+		 * Default topic to which messages are sent.
 		 */
 		private String defaultTopic;
 
@@ -776,9 +795,14 @@ public class KafkaProperties {
 		private Type type = Type.SINGLE;
 
 		/**
-		 * Listener AckMode; see the spring-kafka documentation.
+		 * Listener AckMode. See the spring-kafka documentation.
 		 */
 		private AckMode ackMode;
+
+		/**
+		 * Prefix for the listener's consumer client.id property.
+		 */
+		private String clientId;
 
 		/**
 		 * Number of threads to run in the listener containers.
@@ -786,9 +810,15 @@ public class KafkaProperties {
 		private Integer concurrency;
 
 		/**
-		 * Timeout in milliseconds to use when polling the consumer.
+		 * Timeout to use when polling the consumer.
 		 */
-		private Long pollTimeout;
+		private Duration pollTimeout;
+
+		/**
+		 * Multiplier applied to "pollTimeout" to determine if a consumer is
+		 * non-responsive.
+		 */
+		private Float noPollThreshold;
 
 		/**
 		 * Number of records between offset commits when ackMode is "COUNT" or
@@ -797,10 +827,26 @@ public class KafkaProperties {
 		private Integer ackCount;
 
 		/**
-		 * Time in milliseconds between offset commits when ackMode is "TIME" or
-		 * "COUNT_TIME".
+		 * Time between offset commits when ackMode is "TIME" or "COUNT_TIME".
 		 */
-		private Long ackTime;
+		private Duration ackTime;
+
+		/**
+		 * Time between publishing idle consumer events (no data received).
+		 */
+		private Duration idleEventInterval;
+
+		/**
+		 * Time between checks for non-responsive consumers. If a duration suffix is not
+		 * specified, seconds will be used.
+		 */
+		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		private Duration monitorInterval;
+
+		/**
+		 * Whether to log the container configuration during initialization (INFO level).
+		 */
+		private Boolean logContainerConfig;
 
 		public Type getType() {
 			return this.type;
@@ -818,6 +864,14 @@ public class KafkaProperties {
 			this.ackMode = ackMode;
 		}
 
+		public String getClientId() {
+			return this.clientId;
+		}
+
+		public void setClientId(String clientId) {
+			this.clientId = clientId;
+		}
+
 		public Integer getConcurrency() {
 			return this.concurrency;
 		}
@@ -826,12 +880,20 @@ public class KafkaProperties {
 			this.concurrency = concurrency;
 		}
 
-		public Long getPollTimeout() {
+		public Duration getPollTimeout() {
 			return this.pollTimeout;
 		}
 
-		public void setPollTimeout(Long pollTimeout) {
+		public void setPollTimeout(Duration pollTimeout) {
 			this.pollTimeout = pollTimeout;
+		}
+
+		public Float getNoPollThreshold() {
+			return this.noPollThreshold;
+		}
+
+		public void setNoPollThreshold(Float noPollThreshold) {
+			this.noPollThreshold = noPollThreshold;
 		}
 
 		public Integer getAckCount() {
@@ -842,12 +904,36 @@ public class KafkaProperties {
 			this.ackCount = ackCount;
 		}
 
-		public Long getAckTime() {
+		public Duration getAckTime() {
 			return this.ackTime;
 		}
 
-		public void setAckTime(Long ackTime) {
+		public void setAckTime(Duration ackTime) {
 			this.ackTime = ackTime;
+		}
+
+		public Duration getIdleEventInterval() {
+			return this.idleEventInterval;
+		}
+
+		public void setIdleEventInterval(Duration idleEventInterval) {
+			this.idleEventInterval = idleEventInterval;
+		}
+
+		public Duration getMonitorInterval() {
+			return this.monitorInterval;
+		}
+
+		public void setMonitorInterval(Duration monitorInterval) {
+			this.monitorInterval = monitorInterval;
+		}
+
+		public Boolean getLogContainerConfig() {
+			return this.logContainerConfig;
+		}
+
+		public void setLogContainerConfig(Boolean logContainerConfig) {
+			this.logContainerConfig = logContainerConfig;
 		}
 
 	}
@@ -865,7 +951,7 @@ public class KafkaProperties {
 		private Resource keystoreLocation;
 
 		/**
-		 * Store password for the key store file.
+		 * Password of the key store file.
 		 */
 		private String keystorePassword;
 
@@ -924,7 +1010,7 @@ public class KafkaProperties {
 	public static class Jaas {
 
 		/**
-		 * Enable JAAS configuration.
+		 * Whether to enable JAAS configuration.
 		 */
 		private boolean enabled;
 

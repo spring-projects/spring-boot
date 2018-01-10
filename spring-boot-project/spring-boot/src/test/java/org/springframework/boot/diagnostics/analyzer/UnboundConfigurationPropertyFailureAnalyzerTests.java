@@ -54,7 +54,7 @@ public class UnboundConfigurationPropertyFailureAnalyzerTests {
 	}
 
 	@Test
-	public void bindExceptionDueToUnboundElements() throws Exception {
+	public void bindExceptionDueToUnboundElements() {
 		FailureAnalysis analysis = performAnalysis(
 				UnboundElementsFailureConfiguration.class, "test.foo.listValue[0]=hello",
 				"test.foo.listValue[2]=world");

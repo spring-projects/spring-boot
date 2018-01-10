@@ -49,7 +49,7 @@ public class WebMvcTestWebDriverIntegrationTests {
 	private WebDriver webDriver;
 
 	@Test
-	public void shouldAutoConfigureWebClient() throws Exception {
+	public void shouldAutoConfigureWebClient() {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
@@ -57,7 +57,7 @@ public class WebMvcTestWebDriverIntegrationTests {
 	}
 
 	@Test
-	public void shouldBeADifferentWebClient() throws Exception {
+	public void shouldBeADifferentWebClient() {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");

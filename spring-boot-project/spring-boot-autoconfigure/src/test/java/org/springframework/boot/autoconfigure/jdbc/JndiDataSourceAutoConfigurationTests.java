@@ -157,7 +157,7 @@ public class JndiDataSourceAutoConfigurationTests {
 	}
 
 	private void configureJndi(String name, DataSource dataSource)
-			throws IllegalStateException, NamingException {
+			throws IllegalStateException {
 		TestableInitialContextFactory.bind(name, dataSource);
 	}
 

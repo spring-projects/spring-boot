@@ -32,13 +32,13 @@ import static org.hamcrest.Matchers.nullValue;
 public class DefaultRestartInitializerTests {
 
 	@Test
-	public void nullForTests() throws Exception {
+	public void nullForTests() {
 		MockRestartInitializer initializer = new MockRestartInitializer(true);
 		assertThat(initializer.getInitialUrls(Thread.currentThread())).isNull();
 	}
 
 	@Test
-	public void validMainThread() throws Exception {
+	public void validMainThread() {
 		MockRestartInitializer initializer = new MockRestartInitializer(false);
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
@@ -49,7 +49,7 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void threadNotNamedMain() throws Exception {
+	public void threadNotNamedMain() {
 		MockRestartInitializer initializer = new MockRestartInitializer(false);
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = new Thread();
@@ -60,7 +60,7 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void threadNotUsingAppClassLoader() throws Exception {
+	public void threadNotUsingAppClassLoader() {
 		MockRestartInitializer initializer = new MockRestartInitializer(false);
 		ClassLoader classLoader = new MockLauncherClassLoader(
 				getClass().getClassLoader());
@@ -72,17 +72,17 @@ public class DefaultRestartInitializerTests {
 	}
 
 	@Test
-	public void skipsDueToJUnitStacks() throws Exception {
+	public void skipsDueToJUnitStacks() {
 		testSkipStack("org.junit.runners.Something", true);
 	}
 
 	@Test
-	public void skipsDueToSpringTest() throws Exception {
+	public void skipsDueToSpringTest() {
 		testSkipStack("org.springframework.boot.test.Something", true);
 	}
 
 	@Test
-	public void skipsDueToCucumber() throws Exception {
+	public void skipsDueToCucumber() {
 		testSkipStack("cucumber.runtime.Runtime.run", true);
 	}
 

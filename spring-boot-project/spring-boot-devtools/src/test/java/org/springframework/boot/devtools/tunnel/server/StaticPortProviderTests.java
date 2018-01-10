@@ -33,14 +33,14 @@ public class StaticPortProviderTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void portMustBePositive() throws Exception {
+	public void portMustBePositive() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Port must be positive");
 		new StaticPortProvider(0);
 	}
 
 	@Test
-	public void getPort() throws Exception {
+	public void getPort() {
 		StaticPortProvider provider = new StaticPortProvider(123);
 		assertThat(provider.getPort()).isEqualTo(123);
 	}

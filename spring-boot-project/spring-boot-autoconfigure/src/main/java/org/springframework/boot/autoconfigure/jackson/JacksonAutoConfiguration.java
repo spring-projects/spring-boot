@@ -20,16 +20,18 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.cfg.JacksonJodaDateFormat;
 import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
@@ -70,11 +72,20 @@ import org.springframework.util.ReflectionUtils;
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
  * @author Johannes Edmeier
+ * @author Phillip Webb
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
 public class JacksonAutoConfiguration {
+
+	private static final Map<?, Boolean> FEATURE_DEFAULTS;
+
+	static {
+		Map<Object, Boolean> featureDefaults = new HashMap<>();
+		featureDefaults.put(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		FEATURE_DEFAULTS = Collections.unmodifiableMap(featureDefaults);
+	}
 
 	@Bean
 	public JsonComponentModule jsonComponentModule() {
@@ -228,6 +239,7 @@ public class JacksonAutoConfiguration {
 				if (this.jacksonProperties.getTimeZone() != null) {
 					builder.timeZone(this.jacksonProperties.getTimeZone());
 				}
+				configureFeatures(builder, FEATURE_DEFAULTS);
 				configureFeatures(builder, this.jacksonProperties.getDeserialization());
 				configureFeatures(builder, this.jacksonProperties.getSerialization());
 				configureFeatures(builder, this.jacksonProperties.getMapper());
@@ -241,14 +253,16 @@ public class JacksonAutoConfiguration {
 
 			private void configureFeatures(Jackson2ObjectMapperBuilder builder,
 					Map<?, Boolean> features) {
-				for (Entry<?, Boolean> entry : features.entrySet()) {
-					if (entry.getValue() != null && entry.getValue()) {
-						builder.featuresToEnable(entry.getKey());
+				features.forEach((feature, value) -> {
+					if (value != null) {
+						if (value) {
+							builder.featuresToEnable(feature);
+						}
+						else {
+							builder.featuresToDisable(feature);
+						}
 					}
-					else {
-						builder.featuresToDisable(entry.getKey());
-					}
-				}
+				});
 			}
 
 			private void configureDateFormat(Jackson2ObjectMapperBuilder builder) {

@@ -44,7 +44,7 @@ public class StringToInetAddressConverterTests extends AbstractInetAddressTests 
 	}
 
 	@Test
-	public void convertWhenHostExistsShouldConvert() throws Exception {
+	public void convertWhenHostExistsShouldConvert() {
 		assumeResolves("example.com");
 		InetAddress converted = this.converter.convert("example.com");
 		assertThat(converted.toString()).startsWith("example.com");

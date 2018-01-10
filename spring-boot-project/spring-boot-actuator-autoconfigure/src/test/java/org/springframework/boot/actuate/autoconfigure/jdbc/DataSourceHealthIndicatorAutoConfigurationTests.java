@@ -63,8 +63,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenMultipleDataSourceBeansShouldCreateCompositeIndicator()
-			throws Exception {
+	public void runWhenMultipleDataSourceBeansShouldCreateCompositeIndicator() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				DataSourceConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(HealthIndicator.class);
@@ -76,7 +75,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runShouldFilterRoutingDataSource() throws Exception {
+	public void runShouldFilterRoutingDataSource() {
 		this.contextRunner
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 						RoutingDatasourceConfig.class)
@@ -101,7 +100,7 @@ public class DataSourceHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() throws Exception {
+	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("management.health.db.enabled:false")
 				.run((context) -> assertThat(context)

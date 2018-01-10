@@ -60,7 +60,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
+	public void testDefaultRepositoryConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never")
 				.applyTo(this.context);
@@ -70,7 +70,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMixedRepositoryConfiguration() throws Exception {
+	public void testMixedRepositoryConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never")
 				.applyTo(this.context);
@@ -81,7 +81,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithMongoTemplate() throws Exception {
+	public void testJpaRepositoryConfigurationWithMongoTemplate() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never")
 				.applyTo(this.context);
@@ -91,7 +91,7 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithMongoOverlap() throws Exception {
+	public void testJpaRepositoryConfigurationWithMongoOverlap() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.initialization-mode:never")
 				.applyTo(this.context);
@@ -101,12 +101,11 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithMongoOverlapDisabled()
-			throws Exception {
+	public void testJpaRepositoryConfigurationWithMongoOverlapDisabled() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
 				.of("spring.datasource.initialization-mode:never",
-						"spring.data.mongodb.repositories.enabled:false")
+						"spring.data.mongodb.repositories.type:none")
 				.applyTo(this.context);
 		this.context.register(OverlapConfiguration.class, BaseConfiguration.class);
 		this.context.refresh();

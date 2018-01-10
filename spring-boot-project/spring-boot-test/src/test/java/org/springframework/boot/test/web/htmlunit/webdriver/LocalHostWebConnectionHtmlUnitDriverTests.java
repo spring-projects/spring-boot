@@ -59,31 +59,28 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 	}
 
 	@Test
-	public void createWhenEnvironmentIsNullWillThrowException() throws Exception {
+	public void createWhenEnvironmentIsNullWillThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		new LocalHostWebConnectionHtmlUnitDriver(null);
 	}
 
 	@Test
-	public void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException()
-			throws Exception {
+	public void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		new LocalHostWebConnectionHtmlUnitDriver(null, true);
 	}
 
 	@Test
-	public void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException()
-			throws Exception {
+	public void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		new LocalHostWebConnectionHtmlUnitDriver(null, BrowserVersion.CHROME);
 	}
 
 	@Test
-	public void createWithCapabilitiesWhenEnvironmentIsNullWillThrowException()
-			throws Exception {
+	public void createWithCapabilitiesWhenEnvironmentIsNullWillThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		Capabilities capabilities = mock(Capabilities.class);

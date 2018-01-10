@@ -87,60 +87,59 @@ public class AutoConfigurationSorterTests {
 	}
 
 	@Test
-	public void byOrderAnnotation() throws Exception {
+	public void byOrderAnnotation() {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST, DEFAULT));
 		assertThat(actual).containsExactly(HIGHEST, DEFAULT, LOWEST);
 	}
 
 	@Test
-	public void byAutoConfigureAfter() throws Exception {
+	public void byAutoConfigureAfter() {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C));
 		assertThat(actual).containsExactly(C, B, A);
 	}
 
 	@Test
-	public void byAutoConfigureBefore() throws Exception {
+	public void byAutoConfigureBefore() {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y, Z));
 		assertThat(actual).containsExactly(Z, Y, X);
 	}
 
 	@Test
-	public void byAutoConfigureAfterDoubles() throws Exception {
+	public void byAutoConfigureAfterDoubles() {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, E));
 		assertThat(actual).containsExactly(C, E, B, A);
 	}
 
 	@Test
-	public void byAutoConfigureMixedBeforeAndAfter() throws Exception {
+	public void byAutoConfigureMixedBeforeAndAfter() {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
 		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
-	public void byAutoConfigureMixedBeforeAndAfterWithClassNames() throws Exception {
+	public void byAutoConfigureMixedBeforeAndAfterWithClassNames() {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
 
 	@Test
-	public void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder()
-			throws Exception {
+	public void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder() {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(W, X, A, B, C));
 		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
-	public void byAutoConfigureAfterWithMissing() throws Exception {
+	public void byAutoConfigureAfterWithMissing() {
 		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B));
 		assertThat(actual).containsExactly(B, A);
 	}
 
 	@Test
-	public void byAutoConfigureAfterWithCycle() throws Exception {
+	public void byAutoConfigureAfterWithCycle() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("AutoConfigure cycle detected");
 		this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D));

@@ -54,12 +54,12 @@ class EndpointMBeanInfoAssembler {
 	 * @return the mbean info for the endpoint
 	 */
 	EndpointMBeanInfo createEndpointMBeanInfo(
-			EndpointInfo<JmxEndpointOperation> endpointInfo) {
+			EndpointInfo<JmxOperation> endpointInfo) {
 		Map<String, OperationInfos> operationsMapping = getOperationInfo(endpointInfo);
 		ModelMBeanOperationInfo[] operationsMBeanInfo = operationsMapping.values()
 				.stream().map((t) -> t.mBeanOperationInfo).collect(Collectors.toList())
 				.toArray(new ModelMBeanOperationInfo[] {});
-		Map<String, JmxEndpointOperation> operationsInfo = new LinkedHashMap<>();
+		Map<String, JmxOperation> operationsInfo = new LinkedHashMap<>();
 		operationsMapping.forEach((name, t) -> operationsInfo.put(name, t.operation));
 		MBeanInfo info = new ModelMBeanInfoSupport(EndpointMBean.class.getName(),
 				getDescription(endpointInfo), new ModelMBeanAttributeInfo[0],
@@ -73,7 +73,7 @@ class EndpointMBeanInfoAssembler {
 	}
 
 	private Map<String, OperationInfos> getOperationInfo(
-			EndpointInfo<JmxEndpointOperation> endpointInfo) {
+			EndpointInfo<JmxOperation> endpointInfo) {
 		Map<String, OperationInfos> operationInfos = new HashMap<>();
 		endpointInfo.getOperations().forEach((operationInfo) -> {
 			String name = operationInfo.getOperationName();
@@ -88,7 +88,7 @@ class EndpointMBeanInfoAssembler {
 		return operationInfos;
 	}
 
-	private MBeanParameterInfo[] getMBeanParameterInfos(JmxEndpointOperation operation) {
+	private MBeanParameterInfo[] getMBeanParameterInfos(JmxOperation operation) {
 		return operation.getParameters().stream()
 				.map((operationParameter) -> new MBeanParameterInfo(
 						operationParameter.getName(),
@@ -113,10 +113,10 @@ class EndpointMBeanInfoAssembler {
 
 		private final ModelMBeanOperationInfo mBeanOperationInfo;
 
-		private final JmxEndpointOperation operation;
+		private final JmxOperation operation;
 
 		OperationInfos(ModelMBeanOperationInfo mBeanOperationInfo,
-				JmxEndpointOperation operation) {
+				JmxOperation operation) {
 			this.mBeanOperationInfo = mBeanOperationInfo;
 			this.operation = operation;
 		}

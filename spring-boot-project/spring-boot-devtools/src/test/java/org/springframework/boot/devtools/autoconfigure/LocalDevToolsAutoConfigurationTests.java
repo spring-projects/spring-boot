@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void thymeleafCacheIsFalse() throws Exception {
+	public void thymeleafCacheIsFalse() {
 		this.context = initializeAndRun(Config.class);
 		SpringResourceTemplateResolver resolver = this.context
 				.getBean(SpringResourceTemplateResolver.class);
@@ -93,7 +94,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPropertyCanBeOverriddenFromCommandLine() throws Exception {
+	public void defaultPropertyCanBeOverriddenFromCommandLine() {
 		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
 		SpringResourceTemplateResolver resolver = this.context
 				.getBean(SpringResourceTemplateResolver.class);
@@ -101,7 +102,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPropertyCanBeOverriddenFromUserHomeProperties() throws Exception {
+	public void defaultPropertyCanBeOverriddenFromUserHomeProperties() {
 		String userHome = System.getProperty("user.home");
 		System.setProperty("user.home",
 				new File("src/test/resources/user-home").getAbsolutePath());
@@ -117,21 +118,21 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceCachePeriodIsZero() throws Exception {
+	public void resourceCachePeriodIsZero() {
 		this.context = initializeAndRun(WebResourcesConfig.class);
 		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
-		assertThat(properties.getCachePeriod()).isEqualTo(0);
+		assertThat(properties.getCache().getPeriod()).isEqualTo(Duration.ZERO);
 	}
 
 	@Test
-	public void liveReloadServer() throws Exception {
+	public void liveReloadServer() {
 		this.context = initializeAndRun(Config.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		assertThat(server.isStarted()).isTrue();
 	}
 
 	@Test
-	public void liveReloadTriggeredOnContextRefresh() throws Exception {
+	public void liveReloadTriggeredOnContextRefresh() {
 		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
@@ -140,7 +141,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadTriggeredOnClassPathChangeWithoutRestart() throws Exception {
+	public void liveReloadTriggeredOnClassPathChangeWithoutRestart() {
 		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
@@ -151,7 +152,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadNotTriggeredOnClassPathChangeWithRestart() throws Exception {
+	public void liveReloadNotTriggeredOnClassPathChangeWithRestart() {
 		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
@@ -162,7 +163,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadDisabled() throws Exception {
+	public void liveReloadDisabled() {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.livereload.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
@@ -171,7 +172,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartTriggeredOnClassPathChangeWithRestart() throws Exception {
+	public void restartTriggeredOnClassPathChangeWithRestart() {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.emptySet(), true);
@@ -180,7 +181,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartNotTriggeredOnClassPathChangeWithRestart() throws Exception {
+	public void restartNotTriggeredOnClassPathChangeWithRestart() {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.emptySet(), false);
@@ -189,7 +190,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartWatchingClassPath() throws Exception {
+	public void restartWatchingClassPath() {
 		this.context = initializeAndRun(Config.class);
 		ClassPathFileSystemWatcher watcher = this.context
 				.getBean(ClassPathFileSystemWatcher.class);
@@ -197,7 +198,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartDisabled() throws Exception {
+	public void restartDisabled() {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
@@ -206,7 +207,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartWithTriggerFile() throws Exception {
+	public void restartWithTriggerFile() {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.trigger-file", "somefile.txt");
 		this.context = initializeAndRun(Config.class, properties);
@@ -219,7 +220,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void watchingAdditionalPaths() throws Exception {
+	public void watchingAdditionalPaths() {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.additional-paths",
 				"src/main/java,src/test/java");

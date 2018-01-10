@@ -99,10 +99,9 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 					mediaTypes);
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					this.applicationContext, new ConversionServiceParameterMapper(),
-					(id) -> null, endpointMediaTypes,
-					EndpointPathResolver.useEndpointId());
+					endpointMediaTypes, EndpointPathResolver.useEndpointId(), null, null);
 			Collection<Resource> resources = new JerseyEndpointResourceFactory()
-					.createEndpointResources(new EndpointMapping("/application"),
+					.createEndpointResources(new EndpointMapping("/actuator"),
 							discoverer.discoverEndpoints(), endpointMediaTypes);
 			config.registerResources(new HashSet<>(resources));
 		}

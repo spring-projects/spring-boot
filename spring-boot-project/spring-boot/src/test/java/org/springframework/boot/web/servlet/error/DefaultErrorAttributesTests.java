@@ -52,14 +52,14 @@ public class DefaultErrorAttributesTests {
 	private WebRequest webRequest = new ServletWebRequest(this.request);
 
 	@Test
-	public void includeTimeStamp() throws Exception {
+	public void includeTimeStamp() {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.webRequest, false);
 		assertThat(attributes.get("timestamp")).isInstanceOf(Date.class);
 	}
 
 	@Test
-	public void specificStatusCode() throws Exception {
+	public void specificStatusCode() {
 		this.request.setAttribute("javax.servlet.error.status_code", 404);
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.webRequest, false);
@@ -69,7 +69,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void missingStatusCode() throws Exception {
+	public void missingStatusCode() {
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.webRequest, false);
 		assertThat(attributes.get("error")).isEqualTo("None");
@@ -77,7 +77,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void mvcError() throws Exception {
+	public void mvcError() {
 		RuntimeException ex = new RuntimeException("Test");
 		ModelAndView modelAndView = this.errorAttributes.resolveException(this.request,
 				null, null, ex);
@@ -92,7 +92,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void servletError() throws Exception {
+	public void servletError() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes
@@ -103,7 +103,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void servletMessage() throws Exception {
+	public void servletMessage() {
 		this.request.setAttribute("javax.servlet.error.message", "Test");
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.webRequest, false);
@@ -112,7 +112,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void nullMessage() throws Exception {
+	public void nullMessage() {
 		this.request.setAttribute("javax.servlet.error.exception",
 				new RuntimeException());
 		this.request.setAttribute("javax.servlet.error.message", "Test");
@@ -123,7 +123,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void unwrapServletException() throws Exception {
+	public void unwrapServletException() {
 		RuntimeException ex = new RuntimeException("Test");
 		ServletException wrapped = new ServletException(new ServletException(ex));
 		this.request.setAttribute("javax.servlet.error.exception", wrapped);
@@ -135,7 +135,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void getError() throws Exception {
+	public void getError() {
 		Error error = new OutOfMemoryError("Test error");
 		this.request.setAttribute("javax.servlet.error.exception", error);
 		Map<String, Object> attributes = this.errorAttributes
@@ -146,7 +146,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void extractBindingResultErrors() throws Exception {
+	public void extractBindingResultErrors() {
 		BindingResult bindingResult = new MapBindingResult(
 				Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
@@ -155,8 +155,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void extractMethodArgumentNotValidExceptionBindingResultErrors()
-			throws Exception {
+	public void extractMethodArgumentNotValidExceptionBindingResultErrors() {
 		BindingResult bindingResult = new MapBindingResult(
 				Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
@@ -174,7 +173,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void withExceptionAttribute() throws Exception {
+	public void withExceptionAttribute() {
 		DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(true);
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
@@ -186,7 +185,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void trace() throws Exception {
+	public void trace() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes
@@ -195,7 +194,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void noTrace() throws Exception {
+	public void noTrace() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes
@@ -204,7 +203,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	public void path() throws Exception {
+	public void path() {
 		this.request.setAttribute("javax.servlet.error.request_uri", "path");
 		Map<String, Object> attributes = this.errorAttributes
 				.getErrorAttributes(this.webRequest, false);

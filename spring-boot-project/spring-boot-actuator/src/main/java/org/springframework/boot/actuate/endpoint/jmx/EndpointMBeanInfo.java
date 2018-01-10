@@ -36,10 +36,10 @@ public final class EndpointMBeanInfo {
 
 	private final MBeanInfo mBeanInfo;
 
-	private final Map<String, JmxEndpointOperation> operations;
+	private final Map<String, JmxOperation> operations;
 
 	public EndpointMBeanInfo(String endpointId, MBeanInfo mBeanInfo,
-			Map<String, JmxEndpointOperation> operations) {
+			Map<String, JmxOperation> operations) {
 		this.endpointId = endpointId;
 		this.mBeanInfo = mBeanInfo;
 		this.operations = operations;
@@ -53,7 +53,7 @@ public final class EndpointMBeanInfo {
 		return this.mBeanInfo;
 	}
 
-	public Map<String, JmxEndpointOperation> getOperations() {
+	public Map<String, JmxOperation> getOperations() {
 		return this.operations;
 	}
 

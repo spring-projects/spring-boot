@@ -16,20 +16,25 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.Ordered;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Spring Security.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 @ConfigurationProperties(prefix = "spring.security")
 public class SecurityProperties implements SecurityPrerequisite {
@@ -57,6 +62,12 @@ public class SecurityProperties implements SecurityPrerequisite {
 			- 100;
 
 	private final Filter filter = new Filter();
+
+	private User user = new User();
+
+	public User getUser() {
+		return this.user;
+	}
 
 	public Filter getFilter() {
 		return this.filter;
@@ -89,6 +100,59 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 		public void setDispatcherTypes(Set<DispatcherType> dispatcherTypes) {
 			this.dispatcherTypes = dispatcherTypes;
+		}
+
+	}
+
+	public static class User {
+
+		/**
+		 * Default user name.
+		 */
+		private String name = "user";
+
+		/**
+		 * Password for the default user name.
+		 */
+		private String password = UUID.randomUUID().toString();
+
+		/**
+		 * Granted roles for the default user name.
+		 */
+		private List<String> roles = new ArrayList<>();
+
+		private boolean passwordGenerated = true;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			if (!StringUtils.hasLength(password)) {
+				return;
+			}
+			this.passwordGenerated = false;
+			this.password = password;
+		}
+
+		public List<String> getRoles() {
+			return this.roles;
+		}
+
+		public void setRoles(List<String> roles) {
+			this.roles = new ArrayList<>(roles);
+		}
+
+		public boolean isPasswordGenerated() {
+			return this.passwordGenerated;
 		}
 
 	}

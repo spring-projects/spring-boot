@@ -16,10 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -59,14 +56,14 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testSecurityFilterDoesNotCauseEarlyInitialization() throws Exception {
+	public void testSecurityFilterDoesNotCauseEarlyInitialization() {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();
 			String password = this.outputCapture.toString()
-					.split("Using default security password: ")[1].split("\n")[0].trim();
+					.split("Using generated security password: ")[1].split("\n")[0].trim();
 			new TestRestTemplate("user", password)
 					.getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
@@ -127,8 +124,7 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 		}
 
 		@Override
-		public SourceType deserialize(JsonParser p, DeserializationContext ctxt)
-				throws IOException, JsonProcessingException {
+		public SourceType deserialize(JsonParser p, DeserializationContext ctxt) {
 			return new SourceType();
 		}
 

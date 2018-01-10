@@ -99,7 +99,7 @@ class StartupInfoLogger {
 				: "application");
 	}
 
-	private String getVersion(final Class<?> source) {
+	private String getVersion(Class<?> source) {
 		return getValue(" v", () -> source.getPackage().getImplementationVersion(), "");
 	}
 
@@ -108,7 +108,7 @@ class StartupInfoLogger {
 	}
 
 	private String getPid() {
-		return getValue(" with PID ", () -> System.getProperty("PID"));
+		return getValue(" with PID ", () -> new ApplicationPid().toString());
 	}
 
 	private String getContext() {

@@ -39,7 +39,7 @@ public class LiquibaseProperties {
 	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
 
 	/**
-	 * Check the change log location exists.
+	 * Whether to check that the change log location exists.
 	 */
 	private boolean checkChangeLogLocation = true;
 
@@ -54,12 +54,12 @@ public class LiquibaseProperties {
 	private String defaultSchema;
 
 	/**
-	 * Drop the database schema first.
+	 * Whether to first drop the database schema.
 	 */
 	private boolean dropFirst;
 
 	/**
-	 * Enable liquibase support.
+	 * Whether to enable Liquibase support.
 	 */
 	private boolean enabled = true;
 
@@ -74,7 +74,7 @@ public class LiquibaseProperties {
 	private String password;
 
 	/**
-	 * JDBC url of the database to migrate. If not set, the primary configured data source
+	 * JDBC URL of the database to migrate. If not set, the primary configured data source
 	 * is used.
 	 */
 	private String url;
@@ -90,7 +90,7 @@ public class LiquibaseProperties {
 	private Map<String, String> parameters;
 
 	/**
-	 * File to which rollback SQL will be written when an update is performed.
+	 * File to which rollback SQL is written when an update is performed.
 	 */
 	private File rollbackFile;
 

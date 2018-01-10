@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.jdbc;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -44,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataSourcePoolMetricsTests {
 
 	@Test
-	public void dataSourceIsInstrumented() throws SQLException, InterruptedException {
+	public void dataSourceIsInstrumented() {
 		new ApplicationContextRunner()
 				.withUserConfiguration(DataSourceConfig.class, MetricsApp.class)
 				.withConfiguration(

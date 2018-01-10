@@ -95,7 +95,7 @@ public class TransactionAutoConfigurationTests {
 	}
 
 	@Test
-	public void platformTransactionManagerCustomizers() throws Exception {
+	public void platformTransactionManagerCustomizers() {
 		load(SeveralTransactionManagersConfiguration.class);
 		TransactionManagerCustomizers customizers = this.context
 				.getBean(TransactionManagerCustomizers.class);

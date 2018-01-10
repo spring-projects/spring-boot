@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -39,7 +40,8 @@ public class RedisProperties {
 	private int database = 0;
 
 	/**
-	 * Redis url, which will overrule host, port and password if set.
+	 * Connection URL. Overrides host, port, and password. User is ignored. Example:
+	 * redis://user:password@example.com:6379
 	 */
 	private String url;
 
@@ -59,14 +61,14 @@ public class RedisProperties {
 	private int port = 6379;
 
 	/**
-	 * Enable SSL.
+	 * Whether to enable SSL support.
 	 */
 	private boolean ssl;
 
 	/**
-	 * Connection timeout in milliseconds.
+	 * Connection timeout.
 	 */
-	private int timeout;
+	private Duration timeout;
 
 	private Sentinel sentinel;
 
@@ -124,11 +126,11 @@ public class RedisProperties {
 		this.ssl = ssl;
 	}
 
-	public void setTimeout(int timeout) {
+	public void setTimeout(Duration timeout) {
 		this.timeout = timeout;
 	}
 
-	public int getTimeout() {
+	public Duration getTimeout() {
 		return this.timeout;
 	}
 
@@ -162,8 +164,8 @@ public class RedisProperties {
 	public static class Pool {
 
 		/**
-		 * Max number of "idle" connections in the pool. Use a negative value to indicate
-		 * an unlimited number of idle connections.
+		 * Maximum number of "idle" connections in the pool. Use a negative value to
+		 * indicate an unlimited number of idle connections.
 		 */
 		private int maxIdle = 8;
 
@@ -174,17 +176,17 @@ public class RedisProperties {
 		private int minIdle = 0;
 
 		/**
-		 * Max number of connections that can be allocated by the pool at a given time.
-		 * Use a negative value for no limit.
+		 * Maximum number of connections that can be allocated by the pool at a given
+		 * time. Use a negative value for no limit.
 		 */
 		private int maxActive = 8;
 
 		/**
-		 * Maximum amount of time (in milliseconds) a connection allocation should block
-		 * before throwing an exception when the pool is exhausted. Use a negative value
-		 * to block indefinitely.
+		 * Maximum amount of time a connection allocation should block before throwing an
+		 * exception when the pool is exhausted. Use a negative value to block
+		 * indefinitely.
 		 */
-		private int maxWait = -1;
+		private Duration maxWait = Duration.ofMillis(-1);
 
 		public int getMaxIdle() {
 			return this.maxIdle;
@@ -210,11 +212,11 @@ public class RedisProperties {
 			this.maxActive = maxActive;
 		}
 
-		public int getMaxWait() {
+		public Duration getMaxWait() {
 			return this.maxWait;
 		}
 
-		public void setMaxWait(int maxWait) {
+		public void setMaxWait(Duration maxWait) {
 			this.maxWait = maxWait;
 		}
 
@@ -261,14 +263,14 @@ public class RedisProperties {
 	public static class Sentinel {
 
 		/**
-		 * Name of Redis server.
+		 * Name of the Redis server.
 		 */
 		private String master;
 
 		/**
-		 * Comma-separated list of host:port pairs.
+		 * Comma-separated list of "host:port" pairs.
 		 */
-		private String nodes;
+		private List<String> nodes;
 
 		public String getMaster() {
 			return this.master;
@@ -278,11 +280,11 @@ public class RedisProperties {
 			this.master = master;
 		}
 
-		public String getNodes() {
+		public List<String> getNodes() {
 			return this.nodes;
 		}
 
-		public void setNodes(String nodes) {
+		public void setNodes(List<String> nodes) {
 			this.nodes = nodes;
 		}
 
@@ -314,20 +316,20 @@ public class RedisProperties {
 	public static class Lettuce {
 
 		/**
-		 * Shutdown timeout in milliseconds.
+		 * Shutdown timeout.
 		 */
-		private int shutdownTimeout = 100;
+		private Duration shutdownTimeout = Duration.ofMillis(100);
 
 		/**
 		 * Lettuce pool configuration.
 		 */
 		private Pool pool;
 
-		public int getShutdownTimeout() {
+		public Duration getShutdownTimeout() {
 			return this.shutdownTimeout;
 		}
 
-		public void setShutdownTimeout(int shutdownTimeout) {
+		public void setShutdownTimeout(Duration shutdownTimeout) {
 			this.shutdownTimeout = shutdownTimeout;
 		}
 

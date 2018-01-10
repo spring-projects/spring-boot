@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,8 +62,8 @@ public class ResourceBanner implements Banner {
 			PrintStream out) {
 		try {
 			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
-					environment.getProperty("banner.charset", Charset.class,
-							Charset.forName("UTF-8")));
+					environment.getProperty("spring.banner.charset", Charset.class,
+							StandardCharsets.UTF_8));
 
 			for (PropertyResolver resolver : getPropertyResolvers(environment,
 					sourceClass)) {

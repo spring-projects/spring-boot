@@ -16,11 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Iterator;
-
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
 
 /**
  * Abstract base class for {@link PropertyMapper} tests.
@@ -38,9 +35,7 @@ public abstract class AbstractPropertyMapperTests {
 	}
 
 	protected final Iterator<String> namesFromString(String name, Object value) {
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.singletonMap(name, value));
-		return getMapper().map(propertySource, name).stream()
+		return Arrays.stream(getMapper().map(name))
 				.map((mapping) -> mapping.getConfigurationPropertyName().toString())
 				.iterator();
 	}
@@ -50,10 +45,8 @@ public abstract class AbstractPropertyMapperTests {
 	}
 
 	protected final Iterator<String> namesFromConfiguration(String name, String value) {
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.singletonMap(name, value));
-		return getMapper().map(propertySource, ConfigurationPropertyName.of(name))
-				.stream().map(PropertyMapping::getPropertySourceName).iterator();
+		return Arrays.stream(getMapper().map(ConfigurationPropertyName.of(name)))
+				.map(PropertyMapping::getPropertySourceName).iterator();
 	}
 
 }

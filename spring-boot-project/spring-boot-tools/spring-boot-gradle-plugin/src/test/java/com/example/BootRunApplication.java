@@ -18,7 +18,6 @@ package com.example;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
 
 /**
  * Very basic application used for testing {@code BootRun}.
@@ -32,25 +31,11 @@ public class BootRunApplication {
 	}
 
 	public static void main(String[] args) {
-		dumpClassPath();
-		dumpArgs(args);
-		dumpJvmArgs();
-	}
-
-	private static void dumpClassPath() {
 		int i = 1;
 		for (String entry : ManagementFactory.getRuntimeMXBean().getClassPath()
 				.split(File.pathSeparator)) {
 			System.out.println(i++ + ". " + entry);
 		}
-	}
-
-	private static void dumpArgs(String[] args) {
-		System.out.println(Arrays.toString(args));
-	}
-
-	private static void dumpJvmArgs() {
-		System.out.println(ManagementFactory.getRuntimeMXBean().getInputArguments());
 	}
 
 }

@@ -56,7 +56,6 @@ public class PoolingDataSourceBean extends PoolingDataSource
 	private String beanName;
 
 	public PoolingDataSourceBean() {
-		super();
 		setMaxPoolSize(10);
 		setAllowLocalTransactions(true);
 		setEnableJdbc4ConnectionTest(true);

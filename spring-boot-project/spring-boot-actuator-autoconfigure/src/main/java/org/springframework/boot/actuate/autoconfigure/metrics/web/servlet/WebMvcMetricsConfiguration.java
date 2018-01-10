@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,17 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
-import org.springframework.boot.actuate.metrics.web.servlet.MetricsHandlerInterceptor;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetrics;
+import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Configures instrumentation of Spring Web MVC servlet-based request mappings.
@@ -61,27 +60,8 @@ public class WebMvcMetricsConfiguration {
 	}
 
 	@Bean
-	public MetricsHandlerInterceptor webMetricsInterceptor(
-			WebMvcMetrics controllerMetrics) {
-		return new MetricsHandlerInterceptor(controllerMetrics);
-	}
-
-	@Configuration
-	public class MetricsServletRequestInterceptorConfiguration
-			implements WebMvcConfigurer {
-
-		private final MetricsHandlerInterceptor handlerInterceptor;
-
-		public MetricsServletRequestInterceptorConfiguration(
-				MetricsHandlerInterceptor handlerInterceptor) {
-			this.handlerInterceptor = handlerInterceptor;
-		}
-
-		@Override
-		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(this.handlerInterceptor);
-		}
-
+	public WebMvcMetricsFilter webMetricsFilter(ApplicationContext context) {
+		return new WebMvcMetricsFilter(context);
 	}
 
 }

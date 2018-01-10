@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
 /**
@@ -41,8 +40,6 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
  */
 public class JsonMarshaller {
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
-
 	private static final int BUFFER_SIZE = 4098;
 
 	public void write(ConfigurationMetadata metadata, OutputStream outputStream)
@@ -53,7 +50,7 @@ public class JsonMarshaller {
 			object.put("groups", converter.toJsonArray(metadata, ItemType.GROUP));
 			object.put("properties", converter.toJsonArray(metadata, ItemType.PROPERTY));
 			object.put("hints", converter.toJsonArray(metadata.getHints()));
-			outputStream.write(object.toString(2).getBytes(UTF_8));
+			outputStream.write(object.toString(2).getBytes(StandardCharsets.UTF_8));
 		}
 		catch (Exception ex) {
 			if (ex instanceof IOException) {
@@ -170,7 +167,7 @@ public class JsonMarshaller {
 
 	private String toString(InputStream inputStream) throws IOException {
 		StringBuilder out = new StringBuilder();
-		InputStreamReader reader = new InputStreamReader(inputStream, UTF_8);
+		InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 		char[] buffer = new char[BUFFER_SIZE];
 		int bytesRead;
 		while ((bytesRead = reader.read(buffer)) != -1) {

@@ -22,13 +22,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -103,12 +102,11 @@ public class RequestMappingEndpointTests {
 		this.endpoint.setApplicationContext(context);
 		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(2);
-		assertThat(result.keySet())
-				.filteredOn((key) -> key.contains("[/application/test]"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/actuator/test]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("bean", "method"));
-		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/application]"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/actuator]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("bean", "method"));
@@ -121,12 +119,11 @@ public class RequestMappingEndpointTests {
 		this.endpoint.setMethodMappings(Collections.singletonList(mapping));
 		Map<String, Object> result = this.endpoint.mappings();
 		assertThat(result).hasSize(2);
-		assertThat(result.keySet())
-				.filteredOn((key) -> key.contains("[/application/test]"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/actuator/test]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("method"));
-		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/application]"))
+		assertThat(result.keySet()).filteredOn((key) -> key.contains("[/actuator]"))
 				.hasOnlyOneElementSatisfying(
 						(key) -> assertThat((Map<String, Object>) result.get(key))
 								.containsOnlyKeys("method"));
@@ -136,12 +133,12 @@ public class RequestMappingEndpointTests {
 		OperationRequestPredicate requestPredicate = new OperationRequestPredicate("test",
 				WebEndpointHttpMethod.GET, Collections.singletonList("application/json"),
 				Collections.singletonList("application/json"));
-		WebEndpointOperation operation = new WebEndpointOperation(OperationType.READ,
+		WebOperation operation = new WebOperation(OperationType.READ,
 				(arguments) -> "Invoked", true, requestPredicate, "test");
 		WebMvcEndpointHandlerMapping mapping = new WebMvcEndpointHandlerMapping(
-				new EndpointMapping("application"),
-				Collections.singleton(new EndpointInfo<>("test",
-						DefaultEnablement.ENABLED, Collections.singleton(operation))),
+				new EndpointMapping("actuator"),
+				Collections.singleton(new EndpointInfo<>("test", true,
+						Collections.singleton(operation))),
 				new EndpointMediaTypes(Arrays.asList("application/vnd.test+json"),
 						Arrays.asList("application/vnd.test+json")));
 		mapping.setApplicationContext(new StaticApplicationContext());

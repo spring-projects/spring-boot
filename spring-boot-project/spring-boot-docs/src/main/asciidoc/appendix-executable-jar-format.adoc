@@ -1,35 +1,35 @@
 [appendix]
 [[executable-jar]]
-== The executable jar format
-The `spring-boot-loader` modules allows Spring Boot to support executable jar and
-war files. If you're using the Maven or Gradle plugin, executable jars are
-automatically generated and you generally won't need to know the details of how
+== The Executable Jar Format
+The `spring-boot-loader` modules lets Spring Boot support executable jar and
+war files. If you use the Maven plugin or the Gradle plugin, executable jars are
+automatically generated, and you generally do not need to know the details of how
 they work.
 
-If you need to create executable jars from a different build system, or if you are just
+If you need to create executable jars from a different build system or if you are just
 curious about the underlying technology, this section provides some background.
 
 
 
 [[executable-jar-nested-jars]]
 === Nested JARs
-Java does not provide any standard way to load nested jar files (i.e. jar files that
-are themselves contained within a jar). This can be problematic if you are looking
-to distribute a self-contained application that you can just run from the command line
+Java does not provide any standard way to load nested jar files (that is, jar files that
+are themselves contained within a jar). This can be problematic if you need
+to distribute a self-contained application that can be run from the command line
 without unpacking.
 
-To solve this problem, many developers use "`shaded`" jars. A shaded jar simply packages
-all classes, from all jars, into a single 'uber jar'. The problem with shaded jars is
-that it becomes hard to see which libraries you are actually using in your application.
+To solve this problem, many developers use "`shaded`" jars. A shaded jar packages
+all classes, from all jars, into a single "`uber jar`". The problem with shaded jars is
+that it becomes hard to see which libraries are actually in your application.
 It can also be problematic if the same filename is used (but with different content)
-in multiple jars. Spring Boot takes a different approach and allows you to actually nest
+in multiple jars. Spring Boot takes a different approach and lets you actually nest
 jars directly.
 
 
 
 [[executable-jar-jar-file-structure]]
-==== The executable jar file structure
-Spring Boot Loader compatible jar files should be structured in the following way:
+==== The Executable Jar File Structure
+Spring Boot Loader-compatible jar files should be structured in the following way:
 
 [indent=0]
 ----
@@ -58,8 +58,8 @@ Dependencies should be placed in a nested `BOOT-INF/lib` directory.
 
 
 [[executable-jar-war-file-structure]]
-==== The executable war file structure
-Spring Boot Loader compatible war files should be structured in the following way:
+==== The Executable War File Structure
+Spring Boot Loader-compatible war files should be structured in the following way:
 
 [indent=0]
 ----
@@ -93,11 +93,12 @@ a traditional web container should be placed in `WEB-INF/lib-provided`.
 
 
 [[executable-jar-jarfile]]
-=== Spring Boot's "`JarFile`" class
+=== Spring Boot's "`JarFile`" Class
 The core class used to support loading nested jars is
-`org.springframework.boot.loader.jar.JarFile`. It allows you to load jar
-content from a standard jar file, or from nested child jar data. When first loaded, the
-location of each `JarEntry` is mapped to a physical file offset of the outer jar:
+`org.springframework.boot.loader.jar.JarFile`. It lets you load jar
+content from a standard jar file or from nested child jar data. When first loaded, the
+location of each `JarEntry` is mapped to a physical file offset of the outer jar, as
+shown in the following example:
 
 [indent=0]
 ----
@@ -112,54 +113,54 @@ location of each `JarEntry` is mapped to a physical file offset of the outer jar
 	 0063                 3452        3980
 ----
 
-The example above shows how `A.class` can be found in `/BOOT-INF/classes` in `myapp.jar`
-position `0063`. `B.class` from the nested jar can actually be found in `myapp.jar`
-position `3452` and `C.class` is at position `3980`.
+The preceding example shows how `A.class` can be found in `/BOOT-INF/classes` in
+`myapp.jar` at position `0063`. `B.class` from the nested jar can actually be found in
+`myapp.jar` at position `3452`, and `C.class` is at position `3980`.
 
-Armed with this information, we can load specific nested entries by simply seeking to
-the appropriate part of the outer jar. We don't need to unpack the archive and we
-don't need to read all entry data into memory.
+Armed with this information, we can load specific nested entries by seeking to
+the appropriate part of the outer jar. We do not need to unpack the archive, and we
+do not need to read all entry data into memory.
 
 
 
 [[executable-jar-jarfile-compatibility]]
-==== Compatibility with the standard Java "`JarFile`"
+==== Compatibility with the Standard Java "`JarFile`"
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and
-should work as a drop-in replacement. The `getURL()` method will return a `URL` that
-opens a `java.net.JarURLConnection` compatible connection and can be used with Java's
+should work as a drop-in replacement. The `getURL()` method returns a `URL` that
+opens a connection compatible with `java.net.JarURLConnection` and can be used with Java's
 `URLClassLoader`.
 
 
 
 [[executable-jar-launching]]
-=== Launching executable jars
+=== Launching Executable Jars
 The `org.springframework.boot.loader.Launcher` class is a special bootstrap class that
-is used as an executable jars main entry point. It is the actual `Main-Class` in your jar
-file and it's used to setup an appropriate `URLClassLoader` and ultimately call your
+is used as an executable jar's main entry point. It is the actual `Main-Class` in your jar
+file, and it is used to setup an appropriate `URLClassLoader` and ultimately call your
 `main()` method.
 
-There are 3 launcher subclasses (`JarLauncher`, `WarLauncher` and `PropertiesLauncher`).
-Their purpose is to load resources (`.class` files etc.) from nested jar files or war
-files in directories (as opposed to explicitly on the classpath). In the case of
-`JarLauncher` and `WarLauncher` the nested paths are fixed. `JarLauncher` looks in
-`BOOT-INF/lib/` and `WarLauncher` looks in `WEB-INF/lib/` and `WEB-INF/lib-provided/` so
-you just add extra jars in those locations if you want more. The `PropertiesLauncher`
-looks in `BOOT-INF/lib/` in your application archive by default, but you can add
-additional locations by setting an environment variable `LOADER_PATH` or `loader.path`
-in `loader.properties` (comma-separated list of directories, archives, or directories
-within archives).
+There are three launcher subclasses (`JarLauncher`, `WarLauncher`, and
+`PropertiesLauncher`). Their purpose is to load resources (`.class` files and so on.) from
+nested jar files or war files in directories (as opposed to those explicitly on the
+classpath). In the case of `JarLauncher` and `WarLauncher`, the nested paths are fixed.
+`JarLauncher` looks in `BOOT-INF/lib/`, and `WarLauncher` looks in `WEB-INF/lib/` and
+`WEB-INF/lib-provided/`. You can add extra jars in those locations if you want more. The
+`PropertiesLauncher` looks in `BOOT-INF/lib/` in your application archive by default, but
+you can add additional locations by setting an environment variable called `LOADER_PATH`
+or `loader.path` in `loader.properties` (which is a comma-separated list of directories,
+archives, or directories within archives).
 
 
 
 [[executable-jar-launcher-manifest]]
-==== Launcher manifest
+==== Launcher Manifest
 You need to specify an appropriate `Launcher` as the `Main-Class` attribute of
-`META-INF/MANIFEST.MF`. The actual class that you want to launch (i.e. the class that
-you wrote that contains a `main` method) should be specified  in the `Start-Class`
+`META-INF/MANIFEST.MF`. The actual class that you want to launch (that is, the class that
+contains a `main` method) should be specified  in the `Start-Class`
 attribute.
 
-For example, here is a typical `MANIFEST.MF` for an executable jar file:
+The following example shows a typical `MANIFEST.MF` for an executable jar file:
 
 [indent=0]
 ----
@@ -167,7 +168,7 @@ For example, here is a typical `MANIFEST.MF` for an executable jar file:
 	Start-Class: com.mycompany.project.MyApplication
 ----
 
-For a war file, it would be:
+For a war file, it would be as follows:
 
 [indent=0]
 ----
@@ -175,16 +176,16 @@ For a war file, it would be:
 	Start-Class: com.mycompany.project.MyApplication
 ----
 
-NOTE: You do not need to specify `Class-Path` entries in your manifest file, the classpath
-will be deduced from the nested jars.
+NOTE: You need not specify `Class-Path` entries in your manifest file. The classpath
+is deduced from the nested jars.
 
 
 
 [[executable-jar-exploded-archives]]
-==== Exploded archives
+==== Exploded Archives
 Certain PaaS implementations may choose to unpack archives before they run. For example,
-Cloud Foundry operates in this way. You can run an unpacked archive by simply starting
-the appropriate launcher:
+Cloud Foundry operates this way. You can run an unpacked archive by starting
+the appropriate launcher, as follows:
 
 [indent=0]
 ----
@@ -195,41 +196,42 @@ the appropriate launcher:
 
 
 [[executable-jar-property-launcher-features]]
-=== PropertiesLauncher Features
+=== `PropertiesLauncher` Features
 
 `PropertiesLauncher` has a few special features that can be enabled with external
-properties (System properties, environment variables, manifest entries or
-`loader.properties`).
+properties (System properties, environment variables, manifest entries, or
+`loader.properties`). The following table describes these properties:
 
 |===
 |Key |Purpose
 
 |`loader.path`
-|Comma-separated Classpath, e.g. `lib,${HOME}/app/lib`. Earlier entries take precedence,
- just like a regular `-classpath` on the `javac` command line.
+|Comma-separated Classpath, such as `lib,${HOME}/app/lib`. Earlier entries take
+ precedence, like a regular `-classpath` on the `javac` command line.
 
 |`loader.home`
-|Used to resolve relative paths in `loader.path`. E.g. `loader.path=lib` then
- `${loader.home}/lib` is a classpath location (along with all jar files in that
- directory). Also used to locate a `loader.properties` file. Example `file:///opt/app`
- (defaults to `${user.dir}`).
+|Used to resolve relative paths in `loader.path`. For example, given `loader.path=lib`,
+ then `${loader.home}/lib` is a classpath location (along with all jar files in that
+ directory). This property is also used to locate a `loader.properties` file, as in the
+ following example `file:///opt/app`
+ It defaults to `${user.dir}`.
 
 |`loader.args`
-|Default arguments for the main method (space separated)
+|Default arguments for the main method (space separated).
 
 |`loader.main`
-|Name of main class to launch, e.g. `com.app.Application`.
+|Name of main class to launch (for example, `com.app.Application`).
 
 |`loader.config.name`
-|Name of properties file, e.g. `launcher` (defaults to `loader`).
+|Name of properties file (for example, `launcher`) It defaults to `loader`.
 
 |`loader.config.location`
-|Path to properties file, e.g. `classpath:loader.properties` (defaults to
- `loader.properties`).
+|Path to properties file (for example, `classpath:loader.properties`). It defaults to
+ `loader.properties`.
 
 |`loader.system`
 |Boolean flag to indicate that all properties should be added to System properties
- (defaults to `false`)
+ It defaults to `false`.
 
 |===
 
@@ -266,43 +268,45 @@ be used:
 |===
 
 TIP: Build plugins automatically move the `Main-Class` attribute to `Start-Class` when
-the fat jar is built. If you are using that, specify the name of the class to launch using
-the `Main-Class` attribute and leave out `Start-Class`.
+the fat jar is built. If you use that, specify the name of the class to launch by using
+the `Main-Class` attribute and leaving out `Start-Class`.
 
-* `loader.properties` are searched for in `loader.home` then in the root of the
-  classpath, then in `classpath:/BOOT-INF/classes`. The first location that exists is
-  used.
-* `loader.home` is only the directory location of an additional properties file
-  (overriding the default) as long as `loader.config.location` is not specified.
-* `loader.path` can contain directories (scanned recursively for jar and zip files),
-  archive paths, a directory within an archive that is scanned for jar files (for
+The following rules apply to working with `PropertiesLauncher`:
+
+* `loader.properties` is searched for in `loader.home`, then in the root of the
+  classpath, and then in `classpath:/BOOT-INF/classes`. The first location where a file
+	with that name exists is used.
+* `loader.home` is the directory location of an additional properties file
+  (overriding the default) only when `loader.config.location` is not specified.
+* `loader.path` can contain directories (which are scanned recursively for jar and zip
+  files), archive paths, a directory within an archive that is scanned for jar files (for
   example, `dependencies.jar!/lib`), or wildcard patterns (for the default JVM behavior).
-  Archive paths can be relative to `loader.home`, or anywhere in the file system with a
+  Archive paths can be relative to `loader.home` or anywhere in the file system with a
   `jar:file:` prefix.
 * `loader.path` (if empty) defaults to `BOOT-INF/lib` (meaning a local directory or a
-  nested one if running from an archive). Because of this `PropertiesLauncher` behaves the
-  same as `JarLauncher` when no additional configuration is provided.
+  nested one if running from an archive). Because of this, `PropertiesLauncher` behaves
+  the same as `JarLauncher` when no additional configuration is provided.
 * `loader.path` can not be used to configure the location of `loader.properties` (the
   classpath used to search for the latter is the JVM classpath when `PropertiesLauncher`
   is launched).
 * Placeholder replacement is done from System and environment variables plus the
   properties file itself on all values before use.
 * The search order for properties (where it makes sense to look in more than one place)
-  is env vars, system properties, `loader.properties`, exploded archive manifest, archive
-  manifest.
+  is environment variables, system properties, `loader.properties`, the exploded archive
+	manifest, and the archive manifest.
 
 
 
 [[executable-jar-restrictions]]
-=== Executable jar restrictions
-There are a number of restrictions that you need to consider when working with a Spring
-Boot Loader packaged application.
+=== Executable Jar Restrictions
+You need to consider the following restrictions when working with a Spring
+Boot Loader packaged application:
 
 
 
 [[executable-jar-zip-entry-compression]]
-==== Zip entry compression
-The `ZipEntry` for a nested jar must be saved using the `ZipEntry.STORED` method. This
+* Zip entry compression:
+The `ZipEntry` for a nested jar must be saved by using the `ZipEntry.STORED` method. This
 is required so that we can seek directly to individual content within the nested jar.
 The content of the nested jar file itself can still be compressed, as can any other
 entries in the outer jar.
@@ -310,22 +314,21 @@ entries in the outer jar.
 
 
 [[executable-jar-system-classloader]]
-==== System ClassLoader
+* System classLoader:
 Launched applications should use `Thread.getContextClassLoader()` when loading classes
-(most libraries and frameworks will do this by default). Trying to load nested jar
-classes via `ClassLoader.getSystemClassLoader()` will fail. Please be aware that
-`java.util.Logging` always uses the system classloader, for this reason you should
+(most libraries and frameworks do so by default). Trying to load nested jar
+classes with `ClassLoader.getSystemClassLoader()` fails.
+`java.util.Logging` always uses the system classloader. For this reason, you should
 consider a different logging implementation.
 
 
 
 [[executable-jar-alternatives]]
-=== Alternative single jar solutions
-If the above restrictions mean that you cannot use Spring Boot Loader the following
-alternatives could be considered:
+=== Alternative Single Jar Solutions
+If the preceding restrictions mean that you cannot use Spring Boot Loader, consider the
+following alternatives:
 
 * http://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]
 * http://www.jdotsoft.com/JarClassLoader.php[JarClassLoader]
 * http://one-jar.sourceforge.net[OneJar]
-
 

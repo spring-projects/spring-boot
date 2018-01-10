@@ -16,8 +16,6 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
-import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,8 +28,6 @@ import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.server.HttpRestartServer;
 import org.springframework.boot.devtools.restart.server.SourceFolderUrlFilter;
-import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer;
-import org.springframework.boot.devtools.tunnel.server.TargetServerConnection;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,7 +84,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void disabledIfRemoteSecretIsMissing() throws Exception {
+	public void disabledIfRemoteSecretIsMissing() {
 		loadContext("a:b");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(DispatcherFilter.class);
@@ -145,7 +141,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableRestart() throws Exception {
+	public void disableRestart() {
 		loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -202,22 +198,6 @@ public class RemoteDevToolsAutoConfigurationTests {
 	}
 
 	/**
-	 * Mock {@link HttpTunnelServer} implementation.
-	 */
-	static class MockHttpTunnelServer extends HttpTunnelServer {
-
-		MockHttpTunnelServer(TargetServerConnection serverConnection) {
-			super(serverConnection);
-		}
-
-		@Override
-		public void handle(ServerHttpRequest request, ServerHttpResponse response)
-				throws IOException {
-		}
-
-	}
-
-	/**
 	 * Mock {@link HttpRestartServer} implementation.
 	 */
 	static class MockHttpRestartServer extends HttpRestartServer {
@@ -229,8 +209,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		}
 
 		@Override
-		public void handle(ServerHttpRequest request, ServerHttpResponse response)
-				throws IOException {
+		public void handle(ServerHttpRequest request, ServerHttpResponse response) {
 			this.invoked = true;
 		}
 

@@ -49,29 +49,29 @@ public class BasicJsonTesterTests {
 	private BasicJsonTester json = new BasicJsonTester(getClass());
 
 	@Test
-	public void createWhenResourceLoadClassIsNullShouldThrowException() throws Exception {
+	public void createWhenResourceLoadClassIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ResourceLoadClass must not be null");
 		new BasicJsonTester(null);
 	}
 
 	@Test
-	public void fromJsonStringShouldReturnJsonContent() throws Exception {
+	public void fromJsonStringShouldReturnJsonContent() {
 		assertThat(this.json.from(JSON)).isEqualToJson("source.json");
 	}
 
 	@Test
-	public void fromResourceStringShouldReturnJsonContent() throws Exception {
+	public void fromResourceStringShouldReturnJsonContent() {
 		assertThat(this.json.from("source.json")).isEqualToJson(JSON);
 	}
 
 	@Test
-	public void fromResourceStringWithClassShouldReturnJsonContent() throws Exception {
+	public void fromResourceStringWithClassShouldReturnJsonContent() {
 		assertThat(this.json.from("source.json", getClass())).isEqualToJson(JSON);
 	}
 
 	@Test
-	public void fromByteArrayShouldReturnJsonContent() throws Exception {
+	public void fromByteArrayShouldReturnJsonContent() {
 		assertThat(this.json.from(JSON.getBytes())).isEqualToJson("source.json");
 	}
 
@@ -83,13 +83,13 @@ public class BasicJsonTesterTests {
 	}
 
 	@Test
-	public void fromInputStreamShouldReturnJsonContent() throws Exception {
+	public void fromInputStreamShouldReturnJsonContent() {
 		InputStream inputStream = new ByteArrayInputStream(JSON.getBytes());
 		assertThat(this.json.from(inputStream)).isEqualToJson("source.json");
 	}
 
 	@Test
-	public void fromResourceShouldReturnJsonContent() throws Exception {
+	public void fromResourceShouldReturnJsonContent() {
 		Resource resource = new ByteArrayResource(JSON.getBytes());
 		assertThat(this.json.from(resource)).isEqualToJson("source.json");
 	}

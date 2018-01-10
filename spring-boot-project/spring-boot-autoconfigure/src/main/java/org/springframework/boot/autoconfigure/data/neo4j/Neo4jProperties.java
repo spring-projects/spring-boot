@@ -158,7 +158,7 @@ public class Neo4jProperties implements ApplicationContextAware {
 	public static class Embedded {
 
 		/**
-		 * Enable embedded mode if the embedded driver is available.
+		 * Whether to enable embedded mode if the embedded driver is available.
 		 */
 		private boolean enabled = true;
 

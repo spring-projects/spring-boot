@@ -51,18 +51,18 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.configprops.enabled:false")
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.configprops.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
 	}
 
 	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
+	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues(
-						"endpoints.configprops.keys-to-sanitize: .*pass.*, property")
+						"management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
 				.run(validateTestProperties("******", "******"));
 	}
 

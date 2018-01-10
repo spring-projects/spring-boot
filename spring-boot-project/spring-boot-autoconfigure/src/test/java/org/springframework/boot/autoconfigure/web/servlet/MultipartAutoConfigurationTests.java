@@ -131,7 +131,7 @@ public class MultipartAutoConfigurationTests {
 	}
 
 	@Test
-	public void webServerWithAutomatedMultipartTomcatConfiguration() throws Exception {
+	public void webServerWithAutomatedMultipartTomcatConfiguration() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				WebServerWithEverythingTomcat.class, BaseConfiguration.class);
 		new RestTemplate().getForObject(
@@ -177,7 +177,7 @@ public class MultipartAutoConfigurationTests {
 	}
 
 	@Test
-	public void webServerWithCustomMultipartResolver() throws Exception {
+	public void webServerWithCustomMultipartResolver() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				WebServerWithCustomMultipartResolver.class, BaseConfiguration.class);
 		MultipartResolver multipartResolver = this.context

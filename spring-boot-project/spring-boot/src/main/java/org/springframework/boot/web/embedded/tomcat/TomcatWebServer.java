@@ -16,9 +16,11 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 
@@ -43,6 +45,7 @@ import org.springframework.util.Assert;
  * should be created using the {@link TomcatReactiveWebServerFactory} and not directly.
  *
  * @author Brian Clozel
+ * @author Kristine Jetzke
  * @since 2.0.0
  */
 public class TomcatWebServer implements WebServer {
@@ -191,7 +194,8 @@ public class TomcatWebServer implements WebServer {
 				checkThatConnectorsHaveStarted();
 				this.started = true;
 				TomcatWebServer.logger
-						.info("Tomcat started on port(s): " + getPortsDescription(true));
+						.info("Tomcat started on port(s): " + getPortsDescription(true)
+								+ " with context path '" + getContextPath() + "'");
 			}
 			catch (ConnectorStartFailedException ex) {
 				stopSilently();
@@ -320,6 +324,13 @@ public class TomcatWebServer implements WebServer {
 			return connector.getLocalPort();
 		}
 		return 0;
+	}
+
+	private String getContextPath() {
+		return Arrays.stream(this.tomcat.getHost().findChildren())
+				.filter(TomcatEmbeddedContext.class::isInstance)
+				.map(TomcatEmbeddedContext.class::cast)
+				.map(TomcatEmbeddedContext::getPath).collect(Collectors.joining(" "));
 	}
 
 	/**

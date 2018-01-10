@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FlywayEndpointTests {
 
 	@Test
-	public void flywayReportIsProduced() throws Exception {
+	public void flywayReportIsProduced() {
 		new ApplicationContextRunner().withUserConfiguration(Config.class)
 				.run((context) -> assertThat(
 						context.getBean(FlywayEndpoint.class).flywayReports())

@@ -24,42 +24,30 @@ import java.util.Map;
 
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoSink;
-import reactor.core.scheduler.Schedulers;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.ParametersMissingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.result.condition.ConsumesRequestCondition;
-import org.springframework.web.reactive.result.condition.PatternsRequestCondition;
-import org.springframework.web.reactive.result.condition.ProducesRequestCondition;
-import org.springframework.web.reactive.result.condition.RequestMethodsRequestCondition;
-import org.springframework.web.reactive.result.method.RequestMappingInfo;
-import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes web endpoints available over HTTP using
@@ -68,10 +56,8 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapping
+public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping
 		implements InitializingBean {
-
-	private static final PathPatternParser pathPatternParser = new PathPatternParser();
 
 	private final Method handleRead = ReflectionUtils
 			.findMethod(ReadOperationHandler.class, "handle", ServerWebExchange.class);
@@ -84,14 +70,6 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 
 	private final EndpointLinksResolver endpointLinksResolver = new EndpointLinksResolver();
 
-	private final EndpointMapping endpointMapping;
-
-	private final Collection<EndpointInfo<WebEndpointOperation>> webEndpoints;
-
-	private final EndpointMediaTypes endpointMediaTypes;
-
-	private final CorsConfiguration corsConfiguration;
-
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
@@ -100,7 +78,7 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 */
 	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> collection,
+			Collection<EndpointInfo<WebOperation>> collection,
 			EndpointMediaTypes endpointMediaTypes) {
 		this(endpointMapping, collection, endpointMediaTypes, null);
 	}
@@ -114,47 +92,19 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 	 * @param corsConfiguration the CORS configuration for the endpoints
 	 */
 	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
-		this.endpointMapping = endpointMapping;
-		this.webEndpoints = webEndpoints;
-		this.endpointMediaTypes = endpointMediaTypes;
-		this.corsConfiguration = corsConfiguration;
+		super(endpointMapping, webEndpoints, endpointMediaTypes, corsConfiguration);
 		setOrder(-100);
 	}
 
 	@Override
-	protected void initHandlerMethods() {
-		this.webEndpoints.stream()
-				.flatMap((webEndpoint) -> webEndpoint.getOperations().stream())
-				.forEach(this::registerMappingForOperation);
-		if (StringUtils.hasText(this.endpointMapping.getPath())) {
-			registerLinksMapping();
-		}
-	}
-
-	private void registerLinksMapping() {
-		registerMapping(
-				new RequestMappingInfo(
-						new PatternsRequestCondition(
-								pathPatternParser.parse(this.endpointMapping.getPath())),
-						new RequestMethodsRequestCondition(RequestMethod.GET), null, null,
-						null,
-						new ProducesRequestCondition(
-								this.endpointMediaTypes.getProduced()
-										.toArray(new String[this.endpointMediaTypes
-												.getProduced().size()])),
-						null),
-				this, this.links);
+	protected Method getLinks() {
+		return this.links;
 	}
 
 	@Override
-	protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
-			RequestMappingInfo mapping) {
-		return this.corsConfiguration;
-	}
-
-	private void registerMappingForOperation(WebEndpointOperation operation) {
+	protected void registerMappingForOperation(WebOperation operation) {
 		OperationType operationType = operation.getType();
 		OperationInvoker operationInvoker = operation.getInvoker();
 		if (operation.isBlocking()) {
@@ -162,46 +112,18 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 		}
 		registerMapping(createRequestMappingInfo(operation),
 				operationType == OperationType.WRITE
-						? new WriteOperationHandler(operationInvoker)
-						: new ReadOperationHandler(operationInvoker),
+						? new WebFluxEndpointHandlerMapping.WriteOperationHandler(
+								operationInvoker)
+						: new WebFluxEndpointHandlerMapping.ReadOperationHandler(
+								operationInvoker),
 				operationType == OperationType.WRITE ? this.handleWrite
 						: this.handleRead);
-	}
-
-	private RequestMappingInfo createRequestMappingInfo(
-			WebEndpointOperation operationInfo) {
-		OperationRequestPredicate requestPredicate = operationInfo.getRequestPredicate();
-		PatternsRequestCondition patterns = new PatternsRequestCondition(pathPatternParser
-				.parse(this.endpointMapping.createSubPath(requestPredicate.getPath())));
-		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
-				RequestMethod.valueOf(requestPredicate.getHttpMethod().name()));
-		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
-				toStringArray(requestPredicate.getConsumes()));
-		ProducesRequestCondition produces = new ProducesRequestCondition(
-				toStringArray(requestPredicate.getProduces()));
-		return new RequestMappingInfo(null, patterns, methods, null, null, consumes,
-				produces, null);
-	}
-
-	private String[] toStringArray(Collection<String> collection) {
-		return collection.toArray(new String[collection.size()]);
-	}
-
-	@Override
-	protected boolean isHandler(Class<?> beanType) {
-		return false;
-	}
-
-	@Override
-	protected RequestMappingInfo getMappingForMethod(Method method,
-			Class<?> handlerType) {
-		return null;
 	}
 
 	@ResponseBody
 	private Map<String, Map<String, Link>> links(ServerHttpRequest request) {
 		return Collections.singletonMap("_links",
-				this.endpointLinksResolver.resolveLinks(this.webEndpoints,
+				this.endpointLinksResolver.resolveLinks(getEndpoints(),
 						UriComponentsBuilder.fromUri(request.getURI()).replaceQuery(null)
 								.toUriString()));
 	}
@@ -282,37 +204,6 @@ public class WebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapp
 		@ResponseBody
 		public Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return doHandle(exchange, null);
-		}
-
-	}
-
-	/**
-	 * An {@link OperationInvoker} that performs the invocation of a blocking operation on
-	 * a separate thread using Reactor's {@link Schedulers#elastic() elastic scheduler}.
-	 */
-	private static final class ElasticSchedulerOperationInvoker
-			implements OperationInvoker {
-
-		private final OperationInvoker delegate;
-
-		private ElasticSchedulerOperationInvoker(OperationInvoker delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public Object invoke(Map<String, Object> arguments) {
-			return Mono.create((sink) -> Schedulers.elastic()
-					.schedule(() -> invoke(arguments, sink)));
-		}
-
-		private void invoke(Map<String, Object> arguments, MonoSink<Object> sink) {
-			try {
-				Object result = this.delegate.invoke(arguments);
-				sink.success(result);
-			}
-			catch (Exception ex) {
-				sink.error(ex);
-			}
 		}
 
 	}

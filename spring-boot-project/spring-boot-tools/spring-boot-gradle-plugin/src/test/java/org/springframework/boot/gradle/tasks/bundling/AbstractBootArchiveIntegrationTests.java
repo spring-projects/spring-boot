@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
 import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.loader.tools.FileUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,6 +55,21 @@ public abstract class AbstractBootArchiveIntegrationTests {
 			UnexpectedBuildFailure, IOException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName)
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@Test
+	public void reproducibleArchive() throws InvalidRunnerConfigurationException,
+			UnexpectedBuildFailure, IOException, InterruptedException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName)
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs")
+				.listFiles()[0];
+		String firstHash = FileUtils.sha1Hash(jar);
+		Thread.sleep(1500);
+		assertThat(this.gradleBuild.build("clean", this.taskName)
+				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		String secondHash = FileUtils.sha1Hash(jar);
+		assertThat(firstHash).isEqualTo(secondHash);
 	}
 
 	@Test

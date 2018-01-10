@@ -82,7 +82,7 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 	}
 
 	@Test
-	public void annotationAttributesOverridePropertiesFile() throws Exception {
+	public void annotationAttributesOverridePropertiesFile() {
 		assertThat(this.value).isEqualTo(123);
 	}
 
@@ -92,7 +92,7 @@ public abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 				WebApplicationContextUtils.getWebApplicationContext(this.servletContext));
 	}
 
-	protected static class AbstractConfig {
+	protected static abstract class AbstractConfig {
 
 		@Value("${server.port:8080}")
 		private int port = 8080;

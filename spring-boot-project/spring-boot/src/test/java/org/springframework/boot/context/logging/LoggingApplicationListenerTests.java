@@ -49,6 +49,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
@@ -117,13 +118,13 @@ public class LoggingApplicationListenerTests {
 		loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
 		loggingSystem.cleanUp();
 		System.clearProperty(LoggingSystem.class.getName());
-		System.clearProperty("LOG_FILE");
-		System.clearProperty("LOG_PATH");
-		System.clearProperty("PID");
-		System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
-		System.clearProperty("CONSOLE_LOG_PATTERN");
-		System.clearProperty("FILE_LOG_PATTERN");
-		System.clearProperty("LOG_LEVEL_PATTERN");
+		System.clearProperty(LoggingSystemProperties.LOG_FILE);
+		System.clearProperty(LoggingSystemProperties.LOG_PATH);
+		System.clearProperty(LoggingSystemProperties.PID_KEY);
+		System.clearProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD);
+		System.clearProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN);
+		System.clearProperty(LoggingSystemProperties.FILE_LOG_PATTERN);
+		System.clearProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN);
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
 		if (this.context != null) {
 			this.context.close();
@@ -164,7 +165,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void overrideConfigDoesNotExist() throws Exception {
+	public void overrideConfigDoesNotExist() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=doesnotexist.xml");
 		this.thrown.expect(IllegalStateException.class);
@@ -175,7 +176,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void azureDefaultLoggingConfigDoesNotCauseAFailure() throws Exception {
+	public void azureDefaultLoggingConfigDoesNotCauseAFailure() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config: -Djava.util.logging.config.file=\"d:\\home\\site\\wwwroot\\bin\\apache-tomcat-7.0.52\\conf\\logging.properties\"");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -187,7 +188,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void tomcatNopLoggingConfigDoesNotCauseAFailure() throws Exception {
+	public void tomcatNopLoggingConfigDoesNotCauseAFailure() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"LOGGING_CONFIG: -Dnop");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -199,7 +200,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void overrideConfigBroken() throws Exception {
+	public void overrideConfigBroken() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-broken.xml");
 		this.thrown.expect(IllegalStateException.class);
@@ -249,7 +250,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseDebugArg() throws Exception {
+	public void parseDebugArg() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -260,7 +261,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseTraceArg() throws Exception {
+	public void parseTraceArg() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "trace");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -292,7 +293,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseLevels() throws Exception {
+	public void parseLevels() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=TRACE");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -304,7 +305,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseLevelsCaseInsensitive() throws Exception {
+	public void parseLevelsCaseInsensitive() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=TrAcE");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -316,7 +317,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseLevelsWithPlaceholder() throws Exception {
+	public void parseLevelsWithPlaceholder() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"foo=TRACE", "logging.level.org.springframework.boot=${foo}");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -328,7 +329,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseLevelsFails() throws Exception {
+	public void parseLevelsFails() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=GARBAGE");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -339,7 +340,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseLevelsNone() throws Exception {
+	public void parseLevelsNone() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=OFF");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -351,7 +352,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseLevelsMapsFalseToOff() throws Exception {
+	public void parseLevelsMapsFalseToOff() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.level.org.springframework.boot=false");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -363,7 +364,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseArgsDisabled() throws Exception {
+	public void parseArgsDisabled() {
 		this.initializer.setParseArgs(false);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -373,7 +374,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void parseArgsDoesntReplace() throws Exception {
+	public void parseArgsDoesntReplace() {
 		this.initializer.setSpringBootLogging(LogLevel.ERROR);
 		this.initializer.setParseArgs(false);
 		multicastEvent(new ApplicationStartingEvent(this.springApplication,
@@ -385,14 +386,14 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void bridgeHandlerLifecycle() throws Exception {
+	public void bridgeHandlerLifecycle() {
 		assertThat(bridgeHandlerInstalled()).isTrue();
 		multicastEvent(new ContextClosedEvent(this.context));
 		assertThat(bridgeHandlerInstalled()).isFalse();
 	}
 
 	@Test
-	public void defaultExceptionConversionWord() throws Exception {
+	public void defaultExceptionConversionWord() {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.outputCapture.expect(containsString("Hello world"));
@@ -403,7 +404,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void overrideExceptionConversionWord() throws Exception {
+	public void overrideExceptionConversionWord() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.exceptionConversionWord=%rEx");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -416,7 +417,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void shutdownHookIsNotRegisteredByDefault() throws Exception {
+	public void shutdownHookIsNotRegisteredByDefault() {
 		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
 		System.setProperty(LoggingSystem.class.getName(),
 				TestShutdownHandlerLoggingSystem.class.getName());
@@ -481,14 +482,19 @@ public class LoggingApplicationListenerTests {
 				"logging.pattern.file=file", "logging.pattern.level=level");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		assertThat(System.getProperty("CONSOLE_LOG_PATTERN")).isEqualTo("console");
-		assertThat(System.getProperty("FILE_LOG_PATTERN")).isEqualTo("file");
-		assertThat(System.getProperty("LOG_EXCEPTION_CONVERSION_WORD"))
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console");
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN))
+				.isEqualTo("file");
+		assertThat(System.getProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD))
 				.isEqualTo("conversion");
-		assertThat(System.getProperty("LOG_FILE")).isEqualTo("target/log");
-		assertThat(System.getProperty("LOG_LEVEL_PATTERN")).isEqualTo("level");
-		assertThat(System.getProperty("LOG_PATH")).isEqualTo("path");
-		assertThat(System.getProperty("PID")).isNotNull();
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
+				.isEqualTo("target/log");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN))
+				.isEqualTo("level");
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH))
+				.isEqualTo("path");
+		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
 	}
 
 	@Test
@@ -498,7 +504,8 @@ public class LoggingApplicationListenerTests {
 				"logging.pattern.console=console ${pid}");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		assertThat(System.getProperty("CONSOLE_LOG_PATTERN")).isEqualTo("console ${pid}");
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console ${pid}");
 	}
 
 	@Test
@@ -507,7 +514,7 @@ public class LoggingApplicationListenerTests {
 				"logging.file=target/${PID}.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		assertThat(System.getProperty("LOG_FILE"))
+		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
 				.isEqualTo("target/" + new ApplicationPid().toString() + ".log");
 	}
 
@@ -526,8 +533,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig()
-			throws Exception {
+	public void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig() {
 		MutablePropertySources propertySources = this.context.getEnvironment()
 				.getPropertySources();
 		propertySources.addFirst(new MapPropertySource("test1",

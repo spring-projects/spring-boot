@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,10 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -59,9 +55,6 @@ import org.springframework.util.ClassUtils;
  */
 public class ServletListenerRegistrationBean<T extends EventListener>
 		extends RegistrationBean {
-
-	private static final Log logger = LogFactory
-			.getLog(ServletListenerRegistrationBean.class);
 
 	private static final Set<Class<?>> SUPPORTED_TYPES;
 
@@ -104,12 +97,22 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 		this.listener = listener;
 	}
 
+	/**
+	 * Return the listener to be registered.
+	 * @return the listener to be registered
+	 */
+	public T getListener() {
+		return this.listener;
+	}
+
 	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		if (!isEnabled()) {
-			logger.info("Listener " + this.listener + " was not registered (disabled)");
-			return;
-		}
+	protected String getDescription() {
+		Assert.notNull(this.listener, "Listener must not be null");
+		return "listener " + this.listener;
+	}
+
+	@Override
+	protected void register(String description, ServletContext servletContext) {
 		try {
 			servletContext.addListener(this.listener);
 		}
@@ -118,10 +121,6 @@ public class ServletListenerRegistrationBean<T extends EventListener>
 					"Failed to add listener '" + this.listener + "' to servlet context",
 					ex);
 		}
-	}
-
-	public T getListener() {
-		return this.listener;
 	}
 
 	/**

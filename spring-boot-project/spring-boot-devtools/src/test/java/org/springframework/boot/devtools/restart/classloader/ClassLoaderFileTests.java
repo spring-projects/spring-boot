@@ -44,42 +44,42 @@ public class ClassLoaderFileTests {
 	}
 
 	@Test
-	public void addedContentsMustNotBeNull() throws Exception {
+	public void addedContentsMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Contents must not be null");
 		new ClassLoaderFile(Kind.ADDED, null);
 	}
 
 	@Test
-	public void modifiedContentsMustNotBeNull() throws Exception {
+	public void modifiedContentsMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Contents must not be null");
 		new ClassLoaderFile(Kind.MODIFIED, null);
 	}
 
 	@Test
-	public void deletedContentsMustBeNull() throws Exception {
+	public void deletedContentsMustBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Contents must be null");
 		new ClassLoaderFile(Kind.DELETED, new byte[10]);
 	}
 
 	@Test
-	public void added() throws Exception {
+	public void added() {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.ADDED, BYTES);
 		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.ADDED);
 		assertThat(file.getContents()).isEqualTo(BYTES);
 	}
 
 	@Test
-	public void modified() throws Exception {
+	public void modified() {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.MODIFIED, BYTES);
 		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.MODIFIED);
 		assertThat(file.getContents()).isEqualTo(BYTES);
 	}
 
 	@Test
-	public void deleted() throws Exception {
+	public void deleted() {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.DELETED, null);
 		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.DELETED);
 		assertThat(file.getContents()).isNull();

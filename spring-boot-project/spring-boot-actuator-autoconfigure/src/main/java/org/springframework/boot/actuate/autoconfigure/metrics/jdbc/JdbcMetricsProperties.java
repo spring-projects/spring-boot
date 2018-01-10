@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties("spring.metrics.jdbc")
+@ConfigurationProperties("management.metrics.jdbc")
 public class JdbcMetricsProperties {
 
 	/**

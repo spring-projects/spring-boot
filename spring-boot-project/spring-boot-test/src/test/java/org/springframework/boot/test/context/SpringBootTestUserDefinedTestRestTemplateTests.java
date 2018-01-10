@@ -44,7 +44,7 @@ public class SpringBootTestUserDefinedTestRestTemplateTests
 		extends AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Test
-	public void restTemplateIsUserDefined() throws Exception {
+	public void restTemplateIsUserDefined() {
 		assertThat(getContext().getBean("testRestTemplate"))
 				.isInstanceOf(RestTemplate.class);
 	}

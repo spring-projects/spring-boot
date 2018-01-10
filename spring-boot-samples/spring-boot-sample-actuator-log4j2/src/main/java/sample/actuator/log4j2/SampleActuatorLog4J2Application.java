@@ -18,18 +18,9 @@ package sample.actuator.log4j2;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringBootApplication
 public class SampleActuatorLog4J2Application {
-
-	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
-				.username("user").password("password").roles("USER").build());
-	}
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleActuatorLog4J2Application.class, args);

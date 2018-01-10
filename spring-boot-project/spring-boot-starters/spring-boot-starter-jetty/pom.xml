@@ -59,6 +59,9 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
+							<ignoredClassPatterns>
+								<ignoredClassPattern>^module-info$</ignoredClassPattern>
+							</ignoredClassPatterns>
 							<ignoredResourcePatterns>
 								<ignoredResourcePattern>about.html</ignoredResourcePattern>
 							</ignoredResourcePatterns>

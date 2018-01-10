@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CloudAutoConfigurationTests {
 
 	@Test
-	public void testOrder() throws Exception {
+	public void testOrder() {
 		TestAutoConfigurationSorter sorter = new TestAutoConfigurationSorter(
 				new CachingMetadataReaderFactory());
 		Collection<String> classNames = new ArrayList<>();

@@ -102,7 +102,7 @@ public class DataSourceInitializerTests {
 
 	private HikariDataSource createDataSource() {
 		return DataSourceBuilder.create().type(HikariDataSource.class)
-				.url("jdbc:h2:mem:" + UUID.randomUUID().toString()).build();
+				.url("jdbc:h2:mem:" + UUID.randomUUID()).build();
 	}
 
 }

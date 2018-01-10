@@ -498,8 +498,8 @@ public class PropertiesLauncher extends Launcher {
 			// If home dir is same as parent archive, no need to add it twice.
 			return null;
 		}
-		if (root.contains("!")) {
-			int index = root.indexOf("!");
+		int index = root.indexOf("!");
+		if (index != -1) {
 			File file = new File(this.home, root.substring(0, index));
 			if (root.startsWith("jar:file:")) {
 				file = new File(root.substring("jar:file:".length(), index));
@@ -555,7 +555,8 @@ public class PropertiesLauncher extends Launcher {
 		if (path.startsWith("./")) {
 			path = path.substring(2);
 		}
-		if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
+		String lowerCasePath = path.toLowerCase();
+		if (lowerCasePath.endsWith(".jar") || lowerCasePath.endsWith(".zip")) {
 			return path;
 		}
 		if (path.endsWith("/*")) {

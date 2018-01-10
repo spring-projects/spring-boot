@@ -17,7 +17,8 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.InetAddress;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,44 +55,45 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void testPortBinding() throws Exception {
+	public void testPortBinding() {
 		bind("server.port", "9000");
 		assertThat(this.properties.getPort().intValue()).isEqualTo(9000);
 	}
 
 	@Test
-	public void testServerHeaderDefault() throws Exception {
+	public void testServerHeaderDefault() {
 		assertThat(this.properties.getServerHeader()).isNull();
 	}
 
 	@Test
-	public void testServerHeader() throws Exception {
+	public void testServerHeader() {
 		bind("server.server-header", "Custom Server");
 		assertThat(this.properties.getServerHeader()).isEqualTo("Custom Server");
 	}
 
 	@Test
-	public void testConnectionTimeout() throws Exception {
-		bind("server.connection-timeout", "60000");
-		assertThat(this.properties.getConnectionTimeout()).isEqualTo(60000);
+	public void testConnectionTimeout() {
+		bind("server.connection-timeout", "60s");
+		assertThat(this.properties.getConnectionTimeout())
+				.isEqualTo(Duration.ofMillis(60000));
 	}
 
 	@Test
-	public void testServletPathAsMapping() throws Exception {
+	public void testServletPathAsMapping() {
 		bind("server.servlet.path", "/foo/*");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
-	public void testServletPathAsPrefix() throws Exception {
+	public void testServletPathAsPrefix() {
 		bind("server.servlet.path", "/foo");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
 		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
 	}
 
 	@Test
-	public void testTomcatBinding() throws Exception {
+	public void testTomcatBinding() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.pattern", "%h %t '%r' %s %b");
 		map.put("server.tomcat.accesslog.prefix", "foo");
@@ -115,11 +117,12 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getInternalProxies())
 				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
-		assertThat(tomcat.getBackgroundProcessorDelay()).isEqualTo(10);
+		assertThat(tomcat.getBackgroundProcessorDelay())
+				.isEqualTo(Duration.ofSeconds(10));
 	}
 
 	@Test
-	public void redirectContextRootIsNotConfiguredByDefault() throws Exception {
+	public void redirectContextRootIsNotConfiguredByDefault() {
 		bind(new HashMap<>());
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getRedirectContextRoot()).isNull();
@@ -138,32 +141,32 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void testCustomizeUriEncoding() throws Exception {
+	public void testCustomizeUriEncoding() {
 		bind("server.tomcat.uri-encoding", "US-ASCII");
 		assertThat(this.properties.getTomcat().getUriEncoding())
-				.isEqualTo(Charset.forName("US-ASCII"));
+				.isEqualTo(StandardCharsets.US_ASCII);
 	}
 
 	@Test
-	public void testCustomizeHeaderSize() throws Exception {
+	public void testCustomizeHeaderSize() {
 		bind("server.max-http-header-size", "9999");
 		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
 	}
 
 	@Test
-	public void testCustomizeJettyAcceptors() throws Exception {
+	public void testCustomizeJettyAcceptors() {
 		bind("server.jetty.acceptors", "10");
 		assertThat(this.properties.getJetty().getAcceptors()).isEqualTo(10);
 	}
 
 	@Test
-	public void testCustomizeJettySelectors() throws Exception {
+	public void testCustomizeJettySelectors() {
 		bind("server.jetty.selectors", "10");
 		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
 	}
 
 	@Test
-	public void testCustomizeJettyAccessLog() throws Exception {
+	public void testCustomizeJettyAccessLog() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.jetty.accesslog.enabled", "true");
 		map.put("server.jetty.accesslog.filename", "foo.txt");

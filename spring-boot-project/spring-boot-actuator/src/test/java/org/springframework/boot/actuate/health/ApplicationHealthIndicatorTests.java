@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApplicationHealthIndicatorTests {
 
 	@Test
-	public void indicatesUp() throws Exception {
+	public void indicatesUp() {
 		ApplicationHealthIndicator healthIndicator = new ApplicationHealthIndicator();
 		assertThat(healthIndicator.health().getStatus()).isEqualTo(Status.UP);
 	}

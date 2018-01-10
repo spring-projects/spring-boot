@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.session;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.session.SessionsEndpoint;
-import org.springframework.boot.actuate.session.SessionsWebEndpointExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -48,18 +47,11 @@ public class SessionsEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runShouldHaveWebExtensionBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(SessionsWebEndpointExtension.class));
-	}
-
-	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointOrExtensionBean()
-			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.sessions.enabled:false")
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.sessions.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(SessionsEndpoint.class)
-						.doesNotHaveBean(SessionsWebEndpointExtension.class));
+						.doesNotHaveBean(SessionsEndpoint.class));
 	}
 
 	@Configuration

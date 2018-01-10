@@ -46,12 +46,12 @@ public class ImportsContextCustomizerFactoryIntegrationTests {
 	private ImportedBean bean;
 
 	@Test
-	public void beanWasImported() throws Exception {
+	public void beanWasImported() {
 		assertThat(this.bean).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void testItselfIsNotABean() throws Exception {
+	public void testItselfIsNotABean() {
 		this.context.getBean(getClass());
 	}
 

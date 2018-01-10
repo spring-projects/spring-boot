@@ -16,6 +16,6 @@ springBoot {
 
 task configuredMainClass {
 	doLast {
-		println bootRun.mainClassName
+		println bootRun.main
 	}
 }

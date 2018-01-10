@@ -42,8 +42,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 public class SecurityFilterAutoConfigurationTests {
 
 	@Test
-	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration()
-			throws Exception {
+	public void filterAutoConfigurationWorksWithoutSecurityAutoConfiguration() {
 		try (AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext()) {
 			context.setServletContext(new MockServletContext());
 			context.register(Config.class);

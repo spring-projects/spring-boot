@@ -33,7 +33,7 @@ import static org.mockito.Mockito.withSettings;
 public class AliasedConfigurationPropertySourceTests {
 
 	@Test
-	public void getConfigurationPropertyShouldConsiderAliases() throws Exception {
+	public void getConfigurationPropertyShouldConsiderAliases() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "bing");
 		source.put("foo.baz", "biff");
@@ -44,8 +44,7 @@ public class AliasedConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void getConfigurationPropertyWhenNotAliasesShouldReturnValue()
-			throws Exception {
+	public void getConfigurationPropertyWhenNotAliasesShouldReturnValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "bing");
 		source.put("foo.baz", "biff");
@@ -55,8 +54,7 @@ public class AliasedConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsUnknownShouldReturnUnknown()
-			throws Exception {
+	public void containsDescendantOfWhenSourceReturnsUnknownShouldReturnUnknown() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
@@ -69,8 +67,7 @@ public class AliasedConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsPresentShouldReturnPresent()
-			throws Exception {
+	public void containsDescendantOfWhenSourceReturnsPresentShouldReturnPresent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
@@ -85,8 +82,7 @@ public class AliasedConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenAllAreAbsentShouldReturnAbsent()
-			throws Exception {
+	public void containsDescendantOfWhenAllAreAbsentShouldReturnAbsent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
@@ -101,8 +97,7 @@ public class AliasedConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenAnyIsPresentShouldReturnPresent()
-			throws Exception {
+	public void containsDescendantOfWhenAnyIsPresentShouldReturnPresent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));

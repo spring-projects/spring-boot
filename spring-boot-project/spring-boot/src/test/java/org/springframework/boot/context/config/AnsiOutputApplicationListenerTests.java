@@ -70,7 +70,7 @@ public class AnsiOutputApplicationListenerTests {
 	}
 
 	@Test
-	public void disabled() throws Exception {
+	public void disabled() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		Map<String, Object> props = new HashMap<>();
@@ -81,7 +81,7 @@ public class AnsiOutputApplicationListenerTests {
 	}
 
 	@Test
-	public void disabledViaApplicationProperties() throws Exception {
+	public void disabledViaApplicationProperties() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
 				"spring.config.name=ansi");

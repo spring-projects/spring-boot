@@ -44,9 +44,9 @@ public class InfoEndpointWebIntegrationTests {
 	private static WebTestClient client;
 
 	@Test
-	public void info() throws Exception {
-		client.get().uri("/application/info").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isOk().expectBody().jsonPath("beanName1.key11")
+	public void info() {
+		client.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON).exchange()
+				.expectStatus().isOk().expectBody().jsonPath("beanName1.key11")
 				.isEqualTo("value11").jsonPath("beanName1.key12").isEqualTo("value12")
 				.jsonPath("beanName2.key21").isEqualTo("value21")
 				.jsonPath("beanName2.key22").isEqualTo("value22");

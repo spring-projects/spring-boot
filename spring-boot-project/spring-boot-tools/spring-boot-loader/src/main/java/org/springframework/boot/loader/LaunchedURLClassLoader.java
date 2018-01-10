@@ -65,7 +65,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	public Enumeration<URL> findResources(String name) throws IOException {
 		Handler.setUseFastConnectionExceptions(true);
 		try {
-			return super.findResources(name);
+			return new UseFastConnectionExceptionsEnumeration(super.findResources(name));
 		}
 		finally {
 			Handler.setUseFastConnectionExceptions(false);
@@ -126,7 +126,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	private void definePackage(final String className, final String packageName) {
+	private void definePackage(String className, String packageName) {
 		try {
 			AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
 				String packageEntryName = packageName.replace('.', '/') + "/";
@@ -180,6 +180,40 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		if (jarFile instanceof org.springframework.boot.loader.jar.JarFile) {
 			((org.springframework.boot.loader.jar.JarFile) jarFile).clearCache();
 		}
+	}
+
+	private static class UseFastConnectionExceptionsEnumeration
+			implements Enumeration<URL> {
+
+		private final Enumeration<URL> delegate;
+
+		UseFastConnectionExceptionsEnumeration(Enumeration<URL> delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			Handler.setUseFastConnectionExceptions(true);
+			try {
+				return this.delegate.hasMoreElements();
+			}
+			finally {
+				Handler.setUseFastConnectionExceptions(false);
+			}
+
+		}
+
+		@Override
+		public URL nextElement() {
+			Handler.setUseFastConnectionExceptions(true);
+			try {
+				return this.delegate.nextElement();
+			}
+			finally {
+				Handler.setUseFastConnectionExceptions(false);
+			}
+		}
+
 	}
 
 }

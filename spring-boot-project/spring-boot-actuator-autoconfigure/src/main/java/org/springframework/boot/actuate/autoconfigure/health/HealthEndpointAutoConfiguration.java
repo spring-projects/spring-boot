@@ -16,24 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.health.CompositeHealthIndicatorFactory;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.StatusEndpoint;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ClassUtils;
+import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthEndpoint}.
@@ -44,55 +32,11 @@ import org.springframework.util.ClassUtils;
  * @since 2.0.0
  */
 @Configuration
+@EnableConfigurationProperties({ HealthEndpointProperties.class,
+		HealthIndicatorProperties.class })
+@AutoConfigureAfter(HealthIndicatorAutoConfiguration.class)
+@Import({ HealthEndpointConfiguration.class,
+		HealthEndpointWebExtensionConfiguration.class })
 public class HealthEndpointAutoConfiguration {
-
-	private final HealthIndicator healthIndicator;
-
-	public HealthEndpointAutoConfiguration(ApplicationContext applicationContext,
-			ObjectProvider<HealthAggregator> healthAggregator) {
-		this.healthIndicator = getHealthIndicator(applicationContext,
-				healthAggregator.getIfAvailable(OrderedHealthAggregator::new));
-	}
-
-	private HealthIndicator getHealthIndicator(ApplicationContext applicationContext,
-			HealthAggregator healthAggregator) {
-		Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
-		indicators.putAll(applicationContext.getBeansOfType(HealthIndicator.class));
-		if (ClassUtils.isPresent("reactor.core.publisher.Flux", null)) {
-			new ReactiveHealthIndicators().get(applicationContext)
-					.forEach(indicators::putIfAbsent);
-		}
-		CompositeHealthIndicatorFactory factory = new CompositeHealthIndicatorFactory();
-		return factory.createHealthIndicator(healthAggregator, indicators);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	public HealthEndpoint healthEndpoint() {
-		return new HealthEndpoint(this.healthIndicator);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	public StatusEndpoint statusEndpoint() {
-		return new StatusEndpoint(this.healthIndicator);
-	}
-
-	private static class ReactiveHealthIndicators {
-
-		public Map<String, HealthIndicator> get(ApplicationContext applicationContext) {
-			Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
-			applicationContext.getBeansOfType(ReactiveHealthIndicator.class)
-					.forEach((name, indicator) -> indicators.put(name, adapt(indicator)));
-			return indicators;
-		}
-
-		private HealthIndicator adapt(ReactiveHealthIndicator indicator) {
-			return () -> indicator.health().block();
-		}
-
-	}
 
 }

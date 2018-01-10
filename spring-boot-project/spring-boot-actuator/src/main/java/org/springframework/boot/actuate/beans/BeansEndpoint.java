@@ -63,21 +63,21 @@ public class BeansEndpoint {
 	 */
 	public static final class ApplicationContextDescriptor {
 
-		private final String id;
+		private final String contextId;
 
 		private final Map<String, BeanDescriptor> beans;
 
 		private final ApplicationContextDescriptor parent;
 
-		private ApplicationContextDescriptor(String id, Map<String, BeanDescriptor> beans,
-				ApplicationContextDescriptor parent) {
-			this.id = id;
+		private ApplicationContextDescriptor(String contextId,
+				Map<String, BeanDescriptor> beans, ApplicationContextDescriptor parent) {
+			this.contextId = contextId;
 			this.beans = beans;
 			this.parent = parent;
 		}
 
-		public String getId() {
-			return this.id;
+		public String getContextId() {
+			return this.contextId;
 		}
 
 		public ApplicationContextDescriptor getParent() {

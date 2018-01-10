@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,19 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.validation.Configuration;
 import javax.validation.Validation;
 
 import org.apache.catalina.mbeans.MBeanFactory;
 
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
@@ -53,7 +56,7 @@ public class BackgroundPreinitializer
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
+		if (event instanceof ApplicationStartingEvent) {
 			if (preinitializationStarted.compareAndSet(false, true)) {
 				performPreinitialization();
 			}
@@ -76,11 +79,12 @@ public class BackgroundPreinitializer
 
 				@Override
 				public void run() {
+					runSafely(new ConversionServiceInitializer());
+					runSafely(new ValidationInitializer());
 					runSafely(new MessageConverterInitializer());
 					runSafely(new MBeanFactoryInitializer());
-					runSafely(new ValidationInitializer());
 					runSafely(new JacksonInitializer());
-					runSafely(new ConversionServiceInitializer());
+					runSafely(new CharsetInitializer());
 					preinitializationComplete.countDown();
 				}
 
@@ -135,7 +139,8 @@ public class BackgroundPreinitializer
 
 		@Override
 		public void run() {
-			Validation.byDefaultProvider().configure();
+			Configuration<?> configuration = Validation.byDefaultProvider().configure();
+			configuration.buildValidatorFactory().getValidator();
 		}
 
 	}
@@ -160,6 +165,16 @@ public class BackgroundPreinitializer
 		@Override
 		public void run() {
 			new DefaultFormattingConversionService();
+		}
+
+	}
+
+	private static class CharsetInitializer implements Runnable {
+
+		@Override
+		public void run() {
+			StandardCharsets.UTF_8.name();
+			Charset.availableCharsets();
 		}
 
 	}

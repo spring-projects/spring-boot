@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,24 +21,17 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.beans.BeansEndpoint;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -49,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for the actuator endpoints' CORS support
+ * Integration tests for the MVC actuator endpoints' CORS support
  *
  * @author Andy Wilkinson
  * @see WebMvcEndpointManagementContextConfiguration
@@ -65,28 +58,29 @@ public class WebMvcEndpointCorsIntegrationTests {
 		this.context.register(JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-				EndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class,
 				BeansEndpointAutoConfiguration.class);
-		TestPropertyValues.of("endpoints.default.web.enabled:true").applyTo(this.context);
+		TestPropertyValues.of("management.endpoints.web.expose:*").applyTo(this.context);
 	}
 
 	@Test
 	public void corsIsDisabledByDefault() throws Exception {
-		MockMvc mockMvc = createMockMvc();
-		System.out.println(new ConditionEvaluationReportMessage(
-				this.context.getBean(ConditionEvaluationReport.class)));
-		mockMvc.perform(options("/application/beans").header("Origin", "foo.example.com")
-				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
+		createMockMvc()
+				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+				.andExpect(
 						header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
 	}
 
 	@Test
 	public void settingAllowedOriginsEnablesCors() throws Exception {
-		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com")
+		TestPropertyValues
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/application/beans").header("Origin", "bar.example.com")
+				.perform(options("/actuator/beans").header("Origin", "bar.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 				.andExpect(status().isForbidden());
 		performAcceptedCorsRequest();
@@ -94,7 +88,8 @@ public class WebMvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void maxAgeDefaultsTo30Minutes() throws Exception {
-		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com")
+		TestPropertyValues
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.applyTo(this.context);
 		performAcceptedCorsRequest()
 				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800"));
@@ -102,18 +97,21 @@ public class WebMvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void maxAgeCanBeConfigured() throws Exception {
-		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com",
-				"management.endpoints.cors.max-age: 2400").applyTo(this.context);
+		TestPropertyValues
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com",
+						"management.endpoints.web.cors.max-age: 2400")
+				.applyTo(this.context);
 		performAcceptedCorsRequest()
 				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "2400"));
 	}
 
 	@Test
 	public void requestsWithDisallowedHeadersAreRejected() throws Exception {
-		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com")
+		TestPropertyValues
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/application/beans").header("Origin", "foo.example.com")
+				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isForbidden());
@@ -122,11 +120,11 @@ public class WebMvcEndpointCorsIntegrationTests {
 	@Test
 	public void allowedHeadersCanBeConfigured() throws Exception {
 		TestPropertyValues
-				.of("management.endpoints.cors.allowed-origins:foo.example.com",
-						"management.endpoints.cors.allowed-headers:Alpha,Bravo")
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com",
+						"management.endpoints.web.cors.allowed-headers:Alpha,Bravo")
 				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/application/beans").header("Origin", "foo.example.com")
+				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isOk()).andExpect(header()
@@ -135,10 +133,11 @@ public class WebMvcEndpointCorsIntegrationTests {
 
 	@Test
 	public void requestsWithDisallowedMethodsAreRejected() throws Exception {
-		TestPropertyValues.of("management.endpoints.cors.allowed-origins:foo.example.com")
+		TestPropertyValues
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com")
 				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/application/health")
+				.perform(options("/actuator/health")
 						.header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
 				.andExpect(status().isForbidden());
@@ -147,11 +146,11 @@ public class WebMvcEndpointCorsIntegrationTests {
 	@Test
 	public void allowedMethodsCanBeConfigured() throws Exception {
 		TestPropertyValues
-				.of("management.endpoints.cors.allowed-origins:foo.example.com",
-						"management.endpoints.cors.allowed-methods:GET,HEAD")
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com",
+						"management.endpoints.web.cors.allowed-methods:GET,HEAD")
 				.applyTo(this.context);
 		createMockMvc()
-				.perform(options("/application/beans")
+				.perform(options("/actuator/beans")
 						.header(HttpHeaders.ORIGIN, "foo.example.com")
 						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
 				.andExpect(status().isOk()).andExpect(header()
@@ -161,8 +160,8 @@ public class WebMvcEndpointCorsIntegrationTests {
 	@Test
 	public void credentialsCanBeAllowed() throws Exception {
 		TestPropertyValues
-				.of("management.endpoints.cors.allowed-origins:foo.example.com",
-						"management.endpoints.cors.allow-credentials:true")
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com",
+						"management.endpoints.web.cors.allow-credentials:true")
 				.applyTo(this.context);
 		performAcceptedCorsRequest().andExpect(
 				header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
@@ -171,8 +170,8 @@ public class WebMvcEndpointCorsIntegrationTests {
 	@Test
 	public void credentialsCanBeDisabled() throws Exception {
 		TestPropertyValues
-				.of("management.endpoints.cors.allowed-origins:foo.example.com",
-						"management.endpoints.cors.allow-credentials:false")
+				.of("management.endpoints.web.cors.allowed-origins:foo.example.com",
+						"management.endpoints.web.cors.allow-credentials:false")
 				.applyTo(this.context);
 		performAcceptedCorsRequest().andExpect(
 				header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
@@ -184,7 +183,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 	}
 
 	private ResultActions performAcceptedCorsRequest() throws Exception {
-		return performAcceptedCorsRequest("/application/beans");
+		return performAcceptedCorsRequest("/actuator/beans");
 	}
 
 	private ResultActions performAcceptedCorsRequest(String url) throws Exception {
@@ -194,27 +193,6 @@ public class WebMvcEndpointCorsIntegrationTests {
 				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
 						"foo.example.com"))
 				.andExpect(status().isOk());
-	}
-
-	@Configuration
-	static class EndpointConfiguration {
-
-		@Bean
-		public BeansEndpoint beansEndpoint(
-				ConfigurableApplicationContext applicationContext) {
-			return new BeansEndpoint(applicationContext);
-		}
-
-	}
-
-	@Configuration
-	static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.cors();
-		}
-
 	}
 
 }

@@ -60,13 +60,13 @@ public class BindResultTests {
 	}
 
 	@Test
-	public void getWhenHasValueShouldReturnValue() throws Exception {
+	public void getWhenHasValueShouldReturnValue() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThat(result.get()).isEqualTo("foo");
 	}
 
 	@Test
-	public void getWhenHasNoValueShouldThrowException() throws Exception {
+	public void getWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
 		this.thrown.expect(NoSuchElementException.class);
 		this.thrown.expectMessage("No value bound");
@@ -74,19 +74,19 @@ public class BindResultTests {
 	}
 
 	@Test
-	public void isBoundWhenHasValueShouldReturnTrue() throws Exception {
+	public void isBoundWhenHasValueShouldReturnTrue() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThat(result.isBound()).isTrue();
 	}
 
 	@Test
-	public void isBoundWhenHasNoValueShouldFalse() throws Exception {
+	public void isBoundWhenHasNoValueShouldFalse() {
 		BindResult<String> result = BindResult.of(null);
 		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
-	public void ifBoundWhenConsumerIsNullShouldThrowException() throws Exception {
+	public void ifBoundWhenConsumerIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Consumer must not be null");
@@ -94,21 +94,21 @@ public class BindResultTests {
 	}
 
 	@Test
-	public void ifBoundWhenHasValueShouldCallConsumer() throws Exception {
+	public void ifBoundWhenHasValueShouldCallConsumer() {
 		BindResult<String> result = BindResult.of("foo");
 		result.ifBound(this.consumer);
 		verify(this.consumer).accept("foo");
 	}
 
 	@Test
-	public void ifBoundWhenHasNoValueShouldNotCallConsumer() throws Exception {
+	public void ifBoundWhenHasNoValueShouldNotCallConsumer() {
 		BindResult<String> result = BindResult.of(null);
 		result.ifBound(this.consumer);
 		verifyZeroInteractions(this.consumer);
 	}
 
 	@Test
-	public void mapWhenMapperIsNullShouldThrowException() throws Exception {
+	public void mapWhenMapperIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Mapper must not be null");
@@ -116,47 +116,47 @@ public class BindResultTests {
 	}
 
 	@Test
-	public void mapWhenHasValueShouldCallMapper() throws Exception {
+	public void mapWhenHasValueShouldCallMapper() {
 		BindResult<String> result = BindResult.of("foo");
 		given(this.mapper.apply("foo")).willReturn("bar");
 		assertThat(result.map(this.mapper).get()).isEqualTo("bar");
 	}
 
 	@Test
-	public void mapWhenHasNoValueShouldNotCallMapper() throws Exception {
+	public void mapWhenHasNoValueShouldNotCallMapper() {
 		BindResult<String> result = BindResult.of(null);
 		result.map(this.mapper);
 		verifyZeroInteractions(this.mapper);
 	}
 
 	@Test
-	public void orElseWhenHasValueShouldReturnValue() throws Exception {
+	public void orElseWhenHasValueShouldReturnValue() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThat(result.orElse("bar")).isEqualTo("foo");
 	}
 
 	@Test
-	public void orElseWhenHasValueNoShouldReturnOther() throws Exception {
+	public void orElseWhenHasValueNoShouldReturnOther() {
 		BindResult<String> result = BindResult.of(null);
 		assertThat(result.orElse("bar")).isEqualTo("bar");
 	}
 
 	@Test
-	public void orElseGetWhenHasValueShouldReturnValue() throws Exception {
+	public void orElseGetWhenHasValueShouldReturnValue() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThat(result.orElseGet(this.supplier)).isEqualTo("foo");
 		verifyZeroInteractions(this.supplier);
 	}
 
 	@Test
-	public void orElseGetWhenHasValueNoShouldReturnOther() throws Exception {
+	public void orElseGetWhenHasValueNoShouldReturnOther() {
 		BindResult<String> result = BindResult.of(null);
 		given(this.supplier.get()).willReturn("bar");
 		assertThat(result.orElseGet(this.supplier)).isEqualTo("bar");
 	}
 
 	@Test
-	public void orElseCreateWhenTypeIsNullShouldThrowException() throws Exception {
+	public void orElseCreateWhenTypeIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
@@ -164,13 +164,13 @@ public class BindResultTests {
 	}
 
 	@Test
-	public void orElseCreateWhenHasValueShouldReturnValue() throws Exception {
+	public void orElseCreateWhenHasValueShouldReturnValue() {
 		BindResult<ExampleBean> result = BindResult.of(new ExampleBean("foo"));
 		assertThat(result.orElseCreate(ExampleBean.class).getValue()).isEqualTo("foo");
 	}
 
 	@Test
-	public void orElseCreateWhenHasValueNoShouldReturnCreatedValue() throws Exception {
+	public void orElseCreateWhenHasValueNoShouldReturnCreatedValue() {
 		BindResult<ExampleBean> result = BindResult.of(null);
 		assertThat(result.orElseCreate(ExampleBean.class).getValue()).isEqualTo("new");
 	}
@@ -189,7 +189,7 @@ public class BindResultTests {
 	}
 
 	@Test
-	public void hashCodeAndEquals() throws Exception {
+	public void hashCodeAndEquals() {
 		BindResult<?> result1 = BindResult.of("foo");
 		BindResult<?> result2 = BindResult.of("foo");
 		BindResult<?> result3 = BindResult.of("bar");
@@ -200,14 +200,14 @@ public class BindResultTests {
 	}
 
 	@Test
-	public void ofWhenHasValueShouldReturnBoundResultOfValue() throws Exception {
+	public void ofWhenHasValueShouldReturnBoundResultOfValue() {
 		BindResult<Object> result = BindResult.of("foo");
 		assertThat(result.isBound()).isTrue();
 		assertThat(result.get()).isEqualTo("foo");
 	}
 
 	@Test
-	public void ofWhenValueIsNullShouldReturnUnbound() throws Exception {
+	public void ofWhenValueIsNullShouldReturnUnbound() {
 		BindResult<Object> result = BindResult.of(null);
 		assertThat(result.isBound()).isFalse();
 		assertThat(result).isSameAs(BindResult.of(null));

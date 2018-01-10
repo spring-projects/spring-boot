@@ -65,21 +65,21 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void createWithNullRootUriShouldThrowException() throws Exception {
+	public void createWithNullRootUriShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RootUri must not be null");
 		new RootUriTemplateHandler((String) null);
 	}
 
 	@Test
-	public void createWithNullHandlerShouldThrowException() throws Exception {
+	public void createWithNullHandlerShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Handler must not be null");
 		new RootUriTemplateHandler("http://example.com", null);
 	}
 
 	@Test
-	public void expandMapVariablesShouldPrefixRoot() throws Exception {
+	public void expandMapVariablesShouldPrefixRoot() {
 		HashMap<String, Object> uriVariables = new HashMap<>();
 		URI expanded = this.handler.expand("/hello", uriVariables);
 		verify(this.delegate).expand("http://example.com/hello", uriVariables);
@@ -87,8 +87,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void expandMapVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot()
-			throws Exception {
+	public void expandMapVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot() {
 		HashMap<String, Object> uriVariables = new HashMap<>();
 		URI expanded = this.handler.expand("http://spring.io/hello", uriVariables);
 		verify(this.delegate).expand("http://spring.io/hello", uriVariables);
@@ -96,7 +95,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void expandArrayVariablesShouldPrefixRoot() throws Exception {
+	public void expandArrayVariablesShouldPrefixRoot() {
 		Object[] uriVariables = new Object[0];
 		URI expanded = this.handler.expand("/hello", uriVariables);
 		verify(this.delegate).expand("http://example.com/hello", uriVariables);
@@ -104,8 +103,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void expandArrayVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot()
-			throws Exception {
+	public void expandArrayVariablesWhenPathDoesNotStartWithSlashShouldNotPrefixRoot() {
 		Object[] uriVariables = new Object[0];
 		URI expanded = this.handler.expand("http://spring.io/hello", uriVariables);
 		verify(this.delegate).expand("http://spring.io/hello", uriVariables);
@@ -113,7 +111,7 @@ public class RootUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void applyShouldWrapExistingTemplate() throws Exception {
+	public void applyShouldWrapExistingTemplate() {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setUriTemplateHandler(this.delegate);
 		this.handler = RootUriTemplateHandler.addTo(restTemplate, "http://example.com");

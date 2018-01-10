@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties("spring.metrics")
+@ConfigurationProperties("management.metrics")
 public class MetricsProperties {
 
-	private Web web = new Web();
+	private final Web web = new Web();
 
 	/**
-	 * Whether or not auto-configured MeterRegistry implementations should be bound to the
-	 * global static registry on Metrics. For testing, set this to 'false' to maximize
-	 * test independence.
+	 * Whether auto-configured MeterRegistry implementations should be bound to the global
+	 * static registry on Metrics. For testing, set this to 'false' to maximize test
+	 * independence.
 	 */
 	private boolean useGlobalRegistry = true;
 
@@ -50,31 +50,23 @@ public class MetricsProperties {
 
 	public static class Web {
 
-		private Client client = new Client();
+		private final Client client = new Client();
 
-		private Server server = new Server();
+		private final Server server = new Server();
 
 		public Client getClient() {
 			return this.client;
-		}
-
-		public void setClient(Client client) {
-			this.client = client;
 		}
 
 		public Server getServer() {
 			return this.server;
 		}
 
-		public void setServer(Server server) {
-			this.server = server;
-		}
-
 		public static class Client {
 
 			/**
-			 * Whether or not instrumented requests record percentiles histogram buckets
-			 * by default.
+			 * Whether instrumented requests record percentiles histogram buckets by
+			 * default.
 			 */
 			private boolean recordRequestPercentiles;
 
@@ -104,10 +96,10 @@ public class MetricsProperties {
 		public static class Server {
 
 			/**
-			 * Whether or not requests handled by Spring MVC or WebFlux should be
-			 * automatically timed. If the number of time series emitted grows too large
-			 * on account of request mapping timings, disable this and use 'Timed' on a
-			 * per request mapping basis as needed.
+			 * Whether requests handled by Spring MVC or WebFlux should be automatically
+			 * timed. If the number of time series emitted grows too large on account of
+			 * request mapping timings, disable this and use 'Timed' on a per request
+			 * mapping basis as needed.
 			 */
 			private boolean autoTimeRequests = true;
 

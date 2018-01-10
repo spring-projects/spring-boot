@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,7 +69,7 @@ public class DataSourcePropertiesTests {
 	public void determineUrlWithNoEmbeddedSupport() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setBeanClassLoader(
-				new HidePackagesClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
+				new FilteredClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
 		properties.afterPropertiesSet();
 		this.thrown.expect(DataSourceProperties.DataSourceBeanCreationException.class);
 		this.thrown.expectMessage("Cannot determine embedded database url");

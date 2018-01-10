@@ -114,9 +114,23 @@ public abstract class AbstractErrorWebExceptionHandler
 		return this.errorAttributes.getErrorAttributes(request, includeStackTrace);
 	}
 
+	/**
+	 * Extract the original error from the current request.
+	 * @param request the source request
+	 * @return the error
+	 */
+	protected Throwable getError(ServerRequest request) {
+		return this.errorAttributes.getError(request);
+	}
+
+	/**
+	 * Check whether the trace attribute has been set on the given request.
+	 * @param request the source request
+	 * @return {@code true} if the error trace has been requested, {@code false} otherwise
+	 */
 	protected boolean isTraceEnabled(ServerRequest request) {
 		String parameter = request.queryParam("trace").orElse("false");
-		return !"false".equals(parameter.toLowerCase());
+		return !"false".equalsIgnoreCase(parameter);
 	}
 
 	/**
@@ -206,6 +220,9 @@ public abstract class AbstractErrorWebExceptionHandler
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable throwable) {
+		if (exchange.getResponse().isCommitted()) {
+			return Mono.error(throwable);
+		}
 		this.errorAttributes.storeErrorInformation(throwable, exchange);
 		ServerRequest request = ServerRequest.create(exchange, this.messageReaders);
 		return getRoutingFunction(this.errorAttributes).route(request)

@@ -27,6 +27,7 @@
 		<module>spring-boot-starter-data-cassandra</module>
 		<module>spring-boot-starter-data-cassandra-reactive</module>
 		<module>spring-boot-starter-data-couchbase</module>
+		<module>spring-boot-starter-data-couchbase-reactive</module>
 		<module>spring-boot-starter-data-elasticsearch</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-ldap</module>
@@ -34,6 +35,7 @@
 		<module>spring-boot-starter-data-mongodb-reactive</module>
 		<module>spring-boot-starter-data-neo4j</module>
 		<module>spring-boot-starter-data-redis</module>
+		<module>spring-boot-starter-data-redis-reactive</module>
 		<module>spring-boot-starter-data-rest</module>
 		<module>spring-boot-starter-data-solr</module>
 		<module>spring-boot-starter-freemarker</module>
@@ -51,16 +53,12 @@
 		<module>spring-boot-starter-logging</module>
 		<module>spring-boot-starter-log4j2</module>
 		<module>spring-boot-starter-mail</module>
-		<module>spring-boot-starter-mobile</module>
 		<module>spring-boot-starter-mustache</module>
 		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
 		<module>spring-boot-starter-quartz</module>
 		<module>spring-boot-starter-reactor-netty</module>
 		<module>spring-boot-starter-security</module>
-		<module>spring-boot-starter-social-facebook</module>
-		<module>spring-boot-starter-social-twitter</module>
-		<module>spring-boot-starter-social-linkedin</module>
 		<module>spring-boot-starter-test</module>
 		<module>spring-boot-starter-thymeleaf</module>
 		<module>spring-boot-starter-tomcat</module>

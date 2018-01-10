@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
-import org.springframework.boot.test.context.HidePackagesClassLoader;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -237,10 +237,12 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	public void gsonIsPreferredIfJacksonIsNotAvailable() {
 		allOptionsRunner().withClassLoader(
-				new HidePackagesClassLoader(ObjectMapper.class.getPackage().getName()))
+				new FilteredClassLoader(ObjectMapper.class.getPackage().getName()))
 				.run((context) -> {
 					assertConverterBeanExists(context, GsonHttpMessageConverter.class,
 							"gsonHttpMessageConverter");
+					assertConverterBeanRegisteredWithHttpMessageConverters(context,
+							GsonHttpMessageConverter.class);
 					assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
 				});
 	}
@@ -248,9 +250,9 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	public void jsonbIsPreferredIfJacksonAndGsonAreNotAvailable() {
 		allOptionsRunner()
-				.withClassLoader(new HidePackagesClassLoader(
-						ObjectMapper.class.getPackage().getName(),
-						Gson.class.getPackage().getName()))
+				.withClassLoader(
+						new FilteredClassLoader(ObjectMapper.class.getPackage().getName(),
+								Gson.class.getPackage().getName()))
 				.run(assertConverter(JsonbHttpMessageConverter.class,
 						"jsonbHttpMessageConverter"));
 	}

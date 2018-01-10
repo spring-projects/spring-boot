@@ -18,7 +18,6 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,7 +87,7 @@ public class TestJarFile {
 	}
 
 	private void copyToFile(InputStream inputStream, File file)
-			throws FileNotFoundException, IOException {
+			throws IOException {
 		try (OutputStream outputStream = new FileOutputStream(file)) {
 			copy(inputStream, outputStream);
 		}

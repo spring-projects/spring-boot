@@ -19,10 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 import org.junit.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.actuate.health.HealthReactiveWebEndpointExtension;
-import org.springframework.boot.actuate.health.HealthWebEndpointExtension;
-import org.springframework.boot.actuate.health.StatusReactiveWebEndpointExtension;
-import org.springframework.boot.actuate.health.StatusWebEndpointExtension;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
@@ -59,35 +57,27 @@ public class WebEndpointsAutoConfigurationIntegrationTests {
 		servletWebRunner()
 				.run((context) -> context.getBean(WebEndpointTestApplication.class));
 		servletWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(HealthWebEndpointExtension.class));
-	}
-
-	@Test
-	public void statusEndpointWebExtensionIsAutoConfigured() {
-		servletWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(StatusWebEndpointExtension.class));
+				.hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
 	public void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(HealthReactiveWebEndpointExtension.class));
-	}
-
-	@Test
-	public void statusEndpointReactiveWebExtensionIsAutoConfigured() {
-		reactiveWebRunner().run((context) -> assertThat(context)
-				.hasSingleBean(StatusReactiveWebEndpointExtension.class));
+				.hasSingleBean(ReactiveHealthEndpointWebExtension.class));
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {
-		return new WebApplicationContextRunner().withConfiguration(
-				UserConfigurations.of(WebEndpointTestApplication.class));
+		return new WebApplicationContextRunner()
+				.withConfiguration(
+						UserConfigurations.of(WebEndpointTestApplication.class))
+				.withPropertyValues("management.metrics.export.statsd.enabled:false");
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
-		return new ReactiveWebApplicationContextRunner().withConfiguration(
-				UserConfigurations.of(WebEndpointTestApplication.class));
+		return new ReactiveWebApplicationContextRunner()
+				.withConfiguration(
+						UserConfigurations.of(WebEndpointTestApplication.class))
+				.withPropertyValues("management.metrics.export.statsd.enabled:false");
 	}
 
 	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class,

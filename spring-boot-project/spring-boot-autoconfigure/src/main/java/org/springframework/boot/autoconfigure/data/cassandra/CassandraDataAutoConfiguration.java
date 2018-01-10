@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,7 +47,6 @@ import org.springframework.data.cassandra.core.convert.CassandraCustomConversion
 import org.springframework.data.cassandra.core.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Cassandra support.
@@ -92,12 +92,14 @@ public class CassandraDataAutoConfiguration {
 		if (!packages.isEmpty()) {
 			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
 		}
-		if (StringUtils.hasText(this.properties.getKeyspaceName())) {
-			context.setUserTypeResolver(new SimpleUserTypeResolver(this.cluster,
-					this.properties.getKeyspaceName()));
-		}
+		PropertyMapper.get().from(this.properties::getKeyspaceName).whenHasText()
+				.as(this::createSimpleUserTypeResolver).to(context::setUserTypeResolver);
 		context.setCustomConversions(conversions);
 		return context;
+	}
+
+	private SimpleUserTypeResolver createSimpleUserTypeResolver(String keyspaceName) {
+		return new SimpleUserTypeResolver(this.cluster, keyspaceName);
 	}
 
 	@Bean

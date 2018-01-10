@@ -28,7 +28,6 @@ import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -319,7 +318,7 @@ public class HibernateJpaAutoConfigurationTests
 		}
 
 		@Override
-		public int getCurrentStatus() throws SystemException {
+		public int getCurrentStatus() {
 			throw new UnsupportedOperationException();
 		}
 

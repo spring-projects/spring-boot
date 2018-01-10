@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -38,8 +40,11 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,6 +77,9 @@ public class MapBinderTests {
 	private static final Bindable<Map<String, String[]>> STRING_ARRAY_MAP = Bindable
 			.mapOf(String.class, String[].class);
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;
@@ -82,7 +90,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldReturnPopulatedMap() throws Exception {
+	public void bindToMapShouldReturnPopulatedMap() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "1");
 		source.put("foo.[baz]", "2");
@@ -97,7 +105,7 @@ public class MapBinderTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void bindToMapWithEmptyPrefix() throws Exception {
+	public void bindToMapWithEmptyPrefix() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "1");
 		this.sources.add(source);
@@ -106,7 +114,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldConvertMapValue() throws Exception {
+	public void bindToMapShouldConvertMapValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "1");
 		source.put("foo.[baz]", "2");
@@ -121,7 +129,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldBindToMapValue() throws Exception {
+	public void bindToMapShouldBindToMapValue() {
 		ResolvableType type = ResolvableType.forClassWithGenerics(Map.class,
 				ResolvableType.forClass(String.class), STRING_INTEGER_MAP.getType());
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -139,7 +147,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldBindNestedMapValue() throws Exception {
+	public void bindToMapShouldBindNestedMapValue() {
 		ResolvableType nestedType = ResolvableType.forClassWithGenerics(Map.class,
 				ResolvableType.forClass(String.class), STRING_INTEGER_MAP.getType());
 		ResolvableType type = ResolvableType.forClassWithGenerics(Map.class,
@@ -163,7 +171,7 @@ public class MapBinderTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void bindToMapWhenMapValueIsObjectShouldBindNestedMapValue() throws Exception {
+	public void bindToMapWhenMapValueIsObjectShouldBindNestedMapValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.bar.baz", "1");
 		source.put("foo.nested.bar.bin", "2");
@@ -182,8 +190,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWhenMapValueIsObjectAndNoRootShouldBindNestedMapValue()
-			throws Exception {
+	public void bindToMapWhenMapValueIsObjectAndNoRootShouldBindNestedMapValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("commit.id", "abcdefg");
 		source.put("branch", "master");
@@ -198,7 +205,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWhenEmptyRootNameShouldBindMap() throws Exception {
+	public void bindToMapWhenEmptyRootNameShouldBindMap() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("bar.baz", "1");
 		source.put("bar.bin", "2");
@@ -209,7 +216,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWhenMultipleCandidateShouldBindFirst() throws Exception {
+	public void bindToMapWhenMultipleCandidateShouldBindFirst() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("foo.bar", "1");
 		source1.put("foo.baz", "2");
@@ -226,8 +233,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWhenMultipleInSameSourceCandidateShouldBindFirst()
-			throws Exception {
+	public void bindToMapWhenMultipleInSameSourceCandidateShouldBindFirst() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("foo.bar", "1");
 		map.put("foo.b-az", "2");
@@ -245,8 +251,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWhenHasExistingMapShouldReplaceOnlyNewContents()
-			throws Exception {
+	public void bindToMapWhenHasExistingMapShouldReplaceOnlyNewContents() {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "1"));
 		Map<String, Integer> existing = new HashMap<>();
 		existing.put("bar", 1000);
@@ -262,7 +267,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldRespectMapType() throws Exception {
+	public void bindToMapShouldRespectMapType() {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "1"));
 		ResolvableType type = ResolvableType.forClassWithGenerics(HashMap.class,
 				String.class, Integer.class);
@@ -273,7 +278,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWhenNoValueShouldReturnUnbound() throws Exception {
+	public void bindToMapWhenNoValueShouldReturnUnbound() {
 		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
 		BindResult<Map<String, Integer>> result = this.binder.bind("foo",
 				STRING_INTEGER_MAP);
@@ -281,7 +286,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldConvertKey() throws Exception {
+	public void bindToMapShouldConvertKey() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "1");
 		source.put("foo[1]", "2");
@@ -295,7 +300,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldBeGreedyForStrings() throws Exception {
+	public void bindToMapShouldBeGreedyForStrings() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.aaa.bbb.ccc", "b");
 		source.put("foo.bbb.ccc.ddd", "a");
@@ -309,7 +314,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldBeGreedyForScalars() throws Exception {
+	public void bindToMapShouldBeGreedyForScalars() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.aaa.bbb.ccc", "foo-bar");
 		source.put("foo.bbb.ccc.ddd", "BAR_BAZ");
@@ -324,7 +329,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWithPlaceholdersShouldBeGreedyForScalars() throws Exception {
+	public void bindToMapWithPlaceholdersShouldBeGreedyForScalars() {
 		StandardEnvironment environment = new StandardEnvironment();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "foo=boo");
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource(
@@ -338,7 +343,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWithNoPropertiesShouldReturnUnbound() throws Exception {
+	public void bindToMapWithNoPropertiesShouldReturnUnbound() {
 		this.binder = new Binder(this.sources);
 		BindResult<Map<String, ExampleEnum>> result = this.binder.bind("foo",
 				Bindable.mapOf(String.class, ExampleEnum.class));
@@ -346,7 +351,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldTriggerOnSuccess() throws Exception {
+	public void bindToMapShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "1", "line1"));
 		BindHandler handler = mock(BindHandler.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
@@ -360,7 +365,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapStringArrayShouldTriggerOnSuccess() throws Exception {
+	public void bindToMapStringArrayShouldTriggerOnSuccess() {
 		this.sources
 				.add(new MockConfigurationPropertySource("foo.bar", "a,b,c", "line1"));
 		BindHandler handler = mock(BindHandler.class,
@@ -377,7 +382,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapNonScalarCollectionShouldPopulateMap() throws Exception {
+	public void bindToMapNonScalarCollectionShouldPopulateMap() {
 		Bindable<List<JavaBean>> valueType = Bindable.listOf(JavaBean.class);
 		Bindable<Map<String, List<JavaBean>>> target = getMapBindable(String.class,
 				valueType.getType());
@@ -394,7 +399,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToPropertiesShouldBeEquivalentToMapOfStringString() throws Exception {
+	public void bindToPropertiesShouldBeEquivalentToMapOfStringString() {
 		this.sources
 				.add(new MockConfigurationPropertySource("foo.bar.baz", "1", "line1"));
 		Bindable<Properties> target = Bindable.of(Properties.class);
@@ -403,8 +408,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapShouldNotTreatClassWithStringConstructorAsScalar()
-			throws Exception {
+	public void bindToMapShouldNotTreatClassWithStringConstructorAsScalar() {
 		this.sources.add(
 				new MockConfigurationPropertySource("foo.bar.pattern", "1", "line1"));
 		Bindable<Map<String, Foo>> target = Bindable.mapOf(String.class, Foo.class);
@@ -413,7 +417,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapStringArrayWithDotKeysShouldPreserveDot() throws Exception {
+	public void bindToMapStringArrayWithDotKeysShouldPreserveDot() {
 		MockConfigurationPropertySource mockSource = new MockConfigurationPropertySource();
 		mockSource.put("foo.bar.baz[0]", "a");
 		mockSource.put("foo.bar.baz[1]", "b");
@@ -424,8 +428,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapStringArrayWithDotKeysAndCommaSeparatedShouldPreserveDot()
-			throws Exception {
+	public void bindToMapStringArrayWithDotKeysAndCommaSeparatedShouldPreserveDot() {
 		MockConfigurationPropertySource mockSource = new MockConfigurationPropertySource();
 		mockSource.put("foo.bar.baz", "a,b,c");
 		this.sources.add(mockSource);
@@ -434,7 +437,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapStringCollectionWithDotKeysShouldPreserveDot() throws Exception {
+	public void bindToMapStringCollectionWithDotKeysShouldPreserveDot() {
 		Bindable<List<String>> valueType = Bindable.listOf(String.class);
 		Bindable<Map<String, List<String>>> target = getMapBindable(String.class,
 				valueType.getType());
@@ -449,7 +452,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapNonScalarCollectionWithDotKeysShouldBind() throws Exception {
+	public void bindToMapNonScalarCollectionWithDotKeysShouldBind() {
 		Bindable<List<JavaBean>> valueType = Bindable.listOf(JavaBean.class);
 		Bindable<Map<String, List<JavaBean>>> target = getMapBindable(String.class,
 				valueType.getType());
@@ -465,7 +468,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToListOfMaps() throws Exception {
+	public void bindToListOfMaps() {
 		Bindable<List<Integer>> listBindable = Bindable.listOf(Integer.class);
 		Bindable<Map<String, List<Integer>>> mapBindable = getMapBindable(String.class,
 				listBindable.getType());
@@ -481,7 +484,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWithNumberKeyAndCommaSeparated() throws Exception {
+	public void bindToMapWithNumberKeyAndCommaSeparated() {
 		Bindable<List<String>> listBindable = Bindable.listOf(String.class);
 		Bindable<Map<Integer, List<String>>> target = getMapBindable(Integer.class,
 				listBindable.getType());
@@ -495,7 +498,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToMapWithNumberKeyAndIndexed() throws Exception {
+	public void bindToMapWithNumberKeyAndIndexed() {
 		Bindable<List<Integer>> listBindable = Bindable.listOf(Integer.class);
 		Bindable<Map<Integer, List<Integer>>> target = getMapBindable(Integer.class,
 				listBindable.getType());
@@ -508,7 +511,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindingWithSquareBracketMap() throws Exception {
+	public void bindingWithSquareBracketMap() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.[x [B] y]", "[ball]");
 		this.sources.add(source);
@@ -517,7 +520,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void nestedMapsShouldNotBindToNull() throws Exception {
+	public void nestedMapsShouldNotBindToNull() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "one");
 		source.put("foo.foos.foo1.value", "two");
@@ -527,6 +530,28 @@ public class MapBinderTests {
 		assertThat(foo.get().getValue()).isNotNull();
 		assertThat(foo.get().getFoos().get("foo1").getValue()).isEqualTo("two");
 		assertThat(foo.get().getFoos().get("foo2").getValue()).isEqualTo("three");
+	}
+
+	@Test
+	public void bindToMapWithCustomConverter() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new MapConverter());
+		Binder binder = new Binder(this.sources, null, conversionService);
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "a,b");
+		this.sources.add(source);
+		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(map.get("a")).isNotNull();
+		assertThat(map.get("b")).isNotNull();
+	}
+
+	@Test
+	public void bindToMapWithNoConverterForValue() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "a,b");
+		this.sources.add(source);
+		this.thrown.expect(BindException.class);
+		this.binder.bind("foo", STRING_STRING_MAP);
 	}
 
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
@@ -577,6 +602,17 @@ public class MapBinderTests {
 
 		public void setValue(String value) {
 			this.value = value;
+		}
+
+	}
+
+	static class MapConverter implements Converter<String, Map<String, String>> {
+
+		@Override
+		public Map<String, String> convert(String s) {
+			Map<String, String> map = new HashMap<>();
+			StringUtils.commaDelimitedListToSet(s).forEach(k -> map.put(k, ""));
+			return map;
 		}
 
 	}

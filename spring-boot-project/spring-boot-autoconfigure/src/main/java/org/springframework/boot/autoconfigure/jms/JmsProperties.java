@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
+import java.time.Duration;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -29,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JmsProperties {
 
 	/**
-	 * Specify if the default destination type is topic.
+	 * Whether the default destination type is topic.
 	 */
 	private boolean pubSubDomain = false;
 
@@ -136,42 +138,44 @@ public class JmsProperties {
 	public static class Template {
 
 		/**
-		 * Default destination to use on send/receive operations that do not have a
+		 * Default destination to use on send and receive operations that do not have a
 		 * destination parameter.
 		 */
 		private String defaultDestination;
 
 		/**
-		 * Delivery delay to use for send calls in milliseconds.
+		 * Delivery delay to use for send calls.
 		 */
-		private Long deliveryDelay;
+		private Duration deliveryDelay;
 
 		/**
-		 * Delivery mode. Enable QoS when set.
+		 * Delivery mode. Enables QoS (Quality of Service) when set.
 		 */
 		private DeliveryMode deliveryMode;
 
 		/**
-		 * Priority of a message when sending. Enable QoS when set.
+		 * Priority of a message when sending. Enables QoS (Quality of Service) when set.
 		 */
 		private Integer priority;
 
 		/**
-		 * Time-to-live of a message when sending in milliseconds. Enable QoS when set.
+		 * Time-to-live of a message when sending. Enables QoS (Quality of Service) when
+		 * set.
 		 */
-		private Long timeToLive;
+		private Duration timeToLive;
 
 		/**
-		 * Enable explicit QoS when sending a message. When enabled, the delivery mode,
-		 * priority and time-to-live properties will be used when sending a message. QoS
-		 * is automatically enabled when at least one of those settings is customized.
+		 * Whether to enable explicit QoS (Quality of Service) when sending a message.
+		 * When enabled, the delivery mode, priority and time-to-live properties will be
+		 * used when sending a message. QoS is automatically enabled when at least one of
+		 * those settings is customized.
 		 */
 		private Boolean qosEnabled;
 
 		/**
-		 * Timeout to use for receive calls in milliseconds.
+		 * Timeout to use for receive calls.
 		 */
-		private Long receiveTimeout;
+		private Duration receiveTimeout;
 
 		public String getDefaultDestination() {
 			return this.defaultDestination;
@@ -181,11 +185,11 @@ public class JmsProperties {
 			this.defaultDestination = defaultDestination;
 		}
 
-		public Long getDeliveryDelay() {
+		public Duration getDeliveryDelay() {
 			return this.deliveryDelay;
 		}
 
-		public void setDeliveryDelay(Long deliveryDelay) {
+		public void setDeliveryDelay(Duration deliveryDelay) {
 			this.deliveryDelay = deliveryDelay;
 		}
 
@@ -205,11 +209,11 @@ public class JmsProperties {
 			this.priority = priority;
 		}
 
-		public Long getTimeToLive() {
+		public Duration getTimeToLive() {
 			return this.timeToLive;
 		}
 
-		public void setTimeToLive(Long timeToLive) {
+		public void setTimeToLive(Duration timeToLive) {
 			this.timeToLive = timeToLive;
 		}
 
@@ -229,11 +233,11 @@ public class JmsProperties {
 			this.qosEnabled = qosEnabled;
 		}
 
-		public Long getReceiveTimeout() {
+		public Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
-		public void setReceiveTimeout(Long receiveTimeout) {
+		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 

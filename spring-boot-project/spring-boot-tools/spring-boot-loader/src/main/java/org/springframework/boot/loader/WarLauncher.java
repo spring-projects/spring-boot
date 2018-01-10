@@ -37,7 +37,6 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 	private static final String WEB_INF_LIB_PROVIDED = WEB_INF + "lib-provided/";
 
 	public WarLauncher() {
-		super();
 	}
 
 	protected WarLauncher(Archive archive) {

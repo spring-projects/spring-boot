@@ -80,7 +80,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testWebConfiguration() throws Exception {
+	public void testWebConfiguration() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
@@ -92,7 +92,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultFilterOrderWithSecurityAdapter() throws Exception {
+	public void testDefaultFilterOrderWithSecurityAdapter() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(WebSecurity.class, SecurityAutoConfiguration.class,
@@ -105,7 +105,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testFilterIsNotRegisteredInNonWeb() throws Exception {
+	public void testFilterIsNotRegisteredInNonWeb() {
 		try (AnnotationConfigApplicationContext customContext = new AnnotationConfigApplicationContext()) {
 			customContext.register(SecurityAutoConfiguration.class,
 					SecurityFilterAutoConfiguration.class,
@@ -117,7 +117,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultFilterOrder() throws Exception {
+	public void testDefaultFilterOrder() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
@@ -130,7 +130,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testCustomFilterOrder() throws Exception {
+	public void testCustomFilterOrder() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		TestPropertyValues.of("spring.security.filter.order:12345").applyTo(this.context);
 		this.context.setServletContext(new MockServletContext());
@@ -143,20 +143,19 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultUsernamePassword() throws Exception {
+	public void testDefaultUsernamePassword() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class);
 		this.context.refresh();
 		UserDetailsService manager = this.context.getBean(UserDetailsService.class);
 		assertThat(this.outputCapture.toString())
-				.contains("Using default security password:");
+				.contains("Using generated security password:");
 		assertThat(manager.loadUserByUsername("user")).isNotNull();
 	}
 
 	@Test
-	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent()
-			throws Exception {
+	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestAuthenticationManagerConfiguration.class,
@@ -167,13 +166,13 @@ public class SecurityAutoConfigurationTests {
 		assertThat(manager).isEqualTo(this.context.getBean(
 				TestAuthenticationManagerConfiguration.class).authenticationManager);
 		assertThat(this.outputCapture.toString())
-				.doesNotContain("Using default security password: ");
+				.doesNotContain("Using generated security password: ");
 		TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 		assertThat(manager.authenticate(token)).isNotNull();
 	}
 
 	@Test
-	public void defaultUserNotCreatedIfUserDetailsServiceBeanPresent() throws Exception {
+	public void defaultUserNotCreatedIfUserDetailsServiceBeanPresent() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestUserDetailsServiceConfiguration.class,
@@ -188,8 +187,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent()
-			throws Exception {
+	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestAuthenticationProviderConfiguration.class,
@@ -205,7 +203,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaCoexistsHappily() throws Exception {
+	public void testJpaCoexistsHappily() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		TestPropertyValues
@@ -295,7 +293,7 @@ public class SecurityAutoConfigurationTests {
 	protected static class TestUserDetailsServiceConfiguration {
 
 		@Bean
-		public InMemoryUserDetailsManager myUserDetailsService() {
+		public InMemoryUserDetailsManager myUserDetailsManager() {
 			return new InMemoryUserDetailsManager(
 					User.withUsername("foo").password("bar").roles("USER").build());
 		}

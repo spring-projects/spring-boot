@@ -28,14 +28,11 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class PrometheusPropertiesConfigAdapter
-		extends PropertiesConfigAdapter<PrometheusProperties, PrometheusConfig>
-		implements PrometheusConfig {
-
-	private static final PrometheusConfig DEFAULTS = (key) -> null;
+class PrometheusPropertiesConfigAdapter extends
+		PropertiesConfigAdapter<PrometheusProperties> implements PrometheusConfig {
 
 	PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
@@ -45,19 +42,13 @@ class PrometheusPropertiesConfigAdapter
 
 	@Override
 	public boolean descriptions() {
-		return get(PrometheusProperties::getDescriptions, PrometheusConfig::descriptions);
+		return get(PrometheusProperties::getDescriptions,
+				PrometheusConfig.super::descriptions);
 	}
 
 	@Override
-	public Duration timerPercentilesMin() {
-		return get(PrometheusProperties::getTimerPercentilesMin,
-				PrometheusConfig::timerPercentilesMin);
-	}
-
-	@Override
-	public Duration timerPercentilesMax() {
-		return get(PrometheusProperties::getTimerPercentilesMax,
-				PrometheusConfig::timerPercentilesMax);
+	public Duration step() {
+		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
 	}
 
 }

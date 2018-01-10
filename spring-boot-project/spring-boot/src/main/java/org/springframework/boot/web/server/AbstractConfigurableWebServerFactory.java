@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class AbstractConfigurableWebServerFactory
+public abstract class AbstractConfigurableWebServerFactory
 		implements ConfigurableWebServerFactory {
 
 	private int port = 8080;
@@ -49,6 +49,8 @@ public class AbstractConfigurableWebServerFactory
 	private Ssl ssl;
 
 	private SslStoreProvider sslStoreProvider;
+
+	private Http2 http2;
 
 	private Compression compression;
 
@@ -70,7 +72,7 @@ public class AbstractConfigurableWebServerFactory
 	}
 
 	/**
-	 * The port that the web server server listens on.
+	 * The port that the web server listens on.
 	 * @return the port
 	 */
 	public int getPort() {
@@ -132,6 +134,15 @@ public class AbstractConfigurableWebServerFactory
 	@Override
 	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
 		this.sslStoreProvider = sslStoreProvider;
+	}
+
+	public Http2 getHttp2() {
+		return this.http2;
+	}
+
+	@Override
+	public void setHttp2(Http2 http2) {
+		this.http2 = http2;
 	}
 
 	public Compression getCompression() {

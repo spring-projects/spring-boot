@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration.MailSenderCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -77,19 +79,16 @@ public class MailSenderAutoConfiguration {
 	}
 
 	private void applyProperties(JavaMailSenderImpl sender) {
-		sender.setHost(this.properties.getHost());
-		if (this.properties.getPort() != null) {
-			sender.setPort(this.properties.getPort());
-		}
-		sender.setUsername(this.properties.getUsername());
-		sender.setPassword(this.properties.getPassword());
-		sender.setProtocol(this.properties.getProtocol());
-		if (this.properties.getDefaultEncoding() != null) {
-			sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
-		}
-		if (!this.properties.getProperties().isEmpty()) {
-			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
-		}
+		PropertyMapper map = PropertyMapper.get();
+		map.from(this.properties::getHost).to(sender::setHost);
+		map.from(this.properties::getPort).whenNonNull().to(sender::setPort);
+		map.from(this.properties::getUsername).to(sender::setUsername);
+		map.from(this.properties::getPassword).to(sender::setPassword);
+		map.from(this.properties::getProtocol).to(sender::setProtocol);
+		map.from(this.properties::getDefaultEncoding).whenNonNull().as(Charset::name)
+				.to(sender::setDefaultEncoding);
+		map.from(this.properties::getProperties).whenNot(Map::isEmpty)
+				.as(this::asProperties).to(sender::setJavaMailProperties);
 	}
 
 	private Properties asProperties(Map<String, String> source) {

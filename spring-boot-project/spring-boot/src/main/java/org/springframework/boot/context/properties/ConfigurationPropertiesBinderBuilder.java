@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -38,22 +37,22 @@ import org.springframework.validation.Validator;
  * {@link ApplicationContext}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-public class ConfigurationPropertiesBinderBuilder {
+class ConfigurationPropertiesBinderBuilder {
 
 	/**
 	 * The bean name of the configuration properties validator.
 	 */
-	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+	static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME;
 
 	/**
 	 * The bean name of the configuration properties conversion service.
 	 */
-	public static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
+	static final String CONVERSION_SERVICE_BEAN_NAME = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
-			"javax.validation.ValidatorFactory" };
+			"javax.validation.ValidatorFactory",
+			"javax.validation.bootstrap.GenericBootstrap" };
 
 	private final ApplicationContext applicationContext;
 
@@ -67,64 +66,20 @@ public class ConfigurationPropertiesBinderBuilder {
 	 * Creates an instance with the {@link ApplicationContext} to use.
 	 * @param applicationContext the application context
 	 */
-	public ConfigurationPropertiesBinderBuilder(ApplicationContext applicationContext) {
+	ConfigurationPropertiesBinderBuilder(ApplicationContext applicationContext) {
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
 		this.applicationContext = applicationContext;
-	}
-
-	/**
-	 * Specify the {@link ConversionService} to use or {@code null} to use the default.
-	 * <p>
-	 * By default, use a {@link ConversionService} bean named
-	 * {@value #CONVERSION_SERVICE_BEAN_NAME} if any. Otherwise create a
-	 * {@link DefaultConversionService} with any {@link ConfigurationPropertiesBinding}
-	 * qualified {@link Converter} and {@link GenericConverter} beans found in the
-	 * context.
-	 * @param conversionService the conversion service to use or {@code null}
-	 * @return this instance
-	 */
-	public ConfigurationPropertiesBinderBuilder withConversionService(
-			ConversionService conversionService) {
-		this.conversionService = conversionService;
-		return this;
-	}
-
-	/**
-	 * Specify the {@link Validator} to use or {@code null} to use the default.
-	 * <p>
-	 * By default, use a {@link Validator} bean named {@value #VALIDATOR_BEAN_NAME} if
-	 * any. If not, create a JSR 303 Validator if the necessary libraries are available.
-	 * No validation occurs otherwise.
-	 * @param validator the validator to use or {@code null}
-	 * @return this instance
-	 */
-	public ConfigurationPropertiesBinderBuilder withValidator(Validator validator) {
-		this.validator = validator;
-		return this;
 	}
 
 	/**
 	 * Specify the {@link PropertySource property sources} to use.
 	 * @param propertySources the configuration the binder should use
 	 * @return this instance
-	 * @see #withEnvironment(ConfigurableEnvironment)
 	 */
-	public ConfigurationPropertiesBinderBuilder withPropertySources(
+	ConfigurationPropertiesBinderBuilder withPropertySources(
 			Iterable<PropertySource<?>> propertySources) {
 		this.propertySources = propertySources;
 		return this;
-	}
-
-	/**
-	 * Specify the {@link ConfigurableEnvironment Environment} to use, use all available
-	 * {@link PropertySource}.
-	 * @param environment the environment to use
-	 * @return this instance
-	 * @see #withPropertySources(Iterable)
-	 */
-	public ConfigurationPropertiesBinderBuilder withEnvironment(
-			ConfigurableEnvironment environment) {
-		return withPropertySources(environment.getPropertySources());
 	}
 
 	/**
@@ -132,7 +87,7 @@ public class ConfigurationPropertiesBinderBuilder {
 	 * discovering the {@link ConversionService} and {@link Validator} if necessary.
 	 * @return a {@link ConfigurationPropertiesBinder}
 	 */
-	public ConfigurationPropertiesBinder build() {
+	ConfigurationPropertiesBinder build() {
 		return new ConfigurationPropertiesBinder(this.propertySources,
 				determineConversionService(), determineValidator());
 	}
@@ -147,7 +102,7 @@ public class ConfigurationPropertiesBinderBuilder {
 			return defaultValidator;
 		}
 		if (isJsr303Present()) {
-			return new ValidatedLocalValidatorFactoryBean(this.applicationContext);
+			return new Jsr303ConfigurationPropertiesValidator(this.applicationContext);
 		}
 		return null;
 	}

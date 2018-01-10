@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class NamePatternFilterTests {
 
 	@Test
-	public void nonRegex() throws Exception {
+	public void nonRegex() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		assertThat(filter.getResults("not.a.regex")).containsEntry("not.a.regex",
 				"not.a.regex");
@@ -40,7 +40,7 @@ public class NamePatternFilterTests {
 	}
 
 	@Test
-	public void nonRegexThatContainsRegexPart() throws Exception {
+	public void nonRegexThatContainsRegexPart() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		assertThat(filter.getResults("*")).containsEntry("*", "*");
 		assertThat(filter.isGetNamesCalled()).isFalse();

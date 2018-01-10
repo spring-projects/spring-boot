@@ -42,14 +42,14 @@ public class MongoHealthIndicatorAutoConfigurationTests {
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() throws Exception {
+	public void runShouldCreateIndicator() {
 		this.contextRunner.run(
 				(context) -> assertThat(context).hasSingleBean(MongoHealthIndicator.class)
 						.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() throws Exception {
+	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.mongo.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(MongoHealthIndicator.class)

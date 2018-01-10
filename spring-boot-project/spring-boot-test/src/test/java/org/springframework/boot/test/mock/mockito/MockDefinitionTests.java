@@ -44,14 +44,14 @@ public class MockDefinitionTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void classToMockMustNotBeNull() throws Exception {
+	public void classToMockMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TypeToMock must not be null");
 		new MockDefinition(null, null, null, null, false, null, null);
 	}
 
 	@Test
-	public void createWithDefaults() throws Exception {
+	public void createWithDefaults() {
 		MockDefinition definition = new MockDefinition(null, EXAMPLE_SERVICE_TYPE, null,
 				null, false, null, null);
 		assertThat(definition.getName()).isNull();
@@ -64,7 +64,7 @@ public class MockDefinitionTests {
 	}
 
 	@Test
-	public void createExplicit() throws Exception {
+	public void createExplicit() {
 		QualifierDefinition qualifier = mock(QualifierDefinition.class);
 		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
@@ -81,7 +81,7 @@ public class MockDefinitionTests {
 	}
 
 	@Test
-	public void createMock() throws Exception {
+	public void createMock() {
 		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE, null);

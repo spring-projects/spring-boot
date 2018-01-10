@@ -41,40 +41,40 @@ public class ConfigurationPropertyTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenNameIsNullShouldThrowException() throws Exception {
+	public void createWhenNameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Name must not be null");
 		new ConfigurationProperty(null, "bar", null);
 	}
 
 	@Test
-	public void createWhenValueIsNullShouldThrowException() throws Exception {
+	public void createWhenValueIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Value must not be null");
 		new ConfigurationProperty(NAME, null, null);
 	}
 
 	@Test
-	public void getNameShouldReturnName() throws Exception {
+	public void getNameShouldReturnName() {
 		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
 		assertThat((Object) property.getName()).isEqualTo(NAME);
 	}
 
 	@Test
-	public void getValueShouldReturnValue() throws Exception {
+	public void getValueShouldReturnValue() {
 		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
 		assertThat(property.getValue()).isEqualTo("foo");
 	}
 
 	@Test
-	public void getPropertyOriginShouldReturnValuePropertyOrigin() throws Exception {
+	public void getPropertyOriginShouldReturnValuePropertyOrigin() {
 		Origin origin = mock(Origin.class);
 		OriginProvider property = ConfigurationProperty.of(NAME, "foo", origin);
 		assertThat(property.getOrigin()).isEqualTo(origin);
 	}
 
 	@Test
-	public void equalsAndHashCode() throws Exception {
+	public void equalsAndHashCode() {
 		ConfigurationProperty property1 = new ConfigurationProperty(
 				ConfigurationPropertyName.of("foo"), "bar", null);
 		ConfigurationProperty property2 = new ConfigurationProperty(
@@ -89,7 +89,7 @@ public class ConfigurationPropertyTests {
 	}
 
 	@Test
-	public void toStringShouldReturnValue() throws Exception {
+	public void toStringShouldReturnValue() {
 		ConfigurationProperty property = ConfigurationProperty.of(NAME, "foo", null);
 		assertThat(property.toString()).contains("name").contains("value");
 	}

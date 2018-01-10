@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Assume;
 import org.junit.rules.TestRule;
@@ -100,7 +101,7 @@ public class CliTester implements TestRule {
 		return getOutput();
 	}
 
-	private <T extends OptionParsingCommand> Future<T> submitCommand(final T command,
+	private <T extends OptionParsingCommand> Future<T> submitCommand(T command,
 			String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
@@ -165,7 +166,7 @@ public class CliTester implements TestRule {
 	}
 
 	@Override
-	public Statement apply(final Statement base, final Description description) {
+	public Statement apply(Statement base, Description description) {
 		final Statement statement = CliTester.this.outputCapture
 				.apply(new RunLauncherStatement(base), description);
 		return new Statement() {
@@ -192,12 +193,7 @@ public class CliTester implements TestRule {
 			InputStream stream = URI.create("http://localhost:" + port + uri).toURL()
 					.openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			String line;
-			StringBuilder result = new StringBuilder();
-			while ((line = reader.readLine()) != null) {
-				result.append(line);
-			}
-			return result.toString();
+			return reader.lines().collect(Collectors.joining());
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

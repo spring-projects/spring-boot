@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,6 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * Create a new {@link JettyServletWebServerFactory} instance.
 	 */
 	public JettyReactiveWebServerFactory() {
-		super();
 	}
 
 	/**
@@ -97,11 +96,14 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		ServletContextHandler contextHandler = new ServletContextHandler(server, "",
 				false, false);
 		contextHandler.addServlet(servletHolder, "/");
+		JettyReactiveWebServerFactory.logger
+				.info("Server initialized with port: " + port);
+		if (getSsl() != null && getSsl().isEnabled()) {
+			customizeSsl(server, port);
+		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
 		}
-		JettyReactiveWebServerFactory.logger
-				.info("Server initialized with port: " + port);
 		return server;
 	}
 
@@ -117,6 +119,11 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 			}
 		}
 		return connector;
+	}
+
+	private void customizeSsl(Server server, int port) {
+		new SslServerCustomizer(port, getSsl(), getSslStoreProvider(), getHttp2())
+				.customize(server);
 	}
 
 	/**

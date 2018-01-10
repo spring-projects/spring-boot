@@ -55,7 +55,7 @@ public abstract class TestJarCreator {
 	}
 
 	private static void writeNestedEntry(String name, boolean unpackNested,
-			JarOutputStream jarOutputStream) throws Exception, IOException {
+			JarOutputStream jarOutputStream) throws Exception {
 		JarEntry nestedEntry = new JarEntry(name);
 		byte[] nestedJarData = getNestedJarData();
 		nestedEntry.setSize(nestedJarData.length);

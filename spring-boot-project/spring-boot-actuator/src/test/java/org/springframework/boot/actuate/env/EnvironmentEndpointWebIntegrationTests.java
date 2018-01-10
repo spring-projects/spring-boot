@@ -45,57 +45,56 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void home() throws Exception {
-		client.get().uri("/application/env").exchange().expectStatus().isOk().expectBody()
+	public void home() {
+		client.get().uri("/actuator/env").exchange().expectStatus().isOk().expectBody()
 				.jsonPath("propertySources[?(@.name=='systemProperties')]").exists();
 	}
 
 	@Test
-	public void sub() throws Exception {
-		client.get().uri("/application/env/foo").exchange().expectStatus().isOk()
+	public void sub() {
+		client.get().uri("/actuator/env/foo").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("property.source").isEqualTo("test")
 				.jsonPath("property.value").isEqualTo("bar");
 	}
 
 	@Test
-	public void regex() throws Exception {
+	public void regex() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("food", null);
 		EnvironmentEndpointWebIntegrationTests.context.getEnvironment()
 				.getPropertySources().addFirst(new MapPropertySource("null-value", map));
-		client.get().uri("/application/env?pattern=foo.*").exchange().expectStatus()
-				.isOk().expectBody().jsonPath(forProperty("test", "foo")).isEqualTo("bar")
+		client.get().uri("/actuator/env?pattern=foo.*").exchange().expectStatus().isOk()
+				.expectBody().jsonPath(forProperty("test", "foo")).isEqualTo("bar")
 				.jsonPath(forProperty("test", "fool")).isEqualTo("baz");
 	}
 
 	@Test
-	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
-			throws Exception {
+	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
-		client.get().uri("/application/env/my.foo").exchange().expectStatus().isOk()
+		client.get().uri("/actuator/env/my.foo").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("property.value").isEqualTo("${my.bar}")
 				.jsonPath(forPropertyEntry("unresolved-placeholder"))
 				.isEqualTo("${my.bar}");
 	}
 
 	@Test
-	public void nestedPathWithSensitivePlaceholderShouldSanitize() throws Exception {
+	public void nestedPathWithSensitivePlaceholderShouldSanitize() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("placeholder", map));
-		client.get().uri("/application/env/my.foo").exchange().expectStatus().isOk()
+		client.get().uri("/actuator/env/my.foo").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("property.value").isEqualTo("******")
 				.jsonPath(forPropertyEntry("placeholder")).isEqualTo("******");
 	}
 
 	@Test
-	public void nestedPathForUnknownKeyShouldReturn404AndBody() throws Exception {
-		client.get().uri("/application/env/this.does.not.exist").exchange().expectStatus()
+	public void nestedPathForUnknownKeyShouldReturn404AndBody() {
+		client.get().uri("/actuator/env/this.does.not.exist").exchange().expectStatus()
 				.isNotFound().expectBody().jsonPath("property").doesNotExist()
 				.jsonPath("propertySources[?(@.name=='test')]").exists()
 				.jsonPath("propertySources[?(@.name=='systemProperties')]").exists()
@@ -103,13 +102,12 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
-			throws Exception {
+	public void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("unresolved-placeholder", map));
-		client.get().uri("/application/env?pattern=my.*").exchange().expectStatus().isOk()
+		client.get().uri("/actuator/env?pattern=my.*").exchange().expectStatus().isOk()
 				.expectBody()
 				.jsonPath(
 						"propertySources[?(@.name=='unresolved-placeholder')].properties.['my.foo'].value")
@@ -117,14 +115,13 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void nestedPathMatchedByRegexWithSensitivePlaceholderShouldSanitize()
-			throws Exception {
+	public void nestedPathMatchedByRegexWithSensitivePlaceholderShouldSanitize() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("placeholder", map));
-		client.get().uri("/application/env?pattern=my.*").exchange().expectStatus().isOk()
+		client.get().uri("/actuator/env?pattern=my.*").exchange().expectStatus().isOk()
 				.expectBody().jsonPath(forProperty("placeholder", "my.foo"))
 				.isEqualTo("******");
 	}
@@ -147,9 +144,9 @@ public class EnvironmentEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public EnvironmentWebEndpointExtension webEndpointExtension(
+		public EnvironmentEndpointWebExtension environmentEndpointWebExtension(
 				EnvironmentEndpoint endpoint) {
-			return new EnvironmentWebEndpointExtension(endpoint);
+			return new EnvironmentEndpointWebExtension(endpoint);
 		}
 
 	}

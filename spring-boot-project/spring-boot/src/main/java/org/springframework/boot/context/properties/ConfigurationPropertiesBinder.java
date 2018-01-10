@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.springframework.boot.context.properties.bind.validation.ValidationBin
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
@@ -39,10 +38,8 @@ import org.springframework.validation.Validator;
  * {@link PropertySource}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
- * @see ConfigurationPropertiesBinderBuilder
  */
-public class ConfigurationPropertiesBinder {
+class ConfigurationPropertiesBinder {
 
 	private final Iterable<PropertySource<?>> propertySources;
 
@@ -52,6 +49,8 @@ public class ConfigurationPropertiesBinder {
 
 	private Iterable<ConfigurationPropertySource> configurationSources;
 
+	private final Binder binder;
+
 	ConfigurationPropertiesBinder(Iterable<PropertySource<?>> propertySources,
 			ConversionService conversionService, Validator validator) {
 		Assert.notNull(propertySources, "PropertySources must not be null");
@@ -59,20 +58,10 @@ public class ConfigurationPropertiesBinder {
 		this.conversionService = conversionService;
 		this.validator = validator;
 		this.configurationSources = ConfigurationPropertySources.from(propertySources);
-	}
+		this.binder = new Binder(this.configurationSources,
+				new PropertySourcesPlaceholdersResolver(this.propertySources),
+				this.conversionService);
 
-	/**
-	 * Bind the specified {@code target} object if it is annotated with
-	 * {@link ConfigurationProperties}, otherwise ignore it.
-	 * @param target the target to bind the configuration property sources to
-	 * @throws ConfigurationPropertiesBindingException if the binding failed
-	 */
-	public void bind(Object target) {
-		ConfigurationProperties annotation = AnnotationUtils
-				.findAnnotation(target.getClass(), ConfigurationProperties.class);
-		if (annotation != null) {
-			bind(target, annotation);
-		}
 	}
 
 	/**
@@ -83,18 +72,17 @@ public class ConfigurationPropertiesBinder {
 	 * @throws ConfigurationPropertiesBindingException if the binding failed
 	 */
 	void bind(Object target, ConfigurationProperties annotation) {
-		Binder binder = new Binder(this.configurationSources,
-				new PropertySourcesPlaceholdersResolver(this.propertySources),
-				this.conversionService);
 		Validator validator = determineValidator(target);
 		BindHandler handler = getBindHandler(annotation, validator);
 		Bindable<?> bindable = Bindable.ofInstance(target);
 		try {
-			binder.bind(annotation.prefix(), bindable, handler);
+			this.binder.bind(annotation.prefix(), bindable, handler);
 		}
 		catch (Exception ex) {
-			throw new ConfigurationPropertiesBindingException(target.getClass(),
-					getAnnotationDetails(annotation), ex);
+			String message = "Could not bind properties to '"
+					+ ClassUtils.getShortName(target.getClass()) + "': "
+					+ getAnnotationDetails(annotation);
+			throw new ConfigurationPropertiesBindingException(message, ex);
 		}
 	}
 

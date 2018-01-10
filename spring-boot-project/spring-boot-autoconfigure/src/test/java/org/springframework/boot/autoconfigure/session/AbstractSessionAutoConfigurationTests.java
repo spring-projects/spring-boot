@@ -21,11 +21,13 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.web.http.SessionRepositoryFilter;
+import org.springframework.web.server.session.WebSessionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Share test utilities for {@link SessionAutoConfiguration} tests.
+ * Shared test utilities for {@link SessionAutoConfiguration} tests.
  *
  * @author Stephane Nicoll
  */
@@ -33,6 +35,7 @@ public abstract class AbstractSessionAutoConfigurationTests {
 
 	protected <T extends SessionRepository<?>> T validateSessionRepository(
 			AssertableWebApplicationContext context, Class<T> type) {
+		assertThat(context).hasSingleBean(SessionRepositoryFilter.class);
 		assertThat(context).hasSingleBean(SessionRepository.class);
 		SessionRepository<?> repository = context.getBean(SessionRepository.class);
 		assertThat(repository).as("Wrong session repository type").isInstanceOf(type);
@@ -46,6 +49,7 @@ public abstract class AbstractSessionAutoConfigurationTests {
 
 	protected <T extends ReactiveSessionRepository<?>> T validateSessionRepository(
 			AssertableReactiveWebApplicationContext context, Class<T> type) {
+		assertThat(context).hasSingleBean(WebSessionManager.class);
 		assertThat(context).hasSingleBean(ReactiveSessionRepository.class);
 		ReactiveSessionRepository<?> repository = context
 				.getBean(ReactiveSessionRepository.class);

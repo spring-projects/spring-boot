@@ -99,46 +99,29 @@ checkstyle until you are ready to submit a pull request:
 
 
 ==== Full Build
-Multi-module Maven builds cannot directly include maven plugins that are part of the
-reactor unless they have previously been built. Unfortunately this restriction causes
-some compilations for Spring Boot as we include a maven plugin and use it within the
-samples. The standard build works around this restriction by launching the samples via
-the `maven-invoker-plugin` so that they are not part of the reactor. This works fine
-most of the time, however, sometimes it's useful to run a build that includes all modules
-(for example when using `maven-versions-plugin`). We use the full build on our CI servers
-and during the release process.
-
-Running a full build is a two phase process.
-
-1) Prepare the build
-
-Preparing the build will compile and install the `spring-boot-maven-plugin` so that it
-can be referenced during the full build. It also generates a `settings.xml` file that
-enables a `snapshot`, `milestone` or `release` profiles based on the version being
-built. To prepare the build, from the root directory use:
+You can run a full build using the following command:
 
 [indent=0]
 ----
-	$ ./mvnw -P snapshot,prepare install -DskipTests
-----
-
-NOTE: You may notice that preparing the build also changes the
-`spring-boot-starter-parent` POM. This is required for our release process to work
-correctly.
-
-2) Run the full build
-
-Once the build has been prepared, you can run a full build using the following commands:
-
-[indent=0]
-----
-	$ ./mvnw -s ./settings.xml -f spring-boot-full-build -P full clean install
+	$ ./mvnw -Pfull clean install
 ----
 
 NOTE: As for the standard build, you may need to increase the amount of memory available
-to Maven by setting a `MAVEN_OPTS` environment variable with the value
-`-Xmx512m`. We generate more artifacts when running the full build
-(such as Javadoc jars), so you may find the process a little slower than the standard build.
+to Maven by setting a `MAVEN_OPTS` environment variable with the value `-Xmx512m`. We
+generate more artifacts when running the full build (such as Javadoc jars), so you may
+find the process a little slower than the standard build.
+
+[TIP]
+====
+If you want to run a build without the samples and integration tests, building the
+`spring-boot-project` module is enough. You can cd there and run the same command, or you
+can run this from the top-level directory:
+
+[indent=0]
+----
+	$ ./mvnw -f spring-boot-project -Pfull clean install
+----
+====
 
 
 

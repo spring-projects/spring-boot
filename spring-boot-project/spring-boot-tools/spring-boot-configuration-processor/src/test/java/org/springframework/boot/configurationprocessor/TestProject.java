@@ -17,14 +17,12 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -194,7 +192,7 @@ public class TestProject {
 	}
 
 	private static void putContents(File targetFile, String contents)
-			throws FileNotFoundException, IOException, UnsupportedEncodingException {
+			throws IOException {
 		FileCopyUtils.copy(new StringReader(contents), new FileWriter(targetFile));
 	}
 

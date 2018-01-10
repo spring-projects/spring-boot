@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,35 +18,20 @@ package sample.undertow.web;
 
 import java.util.concurrent.Callable;
 
-import sample.undertow.service.HelloWorldService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SampleController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
-
 	@GetMapping("/")
 	public String helloWorld() {
-		return this.helloWorldService.getHelloMessage();
+		return "Hello World";
 	}
 
 	@GetMapping("/async")
 	public Callable<String> helloWorldAsync() {
-		return new Callable<String>() {
-
-			@Override
-			public String call() throws Exception {
-				return "async: "
-						+ SampleController.this.helloWorldService.getHelloMessage();
-			}
-
-		};
-
+		return () -> "async: Hello World";
 	}
 
 }

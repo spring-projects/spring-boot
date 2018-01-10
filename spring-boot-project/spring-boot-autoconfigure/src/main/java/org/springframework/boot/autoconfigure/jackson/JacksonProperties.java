@@ -42,14 +42,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JacksonProperties {
 
 	/**
-	 * Date format string (yyyy-MM-dd HH:mm:ss), or a fully-qualified date format class
-	 * name.
+	 * Date format string or a fully-qualified date format class name. For instance,
+	 * `yyyy-MM-dd HH:mm:ss`.
 	 */
 	private String dateFormat;
 
 	/**
-	 * Joda date time format string (yyyy-MM-dd HH:mm:ss). If not configured,
-	 * "date-format" will be used as a fallback if it is configured with a format string.
+	 * Joda date time format string. If not configured, "date-format" is used as a
+	 * fallback if it is configured with a format string.
 	 */
 	private String jodaDateTimeFormat;
 
@@ -92,8 +92,8 @@ public class JacksonProperties {
 	private JsonInclude.Include defaultPropertyInclusion;
 
 	/**
-	 * Time zone used when formatting dates. Configured using any recognized time zone
-	 * identifier, for example "America/Los_Angeles" or "GMT+10".
+	 * Time zone used when formatting dates. For instance, "America/Los_Angeles" or
+	 * "GMT+10".
 	 */
 	private TimeZone timeZone = null;
 

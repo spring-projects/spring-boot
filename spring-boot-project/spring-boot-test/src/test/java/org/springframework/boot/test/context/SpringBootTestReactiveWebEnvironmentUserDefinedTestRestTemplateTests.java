@@ -44,7 +44,7 @@ public class SpringBootTestReactiveWebEnvironmentUserDefinedTestRestTemplateTest
 		extends AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 
 	@Test
-	public void restTemplateIsUserDefined() throws Exception {
+	public void restTemplateIsUserDefined() {
 		assertThat(getContext().getBean("testRestTemplate"))
 				.isInstanceOf(RestTemplate.class);
 	}

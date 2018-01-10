@@ -44,7 +44,7 @@ public class UserDocumentationTests {
 	private RequestSpecification documentationSpec;
 
 	@Test
-	public void listUsers() throws Exception {
+	public void listUsers() {
 		given(this.documentationSpec).filter(document("list-users")).when()
 				.port(this.port).get("/").then().assertThat().statusCode(is(200));
 	}

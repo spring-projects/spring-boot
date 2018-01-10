@@ -43,7 +43,7 @@ public class MockRestarter implements TestRule {
 	private Restarter mock = mock(Restarter.class);
 
 	@Override
-	public Statement apply(final Statement base, Description description) {
+	public Statement apply(Statement base, Description description) {
 		return new Statement() {
 
 			@Override

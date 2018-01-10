@@ -52,7 +52,7 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.metrics.use-global-registry=false")
+						"management.metrics.use-global-registry=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -67,8 +67,8 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.metrics.jdbc.datasource-metric-name=custom.name",
-						"spring.metrics.use-global-registry=false")
+						"management.metrics.jdbc.datasource-metric-name=custom.name",
+						"management.metrics.use-global-registry=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -83,12 +83,12 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.metrics.jdbc.instrument-datasource=false",
-						"spring.metrics.use-global-registry=false")
+						"management.metrics.jdbc.instrument-datasource=false",
+						"management.metrics.use-global-registry=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("custom.name.max.connections")
+					assertThat(registry.find("data.source.max.connections")
 							.tags("name", "dataSource").meter()).isNotPresent();
 				});
 	}
@@ -157,7 +157,7 @@ public class MetricsAutoConfigurationTests {
 		}
 
 		private DataSource createDataSource() {
-			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID().toString();
+			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
 			return DataSourceBuilder.create().url(url).build();
 		}
 

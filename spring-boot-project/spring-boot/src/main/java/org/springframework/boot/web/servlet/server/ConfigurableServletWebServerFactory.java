@@ -18,10 +18,10 @@ package org.springframework.boot.web.servlet.server;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
@@ -59,19 +59,11 @@ public interface ConfigurableServletWebServerFactory
 	void setDisplayName(String displayName);
 
 	/**
-	 * The session timeout in seconds (default 30 minutes). If 0 or negative then sessions
+	 * The session timeout in seconds (default 30 minutes). If {@code null} then sessions
 	 * never expire.
 	 * @param sessionTimeout the session timeout
 	 */
-	void setSessionTimeout(int sessionTimeout);
-
-	/**
-	 * The session timeout in the specified {@link TimeUnit} (default 30 minutes). If 0 or
-	 * negative then sessions never expire.
-	 * @param sessionTimeout the session timeout
-	 * @param timeUnit the time unit
-	 */
-	void setSessionTimeout(int sessionTimeout, TimeUnit timeUnit);
+	void setSessionTimeout(Duration sessionTimeout);
 
 	/**
 	 * Sets if session data should be persisted between restarts.

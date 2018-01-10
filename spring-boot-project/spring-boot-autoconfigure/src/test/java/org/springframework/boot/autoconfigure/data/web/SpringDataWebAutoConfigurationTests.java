@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,15 +78,50 @@ public class SpringDataWebAutoConfigurationTests {
 	public void customizePageable() {
 		load("spring.data.web.pageable.page-parameter=p",
 				"spring.data.web.pageable.size-parameter=s",
-				"spring.data.web.pageable.default-page-size=10");
+				"spring.data.web.pageable.default-page-size=10",
+				"spring.data.web.pageable.prefix=abc",
+				"spring.data.web.pageable.qualifier-delimiter=__",
+				"spring.data.web.pageable.max-page-size=100",
+				"spring.data.web.pageable.one-indexed-parameters=true");
 		PageableHandlerMethodArgumentResolver argumentResolver = this.context
 				.getBean(PageableHandlerMethodArgumentResolver.class);
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "pageParameterName"))
 				.isEqualTo("p");
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "sizeParameterName"))
 				.isEqualTo("s");
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "oneIndexedParameters"))
+				.isEqualTo(true);
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "prefix"))
+				.isEqualTo("abc");
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "qualifierDelimiter"))
+				.isEqualTo("__");
 		assertThat(ReflectionTestUtils.getField(argumentResolver, "fallbackPageable"))
 				.isEqualTo(PageRequest.of(0, 10));
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "maxPageSize"))
+				.isEqualTo(100);
+	}
+
+	@Test
+	public void defaultPageable() {
+		load();
+		PageableHandlerMethodArgumentResolver argumentResolver = this.context
+				.getBean(PageableHandlerMethodArgumentResolver.class);
+		SpringDataWebProperties.Pageable properties = new SpringDataWebProperties()
+				.getPageable();
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "pageParameterName"))
+				.isEqualTo(properties.getPageParameter());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "sizeParameterName"))
+				.isEqualTo(properties.getSizeParameter());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "oneIndexedParameters"))
+				.isEqualTo(properties.isOneIndexedParameters());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "prefix"))
+				.isEqualTo(properties.getPrefix());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "qualifierDelimiter"))
+				.isEqualTo(properties.getQualifierDelimiter());
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "fallbackPageable"))
+				.isEqualTo(PageRequest.of(0, properties.getDefaultPageSize()));
+		assertThat(ReflectionTestUtils.getField(argumentResolver, "maxPageSize"))
+				.isEqualTo(properties.getMaxPageSize());
 	}
 
 	@Test

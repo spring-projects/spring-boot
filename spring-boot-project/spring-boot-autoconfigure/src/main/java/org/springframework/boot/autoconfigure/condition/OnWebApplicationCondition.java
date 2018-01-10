@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -114,6 +115,10 @@ class OnWebApplicationCondition extends SpringBootCondition {
 
 	private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
+		if (context.getEnvironment() instanceof ConfigurableReactiveWebEnvironment) {
+			return ConditionOutcome
+					.match(message.foundExactly("ConfigurableReactiveWebEnvironment"));
+		}
 		if (context.getResourceLoader() instanceof ReactiveWebApplicationContext) {
 			return ConditionOutcome
 					.match(message.foundExactly("ReactiveWebApplicationContext"));

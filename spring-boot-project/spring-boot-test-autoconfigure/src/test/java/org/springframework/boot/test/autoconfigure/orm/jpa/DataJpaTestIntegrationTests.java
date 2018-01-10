@@ -65,7 +65,7 @@ public class DataJpaTestIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testEntityManager() throws Exception {
+	public void testEntityManager() {
 		ExampleEntity entity = this.entities.persist(new ExampleEntity("spring", "123"));
 		this.entities.flush();
 		Object id = this.entities.getId(entity);
@@ -74,7 +74,7 @@ public class DataJpaTestIntegrationTests {
 	}
 
 	@Test
-	public void testEntityManagerPersistAndGetId() throws Exception {
+	public void testEntityManagerPersistAndGetId() {
 		Long id = this.entities.persistAndGetId(new ExampleEntity("spring", "123"),
 				Long.class);
 		assertThat(id).isNotNull();
@@ -85,7 +85,7 @@ public class DataJpaTestIntegrationTests {
 	}
 
 	@Test
-	public void testRepository() throws Exception {
+	public void testRepository() {
 		this.entities.persist(new ExampleEntity("spring", "123"));
 		this.entities.persist(new ExampleEntity("boot", "124"));
 		this.entities.flush();
@@ -101,7 +101,7 @@ public class DataJpaTestIntegrationTests {
 	}
 
 	@Test
-	public void didNotInjectExampleComponent() throws Exception {
+	public void didNotInjectExampleComponent() {
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.applicationContext.getBean(ExampleComponent.class);
 	}

@@ -63,6 +63,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Kristine Jetzke
  */
 public class TestRestTemplateTests {
 
@@ -82,6 +83,29 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
+	public void getRootUriRootUriSetViaRestTemplateBuilder() {
+		String rootUri = "http://example.com";
+		RestTemplate delegate = new RestTemplateBuilder().rootUri(rootUri).build();
+		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo(rootUri);
+	}
+
+	@Test
+	public void getRootUriRootUriSetViaLocalHostUriTemplateHandler() {
+		String rootUri = "http://example.com";
+		TestRestTemplate template = new TestRestTemplate();
+		LocalHostUriTemplateHandler templateHandler = mock(
+				LocalHostUriTemplateHandler.class);
+		given(templateHandler.getRootUri()).willReturn(rootUri);
+		template.setUriTemplateHandler(templateHandler);
+		assertThat(template.getRootUri()).isEqualTo(rootUri);
+	}
+
+	@Test
+	public void getRootUriRootUriNotSet() {
+		assertThat(new TestRestTemplate().getRootUri()).isEqualTo("");
+	}
+
+	@Test
 	public void authenticated() {
 		assertThat(new TestRestTemplate("user", "password").getRestTemplate()
 				.getRequestFactory())
@@ -89,7 +113,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void options() throws Exception {
+	public void options() {
 		TestRestTemplate template = new TestRestTemplate(
 				HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
@@ -99,7 +123,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void restOperationsAreAvailable() throws Exception {
+	public void restOperationsAreAvailable() {
 		RestTemplate delegate = mock(RestTemplate.class);
 		given(delegate.getUriTemplateHandler())
 				.willReturn(new DefaultUriBuilderFactory());
@@ -108,7 +132,7 @@ public class TestRestTemplateTests {
 
 			@Override
 			public void doWith(Method method)
-					throws IllegalArgumentException, IllegalAccessException {
+					throws IllegalArgumentException {
 				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class,
 						method.getName(), method.getParameterTypes());
 				assertThat(equivalent).as("Method %s not found", method).isNotNull();
@@ -199,7 +223,7 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
-	public void withBasicAuthDoesNotResetErrorHandler() throws Exception {
+	public void withBasicAuthDoesNotResetErrorHandler() {
 		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		originalTemplate.getRestTemplate().setErrorHandler(errorHandler);

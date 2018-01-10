@@ -37,8 +37,9 @@ import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @since 1.5.10
  */
-class JooqExceptionTranslator extends DefaultExecuteListener {
+public class JooqExceptionTranslator extends DefaultExecuteListener {
 
 	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
 

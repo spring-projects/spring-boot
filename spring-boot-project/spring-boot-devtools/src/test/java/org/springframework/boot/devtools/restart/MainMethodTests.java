@@ -47,7 +47,7 @@ public class MainMethodTests {
 	}
 
 	@Test
-	public void threadMustNotBeNull() throws Exception {
+	public void threadMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Thread must not be null");
 		new MainMethod(null);

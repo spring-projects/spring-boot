@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogExportConfiguration;
@@ -50,6 +51,7 @@ import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMet
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -75,19 +77,23 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @EnableConfigurationProperties(MetricsProperties.class)
 @Import({ MeterBindersConfiguration.class, WebMvcMetricsConfiguration.class,
 		WebFluxMetricsConfiguration.class, RestTemplateMetricsConfiguration.class,
-		DataSourcePoolMetricsConfiguration.class, AtlasExportConfiguration.class,
-		DatadogExportConfiguration.class, GangliaExportConfiguration.class,
-		GraphiteExportConfiguration.class, InfluxExportConfiguration.class,
-		JmxExportConfiguration.class, PrometheusExportConfiguration.class,
-		SimpleExportConfiguration.class, StatsdExportConfiguration.class })
-@AutoConfigureAfter({DataSourceAutoConfiguration.class, RabbitAutoConfiguration.class})
+		CacheMetricsConfiguration.class, DataSourcePoolMetricsConfiguration.class,
+		AtlasExportConfiguration.class, DatadogExportConfiguration.class,
+		GangliaExportConfiguration.class, GraphiteExportConfiguration.class,
+		InfluxExportConfiguration.class, JmxExportConfiguration.class,
+		PrometheusExportConfiguration.class, SimpleExportConfiguration.class,
+		StatsdExportConfiguration.class })
+@AutoConfigureAfter({ CacheAutoConfiguration.class, DataSourceAutoConfiguration.class, RabbitAutoConfiguration.class })
 public class MetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MeterRegistry.class)
 	public CompositeMeterRegistry compositeMeterRegistry(
-			ObjectProvider<Collection<MetricsExporter>> exporters) {
+			ObjectProvider<Collection<MetricsExporter>> exporters,
+			ObjectProvider<Collection<MeterRegistryConfigurer>> configurers) {
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		configurers.getIfAvailable(Collections::emptyList)
+				.forEach((configurer) -> configurer.configureRegistry(composite));
 		exporters.getIfAvailable(Collections::emptyList).stream()
 				.map(MetricsExporter::registry).forEach(composite::add);
 		return composite;
@@ -139,11 +145,8 @@ public class MetricsAutoConfiguration {
 	static class MeterRegistryConfigurationSupport {
 
 		MeterRegistryConfigurationSupport(MeterRegistry registry,
-				ObjectProvider<Collection<MeterRegistryConfigurer>> configurers,
 				MetricsProperties config,
 				ObjectProvider<Collection<MeterBinder>> binders) {
-			configurers.getIfAvailable(Collections::emptyList)
-					.forEach((configurer) -> configurer.configureRegistry(registry));
 			binders.getIfAvailable(Collections::emptyList)
 					.forEach((binder) -> binder.bindTo(registry));
 			if (config.isUseGlobalRegistry()) {

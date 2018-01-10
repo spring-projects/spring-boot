@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.convert;
 
-import org.springframework.boot.actuate.endpoint.ParameterMapper;
-import org.springframework.boot.actuate.endpoint.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;

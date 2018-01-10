@@ -41,28 +41,28 @@ public class CompleteTwoDataSourcesExample {
 		// tag::configuration[]
 		@Bean
 		@Primary
-		@ConfigurationProperties("app.datasource.foo")
-		public DataSourceProperties fooDataSourceProperties() {
+		@ConfigurationProperties("app.datasource.first")
+		public DataSourceProperties firstDataSourceProperties() {
 			return new DataSourceProperties();
 		}
 
 		@Bean
 		@Primary
-		@ConfigurationProperties("app.datasource.foo")
-		public DataSource fooDataSource() {
-			return fooDataSourceProperties().initializeDataSourceBuilder().build();
+		@ConfigurationProperties("app.datasource.first")
+		public DataSource firstDataSource() {
+			return firstDataSourceProperties().initializeDataSourceBuilder().build();
 		}
 
 		@Bean
-		@ConfigurationProperties("app.datasource.bar")
-		public DataSourceProperties barDataSourceProperties() {
+		@ConfigurationProperties("app.datasource.second")
+		public DataSourceProperties secondDataSourceProperties() {
 			return new DataSourceProperties();
 		}
 
 		@Bean
-		@ConfigurationProperties("app.datasource.bar")
-		public DataSource barDataSource() {
-			return barDataSourceProperties().initializeDataSourceBuilder().build();
+		@ConfigurationProperties("app.datasource.second")
+		public DataSource secondDataSource() {
+			return secondDataSourceProperties().initializeDataSourceBuilder().build();
 		}
 		// end::configuration[]
 

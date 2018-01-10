@@ -50,7 +50,7 @@ public class PackagePrivateBeanBindingTests {
 	}
 
 	@Test
-	public void bindToPackagePrivateClassShouldBindToInstance() throws Exception {
+	public void bindToPackagePrivateClassShouldBindToInstance() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "999");
 		this.sources.add(source);

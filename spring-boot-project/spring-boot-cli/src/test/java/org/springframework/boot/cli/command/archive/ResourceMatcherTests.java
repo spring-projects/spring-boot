@@ -50,7 +50,7 @@ public class ResourceMatcherTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void defaults() throws Exception {
+	public void defaults() {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""),
 				Arrays.asList(""));
 		Collection<String> includes = (Collection<String>) ReflectionTestUtils
@@ -79,7 +79,7 @@ public class ResourceMatcherTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void includedDeltas() throws Exception {
+	public void includedDeltas() {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**"),
 				Arrays.asList(""));
 		Collection<String> includes = (Collection<String>) ReflectionTestUtils
@@ -90,7 +90,7 @@ public class ResourceMatcherTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void includedDeltasAndNewEntries() throws Exception {
+	public void includedDeltasAndNewEntries() {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(
 				Arrays.asList("-static/**", "foo.jar"), Arrays.asList("-**/*.jar"));
 		Collection<String> includes = (Collection<String>) ReflectionTestUtils
@@ -105,7 +105,7 @@ public class ResourceMatcherTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void excludedDeltas() throws Exception {
+	public void excludedDeltas() {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""),
 				Arrays.asList("-**/*.jar"));
 		Collection<String> excludes = (Collection<String>) ReflectionTestUtils

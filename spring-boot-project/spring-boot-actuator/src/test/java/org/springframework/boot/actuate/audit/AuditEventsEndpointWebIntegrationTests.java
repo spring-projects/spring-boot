@@ -42,24 +42,24 @@ public class AuditEventsEndpointWebIntegrationTests {
 	private static WebTestClient client;
 
 	@Test
-	public void eventsWithoutParams() throws Exception {
-		client.get().uri((builder) -> builder.path("/application/auditevents").build())
+	public void eventsWithoutParams() {
+		client.get().uri((builder) -> builder.path("/actuator/auditevents").build())
 				.exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
-	public void eventsWithDateAfter() throws Exception {
+	public void eventsWithDateAfter() {
 		client.get()
-				.uri((builder) -> builder.path("/application/auditevents")
+				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T13:00:00%2B00:00").build())
 				.exchange().expectStatus().isOk().expectBody().jsonPath("events")
 				.isEmpty();
 	}
 
 	@Test
-	public void eventsWithPrincipalAndDateAfter() throws Exception {
+	public void eventsWithPrincipalAndDateAfter() {
 		client.get()
-				.uri((builder) -> builder.path("/application/auditevents")
+				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T10:00:00%2B00:00")
 						.queryParam("principal", "user").build())
 				.exchange().expectStatus().isOk().expectBody()
@@ -68,9 +68,9 @@ public class AuditEventsEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void eventsWithPrincipalDateAfterAndType() throws Exception {
+	public void eventsWithPrincipalDateAfterAndType() {
 		client.get()
-				.uri((builder) -> builder.path("/application/auditevents")
+				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T10:00:00%2B00:00")
 						.queryParam("principal", "admin").queryParam("type", "logout")
 						.build())
@@ -99,9 +99,9 @@ public class AuditEventsEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public AuditEventsWebEndpointExtension auditEventsWebEndpointExtension(
+		public AuditEventsEndpointWebExtension auditEventsEndpointWebExtension(
 				AuditEventsEndpoint auditEventsEndpoint) {
-			return new AuditEventsWebEndpointExtension(auditEventsEndpoint);
+			return new AuditEventsEndpointWebExtension(auditEventsEndpoint);
 		}
 
 		private AuditEvent createEvent(String instant, String principal, String type) {

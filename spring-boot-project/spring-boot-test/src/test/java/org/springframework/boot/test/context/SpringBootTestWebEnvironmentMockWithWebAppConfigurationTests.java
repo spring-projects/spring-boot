@@ -50,7 +50,7 @@ public class SpringBootTestWebEnvironmentMockWithWebAppConfigurationTests {
 	private ServletContext servletContext;
 
 	@Test
-	public void resourcePath() throws Exception {
+	public void resourcePath() {
 		assertThat(ReflectionTestUtils.getField(this.servletContext, "resourceBasePath"))
 				.isEqualTo("src/mymain/mywebapp");
 	}

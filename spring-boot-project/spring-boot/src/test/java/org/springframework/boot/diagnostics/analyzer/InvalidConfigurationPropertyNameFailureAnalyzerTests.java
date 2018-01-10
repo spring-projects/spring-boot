@@ -37,8 +37,7 @@ public class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 	private InvalidConfigurationPropertyNameFailureAnalyzer analyzer = new InvalidConfigurationPropertyNameFailureAnalyzer();
 
 	@Test
-	public void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName()
-			throws Exception {
+	public void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName() {
 		BeanCreationException failure = createFailure(InvalidPrefixConfiguration.class);
 		FailureAnalysis analysis = this.analyzer.analyze(failure);
 		assertThat(analysis.getDescription()).contains(String.format(

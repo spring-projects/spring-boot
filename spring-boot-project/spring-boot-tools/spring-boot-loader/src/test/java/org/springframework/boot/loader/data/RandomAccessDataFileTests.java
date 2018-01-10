@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,31 +94,35 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void fileNotNull() throws Exception {
+	public void fileNotNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("File must not be null");
 		new RandomAccessDataFile(null);
 	}
 
 	@Test
-	public void fileExists() throws Exception {
+	public void fileExists() {
+		File file = new File("/does/not/exist");
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must exist");
-		new RandomAccessDataFile(new File("/does/not/exist"));
+		this.thrown.expectMessage(String.format("File %s must exist",
+				file.getAbsolutePath()));
+		new RandomAccessDataFile(file);
 	}
 
 	@Test
-	public void fileNotNullWithConcurrentReads() throws Exception {
+	public void fileNotNullWithConcurrentReads() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("File must not be null");
 		new RandomAccessDataFile(null, 1);
 	}
 
 	@Test
-	public void fileExistsWithConcurrentReads() throws Exception {
+	public void fileExistsWithConcurrentReads() {
+		File file = new File("/does/not/exist");
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must exist");
-		new RandomAccessDataFile(new File("/does/not/exist"), 1);
+		this.thrown.expectMessage(String.format("File %s must exist",
+				file.getAbsolutePath()));
+		new RandomAccessDataFile(file, 1);
 	}
 
 	@Test
@@ -206,13 +210,13 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void subsectionNegativeOffset() throws Exception {
+	public void subsectionNegativeOffset() {
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		this.file.getSubsection(-1, 1);
 	}
 
 	@Test
-	public void subsectionNegativeLength() throws Exception {
+	public void subsectionNegativeLength() {
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		this.file.getSubsection(0, -1);
 	}
@@ -225,14 +229,14 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void subsectionTooBig() throws Exception {
+	public void subsectionTooBig() {
 		this.file.getSubsection(0, 256);
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		this.file.getSubsection(0, 257);
 	}
 
 	@Test
-	public void subsectionTooBigWithOffset() throws Exception {
+	public void subsectionTooBigWithOffset() {
 		this.file.getSubsection(1, 255);
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		this.file.getSubsection(1, 256);
@@ -278,7 +282,7 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void getFile() throws Exception {
+	public void getFile() {
 		assertThat(this.file.getFile()).isEqualTo(this.tempFile);
 	}
 
@@ -310,7 +314,7 @@ public class RandomAccessDataFileTests {
 		Field filesField = filePool.getClass().getDeclaredField("files");
 		filesField.setAccessible(true);
 		Queue<?> queue = (Queue<?>) filesField.get(filePool);
-		assertThat(queue.size()).isEqualTo(0);
+		assertThat(queue).isEmpty();
 	}
 
 	@Test

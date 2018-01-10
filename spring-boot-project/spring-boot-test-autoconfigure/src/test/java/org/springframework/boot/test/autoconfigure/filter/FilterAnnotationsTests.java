@@ -129,7 +129,7 @@ public class FilterAnnotationsTests {
 
 		@Override
 		public boolean match(MetadataReader metadataReader,
-				MetadataReaderFactory metadataReaderFactory) throws IOException {
+				MetadataReaderFactory metadataReaderFactory) {
 			return metadataReader.getClassMetadata().getClassName()
 					.equals(ExampleWithoutAnnotation.class.getName());
 		}

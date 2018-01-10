@@ -18,21 +18,12 @@ package sample.session;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringBootApplication
 public class SampleSessionApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleSessionApplication.class);
-	}
-
-	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
-				.username("user").password("password").roles("USER").build());
 	}
 
 }

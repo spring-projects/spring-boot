@@ -45,8 +45,7 @@ public class PropertySourcesPlaceholdersResolverTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void placeholderResolverIfEnvironmentNullShouldThrowException()
-			throws Exception {
+	public void placeholderResolverIfEnvironmentNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		new PropertySourcesPlaceholdersResolver((Environment) null);

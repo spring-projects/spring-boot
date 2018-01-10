@@ -84,13 +84,13 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void get() throws Exception {
+	public void get() {
 		assertThat(this.report).isNotEqualTo(nullValue());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 	}
 
 	@Test
-	public void parent() throws Exception {
+	public void parent() {
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
 				.getParentBeanFactory());
@@ -106,7 +106,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void parentBottomUp() throws Exception {
+	public void parentBottomUp() {
 		this.beanFactory = new DefaultListableBeanFactory(); // NB: overrides setup
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
@@ -119,7 +119,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void recordConditionEvaluations() throws Exception {
+	public void recordConditionEvaluations() {
 		this.outcome1 = new ConditionOutcome(false, "m1");
 		this.outcome2 = new ConditionOutcome(false, "m2");
 		this.outcome3 = new ConditionOutcome(false, "m3");
@@ -148,14 +148,14 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void fullMatch() throws Exception {
+	public void fullMatch() {
 		prepareMatches(true, true, true);
 		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch())
 				.isTrue();
 	}
 
 	@Test
-	public void notFullMatch() throws Exception {
+	public void notFullMatch() {
 		prepareMatches(true, false, true);
 		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch())
 				.isFalse();
@@ -172,7 +172,7 @@ public class ConditionEvaluationReportTests {
 
 	@Test
 	@SuppressWarnings("resource")
-	public void springBootConditionPopulatesReport() throws Exception {
+	public void springBootConditionPopulatesReport() {
 		ConditionEvaluationReport report = ConditionEvaluationReport.get(
 				new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource().size()).isNotEqualTo(0);
@@ -225,7 +225,7 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Test
-	public void negativeOuterPositiveInnerBean() throws Exception {
+	public void negativeOuterPositiveInnerBean() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("test.present=true").applyTo(context);
 		context.register(NegativeOuterConfig.class);

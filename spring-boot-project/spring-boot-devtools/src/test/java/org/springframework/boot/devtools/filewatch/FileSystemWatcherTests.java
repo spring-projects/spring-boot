@@ -17,9 +17,9 @@
 package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -58,40 +58,40 @@ public class FileSystemWatcherTests {
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		setupWatcher(20, 10);
 	}
 
 	@Test
-	public void pollIntervalMustBePositive() throws Exception {
+	public void pollIntervalMustBePositive() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PollInterval must be positive");
-		new FileSystemWatcher(true, 0, 1);
+		new FileSystemWatcher(true, Duration.ofMillis(0), Duration.ofMillis(1));
 	}
 
 	@Test
-	public void quietPeriodMustBePositive() throws Exception {
+	public void quietPeriodMustBePositive() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("QuietPeriod must be positive");
-		new FileSystemWatcher(true, 1, 0);
+		new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(0));
 	}
 
 	@Test
-	public void pollIntervalMustBeGreaterThanQuietPeriod() throws Exception {
+	public void pollIntervalMustBeGreaterThanQuietPeriod() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PollInterval must be greater than QuietPeriod");
-		new FileSystemWatcher(true, 1, 1);
+		new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(1));
 	}
 
 	@Test
-	public void listenerMustNotBeNull() throws Exception {
+	public void listenerMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("FileChangeListener must not be null");
 		this.watcher.addListener(null);
 	}
 
 	@Test
-	public void cannotAddListenerToStartedListener() throws Exception {
+	public void cannotAddListenerToStartedListener() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("FileSystemWatcher already started");
 		this.watcher.start();
@@ -99,14 +99,14 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void sourceFolderMustNotBeNull() throws Exception {
+	public void sourceFolderMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Folder must not be null");
 		this.watcher.addSourceFolder(null);
 	}
 
 	@Test
-	public void sourceFolderMustExist() throws Exception {
+	public void sourceFolderMustExist() {
 		File folder = new File("does/not/exist");
 		assertThat(folder.exists()).isFalse();
 		this.thrown.expect(IllegalArgumentException.class);
@@ -116,7 +116,7 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void sourceFolderMustBeADirectory() throws Exception {
+	public void sourceFolderMustBeADirectory() {
 		File folder = new File("pom.xml");
 		assertThat(folder.isFile()).isTrue();
 		this.thrown.expect(IllegalArgumentException.class);
@@ -261,7 +261,7 @@ public class FileSystemWatcherTests {
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), file);
 		Thread.sleep(100);
-		assertThat(this.changes.size()).isEqualTo(0);
+		assertThat(this.changes).isEmpty();
 		FileCopyUtils.copy("abc".getBytes(), trigger);
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
@@ -272,7 +272,8 @@ public class FileSystemWatcherTests {
 	}
 
 	private void setupWatcher(long pollingInterval, long quietPeriod) {
-		this.watcher = new FileSystemWatcher(false, pollingInterval, quietPeriod);
+		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval),
+				Duration.ofMillis(quietPeriod));
 		this.watcher.addListener(
 				(changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
 	}
@@ -295,7 +296,7 @@ public class FileSystemWatcherTests {
 		return this.changes.get(0);
 	}
 
-	private File touch(File file) throws FileNotFoundException, IOException {
+	private File touch(File file) throws IOException {
 		file.getParentFile().mkdirs();
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		fileOutputStream.close();

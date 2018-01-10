@@ -179,7 +179,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 					parent.getParent());
 		}
 
-		private URL[] getGroovyJars(final ClassLoader parent) {
+		private URL[] getGroovyJars(ClassLoader parent) {
 			Set<URL> urls = new HashSet<>();
 			findGroovyJarsDirectly(parent, urls);
 			if (urls.isEmpty()) {

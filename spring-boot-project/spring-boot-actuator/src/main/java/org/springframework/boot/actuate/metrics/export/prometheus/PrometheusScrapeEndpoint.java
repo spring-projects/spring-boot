@@ -23,9 +23,9 @@ import java.io.Writer;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 
 /**
  * {@link Endpoint} that outputs metrics in a format that can be scraped by the Prometheus
@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@Endpoint(id = "prometheus", exposure = EndpointExposure.WEB)
+@WebEndpoint(id = "prometheus")
 public class PrometheusScrapeEndpoint {
 
 	private final CollectorRegistry collectorRegistry;

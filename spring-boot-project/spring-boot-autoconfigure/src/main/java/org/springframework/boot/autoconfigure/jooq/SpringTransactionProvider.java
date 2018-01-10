@@ -30,14 +30,15 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  * @author Lukas Eder
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
+ * @since 1.5.10
  */
-class SpringTransactionProvider implements TransactionProvider {
+public class SpringTransactionProvider implements TransactionProvider {
 
 	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
 
 	private final PlatformTransactionManager transactionManager;
 
-	SpringTransactionProvider(PlatformTransactionManager transactionManager) {
+	public SpringTransactionProvider(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 

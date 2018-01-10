@@ -47,7 +47,7 @@ public class ElasticsearchHealthIndicatorAutoConfigurationTests {
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() throws Exception {
+	public void runShouldCreateIndicator() {
 		this.contextRunner
 				.withPropertyValues("spring.data.elasticsearch.cluster-nodes:localhost:0")
 				.withSystemProperties("es.set.netty.runtime.available.processors=false")
@@ -58,7 +58,7 @@ public class ElasticsearchHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenUsingJestClientShouldCreateIndicator() throws Exception {
+	public void runWhenUsingJestClientShouldCreateIndicator() {
 		this.contextRunner.withUserConfiguration(JestClientConfiguration.class)
 				.withSystemProperties("es.set.netty.runtime.available.processors=false")
 				.run((context) -> assertThat(context)
@@ -68,7 +68,7 @@ public class ElasticsearchHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() throws Exception {
+	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner
 				.withPropertyValues("management.health.elasticsearch.enabled:false")
 				.run((context) -> assertThat(context)

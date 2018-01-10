@@ -21,14 +21,12 @@ import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.StringToDurationConverter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Configuration for exporting metrics to Datadog.
@@ -38,8 +36,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @ConditionalOnClass(DatadogMeterRegistry.class)
-@ConditionalOnProperty("spring.metrics.datadog.api-key")
-@Import(StringToDurationConverter.class)
+@ConditionalOnProperty("management.metrics.export.datadog.api-key")
 @EnableConfigurationProperties(DatadogProperties.class)
 public class DatadogExportConfiguration {
 
@@ -50,7 +47,7 @@ public class DatadogExportConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "spring.metrics.datadog.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.metrics.export.datadog.enabled", matchIfMissing = true)
 	public MetricsExporter datadogExporter(DatadogConfig datadogConfig, Clock clock) {
 		return () -> new DatadogMeterRegistry(datadogConfig, clock);
 	}

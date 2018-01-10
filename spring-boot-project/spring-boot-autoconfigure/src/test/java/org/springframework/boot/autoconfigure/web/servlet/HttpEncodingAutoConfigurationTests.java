@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -98,7 +98,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void forceRequest() throws Exception {
+	public void forceRequest() {
 		load(EmptyConfiguration.class, "spring.http.encoding.force-request:false");
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
@@ -106,7 +106,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void forceResponse() throws Exception {
+	public void forceResponse() {
 		load(EmptyConfiguration.class, "spring.http.encoding.force-response:true");
 		CharacterEncodingFilter filter = this.context
 				.getBean(CharacterEncodingFilter.class);
@@ -114,7 +114,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void forceRequestOverridesForce() throws Exception {
+	public void forceRequestOverridesForce() {
 		load(EmptyConfiguration.class, "spring.http.encoding.force:true",
 				"spring.http.encoding.force-request:false");
 		CharacterEncodingFilter filter = this.context
@@ -123,7 +123,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void forceResponseOverridesForce() throws Exception {
+	public void forceResponseOverridesForce() {
 		load(EmptyConfiguration.class, "spring.http.encoding.force:true",
 				"spring.http.encoding.force-response:false");
 		CharacterEncodingFilter filter = this.context
@@ -132,7 +132,7 @@ public class HttpEncodingAutoConfigurationTests {
 	}
 
 	@Test
-	public void filterIsOrderedHighest() throws Exception {
+	public void filterIsOrderedHighest() {
 		load(OrderedConfiguration.class);
 		List<Filter> beans = new ArrayList<>(
 				this.context.getBeansOfType(Filter.class).values());
@@ -147,7 +147,7 @@ public class HttpEncodingAutoConfigurationTests {
 		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
 		assertThat(beans.size()).isEqualTo(1);
 		assertThat(this.context.getBean(MockServletWebServerFactory.class)
-				.getLocaleCharsetMappings().size()).isEqualTo(0);
+				.getLocaleCharsetMappings()).isEmpty();
 	}
 
 	@Test
@@ -160,10 +160,10 @@ public class HttpEncodingAutoConfigurationTests {
 				.getLocaleCharsetMappings().size()).isEqualTo(2);
 		assertThat(this.context.getBean(MockServletWebServerFactory.class)
 				.getLocaleCharsetMappings().get(Locale.ENGLISH))
-						.isEqualTo(Charset.forName("UTF-8"));
+						.isEqualTo(StandardCharsets.UTF_8);
 		assertThat(this.context.getBean(MockServletWebServerFactory.class)
 				.getLocaleCharsetMappings().get(Locale.FRANCE))
-						.isEqualTo(Charset.forName("UTF-8"));
+						.isEqualTo(StandardCharsets.UTF_8);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

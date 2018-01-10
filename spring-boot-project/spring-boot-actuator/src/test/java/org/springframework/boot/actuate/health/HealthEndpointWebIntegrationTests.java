@@ -29,7 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Integration tests for {@link HealthEndpoint} and {@link HealthWebEndpointExtension}
+ * Integration tests for {@link HealthEndpoint} and {@link HealthEndpointWebExtension}
  * exposed by Jersey, Spring MVC, and WebFlux.
  *
  * @author Andy Wilkinson
@@ -42,18 +42,17 @@ public class HealthEndpointWebIntegrationTests {
 	private static ConfigurableApplicationContext context;
 
 	@Test
-	public void whenHealthIsUp200ResponseIsReturned() throws Exception {
-		client.get().uri("/application/health").exchange().expectStatus().isOk()
-				.expectBody().jsonPath("status").isEqualTo("UP")
-				.jsonPath("details.alpha.status").isEqualTo("UP")
-				.jsonPath("details.bravo.status").isEqualTo("UP");
+	public void whenHealthIsUp200ResponseIsReturned() {
+		client.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody()
+				.jsonPath("status").isEqualTo("UP").jsonPath("details.alpha.status")
+				.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP");
 	}
 
 	@Test
-	public void whenHealthIsDown503ResponseIsReturned() throws Exception {
+	public void whenHealthIsDown503ResponseIsReturned() {
 		context.getBean("alphaHealthIndicator", TestHealthIndicator.class)
 				.setHealth(Health.down().build());
-		client.get().uri("/application/health").exchange().expectStatus()
+		client.get().uri("/actuator/health").exchange().expectStatus()
 				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
 				.isEqualTo("DOWN").jsonPath("details.alpha.status").isEqualTo("DOWN")
 				.jsonPath("details.bravo.status").isEqualTo("UP");
@@ -71,9 +70,12 @@ public class HealthEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		public HealthWebEndpointExtension healthWebEndpointExtension(
-				HealthEndpoint delegate) {
-			return new HealthWebEndpointExtension(delegate, new HealthStatusHttpMapper());
+		public HealthEndpointWebExtension healthWebEndpointExtension(
+				Map<String, HealthIndicator> healthIndicators) {
+			return new HealthEndpointWebExtension(
+					new CompositeHealthIndicatorFactory().createHealthIndicator(
+							new OrderedHealthAggregator(), healthIndicators),
+					new HealthStatusHttpMapper(), true);
 		}
 
 		@Bean

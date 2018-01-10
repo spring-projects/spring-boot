@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -94,7 +95,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	/**
 	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
 	 * is deemed to be the "main" servlet and is automatically given a mapping of "/" by
-	 * default. To change the default behaviour you can use a
+	 * default. To change the default behavior you can use a
 	 * {@link ServletRegistrationBean} or a different bean name.
 	 */
 	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
@@ -104,6 +105,21 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	private ServletConfig servletConfig;
 
 	private String namespace;
+
+	/**
+	 * Create a new {@link ServletWebServerApplicationContext}.
+	 */
+	public ServletWebServerApplicationContext() {
+	}
+
+	/**
+	 * Create a new {@link ServletWebServerApplicationContext} with the given
+	 * {@code DefaultListableBeanFactory}.
+	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 */
+	public ServletWebServerApplicationContext(DefaultListableBeanFactory beanFactory) {
+		super(beanFactory);
+	}
 
 	/**
 	 * Register ServletContextAwareProcessor.

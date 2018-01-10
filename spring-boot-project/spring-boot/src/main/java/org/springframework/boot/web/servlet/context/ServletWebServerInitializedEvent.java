@@ -45,7 +45,7 @@ public class ServletWebServerInitializedEvent extends WebServerInitializedEvent 
 	/**
 	 * Access the application context that the server was created in. Sometimes it is
 	 * prudent to check that this matches expectations (like being equal to the current
-	 * context) before acting on the server server itself.
+	 * context) before acting on the server itself.
 	 * @return the applicationContext that the server was created from
 	 */
 	@Override

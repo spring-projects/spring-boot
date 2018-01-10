@@ -16,10 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -27,6 +24,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 
@@ -39,7 +37,7 @@ import org.springframework.util.Assert;
  * <p>
  * Each {@link ConfigurationPropertySource#getConfigurationProperty
  * getConfigurationProperty} call attempts to
- * {@link PropertyMapper#map(PropertySource, ConfigurationPropertyName) map} the
+ * {@link PropertyMapper#map(ConfigurationPropertyName) map} the
  * {@link ConfigurationPropertyName} to one or more {@code String} based names. This
  * allows fast property resolution for well formed property sources.
  * <p>
@@ -84,7 +82,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
-		List<PropertyMapping> mappings = getMapper().map(getPropertySource(), name);
+		PropertyMapping[] mappings = getMapper().map(name);
 		return find(mappings, name);
 	}
 
@@ -99,10 +97,17 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		return this.propertySource;
 	}
 
-	protected final ConfigurationProperty find(List<PropertyMapping> mappings,
+	protected final ConfigurationProperty find(PropertyMapping[] mappings,
 			ConfigurationPropertyName name) {
-		return mappings.stream().filter((m) -> m.isApplicable(name)).map(this::find)
-				.filter(Objects::nonNull).findFirst().orElse(null);
+		for (PropertyMapping candidate : mappings) {
+			if (candidate.isApplicable(name)) {
+				ConfigurationProperty result = find(candidate);
+				if (result != null) {
+					return result;
+				}
+			}
+		}
+		return null;
 	}
 
 	private ConfigurationProperty find(PropertyMapping mapping) {
@@ -111,7 +116,6 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		if (value == null) {
 			return null;
 		}
-		value = mapping.getValueExtractor().apply(value);
 		ConfigurationPropertyName configurationPropertyName = mapping
 				.getConfigurationPropertyName();
 		Origin origin = PropertySourceOrigin.get(this.propertySource, propertySourceName);
@@ -150,10 +154,18 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	private static PropertyMapper getPropertyMapper(PropertySource<?> source) {
-		if (source instanceof SystemEnvironmentPropertySource) {
+		if (source instanceof SystemEnvironmentPropertySource
+				&& hasSystemEnvironmentName(source)) {
 			return SystemEnvironmentPropertyMapper.INSTANCE;
 		}
 		return DefaultPropertyMapper.INSTANCE;
+	}
+
+	private static boolean hasSystemEnvironmentName(PropertySource<?> source) {
+		String name = source.getName();
+		return StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(name)
+				|| name.endsWith("-"
+						+ StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
 	}
 
 	private static boolean isFullEnumerable(PropertySource<?> source) {
@@ -206,24 +218,23 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		}
 
 		@Override
-		public List<PropertyMapping> map(PropertySource<?> propertySource,
+		public PropertyMapping[] map(
 				ConfigurationPropertyName configurationPropertyName) {
 			try {
-				return this.mapper.map(propertySource, configurationPropertyName);
+				return this.mapper.map(configurationPropertyName);
 			}
 			catch (Exception ex) {
-				return Collections.emptyList();
+				return NO_MAPPINGS;
 			}
 		}
 
 		@Override
-		public List<PropertyMapping> map(PropertySource<?> propertySource,
-				String propertySourceName) {
+		public PropertyMapping[] map(String propertySourceName) {
 			try {
-				return this.mapper.map(propertySource, propertySourceName);
+				return this.mapper.map(propertySourceName);
 			}
 			catch (Exception ex) {
-				return Collections.emptyList();
+				return NO_MAPPINGS;
 			}
 		}
 

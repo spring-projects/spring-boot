@@ -48,7 +48,6 @@ public class City implements Serializable {
 	}
 
 	public City(String name, String state, String country, String map) {
-		super();
 		this.name = name;
 		this.state = state;
 		this.country = country;

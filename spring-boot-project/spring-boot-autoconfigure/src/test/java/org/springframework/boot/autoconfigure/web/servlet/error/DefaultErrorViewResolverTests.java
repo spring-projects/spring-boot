@@ -86,30 +86,28 @@ public class DefaultErrorViewResolverTests {
 	}
 
 	@Test
-	public void createWhenApplicationContextIsNullShouldThrowException()
-			throws Exception {
+	public void createWhenApplicationContextIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ApplicationContext must not be null");
 		new DefaultErrorViewResolver(null, new ResourceProperties());
 	}
 
 	@Test
-	public void createWhenResourcePropertiesIsNullShouldThrowException()
-			throws Exception {
+	public void createWhenResourcePropertiesIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ResourceProperties must not be null");
 		new DefaultErrorViewResolver(mock(ApplicationContext.class), null);
 	}
 
 	@Test
-	public void resolveWhenNoMatchShouldReturnNull() throws Exception {
+	public void resolveWhenNoMatchShouldReturnNull() {
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request,
 				HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved).isNull();
 	}
 
 	@Test
-	public void resolveWhenExactTemplateMatchShouldReturnTemplate() throws Exception {
+	public void resolveWhenExactTemplateMatchShouldReturnTemplate() {
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"),
 				any(Environment.class), any(ClassLoader.class),
 				any(ResourceLoader.class))).willReturn(true);
@@ -124,7 +122,7 @@ public class DefaultErrorViewResolverTests {
 	}
 
 	@Test
-	public void resolveWhenSeries5xxTemplateMatchShouldReturnTemplate() throws Exception {
+	public void resolveWhenSeries5xxTemplateMatchShouldReturnTemplate() {
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/5xx"),
 				any(Environment.class), any(ClassLoader.class),
 				any(ResourceLoader.class))).willReturn(true);
@@ -134,7 +132,7 @@ public class DefaultErrorViewResolverTests {
 	}
 
 	@Test
-	public void resolveWhenSeries4xxTemplateMatchShouldReturnTemplate() throws Exception {
+	public void resolveWhenSeries4xxTemplateMatchShouldReturnTemplate() {
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"),
 				any(Environment.class), any(ClassLoader.class),
 				any(ResourceLoader.class))).willReturn(true);
@@ -174,8 +172,7 @@ public class DefaultErrorViewResolverTests {
 	}
 
 	@Test
-	public void resolveWhenTemplateAndResourceMatchShouldFavorTemplate()
-			throws Exception {
+	public void resolveWhenTemplateAndResourceMatchShouldFavorTemplate() {
 		setResourceLocation("/exact");
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"),
 				any(Environment.class), any(ClassLoader.class),
@@ -200,12 +197,12 @@ public class DefaultErrorViewResolverTests {
 	}
 
 	@Test
-	public void orderShouldBeLowest() throws Exception {
+	public void orderShouldBeLowest() {
 		assertThat(this.resolver.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE);
 	}
 
 	@Test
-	public void setOrderShouldChangeOrder() throws Exception {
+	public void setOrderShouldChangeOrder() {
 		this.resolver.setOrder(123);
 		assertThat(this.resolver.getOrder()).isEqualTo(123);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,15 @@
 
 package sample.data.neo4j;
 
-import org.neo4j.ogm.annotation.GraphId;
+import org.neo4j.ogm.annotation.GeneratedValue;
+import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 
 @NodeEntity
 public class Customer {
 
-	@GraphId
+	@Id
+	@GeneratedValue
 	private Long id;
 
 	private String firstName;
@@ -38,8 +40,8 @@ public class Customer {
 
 	@Override
 	public String toString() {
-		return String.format("Customer[id=%s, firstName='%s', lastName='%s']", id,
-				firstName, lastName);
+		return String.format("Customer[id=%s, firstName='%s', lastName='%s']", this.id,
+				this.firstName, this.lastName);
 	}
 
 }

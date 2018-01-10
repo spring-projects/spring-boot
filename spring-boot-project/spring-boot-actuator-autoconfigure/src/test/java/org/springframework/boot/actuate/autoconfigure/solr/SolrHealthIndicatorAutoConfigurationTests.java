@@ -40,14 +40,14 @@ public class SolrHealthIndicatorAutoConfigurationTests {
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() throws Exception {
+	public void runShouldCreateIndicator() {
 		this.contextRunner.run(
 				(context) -> assertThat(context).hasSingleBean(SolrHealthIndicator.class)
 						.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() throws Exception {
+	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.solr.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(SolrHealthIndicator.class)

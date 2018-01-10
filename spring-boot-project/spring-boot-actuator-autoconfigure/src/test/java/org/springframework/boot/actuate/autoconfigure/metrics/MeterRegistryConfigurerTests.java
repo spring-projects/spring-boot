@@ -46,11 +46,32 @@ public class MeterRegistryConfigurerTests {
 								.isPresent());
 	}
 
+	@Test
+	public void commonTagsAreAppliedBeforeRegistryIsInjectableElsewhere() {
+		new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
+				.withConfiguration(
+						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
+				.withPropertyValues("metrics.use-global-registry=false")
+				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
+						.find("my.thing").tags("region", "us-east-1").gauge())
+								.isPresent());
+	}
+
 	static class MeterRegistryConfigurerConfiguration {
 
 		@Bean
 		public MeterRegistryConfigurer registryConfigurer() {
 			return (registry) -> registry.config().commonTags("region", "us-east-1");
+		}
+
+		@Bean
+		public MyThing myThing(MeterRegistry registry) {
+			registry.gauge("my.thing", 0);
+			return new MyThing();
+		}
+
+		class MyThing {
 		}
 
 	}

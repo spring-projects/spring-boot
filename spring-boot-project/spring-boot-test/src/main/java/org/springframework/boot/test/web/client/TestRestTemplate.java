@@ -78,6 +78,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kristine Jetzke
  * @since 1.4.0
  */
 public class TestRestTemplate {
@@ -163,6 +164,19 @@ public class TestRestTemplate {
 	 */
 	public void setUriTemplateHandler(UriTemplateHandler handler) {
 		this.restTemplate.setUriTemplateHandler(handler);
+	}
+
+	/**
+	 * Returns the root URI applied by a {@link RootUriTemplateHandler} or {@code ""} if
+	 * the root URI is not available.
+	 * @return the root URI
+	 */
+	public String getRootUri() {
+		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
+		if (uriTemplateHandler instanceof RootUriTemplateHandler) {
+			return ((RootUriTemplateHandler) uriTemplateHandler).getRootUri();
+		}
+		return "";
 	}
 
 	/**

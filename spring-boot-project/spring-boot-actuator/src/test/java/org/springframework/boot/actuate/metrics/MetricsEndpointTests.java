@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
@@ -36,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MetricsEndpointTests {
 
-	private final MeterRegistry registry = new SimpleMeterRegistry();
+	private final MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT,
+			new MockClock());
 
 	private final MetricsEndpoint endpoint = new MetricsEndpoint(this.registry);
 
@@ -82,6 +85,17 @@ public class MetricsEndpointTests {
 		response = this.endpoint.metric("cache", Collections.singletonList("result:hit"));
 		assertThat(availableTagKeys(response)).containsExactly("host");
 		assertThat(getCount(response)).hasValue(4.0);
+	}
+
+	@Test
+	public void metricTagValuesAreDeduplicated() {
+		this.registry.counter("cache", "host", "1", "region", "east", "result", "hit");
+		this.registry.counter("cache", "host", "1", "region", "east", "result", "miss");
+		MetricsEndpoint.MetricResponse response = this.endpoint.metric("cache",
+				Collections.singletonList("host:1"));
+		assertThat(response.getAvailableTags().stream()
+				.filter((t) -> t.getTag().equals("region"))
+				.flatMap((t) -> t.getValues().stream())).containsExactly("east");
 	}
 
 	@Test

@@ -50,12 +50,12 @@ public class RestClientTestNoComponentIntegrationTests {
 	private MockRestServiceServer server;
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void exampleRestClientIsNotInjected() throws Exception {
+	public void exampleRestClientIsNotInjected() {
 		this.applicationContext.getBean(ExampleRestClient.class);
 	}
 
 	@Test
-	public void manuallyCreateBean() throws Exception {
+	public void manuallyCreateBean() {
 		ExampleRestClient client = new ExampleRestClient(this.restTemplateBuilder);
 		this.server.expect(requestTo("/test"))
 				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));

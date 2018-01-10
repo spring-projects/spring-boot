@@ -47,7 +47,7 @@ public class SpringBootConditionTests {
 	}
 
 	@Test
-	public void sensibleMethodException() throws Exception {
+	public void sensibleMethodException() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Error processing condition on "
 				+ ErrorOnMethod.class.getName() + ".myBean");

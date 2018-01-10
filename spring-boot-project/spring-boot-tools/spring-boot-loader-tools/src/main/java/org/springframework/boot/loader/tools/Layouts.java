@@ -42,13 +42,14 @@ public final class Layouts {
 		if (file == null) {
 			throw new IllegalArgumentException("File must not be null");
 		}
-		if (file.getName().toLowerCase().endsWith(".jar")) {
+		String lowerCaseFileName = file.getName().toLowerCase();
+		if (lowerCaseFileName.endsWith(".jar")) {
 			return new Jar();
 		}
-		if (file.getName().toLowerCase().endsWith(".war")) {
+		if (lowerCaseFileName.endsWith(".war")) {
 			return new War();
 		}
-		if (file.isDirectory() || file.getName().toLowerCase().endsWith(".zip")) {
+		if (file.isDirectory() || lowerCaseFileName.endsWith(".zip")) {
 			return new Expanded();
 		}
 		throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
@@ -120,7 +121,7 @@ public final class Layouts {
 	 */
 	public static class War implements Layout {
 
-		private static final Map<LibraryScope, String> scopeDestinations;
+		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
 
 		static {
 			Map<LibraryScope, String> map = new HashMap<>();
@@ -128,7 +129,7 @@ public final class Layouts {
 			map.put(LibraryScope.CUSTOM, "WEB-INF/lib/");
 			map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
 			map.put(LibraryScope.PROVIDED, "WEB-INF/lib-provided/");
-			scopeDestinations = Collections.unmodifiableMap(map);
+			SCOPE_DESTINATIONS = Collections.unmodifiableMap(map);
 		}
 
 		@Override
@@ -138,7 +139,7 @@ public final class Layouts {
 
 		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return scopeDestinations.get(scope);
+			return SCOPE_DESTINATIONS.get(scope);
 		}
 
 		@Override

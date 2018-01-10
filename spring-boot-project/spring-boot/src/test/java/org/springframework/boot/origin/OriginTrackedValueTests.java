@@ -29,26 +29,26 @@ import static org.mockito.Mockito.mock;
 public class OriginTrackedValueTests {
 
 	@Test
-	public void getValueShouldReturnValue() throws Exception {
+	public void getValueShouldReturnValue() {
 		Object value = new Object();
 		assertThat(OriginTrackedValue.of(value).getValue()).isEqualTo(value);
 	}
 
 	@Test
-	public void getOriginShouldReturnOrigin() throws Exception {
+	public void getOriginShouldReturnOrigin() {
 		Object value = new Object();
 		Origin origin = mock(Origin.class);
 		assertThat(OriginTrackedValue.of(value, origin).getOrigin()).isEqualTo(origin);
 	}
 
 	@Test
-	public void toStringShouldReturnValueToString() throws Exception {
+	public void toStringShouldReturnValueToString() {
 		Object value = new Object();
 		assertThat(OriginTrackedValue.of(value).toString()).isEqualTo(value.toString());
 	}
 
 	@Test
-	public void hashCodeAndEqualsShouldIgnoreOrigin() throws Exception {
+	public void hashCodeAndEqualsShouldIgnoreOrigin() {
 		Object value1 = new Object();
 		OriginTrackedValue tracked1 = OriginTrackedValue.of(value1);
 		OriginTrackedValue tracked2 = OriginTrackedValue.of(value1, mock(Origin.class));
@@ -59,13 +59,13 @@ public class OriginTrackedValueTests {
 	}
 
 	@Test
-	public void ofWhenValueIsNullShouldReturnNull() throws Exception {
+	public void ofWhenValueIsNullShouldReturnNull() {
 		assertThat(OriginTrackedValue.of(null)).isNull();
 		assertThat(OriginTrackedValue.of(null, mock(Origin.class))).isNull();
 	}
 
 	@Test
-	public void ofWhenValueIsCharSequenceShouldReturnCharSequence() throws Exception {
+	public void ofWhenValueIsCharSequenceShouldReturnCharSequence() {
 		String value = "foo";
 		OriginTrackedValue tracked = OriginTrackedValue.of(value);
 		assertThat(tracked).isInstanceOf(CharSequence.class);

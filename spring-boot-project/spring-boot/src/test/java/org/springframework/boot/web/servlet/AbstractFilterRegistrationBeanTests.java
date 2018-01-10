@@ -128,7 +128,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	public void setServletRegistrationBeanMustNotBeNull() throws Exception {
+	public void setServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletRegistrationBeans must not be null");
@@ -136,7 +136,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	public void addServletRegistrationBeanMustNotBeNull() throws Exception {
+	public void addServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletRegistrationBeans must not be null");
@@ -164,7 +164,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	public void setUrlPatternMustNotBeNull() throws Exception {
+	public void setUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("UrlPatterns must not be null");
@@ -172,7 +172,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	public void addUrlPatternMustNotBeNull() throws Exception {
+	public void addUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("UrlPatterns must not be null");
@@ -180,7 +180,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	public void setServletNameMustNotBeNull() throws Exception {
+	public void setServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletNames must not be null");
@@ -188,7 +188,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
-	public void addServletNameMustNotBeNull() throws Exception {
+	public void addServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletNames must not be null");

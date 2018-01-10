@@ -60,6 +60,9 @@ public class SessionsEndpoint {
 	@ReadOperation
 	public SessionDescriptor getSession(@Selector String sessionId) {
 		Session session = this.sessionRepository.findById(sessionId);
+		if (session == null) {
+			return null;
+		}
 		return new SessionDescriptor(session);
 	}
 

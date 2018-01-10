@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class DevToolsProperties {
 	private Livereload livereload = new Livereload();
 
 	@NestedConfigurationProperty
-	private RemoteDevToolsProperties remote = new RemoteDevToolsProperties();
+	private final RemoteDevToolsProperties remote = new RemoteDevToolsProperties();
 
 	public Restart getRestart() {
 		return this.restart;
@@ -62,12 +63,8 @@ public class DevToolsProperties {
 				+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**,"
 				+ "**/*Test.class,**/*Tests.class,git.properties,META-INF/build-info.properties";
 
-		private static final long DEFAULT_RESTART_POLL_INTERVAL = 1000;
-
-		private static final long DEFAULT_RESTART_QUIET_PERIOD = 400;
-
 		/**
-		 * Enable automatic restart.
+		 * Whether to enable automatic restart.
 		 */
 		private boolean enabled = true;
 
@@ -82,19 +79,19 @@ public class DevToolsProperties {
 		private String additionalExclude;
 
 		/**
-		 * Amount of time (in milliseconds) to wait between polling for classpath changes.
+		 * Amount of time to wait between polling for classpath changes.
 		 */
-		private long pollInterval = DEFAULT_RESTART_POLL_INTERVAL;
+		private Duration pollInterval = Duration.ofSeconds(1);
 
 		/**
-		 * Amount of quiet time (in milliseconds) required without any classpath changes
-		 * before a restart is triggered.
+		 * Amount of quiet time required without any classpath changes before a restart is
+		 * triggered.
 		 */
-		private long quietPeriod = DEFAULT_RESTART_QUIET_PERIOD;
+		private Duration quietPeriod = Duration.ofMillis(400);
 
 		/**
-		 * Name of a specific file that when changed will trigger the restart check. If
-		 * not specified any classpath file change will trigger the restart.
+		 * Name of a specific file that, when changed, triggers the restart check. If not
+		 * specified, any classpath file change will trigger the restart.
 		 */
 		private String triggerFile;
 
@@ -102,6 +99,11 @@ public class DevToolsProperties {
 		 * Additional paths to watch for changes.
 		 */
 		private List<File> additionalPaths = new ArrayList<>();
+
+		/**
+		 * Whether to log the condition evaluation delta upon restart.
+		 */
+		private boolean logConditionEvaluationDelta = true;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -139,19 +141,19 @@ public class DevToolsProperties {
 			this.additionalExclude = additionalExclude;
 		}
 
-		public long getPollInterval() {
+		public Duration getPollInterval() {
 			return this.pollInterval;
 		}
 
-		public void setPollInterval(long pollInterval) {
+		public void setPollInterval(Duration pollInterval) {
 			this.pollInterval = pollInterval;
 		}
 
-		public long getQuietPeriod() {
+		public Duration getQuietPeriod() {
 			return this.quietPeriod;
 		}
 
-		public void setQuietPeriod(long quietPeriod) {
+		public void setQuietPeriod(Duration quietPeriod) {
 			this.quietPeriod = quietPeriod;
 		}
 
@@ -171,6 +173,14 @@ public class DevToolsProperties {
 			this.additionalPaths = additionalPaths;
 		}
 
+		public boolean isLogConditionEvaluationDelta() {
+			return this.logConditionEvaluationDelta;
+		}
+
+		public void setLogConditionEvaluationDelta(boolean logConditionEvaluationDelta) {
+			this.logConditionEvaluationDelta = logConditionEvaluationDelta;
+		}
+
 	}
 
 	/**
@@ -179,7 +189,7 @@ public class DevToolsProperties {
 	public static class Livereload {
 
 		/**
-		 * Enable a livereload.com compatible server.
+		 * Whether to enable a livereload.com-compatible server.
 		 */
 		private boolean enabled = true;
 

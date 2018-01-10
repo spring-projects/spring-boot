@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.context;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 /**
  * Configuration properties for Message Source.
@@ -28,38 +30,39 @@ import java.nio.charset.Charset;
 public class MessageSourceProperties {
 
 	/**
-	 * Comma-separated list of basenames, each following the ResourceBundle convention.
-	 * Essentially a fully-qualified classpath location. If it doesn't contain a package
-	 * qualifier (such as "org.mypackage"), it will be resolved from the classpath root.
+	 * Comma-separated list of basenames (essentially a fully-qualified classpath
+	 * location), each following the ResourceBundle convention with relaxed support for
+	 * slash based locations. If it doesn't contain a package qualifier (such as
+	 * "org.mypackage"), it will be resolved from the classpath root.
 	 */
 	private String basename = "messages";
 
 	/**
 	 * Message bundles encoding.
 	 */
-	private Charset encoding = Charset.forName("UTF-8");
+	private Charset encoding = StandardCharsets.UTF_8;
 
 	/**
-	 * Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles
+	 * Loaded resource bundle files cache expiration, in seconds. When not set, bundles
 	 * are cached forever.
 	 */
-	private int cacheSeconds = -1;
+	private Duration cacheDuration;
 
 	/**
-	 * Set whether to fall back to the system Locale if no files for a specific Locale
-	 * have been found. if this is turned off, the only fallback will be the default file
-	 * (e.g. "messages.properties" for basename "messages").
+	 * Whether to fall back to the system Locale if no files for a specific Locale have
+	 * been found. if this is turned off, the only fallback will be the default file (e.g.
+	 * "messages.properties" for basename "messages").
 	 */
 	private boolean fallbackToSystemLocale = true;
 
 	/**
-	 * Set whether to always apply the MessageFormat rules, parsing even messages without
+	 * Whether to always apply the MessageFormat rules, parsing even messages without
 	 * arguments.
 	 */
 	private boolean alwaysUseMessageFormat = false;
 
 	/**
-	 * Set whether to use the message code as default message instead of throwing a
+	 * Whether to use the message code as the default message instead of throwing a
 	 * "NoSuchMessageException". Recommended during development only.
 	 */
 	private boolean useCodeAsDefaultMessage = false;
@@ -80,12 +83,12 @@ public class MessageSourceProperties {
 		this.encoding = encoding;
 	}
 
-	public int getCacheSeconds() {
-		return this.cacheSeconds;
+	public Duration getCacheDuration() {
+		return this.cacheDuration;
 	}
 
-	public void setCacheSeconds(int cacheSeconds) {
-		this.cacheSeconds = cacheSeconds;
+	public void setCacheDuration(Duration cacheDuration) {
+		this.cacheDuration = cacheDuration;
 	}
 
 	public boolean isFallbackToSystemLocale() {
@@ -108,7 +111,7 @@ public class MessageSourceProperties {
 		return this.useCodeAsDefaultMessage;
 	}
 
-	public void setUseCodeAsDefaultMessage(final boolean useCodeAsDefaultMessage) {
+	public void setUseCodeAsDefaultMessage(boolean useCodeAsDefaultMessage) {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
 	}
 

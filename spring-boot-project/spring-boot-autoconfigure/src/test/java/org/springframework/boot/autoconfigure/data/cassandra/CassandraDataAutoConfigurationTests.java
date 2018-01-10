@@ -70,7 +70,7 @@ public class CassandraDataAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() throws Exception {
+	public void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class);
 		CassandraMappingContext mappingContext = this.context
 				.getBean(CassandraMappingContext.class);
@@ -80,7 +80,7 @@ public class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void userTypeResolverShouldBeSet() throws Exception {
+	public void userTypeResolverShouldBeSet() {
 		load();
 		CassandraMappingContext mappingContext = this.context
 				.getBean(CassandraMappingContext.class);

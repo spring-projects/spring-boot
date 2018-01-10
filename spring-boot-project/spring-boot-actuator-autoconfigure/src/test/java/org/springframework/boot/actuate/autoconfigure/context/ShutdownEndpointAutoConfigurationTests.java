@@ -37,15 +37,17 @@ public class ShutdownEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withPropertyValues("endpoints.shutdown.enabled:true").run(
-				(context) -> assertThat(context).hasSingleBean(ShutdownEndpoint.class));
+		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ShutdownEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.shutdown.enabled:false").run(
-				(context) -> assertThat(context).doesNotHaveBean(ShutdownEndpoint.class));
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.shutdown.enabled:false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ShutdownEndpoint.class));
 	}
 
 }

@@ -25,6 +25,7 @@
 		<module>spring-boot-sample-actuator-ui</module>
 		<module>spring-boot-sample-actuator-custom-security</module>
 		<module>spring-boot-sample-amqp</module>
+		<module>spring-boot-sample-animated-banner</module>
 		<module>spring-boot-sample-aop</module>
 		<module>spring-boot-sample-atmosphere</module>
 		<module>spring-boot-sample-batch</module>
@@ -67,6 +68,7 @@
 		<module>spring-boot-sample-secure-webflux</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-session</module>
+		<module>spring-boot-sample-session-webflux</module>
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-test</module>
 		<module>spring-boot-sample-test-nomockito</module>

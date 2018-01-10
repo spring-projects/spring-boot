@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mail;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,10 +34,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.mail")
 public class MailProperties {
 
-	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * SMTP server host.
+	 * SMTP server host. For instance, `smtp.example.com`.
 	 */
 	private String host;
 
@@ -71,12 +72,12 @@ public class MailProperties {
 	private Map<String, String> properties = new HashMap<>();
 
 	/**
-	 * Session JNDI name. When set, takes precedence to others mail settings.
+	 * Session JNDI name. When set, takes precedence over other mail settings.
 	 */
 	private String jndiName;
 
 	/**
-	 * Test that the mail server is available on startup.
+	 * Whether to test that the mail server is available on startup.
 	 */
 	private boolean testConnection;
 

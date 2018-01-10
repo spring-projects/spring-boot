@@ -104,6 +104,33 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testDefaultRabbitTemplateConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					RabbitTemplate defaultRabbitTemplate = new RabbitTemplate();
+					assertThat(rabbitTemplate.getRoutingKey())
+							.isEqualTo(defaultRabbitTemplate.getRoutingKey());
+					assertThat(rabbitTemplate.getExchange())
+							.isEqualTo(defaultRabbitTemplate.getExchange());
+				});
+	}
+
+	@Test
+	public void testDefaultConnectionFactoryConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					RabbitProperties properties = new RabbitProperties();
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					assertThat(rabbitConnectionFactory.getUsername())
+							.isEqualTo(properties.getUsername());
+					assertThat(rabbitConnectionFactory.getPassword())
+							.isEqualTo(properties.getPassword());
+				});
+	}
+
+	@Test
 	public void testConnectionFactoryWithOverrides() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.host:remote-server",
@@ -221,6 +248,19 @@ public class RabbitAutoConfigurationTests {
 					assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
 					assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
 					assertThat(backOffPolicy.getMaxInterval()).isEqualTo(5000);
+				});
+	}
+
+	@Test
+	public void testRabbitTemplateExchangeAndRoutingKey() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.template.exchange:my-exchange",
+						"spring.rabbitmq.template.routing-key:my-routing-key")
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					assertThat(rabbitTemplate.getExchange()).isEqualTo("my-exchange");
+					assertThat(rabbitTemplate.getRoutingKey())
+							.isEqualTo("my-routing-key");
 				});
 	}
 
@@ -493,7 +533,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableRabbitAutomatically() throws Exception {
+	public void enableRabbitAutomatically() {
 		this.contextRunner.withUserConfiguration(NoEnableRabbitConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasBean(
@@ -570,7 +610,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithInvalidKeystoreTypeShouldFail() throws Exception {
+	public void enableSslWithInvalidKeystoreTypeShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=foo",
@@ -584,7 +624,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithInvalidTrustStoreTypeShouldFail() throws Exception {
+	public void enableSslWithInvalidTrustStoreTypeShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.trustStore=bar",
@@ -598,7 +638,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() throws Exception {
+	public void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",

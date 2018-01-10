@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,6 +120,11 @@ public class ConfigFileApplicationListener
 	 * The "config location" property name.
 	 */
 	public static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
+
+	/**
+	 * The "config additional location" property name.
+	 */
+	public static final String CONFIG_ADDITIONAL_LOCATION_PROPERTY = "spring.config.additional-location";
 
 	/**
 	 * The default order for the processor.
@@ -417,8 +422,9 @@ public class ConfigFileApplicationListener
 		}
 
 		private boolean canLoadFileExtension(PropertySourceLoader loader, String name) {
-			return Arrays.stream(loader.getFileExtensions()).map(String::toLowerCase)
-					.anyMatch(name.toLowerCase()::endsWith);
+			return Arrays.stream(loader.getFileExtensions())
+					.anyMatch((fileExtension) -> StringUtils.endsWithIgnoreCase(name,
+							fileExtension));
 		}
 
 		private void loadForFileExtension(PropertySourceLoader loader, Profile profile,
@@ -563,11 +569,22 @@ public class ConfigFileApplicationListener
 		}
 
 		private Set<String> getSearchLocations() {
-			Set<String> locations = new LinkedHashSet<>();
-			// User-configured settings take precedence, so we do them first
 			if (this.environment.containsProperty(CONFIG_LOCATION_PROPERTY)) {
+				return getSearchLocations(CONFIG_LOCATION_PROPERTY);
+			}
+			Set<String> locations = getSearchLocations(
+					CONFIG_ADDITIONAL_LOCATION_PROPERTY);
+			locations.addAll(
+					asResolvedSet(ConfigFileApplicationListener.this.searchLocations,
+							DEFAULT_SEARCH_LOCATIONS));
+			return locations;
+		}
+
+		private Set<String> getSearchLocations(String propertyName) {
+			Set<String> locations = new LinkedHashSet<>();
+			if (this.environment.containsProperty(propertyName)) {
 				for (String path : asResolvedSet(
-						this.environment.getProperty(CONFIG_LOCATION_PROPERTY), null)) {
+						this.environment.getProperty(propertyName), null)) {
 					if (!path.contains("$")) {
 						path = StringUtils.cleanPath(path);
 						if (!ResourceUtils.isUrl(path)) {
@@ -577,9 +594,6 @@ public class ConfigFileApplicationListener
 					locations.add(path);
 				}
 			}
-			locations.addAll(
-					asResolvedSet(ConfigFileApplicationListener.this.searchLocations,
-							DEFAULT_SEARCH_LOCATIONS));
 			return locations;
 		}
 

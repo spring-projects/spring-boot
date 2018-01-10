@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +47,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class NonAutoConfigurationSampleTomcatApplicationTests {
 
 	@Autowired
@@ -63,14 +61,14 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 			HelloWorldService.class })
 	public static class NonAutoConfigurationSampleTomcatApplication {
 
-		public static void main(String[] args) throws Exception {
+		public static void main(String[] args) {
 			SpringApplication.run(SampleTomcatApplication.class, args);
 		}
 
 	}
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");

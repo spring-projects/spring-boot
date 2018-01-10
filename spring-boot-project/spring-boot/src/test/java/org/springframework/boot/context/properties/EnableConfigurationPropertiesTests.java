@@ -277,7 +277,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testSimpleAutoConfig() throws Exception {
+	public void testSimpleAutoConfig() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"external.name=foo");
 		this.context.register(ExampleConfig.class);
@@ -286,7 +286,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testExplicitType() throws Exception {
+	public void testExplicitType() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"external.name=foo");
 		this.context.register(AnotherExampleConfig.class);
@@ -297,7 +297,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void testMultipleExplicitTypes() throws Exception {
+	public void testMultipleExplicitTypes() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"external.name=foo", "another.name=bar");
 		this.context.register(FurtherExampleConfig.class);

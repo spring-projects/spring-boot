@@ -58,56 +58,56 @@ public class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
-	public void getSimpleProperty() throws Exception {
+	public void getSimpleProperty() {
 		OriginTrackedValue value = this.properties.get("test");
 		assertThat(getValue(value)).isEqualTo("properties");
 		assertThat(getLocation(value)).isEqualTo("11:6");
 	}
 
 	@Test
-	public void getSimplePropertyWithColonSeparator() throws Exception {
+	public void getSimplePropertyWithColonSeparator() {
 		OriginTrackedValue value = this.properties.get("test-colon-separator");
 		assertThat(getValue(value)).isEqualTo("my-property");
 		assertThat(getLocation(value)).isEqualTo("15:23");
 	}
 
 	@Test
-	public void getPropertyWithSeparatorSurroundedBySpaces() throws Exception {
+	public void getPropertyWithSeparatorSurroundedBySpaces() {
 		OriginTrackedValue value = this.properties.get("blah");
 		assertThat(getValue(value)).isEqualTo("hello world");
 		assertThat(getLocation(value)).isEqualTo("2:12");
 	}
 
 	@Test
-	public void getUnicodeProperty() throws Exception {
+	public void getUnicodeProperty() {
 		OriginTrackedValue value = this.properties.get("test-unicode");
 		assertThat(getValue(value)).isEqualTo("properties&test");
 		assertThat(getLocation(value)).isEqualTo("12:14");
 	}
 
 	@Test
-	public void getEscapedProperty() throws Exception {
+	public void getEscapedProperty() {
 		OriginTrackedValue value = this.properties.get("test=property");
 		assertThat(getValue(value)).isEqualTo("helloworld");
 		assertThat(getLocation(value)).isEqualTo("14:15");
 	}
 
 	@Test
-	public void getPropertyWithTab() throws Exception {
+	public void getPropertyWithTab() {
 		OriginTrackedValue value = this.properties.get("test-tab-property");
 		assertThat(getValue(value)).isEqualTo("foo\tbar");
 		assertThat(getLocation(value)).isEqualTo("16:19");
 	}
 
 	@Test
-	public void getPropertyWithBang() throws Exception {
+	public void getPropertyWithBang() {
 		OriginTrackedValue value = this.properties.get("test-bang-property");
 		assertThat(getValue(value)).isEqualTo("foo!");
 		assertThat(getLocation(value)).isEqualTo("34:20");
 	}
 
 	@Test
-	public void getPropertyWithValueComment() throws Exception {
+	public void getPropertyWithValueComment() {
 		OriginTrackedValue value = this.properties.get("test-property-value-comment");
 		assertThat(getValue(value)).isEqualTo("foo !bar #foo");
 		assertThat(getLocation(value)).isEqualTo("36:29");
@@ -121,35 +121,35 @@ public class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
-	public void getPropertyWithCarriageReturn() throws Exception {
+	public void getPropertyWithCarriageReturn() {
 		OriginTrackedValue value = this.properties.get("test-return-property");
 		assertThat(getValue(value)).isEqualTo("foo\rbar");
 		assertThat(getLocation(value)).isEqualTo("17:22");
 	}
 
 	@Test
-	public void getPropertyWithNewLine() throws Exception {
+	public void getPropertyWithNewLine() {
 		OriginTrackedValue value = this.properties.get("test-newline-property");
 		assertThat(getValue(value)).isEqualTo("foo\nbar");
 		assertThat(getLocation(value)).isEqualTo("18:23");
 	}
 
 	@Test
-	public void getPropertyWithFormFeed() throws Exception {
+	public void getPropertyWithFormFeed() {
 		OriginTrackedValue value = this.properties.get("test-form-feed-property");
 		assertThat(getValue(value)).isEqualTo("foo\fbar");
 		assertThat(getLocation(value)).isEqualTo("19:25");
 	}
 
 	@Test
-	public void getPropertyWithWhiteSpace() throws Exception {
+	public void getPropertyWithWhiteSpace() {
 		OriginTrackedValue value = this.properties.get("test-whitespace-property");
 		assertThat(getValue(value)).isEqualTo("foo   bar");
 		assertThat(getLocation(value)).isEqualTo("20:32");
 	}
 
 	@Test
-	public void getCommentedOutPropertyShouldBeNull() throws Exception {
+	public void getCommentedOutPropertyShouldBeNull() {
 		assertThat(this.properties.get("commented-property")).isNull();
 		assertThat(this.properties.get("#commented-property")).isNull();
 		assertThat(this.properties.get("commented-two")).isNull();
@@ -157,63 +157,63 @@ public class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
-	public void getMultiline() throws Exception {
+	public void getMultiline() {
 		OriginTrackedValue value = this.properties.get("test-multiline");
 		assertThat(getValue(value)).isEqualTo("ab\\c");
 		assertThat(getLocation(value)).isEqualTo("21:17");
 	}
 
 	@Test
-	public void getImmediateMultiline() throws Exception {
+	public void getImmediateMultiline() {
 		OriginTrackedValue value = this.properties.get("test-multiline-immediate");
 		assertThat(getValue(value)).isEqualTo("foo");
 		assertThat(getLocation(value)).isEqualTo("32:1");
 	}
 
 	@Test
-	public void getPropertyWithWhitespaceAfterKey() throws Exception {
+	public void getPropertyWithWhitespaceAfterKey() {
 		OriginTrackedValue value = this.properties.get("bar");
 		assertThat(getValue(value)).isEqualTo("foo=baz");
 		assertThat(getLocation(value)).isEqualTo("3:7");
 	}
 
 	@Test
-	public void getPropertyWithSpaceSeparator() throws Exception {
+	public void getPropertyWithSpaceSeparator() {
 		OriginTrackedValue value = this.properties.get("hello");
 		assertThat(getValue(value)).isEqualTo("world");
 		assertThat(getLocation(value)).isEqualTo("4:9");
 	}
 
 	@Test
-	public void getPropertyWithBackslashEscaped() throws Exception {
+	public void getPropertyWithBackslashEscaped() {
 		OriginTrackedValue value = this.properties.get("proper\\ty");
 		assertThat(getValue(value)).isEqualTo("test");
 		assertThat(getLocation(value)).isEqualTo("5:11");
 	}
 
 	@Test
-	public void getPropertyWithEmptyValue() throws Exception {
+	public void getPropertyWithEmptyValue() {
 		OriginTrackedValue value = this.properties.get("foo");
 		assertThat(getValue(value)).isEqualTo("");
 		assertThat(getLocation(value)).isEqualTo("7:0");
 	}
 
 	@Test
-	public void getPropertyWithBackslashEscapedInValue() throws Exception {
+	public void getPropertyWithBackslashEscapedInValue() {
 		OriginTrackedValue value = this.properties.get("bat");
 		assertThat(getValue(value)).isEqualTo("a\\");
 		assertThat(getLocation(value)).isEqualTo("7:7");
 	}
 
 	@Test
-	public void getPropertyWithSeparatorInValue() throws Exception {
+	public void getPropertyWithSeparatorInValue() {
 		OriginTrackedValue value = this.properties.get("bling");
 		assertThat(getValue(value)).isEqualTo("a=b");
 		assertThat(getLocation(value)).isEqualTo("8:9");
 	}
 
 	@Test
-	public void getListProperty() throws Exception {
+	public void getListProperty() {
 		OriginTrackedValue apple = this.properties.get("foods[0]");
 		assertThat(getValue(apple)).isEqualTo("Apple");
 		assertThat(getLocation(apple)).isEqualTo("24:9");
@@ -229,7 +229,7 @@ public class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
-	public void getPropertyWithISO88591Character() throws Exception {
+	public void getPropertyWithISO88591Character() {
 		OriginTrackedValue value = this.properties.get("test-iso8859-1-chars");
 		assertThat(getValue(value)).isEqualTo("æ×ÈÅÞßáñÀÿ");
 	}

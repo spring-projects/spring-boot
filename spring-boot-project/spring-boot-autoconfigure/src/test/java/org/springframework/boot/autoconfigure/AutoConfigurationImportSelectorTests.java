@@ -172,22 +172,19 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void nonAutoConfigurationClassExclusionsShouldThrowException()
-			throws Exception {
+	public void nonAutoConfigurationClassExclusionsShouldThrowException() {
 		this.expected.expect(IllegalStateException.class);
 		selectImports(EnableAutoConfigurationWithFaultyClassExclude.class);
 	}
 
 	@Test
-	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException()
-			throws Exception {
+	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
 		this.expected.expect(IllegalStateException.class);
 		selectImports(EnableAutoConfigurationWithFaultyClassNameExclude.class);
 	}
 
 	@Test
-	public void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException()
-			throws Exception {
+	public void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure."
 						+ "AutoConfigurationImportSelectorTests.TestConfiguration");
@@ -196,8 +193,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void nameAndPropertyExclusionsWhenNotPresentOnClasspathShouldNotThrowException()
-			throws Exception {
+	public void nameAndPropertyExclusionsWhenNotPresentOnClasspathShouldNotThrowException() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure.DoesNotExist2");
 		selectImports(EnableAutoConfigurationWithAbsentClassNameExclude.class);
@@ -208,7 +204,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void filterShouldFilterImports() throws Exception {
+	public void filterShouldFilterImports() {
 		String[] defaultImports = selectImports(BasicEnableAutoConfiguration.class);
 		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 1));
 		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 3, 4));
@@ -219,7 +215,7 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void filterShouldSupportAware() throws Exception {
+	public void filterShouldSupportAware() {
 		TestAutoConfigurationImportFilter filter = new TestAutoConfigurationImportFilter(
 				new String[] {});
 		this.filters.add(filter);

@@ -84,7 +84,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingCollectionType() throws Exception {
+	public void failureAnalysisForMissingCollectionType() {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(StringCollectionConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringCollectionHandler.class,
@@ -96,7 +96,7 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisForMissingMapType() throws Exception {
+	public void failureAnalysisForMissingMapType() {
 		FailureAnalysis analysis = analyzeFailure(
 				createFailure(StringMapConfiguration.class));
 		assertDescriptionConstructorMissingType(analysis, StringMapHandler.class, 0,

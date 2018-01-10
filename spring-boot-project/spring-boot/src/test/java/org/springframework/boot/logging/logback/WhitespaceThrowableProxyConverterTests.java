@@ -37,13 +37,13 @@ public class WhitespaceThrowableProxyConverterTests {
 	private final LoggingEvent event = new LoggingEvent();
 
 	@Test
-	public void noStackTrace() throws Exception {
+	public void noStackTrace() {
 		String s = this.converter.convert(this.event);
 		assertThat(s).isEqualTo("");
 	}
 
 	@Test
-	public void withStackTrace() throws Exception {
+	public void withStackTrace() {
 		this.event.setThrowableProxy(new ThrowableProxy(new RuntimeException()));
 		String s = this.converter.convert(this.event);
 		assertThat(s).startsWith(LINE_SEPARATOR).endsWith(LINE_SEPARATOR);

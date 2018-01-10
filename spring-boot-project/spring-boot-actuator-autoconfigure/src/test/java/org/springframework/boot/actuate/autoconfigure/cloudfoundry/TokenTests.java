@@ -36,14 +36,14 @@ public class TokenTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void invalidJwtShouldThrowException() throws Exception {
+	public void invalidJwtShouldThrowException() {
 		this.thrown
 				.expect(AuthorizationExceptionMatcher.withReason(Reason.INVALID_TOKEN));
 		new Token("invalid-token");
 	}
 
 	@Test
-	public void invalidJwtClaimsShouldThrowException() throws Exception {
+	public void invalidJwtClaimsShouldThrowException() {
 		String header = "{\"alg\": \"RS256\", \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "invalid-claims";
 		this.thrown
@@ -53,7 +53,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void invalidJwtHeaderShouldThrowException() throws Exception {
+	public void invalidJwtHeaderShouldThrowException() {
 		String header = "invalid-header";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		this.thrown
@@ -63,7 +63,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void emptyJwtSignatureShouldThrowException() throws Exception {
+	public void emptyJwtSignatureShouldThrowException() {
 		String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwu"
 				+ "Y29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ.";
 		this.thrown
@@ -72,7 +72,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void validJwt() throws Exception {
+	public void validJwt() {
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		String content = Base64Utils.encodeToString(header.getBytes()) + "."
@@ -89,8 +89,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void getSignatureAlgorithmWhenAlgIsNullShouldThrowException()
-			throws Exception {
+	public void getSignatureAlgorithmWhenAlgIsNullShouldThrowException() {
 		String header = "{\"kid\": \"key-id\",  \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\"}";
 		Token token = createToken(header, claims);
@@ -100,7 +99,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void getIssuerWhenIssIsNullShouldThrowException() throws Exception {
+	public void getIssuerWhenIssIsNullShouldThrowException() {
 		String header = "{\"alg\": \"RS256\", \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647}";
 		Token token = createToken(header, claims);
@@ -110,7 +109,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void getKidWhenKidIsNullShouldThrowException() throws Exception {
+	public void getKidWhenKidIsNullShouldThrowException() {
 		String header = "{\"alg\": \"RS256\", \"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647}";
 		Token token = createToken(header, claims);
@@ -120,7 +119,7 @@ public class TokenTests {
 	}
 
 	@Test
-	public void getExpiryWhenExpIsNullShouldThrowException() throws Exception {
+	public void getExpiryWhenExpIsNullShouldThrowException() {
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"key-id\", \"typ\": \"JWT\"}";
 		String claims = "{\"iss\": \"http://localhost:8080/uaa/oauth/token\"" + "}";
 		Token token = createToken(header, claims);

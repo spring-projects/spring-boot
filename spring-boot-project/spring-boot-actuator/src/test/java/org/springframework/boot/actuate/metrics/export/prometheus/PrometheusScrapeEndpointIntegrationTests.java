@@ -42,7 +42,7 @@ public class PrometheusScrapeEndpointIntegrationTests {
 
 	@Test
 	public void scrapeHasContentTypeText004() {
-		client.get().uri("/application/prometheus").exchange().expectStatus().isOk()
+		client.get().uri("/actuator/prometheus").exchange().expectStatus().isOk()
 				.expectHeader()
 				.contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004));
 	}

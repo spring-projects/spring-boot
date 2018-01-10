@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class ReactiveMongoClientFactoryTests {
 	private MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void portCanBeCustomized() throws UnknownHostException {
+	public void portCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setPort(12345);
 		MongoClient client = createMongoClient(properties);
@@ -61,7 +60,7 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void hostCanBeCustomized() throws UnknownHostException {
+	public void hostCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setHost("mongo.example.com");
 		MongoClient client = createMongoClient(properties);
@@ -71,39 +70,36 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void credentialsCanBeCustomized() throws UnknownHostException {
+	public void credentialsCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
-				"test");
+		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "test");
 	}
 
 	@Test
-	public void databaseCanBeCustomized() throws UnknownHostException {
+	public void databaseCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setDatabase("foo");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
-				"foo");
+		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "foo");
 	}
 
 	@Test
-	public void authenticationDatabaseCanBeCustomized() throws UnknownHostException {
+	public void authenticationDatabaseCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setAuthenticationDatabase("foo");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = createMongoClient(properties);
-		assertMongoCredential(extractMongoCredentials(client).get(0), "user", "secret",
-				"foo");
+		assertMongoCredential(extractMongoCredentials(client), "user", "secret", "foo");
 	}
 
 	@Test
-	public void uriCanBeCustomized() throws UnknownHostException {
+	public void uriCanBeCustomized() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
 				+ "mongo2.example.com:23456/test");
@@ -112,13 +108,12 @@ public class ReactiveMongoClientFactoryTests {
 		assertThat(allAddresses).hasSize(2);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
-		List<MongoCredential> credentialsList = extractMongoCredentials(client);
-		assertThat(credentialsList).hasSize(1);
-		assertMongoCredential(credentialsList.get(0), "user", "secret", "test");
+		MongoCredential credential = extractMongoCredentials(client);
+		assertMongoCredential(credential, "user", "secret", "test");
 	}
 
 	@Test
-	public void uriCannotBeSetWithCredentials() throws UnknownHostException {
+	public void uriCannotBeSetWithCredentials() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setUsername("user");
@@ -130,7 +125,7 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriCannotBeSetWithHostPort() throws UnknownHostException {
+	public void uriCannotBeSetWithHostPort() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setHost("localhost");
@@ -142,7 +137,7 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
-	public void uriIsIgnoredInEmbeddedMode() throws UnknownHostException {
+	public void uriIsIgnoredInEmbeddedMode() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://mongo.example.com:1234/mydb");
 		this.environment.setProperty("local.mongo.port", "4000");
@@ -155,6 +150,26 @@ public class ReactiveMongoClientFactoryTests {
 	@Test
 	public void customizerIsInvoked() {
 		MongoProperties properties = new MongoProperties();
+		MongoClientSettingsBuilderCustomizer customizer = mock(
+				MongoClientSettingsBuilderCustomizer.class);
+		createMongoClient(properties, this.environment, customizer);
+		verify(customizer).customize(any(MongoClientSettings.Builder.class));
+	}
+
+	@Test
+	public void customizerIsInvokedWhenHostIsSet() {
+		MongoProperties properties = new MongoProperties();
+		properties.setHost("localhost");
+		MongoClientSettingsBuilderCustomizer customizer = mock(
+				MongoClientSettingsBuilderCustomizer.class);
+		createMongoClient(properties, this.environment, customizer);
+		verify(customizer).customize(any(MongoClientSettings.Builder.class));
+	}
+
+	@Test
+	public void customizerIsInvokedForEmbeddedMongo() {
+		MongoProperties properties = new MongoProperties();
+		this.environment.setProperty("local.mongo.port", "27017");
 		MongoClientSettingsBuilderCustomizer customizer = mock(
 				MongoClientSettingsBuilderCustomizer.class);
 		createMongoClient(properties, this.environment, customizer);
@@ -175,13 +190,12 @@ public class ReactiveMongoClientFactoryTests {
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
 		MongoClientSettings settings = client.getSettings();
 		ClusterSettings clusterSettings = settings.getClusterSettings();
-		List<ServerAddress> allAddresses = clusterSettings.getHosts();
-		return allAddresses;
+		return clusterSettings.getHosts();
 	}
 
-	private List<MongoCredential> extractMongoCredentials(MongoClient client) {
+	private MongoCredential extractMongoCredentials(MongoClient client) {
 		MongoClientSettings settings = client.getSettings();
-		return settings.getCredentialList();
+		return settings.getCredential();
 	}
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,

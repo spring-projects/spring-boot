@@ -39,14 +39,14 @@ public class StringToEnumConverterFactoryTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void getConverterWhenEnumSubclassShouldReturnConverter() throws Exception {
+	public void getConverterWhenEnumSubclassShouldReturnConverter() {
 		Converter<String, TestEnum> converter = this.factory
 				.getConverter((Class) TestSubclassEnum.ONE.getClass());
 		assertThat(converter).isNotNull();
 	}
 
 	@Test
-	public void convertWhenExactMatchShouldConvertValue() throws Exception {
+	public void convertWhenExactMatchShouldConvertValue() {
 		Converter<String, TestEnum> converter = this.factory.getConverter(TestEnum.class);
 		assertThat(converter.convert("")).isNull();
 		assertThat(converter.convert("ONE")).isEqualTo(TestEnum.ONE);
@@ -56,7 +56,7 @@ public class StringToEnumConverterFactoryTests {
 	}
 
 	@Test
-	public void convertWhenFuzzyMatchShouldConvertValue() throws Exception {
+	public void convertWhenFuzzyMatchShouldConvertValue() {
 		Converter<String, TestEnum> converter = this.factory.getConverter(TestEnum.class);
 		assertThat(converter.convert("")).isNull();
 		assertThat(converter.convert("one")).isEqualTo(TestEnum.ONE);

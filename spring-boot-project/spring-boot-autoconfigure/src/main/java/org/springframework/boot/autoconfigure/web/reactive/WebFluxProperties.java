@@ -28,9 +28,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class WebFluxProperties {
 
 	/**
+	 * Date format to use. For instance, "dd/MM/yyyy".
+	 */
+	private String dateFormat;
+
+	/**
 	 * Path pattern used for static resources.
 	 */
 	private String staticPathPattern = "/**";
+
+	public String getDateFormat() {
+		return this.dateFormat;
+	}
+
+	public void setDateFormat(String dateFormat) {
+		this.dateFormat = dateFormat;
+	}
 
 	public String getStaticPathPattern() {
 		return this.staticPathPattern;

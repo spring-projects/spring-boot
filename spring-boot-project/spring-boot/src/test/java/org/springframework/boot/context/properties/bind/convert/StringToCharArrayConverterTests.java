@@ -30,7 +30,7 @@ public class StringToCharArrayConverterTests {
 	private StringToCharArrayConverter converter = new StringToCharArrayConverter();
 
 	@Test
-	public void convertShouldConvertSource() throws Exception {
+	public void convertShouldConvertSource() {
 		char[] converted = this.converter.convert("test");
 		assertThat(converted).containsExactly('t', 'e', 's', 't');
 	}

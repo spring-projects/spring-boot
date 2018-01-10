@@ -365,13 +365,13 @@ public abstract class AbstractJsonMarshalTester<T> {
 			this.testerClass = testerClass;
 		}
 
-		public void initFields(final Object testInstance, final M marshaller) {
+		public void initFields(Object testInstance, M marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");
 			initFields(testInstance, () -> marshaller);
 		}
 
-		public void initFields(final Object testInstance,
+		public void initFields(Object testInstance,
 				final ObjectFactory<M> marshaller) {
 			Assert.notNull(testInstance, "TestInstance must not be null");
 			Assert.notNull(marshaller, "Marshaller must not be null");

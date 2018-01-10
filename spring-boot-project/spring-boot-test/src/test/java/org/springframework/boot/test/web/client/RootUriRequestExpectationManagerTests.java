@@ -71,22 +71,21 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void createWhenRootUriIsNullShouldThrowException() throws Exception {
+	public void createWhenRootUriIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RootUri must not be null");
 		new RootUriRequestExpectationManager(null, this.delegate);
 	}
 
 	@Test
-	public void createWhenExpectationManagerIsNullShouldThrowException()
-			throws Exception {
+	public void createWhenExpectationManagerIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ExpectationManager must not be null");
 		new RootUriRequestExpectationManager(this.uri, null);
 	}
 
 	@Test
-	public void expectRequestShouldDelegateToExpectationManager() throws Exception {
+	public void expectRequestShouldDelegateToExpectationManager() {
 		ExpectedCount count = mock(ExpectedCount.class);
 		RequestMatcher requestMatcher = mock(RequestMatcher.class);
 		this.manager.expectRequest(count, requestMatcher);
@@ -128,13 +127,13 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void resetRequestShouldDelegateToExpectationManager() throws Exception {
+	public void resetRequestShouldDelegateToExpectationManager() {
 		this.manager.reset();
 		verify(this.delegate).reset();
 	}
 
 	@Test
-	public void bindToShouldReturnMockRestServiceServer() throws Exception {
+	public void bindToShouldReturnMockRestServiceServer() {
 		RestTemplate restTemplate = new RestTemplateBuilder().build();
 		MockRestServiceServer bound = RootUriRequestExpectationManager
 				.bindTo(restTemplate);
@@ -142,8 +141,7 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void bindToWithExpectationManagerShouldReturnMockRestServiceServer()
-			throws Exception {
+	public void bindToWithExpectationManagerShouldReturnMockRestServiceServer() {
 		RestTemplate restTemplate = new RestTemplateBuilder().build();
 		MockRestServiceServer bound = RootUriRequestExpectationManager
 				.bindTo(restTemplate, this.delegate);
@@ -151,8 +149,7 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void forRestTemplateWhenUsingRootUriTemplateHandlerShouldReturnRootUriRequestExpectationManager()
-			throws Exception {
+	public void forRestTemplateWhenUsingRootUriTemplateHandlerShouldReturnRootUriRequestExpectationManager() {
 		RestTemplate restTemplate = new RestTemplateBuilder().rootUri(this.uri).build();
 		RequestExpectationManager actual = RootUriRequestExpectationManager
 				.forRestTemplate(restTemplate, this.delegate);
@@ -161,8 +158,7 @@ public class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
-	public void forRestTemplateWhenNotUsingRootUriTemplateHandlerShouldReturnOriginalRequestExpectationManager()
-			throws Exception {
+	public void forRestTemplateWhenNotUsingRootUriTemplateHandlerShouldReturnOriginalRequestExpectationManager() {
 		RestTemplate restTemplate = new RestTemplateBuilder().build();
 		RequestExpectationManager actual = RootUriRequestExpectationManager
 				.forRestTemplate(restTemplate, this.delegate);

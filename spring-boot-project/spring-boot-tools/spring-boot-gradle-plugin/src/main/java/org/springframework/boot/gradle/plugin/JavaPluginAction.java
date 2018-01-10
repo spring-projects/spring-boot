@@ -102,7 +102,6 @@ final class JavaPluginAction implements PluginApplicationAction {
 		this.singlePublishedArtifact.addCandidate(artifact);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void configureBootRunTask(Project project) {
 		JavaPluginConvention javaConvention = project.getConvention()
 				.getPlugin(JavaPluginConvention.class);
@@ -111,14 +110,14 @@ final class JavaPluginAction implements PluginApplicationAction {
 		run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 		run.classpath(javaConvention.getSourceSets()
 				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath());
-		run.setJvmArgs(project.provider(() -> {
+		run.getConventionMapping().map("jvmArgs", () -> {
 			if (project.hasProperty("applicationDefaultJvmArgs")) {
-				return (List<String>) project.property("applicationDefaultJvmArgs");
+				return project.property("applicationDefaultJvmArgs");
 			}
 			return Collections.emptyList();
-		}));
-		run.setMainClassName(
-				project.provider(new MainClassConvention(project, run::getClasspath)));
+		});
+		run.conventionMapping("main",
+				new MainClassConvention(project, run::getClasspath));
 	}
 
 	private void configureUtf8Encoding(Project project) {

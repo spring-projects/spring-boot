@@ -23,7 +23,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +46,7 @@ import org.springframework.boot.devtools.restart.FailureHandler.Outcome;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.cglib.core.ClassNameReader;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -240,7 +240,7 @@ public class Restarter {
 	 * Restart the running application.
 	 * @param failureHandler a failure handler to deal with application that doesn't start
 	 */
-	public void restart(final FailureHandler failureHandler) {
+	public void restart(FailureHandler failureHandler) {
 		if (!this.enabled) {
 			this.logger.debug("Application restart is disabled");
 			return;
@@ -273,11 +273,10 @@ public class Restarter {
 
 	private Throwable doStart() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
-		ClassLoader parent = this.applicationClassLoader;
 		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
-		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles,
-				this.logger);
+		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader,
+				urls, updatedFiles, this.logger);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Starting application " + this.mainClassName + " with URLs "
 					+ Arrays.asList(urls));
@@ -340,7 +339,9 @@ public class Restarter {
 		clear(ReflectionUtils.class, "declaredMethodsCache");
 		clear(AnnotationUtils.class, "findAnnotationCache");
 		clear(AnnotationUtils.class, "annotatedInterfaceCache");
-		clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+		if (!JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.NINE)) {
+			clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+		}
 	}
 
 	private void clear(String className, String fieldName) {
@@ -360,16 +361,15 @@ public class Restarter {
 			((Set<?>) instance).clear();
 		}
 		if (instance instanceof Map) {
-			Map<?, ?> map = ((Map<?, ?>) instance);
-			for (Iterator<?> iterator = map.keySet().iterator(); iterator.hasNext();) {
-				Object value = iterator.next();
-				if (value instanceof Class && ((Class<?>) value)
-						.getClassLoader() instanceof RestartClassLoader) {
-					iterator.remove();
-				}
-
-			}
+			((Map<?, ?>) instance).keySet().removeIf(this::isFromRestartClassLoader);
 		}
+	}
+
+	private boolean isFromRestartClassLoader(Object object) {
+		if (object instanceof Class) {
+			return ((Class<?>) object).getClassLoader() instanceof RestartClassLoader;
+		}
+		return false;
 	}
 
 	/**
@@ -382,7 +382,7 @@ public class Restarter {
 				memory.add(new long[102400]);
 			}
 		}
-		catch (final OutOfMemoryError ex) {
+		catch (OutOfMemoryError ex) {
 			// Expected
 		}
 	}
@@ -439,8 +439,7 @@ public class Restarter {
 		}
 	}
 
-	public Object getOrAddAttribute(final String name,
-			final ObjectFactory<?> objectFactory) {
+	public Object getOrAddAttribute(String name, final ObjectFactory<?> objectFactory) {
 		synchronized (this.attributes) {
 			if (!this.attributes.containsKey(name)) {
 				this.attributes.put(name, objectFactory.getObject());
@@ -505,7 +504,7 @@ public class Restarter {
 
 	/**
 	 * Initialize restart support. See
-	 * {@link #initialize(String[], boolean, RestartInitializer)} for details.
+	 * {@link #initialize(String[], boolean, RestartInitializer, boolean)} for details.
 	 * @param args main application arguments
 	 * @param forceReferenceCleanup if forcing of soft/weak reference should happen on
 	 * @param initializer the restart initializer
@@ -559,7 +558,7 @@ public class Restarter {
 	 * Set the restarter instance (useful for testing).
 	 * @param instance the instance to set
 	 */
-	final static void setInstance(Restarter instance) {
+	static void setInstance(Restarter instance) {
 		synchronized (INSTANCE_MONITOR) {
 			Restarter.instance = instance;
 		}
@@ -630,7 +629,7 @@ public class Restarter {
 	private class LeakSafeThreadFactory implements ThreadFactory {
 
 		@Override
-		public Thread newThread(final Runnable runnable) {
+		public Thread newThread(Runnable runnable) {
 			return getLeakSafeThread().callAndWait(() -> {
 				Thread thread = new Thread(runnable);
 				thread.setContextClassLoader(Restarter.this.applicationClassLoader);

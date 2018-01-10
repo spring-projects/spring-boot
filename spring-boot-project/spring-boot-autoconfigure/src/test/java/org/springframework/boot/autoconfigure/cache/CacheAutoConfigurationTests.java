@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -90,6 +89,7 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Mark Paluch
+ * @author Ryon Day
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("hazelcast-client-*.jar")
@@ -122,7 +122,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void cacheResolverFromSupportBackOff() throws Exception {
+	public void cacheResolverFromSupportBackOff() {
 		this.contextRunner
 				.withUserConfiguration(CustomCacheResolverFromSupportConfiguration.class)
 				.run((context) -> assertThat(context)
@@ -130,7 +130,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void customCacheResolverCanBeDefined() throws Exception {
+	public void customCacheResolverCanBeDefined() {
 		this.contextRunner.withUserConfiguration(SpecificCacheResolverConfiguration.class)
 				.withPropertyValues("spring.cache.type=simple").run((context) -> {
 					getCacheManager(context, ConcurrentMapCacheManager.class);
@@ -280,14 +280,23 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void redisCacheExplicit() {
 		this.contextRunner.withUserConfiguration(RedisCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=redis").run((context) -> {
+				.withPropertyValues("spring.cache.type=redis",
+						"spring.cache.redis.time-to-live=15000",
+						"spring.cache.redis.cacheNullValues=false",
+						"spring.cache.redis.keyPrefix=foo",
+						"spring.cache.redis.useKeyPrefix=false")
+				.run((context) -> {
 					RedisCacheManager cacheManager = getCacheManager(context,
 							RedisCacheManager.class);
 					assertThat(cacheManager.getCacheNames()).isEmpty();
-					assertThat(
-							((org.springframework.data.redis.cache.RedisCacheConfiguration) new DirectFieldAccessor(
-									cacheManager).getPropertyValue("defaultCacheConfig"))
-											.usePrefix()).isTrue();
+					org.springframework.data.redis.cache.RedisCacheConfiguration redisCacheConfiguration = (org.springframework.data.redis.cache.RedisCacheConfiguration) new DirectFieldAccessor(
+							cacheManager).getPropertyValue("defaultCacheConfig");
+					assertThat(redisCacheConfiguration.getTtl())
+							.isEqualTo(java.time.Duration.ofSeconds(15));
+					assertThat(redisCacheConfiguration.getAllowCacheNullValues())
+							.isFalse();
+					assertThat(redisCacheConfiguration.getKeyPrefix()).contains("foo");
+					assertThat(redisCacheConfiguration.usePrefix()).isFalse();
 				});
 	}
 
@@ -309,6 +318,14 @@ public class CacheAutoConfigurationTests {
 					RedisCacheManager cacheManager = getCacheManager(context,
 							RedisCacheManager.class);
 					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+					org.springframework.data.redis.cache.RedisCacheConfiguration redisCacheConfiguration = (org.springframework.data.redis.cache.RedisCacheConfiguration) new DirectFieldAccessor(
+							cacheManager).getPropertyValue("defaultCacheConfig");
+					assertThat(redisCacheConfiguration.getTtl())
+							.isEqualTo(java.time.Duration.ofMinutes(0));
+					assertThat(redisCacheConfiguration.getAllowCacheNullValues())
+							.isTrue();
+					assertThat(redisCacheConfiguration.getKeyPrefix()).isEmpty();
+					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
 				});
 	}
 
@@ -497,7 +514,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void ehcache3AsJCacheWithConfig() throws IOException {
+	public void ehcache3AsJCacheWithConfig() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		String configLocation = "ehcache3.xml";
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
@@ -553,7 +570,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastCacheWithHazelcastAutoConfiguration() throws IOException {
+	public void hazelcastCacheWithHazelcastAutoConfiguration() {
 		String hazelcastConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		this.contextRunner
 				.withConfiguration(
@@ -598,7 +615,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastAsJCacheWithConfig() throws IOException {
+	public void hazelcastAsJCacheWithConfig() {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		try {
 			String configLocation = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
@@ -621,7 +638,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastAsJCacheWithExistingHazelcastInstance() throws IOException {
+	public void hazelcastAsJCacheWithExistingHazelcastInstance() {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		this.contextRunner
 				.withConfiguration(
@@ -704,7 +721,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void infinispanAsJCacheWithConfig() throws IOException {
+	public void infinispanAsJCacheWithConfig() {
 		String cachingProviderClassName = JCachingProvider.class.getName();
 		String configLocation = "infinispan.xml";
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)

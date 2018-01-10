@@ -259,6 +259,7 @@
 						<configuration>
 							<sourceDocumentName>index.adoc</sourceDocumentName>
 							<attributes>
+								<github-tag>${github-tag}</github-tag>
 								<version-type>${version-type}</version-type>
 								<version>${project.version}</version>
 							</attributes>

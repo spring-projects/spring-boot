@@ -41,13 +41,14 @@ public interface WebMvcTagsProvider {
 
 	/**
 	 * Provides tags to be associated with metrics for the given {@code request} and
-	 * {@code response} exchange.
+	 * {@code response} exchange. The request was handled by the given {@code handler}.
 	 * @param request the request
+	 * @param handler the handler
 	 * @param response the response
 	 * @param ex the current exception, if any
 	 * @return tags to associate with metrics for the request and response exchange
 	 */
-	Iterable<Tag> httpRequestTags(HttpServletRequest request,
+	Iterable<Tag> httpRequestTags(HttpServletRequest request, Object handler,
 			HttpServletResponse response, Throwable ex);
 
 }

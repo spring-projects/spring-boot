@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +39,8 @@ public class ActiveMQProperties {
 	private String brokerUrl;
 
 	/**
-	 * Specify if the default broker URL should be in memory. Ignored if an explicit
-	 * broker has been specified.
+	 * Whether the default broker URL should be in memory. Ignored if an explicit broker
+	 * has been specified.
 	 */
 	private boolean inMemory = true;
 
@@ -54,22 +55,21 @@ public class ActiveMQProperties {
 	private String password;
 
 	/**
-	 * Time to wait, in milliseconds, before considering a close complete.
+	 * Time to wait before considering a close complete.
 	 */
-	private int closeTimeout = 15000;
+	private Duration closeTimeout = Duration.ofSeconds(15);
 
 	/**
-	 * Do not stop message delivery before re-delivering messages from a rolled back
-	 * transaction. This implies that message order will not be preserved when this is
-	 * enabled.
+	 * Whether to stop message delivery before re-delivering messages from a rolled back
+	 * transaction. This implies that message order is not preserved when this is enabled.
 	 */
 	private boolean nonBlockingRedelivery = false;
 
 	/**
-	 * Time to wait, in milliseconds, on Message sends for a response. Set it to 0 to
-	 * indicate to wait forever.
+	 * Time to wait on message sends for a response. Set it to 0 to indicate to wait
+	 * forever.
 	 */
-	private int sendTimeout = 0;
+	private Duration sendTimeout = Duration.ofMillis(0);
 
 	private Pool pool = new Pool();
 
@@ -107,11 +107,11 @@ public class ActiveMQProperties {
 		this.password = password;
 	}
 
-	public int getCloseTimeout() {
+	public Duration getCloseTimeout() {
 		return this.closeTimeout;
 	}
 
-	public void setCloseTimeout(int closeTimeout) {
+	public void setCloseTimeout(Duration closeTimeout) {
 		this.closeTimeout = closeTimeout;
 	}
 
@@ -123,11 +123,11 @@ public class ActiveMQProperties {
 		this.nonBlockingRedelivery = nonBlockingRedelivery;
 	}
 
-	public int getSendTimeout() {
+	public Duration getSendTimeout() {
 		return this.sendTimeout;
 	}
 
-	public void setSendTimeout(int sendTimeout) {
+	public void setSendTimeout(Duration sendTimeout) {
 		this.sendTimeout = sendTimeout;
 	}
 
@@ -146,37 +146,37 @@ public class ActiveMQProperties {
 	public static class Pool {
 
 		/**
-		 * Whether a PooledConnectionFactory should be created instead of a regular
+		 * Whether a PooledConnectionFactory should be created, instead of a regular
 		 * ConnectionFactory.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Block when a connection is requested and the pool is full. Set it to false to
-		 * throw a "JMSException" instead.
+		 * Whether to block when a connection is requested and the pool is full. Set it to
+		 * false to throw a "JMSException" instead.
 		 */
 		private boolean blockIfFull = true;
 
 		/**
-		 * Blocking period, in milliseconds, before throwing an exception if the pool is
-		 * still full.
+		 * Blocking period, before throwing an exception if the pool is still full.
 		 */
-		private long blockIfFullTimeout = -1;
+		private Duration blockIfFullTimeout = Duration.ofMillis(-1);
 
 		/**
-		 * Create a connection on startup. Can be used to warm-up the pool on startup.
+		 * Whether to create a connection on startup. Can be used to warm up the pool on
+		 * startup.
 		 */
 		private boolean createConnectionOnStartup = true;
 
 		/**
-		 * Connection expiration timeout in milliseconds.
+		 * Connection expiration timeout.
 		 */
-		private long expiryTimeout = 0;
+		private Duration expiryTimeout = Duration.ofMillis(0);
 
 		/**
-		 * Connection idle timeout in milliseconds.
+		 * Connection idle timeout.
 		 */
-		private int idleTimeout = 30000;
+		private Duration idleTimeout = Duration.ofSeconds(30);
 
 		/**
 		 * Maximum number of pooled connections.
@@ -194,14 +194,14 @@ public class ActiveMQProperties {
 		private boolean reconnectOnException = true;
 
 		/**
-		 * Time to sleep, in milliseconds, between runs of the idle connection eviction
-		 * thread. When negative, no idle connection eviction thread runs.
+		 * Time to sleep between runs of the idle connection eviction thread. When
+		 * negative, no idle connection eviction thread runs.
 		 */
-		private long timeBetweenExpirationCheck = -1;
+		private Duration timeBetweenExpirationCheck = Duration.ofMillis(-1);
 
 		/**
-		 * Use only one anonymous "MessageProducer" instance. Set it to false to create
-		 * one "MessageProducer" every time one is required.
+		 * Whether to use only one anonymous "MessageProducer" instance. Set it to false
+		 * to create one "MessageProducer" every time one is required.
 		 */
 		private boolean useAnonymousProducers = true;
 
@@ -221,11 +221,11 @@ public class ActiveMQProperties {
 			this.blockIfFull = blockIfFull;
 		}
 
-		public long getBlockIfFullTimeout() {
+		public Duration getBlockIfFullTimeout() {
 			return this.blockIfFullTimeout;
 		}
 
-		public void setBlockIfFullTimeout(long blockIfFullTimeout) {
+		public void setBlockIfFullTimeout(Duration blockIfFullTimeout) {
 			this.blockIfFullTimeout = blockIfFullTimeout;
 		}
 
@@ -237,19 +237,19 @@ public class ActiveMQProperties {
 			this.createConnectionOnStartup = createConnectionOnStartup;
 		}
 
-		public long getExpiryTimeout() {
+		public Duration getExpiryTimeout() {
 			return this.expiryTimeout;
 		}
 
-		public void setExpiryTimeout(long expiryTimeout) {
+		public void setExpiryTimeout(Duration expiryTimeout) {
 			this.expiryTimeout = expiryTimeout;
 		}
 
-		public int getIdleTimeout() {
+		public Duration getIdleTimeout() {
 			return this.idleTimeout;
 		}
 
-		public void setIdleTimeout(int idleTimeout) {
+		public void setIdleTimeout(Duration idleTimeout) {
 			this.idleTimeout = idleTimeout;
 		}
 
@@ -278,11 +278,11 @@ public class ActiveMQProperties {
 			this.reconnectOnException = reconnectOnException;
 		}
 
-		public long getTimeBetweenExpirationCheck() {
+		public Duration getTimeBetweenExpirationCheck() {
 			return this.timeBetweenExpirationCheck;
 		}
 
-		public void setTimeBetweenExpirationCheck(long timeBetweenExpirationCheck) {
+		public void setTimeBetweenExpirationCheck(Duration timeBetweenExpirationCheck) {
 			this.timeBetweenExpirationCheck = timeBetweenExpirationCheck;
 		}
 
@@ -299,7 +299,7 @@ public class ActiveMQProperties {
 	public static class Packages {
 
 		/**
-		 * Trust all packages.
+		 * Whether to trust all packages.
 		 */
 		private Boolean trustAll;
 

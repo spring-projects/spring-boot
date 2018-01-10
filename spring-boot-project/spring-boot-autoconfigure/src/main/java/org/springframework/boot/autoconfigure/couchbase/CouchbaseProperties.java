@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -154,8 +155,8 @@ public class CouchbaseProperties {
 	public static class Ssl {
 
 		/**
-		 * Enable SSL support. Enabled automatically if a "keyStore" is provided unless
-		 * specified otherwise.
+		 * Whether to enable SSL support. Enabled automatically if a "keyStore" is
+		 * provided unless specified otherwise.
 		 */
 		private Boolean enabled;
 
@@ -199,67 +200,67 @@ public class CouchbaseProperties {
 	public static class Timeouts {
 
 		/**
-		 * Bucket connections timeout in milliseconds.
+		 * Bucket connections timeouts.
 		 */
-		private long connect = 5000;
+		private Duration connect = Duration.ofMillis(5000);
 
 		/**
-		 * Blocking operations performed on a specific key timeout in milliseconds.
+		 * Blocking operations performed on a specific key timeout.
 		 */
-		private long keyValue = 2500;
+		private Duration keyValue = Duration.ofMillis(2500);
 
 		/**
-		 * N1QL query operations timeout in milliseconds.
+		 * N1QL query operations timeout.
 		 */
-		private long query = 7500;
+		private Duration query = Duration.ofMillis(7500);
 
 		/**
-		 * Socket connect connections timeout in milliseconds.
+		 * Socket connect connections timeout.
 		 */
-		private int socketConnect = 1000;
+		private Duration socketConnect = Duration.ofMillis(1000);
 
 		/**
-		 * Regular and geospatial view operations timeout in milliseconds.
+		 * Regular and geospatial view operations timeout.
 		 */
-		private long view = 7500;
+		private Duration view = Duration.ofMillis(7500);
 
-		public long getConnect() {
+		public Duration getConnect() {
 			return this.connect;
 		}
 
-		public void setConnect(long connect) {
+		public void setConnect(Duration connect) {
 			this.connect = connect;
 		}
 
-		public long getKeyValue() {
+		public Duration getKeyValue() {
 			return this.keyValue;
 		}
 
-		public void setKeyValue(long keyValue) {
+		public void setKeyValue(Duration keyValue) {
 			this.keyValue = keyValue;
 		}
 
-		public long getQuery() {
+		public Duration getQuery() {
 			return this.query;
 		}
 
-		public void setQuery(long query) {
+		public void setQuery(Duration query) {
 			this.query = query;
 		}
 
-		public int getSocketConnect() {
+		public Duration getSocketConnect() {
 			return this.socketConnect;
 		}
 
-		public void setSocketConnect(int socketConnect) {
+		public void setSocketConnect(Duration socketConnect) {
 			this.socketConnect = socketConnect;
 		}
 
-		public long getView() {
+		public Duration getView() {
 			return this.view;
 		}
 
-		public void setView(long view) {
+		public void setView(Duration view) {
 			this.view = view;
 		}
 

@@ -74,14 +74,14 @@ public class JooqAutoConfigurationTests {
 	}
 
 	@Test
-	public void noDataSource() throws Exception {
+	public void noDataSource() {
 		load();
 		assertThat(this.context.getBeanNamesForType(DSLContext.class).length)
 				.isEqualTo(0);
 	}
 
 	@Test
-	public void jooqWithoutTx() throws Exception {
+	public void jooqWithoutTx() {
 		load(JooqDataSourceConfiguration.class);
 		assertThat(getBeanNames(PlatformTransactionManager.class)).isEqualTo(NO_BEANS);
 		assertThat(getBeanNames(SpringTransactionProvider.class)).isEqualTo(NO_BEANS);
@@ -107,7 +107,7 @@ public class JooqAutoConfigurationTests {
 	}
 
 	@Test
-	public void jooqWithTx() throws Exception {
+	public void jooqWithTx() {
 		load(JooqDataSourceConfiguration.class, TxManagerConfiguration.class);
 		this.context.getBean(PlatformTransactionManager.class);
 		DSLContext dsl = this.context.getBean(DSLContext.class);
@@ -188,7 +188,7 @@ public class JooqAutoConfigurationTests {
 		}
 
 		@Override
-		public void run(org.jooq.Configuration configuration) throws Exception {
+		public void run(org.jooq.Configuration configuration) {
 			assertThat(this.dsl.fetch(this.sql).getValue(0, 0).toString())
 					.isEqualTo(this.expected);
 		}
@@ -207,7 +207,7 @@ public class JooqAutoConfigurationTests {
 		}
 
 		@Override
-		public void run(org.jooq.Configuration configuration) throws Exception {
+		public void run(org.jooq.Configuration configuration) {
 			for (String statement : this.sql) {
 				this.dsl.execute(statement);
 			}

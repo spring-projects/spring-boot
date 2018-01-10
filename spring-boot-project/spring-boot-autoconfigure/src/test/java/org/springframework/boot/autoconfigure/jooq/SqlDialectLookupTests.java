@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 public class SqlDialectLookupTests {
 
 	@Test
-	public void getSqlDialectWhenDataSourceIsNullShouldReturnDefault() throws Exception {
+	public void getSqlDialectWhenDataSourceIsNullShouldReturnDefault() {
 		assertThat(SqlDialectLookup.getDialect(null)).isEqualTo(SQLDialect.DEFAULT);
 	}
 
