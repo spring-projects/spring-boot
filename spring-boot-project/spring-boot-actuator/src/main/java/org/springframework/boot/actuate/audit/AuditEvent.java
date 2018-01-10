@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -110,7 +109,6 @@ public class AuditEvent implements Serializable {
 	 * Returns the date/time that the even was logged.
 	 * @return the time stamp
 	 */
-	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
 	public Date getTimestamp() {
 		return this.timestamp;
 	}
