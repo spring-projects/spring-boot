@@ -52,7 +52,7 @@ public class SpringBootTestContextBootstrapperWithContextConfigurationTests {
 
 	@Test
 	public void contextWasCreatedViaSpringApplication() {
-		assertThat(this.context.getId()).startsWith("application:");
+		assertThat(this.context.getId()).startsWith("application");
 	}
 
 }
