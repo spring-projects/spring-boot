@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.impl.AbstractMetricsCollector;
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
@@ -78,10 +77,10 @@ public class RabbitMetrics implements MeterBinder {
 		}
 
 		public MicrometerMetricsCollector(final MeterRegistry registry, final String prefix, Iterable<Tag> tags) {
-			this(metric -> metric.create(registry, prefix, tags), tags);
+			this(metric -> metric.create(registry, prefix, tags));
 		}
 
-		public MicrometerMetricsCollector(Function<Metrics, Object> metricsCreator, Iterable<Tag> tags) {
+		public MicrometerMetricsCollector(Function<Metrics, Object> metricsCreator) {
 			this.connections = (AtomicLong) metricsCreator.apply(
 					org.springframework.boot.actuate.metrics.amqp.RabbitMetrics.MicrometerMetricsCollector.Metrics.CONNECTIONS);
 			this.channels = (AtomicLong) metricsCreator.apply(
@@ -164,9 +163,7 @@ public class RabbitMetrics implements MeterBinder {
 			PUBLISHED_MESSAGES {
 				@Override
 				Object create(MeterRegistry registry, String prefix, Iterable<Tag> tags) {
-					Meter.Id id = registry.createId(prefix + ".published", tags,
-							"The number of messages published to RabbitMQ");
-					return registry.counter(id);
+					return registry.counter(prefix + "published", tags);
 				}
 			},
 			/**
@@ -175,9 +172,7 @@ public class RabbitMetrics implements MeterBinder {
 			CONSUMED_MESSAGES {
 				@Override
 				Object create(MeterRegistry registry, String prefix, Iterable<Tag> tags) {
-					Meter.Id id = registry.createId(prefix + ".consumed", tags,
-							"The number of messages consumed from RabbitMQ");
-					return registry.counter(id);
+					return registry.counter(prefix + ".consumed", tags);
 				}
 			},
 			/**
@@ -186,9 +181,7 @@ public class RabbitMetrics implements MeterBinder {
 			ACKNOWLEDGED_MESSAGES {
 				@Override
 				Object create(MeterRegistry registry, String prefix, Iterable<Tag> tags) {
-					Meter.Id id = registry.createId(prefix + ".acknowledged", tags,
-							"The number of messages acknowledged to RabbitMQ");
-					return registry.counter(id);
+					return registry.counter(prefix + ".acknowledged", tags);
 				}
 			},
 			/**
@@ -197,9 +190,7 @@ public class RabbitMetrics implements MeterBinder {
 			REJECTED_MESSAGES {
 				@Override
 				Object create(MeterRegistry registry, String prefix, Iterable<Tag> tags) {
-					Meter.Id id = registry.createId(prefix + ".rejected", tags,
-							"The number of messages rejected to RabbitMQ");
-					return registry.counter(id);
+					return registry.counter(prefix + ".rejected", tags);
 				}
 			};
 
