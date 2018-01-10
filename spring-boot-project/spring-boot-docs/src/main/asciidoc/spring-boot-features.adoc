@@ -5907,9 +5907,16 @@ running server, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/web/RandomPortExampleTests.java[tag=test-random-port]
+include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[tag=test-random-port]
 ----
 
+If you prefer to use a {spring-reference}testing.html#webtestclient[`WebTestClient`], you
+can use that as well:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/web/RandomPortWebTestClientExampleTests.java[tag=test-random-port]
+----
 
 
 [[boot-features-testing-spring-boot-applications-mocking-beans]]
@@ -6194,8 +6201,10 @@ additional configuration classes using `@Import` on your test.
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the
 `@MockBean` annotation to provide mock implementations for required collaborators.
 
-`@WebFluxTest` also auto-configures `WebTestClient`, which offers a powerful way to
-quickly test WebFlux controllers without needing to start a full HTTP server.
+`@WebFluxTest` also auto-configures
+{spring-reference}testing.html#webtestclient[`WebTestClient`]`WebTestClient`, which offers
+a powerful way to quickly test WebFlux controllers without needing to start a full HTTP
+server.
 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as
 `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`. The following

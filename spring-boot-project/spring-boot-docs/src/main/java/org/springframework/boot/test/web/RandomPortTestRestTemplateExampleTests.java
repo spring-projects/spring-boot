@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class RandomPortExampleTests {
+public class RandomPortTestRestTemplateExampleTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
