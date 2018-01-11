@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -279,7 +279,7 @@ public class CacheAutoConfigurationTests {
 
 	@Test
 	public void redisCacheExplicit() {
-		this.contextRunner.withUserConfiguration(RedisCacheConfiguration.class)
+		this.contextRunner.withUserConfiguration(RedisConfiguration.class)
 				.withPropertyValues("spring.cache.type=redis",
 						"spring.cache.redis.time-to-live=15000",
 						"spring.cache.redis.cacheNullValues=false",
@@ -301,16 +301,35 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	public void redisCacheWithRedisCacheConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(RedisWithCacheConfigurationConfiguration.class)
+				.withPropertyValues("spring.cache.type=redis",
+						"spring.cache.redis.time-to-live=15000",
+						"spring.cache.redis.keyPrefix=foo")
+				.run((context) -> {
+					RedisCacheManager cacheManager = getCacheManager(context,
+							RedisCacheManager.class);
+					assertThat(cacheManager.getCacheNames()).isEmpty();
+					org.springframework.data.redis.cache.RedisCacheConfiguration redisCacheConfiguration = (org.springframework.data.redis.cache.RedisCacheConfiguration) new DirectFieldAccessor(
+							cacheManager).getPropertyValue("defaultCacheConfig");
+					assertThat(redisCacheConfiguration.getTtl())
+							.isEqualTo(java.time.Duration.ofSeconds(30));
+					assertThat(redisCacheConfiguration.getKeyPrefix()).contains("bar");
+				});
+	}
+
+	@Test
 	public void redisCacheWithCustomizers() {
 		this.contextRunner
-				.withUserConfiguration(RedisCacheAndCustomizersConfiguration.class)
+				.withUserConfiguration(RedisWithCustomizersConfiguration.class)
 				.withPropertyValues("spring.cache.type=" + "redis")
 				.run(dunno("allCacheManagerCustomizer", "redisCacheManagerCustomizer"));
 	}
 
 	@Test
 	public void redisCacheExplicitWithCaches() {
-		this.contextRunner.withUserConfiguration(RedisCacheConfiguration.class)
+		this.contextRunner.withUserConfiguration(RedisConfiguration.class)
 				.withPropertyValues("spring.cache.type=redis",
 						"spring.cache.cacheNames[0]=foo",
 						"spring.cache.cacheNames[1]=bar")
@@ -919,7 +938,7 @@ public class CacheAutoConfigurationTests {
 
 	@Configuration
 	@EnableCaching
-	static class RedisCacheConfiguration {
+	static class RedisConfiguration {
 
 		@Bean
 		public RedisConnectionFactory redisConnectionFactory() {
@@ -929,8 +948,22 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ RedisCacheConfiguration.class, CacheManagerCustomizersConfiguration.class })
-	static class RedisCacheAndCustomizersConfiguration {
+	@Import(RedisConfiguration.class)
+	static class RedisWithCacheConfigurationConfiguration {
+
+		@Bean
+		public org.springframework.data.redis.cache.RedisCacheConfiguration customRedisCacheConfiguration() {
+			return org.springframework.data.redis.cache.RedisCacheConfiguration
+					.defaultCacheConfig()
+					.entryTtl(java.time.Duration.ofSeconds(30))
+					.prefixKeysWith("bar");
+		}
+
+	}
+
+	@Configuration
+	@Import({ RedisConfiguration.class, CacheManagerCustomizersConfiguration.class })
+	static class RedisWithCustomizersConfiguration {
 
 	}
 

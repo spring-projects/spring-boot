@@ -4638,6 +4638,10 @@ key, Redis does not have overlapping keys and cannot return invalid values. We s
 recommend keeping this setting enabled if you create your own `RedisCacheManager`.
 ====
 
+TIP: You can take full control of the configuration by adding a `RedisCacheConfiguration`
+`@Bean` of your own. This can be useful if you're looking for customizing the
+serialization strategy.
+
 
 
 [[boot-features-caching-provider-caffeine]]
