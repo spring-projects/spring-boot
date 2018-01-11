@@ -27,12 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DatadogPropertiesConfigAdapterTests {
 
-	@Test
-	public void apiKeyInferUri() {
+	@Test(expected = IllegalStateException.class)
+	public void apiKeyIsRequired() {
 		DatadogProperties properties = new DatadogProperties();
-		properties.setApiKey("my-key");
-		assertThat(new DatadogPropertiesConfigAdapter(properties).uri())
-				.contains("?api_key=my-key");
+		new DatadogPropertiesConfigAdapter(properties).apiKey();
 	}
 
 	@Test

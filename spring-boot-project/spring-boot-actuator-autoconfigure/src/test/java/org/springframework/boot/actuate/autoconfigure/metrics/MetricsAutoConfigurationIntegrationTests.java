@@ -32,6 +32,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
+import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -92,7 +94,6 @@ public class MetricsAutoConfigurationIntegrationTests {
 						"{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
 		assertThat(this.external.getForObject("/api/external", Map.class))
 				.containsKey("message");
-		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.client.requests").value(Statistic.Count, 1.0)
 				.timer()).isPresent();
 	}
@@ -100,7 +101,6 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Test
 	public void requestMappingIsInstrumented() {
 		this.loopback.getForObject("/api/people", Set.class);
-		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.server.requests").value(Statistic.Count, 1.0)
 				.timer()).isPresent();
 	}
@@ -126,8 +126,12 @@ public class MetricsAutoConfigurationIntegrationTests {
 		}
 
 		@Bean
-		public RestTemplate restTemplate() {
-			return new RestTemplate();
+		public RestTemplate restTemplate(MeterRegistry registry) {
+			RestTemplate restTemplate = new RestTemplate();
+			MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
+					registry, new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests", false);
+			customizer.customize(restTemplate);
+			return restTemplate;
 		}
 
 	}

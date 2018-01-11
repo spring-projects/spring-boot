@@ -82,13 +82,26 @@ public class MetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(MeterRegistry.class)
 	public CompositeMeterRegistry compositeMeterRegistry(
+			MetricsProperties metricsProperties,
 			ObjectProvider<Collection<MetricsExporter>> exporters,
 			ObjectProvider<Collection<MeterRegistryConfigurer>> configurers) {
-		CompositeMeterRegistry composite = new CompositeMeterRegistry();
-		configurers.getIfAvailable(Collections::emptyList)
-				.forEach((configurer) -> configurer.configureRegistry(composite));
-		exporters.getIfAvailable(Collections::emptyList).stream()
-				.map(MetricsExporter::registry).forEach(composite::add);
+		CompositeMeterRegistry composite = metricsProperties.isUseGlobalRegistry() ?
+				Metrics.globalRegistry : new CompositeMeterRegistry();
+
+		if (configurers.getIfAvailable() != null) {
+			configurers.getIfAvailable(Collections::emptyList)
+					.forEach((configurer) -> configurer.configureRegistry(composite));
+		}
+
+		if (exporters.getIfAvailable() != null) {
+			exporters.getIfAvailable().forEach(exporter -> {
+				final MeterRegistry childRegistry = exporter.registry();
+				if (composite == childRegistry) {
+					throw new IllegalStateException("cannot add a CompositeMeterRegistry to itself");
+				}
+				composite.add(childRegistry);
+			});
+		}
 		return composite;
 	}
 
@@ -129,7 +142,7 @@ public class MetricsAutoConfiguration {
 				ObjectProvider<Collection<MeterBinder>> binders) {
 			binders.getIfAvailable(Collections::emptyList)
 					.forEach((binder) -> binder.bindTo(registry));
-			if (config.isUseGlobalRegistry()) {
+			if (config.isUseGlobalRegistry() && registry != Metrics.globalRegistry) {
 				Metrics.addRegistry(registry);
 			}
 		}

@@ -34,6 +34,18 @@ public class DatadogProperties extends StepRegistryProperties {
 	private String apiKey;
 
 	/**
+	 * Datadog application key. Not strictly required, but improves the Datadog
+	 * experience by sending meter descriptions, types, and base units to Datadog.
+	 */
+	private String applicationKey;
+
+	/**
+	 * Enable publishing descriptions metadata to Datadog. Turn
+	 * this off to minimize the amount of metadata sent.
+	 */
+	private Boolean descriptions;
+
+	/**
 	 * Tag that will be mapped to "host" when shipping metrics to Datadog. Can be
 	 * omitted if host should be omitted on publishing.
 	 */
@@ -51,6 +63,22 @@ public class DatadogProperties extends StepRegistryProperties {
 
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
+	}
+
+	public String getApplicationKey() {
+		return this.applicationKey;
+	}
+
+	public void setApplicationKey(String applicationKey) {
+		this.applicationKey = applicationKey;
+	}
+
+	public Boolean getDescriptions() {
+		return this.descriptions;
+	}
+
+	public void setDescriptions(Boolean descriptions) {
+		this.descriptions = descriptions;
 	}
 
 	public String getHostTag() {

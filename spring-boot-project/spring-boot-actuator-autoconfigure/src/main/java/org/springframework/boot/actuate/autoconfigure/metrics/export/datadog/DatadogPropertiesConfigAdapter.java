@@ -40,6 +40,11 @@ class DatadogPropertiesConfigAdapter
 	}
 
 	@Override
+	public String applicationKey() {
+		return get(DatadogProperties::getApplicationKey, DatadogConfig.super::applicationKey);
+	}
+
+	@Override
 	public String hostTag() {
 		return get(DatadogProperties::getHostTag, DatadogConfig.super::hostTag);
 	}
@@ -49,4 +54,8 @@ class DatadogPropertiesConfigAdapter
 		return get(DatadogProperties::getUri, DatadogConfig.super::uri);
 	}
 
+	@Override
+	public boolean descriptions() {
+		return get(DatadogProperties::getDescriptions, DatadogConfig.super::descriptions);
+	}
 }

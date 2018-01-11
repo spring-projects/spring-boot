@@ -64,14 +64,12 @@ public class MetricsEndpointWebIntegrationTests {
 
 	@Test
 	public void selectByName() {
-		MockClock.clock(registry).add(SimpleConfig.DEFAULT_STEP);
 		client.get().uri("/actuator/metrics/jvm.memory.used").exchange().expectStatus()
 				.isOk().expectBody().jsonPath("$.name").isEqualTo("jvm.memory.used");
 	}
 
 	@Test
 	public void selectByTag() {
-		MockClock.clock(registry).add(SimpleConfig.DEFAULT_STEP);
 		client.get()
 				.uri("/actuator/metrics/jvm.memory.used?tag=id:Compressed%20Class%20Space")
 				.exchange().expectStatus().isOk().expectBody().jsonPath("$.name")

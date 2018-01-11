@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -102,6 +103,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 			}
 		}
 		catch (NestedServletException ex) {
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			metrics.record(request, response, ex.getCause());
 			throw ex;
 		}
