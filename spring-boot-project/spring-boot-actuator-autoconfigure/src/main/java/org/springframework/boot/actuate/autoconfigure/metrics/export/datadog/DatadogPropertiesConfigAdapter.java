@@ -40,6 +40,11 @@ class DatadogPropertiesConfigAdapter
 	}
 
 	@Override
+	public String applicationKey() {
+		return get(DatadogProperties::getApplicationKey, DatadogConfig.super::applicationKey);
+	}
+
+	@Override
 	public String hostTag() {
 		return get(DatadogProperties::getHostTag, DatadogConfig.super::hostTag);
 	}
