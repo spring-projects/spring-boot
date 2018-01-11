@@ -51,7 +51,7 @@ import org.springframework.util.ObjectUtils;
  * @see ServletContext#addServlet(String, Servlet)
  */
 public class ServletRegistrationBean<T extends Servlet>
-		extends DynaimcRegistrationBean<ServletRegistration.Dynamic> {
+		extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
 
 	private static final Log logger = LogFactory.getLog(ServletRegistrationBean.class);
 

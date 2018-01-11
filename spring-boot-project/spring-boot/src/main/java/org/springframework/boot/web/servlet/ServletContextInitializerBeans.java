@@ -246,7 +246,7 @@ public class ServletContextInitializerBeans
 	}
 
 	/**
-	 * Adapter to convert a given Bean type into a {@link DynaimcRegistrationBean} (and
+	 * Adapter to convert a given Bean type into a {@link DynamicRegistrationBean} (and
 	 * hence a {@link ServletContextInitializer}.
 	 */
 	private interface RegistrationBeanAdapter<T> {
