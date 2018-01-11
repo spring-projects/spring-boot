@@ -67,7 +67,6 @@ public class MetricsRestTemplateCustomizerTests {
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
 						MediaType.APPLICATION_JSON));
 		String result = this.restTemplate.getForObject("/test/{id}", String.class, 123);
-		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.client.requests")
 				.meters()).anySatisfy((m) -> assertThat(
 						StreamSupport.stream(m.getId().getTags().spliterator(), false)
