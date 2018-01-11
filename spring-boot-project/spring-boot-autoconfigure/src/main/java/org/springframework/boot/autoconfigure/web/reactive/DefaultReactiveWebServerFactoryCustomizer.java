@@ -19,8 +19,10 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.embedded.jetty.JettyCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
+import org.springframework.boot.autoconfigure.web.embedded.undertow.UndertowCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.EnvironmentAware;
@@ -78,6 +80,10 @@ public class DefaultReactiveWebServerFactoryCustomizer implements
 		if (factory instanceof JettyReactiveWebServerFactory) {
 			JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
 					(JettyReactiveWebServerFactory) factory);
+		}
+		if (factory instanceof UndertowReactiveWebServerFactory) {
+			UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
+					(UndertowReactiveWebServerFactory) factory);
 		}
 	}
 

@@ -28,17 +28,8 @@ import javax.servlet.ServletException;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
-import io.undertow.attribute.RequestHeaderAttribute;
-import io.undertow.predicate.Predicate;
-import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.encoding.ContentEncodingRepository;
-import io.undertow.server.handlers.encoding.EncodingHandler;
-import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.util.Headers;
-import io.undertow.util.HttpString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
@@ -47,9 +38,6 @@ import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.MimeType;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -216,35 +204,12 @@ public class UndertowServletWebServer implements WebServer {
 	}
 
 	private HttpHandler getContextHandler(HttpHandler httpHandler) {
-		HttpHandler contextHandler = configurationCompressionIfNecessary(httpHandler);
+		HttpHandler contextHandler = UndertowCompressionConfigurer
+				.configureCompression(this.compression, httpHandler);
 		if (StringUtils.isEmpty(this.contextPath)) {
 			return contextHandler;
 		}
 		return Handlers.path().addPrefixPath(this.contextPath, contextHandler);
-	}
-
-	private HttpHandler configurationCompressionIfNecessary(HttpHandler httpHandler) {
-		if (this.compression == null || !this.compression.getEnabled()) {
-			return httpHandler;
-		}
-		ContentEncodingRepository repository = new ContentEncodingRepository();
-		repository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
-				Predicates.and(getCompressionPredicates(this.compression)));
-		return new EncodingHandler(repository).setNext(httpHandler);
-	}
-
-	private Predicate[] getCompressionPredicates(Compression compression) {
-		List<Predicate> predicates = new ArrayList<>();
-		predicates.add(new MaxSizePredicate(compression.getMinResponseSize()));
-		predicates.add(new CompressibleMimeTypePredicate(compression.getMimeTypes()));
-		if (compression.getExcludedUserAgents() != null) {
-			for (String agent : compression.getExcludedUserAgents()) {
-				RequestHeaderAttribute agentHeader = new RequestHeaderAttribute(
-						new HttpString(HttpHeaders.USER_AGENT));
-				predicates.add(Predicates.not(Predicates.regex(agentHeader, agent)));
-			}
-		}
-		return predicates.toArray(new Predicate[predicates.size()]);
 	}
 
 	private String getPortsDescription() {
@@ -389,56 +354,6 @@ public class UndertowServletWebServer implements WebServer {
 			Port other = (Port) obj;
 			if (this.number != other.number) {
 				return false;
-			}
-			return true;
-		}
-
-	}
-
-	private static class CompressibleMimeTypePredicate implements Predicate {
-
-		private final List<MimeType> mimeTypes;
-
-		CompressibleMimeTypePredicate(String[] mimeTypes) {
-			this.mimeTypes = new ArrayList<>(mimeTypes.length);
-			for (String mimeTypeString : mimeTypes) {
-				this.mimeTypes.add(MimeTypeUtils.parseMimeType(mimeTypeString));
-			}
-		}
-
-		@Override
-		public boolean resolve(HttpServerExchange value) {
-			String contentType = value.getResponseHeaders()
-					.getFirst(HttpHeaders.CONTENT_TYPE);
-			if (contentType != null) {
-				for (MimeType mimeType : this.mimeTypes) {
-					if (mimeType
-							.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
-	}
-
-	/**
-	 * Predicate that returns true if the Content-Size of a request is above a given value
-	 * or is missing.
-	 */
-	private static class MaxSizePredicate implements Predicate {
-
-		private final Predicate maxContentSize;
-
-		MaxSizePredicate(int size) {
-			this.maxContentSize = Predicates.maxContentSize(size);
-		}
-
-		@Override
-		public boolean resolve(HttpServerExchange value) {
-			if (value.getResponseHeaders().contains(Headers.CONTENT_LENGTH)) {
-				return this.maxContentSize.resolve(value);
 			}
 			return true;
 		}

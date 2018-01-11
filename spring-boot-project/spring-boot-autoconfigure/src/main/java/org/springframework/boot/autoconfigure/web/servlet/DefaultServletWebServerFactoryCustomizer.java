@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.time.Duration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -24,13 +23,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 
-import io.undertow.UndertowOptions;
-
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
 import org.springframework.boot.autoconfigure.web.embedded.jetty.JettyCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
-import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.boot.autoconfigure.web.embedded.undertow.UndertowCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -129,15 +126,6 @@ public class DefaultServletWebServerFactoryCustomizer
 				this.serverProperties.getServlet().getContextParameters()));
 	}
 
-	private static boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
-			Environment environment) {
-		if (serverProperties.isUseForwardHeaders() != null) {
-			return serverProperties.isUseForwardHeaders();
-		}
-		CloudPlatform platform = CloudPlatform.getActive(environment);
-		return platform != null && platform.isUsingForwardHeaders();
-	}
-
 	/**
 	 * {@link ServletContextInitializer} to apply appropriate parts of the {@link Session}
 	 * configuration.
@@ -229,73 +217,6 @@ public class DefaultServletWebServerFactoryCustomizer
 			factory.addContextCustomizers(
 					(context) -> context.setUseRelativeRedirects(useRelativeRedirects));
 		}
-	}
-
-	private static class UndertowCustomizer {
-
-		protected static void customizeUndertow(ServerProperties serverProperties,
-				Environment environment, UndertowServletWebServerFactory factory) {
-
-			ServerProperties.Undertow undertowProperties = serverProperties.getUndertow();
-			ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties
-					.getAccesslog();
-			if (undertowProperties.getBufferSize() != null) {
-				factory.setBufferSize(undertowProperties.getBufferSize());
-			}
-			if (undertowProperties.getIoThreads() != null) {
-				factory.setIoThreads(undertowProperties.getIoThreads());
-			}
-			if (undertowProperties.getWorkerThreads() != null) {
-				factory.setWorkerThreads(undertowProperties.getWorkerThreads());
-			}
-			if (undertowProperties.getDirectBuffers() != null) {
-				factory.setDirectBuffers(undertowProperties.getDirectBuffers());
-			}
-			if (undertowProperties.getAccesslog().getEnabled() != null) {
-				factory.setAccessLogEnabled(accesslogProperties.getEnabled());
-			}
-			factory.setAccessLogDirectory(accesslogProperties.getDir());
-			factory.setAccessLogPattern(accesslogProperties.getPattern());
-			factory.setAccessLogPrefix(accesslogProperties.getPrefix());
-			factory.setAccessLogSuffix(accesslogProperties.getSuffix());
-			factory.setAccessLogRotate(accesslogProperties.isRotate());
-			factory.setUseForwardHeaders(
-					getOrDeduceUseForwardHeaders(serverProperties, environment));
-			if (serverProperties.getMaxHttpHeaderSize() > 0) {
-				customizeMaxHttpHeaderSize(factory,
-						serverProperties.getMaxHttpHeaderSize());
-			}
-			if (undertowProperties.getMaxHttpPostSize() > 0) {
-				customizeMaxHttpPostSize(factory,
-						undertowProperties.getMaxHttpPostSize());
-			}
-			if (serverProperties.getConnectionTimeout() != null) {
-				customizeConnectionTimeout(factory,
-						serverProperties.getConnectionTimeout());
-			}
-			factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
-					.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
-		}
-
-		private static void customizeConnectionTimeout(
-				UndertowServletWebServerFactory factory, Duration connectionTimeout) {
-			factory.addBuilderCustomizers((builder) -> builder.setSocketOption(
-					UndertowOptions.NO_REQUEST_TIMEOUT,
-					(int) connectionTimeout.toMillis()));
-		}
-
-		private static void customizeMaxHttpHeaderSize(
-				UndertowServletWebServerFactory factory, int maxHttpHeaderSize) {
-			factory.addBuilderCustomizers((builder) -> builder
-					.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
-		}
-
-		private static void customizeMaxHttpPostSize(
-				UndertowServletWebServerFactory factory, long maxHttpPostSize) {
-			factory.addBuilderCustomizers((builder) -> builder
-					.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
-		}
-
 	}
 
 }

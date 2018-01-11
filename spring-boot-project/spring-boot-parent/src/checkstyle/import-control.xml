@@ -20,6 +20,9 @@
 			<subpackage name="embedded.tomcat">
 				<allow pkg="org.springframework.boot.web.embedded.tomcat" />
 			</subpackage>
+			<subpackage name="embedded.undertow">
+				<allow pkg="org.springframework.boot.web.embedded.undertow" />
+			</subpackage>
 			<subpackage name="servlet">
 				<allow pkg="javax.servlet" />
 				<allow pkg="org.springframework.boot.web.embedded" />

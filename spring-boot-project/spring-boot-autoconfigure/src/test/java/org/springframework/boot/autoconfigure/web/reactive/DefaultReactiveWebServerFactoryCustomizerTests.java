@@ -44,12 +44,15 @@ import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
+import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -432,6 +435,52 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		finally {
 			webServer.stop();
 		}
+	}
+
+	@Test
+	public void customizeUndertowAccessLog() {
+		Map<String, String> map = new HashMap<>();
+		map.put("server.undertow.accesslog.enabled", "true");
+		map.put("server.undertow.accesslog.pattern", "foo");
+		map.put("server.undertow.accesslog.prefix", "test_log");
+		map.put("server.undertow.accesslog.suffix", "txt");
+		map.put("server.undertow.accesslog.dir", "test-logs");
+		map.put("server.undertow.accesslog.rotate", "false");
+		bindProperties(map);
+		UndertowReactiveWebServerFactory factory = spy(
+				new UndertowReactiveWebServerFactory());
+		this.customizer.customize(factory);
+		verify(factory).setAccessLogEnabled(true);
+		verify(factory).setAccessLogPattern("foo");
+		verify(factory).setAccessLogPrefix("test_log");
+		verify(factory).setAccessLogSuffix("txt");
+		verify(factory).setAccessLogDirectory(new File("test-logs"));
+		verify(factory).setAccessLogRotate(false);
+	}
+
+	@Test
+	public void setUseForwardHeadersUndertow() {
+		this.properties.setUseForwardHeaders(true);
+		UndertowReactiveWebServerFactory factory = spy(new UndertowReactiveWebServerFactory());
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void deduceUseForwardHeadersUndertow() {
+		this.customizer.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
+		UndertowReactiveWebServerFactory factory = spy(
+				new UndertowReactiveWebServerFactory());
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void skipNullElementsForUndertow() {
+		UndertowReactiveWebServerFactory factory = mock(
+				UndertowReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory, never()).setAccessLogEnabled(anyBoolean());
 	}
 
 	private NCSARequestLog getNCSARequestLog(JettyWebServer webServer) {
