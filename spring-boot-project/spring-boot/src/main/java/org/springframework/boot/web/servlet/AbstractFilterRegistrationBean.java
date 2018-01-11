@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 abstract class AbstractFilterRegistrationBean<T extends Filter>
-		extends DynaimcRegistrationBean<FilterRegistration.Dynamic> {
+		extends DynamicRegistrationBean<Dynamic> {
 
 	/**
 	 * Filters that wrap the servlet request should be ordered less than or equal to this.
