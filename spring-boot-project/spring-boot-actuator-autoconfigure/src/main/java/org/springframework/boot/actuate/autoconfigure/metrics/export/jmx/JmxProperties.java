@@ -18,6 +18,15 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
 
 import java.time.Duration;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * {@link ConfigurationProperties} for configuring JMX metrics export.
+ *
+ * @author Jon Schneider
+ * @since 2.0.0
+ */
+@ConfigurationProperties(prefix = "management.metrics.export.jmx")
 public class JmxProperties {
 	/**
 	 * Step size (i.e. reporting frequency) to use.
@@ -25,7 +34,7 @@ public class JmxProperties {
 	private Duration step;
 
 	public Duration getStep() {
-		return step;
+		return this.step;
 	}
 
 	public void setStep(Duration step) {

@@ -23,6 +23,23 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +49,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ClientApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(classes = RestTemplateMetricsConfigurationTest.ClientApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class RestTemplateMetricsConfigurationTest {
 	@Autowired
 	private RestTemplate client;
@@ -50,17 +67,28 @@ public class RestTemplateMetricsConfigurationTest {
 		}
 		assertThat(this.registry.find("http.client.requests").meter()).isPresent();
 	}
-}
 
-@SpringBootApplication
-class ClientApp {
-	@Bean
-	public MeterRegistry registry() {
-		return new SimpleMeterRegistry();
+	@SpringBootApplication(exclude = {
+			FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,
+			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
+			Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
+			MongoAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class,
+			HazelcastAutoConfiguration.class, MongoDataAutoConfiguration.class,
+			ElasticsearchAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
+			JestAutoConfiguration.class, SolrRepositoriesAutoConfiguration.class,
+			SolrAutoConfiguration.class, RedisAutoConfiguration.class,
+			RedisRepositoriesAutoConfiguration.class
+	})
+	static class ClientApp {
+		@Bean
+		public MeterRegistry registry() {
+			return new SimpleMeterRegistry();
+		}
+
+		@Bean
+		public RestTemplate restTemplate(RestTemplateBuilder builder) {
+			return builder.build();
+		}
 	}
 
-	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		return builder.build();
-	}
 }

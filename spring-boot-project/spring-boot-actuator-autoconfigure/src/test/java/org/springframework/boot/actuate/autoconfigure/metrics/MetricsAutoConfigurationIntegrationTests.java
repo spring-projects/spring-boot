@@ -32,6 +32,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
+import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -124,8 +126,12 @@ public class MetricsAutoConfigurationIntegrationTests {
 		}
 
 		@Bean
-		public RestTemplate restTemplate() {
-			return new RestTemplate();
+		public RestTemplate restTemplate(MeterRegistry registry) {
+			RestTemplate restTemplate = new RestTemplate();
+			MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
+					registry, new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests", false);
+			customizer.customize(restTemplate);
+			return restTemplate;
 		}
 
 	}
