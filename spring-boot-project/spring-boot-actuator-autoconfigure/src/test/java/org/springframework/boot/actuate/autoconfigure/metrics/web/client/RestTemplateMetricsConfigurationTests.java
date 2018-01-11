@@ -49,8 +49,8 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = RestTemplateMetricsConfigurationTest.ClientApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class RestTemplateMetricsConfigurationTest {
+@SpringBootTest(classes = RestTemplateMetricsConfigurationTests.ClientApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
+public class RestTemplateMetricsConfigurationTests {
 	@Autowired
 	private RestTemplate client;
 
