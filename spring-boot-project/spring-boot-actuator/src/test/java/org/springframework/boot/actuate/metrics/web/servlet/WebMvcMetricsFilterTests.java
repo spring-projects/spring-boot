@@ -85,6 +85,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
 public class WebMvcMetricsFilterTests {
+
 	@Autowired
 	private SimpleMeterRegistry registry;
 
@@ -167,7 +168,7 @@ public class WebMvcMetricsFilterTests {
 	public void unhandledError() {
 		assertThatCode(() -> this.mvc.perform(get("/api/c1/unhandledError/10"))
 				.andExpect(status().isOk()))
-				.hasRootCauseInstanceOf(RuntimeException.class);
+						.hasRootCauseInstanceOf(RuntimeException.class);
 		assertThat(this.registry.find("http.server.requests")
 				.tags("exception", "RuntimeException").value(Statistic.Count, 1.0)
 				.timer()).isPresent();
@@ -230,6 +231,7 @@ public class WebMvcMetricsFilterTests {
 	@EnableWebMvc
 	@Import({ Controller1.class, Controller2.class })
 	static class MetricsFilterApp {
+
 		@Primary
 		@Bean
 		MeterRegistry meterRegistry(Collection<MeterRegistry> registries) {
@@ -250,7 +252,9 @@ public class WebMvcMetricsFilterTests {
 				@Override
 				public MeterFilterReply accept(Meter.Id id) {
 					for (Tag tag : id.getTags()) {
-						if (tag.getKey().equals("uri") && (tag.getValue().contains("histogram") || tag.getValue().contains("percentiles"))) {
+						if (tag.getKey().equals("uri")
+								&& (tag.getValue().contains("histogram")
+								|| tag.getValue().contains("percentiles"))) {
 							return MeterFilterReply.ACCEPT;
 						}
 					}
@@ -368,6 +372,7 @@ public class WebMvcMetricsFilterTests {
 		public String successful(@PathVariable Long id) {
 			return id.toString();
 		}
+
 	}
 
 	static class RedirectAndNotFoundFilter extends OncePerRequestFilter {
@@ -377,7 +382,7 @@ public class WebMvcMetricsFilterTests {
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
-				throws ServletException, IOException {
+						throws ServletException, IOException {
 			String misbehave = request.getHeader(TEST_MISBEHAVE_HEADER);
 			if (misbehave != null) {
 				response.setStatus(Integer.parseInt(misbehave));

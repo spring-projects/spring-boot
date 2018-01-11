@@ -52,6 +52,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,6 +65,7 @@ import org.springframework.integration.support.management.IntegrationManagementC
  *
  * @since 2.0.0
  * @author Jon Schneider
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(Timed.class)
@@ -76,7 +78,8 @@ import org.springframework.integration.support.management.IntegrationManagementC
 		InfluxExportConfiguration.class, JmxExportConfiguration.class,
 		PrometheusExportConfiguration.class, SimpleExportConfiguration.class,
 		StatsdExportConfiguration.class })
-@AutoConfigureAfter({ CacheAutoConfiguration.class, DataSourceAutoConfiguration.class })
+@AutoConfigureAfter({ CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
+		RestTemplateAutoConfiguration.class })
 public class MetricsAutoConfiguration {
 
 	@Bean
@@ -87,21 +90,16 @@ public class MetricsAutoConfiguration {
 			ObjectProvider<Collection<MeterRegistryConfigurer>> configurers) {
 		CompositeMeterRegistry composite = metricsProperties.isUseGlobalRegistry() ?
 				Metrics.globalRegistry : new CompositeMeterRegistry();
-
-		if (configurers.getIfAvailable() != null) {
-			configurers.getIfAvailable(Collections::emptyList)
-					.forEach((configurer) -> configurer.configureRegistry(composite));
-		}
-
-		if (exporters.getIfAvailable() != null) {
-			exporters.getIfAvailable().forEach(exporter -> {
-				final MeterRegistry childRegistry = exporter.registry();
-				if (composite == childRegistry) {
-					throw new IllegalStateException("cannot add a CompositeMeterRegistry to itself");
-				}
-				composite.add(childRegistry);
-			});
-		}
+		configurers.getIfAvailable(Collections::emptyList)
+				.forEach((configurer) -> configurer.configureRegistry(composite));
+		exporters.getIfAvailable(Collections::emptyList).forEach(exporter -> {
+			MeterRegistry childRegistry = exporter.registry();
+			if (composite == childRegistry) {
+				throw new IllegalStateException(
+						"cannot add a CompositeMeterRegistry to itself");
+			}
+			composite.add(childRegistry);
+		});
 		return composite;
 	}
 

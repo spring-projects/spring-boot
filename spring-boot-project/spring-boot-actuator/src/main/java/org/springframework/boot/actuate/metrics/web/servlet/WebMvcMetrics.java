@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,8 @@ public class WebMvcMetrics {
 
 	void preHandle(HttpServletRequest request, Object handler) {
 		if (request.getAttribute(TIMING_REQUEST_ATTRIBUTE) == null) {
-			request.setAttribute(TIMING_REQUEST_ATTRIBUTE, this.registry.config().clock().monotonicTime());
+			request.setAttribute(TIMING_REQUEST_ATTRIBUTE,
+					this.registry.config().clock().monotonicTime());
 		}
 		request.setAttribute(HANDLER_REQUEST_ATTRIBUTE, handler);
 		longTaskTimed(handler).forEach((config) -> {

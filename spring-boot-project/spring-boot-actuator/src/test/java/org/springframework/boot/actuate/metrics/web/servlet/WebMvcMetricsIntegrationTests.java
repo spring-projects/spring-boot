@@ -83,8 +83,8 @@ public class WebMvcMetricsIntegrationTests {
 	public void handledExceptionIsRecordedInMetricTag() throws Exception {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
 		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception1", "status", "500").value(Statistic.Count, 1.0).timer())
-						.isPresent();
+				.tags("exception", "Exception1", "status", "500")
+				.value(Statistic.Count, 1.0).timer()).isPresent();
 	}
 
 	@Test
@@ -92,8 +92,8 @@ public class WebMvcMetricsIntegrationTests {
 		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError"))
 				.andExpect(status().is5xxServerError()));
 		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception2", "status", "500").value(Statistic.Count, 1.0).timer())
-						.isPresent();
+				.tags("exception", "Exception2", "status", "500")
+				.value(Statistic.Count, 1.0).timer()).isPresent();
 	}
 
 	@Configuration

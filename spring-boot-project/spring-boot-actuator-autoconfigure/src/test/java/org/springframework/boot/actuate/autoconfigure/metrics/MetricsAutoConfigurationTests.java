@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withPropertyValues("management.metrics.use-global-registry=false")
 			.withUserConfiguration(RegistryConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
 
@@ -49,8 +50,7 @@ public class MetricsAutoConfigurationTests {
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.use-global-registry=false")
+				.withPropertyValues("spring.datasource.generate-unique-name=true")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -65,8 +65,7 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.datasource-metric-name=custom.name",
-						"management.metrics.use-global-registry=false")
+						"management.metrics.jdbc.datasource-metric-name=custom.name")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -81,8 +80,7 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.instrument-datasource=false",
-						"management.metrics.use-global-registry=false")
+						"management.metrics.jdbc.instrument-datasource=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -96,7 +94,6 @@ public class MetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TwoDataSourcesConfiguration.class)
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("metrics.use-global-registry=false")
 				.run((context) -> {
 					context.getBean("firstDataSource", DataSource.class).getConnection()
 							.getMetaData();

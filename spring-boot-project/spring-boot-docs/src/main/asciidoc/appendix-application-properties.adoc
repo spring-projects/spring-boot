@@ -1290,8 +1290,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.atlas.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.atlas.uri= # URI of the Atlas server.
 	management.metrics.export.datadog.api-key= # Datadog API key.
+	management.metrics.export.datadog.application-key= # Datadog application key.
 	management.metrics.export.datadog.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.datadog.connect-timeout= # Connection timeout for requests to the backend.
+	management.metrics.export.datadog.descriptions= # Whether to publish descriptions metadata to Datadog. Turn this off to minimize the amount of metadata sent.
 	management.metrics.export.datadog.enabled=true # Whether exporting of metrics to this backend is enabled.
 	management.metrics.export.datadog.host-tag= # Tag that will be mapped to "host" when shipping metrics to Datadog. Can be omitted if host should be omitted on publishing.
 	management.metrics.export.datadog.num-threads= # Number of threads to use with the metrics publishing scheduler.
@@ -1328,6 +1330,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.influx.uri= # URI of the Influx server.
 	management.metrics.export.influx.user-name= # Login user of the Influx server.
 	management.metrics.export.jmx.enabled=true # Whether exporting of metrics to JMX is enabled.
+	management.metrics.export.jmx.step= # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.prometheus.descriptions= # Enable publishing descriptions as part of the scrape payload to Prometheus. Turn this off to minimize the amount of data sent on each scrape.
 	management.metrics.export.prometheus.enabled=true # Whether exporting of metrics to Prometheus is enabled.
 	management.metrics.export.prometheus.step= # Step size (i.e. reporting frequency) to use.

@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "management.metrics.export.jmx")
 public class JmxProperties {
+
 	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
