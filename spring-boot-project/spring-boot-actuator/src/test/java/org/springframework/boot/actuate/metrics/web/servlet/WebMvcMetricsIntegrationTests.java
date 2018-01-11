@@ -84,7 +84,7 @@ public class WebMvcMetricsIntegrationTests {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
 		this.clock.add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception1").value(Statistic.Count, 1.0).timer())
+				.tags("exception", "Exception1", "status", "500").value(Statistic.Count, 1.0).timer())
 						.isPresent();
 	}
 
@@ -94,7 +94,7 @@ public class WebMvcMetricsIntegrationTests {
 				.andExpect(status().is5xxServerError()));
 		this.clock.add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception2").value(Statistic.Count, 1.0).timer())
+				.tags("exception", "Exception2", "status", "500").value(Statistic.Count, 1.0).timer())
 						.isPresent();
 	}
 
