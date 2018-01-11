@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.util.ErrorHandler;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
 
@@ -92,8 +93,21 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 	}
 
 	@Override
-	public void finished(ConfigurableApplicationContext context, Throwable exception) {
-		SpringApplicationEvent event = getFinishedEvent(context, exception);
+	public void started(ConfigurableApplicationContext context) {
+		context.publishEvent(
+				new ApplicationStartedEvent(this.application, this.args, context));
+	}
+
+	@Override
+	public void running(ConfigurableApplicationContext context) {
+		context.publishEvent(
+				new ApplicationReadyEvent(this.application, this.args, context));
+	}
+
+	@Override
+	public void failed(ConfigurableApplicationContext context, Throwable exception) {
+		ApplicationFailedEvent event = new ApplicationFailedEvent(this.application,
+				this.args, context, exception);
 		if (context != null && context.isActive()) {
 			// Listeners have been registered to the application context so we should
 			// use it at this point if we can
@@ -108,20 +122,9 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 					this.initialMulticaster.addApplicationListener(listener);
 				}
 			}
-			if (event instanceof ApplicationFailedEvent) {
-				this.initialMulticaster.setErrorHandler(new LoggingErrorHandler());
-			}
+			this.initialMulticaster.setErrorHandler(new LoggingErrorHandler());
 			this.initialMulticaster.multicastEvent(event);
 		}
-	}
-
-	private SpringApplicationEvent getFinishedEvent(
-			ConfigurableApplicationContext context, Throwable exception) {
-		if (exception != null) {
-			return new ApplicationFailedEvent(this.application, this.args, context,
-					exception);
-		}
-		return new ApplicationReadyEvent(this.application, this.args, context);
 	}
 
 	private static class LoggingErrorHandler implements ErrorHandler {

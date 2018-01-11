@@ -235,8 +235,10 @@ except for the registration of listeners and initializers.
 the context is known but before the context is created.
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean
 definitions have been loaded.
-. An `ApplicationReadyEvent` is sent after the refresh and any related callbacks have
-been processed, to indicate that the application is ready to service requests.
+. An `ApplicationStartedEvent` is sent after the context has been refreshed but before any
+application and command-line runners have been called.
+. An `ApplicationReadyEvent` is sent after any application and command-line runners have
+been called. It indicates that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
 TIP: You often need not use application events, but it can be handy to know that they
