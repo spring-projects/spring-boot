@@ -54,4 +54,8 @@ class DatadogPropertiesConfigAdapter
 		return get(DatadogProperties::getUri, DatadogConfig.super::uri);
 	}
 
+	@Override
+	public boolean descriptions() {
+		return get(DatadogProperties::getDescriptions, DatadogConfig.super::descriptions);
+	}
 }
