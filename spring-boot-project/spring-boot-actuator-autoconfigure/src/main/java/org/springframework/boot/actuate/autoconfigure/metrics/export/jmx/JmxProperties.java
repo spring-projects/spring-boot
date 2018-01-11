@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.cache;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
 
-import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.binder.MeterBinder;
-import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
+import java.time.Duration;
 
-import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link CacheMeterBinderProvider} implementation for Caffeine.
+ * {@link ConfigurationProperties} for configuring JMX metrics export.
  *
- * @author Stephane Nicoll
+ * @author Jon Schneider
  * @since 2.0.0
  */
-public class CaffeineCacheMeterBinderProvider
-		implements CacheMeterBinderProvider<CaffeineCache> {
+@ConfigurationProperties(prefix = "management.metrics.export.jmx")
+public class JmxProperties {
 
-	@Override
-	public MeterBinder getMeterBinder(CaffeineCache cache, String name,
-			Iterable<Tag> tags) {
-		return new CaffeineCacheMetrics(cache.getNativeCache(), name, tags);
+	/**
+	 * Step size (i.e. reporting frequency) to use.
+	 */
+	private Duration step;
+
+	public Duration getStep() {
+		return this.step;
 	}
 
+	public void setStep(Duration step) {
+		this.step = step;
+	}
 }

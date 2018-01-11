@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class MeterRegistryConfigurerTests {
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
 				.withConfiguration(
 						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
-				.withPropertyValues("metrics.use-global-registry=false")
+				.withPropertyValues("management.metrics.use-global-registry=false")
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
 						.find("jvm.memory.used").tags("region", "us-east-1").gauge())
 								.isPresent());
@@ -52,7 +52,7 @@ public class MeterRegistryConfigurerTests {
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
 				.withConfiguration(
 						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
-				.withPropertyValues("metrics.use-global-registry=false")
+				.withPropertyValues("management.metrics.use-global-registry=false")
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
 						.find("my.thing").tags("region", "us-east-1").gauge())
 								.isPresent());

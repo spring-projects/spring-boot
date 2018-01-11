@@ -1010,9 +1010,9 @@ instance.
 
 [[production-ready-metrics-rest-template]]
 === RestTemplate Metrics
-Auto-configuration customizes the auto-configured `RestTemplate` to enable the
-instrumentation of its requests. `MetricsRestTemplateCustomizer` can be used to customize
-your own `RestTemplate` instances.
+The instrumentation of any `RestTemplate` created using the auto-configured
+`RestTemplateBuilder` is enabled. It is also possible to apply
+`MetricsRestTemplateCustomizer` manually.
 
 By default, metrics are generated with the name, `http.client.requests`. The name can be
 customized by setting the `management.metrics.web.client.requests-metric-name` property.

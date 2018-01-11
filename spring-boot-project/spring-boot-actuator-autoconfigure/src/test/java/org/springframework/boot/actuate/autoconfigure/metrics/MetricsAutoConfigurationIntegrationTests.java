@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -92,7 +94,6 @@ public class MetricsAutoConfigurationIntegrationTests {
 						"{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
 		assertThat(this.external.getForObject("/api/external", Map.class))
 				.containsKey("message");
-		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.client.requests").value(Statistic.Count, 1.0)
 				.timer()).isPresent();
 	}
@@ -100,7 +101,6 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Test
 	public void requestMappingIsInstrumented() {
 		this.loopback.getForObject("/api/people", Set.class);
-		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.server.requests").value(Statistic.Count, 1.0)
 				.timer()).isPresent();
 	}
@@ -115,7 +115,8 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Configuration
 	@ImportAutoConfiguration({ MetricsAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+			RestTemplateAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class,
 			ServletWebServerFactoryAutoConfiguration.class })
 	@Import(PersonController.class)
 	static class MetricsApp {
@@ -126,8 +127,8 @@ public class MetricsAutoConfigurationIntegrationTests {
 		}
 
 		@Bean
-		public RestTemplate restTemplate() {
-			return new RestTemplate();
+		public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+			return restTemplateBuilder.build();
 		}
 
 	}
