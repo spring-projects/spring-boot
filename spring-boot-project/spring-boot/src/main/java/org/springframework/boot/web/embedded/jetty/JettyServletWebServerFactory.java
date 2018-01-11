@@ -40,7 +40,6 @@ import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Request;
@@ -96,7 +95,7 @@ import org.springframework.util.StringUtils;
  * @see JettyWebServer
  */
 public class JettyServletWebServerFactory extends AbstractServletWebServerFactory
-		implements ResourceLoaderAware {
+		implements ConfigurableJettyWebServerFactory, ResourceLoaderAware {
 
 	private List<Configuration> configurations = new ArrayList<>();
 
@@ -438,29 +437,17 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		this.resourceLoader = resourceLoader;
 	}
 
-	/**
-	 * Set if x-forward-* headers should be processed.
-	 * @param useForwardHeaders if x-forward headers should be used
-	 * @since 1.3.0
-	 */
+	@Override
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
 	}
 
-	/**
-	 * Set the number of acceptor threads to use.
-	 * @param acceptors the number of acceptor threads to use
-	 * @since 1.4.0
-	 */
+	@Override
 	public void setAcceptors(int acceptors) {
 		this.acceptors = acceptors;
 	}
 
-	/**
-	 * Set the number of selector threads to use.
-	 * @param selectors the number of selector threads to use
-	 * @since 1.4.0
-	 */
+	@Override
 	public void setSelectors(int selectors) {
 		this.selectors = selectors;
 	}
@@ -485,11 +472,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return this.jettyServerCustomizers;
 	}
 
-	/**
-	 * Add {@link JettyServerCustomizer}s that will be applied to the {@link Server}
-	 * before it is started.
-	 * @param customizers the customizers to add
-	 */
+	@Override
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
@@ -563,28 +546,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 				}
 			}
 		}
-	}
-
-	/**
-	 * {@link JettyServerCustomizer} to add {@link ForwardedRequestCustomizer}. Only
-	 * supported with Jetty 9 (hence the inner class)
-	 */
-	private static class ForwardHeadersCustomizer implements JettyServerCustomizer {
-
-		@Override
-		public void customize(Server server) {
-			ForwardedRequestCustomizer customizer = new ForwardedRequestCustomizer();
-			for (Connector connector : server.getConnectors()) {
-				for (ConnectionFactory connectionFactory : connector
-						.getConnectionFactories()) {
-					if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-						((HttpConfiguration.ConnectionFactory) connectionFactory)
-								.getHttpConfiguration().addCustomizer(customizer);
-					}
-				}
-			}
-		}
-
 	}
 
 	/**

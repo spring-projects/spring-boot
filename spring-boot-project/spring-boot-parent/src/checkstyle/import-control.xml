@@ -14,6 +14,9 @@
 			<subpackage name="client">
 				<allow pkg="org.springframework.boot.web.client" />
 			</subpackage>
+			<subpackage name="embedded.jetty">
+				<allow pkg="org.springframework.boot.web.embedded.jetty" />
+			</subpackage>
 			<subpackage name="embedded.tomcat">
 				<allow pkg="org.springframework.boot.web.embedded.tomcat" />
 			</subpackage>

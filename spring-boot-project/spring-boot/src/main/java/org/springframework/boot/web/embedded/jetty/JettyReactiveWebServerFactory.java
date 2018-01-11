@@ -46,7 +46,8 @@ import org.springframework.util.Assert;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
+public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory
+		implements ConfigurableJettyWebServerFactory {
 
 	private static final Log logger = LogFactory
 			.getLog(JettyReactiveWebServerFactory.class);
@@ -60,6 +61,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * The number of selector threads to use.
 	 */
 	private int selectors = -1;
+
+	private boolean useForwardHeaders;
 
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
 
@@ -81,10 +84,51 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	@Override
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	@Override
+	public void setAcceptors(int acceptors) {
+		this.acceptors = acceptors;
+	}
+
+	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		JettyHttpHandlerAdapter servlet = new JettyHttpHandlerAdapter(httpHandler);
 		Server server = createJettyServer(servlet);
 		return new JettyWebServer(server, getPort() >= 0);
+	}
+
+	@Override
+	public void addServerCustomizers(JettyServerCustomizer... customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
+	}
+
+	/**
+	 * Sets {@link JettyServerCustomizer}s that will be applied to the {@link Server}
+	 * before it is started. Calling this method will replace any existing customizers.
+	 * @param customizers the Jetty customizers to apply
+	 */
+	public void setServerCustomizers(
+			Collection<? extends JettyServerCustomizer> customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.jettyServerCustomizers = new ArrayList<>(customizers);
+	}
+
+	/**
+	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be
+	 * applied to the {@link Server} before it is created.
+	 * @return the Jetty customizers
+	 */
+	public Collection<JettyServerCustomizer> getServerCustomizers() {
+		return this.jettyServerCustomizers;
+	}
+
+	@Override
+	public void setSelectors(int selectors) {
+		this.selectors = selectors;
 	}
 
 	protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
@@ -103,6 +147,9 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
+		}
+		if (this.useForwardHeaders) {
+			new ForwardHeadersCustomizer().customize(server);
 		}
 		return server;
 	}
@@ -143,49 +190,4 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		this.threadPool = threadPool;
 	}
 
-	/**
-	 * Set the number of acceptor threads to use.
-	 * @param acceptors the number of acceptor threads to use
-	 */
-	public void setAcceptors(int acceptors) {
-		this.acceptors = acceptors;
-	}
-
-	/**
-	 * Sets {@link JettyServerCustomizer}s that will be applied to the {@link Server}
-	 * before it is started. Calling this method will replace any existing customizers.
-	 * @param customizers the Jetty customizers to apply
-	 */
-	public void setServerCustomizers(
-			Collection<? extends JettyServerCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers = new ArrayList<>(customizers);
-	}
-
-	/**
-	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be
-	 * applied to the {@link Server} before it is created.
-	 * @return the Jetty customizers
-	 */
-	public Collection<JettyServerCustomizer> getServerCustomizers() {
-		return this.jettyServerCustomizers;
-	}
-
-	/**
-	 * Add {@link JettyServerCustomizer}s that will be applied to the {@link Server}
-	 * before it is started.
-	 * @param customizers the customizers to add
-	 */
-	public void addServerCustomizers(JettyServerCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
-	}
-
-	/**
-	 * Set the number of selector threads to use.
-	 * @param selectors the number of selector threads to use
-	 */
-	public void setSelectors(int selectors) {
-		this.selectors = selectors;
-	}
 }

@@ -25,21 +25,12 @@ import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 
 import io.undertow.UndertowOptions;
-import org.eclipse.jetty.server.AbstractConnector;
-import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.NCSARequestLog;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
+import org.springframework.boot.autoconfigure.web.embedded.jetty.JettyCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -128,7 +119,6 @@ public class DefaultServletWebServerFactoryCustomizer
 			JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
 					(JettyServletWebServerFactory) factory);
 		}
-
 		if (factory instanceof UndertowServletWebServerFactory) {
 			UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
 					(UndertowServletWebServerFactory) factory);
@@ -306,156 +296,6 @@ public class DefaultServletWebServerFactoryCustomizer
 					.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
 		}
 
-	}
-
-	private static class JettyCustomizer {
-
-		public static void customizeJetty(ServerProperties serverProperties,
-				Environment environment, JettyServletWebServerFactory factory) {
-			ServerProperties.Jetty jettyProperties = serverProperties.getJetty();
-			factory.setUseForwardHeaders(
-					getOrDeduceUseForwardHeaders(serverProperties, environment));
-			if (jettyProperties.getAcceptors() != null) {
-				factory.setAcceptors(jettyProperties.getAcceptors());
-			}
-			if (jettyProperties.getSelectors() != null) {
-				factory.setSelectors(jettyProperties.getSelectors());
-			}
-			if (serverProperties.getMaxHttpHeaderSize() > 0) {
-				customizeMaxHttpHeaderSize(factory,
-						serverProperties.getMaxHttpHeaderSize());
-			}
-			if (jettyProperties.getMaxHttpPostSize() > 0) {
-				customizeMaxHttpPostSize(factory, jettyProperties.getMaxHttpPostSize());
-			}
-
-			if (serverProperties.getConnectionTimeout() != null) {
-				customizeConnectionTimeout(factory,
-						serverProperties.getConnectionTimeout());
-			}
-			if (jettyProperties.getAccesslog().isEnabled()) {
-				customizeAccessLog(factory, jettyProperties.getAccesslog());
-			}
-		}
-
-		private static void customizeConnectionTimeout(
-				JettyServletWebServerFactory factory, Duration connectionTimeout) {
-			factory.addServerCustomizers((server) -> {
-				for (org.eclipse.jetty.server.Connector connector : server
-						.getConnectors()) {
-					if (connector instanceof AbstractConnector) {
-						((AbstractConnector) connector)
-								.setIdleTimeout(connectionTimeout.toMillis());
-					}
-				}
-			});
-		}
-
-		private static void customizeMaxHttpHeaderSize(
-				JettyServletWebServerFactory factory, int maxHttpHeaderSize) {
-			factory.addServerCustomizers(new JettyServerCustomizer() {
-
-				@Override
-				public void customize(Server server) {
-					for (org.eclipse.jetty.server.Connector connector : server
-							.getConnectors()) {
-						try {
-							for (ConnectionFactory connectionFactory : connector
-									.getConnectionFactories()) {
-								if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-									customize(
-											(HttpConfiguration.ConnectionFactory) connectionFactory);
-								}
-							}
-						}
-						catch (NoSuchMethodError ex) {
-							customizeOnJetty8(connector, maxHttpHeaderSize);
-						}
-					}
-
-				}
-
-				private void customize(HttpConfiguration.ConnectionFactory factory) {
-					HttpConfiguration configuration = factory.getHttpConfiguration();
-					configuration.setRequestHeaderSize(maxHttpHeaderSize);
-					configuration.setResponseHeaderSize(maxHttpHeaderSize);
-				}
-
-				private void customizeOnJetty8(
-						org.eclipse.jetty.server.Connector connector,
-						int maxHttpHeaderSize) {
-					try {
-						connector.getClass().getMethod("setRequestHeaderSize", int.class)
-								.invoke(connector, maxHttpHeaderSize);
-						connector.getClass().getMethod("setResponseHeaderSize", int.class)
-								.invoke(connector, maxHttpHeaderSize);
-					}
-					catch (Exception ex) {
-						throw new RuntimeException(ex);
-					}
-				}
-
-			});
-		}
-
-		private static void customizeMaxHttpPostSize(JettyServletWebServerFactory factory,
-				int maxHttpPostSize) {
-			factory.addServerCustomizers(new JettyServerCustomizer() {
-
-				@Override
-				public void customize(Server server) {
-					setHandlerMaxHttpPostSize(maxHttpPostSize, server.getHandlers());
-				}
-
-				private void setHandlerMaxHttpPostSize(int maxHttpPostSize,
-						Handler... handlers) {
-					for (Handler handler : handlers) {
-						if (handler instanceof ContextHandler) {
-							((ContextHandler) handler)
-									.setMaxFormContentSize(maxHttpPostSize);
-						}
-						else if (handler instanceof HandlerWrapper) {
-							setHandlerMaxHttpPostSize(maxHttpPostSize,
-									((HandlerWrapper) handler).getHandler());
-						}
-						else if (handler instanceof HandlerCollection) {
-							setHandlerMaxHttpPostSize(maxHttpPostSize,
-									((HandlerCollection) handler).getHandlers());
-						}
-					}
-				}
-
-			});
-		}
-
-		private static void customizeAccessLog(JettyServletWebServerFactory factory,
-				ServerProperties.Jetty.Accesslog properties) {
-			factory.addServerCustomizers((server) -> {
-				NCSARequestLog log = new NCSARequestLog();
-				if (properties.getFilename() != null) {
-					log.setFilename(properties.getFilename());
-				}
-				if (properties.getFileDateFormat() != null) {
-					log.setFilenameDateFormat(properties.getFileDateFormat());
-				}
-				log.setRetainDays(properties.getRetentionPeriod());
-				log.setAppend(properties.isAppend());
-				log.setExtended(properties.isExtendedFormat());
-				if (properties.getDateFormat() != null) {
-					log.setLogDateFormat(properties.getDateFormat());
-				}
-				if (properties.getLocale() != null) {
-					log.setLogLocale(properties.getLocale());
-				}
-				if (properties.getTimeZone() != null) {
-					log.setLogTimeZone(properties.getTimeZone().getID());
-				}
-				log.setLogCookies(properties.isLogCookies());
-				log.setLogServer(properties.isLogServer());
-				log.setLogLatency(properties.isLogLatency());
-				server.setRequestLog(log);
-			});
-		}
 	}
 
 }
