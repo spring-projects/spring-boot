@@ -92,8 +92,8 @@ public class MetricsEndpoint {
 		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
 		return new MetricResponse(requiredMetricName,
-				asList(samples, MetricResponse.Sample::new),
-				asList(availableTags, MetricResponse.AvailableTag::new));
+				asList(samples, Sample::new),
+				asList(availableTags, AvailableTag::new));
 	}
 
 	private List<Tag> parseTags(List<String> tags) {
@@ -154,7 +154,7 @@ public class MetricsEndpoint {
 	/**
 	 * Response payload for a metric name listing.
 	 */
-	static class ListNamesResponse {
+	public static final class ListNamesResponse {
 
 		private final Set<String> names;
 
@@ -170,7 +170,7 @@ public class MetricsEndpoint {
 	/**
 	 * Response payload for a metric name selector.
 	 */
-	static class MetricResponse {
+	public static final class MetricResponse {
 
 		private final String name;
 
@@ -197,58 +197,59 @@ public class MetricsEndpoint {
 			return this.availableTags;
 		}
 
-		/**
-		 * A set of tags for further dimensional drilldown and their potential values.
-		 */
-		static class AvailableTag {
+	}
 
-			private final String tag;
+	/**
+	 * A set of tags for further dimensional drilldown and their potential values.
+	 */
+	public static final class AvailableTag {
 
-			private final Set<String> values;
+		private final String tag;
 
-			AvailableTag(String tag, Set<String> values) {
-				this.tag = tag;
-				this.values = values;
-			}
+		private final Set<String> values;
 
-			public String getTag() {
-				return this.tag;
-			}
-
-			public Set<String> getValues() {
-				return this.values;
-			}
+		AvailableTag(String tag, Set<String> values) {
+			this.tag = tag;
+			this.values = values;
 		}
 
-		/**
-		 * A measurement sample combining a {@link Statistic statistic} and a value.
-		 */
-		static class Sample {
+		public String getTag() {
+			return this.tag;
+		}
 
-			private final Statistic statistic;
+		public Set<String> getValues() {
+			return this.values;
+		}
+	}
 
-			private final Double value;
+	/**
+	 * A measurement sample combining a {@link Statistic statistic} and a value.
+	 */
+	public static final class Sample {
 
-			Sample(Statistic statistic, Double value) {
-				this.statistic = statistic;
-				this.value = value;
-			}
+		private final Statistic statistic;
 
-			public Statistic getStatistic() {
-				return this.statistic;
-			}
+		private final Double value;
 
-			public Double getValue() {
-				return this.value;
-			}
+		Sample(Statistic statistic, Double value) {
+			this.statistic = statistic;
+			this.value = value;
+		}
 
-			@Override
-			public String toString() {
-				return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
-						+ this.value + '}';
-			}
+		public Statistic getStatistic() {
+			return this.statistic;
+		}
 
+		public Double getValue() {
+			return this.value;
+		}
+
+		@Override
+		public String toString() {
+			return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
+					+ this.value + '}';
 		}
 
 	}
+
 }
