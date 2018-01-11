@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,27 @@
 
 package org.springframework.boot.web.reactive.server;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.time.Duration;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLException;
+
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.assertj.core.api.Assumptions;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.HttpStatus;
@@ -89,19 +100,19 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	@Test
 	public void basicSslFromClassPath() {
-		testBasicSslWithKeyStore("classpath:test.jks");
+		testBasicSslWithKeyStore("classpath:test.jks", "password");
 	}
 
 	@Test
 	public void basicSslFromFileSystem() {
-		testBasicSslWithKeyStore("src/test/resources/test.jks");
+		testBasicSslWithKeyStore("src/test/resources/test.jks", "password");
 	}
 
-	protected final void testBasicSslWithKeyStore(String keyStore) {
+	protected final void testBasicSslWithKeyStore(String keyStore, String keyPassword) {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore(keyStore);
-		ssl.setKeyPassword("password");
+		ssl.setKeyPassword(keyPassword);
 		factory.setSsl(ssl);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
@@ -121,6 +132,103 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 					sslContextBuilder.sslProvider(SslProvider.JDK)
 							.trustManager(InsecureTrustManagerFactory.INSTANCE);
 				}));
+	}
+
+	@Test
+	public void sslWantsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setClientAuth(Ssl.ClientAuth.WANT);
+		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyPassword("password");
+		ssl.setTrustStore("classpath:test.jks");
+
+		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector());
+	}
+
+
+	@Test
+	public void sslWantsClientAuthenticationSucceedsWithoutClientCertificate() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setClientAuth(Ssl.ClientAuth.WANT);
+		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyPassword("password");
+		ssl.setTrustStore("classpath:test.jks");
+
+		testClientAuthSuccess(ssl, buildTrustAllSslConnector());
+	}
+
+	protected ReactorClientHttpConnector buildTrustAllSslWithClientKeyConnector() throws Exception {
+		KeyStore clientKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		clientKeyStore.load(new FileInputStream(new File("src/test/resources/test.jks")),
+				"secret".toCharArray());
+		KeyManagerFactory clientKeyManagerFactory =
+				KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+		clientKeyManagerFactory.init(clientKeyStore, "password".toCharArray());
+		return new ReactorClientHttpConnector(
+				(options) -> options.sslSupport(sslContextBuilder -> {
+					sslContextBuilder.sslProvider(SslProvider.JDK)
+							.trustManager(InsecureTrustManagerFactory.INSTANCE)
+							.keyManager(clientKeyManagerFactory);
+				}));
+	}
+
+	protected void testClientAuthSuccess(Ssl sslConfiguration, ReactorClientHttpConnector clientConnector) {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		factory.setSsl(sslConfiguration);
+
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+
+		WebClient client = WebClient.builder()
+				.baseUrl("https://localhost:" + this.webServer.getPort())
+				.clientConnector(clientConnector).build();
+		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
+				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.flatMap((response) -> response.bodyToMono(String.class));
+		assertThat(result.block()).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setClientAuth(Ssl.ClientAuth.NEED);
+		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyPassword("password");
+		ssl.setTrustStore("classpath:test.jks");
+
+		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector());
+	}
+
+	@Test
+	public void sslNeedsClientAuthenticationFailsWithoutClientCertificate() throws Exception {
+		// Ignored for Undertow, see https://github.com/reactor/reactor-netty/issues/257
+		Assumptions.assumeThat(getFactory()).isNotInstanceOf(UndertowReactiveWebServerFactory.class);
+		Ssl ssl = new Ssl();
+		ssl.setClientAuth(Ssl.ClientAuth.NEED);
+		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyPassword("password");
+		ssl.setTrustStore("classpath:test.jks");
+
+		testClientAuthFailure(ssl, buildTrustAllSslConnector());
+	}
+
+	protected void testClientAuthFailure(Ssl sslConfiguration, ReactorClientHttpConnector clientConnector) {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		factory.setSsl(sslConfiguration);
+
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+
+		WebClient client = WebClient.builder()
+				.baseUrl("https://localhost:" + this.webServer.getPort())
+				.clientConnector(clientConnector).build();
+		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
+				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.flatMap((response) -> response.bodyToMono(String.class));
+
+		StepVerifier.create(result)
+				.expectError(SSLException.class)
+				.verify(Duration.ofSeconds(10));
 	}
 
 	protected WebClient.Builder getWebClient() {
