@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public abstract class DynaimcRegistrationBean<D extends Registration.Dynamic>
+public abstract class DynamicRegistrationBean<D extends Registration.Dynamic>
 		extends RegistrationBean {
 
 	private static final Log logger = LogFactory.getLog(RegistrationBean.class);
