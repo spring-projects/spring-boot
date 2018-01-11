@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,13 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 
 /**
  * Default {@link WebServerFactoryCustomizer} for reactive servers.
@@ -27,12 +31,14 @@ import org.springframework.core.Ordered;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class DefaultReactiveWebServerCustomizer implements
-		WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, Ordered {
+public class DefaultReactiveWebServerFactoryCustomizer implements
+		WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, EnvironmentAware, Ordered {
 
 	private final ServerProperties serverProperties;
 
-	public DefaultReactiveWebServerCustomizer(ServerProperties serverProperties) {
+	private Environment environment;
+
+	public DefaultReactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
@@ -42,21 +48,30 @@ public class DefaultReactiveWebServerCustomizer implements
 	}
 
 	@Override
-	public void customize(ConfigurableReactiveWebServerFactory server) {
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
+	public void customize(ConfigurableReactiveWebServerFactory factory) {
 		if (this.serverProperties.getPort() != null) {
-			server.setPort(this.serverProperties.getPort());
+			factory.setPort(this.serverProperties.getPort());
 		}
 		if (this.serverProperties.getAddress() != null) {
-			server.setAddress(this.serverProperties.getAddress());
+			factory.setAddress(this.serverProperties.getAddress());
 		}
 		if (this.serverProperties.getSsl() != null) {
-			server.setSsl(this.serverProperties.getSsl());
+			factory.setSsl(this.serverProperties.getSsl());
 		}
 		if (this.serverProperties.getCompression() != null) {
-			server.setCompression(this.serverProperties.getCompression());
+			factory.setCompression(this.serverProperties.getCompression());
 		}
 		if (this.serverProperties.getHttp2() != null) {
-			server.setHttp2(this.serverProperties.getHttp2());
+			factory.setHttp2(this.serverProperties.getHttp2());
+		}
+		if (factory instanceof TomcatReactiveWebServerFactory) {
+			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,
+					(TomcatReactiveWebServerFactory) factory);
 		}
 	}
 

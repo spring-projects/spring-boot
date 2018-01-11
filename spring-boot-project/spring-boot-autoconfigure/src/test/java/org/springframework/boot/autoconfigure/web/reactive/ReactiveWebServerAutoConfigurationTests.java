@@ -54,7 +54,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 				.hasSize(1);
 		assertThat(this.context.getBeansOfType(WebServerFactoryCustomizer.class))
 				.hasSize(1);
-		assertThat(this.context.getBeansOfType(DefaultReactiveWebServerCustomizer.class))
+		assertThat(this.context.getBeansOfType(DefaultReactiveWebServerFactoryCustomizer.class))
 				.hasSize(1);
 	}
 

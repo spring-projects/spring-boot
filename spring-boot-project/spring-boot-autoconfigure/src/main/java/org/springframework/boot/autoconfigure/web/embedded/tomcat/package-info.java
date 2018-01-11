@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.embedded.tomcat;
-
-import org.apache.catalina.connector.Connector;
-
 /**
- * Callback interface that can be used to customize a Tomcat {@link Connector}.
+ * Configuration for embedded reactive and servlet Tomcat web servers.
  *
- * @author Dave Syer
- * @see ConfigurableTomcatWebServerFactory
- * @since 2.0.0
+ * @see org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory
  */
-@FunctionalInterface
-public interface TomcatConnectorCustomizer {
-
-	/**
-	 * Customize the connector.
-	 * @param connector the connector to customize
-	 */
-	void customize(Connector connector);
-
-}
+package org.springframework.boot.autoconfigure.web.embedded.tomcat;

@@ -25,12 +25,6 @@ import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 
 import io.undertow.UndertowOptions;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.valves.AccessLogValve;
-import org.apache.catalina.valves.RemoteIpValve;
-import org.apache.coyote.AbstractProtocol;
-import org.apache.coyote.ProtocolHandler;
-import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
@@ -43,10 +37,11 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Resource;
+import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -57,7 +52,6 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Default {@link WebServerFactoryCustomizer} for {@link ServerProperties}.
@@ -126,8 +120,9 @@ public class DefaultServletWebServerFactoryCustomizer
 		}
 		factory.setServerHeader(this.serverProperties.getServerHeader());
 		if (factory instanceof TomcatServletWebServerFactory) {
-			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,
-					(TomcatServletWebServerFactory) factory);
+			TomcatServletWebServerFactory tomcatFactory = (TomcatServletWebServerFactory) factory;
+			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment, tomcatFactory);
+			TomcatServletCustomizer.customizeTomcat(this.serverProperties, this.environment, tomcatFactory);
 		}
 		if (factory instanceof JettyServletWebServerFactory) {
 			JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
@@ -150,7 +145,7 @@ public class DefaultServletWebServerFactoryCustomizer
 			return serverProperties.isUseForwardHeaders();
 		}
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		return (platform == null ? false : platform.isUsingForwardHeaders());
+		return platform != null && platform.isUsingForwardHeaders();
 	}
 
 	/**
@@ -214,43 +209,14 @@ public class DefaultServletWebServerFactoryCustomizer
 
 	}
 
-	private static class TomcatCustomizer {
+	private static class TomcatServletCustomizer {
 
 		public static void customizeTomcat(ServerProperties serverProperties,
 				Environment environment, TomcatServletWebServerFactory factory) {
 			ServerProperties.Tomcat tomcatProperties = serverProperties.getTomcat();
-			if (tomcatProperties.getBasedir() != null) {
-				factory.setBaseDirectory(tomcatProperties.getBasedir());
-			}
-			if (tomcatProperties.getBackgroundProcessorDelay() != null) {
-				factory.setBackgroundProcessorDelay((int) tomcatProperties
-						.getBackgroundProcessorDelay().getSeconds());
-			}
-			customizeRemoteIpValve(serverProperties, environment, factory);
-			if (tomcatProperties.getMaxThreads() > 0) {
-				customizeMaxThreads(factory, tomcatProperties.getMaxThreads());
-			}
-			if (tomcatProperties.getMinSpareThreads() > 0) {
-				customizeMinThreads(factory, tomcatProperties.getMinSpareThreads());
-			}
-			int maxHttpHeaderSize = (serverProperties.getMaxHttpHeaderSize() > 0
-					? serverProperties.getMaxHttpHeaderSize()
-					: tomcatProperties.getMaxHttpHeaderSize());
-			if (maxHttpHeaderSize > 0) {
-				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize);
-			}
-			if (tomcatProperties.getMaxHttpPostSize() != 0) {
-				customizeMaxHttpPostSize(factory, tomcatProperties.getMaxHttpPostSize());
-			}
-			if (tomcatProperties.getAccesslog().isEnabled()) {
-				customizeAccessLog(tomcatProperties, factory);
-			}
-			if (tomcatProperties.getUriEncoding() != null) {
-				factory.setUriEncoding(tomcatProperties.getUriEncoding());
-			}
-			if (serverProperties.getConnectionTimeout() != null) {
-				customizeConnectionTimeout(factory,
-						serverProperties.getConnectionTimeout());
+			if (!ObjectUtils.isEmpty(tomcatProperties.getAdditionalTldSkipPatterns())) {
+				factory.getTldSkipPatterns()
+						.addAll(tomcatProperties.getAdditionalTldSkipPatterns());
 			}
 			if (tomcatProperties.getRedirectContextRoot() != null) {
 				customizeRedirectContextRoot(factory,
@@ -260,162 +226,19 @@ public class DefaultServletWebServerFactoryCustomizer
 				customizeUseRelativeRedirects(factory,
 						tomcatProperties.getUseRelativeRedirects());
 			}
-			if (tomcatProperties.getMaxConnections() > 0) {
-				customizeMaxConnections(factory, tomcatProperties.getMaxConnections());
-			}
-			if (tomcatProperties.getAcceptCount() > 0) {
-				customizeAcceptCount(factory, tomcatProperties.getAcceptCount());
-			}
-			if (!ObjectUtils.isEmpty(tomcatProperties.getAdditionalTldSkipPatterns())) {
-				factory.getTldSkipPatterns()
-						.addAll(tomcatProperties.getAdditionalTldSkipPatterns());
-			}
-			customizeStaticResources(serverProperties.getTomcat().getResource(), factory);
-		}
-
-		private static void customizeAcceptCount(TomcatServletWebServerFactory factory,
-				int acceptCount) {
-			factory.addConnectorCustomizers((connector) -> {
-				ProtocolHandler handler = connector.getProtocolHandler();
-				if (handler instanceof AbstractProtocol) {
-					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-					protocol.setAcceptCount(acceptCount);
-				}
-			});
-		}
-
-		private static void customizeMaxConnections(TomcatServletWebServerFactory factory,
-				int maxConnections) {
-			factory.addConnectorCustomizers((connector) -> {
-				ProtocolHandler handler = connector.getProtocolHandler();
-				if (handler instanceof AbstractProtocol) {
-					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-					protocol.setMaxConnections(maxConnections);
-				}
-			});
-		}
-
-		private static void customizeConnectionTimeout(
-				TomcatServletWebServerFactory factory, Duration connectionTimeout) {
-			factory.addConnectorCustomizers((connector) -> {
-				ProtocolHandler handler = connector.getProtocolHandler();
-				if (handler instanceof AbstractProtocol) {
-					AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
-					protocol.setConnectionTimeout((int) connectionTimeout.toMillis());
-				}
-			});
-		}
-
-		private static void customizeRemoteIpValve(ServerProperties properties,
-				Environment environment, TomcatServletWebServerFactory factory) {
-			String protocolHeader = properties.getTomcat().getProtocolHeader();
-			String remoteIpHeader = properties.getTomcat().getRemoteIpHeader();
-			// For back compatibility the valve is also enabled if protocol-header is set
-			if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
-					|| getOrDeduceUseForwardHeaders(properties, environment)) {
-				RemoteIpValve valve = new RemoteIpValve();
-				valve.setProtocolHeader(StringUtils.hasLength(protocolHeader)
-						? protocolHeader : "X-Forwarded-Proto");
-				if (StringUtils.hasLength(remoteIpHeader)) {
-					valve.setRemoteIpHeader(remoteIpHeader);
-				}
-				// The internal proxies default to a white list of "safe" internal IP
-				// addresses
-				valve.setInternalProxies(properties.getTomcat().getInternalProxies());
-				valve.setPortHeader(properties.getTomcat().getPortHeader());
-				valve.setProtocolHeaderHttpsValue(
-						properties.getTomcat().getProtocolHeaderHttpsValue());
-				// ... so it's safe to add this valve by default.
-				factory.addEngineValves(valve);
-			}
-		}
-
-		@SuppressWarnings("rawtypes")
-		private static void customizeMaxThreads(TomcatServletWebServerFactory factory,
-				int maxThreads) {
-			factory.addConnectorCustomizers((connector) -> {
-				ProtocolHandler handler = connector.getProtocolHandler();
-				if (handler instanceof AbstractProtocol) {
-					AbstractProtocol protocol = (AbstractProtocol) handler;
-					protocol.setMaxThreads(maxThreads);
-				}
-			});
-		}
-
-		@SuppressWarnings("rawtypes")
-		private static void customizeMinThreads(TomcatServletWebServerFactory factory,
-				int minSpareThreads) {
-			factory.addConnectorCustomizers((connector) -> {
-				ProtocolHandler handler = connector.getProtocolHandler();
-				if (handler instanceof AbstractProtocol) {
-					AbstractProtocol protocol = (AbstractProtocol) handler;
-					protocol.setMinSpareThreads(minSpareThreads);
-				}
-			});
-		}
-
-		@SuppressWarnings("rawtypes")
-		private static void customizeMaxHttpHeaderSize(
-				TomcatServletWebServerFactory factory, int maxHttpHeaderSize) {
-			factory.addConnectorCustomizers((connector) -> {
-				ProtocolHandler handler = connector.getProtocolHandler();
-				if (handler instanceof AbstractHttp11Protocol) {
-					AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-					protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
-				}
-			});
-		}
-
-		private static void customizeMaxHttpPostSize(
-				TomcatServletWebServerFactory factory, int maxHttpPostSize) {
-			factory.addConnectorCustomizers(
-					(connector) -> connector.setMaxPostSize(maxHttpPostSize));
-		}
-
-		private static void customizeAccessLog(ServerProperties.Tomcat tomcatProperties,
-				TomcatServletWebServerFactory factory) {
-
-			AccessLogValve valve = new AccessLogValve();
-			valve.setPattern(tomcatProperties.getAccesslog().getPattern());
-			valve.setDirectory(tomcatProperties.getAccesslog().getDirectory());
-			valve.setPrefix(tomcatProperties.getAccesslog().getPrefix());
-			valve.setSuffix(tomcatProperties.getAccesslog().getSuffix());
-			valve.setRenameOnRotate(tomcatProperties.getAccesslog().isRenameOnRotate());
-			valve.setFileDateFormat(tomcatProperties.getAccesslog().getFileDateFormat());
-			valve.setRequestAttributesEnabled(
-					tomcatProperties.getAccesslog().isRequestAttributesEnabled());
-			valve.setRotatable(tomcatProperties.getAccesslog().isRotate());
-			valve.setBuffered(tomcatProperties.getAccesslog().isBuffered());
-			factory.addEngineValves(valve);
 		}
 
 		private static void customizeRedirectContextRoot(
-				TomcatServletWebServerFactory factory, boolean redirectContextRoot) {
+				ConfigurableTomcatWebServerFactory factory, boolean redirectContextRoot) {
 			factory.addContextCustomizers((context) -> context
 					.setMapperContextRootRedirectEnabled(redirectContextRoot));
 		}
 
 		private static void customizeUseRelativeRedirects(
-				TomcatServletWebServerFactory factory, boolean useRelativeRedirects) {
+				ConfigurableTomcatWebServerFactory factory, boolean useRelativeRedirects) {
 			factory.addContextCustomizers(
 					(context) -> context.setUseRelativeRedirects(useRelativeRedirects));
 		}
-
-		private static void customizeStaticResources(Resource resource,
-				TomcatServletWebServerFactory factory) {
-			if (resource.getCacheTtl() == null) {
-				return;
-			}
-			factory.addContextCustomizers((context) -> {
-				context.addLifecycleListener((event) -> {
-					if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
-						long ttl = resource.getCacheTtl().toMillis();
-						context.getResources().setCacheTtl(ttl);
-					}
-				});
-			});
-		}
-
 	}
 
 	private static class UndertowCustomizer {
