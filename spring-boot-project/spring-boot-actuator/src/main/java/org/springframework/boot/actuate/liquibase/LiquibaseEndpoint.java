@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.liquibase;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +119,7 @@ public class LiquibaseEndpoint {
 
 		private final Set<String> contexts;
 
-		private final Date dateExecuted;
+		private final Instant dateExecuted;
 
 		private final String deploymentId;
 
@@ -142,7 +142,8 @@ public class LiquibaseEndpoint {
 			this.changeLog = ranChangeSet.getChangeLog();
 			this.comments = ranChangeSet.getComments();
 			this.contexts = ranChangeSet.getContextExpression().getContexts();
-			this.dateExecuted = ranChangeSet.getDateExecuted();
+			this.dateExecuted = Instant
+					.ofEpochMilli(ranChangeSet.getDateExecuted().getTime());
 			this.deploymentId = ranChangeSet.getDeploymentId();
 			this.description = ranChangeSet.getDescription();
 			this.execType = ranChangeSet.getExecType();
@@ -170,7 +171,7 @@ public class LiquibaseEndpoint {
 			return this.contexts;
 		}
 
-		public Date getDateExecuted() {
+		public Instant getDateExecuted() {
 			return this.dateExecuted;
 		}
 

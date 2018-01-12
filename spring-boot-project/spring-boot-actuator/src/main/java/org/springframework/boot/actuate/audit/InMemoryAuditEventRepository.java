@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.audit;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,7 +70,7 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 	}
 
 	@Override
-	public List<AuditEvent> find(String principal, Date after, String type) {
+	public List<AuditEvent> find(String principal, Instant after, String type) {
 		LinkedList<AuditEvent> events = new LinkedList<>();
 		synchronized (this.monitor) {
 			for (int i = 0; i < this.events.length; i++) {
@@ -83,10 +83,11 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 		return events;
 	}
 
-	private boolean isMatch(String principal, Date after, String type, AuditEvent event) {
+	private boolean isMatch(String principal, Instant after, String type,
+			AuditEvent event) {
 		boolean match = true;
 		match = match && (principal == null || event.getPrincipal().equals(principal));
-		match = match && (after == null || event.getTimestamp().compareTo(after) >= 0);
+		match = match && (after == null || event.getTimestamp().isAfter(after));
 		match = match && (type == null || event.getType().equals(type));
 		return match;
 	}

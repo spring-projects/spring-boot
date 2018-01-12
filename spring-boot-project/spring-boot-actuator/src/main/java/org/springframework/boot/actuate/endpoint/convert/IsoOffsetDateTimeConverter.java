@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,29 +18,25 @@ package org.springframework.boot.actuate.endpoint.convert;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link String} to {@link Date} {@link Converter} that uses
+ * A {@link String} to {@link OffsetDateTime} {@link Converter} that uses
  * {@link DateTimeFormatter#ISO_OFFSET_DATE_TIME ISO offset} parsing.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class IsoOffsetDateTimeConverter implements Converter<String, Date> {
+public class IsoOffsetDateTimeConverter implements Converter<String, OffsetDateTime> {
 
 	@Override
-	public Date convert(String source) {
+	public OffsetDateTime convert(String source) {
 		if (StringUtils.hasLength(source)) {
-			OffsetDateTime offsetDateTime = OffsetDateTime.parse(source,
-					DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-			return new Date(TimeUnit.SECONDS.toMillis(offsetDateTime.toEpochSecond()));
+			return OffsetDateTime.parse(source, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 		}
 		return null;
 	}

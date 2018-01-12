@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.audit.listener;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
@@ -60,13 +60,13 @@ public class AuditApplicationEvent extends ApplicationEvent {
 	/**
 	 * Create a new {@link AuditApplicationEvent} that wraps a newly created
 	 * {@link AuditEvent}.
-	 * @param timestamp the time stamp
+	 * @param timestamp the timestamp
 	 * @param principal the principal
 	 * @param type the event type
 	 * @param data the event data
-	 * @see AuditEvent#AuditEvent(Date, String, String, Map)
+	 * @see AuditEvent#AuditEvent(Instant, String, String, Map)
 	 */
-	public AuditApplicationEvent(Date timestamp, String principal, String type,
+	public AuditApplicationEvent(Instant timestamp, String principal, String type,
 			Map<String, Object> data) {
 		this(new AuditEvent(timestamp, principal, type, data));
 	}

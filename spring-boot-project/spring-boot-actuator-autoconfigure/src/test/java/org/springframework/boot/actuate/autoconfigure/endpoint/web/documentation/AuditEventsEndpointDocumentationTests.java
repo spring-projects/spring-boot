@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 
 import org.junit.Test;
 
@@ -74,10 +73,9 @@ public class AuditEventsEndpointDocumentationTests
 
 	@Test
 	public void filteredAuditEvents() throws Exception {
-		ZonedDateTime now = ZonedDateTime.now();
+		OffsetDateTime now = OffsetDateTime.now();
 		String queryTimestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now);
-		Date date = new Date(now.toEpochSecond() * 1000);
-		given(this.repository.find("alice", date, "logout")).willReturn(
+		given(this.repository.find("alice", now.toInstant(), "logout")).willReturn(
 				Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
 		this.mockMvc
 				.perform(get("/actuator/auditevents").param("principal", "alice")
@@ -94,7 +92,7 @@ public class AuditEventsEndpointDocumentationTests
 						parameterWithName("type").description(
 								"Restricts the events to those with the given "
 										+ "type. Optional."))));
-		verify(this.repository).find("alice", date, "logout");
+		verify(this.repository).find("alice", now.toInstant(), "logout");
 	}
 
 	@Configuration

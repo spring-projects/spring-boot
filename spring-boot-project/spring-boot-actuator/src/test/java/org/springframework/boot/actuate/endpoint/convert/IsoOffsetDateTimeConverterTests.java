@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.convert;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import org.junit.Test;
 
@@ -34,16 +34,17 @@ public class IsoOffsetDateTimeConverterTests {
 	@Test
 	public void convertShouldConvertIsoDate() {
 		IsoOffsetDateTimeConverter converter = new IsoOffsetDateTimeConverter();
-		Date date = converter.convert("2011-12-03T10:15:30+01:00");
-		assertThat(date).isNotNull();
+		OffsetDateTime time = converter.convert("2011-12-03T10:15:30+01:00");
+		assertThat(time).isNotNull();
 	}
 
 	@Test
 	public void registerConverterShouldRegister() {
 		DefaultConversionService service = new DefaultConversionService();
 		IsoOffsetDateTimeConverter.registerConverter(service);
-		Date date = service.convert("2011-12-03T10:15:30+01:00", Date.class);
-		assertThat(date).isNotNull();
+		OffsetDateTime time = service.convert("2011-12-03T10:15:30+01:00",
+				OffsetDateTime.class);
+		assertThat(time).isNotNull();
 	}
 
 }

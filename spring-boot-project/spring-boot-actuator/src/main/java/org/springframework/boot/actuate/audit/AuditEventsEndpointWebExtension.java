@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.audit;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint.AuditEventsDescriptor;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -40,10 +40,9 @@ public class AuditEventsEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<AuditEventsDescriptor> eventsWithPrincipalDateAfterAndType(
-			@Nullable String principal, Date after, @Nullable String type) {
-		AuditEventsDescriptor auditEvents = this.delegate
-				.eventsWithPrincipalDateAfterAndType(principal, after, type);
+	public WebEndpointResponse<AuditEventsDescriptor> events(@Nullable String principal,
+			OffsetDateTime after, @Nullable String type) {
+		AuditEventsDescriptor auditEvents = this.delegate.events(principal, after, type);
 		return new WebEndpointResponse<>(auditEvents);
 	}
 

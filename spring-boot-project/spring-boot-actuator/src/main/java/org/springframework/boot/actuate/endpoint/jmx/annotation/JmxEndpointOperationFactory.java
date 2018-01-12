@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.endpoint.jmx.annotation;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -113,7 +113,7 @@ class JmxEndpointOperationFactory implements OperationFactory<JmxOperation> {
 		if (type.isEnum()) {
 			return String.class;
 		}
-		if (Date.class.isAssignableFrom(type)) {
+		if (Instant.class.isAssignableFrom(type)) {
 			return String.class;
 		}
 		if (type.getName().startsWith("java.")) {

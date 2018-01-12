@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.audit;
 
 import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 
 import net.minidev.json.JSONArray;
 import org.junit.Test;
@@ -105,7 +104,7 @@ public class AuditEventsEndpointWebIntegrationTests {
 		}
 
 		private AuditEvent createEvent(String instant, String principal, String type) {
-			return new AuditEvent(Date.from(Instant.parse(instant)), principal, type,
+			return new AuditEvent(Instant.parse(instant), principal, type,
 					Collections.emptyMap());
 		}
 

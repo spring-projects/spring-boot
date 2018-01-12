@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.flyway;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +99,7 @@ public class FlywayEndpoint {
 
 		private final String installedBy;
 
-		private final Date installedOn;
+		private final Instant installedOn;
 
 		private final Integer installedRank;
 
@@ -113,7 +113,7 @@ public class FlywayEndpoint {
 			this.script = info.getScript();
 			this.state = info.getState();
 			this.installedBy = info.getInstalledBy();
-			this.installedOn = info.getInstalledOn();
+			this.installedOn = Instant.ofEpochMilli(info.getInstalledOn().getTime());
 			this.installedRank = info.getInstalledRank();
 			this.executionTime = info.getExecutionTime();
 		}
@@ -150,7 +150,7 @@ public class FlywayEndpoint {
 			return this.installedBy;
 		}
 
-		public Date getInstalledOn() {
+		public Instant getInstalledOn() {
 			return this.installedOn;
 		}
 

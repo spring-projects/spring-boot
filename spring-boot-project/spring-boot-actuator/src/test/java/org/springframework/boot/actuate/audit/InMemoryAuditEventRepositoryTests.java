@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.audit;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,20 +99,17 @@ public class InMemoryAuditEventRepositoryTests {
 
 	@Test
 	public void findByDate() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2000, 1, 1, 0, 0, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
+		Instant instant = Instant.now();
 		Map<String, Object> data = new HashMap<>();
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
-		repository.add(new AuditEvent(calendar.getTime(), "dave", "a", data));
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		repository.add(new AuditEvent(calendar.getTime(), "phil", "b", data));
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		Date after = calendar.getTime();
-		repository.add(new AuditEvent(calendar.getTime(), "dave", "c", data));
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		repository.add(new AuditEvent(calendar.getTime(), "phil", "d", data));
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
+		repository.add(new AuditEvent(instant, "dave", "a", data));
+		repository
+				.add(new AuditEvent(instant.plus(1, ChronoUnit.DAYS), "phil", "b", data));
+		repository
+				.add(new AuditEvent(instant.plus(2, ChronoUnit.DAYS), "dave", "c", data));
+		repository
+				.add(new AuditEvent(instant.plus(3, ChronoUnit.DAYS), "phil", "d", data));
+		Instant after = instant.plus(1, ChronoUnit.DAYS);
 		List<AuditEvent> events = repository.find(null, after, null);
 		assertThat(events.size()).isEqualTo(2);
 		assertThat(events.get(0).getType()).isEqualTo("c");

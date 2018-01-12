@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.convert;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,7 +77,8 @@ public class ConversionServiceParameterMapperTests {
 	@Test
 	public void createShouldRegisterIsoOffsetDateTimeConverter() {
 		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper();
-		Date mapped = mapper.mapParameter("2011-12-03T10:15:30+01:00", Date.class);
+		OffsetDateTime mapped = mapper.mapParameter("2011-12-03T10:15:30+01:00",
+				OffsetDateTime.class);
 		assertThat(mapped).isNotNull();
 	}
 
@@ -87,7 +88,7 @@ public class ConversionServiceParameterMapperTests {
 		ConversionServiceParameterMapper mapper = new ConversionServiceParameterMapper(
 				conversionService);
 		this.thrown.expect(ParameterMappingException.class);
-		mapper.mapParameter("2011-12-03T10:15:30+01:00", Date.class);
+		mapper.mapParameter("2011-12-03T10:15:30+01:00", OffsetDateTime.class);
 	}
 
 }

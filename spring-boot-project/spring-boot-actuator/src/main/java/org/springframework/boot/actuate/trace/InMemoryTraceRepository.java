@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.trace;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 
 	@Override
 	public void add(Map<String, Object> map) {
-		Trace trace = new Trace(new Date(), map);
+		Trace trace = new Trace(Instant.now(), map);
 		synchronized (this.traces) {
 			while (this.traces.size() >= this.capacity) {
 				this.traces.remove(this.reverse ? this.capacity - 1 : 0);

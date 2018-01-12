@@ -321,6 +321,12 @@
 			<artifactId>spring-session-core</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- Runtime -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<!-- Annotation processing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
