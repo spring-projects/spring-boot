@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -43,7 +42,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	@Test
 	public void analysisWithNullEnvironment() {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
-				"test.property", "invalid", "this is not valid");
+				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = new InvalidConfigurationPropertyValueFailureAnalyzer()
 				.analyze(failure);
 		assertThat(analysis).isNull();
@@ -56,12 +55,12 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		this.environment.getPropertySources()
 				.addFirst(OriginCapablePropertySource.get(source));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
-				"test.property", "invalid", "this is not valid");
+				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getDescription())
 				.contains("Validation failed for the following reason")
-				.contains("this is not valid")
+				.contains("This is not valid.")
 				.doesNotContain("Additionally, this property is also set");
 	}
 
@@ -93,7 +92,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		this.environment.getPropertySources()
 				.addLast(OriginCapablePropertySource.get(another));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
-				"test.property", "invalid", "this is not valid");
+				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getDescription())
@@ -106,7 +105,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	@Test
 	public void analysisWithUnknownKey() {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
-				"test.key.not.defined", "invalid", "this is not valid");
+				"test.key.not.defined", "invalid", "This is not valid.");
 		assertThat(performAnalysis(failure)).isNull();
 	}
 
@@ -123,11 +122,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 			InvalidConfigurationPropertyValueException failure) {
 		InvalidConfigurationPropertyValueFailureAnalyzer analyzer = new InvalidConfigurationPropertyValueFailureAnalyzer();
 		analyzer.setEnvironment(this.environment);
-		FailureAnalysis analysis = analyzer.analyze(failure);
-		if (analysis != null) {
-			new LoggingFailureAnalysisReporter().report(analysis);
-		}
-		return analysis;
+		return analyzer.analyze(failure);
 	}
 
 	static class OriginCapablePropertySource<T> extends EnumerablePropertySource<T>

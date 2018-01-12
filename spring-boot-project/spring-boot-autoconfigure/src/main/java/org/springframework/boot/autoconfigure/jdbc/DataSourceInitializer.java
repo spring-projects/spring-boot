@@ -167,7 +167,7 @@ class DataSourceInitializer {
 				}
 				else if (validate) {
 					throw new InvalidConfigurationPropertyValueException(propertyName,
-							resource, "the specified resource does not exist");
+							resource, "The specified resource does not exist.");
 				}
 			}
 		}
