@@ -23,8 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Random;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -44,13 +42,8 @@ public class SampleKafkaApplicationTests {
 
 	@Test
 	public void sendSimpleMessage() throws InterruptedException {
-		while (true) {
-			UserMessage userMessage = new UserMessage();
-			userMessage.setUsername("kafka");
-			userMessage.setUserId(System.nanoTime());
-			this.producer.send(userMessage);
-			Thread.sleep(1000L);
-			assertThat(this.outputCapture.toString().contains("kafka")).isTrue();
-		}
+		producer.send("Test message");
+		Thread.sleep(2000L);
+		assertThat(this.outputCapture.toString().contains("Test message")).isTrue();
 	}
 }

@@ -15,8 +15,6 @@
  */
 package sample.kafka;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -27,12 +25,8 @@ public class Producer {
 	@Autowired
 	private KafkaTemplate kafkaTemplate;
 
-	private static Gson gson = new GsonBuilder().create();
-
-	public void send(UserMessage userMessage) {
-		String msg = gson.toJson(userMessage);
-		kafkaTemplate.send("myTopic", msg);
-		System.out.println("producer has sent message : [" + userMessage + "]");
+	public void send(String message) {
+		kafkaTemplate.send("myTopic", message);
+		System.out.println("producer has sent message : [" + message + "]");
 	}
-
 }

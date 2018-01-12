@@ -15,18 +15,14 @@
  */
 package sample.kafka;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class Consumer {
-	private static Gson gson = new GsonBuilder().create();
 
 	@KafkaListener(topics = "myTopic")
-	public void onMessage(String message) {
-		UserMessage msg = gson.fromJson(message, UserMessage.class);
-		System.out.println("consumer has received message : [" + msg + "]");
+	public void processMessage(String message) {
+		System.out.println("consumer has received message : [" + message + "]");
 	}
 }
