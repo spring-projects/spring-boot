@@ -112,9 +112,6 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic>
 					+ "(possibly already registered?)");
 			return;
 		}
-		Assert.state(registration != null,
-				() -> "Registration is null. Was something already registered for "
-						+ description + "?");
 		configure(registration);
 	}
 
