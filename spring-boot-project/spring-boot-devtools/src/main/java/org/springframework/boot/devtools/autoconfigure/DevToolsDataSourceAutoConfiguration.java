@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -97,7 +99,11 @@ public class DevToolsDataSourceAutoConfiguration {
 		@Override
 		public void destroy() throws Exception {
 			if (dataSourceRequiresShutdown()) {
-				this.dataSource.getConnection().createStatement().execute("SHUTDOWN");
+				try (Connection connection = this.dataSource.getConnection()) {
+					try (Statement statement = connection.createStatement()) {
+						statement.execute("SHUTDOWN");
+					}
+				}
 			}
 		}
 
