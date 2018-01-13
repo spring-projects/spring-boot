@@ -31,6 +31,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Eddú Meléndez
  */
 public class LiquibaseServiceLocatorApplicationListener
 		implements ApplicationListener<ApplicationStartingEvent> {
@@ -51,12 +52,14 @@ public class LiquibaseServiceLocatorApplicationListener
 	private static class LiquibasePresent {
 
 		public void replaceServiceLocator() {
-			CustomResolverServiceLocator customResolverServiceLocator = new CustomResolverServiceLocator(
-					new SpringPackageScanClassResolver(logger));
-			customResolverServiceLocator.addPackageToScan(
-					CommonsLoggingLiquibaseLogger.class.getPackage().getName());
-			ServiceLocator.setInstance(customResolverServiceLocator);
-			liquibase.logging.LogFactory.reset();
+			if (ClassUtils.isPresent("liquibase.servicelocator.CustomResolverServiceLocator", null)) {
+				CustomResolverServiceLocator customResolverServiceLocator = new CustomResolverServiceLocator(
+						new SpringPackageScanClassResolver(logger));
+				customResolverServiceLocator.addPackageToScan(
+						CommonsLoggingLiquibaseLogger.class.getPackage().getName());
+				ServiceLocator.setInstance(customResolverServiceLocator);
+				liquibase.logging.LogFactory.reset();
+			}
 		}
 
 	}
