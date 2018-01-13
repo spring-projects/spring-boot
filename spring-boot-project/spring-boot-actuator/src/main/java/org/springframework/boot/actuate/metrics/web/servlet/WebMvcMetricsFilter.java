@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -43,8 +42,7 @@ import org.springframework.web.util.NestedServletException;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class WebMvcMetricsFilter extends OncePerRequestFilter {
+public class WebMvcMetricsFilter extends OncePerRequestFilter implements Ordered {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(WebMvcMetricsFilter.class);
@@ -54,6 +52,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	private volatile WebMvcMetrics webMvcMetrics;
 
 	private volatile HandlerMappingIntrospector mappingIntrospector;
+
+	private int order = Ordered.HIGHEST_PRECEDENCE;
 
 	public WebMvcMetricsFilter(ApplicationContext context) {
 		this.context = context;
@@ -124,4 +124,16 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		return this.webMvcMetrics;
 	}
 
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
+
+	/**
+	 * Set the order for this filter.
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
 }
