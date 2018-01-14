@@ -155,8 +155,8 @@
 		<spring-restdocs.version>2.0.0.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.2.RELEASE</spring-retry.version>
 		<spring-security.version>5.0.0.RELEASE</spring-security.version>
-		<spring-session.version>2.0.0.RC2</spring-session.version>
-		<spring-session-data-mongodb.version>2.0.0.RC2</spring-session-data-mongodb.version>
+		<spring-session.version>2.0.0.RELEASE</spring-session.version>
+		<spring-session-data-mongodb.version>2.0.0.RELEASE</spring-session-data-mongodb.version>
 		<spring-ws.version>3.0.0.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
