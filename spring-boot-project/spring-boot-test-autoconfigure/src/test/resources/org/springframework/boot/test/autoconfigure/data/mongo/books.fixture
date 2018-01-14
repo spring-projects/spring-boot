@@ -1,0 +1,2 @@
+{"_id": { "$oid": "51948e86c25f4b1d1c0d303c"}, "quantity": "1", "title": "Book one"}
+{"_id": { "$oid": "51948e86c25f4b1d1c0d304d"}, "quantity": "4", "title": "Book two"}
