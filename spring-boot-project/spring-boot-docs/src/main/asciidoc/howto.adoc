@@ -1790,7 +1790,7 @@ In addition, all properties in `+spring.jpa.properties.*+` are passed through as
 JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
 created.
 
-TIP: if you need to apply advanced customization to Hibernate properties, consider
+TIP: If you need to apply advanced customization to Hibernate properties, consider
 registering a `HibernatePropertiesCustomizer` bean that will be invoked prior to creating
 the `EntityManagerFactory`. This takes precedence to anything that is applied by the
 auto-configuration.
@@ -2486,7 +2486,7 @@ shown in the following example:
 	</build>
 ----
 
-TIP: See the {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin documentation]
+TIP: See the {spring-boot-maven-plugin-site}[Spring Boot Maven Plugin documentation]
 for more details.
 
 The following example does the same with Gradle:
@@ -2742,7 +2742,7 @@ for the library, as follows:
 [[howto-remote-debug-maven-run]]
 === Remote Debug a Spring Boot Application Started with Maven
 To attach a remote debugger to a Spring Boot application that was started with Maven, you
-can use the `jvmArguments` property of the {spring-boot-maven-plugin-site}/[maven plugin].
+can use the `jvmArguments` property of the {spring-boot-maven-plugin-site}[maven plugin].
 
 See {spring-boot-maven-plugin-site}/examples/run-debug.html[this example] for more
 details.

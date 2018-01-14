@@ -55,7 +55,7 @@ public class SampleSecureWebFluxCustomSecurityTests {
 	}
 
 	@Test
-	public void healthAndInfoDontRequireAuthentication() {
+	public void healthAndInfoDoNotRequireAuthentication() {
 		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isOk();
 		this.webClient.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON)
