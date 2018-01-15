@@ -513,17 +513,17 @@ content into your application. Rather, pick only the properties that you need.
 	# ----------------------------------------
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
-	spring.flyway.allow-mixed-migrations= #
 	spring.flyway.baseline-description= #
 	spring.flyway.baseline-on-migrate= #
 	spring.flyway.baseline-version=1 # Version to start migration
 	spring.flyway.check-location=true # Whether to check that migration scripts location exists.
 	spring.flyway.clean-disabled= #
 	spring.flyway.clean-on-validation-error= #
+	spring.flyway.dry-run-output= #
 	spring.flyway.enabled=true # Whether to enable flyway.
 	spring.flyway.encoding= #
+	spring.flyway.error-handlers= #
 	spring.flyway.group= #
-	spring.flyway.ignore-failed-future-migration= #
 	spring.flyway.ignore-future-migrations= #
 	spring.flyway.ignore-missing-migrations= #
 	spring.flyway.init-sqls= # SQL statements to execute to initialize a connection immediately after obtaining it.
@@ -543,8 +543,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.flyway.sql-migration-prefix=V #
 	spring.flyway.sql-migration-separator= #
 	spring.flyway.sql-migration-suffix=.sql #
+	spring.flyway.sql-migration-suffixes= #
 	spring.flyway.table= #
 	spring.flyway.target= #
+	spring.flyway.undo-sql-migration-prefix= #
 	spring.flyway.url= # JDBC url of the database to migrate. If not set, the primary configured data source is used.
 	spring.flyway.user= # Login user of the database to migrate.
 	spring.flyway.validate-on-migrate= #
