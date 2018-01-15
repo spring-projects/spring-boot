@@ -24,7 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.SessionCookieConfig;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Servlet.Session;
 import org.springframework.boot.autoconfigure.web.embedded.jetty.JettyCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.undertow.UndertowCustomizer;
@@ -89,11 +89,11 @@ public class DefaultServletWebServerFactoryCustomizer
 		if (this.serverProperties.getDisplayName() != null) {
 			factory.setDisplayName(this.serverProperties.getDisplayName());
 		}
-		if (this.serverProperties.getSession().getTimeout() != null) {
-			factory.setSessionTimeout(this.serverProperties.getSession().getTimeout());
+		if (this.serverProperties.getServlet().getSession().getTimeout() != null) {
+			factory.setSessionTimeout(this.serverProperties.getServlet().getSession().getTimeout());
 		}
-		factory.setPersistSession(this.serverProperties.getSession().isPersistent());
-		factory.setSessionStoreDir(this.serverProperties.getSession().getStoreDir());
+		factory.setPersistSession(this.serverProperties.getServlet().getSession().isPersistent());
+		factory.setSessionStoreDir(this.serverProperties.getServlet().getSession().getStoreDir());
 		if (this.serverProperties.getSsl() != null) {
 			factory.setSsl(this.serverProperties.getSsl());
 		}
@@ -121,7 +121,7 @@ public class DefaultServletWebServerFactoryCustomizer
 					(UndertowServletWebServerFactory) factory);
 		}
 		factory.addInitializers(
-				new SessionConfiguringInitializer(this.serverProperties.getSession()));
+				new SessionConfiguringInitializer(this.serverProperties.getServlet().getSession()));
 		factory.addInitializers(new InitParameterConfiguringServletContextInitializer(
 				this.serverProperties.getServlet().getContextParameters()));
 	}

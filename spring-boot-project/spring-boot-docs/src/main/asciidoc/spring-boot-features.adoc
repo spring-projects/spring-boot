@@ -2809,10 +2809,10 @@ Common server settings include:
 
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface
 address to bind to `server.address`, and so on.
-* Session settings: Whether the session is persistent (`server.session.persistence`),
-session timeout (`server.session.timeout`), location of session data
-(`server.session.store-dir`), and session-cookie configuration
-(`server.session.cookie.*`).
+* Session settings: Whether the session is persistent (`server.servlet.session.persistence`),
+session timeout (`server.servlet.session.timeout`), location of session data
+(`server.servlet.session.store-dir`), and session-cookie configuration
+(`server.servlet.session.cookie.*`).
 * Error management: Location of the error page (`server.error.path`) and so on.
 * <<howto.adoc#howto-configure-ssl,SSL>>
 * <<howto.adoc#how-to-enable-http-response-compression,HTTP compression>>
