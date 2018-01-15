@@ -65,9 +65,6 @@ public class WebMvcMetricsIntegrationTests {
 	@Autowired
 	private SimpleMeterRegistry registry;
 
-	@Autowired
-	private MockClock clock;
-
 	private MockMvc mvc;
 
 	@Autowired

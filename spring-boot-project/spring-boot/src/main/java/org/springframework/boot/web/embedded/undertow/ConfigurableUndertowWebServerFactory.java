@@ -18,7 +18,7 @@ package org.springframework.boot.web.embedded.undertow;
 
 import java.io.File;
 
-import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 
 /**
@@ -33,7 +33,7 @@ public interface ConfigurableUndertowWebServerFactory {
 
 	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
-	 * Undertow {@link Undertow.Builder}.
+	 * Undertow {@link Builder}.
 	 * @param customizers the customizers to add
 	 */
 	void addBuilderCustomizers(UndertowBuilderCustomizer... customizers);

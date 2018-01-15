@@ -88,11 +88,11 @@ public class MetricsAutoConfiguration {
 			MetricsProperties metricsProperties,
 			ObjectProvider<Collection<MetricsExporter>> exporters,
 			ObjectProvider<Collection<MeterRegistryConfigurer>> configurers) {
-		CompositeMeterRegistry composite = metricsProperties.isUseGlobalRegistry() ?
-				Metrics.globalRegistry : new CompositeMeterRegistry();
+		CompositeMeterRegistry composite = metricsProperties.isUseGlobalRegistry()
+				? Metrics.globalRegistry : new CompositeMeterRegistry();
 		configurers.getIfAvailable(Collections::emptyList)
 				.forEach((configurer) -> configurer.configureRegistry(composite));
-		exporters.getIfAvailable(Collections::emptyList).forEach(exporter -> {
+		exporters.getIfAvailable(Collections::emptyList).forEach((exporter) -> {
 			MeterRegistry childRegistry = exporter.registry();
 			if (composite == childRegistry) {
 				throw new IllegalStateException(

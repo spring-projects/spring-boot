@@ -46,7 +46,7 @@ public class GsonAutoConfiguration {
 	@ConditionalOnMissingBean(GsonBuilder.class)
 	public GsonBuilder gsonBuilder(List<GsonBuilderCustomizer> customizers) {
 		GsonBuilder builder = new GsonBuilder();
-		customizers.forEach(c -> c.customize(builder));
+		customizers.forEach((c) -> c.customize(builder));
 		return builder;
 	}
 

@@ -56,9 +56,6 @@ public class WebMvcMetricsFilterAutoTimedTests {
 	private MeterRegistry registry;
 
 	@Autowired
-	private MockClock clock;
-
-	@Autowired
 	private WebApplicationContext context;
 
 	private MockMvc mvc;
