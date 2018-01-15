@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.condition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Condition;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -50,24 +53,58 @@ import org.springframework.util.StringUtils;
 @Endpoint(id = "conditions")
 public class ConditionsReportEndpoint {
 
-	private final ConditionEvaluationReport conditionEvaluationReport;
+	private final ConfigurableApplicationContext context;
 
-	public ConditionsReportEndpoint(ConditionEvaluationReport conditionEvaluationReport) {
-		this.conditionEvaluationReport = conditionEvaluationReport;
+	public ConditionsReportEndpoint(ConfigurableApplicationContext context) {
+		this.context = context;
 	}
 
 	@ReadOperation
-	public Report getEvaluationReport() {
-		return new Report(this.conditionEvaluationReport);
+	public ApplicationConditionEvaluation applicationConditionEvaluation() {
+		Map<String, ContextConditionEvaluation> contextConditionEvaluations = new HashMap<>();
+		ConfigurableApplicationContext target = this.context;
+		while (target != null) {
+			contextConditionEvaluations.put(target.getId(),
+					new ContextConditionEvaluation(target));
+			target = getConfigurableParent(target);
+		}
+		return new ApplicationConditionEvaluation(contextConditionEvaluations);
+	}
+
+	private ConfigurableApplicationContext getConfigurableParent(
+			ConfigurableApplicationContext context) {
+		ApplicationContext parent = context.getParent();
+		if (parent instanceof ConfigurableApplicationContext) {
+			return (ConfigurableApplicationContext) parent;
+		}
+		return null;
 	}
 
 	/**
-	 * Adapts {@link ConditionEvaluationReport} to a JSON friendly structure.
+	 * A description of an application's condition evaluation, primarily intended for
+	 * serialization to JSON.
 	 */
-	@JsonPropertyOrder({ "positiveMatches", "negativeMatches", "exclusions",
-			"unconditionalClasses" })
+	public static final class ApplicationConditionEvaluation {
+
+		private final Map<String, ContextConditionEvaluation> contexts;
+
+		private ApplicationConditionEvaluation(
+				Map<String, ContextConditionEvaluation> contexts) {
+			this.contexts = contexts;
+		}
+
+		public Map<String, ContextConditionEvaluation> getContexts() {
+			return this.contexts;
+		}
+
+	}
+
+	/**
+	 * A description of an application context's condition evaluation, primarily intended
+	 * for serialization to JSON.
+	 */
 	@JsonInclude(Include.NON_EMPTY)
-	public static class Report {
+	public static final class ContextConditionEvaluation {
 
 		private final MultiValueMap<String, MessageAndCondition> positiveMatches;
 
@@ -77,9 +114,11 @@ public class ConditionsReportEndpoint {
 
 		private final Set<String> unconditionalClasses;
 
-		private final Report parent;
+		private final String parentId;
 
-		public Report(ConditionEvaluationReport report) {
+		public ContextConditionEvaluation(ConfigurableApplicationContext context) {
+			ConditionEvaluationReport report = ConditionEvaluationReport
+					.get(context.getBeanFactory());
 			this.positiveMatches = new LinkedMultiValueMap<>();
 			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
@@ -93,8 +132,8 @@ public class ConditionsReportEndpoint {
 					add(this.negativeMatches, entry.getKey(), entry.getValue());
 				}
 			}
-			boolean hasParent = report.getParent() != null;
-			this.parent = (hasParent ? new Report(report.getParent()) : null);
+			this.parentId = context.getParent() == null ? null
+					: context.getParent().getId();
 		}
 
 		private void add(Map<String, MessageAndConditions> map, String source,
@@ -127,8 +166,8 @@ public class ConditionsReportEndpoint {
 			return this.unconditionalClasses;
 		}
 
-		public Report getParent() {
-			return this.parent;
+		public String getParentId() {
+			return this.parentId;
 		}
 
 	}

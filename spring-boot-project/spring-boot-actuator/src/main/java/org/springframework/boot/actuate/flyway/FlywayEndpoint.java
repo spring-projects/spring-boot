@@ -30,7 +30,7 @@ import org.flywaydb.core.api.MigrationType;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.util.Assert;
+import org.springframework.context.ApplicationContext;
 
 /**
  * {@link Endpoint} to expose flyway info.
@@ -43,34 +43,85 @@ import org.springframework.util.Assert;
 @Endpoint(id = "flyway")
 public class FlywayEndpoint {
 
-	private final Map<String, Flyway> flywayBeans;
+	private final ApplicationContext context;
 
-	public FlywayEndpoint(Map<String, Flyway> flywayBeans) {
-		Assert.notEmpty(flywayBeans, "FlywayBeans must be specified");
-		this.flywayBeans = flywayBeans;
+	public FlywayEndpoint(ApplicationContext context) {
+		this.context = context;
 	}
 
 	@ReadOperation
-	public Map<String, FlywayReport> flywayReports() {
-		Map<String, FlywayReport> reports = new HashMap<>();
-		this.flywayBeans.forEach((name, flyway) -> reports.put(name,
-				new FlywayReport(flyway.info().all())));
-		return reports;
+	public ApplicationFlywayBeans flywayBeans() {
+		ApplicationContext target = this.context;
+		Map<String, ContextFlywayBeans> contextFlywayBeans = new HashMap<>();
+		while (target != null) {
+			Map<String, FlywayDescriptor> flywayBeans = new HashMap<>();
+			target.getBeansOfType(Flyway.class).forEach((name, flyway) -> flywayBeans
+					.put(name, new FlywayDescriptor(flyway.info().all())));
+			ApplicationContext parent = target.getParent();
+			contextFlywayBeans.put(target.getId(), new ContextFlywayBeans(flywayBeans,
+					parent == null ? null : parent.getId()));
+			target = parent;
+		}
+		return new ApplicationFlywayBeans(contextFlywayBeans);
 	}
 
 	/**
-	 * Report for one {@link Flyway} instance.
+	 * Description of an application's {@link Flyway} beans, primarily intended for
+	 * serialization to JSON.
 	 */
-	public static class FlywayReport {
+	public static final class ApplicationFlywayBeans {
+
+		private final Map<String, ContextFlywayBeans> contexts;
+
+		private ApplicationFlywayBeans(Map<String, ContextFlywayBeans> contexts) {
+			this.contexts = contexts;
+		}
+
+		public Map<String, ContextFlywayBeans> getContexts() {
+			return this.contexts;
+		}
+
+	}
+
+	/**
+	 * Description of an application context's {@link Flyway} beans, primarily intended
+	 * for serialization to JSON.
+	 */
+	public static final class ContextFlywayBeans {
+
+		private final Map<String, FlywayDescriptor> flywayBeans;
+
+		private final String parentId;
+
+		private ContextFlywayBeans(Map<String, FlywayDescriptor> flywayBeans,
+				String parentId) {
+			this.flywayBeans = flywayBeans;
+			this.parentId = parentId;
+		}
+
+		public Map<String, FlywayDescriptor> getFlywayBeans() {
+			return this.flywayBeans;
+		}
+
+		public String getParentId() {
+			return this.parentId;
+		}
+
+	}
+
+	/**
+	 * Description of a {@link Flyway} bean, primarly intended for serialization to JSON.
+	 */
+	public static class FlywayDescriptor {
 
 		private final List<FlywayMigration> migrations;
 
-		public FlywayReport(MigrationInfo[] migrations) {
+		private FlywayDescriptor(MigrationInfo[] migrations) {
 			this.migrations = Stream.of(migrations).map(FlywayMigration::new)
 					.collect(Collectors.toList());
 		}
 
-		public FlywayReport(List<FlywayMigration> migrations) {
+		public FlywayDescriptor(List<FlywayMigration> migrations) {
 			this.migrations = migrations;
 		}
 
@@ -83,7 +134,7 @@ public class FlywayEndpoint {
 	/**
 	 * Details of a migration performed by Flyway.
 	 */
-	public static class FlywayMigration {
+	public static final class FlywayMigration {
 
 		private final MigrationType type;
 
@@ -105,7 +156,7 @@ public class FlywayEndpoint {
 
 		private final Integer executionTime;
 
-		public FlywayMigration(MigrationInfo info) {
+		private FlywayMigration(MigrationInfo info) {
 			this.type = info.getType();
 			this.checksum = info.getChecksum();
 			this.version = nullSafeToString(info.getVersion());

@@ -36,6 +36,7 @@ import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -48,24 +49,33 @@ import org.springframework.util.StringUtils;
 @Endpoint(id = "liquibase")
 public class LiquibaseEndpoint {
 
-	private final Map<String, SpringLiquibase> liquibaseBeans;
+	private final ApplicationContext context;
 
-	public LiquibaseEndpoint(Map<String, SpringLiquibase> liquibaseBeans) {
-		Assert.notEmpty(liquibaseBeans, "LiquibaseBeans must be specified");
-		this.liquibaseBeans = liquibaseBeans;
+	public LiquibaseEndpoint(ApplicationContext context) {
+		Assert.notNull(context, "Context must be specified");
+		this.context = context;
 	}
 
 	@ReadOperation
-	public Map<String, LiquibaseReport> liquibaseReports() {
-		Map<String, LiquibaseReport> reports = new HashMap<>();
-		DatabaseFactory factory = DatabaseFactory.getInstance();
-		StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
-		this.liquibaseBeans.forEach((name, liquibase) -> reports.put(name,
-				createReport(liquibase, service, factory)));
-		return reports;
+	public ApplicationLiquibaseBeans liquibaseBeans() {
+		ApplicationContext target = this.context;
+		Map<String, ContextLiquibaseBeans> contextBeans = new HashMap<>();
+		while (target != null) {
+			Map<String, LiquibaseBean> liquibaseBeans = new HashMap<>();
+			DatabaseFactory factory = DatabaseFactory.getInstance();
+			StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
+			this.context.getBeansOfType(SpringLiquibase.class)
+					.forEach((name, liquibase) -> liquibaseBeans.put(name,
+							createReport(liquibase, service, factory)));
+			ApplicationContext parent = target.getParent();
+			contextBeans.put(target.getId(), new ContextLiquibaseBeans(liquibaseBeans,
+					parent == null ? null : parent.getId()));
+			target = parent;
+		}
+		return new ApplicationLiquibaseBeans(contextBeans);
 	}
 
-	private LiquibaseReport createReport(SpringLiquibase liquibase,
+	private LiquibaseBean createReport(SpringLiquibase liquibase,
 			ChangeLogHistoryService service, DatabaseFactory factory) {
 		try {
 			DataSource dataSource = liquibase.getDataSource();
@@ -77,7 +87,7 @@ public class LiquibaseEndpoint {
 					database.setDefaultSchemaName(defaultSchema);
 				}
 				service.setDatabase(database);
-				return new LiquibaseReport(service.getRanChangeSets().stream()
+				return new LiquibaseBean(service.getRanChangeSets().stream()
 						.map(ChangeSet::new).collect(Collectors.toList()));
 			}
 			finally {
@@ -90,13 +100,58 @@ public class LiquibaseEndpoint {
 	}
 
 	/**
-	 * Report for a single {@link SpringLiquibase} instance.
+	 * Description of an application's {@link SpringLiquibase} beans, primarily intended
+	 * for serialization to JSON.
 	 */
-	public static class LiquibaseReport {
+	public static final class ApplicationLiquibaseBeans {
+
+		private final Map<String, ContextLiquibaseBeans> contexts;
+
+		private ApplicationLiquibaseBeans(Map<String, ContextLiquibaseBeans> contexts) {
+			this.contexts = contexts;
+		}
+
+		public Map<String, ContextLiquibaseBeans> getContexts() {
+			return this.contexts;
+		}
+
+	}
+
+	/**
+	 * Description of an application context's {@link SpringLiquibase} beans, primarily
+	 * intended for serialization to JSON.
+	 */
+	public static final class ContextLiquibaseBeans {
+
+		private final Map<String, LiquibaseBean> liquibaseBeans;
+
+		private final String parentId;
+
+		private ContextLiquibaseBeans(Map<String, LiquibaseBean> liquibaseBeans,
+				String parentId) {
+			this.liquibaseBeans = liquibaseBeans;
+			this.parentId = parentId;
+		}
+
+		public Map<String, LiquibaseBean> getLiquibaseBeans() {
+			return this.liquibaseBeans;
+		}
+
+		public String getParentId() {
+			return this.parentId;
+		}
+
+	}
+
+	/**
+	 * Description of a {@link SpringLiquibase} bean, primarly intended for serialization
+	 * to JSON.
+	 */
+	public static final class LiquibaseBean {
 
 		private final List<ChangeSet> changeSets;
 
-		public LiquibaseReport(List<ChangeSet> changeSets) {
+		public LiquibaseBean(List<ChangeSet> changeSets) {
 			this.changeSets = changeSets;
 		}
 

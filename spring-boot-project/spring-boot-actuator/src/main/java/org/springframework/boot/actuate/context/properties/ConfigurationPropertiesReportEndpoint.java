@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,21 +88,25 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	@ReadOperation
-	public ConfigurationPropertiesDescriptor configurationProperties() {
+	public ApplicationConfigurationProperties configurationProperties() {
 		return extract(this.context);
 	}
 
-	private ConfigurationPropertiesDescriptor extract(ApplicationContext context) {
+	private ApplicationConfigurationProperties extract(ApplicationContext context) {
 		ObjectMapper mapper = new ObjectMapper();
 		configureObjectMapper(mapper);
-		return describeConfigurationProperties(context, mapper);
+		Map<String, ContextConfigurationProperties> contextProperties = new HashMap<>();
+		ApplicationContext target = context;
+		while (target != null) {
+			contextProperties.put(target.getId(),
+					describeConfigurationProperties(target, mapper));
+			target = target.getParent();
+		}
+		return new ApplicationConfigurationProperties(contextProperties);
 	}
 
-	private ConfigurationPropertiesDescriptor describeConfigurationProperties(
+	private ContextConfigurationProperties describeConfigurationProperties(
 			ApplicationContext context, ObjectMapper mapper) {
-		if (context == null) {
-			return null;
-		}
 		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(
 				context);
 		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
@@ -115,8 +119,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(
 					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
 		}
-		return new ConfigurationPropertiesDescriptor(context.getId(), beanDescriptors,
-				describeConfigurationProperties(context.getParent(), mapper));
+		return new ContextConfigurationProperties(beanDescriptors,
+				context.getParent() == null ? null : context.getParent().getId());
 	}
 
 	private ConfigurationBeanFactoryMetaData getBeanFactoryMetaData(
@@ -390,35 +394,47 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
+	 * A description of an application's {@link ConfigurationProperties} beans. Primarily
+	 * intended for serialization to JSON.
+	 */
+	public static final class ApplicationConfigurationProperties {
+
+		private final Map<String, ContextConfigurationProperties> contexts;
+
+		private ApplicationConfigurationProperties(
+				Map<String, ContextConfigurationProperties> contexts) {
+			this.contexts = contexts;
+		}
+
+		public Map<String, ContextConfigurationProperties> getContexts() {
+			return this.contexts;
+		}
+
+	}
+
+	/**
 	 * A description of an application context's {@link ConfigurationProperties} beans.
 	 * Primarily intended for serialization to JSON.
 	 */
-	public static final class ConfigurationPropertiesDescriptor {
-
-		private final String contextId;
+	public static final class ContextConfigurationProperties {
 
 		private final Map<String, ConfigurationPropertiesBeanDescriptor> beans;
 
-		private final ConfigurationPropertiesDescriptor parent;
+		private final String parentId;
 
-		private ConfigurationPropertiesDescriptor(String contextId,
+		private ContextConfigurationProperties(
 				Map<String, ConfigurationPropertiesBeanDescriptor> beans,
-				ConfigurationPropertiesDescriptor parent) {
-			this.contextId = contextId;
+				String parentId) {
 			this.beans = beans;
-			this.parent = parent;
-		}
-
-		public String getContextId() {
-			return this.contextId;
+			this.parentId = parentId;
 		}
 
 		public Map<String, ConfigurationPropertiesBeanDescriptor> getBeans() {
 			return this.beans;
 		}
 
-		public ConfigurationPropertiesDescriptor getParent() {
-			return this.parent;
+		public String getParentId() {
+			return this.parentId;
 		}
 
 	}

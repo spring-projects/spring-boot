@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,11 +46,15 @@ import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.ContentModifyingOperationPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
+
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 /**
  * Abstract base class for tests that generate endpoint documentation using Spring REST
@@ -79,6 +83,10 @@ public abstract class AbstractEndpointDocumentationTests {
 				.build();
 	}
 
+	protected WebApplicationContext getApplicationContext() {
+		return this.applicationContext;
+	}
+
 	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {
 		return StringUtils
 				.collectionToCommaDelimitedString(Stream.of(enumType.getEnumConstants())
@@ -86,23 +94,35 @@ public abstract class AbstractEndpointDocumentationTests {
 						.collect(Collectors.toList()));
 	}
 
-	protected OperationPreprocessor limit(String key) {
-		return limit(key, (candidate) -> true);
+	protected OperationPreprocessor limit(String... keys) {
+		return limit((candidate) -> true, keys);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T> OperationPreprocessor limit(String key, Predicate<T> filter) {
+	protected <T> OperationPreprocessor limit(Predicate<T> filter, String... keys) {
 		return new ContentModifyingOperationPreprocessor((content, mediaType) -> {
 			ObjectMapper objectMapper = new ObjectMapper()
 					.enable(SerializationFeature.INDENT_OUTPUT);
 			try {
 				Map<String, Object> payload = objectMapper.readValue(content, Map.class);
-				Object entry = payload.get(key);
-				if (entry instanceof Map) {
-					payload.put(key, select((Map<String, Object>) entry, filter));
+				Object target = payload;
+				Map<Object, Object> parent = null;
+				for (String key : keys) {
+					if (target instanceof Map) {
+						parent = (Map<Object, Object>) target;
+						target = parent.get(key);
+					}
+					else {
+						throw new IllegalStateException();
+					}
+				}
+				if (target instanceof Map) {
+					parent.put(keys[keys.length - 1],
+							select((Map<String, Object>) target, filter));
 				}
 				else {
-					payload.put(key, select((List<Object>) entry, filter));
+					parent.put(keys[keys.length - 1],
+							select((List<Object>) target, filter));
 				}
 				return objectMapper.writeValueAsBytes(payload);
 			}
@@ -110,6 +130,12 @@ public abstract class AbstractEndpointDocumentationTests {
 				throw new IllegalStateException(ex);
 			}
 		});
+	}
+
+	protected FieldDescriptor parentIdField() {
+		return fieldWithPath("contexts.*.parentId")
+				.description("Id of the parent application context, if any.").optional()
+				.type(JsonFieldType.STRING);
 	}
 
 	@SuppressWarnings("unchecked")

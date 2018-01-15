@@ -17,21 +17,23 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -70,37 +72,46 @@ public class ConditionsReportEndpointDocumentationTests
 
 	@Test
 	public void conditions() throws Exception {
+		List<FieldDescriptor> positiveMatchFields = Arrays.asList(
+				fieldWithPath("").description(
+						"Classes and methods with conditions that were " + "matched."),
+				fieldWithPath(".*.[].condition").description("Name of the condition."),
+				fieldWithPath(".*.[].message")
+						.description("Details of why the condition was matched."));
+		List<FieldDescriptor> negativeMatchFields = Arrays.asList(
+				fieldWithPath("").description("Classes and methods with conditions that "
+						+ "were not matched."),
+				fieldWithPath(".*.notMatched")
+						.description("Conditions that were matched."),
+				fieldWithPath(".*.notMatched.[].condition")
+						.description("Name of the condition."),
+				fieldWithPath(".*.notMatched.[].message").description(
+						"Details of why the condition was" + " not matched."),
+				fieldWithPath(".*.matched").description("Conditions that were matched."),
+				fieldWithPath(".*.matched.[].condition")
+						.description("Name of the condition.").type(JsonFieldType.STRING)
+						.optional(),
+				fieldWithPath(".*.matched.[].message")
+						.description("Details of why the condition was matched.")
+						.type(JsonFieldType.STRING).optional());
+		FieldDescriptor unconditionalClassesField = fieldWithPath(
+				"contexts.*.unconditionalClasses").description(
+						"Names of unconditional auto-configuration classes if any.");
 		this.mockMvc.perform(get("/actuator/conditions")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("conditions",
-						preprocessResponse(limit("positiveMatches"),
-								limit("negativeMatches")),
-						responseFields(
-								fieldWithPath("positiveMatches").description(
-										"Classes and methods with conditions that were matched."),
-								fieldWithPath("positiveMatches.*.[].condition")
-										.description("Name of the condition."),
-								fieldWithPath("positiveMatches.*.[].message").description(
-										"Details of why the condition was matched."),
-								fieldWithPath("negativeMatches").description(
-										"Classes and methods with conditions that were not matched."),
-								fieldWithPath("negativeMatches.*.notMatched")
-										.description("Conditions that were matched."),
-								fieldWithPath("negativeMatches.*.notMatched.[].condition")
-										.description("Name of the condition."),
-								fieldWithPath("negativeMatches.*.notMatched.[].message")
-										.description(
-												"Details of why the condition was not matched."),
-								fieldWithPath("negativeMatches.*.matched")
-										.description("Conditions that were matched."),
-								fieldWithPath("negativeMatches.*.matched.[].condition")
-										.description("Name of the condition.")
-										.type(JsonFieldType.STRING).optional(),
-								fieldWithPath("negativeMatches.*.matched.[].message")
-										.description(
-												"Details of why the condition was matched.")
-										.type(JsonFieldType.STRING).optional(),
-								fieldWithPath("unconditionalClasses").description(
-										"Names of unconditional auto-configuration classes, if any."))));
+						preprocessResponse(
+								limit("contexts", getApplicationContext().getId(),
+										"positiveMatches"),
+								limit("contexts", getApplicationContext().getId(),
+										"negativeMatches")),
+						responseFields(fieldWithPath("contexts")
+								.description("Application contexts keyed by id."))
+										.andWithPrefix("contexts.*.positiveMatches",
+												positiveMatchFields)
+										.andWithPrefix("contexts.*.negativeMatches",
+												negativeMatchFields)
+										.and(unconditionalClassesField,
+												parentIdField())));
 	}
 
 	@Configuration
@@ -109,12 +120,12 @@ public class ConditionsReportEndpointDocumentationTests
 
 		@Bean
 		public ConditionsReportEndpoint autoConfigurationReportEndpoint(
-				ConfigurableListableBeanFactory beanFactory) {
+				ConfigurableApplicationContext context) {
 			ConditionEvaluationReport conditionEvaluationReport = ConditionEvaluationReport
-					.get(beanFactory);
+					.get(context.getBeanFactory());
 			conditionEvaluationReport.recordEvaluationCandidates(
 					Arrays.asList(PropertyPlaceholderAutoConfiguration.class.getName()));
-			return new ConditionsReportEndpoint(conditionEvaluationReport);
+			return new ConditionsReportEndpoint(context);
 		}
 
 	}

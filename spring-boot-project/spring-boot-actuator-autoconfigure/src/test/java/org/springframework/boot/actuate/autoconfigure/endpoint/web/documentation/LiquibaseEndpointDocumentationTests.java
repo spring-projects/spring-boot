@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,14 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import liquibase.changelog.ChangeSet.ExecType;
-import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -48,12 +47,20 @@ public class LiquibaseEndpointDocumentationTests
 
 	@Test
 	public void liquibase() throws Exception {
+		FieldDescriptor changeSetsField = fieldWithPath(
+				"contexts.*.liquibaseBeans.*.changeSets")
+						.description("Change sets made by the Liquibase beans, keyed by "
+								+ "bean name.");
 		this.mockMvc.perform(get("/actuator/liquibase")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("liquibase",
-						responseFields(fieldWithPath("*.changeSets").description(
-								"Change sets made by the Liquibase beans, keyed by "
-										+ "bean name.")).andWithPrefix("*.changeSets[].",
-												getChangeSetFieldDescriptors())));
+						responseFields(
+								fieldWithPath("contexts")
+										.description("Application contexts keyed by id"),
+						changeSetsField)
+								.andWithPrefix(
+										"contexts.*.liquibaseBeans.*.changeSets[].",
+										getChangeSetFieldDescriptors())
+								.and(parentIdField())));
 	}
 
 	private List<FieldDescriptor> getChangeSetFieldDescriptors() {
@@ -86,8 +93,8 @@ public class LiquibaseEndpointDocumentationTests
 	static class TestConfiguration {
 
 		@Bean
-		public LiquibaseEndpoint endpoint(Map<String, SpringLiquibase> liquibases) {
-			return new LiquibaseEndpoint(liquibases);
+		public LiquibaseEndpoint endpoint(ApplicationContext context) {
+			return new LiquibaseEndpoint(context);
 		}
 
 	}
