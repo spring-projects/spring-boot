@@ -574,7 +574,7 @@ Generally, you can follow the advice from
 "`<<howto-discover-build-in-options-for-external-properties>>`" about
 `@ConfigurationProperties` (`ServerProperties` is the main one here). However, you should
 also look at
-{dc-spring-boot}/web/servlet/server/ServletWebServerFactoryCustomizer.html[`ServletWebServerFactoryCustomizer`].
+{dc-spring-boot}/web/servlet/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
 The Jetty APIs are quite rich, so, once you have access to the
 `JettyServletWebServerFactory`, you can modify it in a number of ways. Alternatively, if
 you need more control and customization, you can add your own
@@ -670,8 +670,8 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto-discover-the-http-port-at-runtime]]
 === Discover the HTTP Port at Runtime
 You can access the port the server is running on from log output or from the
-`ServletWebServerApplicationContext` through its `EmbeddedWebServer`. The best way to get
-that and be sure that it has been initialized is to add a `@Bean` of type
+`ServletWebServerApplicationContext` through its `WebServer`. The best way to get that and
+be sure that it has been initialized is to add a `@Bean` of type
 `ApplicationListener<ServletWebServerInitializedEvent>` and pull the container
 out of the event when it is published.
 
@@ -888,7 +888,7 @@ adding a new valve instance in a `TomcatServletWebServerFactory` bean.
 Generally, you can follow the advice from
 "`<<howto-discover-build-in-options-for-external-properties>>`" about
 `@ConfigurationProperties` (`ServerProperties` is the main one here). However, you should
-also look at `ServletWebServerFactoryCustomizer` and various Tomcat-specific
+also look at `WebServerFactoryCustomizer` and various Tomcat-specific
 `+*Customizers+` that you can add. The Tomcat APIs are quite rich. Consequently, once you
 have access to the `TomcatServletWebServerFactory`, you can modify it in a number of ways.
 Alternatively, if you need more control and customization, you can add your own
@@ -951,7 +951,7 @@ If at all possible, you should consider updating your code to only store values
 compliant with later Cookie specifications. If, however, you cannot change the
 way that cookies are written, you can instead configure Tomcat to use a
 `LegacyCookieProcessor`. To switch to the `LegacyCookieProcessor`, use an
-`ServletWebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`, as shown
+`WebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`, as shown
 in the following example:
 
 [source,java,indent=0]
@@ -966,7 +966,7 @@ include::{code-examples}/context/embedded/TomcatLegacyCookieProcessorExample.jav
 Generally you can follow the advice from
 "`<<howto-discover-build-in-options-for-external-properties>>`" about
 `@ConfigurationProperties` (`ServerProperties` and `ServerProperties.Undertow` are the
-main ones here). However, you should also look at `ServletWebServerFactoryCustomizer`.
+main ones here). However, you should also look at `WebServerFactoryCustomizer`.
 Once you have access to the `UndertowServletWebServerFactory`, you can use an
 `UndertowBuilderCustomizer` to modify Undertow's configuration to meet your needs.
 Alternatively, if you need more control and customization, you can add your own
@@ -3056,7 +3056,7 @@ A typical initializer for WebLogic should resemble the following example:
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
-	import org.springframework.boot.context.web.SpringBootServletInitializer;
+	import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 	import org.springframework.web.WebApplicationInitializer;
 
 	@SpringBootApplication
