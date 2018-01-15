@@ -2053,6 +2053,52 @@ root of the classpath (in that order). If such a file is present, it is automati
 used as the favicon of the application.
 
 
+[[boot-features-spring-mvc-pathmatch]]
+==== Path Patching and Content Negotiation
+Spring MVC can map incoming HTTP requests to handlers by looking at the request path and
+matching it to the mappings defined in your application (for example, `@GetMapping`
+annotations on Controller methods).
+
+Spring Boot chooses to disable suffix pattern matching by default, which means that
+requests like `"GET /projects/spring-boot.json"` won't be matched to
+`@GetMapping("/project/spring-boot")` mappings.
+This is considered as a
+{spring-reference}web.html#mvc-ann-requestmapping-suffix-pattern-match[best practice
+for Spring MVC applications]. This feature was mainly useful in the past for HTTP
+clients which did not send proper "Accept" request headers; we needed to make sure
+to send the correct Content Type to the client. Nowadays, Content Negotiation
+is much more reliable.
+
+There are other ways to deal with HTTP clients that don't consistently send proper
+"Accept" request headers. Instead of using suffix matching, we can use a query
+parameter to ensure that requests like `"GET /projects/spring-boot?format=json"`
+will be mapped to `@GetMapping("/project/spring-boot")`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.content-negotiation.favor-parameter=true
+
+	# We can change the parameter name, which is "format" by default:
+	# spring.mvc.content-negotiation.parameter-name=myparam
+
+	# We can also register additional file extensions/media types with:
+	spring.mvc.media-types.markdown=text/markdown
+----
+
+If you understand the caveats and would still like your application to use
+suffix pattern matching, the following configuration is required:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.content-negotiation.favor-path-extension=true
+
+	# You can also restrict that feature to known extensions only
+	# spring.mvc.path-match.use-registered-suffix-pattern=true
+	
+	# We can also register additional file extensions/media types with:
+	# spring.mvc.media-types.adoc=text/asciidoc
+----
+
 
 [[boot-features-spring-mvc-web-binding-initializer]]
 ==== ConfigurableWebBindingInitializer

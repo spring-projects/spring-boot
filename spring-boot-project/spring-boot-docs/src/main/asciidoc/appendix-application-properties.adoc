@@ -393,6 +393,9 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/servlet/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.async.request-timeout= # Amount of time before asynchronous request handling times out.
+	spring.mvc.content-negotiation.favor-path-extension=false # Whether the path extension in the URL path should be used to determine the requested media type.
+	spring.mvc.content-negotiation.favor-parameter=false # Whether a request parameter ("format" by default) should be used to determine the requested media type.
+	spring.mvc.content-negotiation.parameter-name= # Query parameter name to use when "favor-parameter" is enabled.
 	spring.mvc.date-format= # Date format to use. For instance, `dd/MM/yyyy`.
 	spring.mvc.dispatch-trace-request=false # Whether to dispatch TRACE requests to the FrameworkServlet doService method.
 	spring.mvc.dispatch-options-request=true # Whether to dispatch OPTIONS requests to the FrameworkServlet doService method.
@@ -404,6 +407,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.mvc.log-resolved-exception=false # Whether to enable warn logging of exceptions resolved by a "HandlerExceptionResolver".
 	spring.mvc.media-types.*= # Maps file extensions to media types for content negotiation.
 	spring.mvc.message-codes-resolver-format= # Formatting strategy for message codes. For instance, `PREFIX_ERROR_CODE`.
+	spring.mvc.path-match.use-registered-suffix-pattern=false # Whether suffix pattern matching should work only against path extensions explicitly registered with "spring.mvc.media-types.*".
+	spring.mvc.path-match.use-suffix-pattern=false # Whether to use suffix pattern match (".*") when matching patterns to requests.
 	spring.mvc.servlet.load-on-startup=-1 # Load on startup priority of the Spring Web Services servlet.
 	spring.mvc.static-path-pattern=/** # Path pattern used for static resources.
 	spring.mvc.throw-exception-if-no-handler-found=false # Whether a "NoHandlerFoundException" should be thrown if no Handler was found to process a request.
