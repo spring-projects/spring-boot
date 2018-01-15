@@ -181,7 +181,7 @@ public class GsonAutoConfigurationTests {
 		this.contextRunner.run(context -> {
 			Gson gson = context.getBean(Gson.class);
 			/*
-			 * It seems, that lenient setting not work in version 2.8.2 We get access to
+			 * It seems that lenient setting not work in version 2.8.2. We get access to
 			 * it via reflection
 			 */
 			Field lenientField = gson.getClass().getDeclaredField("lenient");
@@ -196,10 +196,9 @@ public class GsonAutoConfigurationTests {
 	public void withLenient() {
 		this.contextRunner.withPropertyValues("spring.gson.lenient:true").run(context -> {
 			Gson gson = context.getBean(Gson.class);
-
 			/*
-			 * It seems, that lenient setting not work in version 2.8.0 of gson We get
-			 * access to it via reflection
+			 * It seems that lenient setting not work in version 2.8.2. We get access to
+			 * it via reflection
 			 */
 			Field lenientField = gson.getClass().getDeclaredField("lenient");
 			lenientField.setAccessible(true);
@@ -270,8 +269,6 @@ public class GsonAutoConfigurationTests {
 	}
 
 	public class DataObject {
-
-		public static final String STATIC_DATA = "bye";
 
 		@SuppressWarnings("unused")
 		private Long data = 1L;

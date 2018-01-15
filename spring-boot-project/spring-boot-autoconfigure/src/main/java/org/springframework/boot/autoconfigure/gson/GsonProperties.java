@@ -44,12 +44,12 @@ public class GsonProperties {
 	private Boolean excludeFieldsWithoutExposeAnnotation;
 
 	/**
-	 * Whether to to serialize null fields.
+	 * Whether to serialize null fields.
 	 */
 	private Boolean serializeNulls;
 
 	/**
-	 * Whether to enabled serialization of complex map keys (i.e. non-primitives).
+	 * Whether to enable serialization of complex map keys (i.e. non-primitives).
 	 */
 	private Boolean enableComplexMapKeySerialization;
 
@@ -64,7 +64,7 @@ public class GsonProperties {
 	private LongSerializationPolicy longSerializationPolicy;
 
 	/**
-	 * The naming policy that should be applied to an object's field during serialization
+	 * Naming policy that should be applied to an object's field during serialization
 	 * and deserialization.
 	 */
 	private FieldNamingPolicy fieldNamingPolicy;
@@ -80,12 +80,12 @@ public class GsonProperties {
 	private Boolean lenient;
 
 	/**
-	 * Whether to disable the escaping of HTML characters such as '<' '>' etc.
+	 * Whether to disable the escaping of HTML characters such as '<', '>', etc.
 	 */
 	private Boolean disableHtmlEscaping;
 
 	/**
-	 * The format to use when serializing Date objects.
+	 * Format to use when serializing Date objects.
 	 */
 	private String dateFormat;
 

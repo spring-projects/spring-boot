@@ -227,8 +227,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.build();
 			this.thrown.expectCause(instanceOf(IllegalStateException.class));
 			this.thrown.expectMessage("already committed!");
-			client.get().uri("/commit").exchange().expectStatus().isEqualTo(HttpStatus.OK)
-					.expectBody().isEmpty();
+			client.get().uri("/commit").exchange().expectStatus();
 		});
 	}
 
