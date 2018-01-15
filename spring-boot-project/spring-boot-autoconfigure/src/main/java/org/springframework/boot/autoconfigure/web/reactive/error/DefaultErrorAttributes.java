@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
@@ -44,6 +45,7 @@ import org.springframework.web.server.ServerWebExchange;
  * </ul>
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -77,24 +79,36 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.path());
 		Throwable error = getError(request);
-		if (this.includeException) {
-			errorAttributes.put("exception", error.getClass().getName());
-		}
-		if (includeStackTrace) {
-			addStackTrace(errorAttributes, error);
-		}
-		addErrorMessage(errorAttributes, error);
-		if (error instanceof ResponseStatusException) {
-			HttpStatus errorStatus = ((ResponseStatusException) error).getStatus();
-			errorAttributes.put("status", errorStatus.value());
-			errorAttributes.put("error", errorStatus.getReasonPhrase());
-		}
-		else {
-			errorAttributes.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			errorAttributes.put("error",
-					HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-		}
+		HttpStatus errorStatus = determineHttpStatus(error);
+		errorAttributes.put("status", errorStatus.value());
+		errorAttributes.put("error", errorStatus.getReasonPhrase());
+		errorAttributes.put("message", determineMessage(error));
+		handleException(errorAttributes, determineException(error), includeStackTrace);
 		return errorAttributes;
+	}
+
+	private HttpStatus determineHttpStatus(Throwable error) {
+		if (error instanceof ResponseStatusException) {
+			return ((ResponseStatusException) error).getStatus();
+		}
+		return HttpStatus.INTERNAL_SERVER_ERROR;
+	}
+
+	private String determineMessage(Throwable error) {
+		if (error instanceof WebExchangeBindException) {
+			return error.getMessage();
+		}
+		if (error instanceof ResponseStatusException) {
+			return ((ResponseStatusException) error).getReason();
+		}
+		return error.getMessage();
+	}
+
+	private Throwable determineException(Throwable error) {
+		if (error instanceof ResponseStatusException) {
+			return error.getCause() != null ? error.getCause() : error;
+		}
+		return error;
 	}
 
 	private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {
@@ -104,8 +118,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void addErrorMessage(Map<String, Object> errorAttributes, Throwable error) {
-		errorAttributes.put("message", error.getMessage());
+	private void handleException(Map<String, Object> errorAttributes,
+			Throwable error, boolean includeStackTrace) {
+		if (this.includeException) {
+			errorAttributes.put("exception", error.getClass().getName());
+		}
+		if (includeStackTrace) {
+			addStackTrace(errorAttributes, error);
+		}
 		if (error instanceof BindingResult) {
 			BindingResult result = (BindingResult) error;
 			if (result.getErrorCount() > 0) {

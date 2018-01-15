@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DefaultErrorAttributes}.
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  */
 public class DefaultErrorAttributesTests {
 
@@ -123,6 +124,39 @@ public class DefaultErrorAttributesTests {
 		assertThat(attributes.get("exception"))
 				.isEqualTo(RuntimeException.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test");
+	}
+
+	@Test
+	public void processResponseStatusException() {
+		RuntimeException nested = new RuntimeException("Test");
+		ResponseStatusException error = new ResponseStatusException(
+				HttpStatus.BAD_REQUEST, "invalid request", nested);
+		this.errorAttributes = new DefaultErrorAttributes(true);
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, error);
+		Map<String, Object> attributes = this.errorAttributes
+				.getErrorAttributes(serverRequest, false);
+		assertThat(attributes.get("status")).isEqualTo(400);
+		assertThat(attributes.get("message")).isEqualTo("invalid request");
+		assertThat(attributes.get("exception"))
+				.isEqualTo(RuntimeException.class.getName());
+		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
+	}
+
+	@Test
+	public void processResponseStatusExceptionWithNoNestedCause() {
+		ResponseStatusException error = new ResponseStatusException(
+				HttpStatus.NOT_ACCEPTABLE, "could not process request");
+		this.errorAttributes = new DefaultErrorAttributes(true);
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, error);
+		Map<String, Object> attributes = this.errorAttributes
+				.getErrorAttributes(serverRequest, false);
+		assertThat(attributes.get("status")).isEqualTo(406);
+		assertThat(attributes.get("message")).isEqualTo("could not process request");
+		assertThat(attributes.get("exception"))
+				.isEqualTo(ResponseStatusException.class.getName());
+		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
 	}
 
 	@Test
