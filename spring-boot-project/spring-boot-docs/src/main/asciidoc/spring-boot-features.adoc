@@ -1782,7 +1782,7 @@ _<<getting-started.adoc#getting-started-first-application, Getting started>>_ se
 === The "`Spring Web MVC Framework`"
 The {spring-reference}web.html#mvc[Spring Web MVC framework] (often referred to as simply
 "`Spring MVC`") is a rich "`model view controller`" web framework. Spring MVC lets you
-create special `@Controller`or `@RestController` beans to handle incoming HTTP requests.
+create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
 
 The following code shows a typical `@RestController` that serves JSON data:

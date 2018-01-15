@@ -562,7 +562,7 @@ in your `ApplicationContext`. Spring Boot includes a number of auto-configured
 [[production-ready-application-info-autoconfigure]]
 ==== Auto-configured InfoContributors
 
-The following `InfoContributor ` beans are auto-configured by Spring Boot, when
+The following `InfoContributor` beans are auto-configured by Spring Boot, when
 appropriate:
 
 [cols="1,4"]
