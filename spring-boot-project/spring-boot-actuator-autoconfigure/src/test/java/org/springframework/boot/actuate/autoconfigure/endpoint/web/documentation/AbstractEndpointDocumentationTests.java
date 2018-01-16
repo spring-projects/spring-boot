@@ -26,33 +26,26 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.restdocs.JUnitRestDocumentation;
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.ContentModifyingOperationPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
@@ -62,30 +55,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(properties = { "spring.jackson.serialization.indent_output=true",
+@TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
 		"management.endpoints.web.expose=*" })
-public abstract class AbstractEndpointDocumentationTests {
-
-	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
-
-	protected MockMvc mockMvc;
-
-	@Autowired
-	private WebApplicationContext applicationContext;
-
-	@Before
-	public void before() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
-				.apply(MockMvcRestDocumentation
-						.documentationConfiguration(this.restDocumentation).uris())
-				.build();
-	}
-
-	protected WebApplicationContext getApplicationContext() {
-		return this.applicationContext;
-	}
+public class AbstractEndpointDocumentationTests {
 
 	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {
 		return StringUtils
@@ -160,7 +132,9 @@ public abstract class AbstractEndpointDocumentationTests {
 			DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
 			WebEndpointAutoConfiguration.class,
 			WebMvcEndpointManagementContextConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+			WebFluxEndpointManagementContextConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, WebFluxAutoConfiguration.class,
+			HttpHandlerAutoConfiguration.class })
 	static class BaseDocumentationConfiguration {
 
 	}

@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @AutoConfigureTestDatabase
-public class FlywayEndpointDocumentationTests extends AbstractEndpointDocumentationTests {
+public class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void flyway() throws Exception {

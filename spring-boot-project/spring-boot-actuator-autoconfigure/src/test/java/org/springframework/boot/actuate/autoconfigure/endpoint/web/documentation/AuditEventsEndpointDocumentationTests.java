@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 public class AuditEventsEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+		extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
 	private AuditEventRepository repository;

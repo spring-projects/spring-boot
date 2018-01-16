@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class BeansEndpointDocumentationTests extends AbstractEndpointDocumentationTests {
+public class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void beans() throws Exception {

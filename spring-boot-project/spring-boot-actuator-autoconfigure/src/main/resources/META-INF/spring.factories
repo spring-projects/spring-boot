@@ -41,10 +41,10 @@ org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthIndicatorAu
 org.springframework.boot.actuate.autoconfigure.trace.TraceEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.trace.TraceRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.trace.TraceWebFilterAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.web.MappingsEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.servlet.RequestMappingEndpointAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration
 
 org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration=\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration,\

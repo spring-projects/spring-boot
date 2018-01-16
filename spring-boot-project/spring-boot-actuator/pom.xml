@@ -67,6 +67,17 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.undertow</groupId>
+			<artifactId>undertow-servlet</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.spec.javax.servlet</groupId>
+					<artifactId>jboss-servlet-api_3.1_spec</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
 			<optional>true</optional>
@@ -193,6 +204,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-rest-webmvc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-solr</artifactId>
 			<optional>true</optional>
 			<exclusions>
@@ -280,22 +296,6 @@
 			<groupId>io.projectreactor.ipc</groupId>
 			<artifactId>reactor-netty</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-servlet</artifactId>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.spec.javax.servlet</groupId>
-					<artifactId>jboss-servlet-api_3.1_spec</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
