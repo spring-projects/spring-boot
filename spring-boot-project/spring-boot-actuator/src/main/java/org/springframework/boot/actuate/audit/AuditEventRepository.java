@@ -34,10 +34,10 @@ public interface AuditEventRepository {
 	void add(AuditEvent event);
 
 	/**
-	 * Find audit events of specified type relating to the specified principal since the
-	 * time provided.
+	 * Find audit events of specified type relating to the specified principal that
+	 * occurred {@link Instant#isAfter(Instant) after} the time provided.
 	 * @param principal the principal name to search for (or {@code null} if unrestricted)
-	 * @param after timestamp of earliest result required (or {@code null} if
+	 * @param after time after which an event must have occurred (or {@code null} if
 	 * unrestricted)
 	 * @param type the event type to search for (or {@code null} if unrestricted)
 	 * @return audit events of specified type relating to the principal
