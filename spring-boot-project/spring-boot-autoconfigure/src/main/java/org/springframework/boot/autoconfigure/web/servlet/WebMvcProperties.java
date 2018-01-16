@@ -88,11 +88,6 @@ public class WebMvcProperties {
 	private boolean logResolvedException = false;
 
 	/**
-	 * Maps file extensions to media types for content negotiation, e.g. yml to text/yaml.
-	 */
-	private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
-
-	/**
 	 * Path pattern used for static resources.
 	 */
 	private String staticPathPattern = "/**";
@@ -163,14 +158,6 @@ public class WebMvcProperties {
 
 	public void setLogResolvedException(boolean logResolvedException) {
 		this.logResolvedException = logResolvedException;
-	}
-
-	public Map<String, MediaType> getMediaTypes() {
-		return this.mediaTypes;
-	}
-
-	public void setMediaTypes(Map<String, MediaType> mediaTypes) {
-		this.mediaTypes = mediaTypes;
 	}
 
 	public boolean isDispatchOptionsRequest() {
@@ -299,6 +286,11 @@ public class WebMvcProperties {
 		private boolean favorParameter = false;
 
 		/**
+		 * Maps file extensions to media types for content negotiation, e.g. yml to text/yaml.
+		 */
+		private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
+
+		/**
 		 * Query parameter name to use when "favor-parameter" is enabled.
 		 */
 		private String parameterName;
@@ -319,6 +311,14 @@ public class WebMvcProperties {
 			this.favorParameter = favorParameter;
 		}
 
+		public Map<String, MediaType> getMediaTypes() {
+			return this.mediaTypes;
+		}
+
+		public void setMediaTypes(Map<String, MediaType> mediaTypes) {
+			this.mediaTypes = mediaTypes;
+		}
+
 		public String getParameterName() {
 			return this.parameterName;
 		}
@@ -337,8 +337,8 @@ public class WebMvcProperties {
 		private boolean useSuffixPattern = false;
 
 		/**
-		 * Whether suffix pattern matching should work only against path extensions
-		 * explicitly registered with "spring.mvc.media-types.*".
+		 * Whether suffix pattern matching should work only against extensions
+		 * registered with "spring.mvc.content-negotiation.media-types.*".
 		 * This is generally recommended to reduce ambiguity and to
 		 * avoid issues such as when a "." appears in the path for other reasons.
 		 */

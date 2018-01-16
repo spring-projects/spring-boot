@@ -2082,7 +2082,7 @@ will be mapped to `@GetMapping("/project/spring-boot")`:
 	# spring.mvc.content-negotiation.parameter-name=myparam
 
 	# We can also register additional file extensions/media types with:
-	spring.mvc.media-types.markdown=text/markdown
+	spring.mvc.content-negotiation.media-types.markdown=text/markdown
 ----
 
 If you understand the caveats and would still like your application to use
@@ -2096,7 +2096,7 @@ suffix pattern matching, the following configuration is required:
 	# spring.mvc.path-match.use-registered-suffix-pattern=true
 
 	# We can also register additional file extensions/media types with:
-	# spring.mvc.media-types.adoc=text/asciidoc
+	# spring.mvc.content-negotiation.media-types.adoc=text/asciidoc
 ----
 
 

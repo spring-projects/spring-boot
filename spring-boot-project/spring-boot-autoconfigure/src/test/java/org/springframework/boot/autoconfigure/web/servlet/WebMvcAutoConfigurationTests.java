@@ -471,7 +471,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customMediaTypes() {
-		this.contextRunner.withPropertyValues("spring.mvc.mediaTypes.yaml:text/yaml",
+		this.contextRunner.withPropertyValues(
+				"spring.mvc.content-negotiation.media-types.yaml:text/yaml",
 				"spring.mvc.content-negotiation.favor-path-extension:true")
 				.run((context) -> {
 					RequestMappingHandlerAdapter adapter = context

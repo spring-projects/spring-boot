@@ -232,7 +232,7 @@ public class WebMvcAutoConfiguration {
 			if (contentNegotiation.getParameterName() != null) {
 				configurer.parameterName(contentNegotiation.getParameterName());
 			}
-			Map<String, MediaType> mediaTypes = this.mvcProperties.getMediaTypes();
+			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentNegotiation().getMediaTypes();
 			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
 				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
 			}
