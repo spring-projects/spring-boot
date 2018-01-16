@@ -219,7 +219,7 @@ public class TokenValidatorTests {
 
 	private PrivateKey getPrivateKey()
 			throws InvalidKeySpecException, NoSuchAlgorithmException {
-		String signingKey = "-----BEGIN PRIVATE KEY-----\n"
+		String exampleKey = "-----BEGIN PRIVATE KEY-----\n"
 				+ "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDSbn2Xa72IOcxu\n"
 				+ "tcd+qQ6ufZ1VDe98EmpwO4VQrTd37U9kZtWU0KqeSkgnyzIWmlbyWOdbB4/v4uJa\n"
 				+ "lGjPQjt9hvd3xOOFXzpj33sWXgMGvGAzopMk64T+7GegOFlDXguA5TZyReM7M51O\n"
@@ -246,7 +246,7 @@ public class TokenValidatorTests {
 				+ "4Tg4qk/03qpTy5k64DxkX1nJHu8V/hsKwq9Af7Fj/iHy2Av54BLPlBaGPwMi2bzB\n"
 				+ "gYjmUomvx/fqOTQks9Rc4PIMB43p6Rdj0sh+52SKPDR2eHbwsmpuQUXnAs20BPPI\n"
 				+ "J/OOn5zOs8yf26os0q3+JUM=\n-----END PRIVATE KEY-----";
-		String privateKey = signingKey.replace("-----BEGIN PRIVATE KEY-----\n", "");
+		String privateKey = exampleKey.replace("-----BEGIN PRIVATE KEY-----\n", "");
 		privateKey = privateKey.replace("-----END PRIVATE KEY-----", "");
 		byte[] pkcs8EncodedBytes = Base64.decodeBase64(privateKey);
 		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
