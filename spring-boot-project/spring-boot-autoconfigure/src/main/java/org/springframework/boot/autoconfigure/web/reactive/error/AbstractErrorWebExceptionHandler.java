@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Abstract base class for {@link ErrorWebExceptionHandler} implementations.
@@ -191,9 +192,11 @@ public abstract class AbstractErrorWebExceptionHandler
 				.append("<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
 				.append("<div id='created'>").append(timestamp.toString())
 				.append("</div>").append("<div>There was an unexpected error (type=")
-				.append(error.get("error")).append(", status=")
-				.append(error.get("status")).append(").</div>").append("<div>")
-				.append(error.get("message")).append("</div>").append("</body></html>");
+				.append(HtmlUtils.htmlEscape(error.get("error").toString())).append(", status=")
+				.append(HtmlUtils.htmlEscape(error.get("status").toString()))
+				.append(").</div>").append("<div>")
+				.append(HtmlUtils.htmlEscape(error.get("message").toString()))
+				.append("</div>").append("</body></html>");
 		return responseBody.syncBody(builder.toString());
 	}
 

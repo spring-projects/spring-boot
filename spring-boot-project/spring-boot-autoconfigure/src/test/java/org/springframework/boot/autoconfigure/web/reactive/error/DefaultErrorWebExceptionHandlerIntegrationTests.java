@@ -221,6 +221,27 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
+	public void escapeHtmlInDefaultErrorView() throws Exception {
+		this.contextRunner
+				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/")
+				.run((context) -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context)
+							.build();
+					String body = client.get().uri("/html").accept(MediaType.TEXT_HTML)
+							.exchange().expectStatus()
+							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectHeader()
+							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
+							.returnResult().getResponseBody();
+					assertThat(body).contains("Whitelabel Error Page")
+							.doesNotContain("<script>")
+							.contains("&lt;script&gt;");
+					this.output.expect(
+							allOf(containsString("Failed to handle request [GET /html]"),
+									containsString("IllegalStateException")));
+				});
+	}
+
+	@Test
 	public void responseCommitted() throws Exception {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = WebTestClient.bindToApplicationContext(context)
@@ -251,6 +272,11 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 			public Mono<Void> commit(ServerWebExchange exchange) {
 				return exchange.getResponse().writeWith(Mono.empty()).then(
 						Mono.error(new IllegalStateException("already committed!")));
+			}
+
+			@GetMapping("/html")
+			public String htmlEscape() {
+				throw new IllegalStateException("<script>");
 			}
 
 			@PostMapping(path = "/bind", produces = "application/json")
