@@ -2094,7 +2094,7 @@ suffix pattern matching, the following configuration is required:
 
 	# You can also restrict that feature to known extensions only
 	# spring.mvc.path-match.use-registered-suffix-pattern=true
-	
+
 	# We can also register additional file extensions/media types with:
 	# spring.mvc.media-types.adoc=text/asciidoc
 ----
@@ -5251,13 +5251,32 @@ properties that are not directly supported, use the following properties:
 [source,properties,indent=0]
 ----
 	spring.kafka.properties.prop.one=first
-	spring.kafka.consumer.properties.prop.two=second
-	spring,kafka.producer.properties.prop.three=third
+	spring.kafka.admin.properties.prop.two=second
+	spring.kafka.consumer.properties.prop.three=third
+	spring,kafka.producer.properties.prop.four=fourth
 ----
 
-This sets the common `prop.one` Kafka property to `first` (applies to both producers and
-consumers), the consumer `prop.two` property to `second` and the `prop.three` producer
-property to `third`.
+This sets the common `prop.one` Kafka property to `first` (applies to producers,
+consumers and admins), the `prop.two` admin property to `second`, the `prop.three`
+consumer property to `third` and the `prop.four` producer property to `fourth`.
+
+You can also configure the Spring Kafka `JsonDeserializer` as follows:
+
+[source,properties,indent=0]
+----
+spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
+spring.kafka.consumer.properties.spring.json.value.default.type=org.foo.Invoice
+spring.kafka.consumer.properties.spring.json.trusted.packages=org.foo,org.bar
+----
+
+Similarly, you can disable the `JsonSerializer` default behavior of sending type
+information in headers:
+
+[source,properties,indent=0]
+----
+spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
+spring.kafka.producer.properties.spring.json.add.type.headers=false
+----
 
 IMPORTANT: Properties set in this way override any configuration item that Spring Boot
 explicitly supports.
