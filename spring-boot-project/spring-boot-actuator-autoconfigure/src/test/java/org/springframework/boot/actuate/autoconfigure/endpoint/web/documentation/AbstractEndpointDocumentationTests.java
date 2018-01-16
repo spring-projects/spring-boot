@@ -61,9 +61,9 @@ public class AbstractEndpointDocumentationTests {
 
 	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {
 		return StringUtils
-				.collectionToCommaDelimitedString(Stream.of(enumType.getEnumConstants())
+				.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
 						.map((constant) -> "`" + constant.name() + "`")
-						.collect(Collectors.toList()));
+						.collect(Collectors.toList()), ", ");
 	}
 
 	protected OperationPreprocessor limit(String... keys) {
