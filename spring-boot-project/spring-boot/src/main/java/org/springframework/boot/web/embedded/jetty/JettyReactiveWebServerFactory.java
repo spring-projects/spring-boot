@@ -26,9 +26,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
@@ -39,6 +41,7 @@ import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.JettyHttpHandlerAdapter;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link JettyWebServer}s.
@@ -140,6 +143,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		ServletContextHandler contextHandler = new ServletContextHandler(server, "",
 				false, false);
 		contextHandler.addServlet(servletHolder, "/");
+		server.setHandler(addHandlerWrappers(contextHandler));
 		JettyReactiveWebServerFactory.logger
 				.info("Server initialized with port: " + port);
 		if (getSsl() != null && getSsl().isEnabled()) {
@@ -166,6 +170,23 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 			}
 		}
 		return connector;
+	}
+
+	private Handler addHandlerWrappers(Handler handler) {
+		if (getCompression() != null && getCompression().getEnabled()) {
+			handler = applyWrapper(handler,
+					JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
+		}
+		if (StringUtils.hasText(getServerHeader())) {
+			handler = applyWrapper(handler,
+					JettyHandlerWrappers.createServerHeaderHandlerWrapper(getServerHeader()));
+		}
+		return handler;
+	}
+
+	private Handler applyWrapper(Handler handler, HandlerWrapper wrapper) {
+		wrapper.setHandler(handler);
+		return wrapper;
 	}
 
 	private void customizeSsl(Server server, int port) {

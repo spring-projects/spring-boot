@@ -31,23 +31,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.FileSessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
@@ -62,7 +55,6 @@ import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServer;
@@ -185,10 +177,12 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private Handler addHandlerWrappers(Handler handler) {
 		if (getCompression() != null && getCompression().getEnabled()) {
-			handler = applyWrapper(handler, createGzipHandler());
+			handler = applyWrapper(handler,
+					JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
 		}
 		if (StringUtils.hasText(getServerHeader())) {
-			handler = applyWrapper(handler, new ServerHeaderHandler(getServerHeader()));
+			handler = applyWrapper(handler,
+					JettyHandlerWrappers.createServerHeaderHandlerWrapper(getServerHeader()));
 		}
 		return handler;
 	}
@@ -196,20 +190,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private Handler applyWrapper(Handler handler, HandlerWrapper wrapper) {
 		wrapper.setHandler(handler);
 		return wrapper;
-	}
-
-	private HandlerWrapper createGzipHandler() {
-		GzipHandler handler = new GzipHandler();
-		Compression compression = getCompression();
-		handler.setMinGzipSize(compression.getMinResponseSize());
-		handler.setIncludedMimeTypes(compression.getMimeTypes());
-		for (HttpMethod httpMethod : HttpMethod.values()) {
-			handler.addIncludedMethods(httpMethod.name());
-		}
-		if (compression.getExcludedUserAgents() != null) {
-			handler.setExcludedAgentPatterns(compression.getExcludedUserAgents());
-		}
-		return handler;
 	}
 
 	private void customizeSsl(Server server, int port) {
@@ -548,29 +528,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 	}
 
-	/**
-	 * {@link HandlerWrapper} to add a custom {@code server} header.
-	 */
-	private static class ServerHeaderHandler extends HandlerWrapper {
-
-		private static final String SERVER_HEADER = "server";
-
-		private final String value;
-
-		ServerHeaderHandler(String value) {
-			this.value = value;
-		}
-
-		@Override
-		public void handle(String target, Request baseRequest, HttpServletRequest request,
-				HttpServletResponse response) throws IOException, ServletException {
-			if (!response.getHeaderNames().contains(SERVER_HEADER)) {
-				response.setHeader(SERVER_HEADER, this.value);
-			}
-			super.handle(target, baseRequest, request, response);
-		}
-
-	}
 
 	private static final class LoaderHidingResource extends Resource {
 
