@@ -7,5 +7,3 @@ buildscript {
 		classpath 'org.springframework.boot:spring-boot-gradle-plugin:{version}'
 	}
 }
-
-apply plugin: 'org.springframework.boot'
