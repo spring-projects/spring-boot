@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public abstract class DynaimcRegistrationBean<D extends Registration.Dynamic>
+public abstract class DynamicRegistrationBean<D extends Registration.Dynamic>
 		extends RegistrationBean {
 
 	private static final Log logger = LogFactory.getLog(RegistrationBean.class);
@@ -58,7 +58,7 @@ public abstract class DynaimcRegistrationBean<D extends Registration.Dynamic>
 	}
 
 	/**
-	 * Sets if asynchronous operations are support for this registration. If not specified
+	 * Sets if asynchronous operations are supported for this registration. If not specified
 	 * defaults to {@code true}.
 	 * @param asyncSupported if async is supported
 	 */
@@ -67,7 +67,7 @@ public abstract class DynaimcRegistrationBean<D extends Registration.Dynamic>
 	}
 
 	/**
-	 * Returns if asynchronous operations are support for this registration.
+	 * Returns if asynchronous operations are supported for this registration.
 	 * @return if async is supported
 	 */
 	public boolean isAsyncSupported() {
@@ -112,9 +112,6 @@ public abstract class DynaimcRegistrationBean<D extends Registration.Dynamic>
 					+ "(possibly already registered?)");
 			return;
 		}
-		Assert.state(registration != null,
-				() -> "Registration is null. Was something already registered for "
-						+ description + "?");
 		configure(registration);
 	}
 

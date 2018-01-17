@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@
 package org.springframework.boot.actuate.audit;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -46,7 +45,7 @@ import org.springframework.util.Assert;
 @JsonInclude(Include.NON_EMPTY)
 public class AuditEvent implements Serializable {
 
-	private final Date timestamp;
+	private final Instant timestamp;
 
 	private final String principal;
 
@@ -61,7 +60,7 @@ public class AuditEvent implements Serializable {
 	 * @param data The event data
 	 */
 	public AuditEvent(String principal, String type, Map<String, Object> data) {
-		this(new Date(), principal, type, data);
+		this(Instant.now(), principal, type, data);
 	}
 
 	/**
@@ -72,7 +71,7 @@ public class AuditEvent implements Serializable {
 	 * @param data The event data in the form 'key=value' or simply 'key'
 	 */
 	public AuditEvent(String principal, String type, String... data) {
-		this(new Date(), principal, type, convert(data));
+		this(Instant.now(), principal, type, convert(data));
 	}
 
 	/**
@@ -82,7 +81,7 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data The event data
 	 */
-	public AuditEvent(Date timestamp, String principal, String type,
+	public AuditEvent(Instant timestamp, String principal, String type,
 			Map<String, Object> data) {
 		Assert.notNull(timestamp, "Timestamp must not be null");
 		Assert.notNull(type, "Type must not be null");
@@ -107,11 +106,10 @@ public class AuditEvent implements Serializable {
 	}
 
 	/**
-	 * Returns the date/time that the even was logged.
-	 * @return the time stamp
+	 * Returns the date/time that the event was logged.
+	 * @return the timestamp
 	 */
-	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
-	public Date getTimestamp() {
+	public Instant getTimestamp() {
 		return this.timestamp;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.trace;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 
 import org.springframework.util.Assert;
@@ -29,18 +29,18 @@ import org.springframework.util.Assert;
  */
 public final class Trace {
 
-	private final Date timestamp;
+	private final Instant timestamp;
 
 	private final Map<String, Object> info;
 
-	public Trace(Date timestamp, Map<String, Object> info) {
+	public Trace(Instant timestamp, Map<String, Object> info) {
 		Assert.notNull(timestamp, "Timestamp must not be null");
 		Assert.notNull(info, "Info must not be null");
 		this.timestamp = timestamp;
 		this.info = info;
 	}
 
-	public Date getTimestamp() {
+	public Instant getTimestamp() {
 		return this.timestamp;
 	}
 

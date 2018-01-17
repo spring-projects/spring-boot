@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,9 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationContextDescriptor;
+import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationBeans;
 import org.springframework.boot.actuate.beans.BeansEndpoint.BeanDescriptor;
+import org.springframework.boot.actuate.beans.BeansEndpoint.ContextBeans;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -48,11 +49,10 @@ public class BeansEndpointTests {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class);
 		contextRunner.run((context) -> {
-			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
-					.beans();
-			assertThat(result.getParent()).isNull();
-			assertThat(result.getContextId()).isEqualTo(context.getId());
-			Map<String, BeanDescriptor> beans = result.getBeans();
+			ApplicationBeans result = context.getBean(BeansEndpoint.class).beans();
+			ContextBeans descriptor = result.getContexts().get(context.getId());
+			assertThat(descriptor.getParentId()).isNull();
+			Map<String, BeanDescriptor> beans = descriptor.getBeans();
 			assertThat(beans.size())
 					.isLessThanOrEqualTo(context.getBeanDefinitionCount());
 			assertThat(beans).containsKey("endpoint");
@@ -70,9 +70,9 @@ public class BeansEndpointTests {
 					.filter((name) -> BeanDefinition.ROLE_INFRASTRUCTURE == factory
 							.getBeanDefinition(name).getRole())
 					.collect(Collectors.toList());
-			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
-					.beans();
-			Map<String, BeanDescriptor> beans = result.getBeans();
+			ApplicationBeans result = context.getBean(BeansEndpoint.class).beans();
+			ContextBeans contextDescriptor = result.getContexts().get(context.getId());
+			Map<String, BeanDescriptor> beans = contextDescriptor.getBeans();
 			for (String infrastructureBean : infrastructureBeans) {
 				assertThat(beans).doesNotContainKey(infrastructureBean);
 			}
@@ -85,10 +85,10 @@ public class BeansEndpointTests {
 				.withUserConfiguration(EndpointConfiguration.class,
 						LazyBeanConfiguration.class);
 		contextRunner.run((context) -> {
-			ApplicationContextDescriptor result = context.getBean(BeansEndpoint.class)
-					.beans();
+			ApplicationBeans result = context.getBean(BeansEndpoint.class).beans();
+			ContextBeans contextDescriptor = result.getContexts().get(context.getId());
 			assertThat(context).hasBean("lazyBean");
-			assertThat(result.getBeans()).doesNotContainKey("lazyBean");
+			assertThat(contextDescriptor.getBeans()).doesNotContainKey("lazyBean");
 		});
 	}
 
@@ -100,10 +100,11 @@ public class BeansEndpointTests {
 			new ApplicationContextRunner()
 					.withUserConfiguration(EndpointConfiguration.class).withParent(parent)
 					.run(child -> {
-				BeansEndpoint endpoint = child.getBean(BeansEndpoint.class);
-				ApplicationContextDescriptor result = endpoint.beans();
-				assertThat(result.getParent().getBeans()).containsKey("bean");
-				assertThat(result.getBeans()).containsKey("endpoint");
+				ApplicationBeans result = child.getBean(BeansEndpoint.class).beans();
+				assertThat(result.getContexts().get(parent.getId()).getBeans())
+						.containsKey("bean");
+				assertThat(result.getContexts().get(child.getId()).getBeans())
+						.containsKey("endpoint");
 			});
 		});
 	}

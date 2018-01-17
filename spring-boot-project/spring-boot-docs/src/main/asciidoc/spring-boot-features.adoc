@@ -235,8 +235,10 @@ except for the registration of listeners and initializers.
 the context is known but before the context is created.
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean
 definitions have been loaded.
-. An `ApplicationReadyEvent` is sent after the refresh and any related callbacks have
-been processed, to indicate that the application is ready to service requests.
+. An `ApplicationStartedEvent` is sent after the context has been refreshed but before any
+application and command-line runners have been called.
+. An `ApplicationReadyEvent` is sent after any application and command-line runners have
+been called. It indicates that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
 TIP: You often need not use application events, but it can be handy to know that they
@@ -1780,7 +1782,7 @@ _<<getting-started.adoc#getting-started-first-application, Getting started>>_ se
 === The "`Spring Web MVC Framework`"
 The {spring-reference}web.html#mvc[Spring Web MVC framework] (often referred to as simply
 "`Spring MVC`") is a rich "`model view controller`" web framework. Spring MVC lets you
-create special `@Controller`or `@RestController` beans to handle incoming HTTP requests.
+create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
 
 The following code shows a typical `@RestController` that serves JSON data:
@@ -2050,6 +2052,52 @@ Spring Boot looks for a `favicon.ico` in the configured static content locations
 root of the classpath (in that order). If such a file is present, it is automatically
 used as the favicon of the application.
 
+
+[[boot-features-spring-mvc-pathmatch]]
+==== Path Patching and Content Negotiation
+Spring MVC can map incoming HTTP requests to handlers by looking at the request path and
+matching it to the mappings defined in your application (for example, `@GetMapping`
+annotations on Controller methods).
+
+Spring Boot chooses to disable suffix pattern matching by default, which means that
+requests like `"GET /projects/spring-boot.json"` won't be matched to
+`@GetMapping("/project/spring-boot")` mappings.
+This is considered as a
+{spring-reference}web.html#mvc-ann-requestmapping-suffix-pattern-match[best practice
+for Spring MVC applications]. This feature was mainly useful in the past for HTTP
+clients which did not send proper "Accept" request headers; we needed to make sure
+to send the correct Content Type to the client. Nowadays, Content Negotiation
+is much more reliable.
+
+There are other ways to deal with HTTP clients that don't consistently send proper
+"Accept" request headers. Instead of using suffix matching, we can use a query
+parameter to ensure that requests like `"GET /projects/spring-boot?format=json"`
+will be mapped to `@GetMapping("/project/spring-boot")`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.content-negotiation.favor-parameter=true
+
+	# We can change the parameter name, which is "format" by default:
+	# spring.mvc.content-negotiation.parameter-name=myparam
+
+	# We can also register additional file extensions/media types with:
+	spring.mvc.content-negotiation.media-types.markdown=text/markdown
+----
+
+If you understand the caveats and would still like your application to use
+suffix pattern matching, the following configuration is required:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.content-negotiation.favor-path-extension=true
+
+	# You can also restrict that feature to known extensions only
+	# spring.mvc.path-match.use-registered-suffix-pattern=true
+
+	# We can also register additional file extensions/media types with:
+	# spring.mvc.content-negotiation.media-types.adoc=text/asciidoc
+----
 
 
 [[boot-features-spring-mvc-web-binding-initializer]]
@@ -2761,10 +2809,10 @@ Common server settings include:
 
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface
 address to bind to `server.address`, and so on.
-* Session settings: Whether the session is persistent (`server.session.persistence`),
-session timeout (`server.session.timeout`), location of session data
-(`server.session.store-dir`), and session-cookie configuration
-(`server.session.cookie.*`).
+* Session settings: Whether the session is persistent (`server.servlet.session.persistence`),
+session timeout (`server.servlet.session.timeout`), location of session data
+(`server.servlet.session.store-dir`), and session-cookie configuration
+(`server.servlet.session.cookie.*`).
 * Error management: Location of the error page (`server.error.path`) and so on.
 * <<howto.adoc#howto-configure-ssl,SSL>>
 * <<howto.adoc#how-to-enable-http-response-compression,HTTP compression>>
@@ -4638,6 +4686,10 @@ key, Redis does not have overlapping keys and cannot return invalid values. We s
 recommend keeping this setting enabled if you create your own `RedisCacheManager`.
 ====
 
+TIP: You can take full control of the configuration by adding a `RedisCacheConfiguration`
+`@Bean` of your own. This can be useful if you're looking for customizing the
+serialization strategy.
+
 
 
 [[boot-features-caching-provider-caffeine]]
@@ -5199,13 +5251,32 @@ properties that are not directly supported, use the following properties:
 [source,properties,indent=0]
 ----
 	spring.kafka.properties.prop.one=first
-	spring.kafka.consumer.properties.prop.two=second
-	spring,kafka.producer.properties.prop.three=third
+	spring.kafka.admin.properties.prop.two=second
+	spring.kafka.consumer.properties.prop.three=third
+	spring,kafka.producer.properties.prop.four=fourth
 ----
 
-This sets the common `prop.one` Kafka property to `first` (applies to both producers and
-consumers), the consumer `prop.two` property to `second` and the `prop.three` producer
-property to `third`.
+This sets the common `prop.one` Kafka property to `first` (applies to producers,
+consumers and admins), the `prop.two` admin property to `second`, the `prop.three`
+consumer property to `third` and the `prop.four` producer property to `fourth`.
+
+You can also configure the Spring Kafka `JsonDeserializer` as follows:
+
+[source,properties,indent=0]
+----
+spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
+spring.kafka.consumer.properties.spring.json.value.default.type=org.foo.Invoice
+spring.kafka.consumer.properties.spring.json.trusted.packages=org.foo,org.bar
+----
+
+Similarly, you can disable the `JsonSerializer` default behavior of sending type
+information in headers:
+
+[source,properties,indent=0]
+----
+spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
+spring.kafka.producer.properties.spring.json.add.type.headers=false
+----
 
 IMPORTANT: Properties set in this way override any configuration item that Spring Boot
 explicitly supports.
@@ -5907,9 +5978,16 @@ running server, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/web/RandomPortExampleTests.java[tag=test-random-port]
+include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[tag=test-random-port]
 ----
 
+If you prefer to use a {spring-reference}testing.html#webtestclient[`WebTestClient`], you
+can use that as well:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/web/RandomPortWebTestClientExampleTests.java[tag=test-random-port]
+----
 
 
 [[boot-features-testing-spring-boot-applications-mocking-beans]]
@@ -6194,8 +6272,10 @@ additional configuration classes using `@Import` on your test.
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the
 `@MockBean` annotation to provide mock implementations for required collaborators.
 
-`@WebFluxTest` also auto-configures `WebTestClient`, which offers a powerful way to
-quickly test WebFlux controllers without needing to start a full HTTP server.
+`@WebFluxTest` also auto-configures
+{spring-reference}testing.html#webtestclient[`WebTestClient`]`WebTestClient`, which offers
+a powerful way to quickly test WebFlux controllers without needing to start a full HTTP
+server.
 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as
 `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`. The following

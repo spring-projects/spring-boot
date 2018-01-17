@@ -59,9 +59,9 @@ public class ReactiveWebServerAutoConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean
-	public DefaultReactiveWebServerCustomizer defaultReactiveWebServerCustomizer(
+	public DefaultReactiveWebServerFactoryCustomizer defaultReactiveWebServerCustomizer(
 			ServerProperties serverProperties) {
-		return new DefaultReactiveWebServerCustomizer(serverProperties);
+		return new DefaultReactiveWebServerFactoryCustomizer(serverProperties);
 	}
 
 	/**

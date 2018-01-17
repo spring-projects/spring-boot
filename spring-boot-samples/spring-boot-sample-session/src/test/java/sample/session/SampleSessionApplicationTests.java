@@ -59,7 +59,7 @@ public class SampleSessionApplicationTests {
 	private ConfigurableApplicationContext createContext() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder()
 				.sources(SampleSessionApplication.class)
-				.properties("server.port:0", "server.session.timeout:1")
+				.properties("server.port:0", "server.servlet.session.timeout:1")
 				.initializers(new ServerPortInfoApplicationContextInitializer()).run();
 		return context;
 	}

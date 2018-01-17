@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.context.properties;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -45,12 +45,15 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 							.withParent(parent).run(child -> {
 						ConfigurationPropertiesReportEndpoint endpoint = child
 								.getBean(ConfigurationPropertiesReportEndpoint.class);
-						ConfigurationPropertiesDescriptor result = endpoint
+						ApplicationConfigurationProperties applicationProperties = endpoint
 								.configurationProperties();
-						assertThat(result.getBeans().keySet())
-								.containsExactlyInAnyOrder("someProperties");
-						assertThat((result.getParent().getBeans().keySet()))
-								.containsExactly("testProperties");
+						assertThat(applicationProperties.getContexts())
+								.containsOnlyKeys(child.getId(), parent.getId());
+						assertThat(applicationProperties.getContexts().get(child.getId())
+								.getBeans().keySet()).containsExactly("someProperties");
+						assertThat((applicationProperties.getContexts()
+								.get(parent.getId()).getBeans().keySet()))
+										.containsExactly("testProperties");
 					});
 				});
 	}
@@ -65,12 +68,14 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 							.withParent(parent).run(child -> {
 						ConfigurationPropertiesReportEndpoint endpoint = child
 								.getBean(ConfigurationPropertiesReportEndpoint.class);
-						ConfigurationPropertiesDescriptor result = endpoint
+						ApplicationConfigurationProperties applicationProperties = endpoint
 								.configurationProperties();
-						assertThat(result.getBeans().keySet())
-								.containsExactlyInAnyOrder("otherProperties");
-						assertThat((result.getParent().getBeans().keySet()))
-								.containsExactly("testProperties");
+						assertThat(applicationProperties.getContexts().get(child.getId())
+								.getBeans().keySet())
+										.containsExactlyInAnyOrder("otherProperties");
+						assertThat((applicationProperties.getContexts()
+								.get(parent.getId()).getBeans().keySet()))
+										.containsExactly("testProperties");
 					});
 				});
 	}

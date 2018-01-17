@@ -611,7 +611,7 @@ public class MapBinderTests {
 		@Override
 		public Map<String, String> convert(String s) {
 			Map<String, String> map = new HashMap<>();
-			StringUtils.commaDelimitedListToSet(s).forEach(k -> map.put(k, ""));
+			StringUtils.commaDelimitedListToSet(s).forEach((k) -> map.put(k, ""));
 			return map;
 		}
 

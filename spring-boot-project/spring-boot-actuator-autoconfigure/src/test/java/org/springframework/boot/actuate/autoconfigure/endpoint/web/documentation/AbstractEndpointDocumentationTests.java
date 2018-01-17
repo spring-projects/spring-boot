@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,31 +26,28 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.restdocs.JUnitRestDocumentation;
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.ContentModifyingOperationPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
+
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 /**
  * Abstract base class for tests that generate endpoint documentation using Spring REST
@@ -58,51 +55,46 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(properties = { "spring.jackson.serialization.indent_output=true",
+@TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
 		"management.endpoints.web.expose=*" })
-public abstract class AbstractEndpointDocumentationTests {
-
-	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
-
-	protected MockMvc mockMvc;
-
-	@Autowired
-	private WebApplicationContext applicationContext;
-
-	@Before
-	public void before() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
-				.apply(MockMvcRestDocumentation
-						.documentationConfiguration(this.restDocumentation).uris())
-				.build();
-	}
+public class AbstractEndpointDocumentationTests {
 
 	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {
 		return StringUtils
-				.collectionToCommaDelimitedString(Stream.of(enumType.getEnumConstants())
+				.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
 						.map((constant) -> "`" + constant.name() + "`")
-						.collect(Collectors.toList()));
+						.collect(Collectors.toList()), ", ");
 	}
 
-	protected OperationPreprocessor limit(String key) {
-		return limit(key, (candidate) -> true);
+	protected OperationPreprocessor limit(String... keys) {
+		return limit((candidate) -> true, keys);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T> OperationPreprocessor limit(String key, Predicate<T> filter) {
+	protected <T> OperationPreprocessor limit(Predicate<T> filter, String... keys) {
 		return new ContentModifyingOperationPreprocessor((content, mediaType) -> {
 			ObjectMapper objectMapper = new ObjectMapper()
 					.enable(SerializationFeature.INDENT_OUTPUT);
 			try {
 				Map<String, Object> payload = objectMapper.readValue(content, Map.class);
-				Object entry = payload.get(key);
-				if (entry instanceof Map) {
-					payload.put(key, select((Map<String, Object>) entry, filter));
+				Object target = payload;
+				Map<Object, Object> parent = null;
+				for (String key : keys) {
+					if (target instanceof Map) {
+						parent = (Map<Object, Object>) target;
+						target = parent.get(key);
+					}
+					else {
+						throw new IllegalStateException();
+					}
+				}
+				if (target instanceof Map) {
+					parent.put(keys[keys.length - 1],
+							select((Map<String, Object>) target, filter));
 				}
 				else {
-					payload.put(key, select((List<Object>) entry, filter));
+					parent.put(keys[keys.length - 1],
+							select((List<Object>) target, filter));
 				}
 				return objectMapper.writeValueAsBytes(payload);
 			}
@@ -110,6 +102,12 @@ public abstract class AbstractEndpointDocumentationTests {
 				throw new IllegalStateException(ex);
 			}
 		});
+	}
+
+	protected FieldDescriptor parentIdField() {
+		return fieldWithPath("contexts.*.parentId")
+				.description("Id of the parent application context, if any.").optional()
+				.type(JsonFieldType.STRING);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -134,7 +132,9 @@ public abstract class AbstractEndpointDocumentationTests {
 			DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
 			WebEndpointAutoConfiguration.class,
 			WebMvcEndpointManagementContextConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+			WebFluxEndpointManagementContextConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class, WebFluxAutoConfiguration.class,
+			HttpHandlerAutoConfiguration.class })
 	static class BaseDocumentationConfiguration {
 
 	}

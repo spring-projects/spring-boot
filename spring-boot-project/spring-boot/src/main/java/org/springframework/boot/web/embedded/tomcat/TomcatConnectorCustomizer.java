@@ -22,7 +22,7 @@ import org.apache.catalina.connector.Connector;
  * Callback interface that can be used to customize a Tomcat {@link Connector}.
  *
  * @author Dave Syer
- * @see TomcatServletWebServerFactory
+ * @see ConfigurableTomcatWebServerFactory
  * @since 2.0.0
  */
 @FunctionalInterface

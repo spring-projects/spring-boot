@@ -132,12 +132,12 @@ public class MetricsEndpointTests {
 	private Optional<Double> getCount(MetricsEndpoint.MetricResponse response) {
 		return response.getMeasurements().stream()
 				.filter((ms) -> ms.getStatistic().equals(Statistic.Count)).findAny()
-				.map(MetricsEndpoint.MetricResponse.Sample::getValue);
+				.map(MetricsEndpoint.Sample::getValue);
 	}
 
 	private Stream<String> availableTagKeys(MetricsEndpoint.MetricResponse response) {
 		return response.getAvailableTags().stream()
-				.map(MetricsEndpoint.MetricResponse.AvailableTag::getTag);
+				.map(MetricsEndpoint.AvailableTag::getTag);
 	}
 
 }

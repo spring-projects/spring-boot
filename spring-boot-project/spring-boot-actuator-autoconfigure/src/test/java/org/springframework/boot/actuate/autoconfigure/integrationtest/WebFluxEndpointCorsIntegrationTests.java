@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,8 @@ public class WebFluxEndpointCorsIntegrationTests {
 				.header("Origin", "spring.example.org")
 				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
 				.exchange()
-				.expectStatus().isForbidden();
-		//TODO: .expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+				.expectStatus().isForbidden()
+				.expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
 	}
 
 	@Test
@@ -175,8 +175,8 @@ public class WebFluxEndpointCorsIntegrationTests {
 				.of("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allow-credentials:false")
 				.applyTo(this.context);
-		performAcceptedCorsRequest("/actuator/beans");
-		//TODO .expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+		performAcceptedCorsRequest("/actuator/beans")
+				.expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
 	}
 
 

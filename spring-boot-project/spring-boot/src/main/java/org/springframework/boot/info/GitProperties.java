@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.info;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Properties;
 
 /**
@@ -73,8 +73,8 @@ public class GitProperties extends InfoProperties {
 	 * @return the commit time
 	 * @see #get(String)
 	 */
-	public Date getCommitTime() {
-		return getDate("commit.time");
+	public Instant getCommitTime() {
+		return getInstant("commit.time");
 	}
 
 	private static Properties processEntries(Properties properties) {

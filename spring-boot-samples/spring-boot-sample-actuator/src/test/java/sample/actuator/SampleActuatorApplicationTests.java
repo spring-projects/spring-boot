@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -50,6 +51,9 @@ public class SampleActuatorApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
+
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	@Test
 	public void testHomeIsSecure() {
@@ -217,9 +221,7 @@ public class SampleActuatorApplicationTests {
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/actuator/beans", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsOnlyKeys("beans", "parent", "contextId");
-		assertThat(((String) entity.getBody().get("contextId")))
-				.startsWith("application");
+		assertThat(entity.getBody()).containsOnlyKeys("contexts");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -231,7 +233,11 @@ public class SampleActuatorApplicationTests {
 				.getForEntity("/actuator/configprops", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> body = entity.getBody();
-		assertThat((Map<String, Object>) body.get("beans"))
+		Map<String, Object> contexts = (Map<String, Object>) body.get("contexts");
+		Map<String, Object> context = (Map<String, Object>) contexts
+				.get(this.applicationContext.getId());
+		Map<String, Object> beans = (Map<String, Object>) context.get("beans");
+		assertThat(beans)
 				.containsKey("spring.datasource-" + DataSourceProperties.class.getName());
 	}
 

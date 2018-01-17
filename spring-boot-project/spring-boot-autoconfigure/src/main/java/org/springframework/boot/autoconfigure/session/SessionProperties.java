@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Session;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Servlet.Session;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.session.web.http.SessionRepositoryFilter;
@@ -53,7 +53,7 @@ public class SessionProperties {
 
 	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
 		ServerProperties properties = serverProperties.getIfUnique();
-		Session session = (properties == null ? null : properties.getSession());
+		Session session = (properties == null ? null : properties.getServlet().getSession());
 		this.timeout = (session == null ? null : session.getTimeout());
 	}
 
@@ -68,7 +68,7 @@ public class SessionProperties {
 	/**
 	 * Return the session timeout.
 	 * @return the session timeout
-	 * @see ServerProperties#getSession()
+	 * @see ServerProperties.Servlet#getSession()
 	 */
 	public Duration getTimeout() {
 		return this.timeout;

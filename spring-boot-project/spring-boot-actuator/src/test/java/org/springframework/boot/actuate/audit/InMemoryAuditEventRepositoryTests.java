@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.audit;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class InMemoryAuditEventRepositoryTests {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("dave", "b"));
-		List<AuditEvent> events = repository.find("dave", null);
+		List<AuditEvent> events = repository.find("dave", null, null);
 		assertThat(events.size()).isEqualTo(2);
 		assertThat(events.get(0).getType()).isEqualTo("a");
 		assertThat(events.get(1).getType()).isEqualTo("b");
@@ -57,7 +57,7 @@ public class InMemoryAuditEventRepositoryTests {
 		repository.add(new AuditEvent("dave", "a"));
 		repository.add(new AuditEvent("dave", "b"));
 		repository.add(new AuditEvent("dave", "c"));
-		List<AuditEvent> events = repository.find("dave", null);
+		List<AuditEvent> events = repository.find("dave", null, null);
 		assertThat(events.size()).isEqualTo(2);
 		assertThat(events.get(0).getType()).isEqualTo("b");
 		assertThat(events.get(1).getType()).isEqualTo("c");
@@ -78,7 +78,7 @@ public class InMemoryAuditEventRepositoryTests {
 		repository.add(new AuditEvent("phil", "b"));
 		repository.add(new AuditEvent("dave", "c"));
 		repository.add(new AuditEvent("phil", "d"));
-		List<AuditEvent> events = repository.find("dave", null);
+		List<AuditEvent> events = repository.find("dave", null, null);
 		assertThat(events.size()).isEqualTo(2);
 		assertThat(events.get(0).getType()).isEqualTo("a");
 		assertThat(events.get(1).getType()).isEqualTo("c");
@@ -99,25 +99,22 @@ public class InMemoryAuditEventRepositoryTests {
 
 	@Test
 	public void findByDate() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2000, 1, 1, 0, 0, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
+		Instant instant = Instant.now();
 		Map<String, Object> data = new HashMap<>();
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
-		repository.add(new AuditEvent(calendar.getTime(), "dave", "a", data));
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		repository.add(new AuditEvent(calendar.getTime(), "phil", "b", data));
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		Date after = calendar.getTime();
-		repository.add(new AuditEvent(calendar.getTime(), "dave", "c", data));
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		repository.add(new AuditEvent(calendar.getTime(), "phil", "d", data));
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		List<AuditEvent> events = repository.find(after);
+		repository.add(new AuditEvent(instant, "dave", "a", data));
+		repository
+				.add(new AuditEvent(instant.plus(1, ChronoUnit.DAYS), "phil", "b", data));
+		repository
+				.add(new AuditEvent(instant.plus(2, ChronoUnit.DAYS), "dave", "c", data));
+		repository
+				.add(new AuditEvent(instant.plus(3, ChronoUnit.DAYS), "phil", "d", data));
+		Instant after = instant.plus(1, ChronoUnit.DAYS);
+		List<AuditEvent> events = repository.find(null, after, null);
 		assertThat(events.size()).isEqualTo(2);
 		assertThat(events.get(0).getType()).isEqualTo("c");
 		assertThat(events.get(1).getType()).isEqualTo("d");
-		events = repository.find("dave", after);
+		events = repository.find("dave", after, null);
 		assertThat(events.size()).isEqualTo(1);
 		assertThat(events.get(0).getType()).isEqualTo("c");
 	}

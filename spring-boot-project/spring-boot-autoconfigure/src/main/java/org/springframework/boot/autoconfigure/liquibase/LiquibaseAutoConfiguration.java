@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import liquibase.change.DatabaseChange;
 import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
 
@@ -60,7 +61,7 @@ import org.springframework.util.ReflectionUtils;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(SpringLiquibase.class)
+@ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,8 @@ public class SimpleExportConfigurationTests {
 						"management.metrics.export.influx.enabled=false",
 						"management.metrics.export.jmx.enabled=false",
 						"management.metrics.export.prometheus.enabled=false",
-						"management.metrics.export.statsd.enabled=false")
+						"management.metrics.export.statsd.enabled=false",
+						"management.metrics.use-global-registry=false")
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
 				.run((context) -> {
 					CompositeMeterRegistry meterRegistry = context

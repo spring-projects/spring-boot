@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-// Note: this class was written without inspecting the non-free org.json sourcecode.
+// Note: this class was written without inspecting the non-free org.json source code.
 
 /**
  * Implements {@link JSONObject#toString} and {@link JSONArray#toString}. Most application

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-// Note: this class was written without inspecting the non-free org.json sourcecode.
+// Note: this class was written without inspecting the non-free org.json source code.
 
 /**
  * A modifiable set of name/value mappings. Names are unique, non-null strings. Values may

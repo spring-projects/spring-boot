@@ -50,7 +50,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		devToolsProperties.put("spring.freemarker.cache", "false");
 		devToolsProperties.put("spring.groovy.template.cache", "false");
 		devToolsProperties.put("spring.mustache.cache", "false");
-		devToolsProperties.put("server.session.persistent", "true");
+		devToolsProperties.put("server.servlet.session.persistent", "true");
 		devToolsProperties.put("spring.h2.console.enabled", "true");
 		devToolsProperties.put("spring.resources.cache.period", "0");
 		devToolsProperties.put("spring.resources.chain.cache", "false");

@@ -54,7 +54,7 @@ public class SpringBootTestContextBootstrapperIntegrationTests {
 
 	@Test
 	public void contextWasCreatedViaSpringApplication() {
-		assertThat(this.context.getId()).startsWith("application:");
+		assertThat(this.context.getId()).startsWith("application");
 	}
 
 	@Test

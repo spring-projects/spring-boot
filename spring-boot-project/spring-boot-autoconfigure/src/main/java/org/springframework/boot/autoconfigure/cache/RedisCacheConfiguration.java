@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.cache;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.cache.CacheProperties.Redis;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -51,16 +52,20 @@ class RedisCacheConfiguration {
 
 	private final CacheManagerCustomizers customizerInvoker;
 
+	private final org.springframework.data.redis.cache.RedisCacheConfiguration redisCacheConfiguration;
+
 	RedisCacheConfiguration(CacheProperties cacheProperties,
-			CacheManagerCustomizers customizerInvoker) {
+			CacheManagerCustomizers customizerInvoker,
+			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration) {
 		this.cacheProperties = cacheProperties;
 		this.customizerInvoker = customizerInvoker;
+		this.redisCacheConfiguration = redisCacheConfiguration.getIfAvailable();
 	}
 
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
 		RedisCacheManagerBuilder builder = RedisCacheManager
-				.builder(redisConnectionFactory).cacheDefaults(getConfiguration());
+				.builder(redisConnectionFactory).cacheDefaults(determineConfiguration());
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
@@ -68,7 +73,10 @@ class RedisCacheConfiguration {
 		return this.customizerInvoker.customize(builder.build());
 	}
 
-	private org.springframework.data.redis.cache.RedisCacheConfiguration getConfiguration() {
+	private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration() {
+		if (this.redisCacheConfiguration != null) {
+			return this.redisCacheConfiguration;
+		}
 		Redis redisProperties = this.cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 				.defaultCacheConfig();

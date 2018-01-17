@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ public class ProjectInfoAutoConfigurationTests {
 		assertThat(buildProperties.getArtifact()).isEqualTo("demo");
 		assertThat(buildProperties.getName()).isEqualTo("Demo Project");
 		assertThat(buildProperties.getVersion()).isEqualTo("0.0.1-SNAPSHOT");
-		assertThat(buildProperties.getTime().getTime()).isEqualTo(1457100965000L);
+		assertThat(buildProperties.getTime().toEpochMilli()).isEqualTo(1457100965000L);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class ProjectInfoAutoConfigurationTests {
 		assertThat(buildProperties.getArtifact()).isEqualTo("acme");
 		assertThat(buildProperties.getName()).isEqualTo("acme");
 		assertThat(buildProperties.getVersion()).isEqualTo("1.0.1-SNAPSHOT");
-		assertThat(buildProperties.getTime().getTime()).isEqualTo(1457088120000L);
+		assertThat(buildProperties.getTime().toEpochMilli()).isEqualTo(1457088120000L);
 	}
 
 	@Test
