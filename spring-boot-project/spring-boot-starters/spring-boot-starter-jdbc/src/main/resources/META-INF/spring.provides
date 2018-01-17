@@ -1,0 +1,1 @@
+provides: spring-jdbc,spring-tx,HikariCP

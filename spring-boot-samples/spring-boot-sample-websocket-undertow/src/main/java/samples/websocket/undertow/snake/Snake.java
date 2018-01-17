@@ -28,7 +28,7 @@ public class Snake {
 
 	private static final int DEFAULT_LENGTH = 5;
 
-	private final Deque<Location> tail = new ArrayDeque<Location>();
+	private final Deque<Location> tail = new ArrayDeque<>();
 
 	private final Object monitor = new Object();
 

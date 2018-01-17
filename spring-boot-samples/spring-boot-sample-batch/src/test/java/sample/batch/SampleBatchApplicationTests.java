@@ -30,7 +30,7 @@ public class SampleBatchApplicationTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		assertThat(SpringApplication
 				.exit(SpringApplication.run(SampleBatchApplication.class))).isEqualTo(0);
 		String output = this.outputCapture.toString();

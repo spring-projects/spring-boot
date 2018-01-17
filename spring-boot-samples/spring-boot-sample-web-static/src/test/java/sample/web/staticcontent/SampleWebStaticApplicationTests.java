@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,21 +37,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleWebStaticApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Static");
 	}
 
 	@Test
-	public void testCss() throws Exception {
+	public void testCss() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"/webjars/bootstrap/3.0.3/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

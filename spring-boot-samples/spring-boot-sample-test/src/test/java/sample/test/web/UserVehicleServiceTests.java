@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import sample.test.service.VehicleDetails;
 import sample.test.service.VehicleDetailsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
 
 /**
  * Tests for {@link UserVehicleService}.
@@ -61,23 +61,21 @@ public class UserVehicleServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException()
-			throws Exception {
+	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be null");
 		this.service.getVehicleDetails(null);
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException()
-			throws Exception {
+	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException() {
 		given(this.userRepository.findByUsername(anyString())).willReturn(null);
 		this.thrown.expect(UserNameNotFoundException.class);
 		this.service.getVehicleDetails("sboot");
 	}
 
 	@Test
-	public void getVehicleDetailsShouldReturnMakeAndModel() throws Exception {
+	public void getVehicleDetailsShouldReturnMakeAndModel() {
 		given(this.userRepository.findByUsername(anyString()))
 				.willReturn(new User("sboot", VIN));
 		VehicleDetails details = new VehicleDetails("Honda", "Civic");

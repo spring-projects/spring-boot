@@ -32,13 +32,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -47,7 +46,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SampleTomcatWebSocketApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
@@ -56,7 +54,7 @@ public class SampleWebSocketsApplicationTests {
 	private int port = 1234;
 
 	@Test
-	public void echoEndpoint() throws Exception {
+	public void echoEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port
@@ -72,7 +70,7 @@ public class SampleWebSocketsApplicationTests {
 	}
 
 	@Test
-	public void reverseEndpoint() throws Exception {
+	public void reverseEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties(
@@ -94,7 +92,7 @@ public class SampleWebSocketsApplicationTests {
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
-		private final AtomicReference<String> messagePayload = new AtomicReference<String>();
+		private final AtomicReference<String> messagePayload = new AtomicReference<>();
 
 		@Override
 		public void run(String... args) throws Exception {

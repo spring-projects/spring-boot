@@ -51,12 +51,12 @@ public class SampleIntegrationApplicationTests {
 	private ConfigurableApplicationContext context;
 
 	@Before
-	public void deleteInputAndOutput() throws InterruptedException {
+	public void deleteInputAndOutput() {
 		deleteIfExists(new File("target/input"));
 		deleteIfExists(new File("target/output"));
 	}
 
-	private void deleteIfExists(File directory) throws InterruptedException {
+	private void deleteIfExists(File directory) {
 		if (directory.exists()) {
 			assertThat(FileSystemUtils.deleteRecursively(directory)).isTrue();
 		}
@@ -97,13 +97,9 @@ public class SampleIntegrationApplicationTests {
 						}
 						StringBuilder builder = new StringBuilder();
 						for (Resource resource : resources) {
-							InputStream inputStream = resource.getInputStream();
-							try {
+							try (InputStream inputStream = resource.getInputStream()) {
 								builder.append(new String(
 										StreamUtils.copyToByteArray(inputStream)));
-							}
-							finally {
-								inputStream.close();
 							}
 						}
 						return builder.toString();

@@ -1,0 +1,55 @@
+ -----
+ Repackage classifier
+ -----
+ Stephane Nicoll
+ -----
+ 2014-05-02
+ -----
+
+  By default, the <<<repackage>>> goal will replace the original artifact with the
+  repackaged one. That's a sane behavior for modules that represent an app but if
+  your module is used as a dependency of another module, you need to provide a
+  classifier for the repackaged one.
+
+  The reason for that is that application classes are packaged in <<<BOOT-INF/classes>>>
+  so that the dependent module cannot load a repackaged jar's classes. If that is the
+  case or if you prefer to keep the original artifact and attach the repackaged one
+  with a different classifier, configure the plugin as follows:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <classifier>exec</classifier>
+            </configuration>
+          </execution>
+        </executions>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  This configuration will generate two artifacts: the original one and the repackaged counter
+  part produced by the repackage goal. Both will be installed/deployed transparently.
+
+
+
+

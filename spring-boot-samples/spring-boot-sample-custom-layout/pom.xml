@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-samples</artifactId>
-		<version>1.5.10.BUILD-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 	<artifactId>spring-boot-sample-custom-layout</artifactId>
 	<name>Spring Boot Custom Layout Sample</name>
 	<description>Spring Boot Custom Layout Sample</description>
-	<url>http://projects.spring.io/spring-boot/</url>
-	<organization>
-		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
-	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
@@ -24,18 +20,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
 		</dependency>
-		<!-- Test -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-tooling-api</artifactId>
-			<version>${gradle.version}</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -43,21 +27,53 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-invoker-plugin</artifactId>
 				<configuration>
-					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-					<settingsFile>src/it/settings.xml</settingsFile>
 					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-					<postBuildHookScript>verify</postBuildHookScript>
-					<addTestClassPath>true</addTestClassPath>
-					<skipInvocation>${skipTests}</skipInvocation>
-					<streamLogs>true</streamLogs>
 				</configuration>
 				<executions>
 					<execution>
-						<id>integration-test</id>
+						<id>prepare-integration-test</id>
+						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>install</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>integration-test</id>
+						<phase>integration-test</phase>
+						<goals>
 							<goal>run</goal>
 						</goals>
+						<configuration>
+							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+							<settingsFile>src/it/settings.xml</settingsFile>
+							<postBuildHookScript>verify</postBuildHookScript>
+							<addTestClassPath>true</addTestClassPath>
+							<skipInvocation>${skipTests}</skipInvocation>
+							<streamLogs>true</streamLogs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>cleanup-local-integration-repo</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<replaceregexp match="\$\{revision\}" replace="${project.version}"
+									flags="g" byline="true">
+									<fileset
+										dir="${project.build.directory}/local-repo/org/springframework/boot/"
+										includes="**/*.pom" />
+								</replaceregexp>
+							</target>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -85,7 +101,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore></ignore>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -95,16 +111,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<repositories>
-		<repository>
-			<id>gradle</id>
-			<url>http://repo.gradle.org/gradle/libs-releases-local</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>
