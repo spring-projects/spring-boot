@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example;
+package sample;
 
 import javax.validation.Valid;
 
