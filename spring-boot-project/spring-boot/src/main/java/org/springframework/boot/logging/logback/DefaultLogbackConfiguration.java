@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -117,7 +116,6 @@ class DefaultLogbackConfiguration {
 		String logPattern = this.patterns.getProperty("logging.pattern.console",
 				CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
-		encoder.setCharset(StandardCharsets.UTF_8);
 		config.start(encoder);
 		appender.setEncoder(encoder);
 		config.appender("CONSOLE", appender);
