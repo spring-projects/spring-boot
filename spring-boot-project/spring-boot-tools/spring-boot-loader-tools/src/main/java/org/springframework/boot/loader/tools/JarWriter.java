@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,16 +215,16 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	@Override
 	public void writeLoaderClasses(String loaderJarResourceName) throws IOException {
 		URL loaderJar = getClass().getClassLoader().getResource(loaderJarResourceName);
-		JarInputStream inputStream = new JarInputStream(
-				new BufferedInputStream(loaderJar.openStream()));
-		JarEntry entry;
-		while ((entry = inputStream.getNextJarEntry()) != null) {
-			if (entry.getName().endsWith(".class")) {
-				writeEntry(new JarArchiveEntry(entry),
-						new InputStreamEntryWriter(inputStream, false));
+		try (JarInputStream inputStream = new JarInputStream(
+				new BufferedInputStream(loaderJar.openStream()))) {
+			JarEntry entry;
+			while ((entry = inputStream.getNextJarEntry()) != null) {
+				if (entry.getName().endsWith(".class")) {
+					writeEntry(new JarArchiveEntry(entry),
+							new InputStreamEntryWriter(inputStream, false));
+				}
 			}
 		}
-		inputStream.close();
 	}
 
 	/**
