@@ -19,7 +19,9 @@ package sample.quartz;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,9 +37,11 @@ public class SampleQuartzApplicationTests {
 
 	@Test
 	public void test() {
-		SampleQuartzApplication.main(new String[0]);
-		String output = this.outputCapture.toString();
-		assertThat(output).contains("Hello World!");
+		try (ConfigurableApplicationContext context = SpringApplication.run(
+				SampleQuartzApplication.class)) {
+			String output = this.outputCapture.toString();
+			assertThat(output).contains("Hello World!");
+		}
 	}
 
 }
