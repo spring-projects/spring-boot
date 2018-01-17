@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.nio.channels.SocketChannel;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -24,6 +23,7 @@ import javax.annotation.PreDestroy;
 import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
+import io.netty.channel.socket.SocketChannel;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
