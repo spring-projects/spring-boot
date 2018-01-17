@@ -574,7 +574,7 @@ Generally, you can follow the advice from
 "`<<howto-discover-build-in-options-for-external-properties>>`" about
 `@ConfigurationProperties` (`ServerProperties` is the main one here). However, you should
 also look at
-{dc-spring-boot}/web/servlet/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
+{dc-spring-boot}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
 The Jetty APIs are quite rich, so, once you have access to the
 `JettyServletWebServerFactory`, you can modify it in a number of ways. Alternatively, if
 you need more control and customization, you can add your own

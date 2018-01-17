@@ -2054,14 +2054,14 @@ used as the favicon of the application.
 
 
 [[boot-features-spring-mvc-pathmatch]]
-==== Path Patching and Content Negotiation
+==== Path Matching and Content Negotiation
 Spring MVC can map incoming HTTP requests to handlers by looking at the request path and
 matching it to the mappings defined in your application (for example, `@GetMapping`
 annotations on Controller methods).
 
 Spring Boot chooses to disable suffix pattern matching by default, which means that
 requests like `"GET /projects/spring-boot.json"` won't be matched to
-`@GetMapping("/project/spring-boot")` mappings.
+`@GetMapping("/projects/spring-boot")` mappings.
 This is considered as a
 {spring-reference}web.html#mvc-ann-requestmapping-suffix-pattern-match[best practice
 for Spring MVC applications]. This feature was mainly useful in the past for HTTP
@@ -2072,7 +2072,7 @@ is much more reliable.
 There are other ways to deal with HTTP clients that don't consistently send proper
 "Accept" request headers. Instead of using suffix matching, we can use a query
 parameter to ensure that requests like `"GET /projects/spring-boot?format=json"`
-will be mapped to `@GetMapping("/project/spring-boot")`:
+will be mapped to `@GetMapping("/projects/spring-boot")`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----

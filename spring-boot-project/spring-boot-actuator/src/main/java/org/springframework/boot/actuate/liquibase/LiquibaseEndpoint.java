@@ -144,7 +144,7 @@ public class LiquibaseEndpoint {
 	}
 
 	/**
-	 * Description of a {@link SpringLiquibase} bean, primarly intended for serialization
+	 * Description of a {@link SpringLiquibase} bean, primarily intended for serialization
 	 * to JSON.
 	 */
 	public static final class LiquibaseBean {
