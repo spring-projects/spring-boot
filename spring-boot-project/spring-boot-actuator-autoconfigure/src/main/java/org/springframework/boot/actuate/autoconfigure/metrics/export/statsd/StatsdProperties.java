@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,8 @@ public class StatsdProperties {
 	private Integer maxPacketLength = 1400;
 
 	/**
-	 * How often gauges will be polled. When a gauge is polled, its value is
-	 * recalculated and if the value has changed, it is sent to the StatsD server.
+	 * How often gauges will be polled. When a gauge is polled, its value is recalculated
+	 * and if the value has changed, it is sent to the StatsD server.
 	 */
 	private Duration pollingFrequency = Duration.ofSeconds(10);
 

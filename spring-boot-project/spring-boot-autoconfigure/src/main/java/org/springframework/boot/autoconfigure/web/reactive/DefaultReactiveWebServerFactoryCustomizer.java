@@ -35,8 +35,9 @@ import org.springframework.core.env.Environment;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class DefaultReactiveWebServerFactoryCustomizer implements
-		WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, EnvironmentAware, Ordered {
+public class DefaultReactiveWebServerFactoryCustomizer
+		implements WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>,
+		EnvironmentAware, Ordered {
 
 	private final ServerProperties serverProperties;
 

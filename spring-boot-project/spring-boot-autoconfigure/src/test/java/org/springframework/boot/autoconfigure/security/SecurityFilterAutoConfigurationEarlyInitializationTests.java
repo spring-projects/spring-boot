@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,8 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 			context.refresh();
 			int port = context.getWebServer().getPort();
 			String password = this.outputCapture.toString()
-					.split("Using generated security password: ")[1].split("\n")[0].trim();
+					.split("Using generated security password: ")[1].split("\n")[0]
+							.trim();
 			new TestRestTemplate("user", password)
 					.getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown

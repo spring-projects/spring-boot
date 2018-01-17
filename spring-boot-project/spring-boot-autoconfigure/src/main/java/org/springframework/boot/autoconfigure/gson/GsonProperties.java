@@ -64,8 +64,8 @@ public class GsonProperties {
 	private LongSerializationPolicy longSerializationPolicy;
 
 	/**
-	 * Naming policy that should be applied to an object's field during serialization
-	 * and deserialization.
+	 * Naming policy that should be applied to an object's field during serialization and
+	 * deserialization.
 	 */
 	private FieldNamingPolicy fieldNamingPolicy;
 

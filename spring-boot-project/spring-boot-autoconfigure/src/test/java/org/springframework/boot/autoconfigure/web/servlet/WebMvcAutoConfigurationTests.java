@@ -471,9 +471,10 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customMediaTypes() {
-		this.contextRunner.withPropertyValues(
-				"spring.mvc.content-negotiation.media-types.yaml:text/yaml",
-				"spring.mvc.content-negotiation.favor-path-extension:true")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.mvc.content-negotiation.media-types.yaml:text/yaml",
+						"spring.mvc.content-negotiation.favor-path-extension:true")
 				.run((context) -> {
 					RequestMappingHandlerAdapter adapter = context
 							.getBean(RequestMappingHandlerAdapter.class);
@@ -744,7 +745,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void defaultPathMatching() {
 		this.contextRunner.run((context) -> {
-			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+			RequestMappingHandlerMapping handlerMapping = context
+					.getBean(RequestMappingHandlerMapping.class);
 			assertThat(handlerMapping.useSuffixPatternMatch()).isFalse();
 			assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isFalse();
 		});
@@ -756,34 +758,40 @@ public class WebMvcAutoConfigurationTests {
 				.withPropertyValues("spring.mvc.path-match.use-suffix-pattern:true",
 						"spring.mvc.path-match.use-registered-suffix-pattern:true")
 				.run((context) -> {
-			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-			assertThat(handlerMapping.useSuffixPatternMatch()).isTrue();
-			assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isTrue();
-		});
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					assertThat(handlerMapping.useSuffixPatternMatch()).isTrue();
+					assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isTrue();
+				});
 	}
 
 	@Test
 	public void defaultContentNegotiation() {
 		this.contextRunner.run((context) -> {
-			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-			ContentNegotiationManager contentNegotiationManager = handlerMapping.getContentNegotiationManager();
+			RequestMappingHandlerMapping handlerMapping = context
+					.getBean(RequestMappingHandlerMapping.class);
+			ContentNegotiationManager contentNegotiationManager = handlerMapping
+					.getContentNegotiationManager();
 			assertThat(contentNegotiationManager.getStrategies())
-					.doesNotHaveAnyElementsOfTypes(WebMvcAutoConfiguration
-							.OptionalPathExtensionContentNegotiationStrategy.class);
+					.doesNotHaveAnyElementsOfTypes(
+							WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class);
 		});
 	}
 
 	@Test
 	public void pathExtensionContentNegotiation() {
 		this.contextRunner
-				.withPropertyValues("spring.mvc.content-negotiation.favor-path-extension:true")
+				.withPropertyValues(
+						"spring.mvc.content-negotiation.favor-path-extension:true")
 				.run((context) -> {
-			RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-			ContentNegotiationManager contentNegotiationManager = handlerMapping.getContentNegotiationManager();
-			assertThat(contentNegotiationManager.getStrategies())
-					.hasAtLeastOneElementOfType(WebMvcAutoConfiguration
-							.OptionalPathExtensionContentNegotiationStrategy.class);
-		});
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					ContentNegotiationManager contentNegotiationManager = handlerMapping
+							.getContentNegotiationManager();
+					assertThat(contentNegotiationManager.getStrategies())
+							.hasAtLeastOneElementOfType(
+									WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class);
+				});
 	}
 
 	@Test
@@ -791,10 +799,13 @@ public class WebMvcAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.mvc.content-negotiation.favor-parameter:true")
 				.run((context) -> {
-					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
-					ContentNegotiationManager contentNegotiationManager = handlerMapping.getContentNegotiationManager();
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					ContentNegotiationManager contentNegotiationManager = handlerMapping
+							.getContentNegotiationManager();
 					assertThat(contentNegotiationManager.getStrategies())
-							.hasAtLeastOneElementOfType(ParameterContentNegotiationStrategy.class);
+							.hasAtLeastOneElementOfType(
+									ParameterContentNegotiationStrategy.class);
 				});
 	}
 

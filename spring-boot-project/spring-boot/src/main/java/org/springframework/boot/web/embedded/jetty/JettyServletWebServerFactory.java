@@ -182,8 +182,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 					JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
 		}
 		if (StringUtils.hasText(getServerHeader())) {
-			handler = applyWrapper(handler,
-					JettyHandlerWrappers.createServerHeaderHandlerWrapper(getServerHeader()));
+			handler = applyWrapper(handler, JettyHandlerWrappers
+					.createServerHeaderHandlerWrapper(getServerHeader()));
 		}
 		return handler;
 	}
@@ -529,7 +529,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			}
 		}
 	}
-
 
 	private static final class LoaderHidingResource extends Resource {
 

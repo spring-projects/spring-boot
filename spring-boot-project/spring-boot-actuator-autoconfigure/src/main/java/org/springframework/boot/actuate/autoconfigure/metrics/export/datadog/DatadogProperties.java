@@ -34,8 +34,8 @@ public class DatadogProperties extends StepRegistryProperties {
 	private String apiKey;
 
 	/**
-	 * Datadog application key. Not strictly required, but improves the Datadog
-	 * experience by sending meter descriptions, types, and base units to Datadog.
+	 * Datadog application key. Not strictly required, but improves the Datadog experience
+	 * by sending meter descriptions, types, and base units to Datadog.
 	 */
 	private String applicationKey;
 
@@ -46,8 +46,8 @@ public class DatadogProperties extends StepRegistryProperties {
 	private Boolean descriptions;
 
 	/**
-	 * Tag that will be mapped to "host" when shipping metrics to Datadog. Can be
-	 * omitted if host should be omitted on publishing.
+	 * Tag that will be mapped to "host" when shipping metrics to Datadog. Can be omitted
+	 * if host should be omitted on publishing.
 	 */
 	private String hostTag;
 

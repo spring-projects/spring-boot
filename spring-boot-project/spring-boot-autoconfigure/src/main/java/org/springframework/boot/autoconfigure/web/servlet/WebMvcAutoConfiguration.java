@@ -217,22 +217,23 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void configurePathMatch(PathMatchConfigurer configurer) {
-			configurer.setUseSuffixPatternMatch(this.mvcProperties
-					.getPathMatch().isUseSuffixPattern());
-			configurer.setUseRegisteredSuffixPatternMatch(this.mvcProperties
-					.getPathMatch().isUseRegisteredSuffixPattern());
+			configurer.setUseSuffixPatternMatch(
+					this.mvcProperties.getPathMatch().isUseSuffixPattern());
+			configurer.setUseRegisteredSuffixPatternMatch(
+					this.mvcProperties.getPathMatch().isUseRegisteredSuffixPattern());
 		}
 
 		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-			WebMvcProperties.ContentNegotiation contentNegotiation
-					= this.mvcProperties.getContentNegotiation();
+			WebMvcProperties.ContentNegotiation contentNegotiation = this.mvcProperties
+					.getContentNegotiation();
 			configurer.favorPathExtension(contentNegotiation.isFavorPathExtension());
 			configurer.favorParameter(contentNegotiation.isFavorParameter());
 			if (contentNegotiation.getParameterName() != null) {
 				configurer.parameterName(contentNegotiation.getParameterName());
 			}
-			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentNegotiation().getMediaTypes();
+			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentNegotiation()
+					.getMediaTypes();
 			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
 				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
 			}
@@ -324,8 +325,8 @@ public class WebMvcAutoConfiguration {
 						registry.addResourceHandler("/webjars/**")
 								.addResourceLocations(
 										"classpath:/META-INF/resources/webjars/")
-								.setCachePeriod(getSeconds(cachePeriod))
-								.setCacheControl(cacheControl));
+						.setCachePeriod(getSeconds(cachePeriod))
+						.setCacheControl(cacheControl));
 			}
 			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
@@ -333,8 +334,8 @@ public class WebMvcAutoConfiguration {
 						registry.addResourceHandler(staticPathPattern)
 								.addResourceLocations(getResourceLocations(
 										this.resourceProperties.getStaticLocations()))
-								.setCachePeriod(getSeconds(cachePeriod))
-								.setCacheControl(cacheControl));
+						.setCachePeriod(getSeconds(cachePeriod))
+						.setCacheControl(cacheControl));
 			}
 		}
 

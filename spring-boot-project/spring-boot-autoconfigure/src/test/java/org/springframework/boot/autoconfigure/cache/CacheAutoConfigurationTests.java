@@ -321,8 +321,7 @@ public class CacheAutoConfigurationTests {
 
 	@Test
 	public void redisCacheWithCustomizers() {
-		this.contextRunner
-				.withUserConfiguration(RedisWithCustomizersConfiguration.class)
+		this.contextRunner.withUserConfiguration(RedisWithCustomizersConfiguration.class)
 				.withPropertyValues("spring.cache.type=" + "redis")
 				.run(dunno("allCacheManagerCustomizer", "redisCacheManagerCustomizer"));
 	}
@@ -954,8 +953,7 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public org.springframework.data.redis.cache.RedisCacheConfiguration customRedisCacheConfiguration() {
 			return org.springframework.data.redis.cache.RedisCacheConfiguration
-					.defaultCacheConfig()
-					.entryTtl(java.time.Duration.ofSeconds(30))
+					.defaultCacheConfig().entryTtl(java.time.Duration.ofSeconds(30))
 					.prefixKeysWith("bar");
 		}
 

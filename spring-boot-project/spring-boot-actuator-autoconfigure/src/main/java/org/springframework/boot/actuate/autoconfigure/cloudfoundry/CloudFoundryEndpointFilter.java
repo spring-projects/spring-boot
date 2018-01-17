@@ -36,4 +36,3 @@ class CloudFoundryEndpointFilter implements EndpointFilter<WebOperation> {
 	}
 
 }
-

@@ -1018,7 +1018,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		factory.getSession().getCookie().setHttpOnly(true);
 		factory.getSession().getCookie().setSecure(true);
 		factory.getSession().getCookie().setMaxAge(Duration.ofMinutes(1));
-		AtomicReference<ServletContext> contextReference = new AtomicReference<ServletContext>();
+		AtomicReference<ServletContext> contextReference = new AtomicReference<>();
 		factory.getWebServer(contextReference::set).start();
 		ServletContext servletContext = contextReference.get();
 		assertThat(servletContext.getEffectiveSessionTrackingModes())

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = { "app.datasource.second.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
+@SpringBootTest(properties = {
+		"app.datasource.second.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
 		"app.datasource.second.max-total=42" })
 @Import(SimpleTwoDataSourcesExample.SimpleDataSourcesConfiguration.class)
 public class SimpleTwoDataSourcesExampleTests {
@@ -55,7 +56,8 @@ public class SimpleTwoDataSourcesExampleTests {
 				.startsWith("jdbc:h2:mem:");
 		BasicDataSource secondDataSource = this.context.getBean("secondDataSource",
 				BasicDataSource.class);
-		assertThat(secondDataSource.getUrl()).isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
+		assertThat(secondDataSource.getUrl())
+				.isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
 		assertThat(secondDataSource.getMaxTotal()).isEqualTo(42);
 	}
 

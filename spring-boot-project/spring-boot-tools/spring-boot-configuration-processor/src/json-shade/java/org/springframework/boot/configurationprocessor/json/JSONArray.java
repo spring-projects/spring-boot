@@ -52,7 +52,7 @@ public class JSONArray {
 	 * Creates a {@code JSONArray} with no values.
 	 */
 	public JSONArray() {
-		this.values = new ArrayList<Object>();
+		this.values = new ArrayList<>();
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class JSONArray {
 			throw new JSONException("Not a primitive array: " + array.getClass());
 		}
 		final int length = Array.getLength(array);
-		this.values = new ArrayList<Object>(length);
+		this.values = new ArrayList<>(length);
 		for (int i = 0; i < length; ++i) {
 			put(JSONObject.wrap(Array.get(array, i)));
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
- * Factory that can be used to create a {@link ServerWebExchangeMatcher} for actuator endpoint
- * locations.
+ * Factory that can be used to create a {@link ServerWebExchangeMatcher} for actuator
+ * endpoint locations.
  *
  * @author Madhura Bhave
  * @since 2.0.0
@@ -52,8 +52,9 @@ public final class EndpointRequest {
 
 	/**
 	 * Returns a matcher that includes all {@link Endpoint actuator endpoints}. The
-	 * {@link EndpointServerWebExchangeMatcher#excluding(Class...) excluding} method can be used to
-	 * further remove specific endpoints if required. For example: <pre class="code">
+	 * {@link EndpointServerWebExchangeMatcher#excluding(Class...) excluding} method can
+	 * be used to further remove specific endpoints if required. For example:
+	 * <pre class="code">
 	 * EndpointServerWebExchangeMatcher.toAnyEndpoint().excluding(ShutdownEndpoint.class)
 	 * </pre>
 	 * @return the configured {@link ServerWebExchangeMatcher}
@@ -87,7 +88,8 @@ public final class EndpointRequest {
 	}
 
 	/**
-	 * The {@link ServerWebExchangeMatcher} used to match against {@link Endpoint actuator endpoints}.
+	 * The {@link ServerWebExchangeMatcher} used to match against {@link Endpoint actuator
+	 * endpoints}.
 	 */
 	public final static class EndpointServerWebExchangeMatcher
 			extends ApplicationContextServerWebExchangeMatcher<EndpointPathProvider> {
@@ -116,7 +118,8 @@ public final class EndpointRequest {
 			this.excludes = Collections.emptyList();
 		}
 
-		private EndpointServerWebExchangeMatcher(List<Object> includes, List<Object> excludes) {
+		private EndpointServerWebExchangeMatcher(List<Object> includes,
+				List<Object> excludes) {
 			super(EndpointPathProvider.class);
 			this.includes = includes;
 			this.excludes = excludes;
@@ -167,7 +170,8 @@ public final class EndpointRequest {
 		}
 
 		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
-			return paths.stream().map((path) -> new PathPatternParserServerWebExchangeMatcher(path + "/**"))
+			return paths.stream().map(
+					(path) -> new PathPatternParserServerWebExchangeMatcher(path + "/**"))
 					.collect(Collectors.toList());
 		}
 

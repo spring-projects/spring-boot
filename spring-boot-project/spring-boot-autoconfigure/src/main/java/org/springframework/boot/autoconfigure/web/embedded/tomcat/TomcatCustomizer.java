@@ -32,8 +32,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
- * Customization for Tomcat-specific features common
- * for both Servlet and Reactive servers.
+ * Customization for Tomcat-specific features common for both Servlet and Reactive
+ * servers.
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -50,8 +50,8 @@ public final class TomcatCustomizer {
 			factory.setBaseDirectory(tomcatProperties.getBasedir());
 		}
 		if (tomcatProperties.getBackgroundProcessorDelay() != null) {
-			factory.setBackgroundProcessorDelay((int) tomcatProperties
-					.getBackgroundProcessorDelay().getSeconds());
+			factory.setBackgroundProcessorDelay(
+					(int) tomcatProperties.getBackgroundProcessorDelay().getSeconds());
 		}
 		customizeRemoteIpValve(serverProperties, environment, factory);
 		if (tomcatProperties.getMaxThreads() > 0) {
@@ -76,8 +76,7 @@ public final class TomcatCustomizer {
 			factory.setUriEncoding(tomcatProperties.getUriEncoding());
 		}
 		if (serverProperties.getConnectionTimeout() != null) {
-			customizeConnectionTimeout(factory,
-					serverProperties.getConnectionTimeout());
+			customizeConnectionTimeout(factory, serverProperties.getConnectionTimeout());
 		}
 		if (tomcatProperties.getMaxConnections() > 0) {
 			customizeMaxConnections(factory, tomcatProperties.getMaxConnections());
@@ -99,8 +98,8 @@ public final class TomcatCustomizer {
 		});
 	}
 
-	private static void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory,
-			int maxConnections) {
+	private static void customizeMaxConnections(
+			ConfigurableTomcatWebServerFactory factory, int maxConnections) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractProtocol) {
@@ -129,8 +128,8 @@ public final class TomcatCustomizer {
 		if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
 				|| getOrDeduceUseForwardHeaders(properties, environment)) {
 			RemoteIpValve valve = new RemoteIpValve();
-			valve.setProtocolHeader(StringUtils.hasLength(protocolHeader)
-					? protocolHeader : "X-Forwarded-Proto");
+			valve.setProtocolHeader(StringUtils.hasLength(protocolHeader) ? protocolHeader
+					: "X-Forwarded-Proto");
 			if (StringUtils.hasLength(remoteIpHeader)) {
 				valve.setRemoteIpHeader(remoteIpHeader);
 			}
@@ -213,7 +212,8 @@ public final class TomcatCustomizer {
 		factory.addEngineValves(valve);
 	}
 
-	private static void customizeStaticResources(ServerProperties.Tomcat.Resource resource,
+	private static void customizeStaticResources(
+			ServerProperties.Tomcat.Resource resource,
 			ConfigurableTomcatWebServerFactory factory) {
 		if (resource.getCacheTtl() == null) {
 			return;

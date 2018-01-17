@@ -273,20 +273,21 @@ public class WebMvcProperties {
 	public static class ContentNegotiation {
 
 		/**
-		 * Whether the path extension in the URL path should be used to determine
-		 * the requested media type. If enabled a request "/users.pdf" will be
-		 * interpreted as a request for "application/pdf" regardless of the 'Accept' header.
+		 * Whether the path extension in the URL path should be used to determine the
+		 * requested media type. If enabled a request "/users.pdf" will be interpreted as
+		 * a request for "application/pdf" regardless of the 'Accept' header.
 		 */
 		private boolean favorPathExtension = false;
 
 		/**
-		 * Whether a request parameter ("format" by default) should be used to
-		 * determine the requested media type.
+		 * Whether a request parameter ("format" by default) should be used to determine
+		 * the requested media type.
 		 */
 		private boolean favorParameter = false;
 
 		/**
-		 * Maps file extensions to media types for content negotiation, e.g. yml to text/yaml.
+		 * Maps file extensions to media types for content negotiation, e.g. yml to
+		 * text/yaml.
 		 */
 		private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
 
@@ -331,16 +332,16 @@ public class WebMvcProperties {
 	public static class PathMatch {
 
 		/**
-		 * Whether to use suffix pattern match (".*") when matching patterns to
-		 * requests. If enabled a method mapped to "/users" also matches to "/users.*".
+		 * Whether to use suffix pattern match (".*") when matching patterns to requests.
+		 * If enabled a method mapped to "/users" also matches to "/users.*".
 		 */
 		private boolean useSuffixPattern = false;
 
 		/**
-		 * Whether suffix pattern matching should work only against extensions
-		 * registered with "spring.mvc.content-negotiation.media-types.*".
-		 * This is generally recommended to reduce ambiguity and to
-		 * avoid issues such as when a "." appears in the path for other reasons.
+		 * Whether suffix pattern matching should work only against extensions registered
+		 * with "spring.mvc.content-negotiation.media-types.*". This is generally
+		 * recommended to reduce ambiguity and to avoid issues such as when a "." appears
+		 * in the path for other reasons.
 		 */
 		private boolean useRegisteredSuffixPattern = false;
 

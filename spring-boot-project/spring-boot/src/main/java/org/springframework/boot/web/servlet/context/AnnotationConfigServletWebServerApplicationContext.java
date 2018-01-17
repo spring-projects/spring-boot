@@ -123,8 +123,8 @@ public class AnnotationConfigServletWebServerApplicationContext
 
 	/**
 	 * Provide a custom {@link BeanNameGenerator} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner},
-	 * if any.
+	 * {@link AnnotatedBeanDefinitionReader} and/or
+	 * {@link ClassPathBeanDefinitionScanner}, if any.
 	 * <p>
 	 * Default is
 	 * {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
@@ -169,6 +169,7 @@ public class AnnotationConfigServletWebServerApplicationContext
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */
+	@Override
 	public final void register(Class<?>... annotatedClasses) {
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
@@ -182,6 +183,7 @@ public class AnnotationConfigServletWebServerApplicationContext
 	 * @see #register(Class...)
 	 * @see #refresh()
 	 */
+	@Override
 	public final void scan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		this.basePackages = basePackages;

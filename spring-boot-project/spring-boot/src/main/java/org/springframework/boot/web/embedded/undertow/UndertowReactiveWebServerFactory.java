@@ -77,7 +77,6 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 
 	private boolean useForwardHeaders;
 
-
 	/**
 	 * Create a new {@link UndertowReactiveWebServerFactory} instance.
 	 */
@@ -94,7 +93,8 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	}
 
 	@Override
-	public WebServer getWebServer(org.springframework.http.server.reactive.HttpHandler httpHandler) {
+	public WebServer getWebServer(
+			org.springframework.http.server.reactive.HttpHandler httpHandler) {
 		Undertow.Builder builder = createBuilder(getPort());
 		HttpHandler handler = createUndertowHandler(httpHandler);
 		builder.setHandler(handler);
@@ -127,19 +127,22 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		return builder;
 	}
 
-	private HttpHandler createUndertowHandler(org.springframework.http.server.reactive.HttpHandler httpHandler) {
+	private HttpHandler createUndertowHandler(
+			org.springframework.http.server.reactive.HttpHandler httpHandler) {
 		HttpHandler handler = new UndertowHttpHandlerAdapter(httpHandler);
 		if (this.useForwardHeaders) {
 			handler = Handlers.proxyPeerAddress(handler);
 		}
-		handler = UndertowCompressionConfigurer.configureCompression(getCompression(), handler);
+		handler = UndertowCompressionConfigurer.configureCompression(getCompression(),
+				handler);
 		if (isAccessLogEnabled()) {
 			handler = createAccessLogHandler(handler);
 		}
 		return handler;
 	}
 
-	private AccessLogHandler createAccessLogHandler(io.undertow.server.HttpHandler handler) {
+	private AccessLogHandler createAccessLogHandler(
+			io.undertow.server.HttpHandler handler) {
 		try {
 			createAccessLogDirectoryIfNecessary();
 			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix
@@ -175,8 +178,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider())
 				.customize(builder);
 		if (getHttp2() != null) {
-			builder.setServerOption(UndertowOptions.ENABLE_HTTP2,
-					getHttp2().isEnabled());
+			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().isEnabled());
 		}
 	}
 
@@ -304,6 +306,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 * Undertow {@link io.undertow.Undertow.Builder Builder}.
 	 * @param customizers the customizers to add
 	 */
+	@Override
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.builderCustomizers.addAll(Arrays.asList(customizers));

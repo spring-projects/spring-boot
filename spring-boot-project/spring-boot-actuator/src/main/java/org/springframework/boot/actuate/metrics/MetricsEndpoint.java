@@ -91,8 +91,7 @@ public class MetricsEndpoint {
 		Map<Statistic, Double> samples = getSamples(meters);
 		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
-		return new MetricResponse(requiredMetricName,
-				asList(samples, Sample::new),
+		return new MetricResponse(requiredMetricName, asList(samples, Sample::new),
 				asList(availableTags, AvailableTag::new));
 	}
 

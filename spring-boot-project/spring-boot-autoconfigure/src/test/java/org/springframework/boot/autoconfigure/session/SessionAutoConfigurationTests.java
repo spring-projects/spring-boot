@@ -153,24 +153,24 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	@Test
 	public void sessionCookieConfigurationIsPickedUp() {
-		new WebApplicationContextRunner(
+		WebApplicationContextRunner webRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations
 								.of(ServletWebServerFactoryAutoConfiguration.class))
 						.withUserConfiguration(SessionRepositoryConfiguration.class)
 						.withPropertyValues("server.port=0",
-								"server.servlet.session.cookie.name=testname")
-						.run((context) -> {
-							SessionRepositoryFilter<?> filter = context
-									.getBean(SessionRepositoryFilter.class);
-							CookieHttpSessionIdResolver sessionIdResolver = (CookieHttpSessionIdResolver) ReflectionTestUtils
-									.getField(filter, "httpSessionIdResolver");
-							DefaultCookieSerializer cookieSerializer = (DefaultCookieSerializer) ReflectionTestUtils
-									.getField(sessionIdResolver, "cookieSerializer");
-							String cookieName = (String) ReflectionTestUtils
-									.getField(cookieSerializer, "cookieName");
-							assertThat(cookieName).isEqualTo("testname");
-						});
+								"server.servlet.session.cookie.name=testname");
+		webRunner.run((context) -> {
+			SessionRepositoryFilter<?> filter = context
+					.getBean(SessionRepositoryFilter.class);
+			CookieHttpSessionIdResolver sessionIdResolver = (CookieHttpSessionIdResolver) ReflectionTestUtils
+					.getField(filter, "httpSessionIdResolver");
+			DefaultCookieSerializer cookieSerializer = (DefaultCookieSerializer) ReflectionTestUtils
+					.getField(sessionIdResolver, "cookieSerializer");
+			String cookieName = (String) ReflectionTestUtils.getField(cookieSerializer,
+					"cookieName");
+			assertThat(cookieName).isEqualTo("testname");
+		});
 	}
 
 	@Configuration

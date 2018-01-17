@@ -58,8 +58,8 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic>
 	}
 
 	/**
-	 * Sets if asynchronous operations are supported for this registration. If not specified
-	 * defaults to {@code true}.
+	 * Sets if asynchronous operations are supported for this registration. If not
+	 * specified defaults to {@code true}.
 	 * @param asyncSupported if async is supported
 	 */
 	public void setAsyncSupported(boolean asyncSupported) {

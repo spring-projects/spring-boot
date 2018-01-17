@@ -170,7 +170,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 	public void defaultTomcatBackgroundProcessorDelay() {
 		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
 		this.customizer.customize(factory);
-		TomcatWebServer webServer = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		TomcatWebServer webServer = (TomcatWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		assertThat(webServer.getTomcat().getEngine().getBackgroundProcessorDelay())
 				.isEqualTo(30);
 		webServer.stop();
@@ -183,7 +184,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
 		this.customizer.customize(factory);
-		TomcatWebServer webServer = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		TomcatWebServer webServer = (TomcatWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		assertThat(webServer.getTomcat().getEngine().getBackgroundProcessorDelay())
 				.isEqualTo(5);
 		webServer.stop();
@@ -261,7 +263,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer server = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		TomcatWebServer server = (TomcatWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		server.start();
 		try {
 			assertThat(((AbstractProtocol<?>) server.getTomcat().getConnector()
@@ -279,7 +282,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer server = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		TomcatWebServer server = (TomcatWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		server.start();
 		try {
 			assertThat(((AbstractProtocol<?>) server.getTomcat().getConnector()
@@ -297,7 +301,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer server = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		TomcatWebServer server = (TomcatWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		server.start();
 		try {
 			assertThat(server.getTomcat().getConnector().getMaxPostSize())
@@ -315,7 +320,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer server = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		TomcatWebServer server = (TomcatWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		server.start();
 		try {
 			assertThat(server.getTomcat().getConnector().getMaxPostSize()).isEqualTo(-1);
@@ -340,7 +346,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		bindProperties(map);
 		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory(0);
 		this.customizer.customize(factory);
-		TomcatWebServer server = (TomcatWebServer) factory.getWebServer(mock(HttpHandler.class));
+		TomcatWebServer server = (TomcatWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		server.start();
 		try {
 			Tomcat tomcat = server.getTomcat();
@@ -382,7 +389,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		map.put("server.jetty.accesslog.enabled", "true");
 		bindProperties(map);
 		this.customizer.customize(factory);
-		JettyWebServer webServer = (JettyWebServer) factory.getWebServer(mock(HttpHandler.class));
+		JettyWebServer webServer = (JettyWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		try {
 			NCSARequestLog requestLog = getNCSARequestLog(webServer);
 			assertThat(requestLog.getFilename()).isNull();
@@ -417,7 +425,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		map.put("server.jetty.accesslog.log-latency", "true");
 		bindProperties(map);
 		this.customizer.customize(factory);
-		JettyWebServer webServer = (JettyWebServer) factory.getWebServer(mock(HttpHandler.class));
+		JettyWebServer webServer = (JettyWebServer) factory
+				.getWebServer(mock(HttpHandler.class));
 		NCSARequestLog requestLog = getNCSARequestLog(webServer);
 		try {
 			assertThat(requestLog.getFilename()).isEqualTo(logFile.getAbsolutePath());
@@ -461,7 +470,8 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 	@Test
 	public void setUseForwardHeadersUndertow() {
 		this.properties.setUseForwardHeaders(true);
-		UndertowReactiveWebServerFactory factory = spy(new UndertowReactiveWebServerFactory());
+		UndertowReactiveWebServerFactory factory = spy(
+				new UndertowReactiveWebServerFactory());
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
 	}

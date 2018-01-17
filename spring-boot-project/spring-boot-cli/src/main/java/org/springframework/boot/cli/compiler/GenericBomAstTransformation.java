@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ import org.springframework.core.Ordered;
  * dependencies in the BOM (and its transitives) will be added to the dependency
  * management lookup, so an app can use just the artifact id (e.g. "spring-jdbc") in a
  * {@code @Grab}. To install, implement the missing methods and list the class in
- * {@code META-INF/services/org.springframework.boot.cli.compiler.SpringBootAstTransformation}.
- * The {@link #getOrder()} value needs to be before
+ * {@code META-INF/services/org.springframework.boot.cli.compiler.SpringBootAstTransformation}
+ * . The {@link #getOrder()} value needs to be before
  * {@link DependencyManagementBomTransformation#ORDER}.
  *
  * @author Dave Syer

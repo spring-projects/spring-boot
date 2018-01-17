@@ -56,11 +56,9 @@ public class LiquibaseEndpointDocumentationTests
 						responseFields(
 								fieldWithPath("contexts")
 										.description("Application contexts keyed by id"),
-						changeSetsField)
-								.andWithPrefix(
-										"contexts.*.liquibaseBeans.*.changeSets[].",
-										getChangeSetFieldDescriptors())
-								.and(parentIdField())));
+						changeSetsField).andWithPrefix(
+								"contexts.*.liquibaseBeans.*.changeSets[].",
+								getChangeSetFieldDescriptors()).and(parentIdField())));
 	}
 
 	private List<FieldDescriptor> getChangeSetFieldDescriptors() {

@@ -35,8 +35,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.core.env.Environment;
 
 /**
- * Customization for Jetty-specific features common
- * for both Servlet and Reactive servers.
+ * Customization for Jetty-specific features common for both Servlet and Reactive servers.
  *
  * @author Brian Clozel
  * @since 2.0.0
@@ -58,16 +57,14 @@ public final class JettyCustomizer {
 			factory.setSelectors(jettyProperties.getSelectors());
 		}
 		if (serverProperties.getMaxHttpHeaderSize() > 0) {
-			customizeMaxHttpHeaderSize(factory,
-					serverProperties.getMaxHttpHeaderSize());
+			customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
 		}
 		if (jettyProperties.getMaxHttpPostSize() > 0) {
 			customizeMaxHttpPostSize(factory, jettyProperties.getMaxHttpPostSize());
 		}
 
 		if (serverProperties.getConnectionTimeout() != null) {
-			customizeConnectionTimeout(factory,
-					serverProperties.getConnectionTimeout());
+			customizeConnectionTimeout(factory, serverProperties.getConnectionTimeout());
 		}
 		if (jettyProperties.getAccesslog().isEnabled()) {
 			customizeAccessLog(factory, jettyProperties.getAccesslog());
@@ -86,8 +83,7 @@ public final class JettyCustomizer {
 	private static void customizeConnectionTimeout(
 			ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
 		factory.addServerCustomizers((server) -> {
-			for (org.eclipse.jetty.server.Connector connector : server
-					.getConnectors()) {
+			for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
 				if (connector instanceof AbstractConnector) {
 					((AbstractConnector) connector)
 							.setIdleTimeout(connectionTimeout.toMillis());
@@ -123,8 +119,8 @@ public final class JettyCustomizer {
 		});
 	}
 
-	private static void customizeMaxHttpPostSize(ConfigurableJettyWebServerFactory factory,
-			int maxHttpPostSize) {
+	private static void customizeMaxHttpPostSize(
+			ConfigurableJettyWebServerFactory factory, int maxHttpPostSize) {
 		factory.addServerCustomizers(new JettyServerCustomizer() {
 
 			@Override
@@ -136,8 +132,7 @@ public final class JettyCustomizer {
 					Handler... handlers) {
 				for (Handler handler : handlers) {
 					if (handler instanceof ContextHandler) {
-						((ContextHandler) handler)
-								.setMaxFormContentSize(maxHttpPostSize);
+						((ContextHandler) handler).setMaxFormContentSize(maxHttpPostSize);
 					}
 					else if (handler instanceof HandlerWrapper) {
 						setHandlerMaxHttpPostSize(maxHttpPostSize,

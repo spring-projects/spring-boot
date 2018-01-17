@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public final class PropertyMapper {
 		if (this.parent != null) {
 			return this.parent.from(supplier);
 		}
-		return new Source<T>(new CachingSupplier<>(supplier), (Predicate<T>) ALWAYS);
+		return new Source<>(new CachingSupplier<>(supplier), (Predicate<T>) ALWAYS);
 	}
 
 	/**
@@ -207,7 +207,7 @@ public final class PropertyMapper {
 				}
 				return null;
 			};
-			return new Source<R>(supplier, predicate);
+			return new Source<>(supplier, predicate);
 		}
 
 		/**

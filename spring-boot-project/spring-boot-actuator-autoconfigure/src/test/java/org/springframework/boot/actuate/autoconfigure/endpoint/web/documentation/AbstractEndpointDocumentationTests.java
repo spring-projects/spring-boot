@@ -113,7 +113,7 @@ public class AbstractEndpointDocumentationTests {
 	@SuppressWarnings("unchecked")
 	private <T> Map<String, Object> select(Map<String, Object> candidates,
 			Predicate<T> filter) {
-		Map<String, Object> selected = new HashMap<String, Object>();
+		Map<String, Object> selected = new HashMap<>();
 		candidates.entrySet().stream().filter((candidate) -> filter.test((T) candidate))
 				.limit(3)
 				.forEach((entry) -> selected.put(entry.getKey(), entry.getValue()));

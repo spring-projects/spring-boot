@@ -26,8 +26,8 @@ import org.springframework.boot.web.embedded.undertow.ConfigurableUndertowWebSer
 import org.springframework.core.env.Environment;
 
 /**
- * Customization for Undertow-specific features common
- * for both Servlet and Reactive servers.
+ * Customization for Undertow-specific features common for both Servlet and Reactive
+ * servers.
  *
  * @author Brian Clozel
  */
@@ -62,18 +62,16 @@ public final class UndertowCustomizer {
 		factory.setAccessLogPrefix(accesslogProperties.getPrefix());
 		factory.setAccessLogSuffix(accesslogProperties.getSuffix());
 		factory.setAccessLogRotate(accesslogProperties.isRotate());
-		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders(serverProperties, environment));
+		factory.setUseForwardHeaders(
+				getOrDeduceUseForwardHeaders(serverProperties, environment));
 		if (serverProperties.getMaxHttpHeaderSize() > 0) {
-			customizeMaxHttpHeaderSize(factory,
-					serverProperties.getMaxHttpHeaderSize());
+			customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
 		}
 		if (undertowProperties.getMaxHttpPostSize() > 0) {
-			customizeMaxHttpPostSize(factory,
-					undertowProperties.getMaxHttpPostSize());
+			customizeMaxHttpPostSize(factory, undertowProperties.getMaxHttpPostSize());
 		}
 		if (serverProperties.getConnectionTimeout() != null) {
-			customizeConnectionTimeout(factory,
-					serverProperties.getConnectionTimeout());
+			customizeConnectionTimeout(factory, serverProperties.getConnectionTimeout());
 		}
 		factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
 				.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
@@ -82,8 +80,7 @@ public final class UndertowCustomizer {
 	private static void customizeConnectionTimeout(
 			ConfigurableUndertowWebServerFactory factory, Duration connectionTimeout) {
 		factory.addBuilderCustomizers((builder) -> builder.setSocketOption(
-				UndertowOptions.NO_REQUEST_TIMEOUT,
-				(int) connectionTimeout.toMillis()));
+				UndertowOptions.NO_REQUEST_TIMEOUT, (int) connectionTimeout.toMillis()));
 	}
 
 	private static void customizeMaxHttpHeaderSize(

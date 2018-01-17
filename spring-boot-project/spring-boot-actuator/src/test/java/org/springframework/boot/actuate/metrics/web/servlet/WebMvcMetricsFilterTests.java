@@ -247,14 +247,15 @@ public class WebMvcMetricsFilterTests {
 
 		@Bean
 		PrometheusMeterRegistry prometheus() {
-			PrometheusMeterRegistry r = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT, new CollectorRegistry(), Clock.SYSTEM);
+			PrometheusMeterRegistry r = new PrometheusMeterRegistry(
+					PrometheusConfig.DEFAULT, new CollectorRegistry(), Clock.SYSTEM);
 			r.config().meterFilter(new MeterFilter() {
 				@Override
 				public MeterFilterReply accept(Meter.Id id) {
 					for (Tag tag : id.getTags()) {
 						if (tag.getKey().equals("uri")
 								&& (tag.getValue().contains("histogram")
-								|| tag.getValue().contains("percentiles"))) {
+										|| tag.getValue().contains("percentiles"))) {
 							return MeterFilterReply.ACCEPT;
 						}
 					}

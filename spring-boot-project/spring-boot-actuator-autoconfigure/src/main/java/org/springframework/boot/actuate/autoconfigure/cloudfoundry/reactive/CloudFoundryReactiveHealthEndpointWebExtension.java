@@ -27,8 +27,8 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 
 /**
- * Reactive {@link EndpointExtension} for the {@link HealthEndpoint} that always
- * exposes full health details.
+ * Reactive {@link EndpointExtension} for the {@link HealthEndpoint} that always exposes
+ * full health details.
  *
  * @author Madhura Bhave
  * @since 2.0.0

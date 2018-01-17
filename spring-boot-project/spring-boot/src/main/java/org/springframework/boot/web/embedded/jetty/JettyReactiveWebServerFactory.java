@@ -178,8 +178,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 					JettyHandlerWrappers.createGzipHandlerWrapper(getCompression()));
 		}
 		if (StringUtils.hasText(getServerHeader())) {
-			handler = applyWrapper(handler,
-					JettyHandlerWrappers.createServerHeaderHandlerWrapper(getServerHeader()));
+			handler = applyWrapper(handler, JettyHandlerWrappers
+					.createServerHeaderHandlerWrapper(getServerHeader()));
 		}
 		return handler;
 	}

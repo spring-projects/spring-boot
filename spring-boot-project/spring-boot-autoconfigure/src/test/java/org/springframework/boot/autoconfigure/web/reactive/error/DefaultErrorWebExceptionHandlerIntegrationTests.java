@@ -233,8 +233,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
-							.doesNotContain("<script>")
-							.contains("&lt;script&gt;");
+							.doesNotContain("<script>").contains("&lt;script&gt;");
 					this.output.expect(
 							allOf(containsString("Failed to handle request [GET /html]"),
 									containsString("IllegalStateException")));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,8 @@ public class EndpointRequestTests {
 
 	@Test
 	public void excludeByIdShouldNotMatchExcluded() {
-		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("foo");
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint()
+				.excluding("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).matches("/actuator/bar");
 	}
@@ -113,13 +114,16 @@ public class EndpointRequestTests {
 
 		private final ServerWebExchangeMatcher matcher;
 
-		RequestMatcherAssert(StaticApplicationContext context, ServerWebExchangeMatcher matcher) {
+		RequestMatcherAssert(StaticApplicationContext context,
+				ServerWebExchangeMatcher matcher) {
 			this.context = context;
 			this.matcher = matcher;
 		}
 
 		void matches(String path) {
-			ServerWebExchange exchange = webHandler().createExchange(MockServerHttpRequest.get(path).build(), new MockServerHttpResponse());
+			ServerWebExchange exchange = webHandler().createExchange(
+					MockServerHttpRequest.get(path).build(),
+					new MockServerHttpResponse());
 			matches(exchange);
 		}
 
@@ -129,7 +133,9 @@ public class EndpointRequestTests {
 		}
 
 		void doesNotMatch(String path) {
-			ServerWebExchange exchange = webHandler().createExchange(MockServerHttpRequest.get(path).build(), new MockServerHttpResponse());
+			ServerWebExchange exchange = webHandler().createExchange(
+					MockServerHttpRequest.get(path).build(),
+					new MockServerHttpResponse());
 			doesNotMatch(exchange);
 		}
 
@@ -139,7 +145,8 @@ public class EndpointRequestTests {
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {
-			TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(mock(WebHandler.class));
+			TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(
+					mock(WebHandler.class));
 			adapter.setApplicationContext(this.context);
 			return adapter;
 		}
@@ -157,7 +164,8 @@ public class EndpointRequestTests {
 		}
 
 		@Override
-		protected ServerWebExchange createExchange(ServerHttpRequest request, ServerHttpResponse response) {
+		protected ServerWebExchange createExchange(ServerHttpRequest request,
+				ServerHttpResponse response) {
 			return super.createExchange(request, response);
 		}
 

@@ -452,6 +452,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		this.ioThreads = ioThreads;
 	}
 
+	@Override
 	public void setWorkerThreads(Integer workerThreads) {
 		this.workerThreads = workerThreads;
 	}

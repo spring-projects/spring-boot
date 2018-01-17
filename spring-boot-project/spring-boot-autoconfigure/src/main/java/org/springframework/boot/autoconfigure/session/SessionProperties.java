@@ -53,7 +53,8 @@ public class SessionProperties {
 
 	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
 		ServerProperties properties = serverProperties.getIfUnique();
-		Session session = (properties == null ? null : properties.getServlet().getSession());
+		Session session = (properties == null ? null
+				: properties.getServlet().getSession());
 		this.timeout = (session == null ? null : session.getTimeout());
 	}
 
@@ -68,7 +69,7 @@ public class SessionProperties {
 	/**
 	 * Return the session timeout.
 	 * @return the session timeout
-	 * @see ServerProperties.Servlet#getSession()
+	 * @see Session#getTimeout()
 	 */
 	public Duration getTimeout() {
 		return this.timeout;

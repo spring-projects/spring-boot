@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,34 +55,40 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 	@Test
 	public void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		ServerWebExchange exchange = createHttpWebHandlerAdapter();
-		StaticApplicationContext context = (StaticApplicationContext) exchange.getApplicationContext();
-		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(ApplicationContext.class)
-				.callMatchesAndReturnProvidedContext(exchange)).isEqualTo(context);
+		StaticApplicationContext context = (StaticApplicationContext) exchange
+				.getApplicationContext();
+		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(
+				ApplicationContext.class).callMatchesAndReturnProvidedContext(exchange))
+						.isEqualTo(context);
 	}
 
 	@Test
 	public void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
 		ServerWebExchange exchange = createHttpWebHandlerAdapter();
-		StaticApplicationContext context = (StaticApplicationContext) exchange.getApplicationContext();
+		StaticApplicationContext context = (StaticApplicationContext) exchange
+				.getApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
-		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(exchange))
-				.isEqualTo(context.getBean(ExistingBean.class));
+		assertThat(
+				new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
+						.callMatchesAndReturnProvidedContext(exchange))
+								.isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
 	public void matchesWhenContextClassIsNewBeanShouldProvideBean() {
 		ServerWebExchange exchange = createHttpWebHandlerAdapter();
-		StaticApplicationContext context = (StaticApplicationContext) exchange.getApplicationContext();
+		StaticApplicationContext context = (StaticApplicationContext) exchange
+				.getApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(NewBean.class)
 				.callMatchesAndReturnProvidedContext(exchange).getBean())
-				.isEqualTo(context.getBean(ExistingBean.class));
+						.isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
 	public void matchesWhenContextIsNull() {
-		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/path").build());
+		MockServerWebExchange exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/path").build());
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("No WebApplicationContext found.");
 		new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
@@ -91,9 +97,11 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 
 	private ServerWebExchange createHttpWebHandlerAdapter() {
 		StaticApplicationContext context = new StaticApplicationContext();
-		TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(mock(WebHandler.class));
+		TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(
+				mock(WebHandler.class));
 		adapter.setApplicationContext(context);
-		return adapter.createExchange(MockServerHttpRequest.get("/path").build(), new MockServerHttpResponse());
+		return adapter.createExchange(MockServerHttpRequest.get("/path").build(),
+				new MockServerHttpResponse());
 	}
 
 	static class TestHttpWebHandlerAdapter extends HttpWebHandlerAdapter {
@@ -103,7 +111,8 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 		}
 
 		@Override
-		protected ServerWebExchange createExchange(ServerHttpRequest request, ServerHttpResponse response) {
+		protected ServerWebExchange createExchange(ServerHttpRequest request,
+				ServerHttpResponse response) {
 			return super.createExchange(request, response);
 		}
 
@@ -154,4 +163,3 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 	}
 
 }
-

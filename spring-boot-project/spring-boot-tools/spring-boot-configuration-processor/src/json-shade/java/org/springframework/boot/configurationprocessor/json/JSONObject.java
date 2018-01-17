@@ -111,7 +111,7 @@ public class JSONObject {
 	 * Creates a {@code JSONObject} with no name/value mappings.
 	 */
 	public JSONObject() {
-		this.nameValuePairs = new HashMap<String, Object>();
+		this.nameValuePairs = new HashMap<>();
 	}
 
 	/**
@@ -691,7 +691,7 @@ public class JSONObject {
 	 */
 	public JSONArray names() {
 		return this.nameValuePairs.isEmpty() ? null
-				: new JSONArray(new ArrayList<String>(this.nameValuePairs.keySet()));
+				: new JSONArray(new ArrayList<>(this.nameValuePairs.keySet()));
 	}
 
 	/**

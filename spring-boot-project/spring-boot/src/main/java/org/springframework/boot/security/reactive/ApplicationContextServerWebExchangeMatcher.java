@@ -26,8 +26,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
- * {@link ApplicationContext} backed {@link ServerWebExchangeMatcher}. Can work directly with the
- * {@link ApplicationContext}, obtain an existing bean or
+ * {@link ApplicationContext} backed {@link ServerWebExchangeMatcher}. Can work directly
+ * with the {@link ApplicationContext}, obtain an existing bean or
  * {@link AutowireCapableBeanFactory#createBean(Class, int, boolean) create a new bean}
  * that is autowired in the usual way.
  *
@@ -38,7 +38,8 @@ import org.springframework.web.server.ServerWebExchange;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public abstract class ApplicationContextServerWebExchangeMatcher<C> implements ServerWebExchangeMatcher {
+public abstract class ApplicationContextServerWebExchangeMatcher<C>
+		implements ServerWebExchangeMatcher {
 
 	private final Class<? extends C> contextClass;
 
@@ -101,4 +102,3 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 	}
 
 }
-

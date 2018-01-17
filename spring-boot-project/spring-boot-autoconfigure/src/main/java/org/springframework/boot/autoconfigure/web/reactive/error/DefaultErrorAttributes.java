@@ -118,8 +118,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void handleException(Map<String, Object> errorAttributes,
-			Throwable error, boolean includeStackTrace) {
+	private void handleException(Map<String, Object> errorAttributes, Throwable error,
+			boolean includeStackTrace) {
 		if (this.includeException) {
 			errorAttributes.put("exception", error.getClass().getName());
 		}

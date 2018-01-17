@@ -47,6 +47,7 @@ import org.springframework.util.StringUtils;
 final class JavaPluginAction implements PluginApplicationAction {
 
 	private static final String PARAMETERS_COMPILER_ARG = "-parameters";
+
 	private final SinglePublishedArtifact singlePublishedArtifact;
 
 	JavaPluginAction(SinglePublishedArtifact singlePublishedArtifact) {

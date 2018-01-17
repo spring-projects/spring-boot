@@ -45,10 +45,9 @@ public class RestTemplateMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("management.metrics.use-global-registry=false")
-			.withConfiguration(AutoConfigurations.of(
-					RestTemplateAutoConfiguration.class, MetricsAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
+					MetricsAutoConfiguration.class))
 			.withUserConfiguration(RegistryConfiguration.class);
-
 
 	@Test
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
@@ -64,8 +63,9 @@ public class RestTemplateMetricsConfigurationTests {
 	public void restTemplateCanBeCustomizedManually() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
-			RestTemplate restTemplate = new RestTemplateBuilder().customizers(
-					context.getBean(MetricsRestTemplateCustomizer.class)).build();
+			RestTemplate restTemplate = new RestTemplateBuilder()
+					.customizers(context.getBean(MetricsRestTemplateCustomizer.class))
+					.build();
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			validateRestTemplate(restTemplate, registry);
 		});
