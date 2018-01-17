@@ -393,8 +393,8 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/servlet/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.async.request-timeout= # Amount of time before asynchronous request handling times out.
-	spring.mvc.content-negotiation.favor-path-extension=false # Whether the path extension in the URL path should be used to determine the requested media type.
 	spring.mvc.content-negotiation.favor-parameter=false # Whether a request parameter ("format" by default) should be used to determine the requested media type.
+	spring.mvc.content-negotiation.favor-path-extension=false # Whether the path extension in the URL path should be used to determine the requested media type.
 	spring.mvc.content-negotiation.media-types.*= # Maps file extensions to media types for content negotiation.
 	spring.mvc.content-negotiation.parameter-name= # Query parameter name to use when "favor-parameter" is enabled.
 	spring.mvc.date-format= # Date format to use. For instance, `dd/MM/yyyy`.
@@ -1209,7 +1209,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.loggers.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.loggers.enabled= # Whether to enable the loggers endpoint.
 
-	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator-autoconfigure}/web/servlet/RequestMappingEndpoint.{sc-ext}[RequestMappingEndpoint])
+	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator}/web/MappingsEndpoint.{sc-ext}[MappingsEndpoint])
 	management.endpoint.mappings.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.mappings.enabled= # Whether to enable the mappings endpoint.
 
