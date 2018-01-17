@@ -36,11 +36,15 @@ public class SampleQuartzApplicationTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void test() {
-		try (ConfigurableApplicationContext context = SpringApplication.run(
-				SampleQuartzApplication.class)) {
-			String output = this.outputCapture.toString();
-			assertThat(output).contains("Hello World!");
+	public void quartzJobIsTriggered() throws InterruptedException {
+		try (ConfigurableApplicationContext context = SpringApplication
+				.run(SampleQuartzApplication.class)) {
+			long end = System.currentTimeMillis() + 5000;
+			while ((!this.outputCapture.toString().contains("Hello World!"))
+					&& System.currentTimeMillis() < end) {
+				Thread.sleep(100);
+			}
+			assertThat(this.outputCapture.toString()).contains("Hello World!");
 		}
 	}
 
