@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security;
+package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -30,6 +30,8 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;

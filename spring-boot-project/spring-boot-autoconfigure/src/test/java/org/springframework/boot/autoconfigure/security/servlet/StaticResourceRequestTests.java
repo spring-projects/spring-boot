@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security;
+package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Set;
 
@@ -25,7 +25,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.autoconfigure.security.StaticResourceRequest.Location;
+import org.springframework.boot.autoconfigure.security.servlet.StaticResourceRequest;
+import org.springframework.boot.autoconfigure.security.servlet.StaticResourceRequest.Location;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;

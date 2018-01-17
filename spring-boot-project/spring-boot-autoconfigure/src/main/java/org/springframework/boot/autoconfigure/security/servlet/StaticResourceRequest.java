@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security;
+package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Arrays;
 import java.util.EnumSet;
