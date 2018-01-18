@@ -91,7 +91,7 @@ public final class EndpointRequest {
 	 * The {@link ServerWebExchangeMatcher} used to match against {@link Endpoint actuator
 	 * endpoints}.
 	 */
-	public final static class EndpointServerWebExchangeMatcher
+	public static final class EndpointServerWebExchangeMatcher
 			extends ApplicationContextServerWebExchangeMatcher<EndpointPathProvider> {
 
 		private final List<Object> includes;

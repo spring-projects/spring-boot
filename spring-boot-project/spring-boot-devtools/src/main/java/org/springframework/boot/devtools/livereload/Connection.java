@@ -43,7 +43,7 @@ class Connection {
 	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern
 			.compile("^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
 
-	public final static String WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+	public static final String WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 	private final Socket socket;
 

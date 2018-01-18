@@ -537,7 +537,7 @@ public class RabbitProperties {
 
 	}
 
-	public static abstract class AmqpContainer {
+	public abstract static class AmqpContainer {
 
 		/**
 		 * Whether to start the container automatically on startup.

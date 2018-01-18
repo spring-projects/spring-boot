@@ -109,7 +109,7 @@ class ServletManagementChildContextConfiguration {
 
 	}
 
-	static abstract class AccessLogCustomizer implements Ordered {
+	abstract static class AccessLogCustomizer implements Ordered {
 
 		protected String customizePrefix(String prefix) {
 			return "management_" + prefix;

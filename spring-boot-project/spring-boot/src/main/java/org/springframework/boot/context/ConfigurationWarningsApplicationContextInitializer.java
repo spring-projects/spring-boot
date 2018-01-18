@@ -72,7 +72,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 	/**
 	 * {@link BeanDefinitionRegistryPostProcessor} to report warnings.
 	 */
-	protected final static class ConfigurationWarningsPostProcessor
+	protected static final class ConfigurationWarningsPostProcessor
 			implements PriorityOrdered, BeanDefinitionRegistryPostProcessor {
 
 		private Check[] checks;

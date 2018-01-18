@@ -74,7 +74,7 @@ public abstract class PathBasedTemplateAvailabilityProvider
 		return false;
 	}
 
-	protected static abstract class TemplateAvailabilityProperties {
+	protected abstract static class TemplateAvailabilityProperties {
 
 		private String prefix;
 
