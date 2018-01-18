@@ -521,14 +521,6 @@
       }
     },
     {
-      "name": "flyway.ignore-failed-future-migration",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "replacement": "spring.flyway.ignore-failed-future-migration",
-        "level": "error"
-      }
-    },
-    {
       "name": "flyway.init-description",
       "type": "java.lang.String",
       "deprecation": {
