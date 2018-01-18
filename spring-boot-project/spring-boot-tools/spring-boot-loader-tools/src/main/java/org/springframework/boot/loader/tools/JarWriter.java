@@ -253,8 +253,8 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		else {
 			entry.setUnixMode(UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
 		}
-		if (parent.lastIndexOf("/") != -1) {
-			parent = parent.substring(0, parent.lastIndexOf("/") + 1);
+		if (parent.lastIndexOf('/') != -1) {
+			parent = parent.substring(0, parent.lastIndexOf('/') + 1);
 			if (!parent.isEmpty()) {
 				writeEntry(new JarArchiveEntry(parent), null);
 			}

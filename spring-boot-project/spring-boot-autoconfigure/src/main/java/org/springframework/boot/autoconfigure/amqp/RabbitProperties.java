@@ -891,7 +891,7 @@ public class RabbitProperties {
 		}
 
 		private String parseVirtualHost(String input) {
-			int hostIndex = input.indexOf("/");
+			int hostIndex = input.indexOf('/');
 			if (hostIndex >= 0) {
 				this.virtualHost = input.substring(hostIndex + 1);
 				if (this.virtualHost.isEmpty()) {

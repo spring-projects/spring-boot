@@ -71,7 +71,7 @@ public class Token {
 	}
 
 	public byte[] getContent() {
-		return this.encoded.substring(0, this.encoded.lastIndexOf(".")).getBytes();
+		return this.encoded.substring(0, this.encoded.lastIndexOf('.')).getBytes();
 	}
 
 	public byte[] getSignature() {
