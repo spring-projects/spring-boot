@@ -1353,6 +1353,8 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.statsd.queue-size=2147483647 # Maximum size of the queue of items waiting to be sent to the StatsD server.
 	management.metrics.jdbc.datasource-metric-name=data.source # Name of the metric for data source usage.
 	management.metrics.jdbc.instrument=true # Instrument all available data sources.
+	management.metrics.rabbitmq.instrument=true # Instrument all available connection factories.
+	management.metrics.rabbitmq.metric-name=rabbitmq # Name of the metric for RabbitMQ usage.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
 	management.metrics.web.client.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	management.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.

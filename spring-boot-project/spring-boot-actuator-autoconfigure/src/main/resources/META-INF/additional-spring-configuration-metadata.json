@@ -233,6 +233,13 @@
       "description": "Instrument all available data sources.",
       "defaultValue": true
     },
+    },
+    {
+      "name": "management.metrics.rabbitmq.instrument",
+      "type": "java.lang.Boolean",
+      "description": "Instrument all available connection factories.",
+      "defaultValue": true
+    },
     {
       "name": "endpoints.actuator.enabled",
       "type": "java.lang.Boolean",

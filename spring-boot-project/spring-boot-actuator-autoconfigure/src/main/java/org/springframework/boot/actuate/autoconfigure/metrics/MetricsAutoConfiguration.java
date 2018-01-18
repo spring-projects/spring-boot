@@ -27,6 +27,7 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasExportConfiguration;
@@ -46,6 +47,7 @@ import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -73,13 +75,13 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @Import({ MeterBindersConfiguration.class, WebMvcMetricsConfiguration.class,
 		WebFluxMetricsConfiguration.class, RestTemplateMetricsConfiguration.class,
 		CacheMetricsConfiguration.class, DataSourcePoolMetricsConfiguration.class,
-		AtlasExportConfiguration.class, DatadogExportConfiguration.class,
-		GangliaExportConfiguration.class, GraphiteExportConfiguration.class,
-		InfluxExportConfiguration.class, JmxExportConfiguration.class,
-		PrometheusExportConfiguration.class, SimpleExportConfiguration.class,
-		StatsdExportConfiguration.class })
+		RabbitMetricsConfiguration.class, AtlasExportConfiguration.class,
+		DatadogExportConfiguration.class, GangliaExportConfiguration.class,
+		GraphiteExportConfiguration.class, InfluxExportConfiguration.class,
+		JmxExportConfiguration.class, PrometheusExportConfiguration.class,
+		SimpleExportConfiguration.class, StatsdExportConfiguration.class })
 @AutoConfigureAfter({ CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
-		RestTemplateAutoConfiguration.class })
+		RabbitAutoConfiguration.class, RestTemplateAutoConfiguration.class })
 public class MetricsAutoConfiguration {
 
 	@Bean
