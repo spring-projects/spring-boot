@@ -129,7 +129,7 @@
 		<liquibase.version>3.5.3</liquibase.version>
 		<log4j2.version>2.7</log4j2.version>
 		<logback.version>1.1.11</logback.version>
-		<lombok.version>1.16.18</lombok.version>
+		<lombok.version>1.16.20</lombok.version>
 		<mariadb.version>1.5.9</mariadb.version>
 		<mssql-jdbc.version>6.1.0.jre7</mssql-jdbc.version>
 		<mockito.version>1.10.19</mockito.version>
