@@ -19,7 +19,9 @@ package org.springframework.boot.configurationprocessor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -185,7 +187,14 @@ class TypeUtils {
 				return getQualifiedName(enclosingElement) + "$"
 						+ type.asElement().getSimpleName().toString();
 			}
-			return type.toString();
+			StringBuilder sb  = new StringBuilder();
+			sb.append(getQualifiedName(type.asElement()));
+			if (!type.getTypeArguments().isEmpty()) {
+				List<String> parameters = type.getTypeArguments().stream()
+						.map(TypeMirror::toString).collect(Collectors.toList());
+				sb.append("<").append(String.join(",", parameters)).append(">");
+			}
+			return sb.toString();
 		}
 
 		@Override

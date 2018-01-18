@@ -267,6 +267,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				"java.util.Collection<java.lang.Byte>"));
 		assertThat(metadata).has(Metadata.withProperty("collection.doubles",
 				"java.util.List<java.lang.Double>"));
+		assertThat(metadata).has(Metadata.withProperty("collection.names-to-holders",
+				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.simple.SimpleCollectionProperties.Holder<java.lang.String>>"));
 	}
 
 	@Test
