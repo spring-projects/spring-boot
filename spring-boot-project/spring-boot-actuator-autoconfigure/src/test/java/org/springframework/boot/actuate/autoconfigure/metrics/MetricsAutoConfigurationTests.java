@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.instrument-datasource=false")
+						"management.metrics.jdbc.instrument=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);

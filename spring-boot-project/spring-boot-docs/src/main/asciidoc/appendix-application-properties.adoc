@@ -1282,7 +1282,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
 	management.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.
 	management.metrics.cache.cache-metric-name=cache # Name of the metric for cache usage.
-	management.metrics.cache.instrument-cache=true # Instrument all available caches.
+	management.metrics.cache.instrument=true # Instrument all available caches.
 	management.metrics.export.atlas.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.atlas.config-refresh-frequency= # Frequency for refreshing config settings from the LWC service.
 	management.metrics.export.atlas.config-time-to-live= # Time to live for subscriptions from the LWC service.
@@ -1352,7 +1352,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.statsd.port=8125 # Port of the StatsD server to receive exported metrics.
 	management.metrics.export.statsd.queue-size=2147483647 # Maximum size of the queue of items waiting to be sent to the StatsD server.
 	management.metrics.jdbc.datasource-metric-name=data.source # Name of the metric for data source usage.
-	management.metrics.jdbc.instrument-datasource=true # Instrument all available data sources.
+	management.metrics.jdbc.instrument=true # Instrument all available data sources.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
 	management.metrics.web.client.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	management.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
