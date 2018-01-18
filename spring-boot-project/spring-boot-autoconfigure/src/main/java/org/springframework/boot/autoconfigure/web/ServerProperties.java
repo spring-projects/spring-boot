@@ -292,7 +292,7 @@ public class ServerProperties {
 
 		public String getServletPrefix() {
 			String result = this.path;
-			int index = result.indexOf("*");
+			int index = result.indexOf('*');
 			if (index != -1) {
 				result = result.substring(0, index);
 			}

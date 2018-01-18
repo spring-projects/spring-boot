@@ -498,7 +498,7 @@ public class PropertiesLauncher extends Launcher {
 			// If home dir is same as parent archive, no need to add it twice.
 			return null;
 		}
-		int index = root.indexOf("!");
+		int index = root.indexOf('!');
 		if (index != -1) {
 			File file = new File(this.home, root.substring(0, index));
 			if (root.startsWith("jar:file:")) {
