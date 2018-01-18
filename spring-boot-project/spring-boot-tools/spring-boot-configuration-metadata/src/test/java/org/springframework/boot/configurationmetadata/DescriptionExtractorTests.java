@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DescriptionExtractorTests {
 
-	private static final String NEW_LINE = System.getProperty("line.separator");
-
 	private DescriptionExtractor extractor = new DescriptionExtractor();
 
 	@Test
@@ -41,14 +39,16 @@ public class DescriptionExtractorTests {
 	@Test
 	public void extractShortDescriptionNewLineBeforeDot() {
 		String description = this.extractor.getShortDescription(
-				"My short" + NEW_LINE + "description." + NEW_LINE + "More stuff.");
+				"My short" + System.lineSeparator() + "description."
+						+ System.lineSeparator() + "More stuff.");
 		assertThat(description).isEqualTo("My short description.");
 	}
 
 	@Test
 	public void extractShortDescriptionNewLineBeforeDotWithSpaces() {
 		String description = this.extractor.getShortDescription(
-				"My short  " + NEW_LINE + " description.  " + NEW_LINE + "More stuff.");
+				"My short  " + System.lineSeparator() + " description.  "
+						+ System.lineSeparator() + "More stuff.");
 		assertThat(description).isEqualTo("My short description.");
 	}
 
@@ -61,7 +61,8 @@ public class DescriptionExtractorTests {
 	@Test
 	public void extractShortDescriptionNoDotMultipleLines() {
 		String description = this.extractor
-				.getShortDescription("My short description " + NEW_LINE + " More stuff");
+				.getShortDescription("My short description " + System.lineSeparator()
+						+ " More stuff");
 		assertThat(description).isEqualTo("My short description");
 	}
 

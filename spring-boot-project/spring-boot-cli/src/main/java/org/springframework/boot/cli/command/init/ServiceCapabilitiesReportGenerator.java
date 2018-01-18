@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ import java.util.TreeSet;
  */
 class ServiceCapabilitiesReportGenerator {
 
-	private static final String NEW_LINE = System.getProperty("line.separator");
-
 	private final InitializrService initializrService;
 
 	/**
@@ -66,29 +64,29 @@ class ServiceCapabilitiesReportGenerator {
 	private String generateHelp(String url, InitializrServiceMetadata metadata) {
 		String header = "Capabilities of " + url;
 		StringBuilder report = new StringBuilder();
-		report.append(repeat("=", header.length()) + NEW_LINE);
-		report.append(header + NEW_LINE);
-		report.append(repeat("=", header.length()) + NEW_LINE);
-		report.append(NEW_LINE);
+		report.append(repeat("=", header.length()) + System.lineSeparator());
+		report.append(header + System.lineSeparator());
+		report.append(repeat("=", header.length()) + System.lineSeparator());
+		report.append(System.lineSeparator());
 		reportAvailableDependencies(metadata, report);
-		report.append(NEW_LINE);
+		report.append(System.lineSeparator());
 		reportAvailableProjectTypes(metadata, report);
-		report.append(NEW_LINE);
+		report.append(System.lineSeparator());
 		reportDefaults(report, metadata);
 		return report.toString();
 	}
 
 	private void reportAvailableDependencies(InitializrServiceMetadata metadata,
 			StringBuilder report) {
-		report.append("Available dependencies:" + NEW_LINE);
-		report.append("-----------------------" + NEW_LINE);
+		report.append("Available dependencies:" + System.lineSeparator());
+		report.append("-----------------------" + System.lineSeparator());
 		List<Dependency> dependencies = getSortedDependencies(metadata);
 		for (Dependency dependency : dependencies) {
 			report.append(dependency.getId() + " - " + dependency.getName());
 			if (dependency.getDescription() != null) {
 				report.append(": " + dependency.getDescription());
 			}
-			report.append(NEW_LINE);
+			report.append(System.lineSeparator());
 		}
 	}
 
@@ -100,8 +98,8 @@ class ServiceCapabilitiesReportGenerator {
 
 	private void reportAvailableProjectTypes(InitializrServiceMetadata metadata,
 			StringBuilder report) {
-		report.append("Available project types:" + NEW_LINE);
-		report.append("------------------------" + NEW_LINE);
+		report.append("Available project types:" + System.lineSeparator());
+		report.append("------------------------" + System.lineSeparator());
 		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(
 				Comparator.comparing(Entry::getKey));
 		entries.addAll(metadata.getProjectTypes().entrySet());
@@ -114,7 +112,7 @@ class ServiceCapabilitiesReportGenerator {
 			if (type.isDefaultType()) {
 				report.append(" (default)");
 			}
-			report.append(NEW_LINE);
+			report.append(System.lineSeparator());
 		}
 	}
 
@@ -134,13 +132,13 @@ class ServiceCapabilitiesReportGenerator {
 
 	private void reportDefaults(StringBuilder report,
 			InitializrServiceMetadata metadata) {
-		report.append("Defaults:" + NEW_LINE);
-		report.append("---------" + NEW_LINE);
+		report.append("Defaults:" + System.lineSeparator());
+		report.append("---------" + System.lineSeparator());
 		List<String> defaultsKeys = new ArrayList<>(metadata.getDefaults().keySet());
 		Collections.sort(defaultsKeys);
 		for (String defaultsKey : defaultsKeys) {
 			String defaultsValue = metadata.getDefaults().get(defaultsKey);
-			report.append(defaultsKey + ": " + defaultsValue + NEW_LINE);
+			report.append(defaultsKey + ": " + defaultsValue + System.lineSeparator());
 		}
 	}
 
