@@ -53,6 +53,7 @@ import org.springframework.boot.configurationsample.simple.ClassWithNestedProper
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
+import org.springframework.boot.configurationsample.simple.SimpleArrayProperties;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
 import org.springframework.boot.configurationsample.simple.SimplePrefixValueProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
@@ -69,6 +70,7 @@ import org.springframework.boot.configurationsample.specific.InnerClassRootConfi
 import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
+import org.springframework.boot.configurationsample.specific.WildcardConfig;
 import org.springframework.boot.junit.compiler.TestCompiler;
 import org.springframework.util.FileCopyUtils;
 
@@ -257,6 +259,22 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
+	public void parseArrayConfig() throws Exception {
+		ConfigurationMetadata metadata = compile(SimpleArrayProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("array")
+				.ofType(SimpleArrayProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("array.primitive",
+				"java.lang.Integer[]"));
+		assertThat(metadata).has(Metadata.withProperty("array.simple",
+				"java.lang.String[]"));
+		assertThat(metadata).has(Metadata.withProperty("array.inner",
+				"org.springframework.boot.configurationsample.simple.SimpleArrayProperties$Holder[]"));
+		assertThat(metadata).has(Metadata.withProperty("array.name-to-integer",
+				"java.util.Map<java.lang.String,java.lang.Integer>[]"));
+		assertThat(metadata.getItems()).hasSize(5);
+	}
+
+	@Test
 	public void simpleMethodConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
 		assertThat(metadata)
@@ -441,6 +459,20 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.biz.name")
 				.ofType("java.lang.String").fromSource(GenericConfig.Bar.Biz.class));
 		assertThat(metadata.getItems()).hasSize(9);
+	}
+
+	@Test
+	public void wildcardTypes() throws IOException {
+		ConfigurationMetadata metadata = compile(WildcardConfig.class);
+		assertThat(metadata).has(Metadata.withGroup("wildcard")
+				.ofType(WildcardConfig.class));
+		assertThat(metadata).has(Metadata.withProperty("wildcard.string-to-number")
+				.ofType("java.util.Map<java.lang.String,? extends java.lang.Number>")
+				.fromSource(WildcardConfig.class));
+		assertThat(metadata).has(Metadata.withProperty("wildcard.integers")
+				.ofType("java.util.List<? super java.lang.Integer>")
+				.fromSource(WildcardConfig.class));
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
