@@ -233,7 +233,6 @@
       "description": "Instrument all available data sources.",
       "defaultValue": true
     },
-    },
     {
       "name": "management.metrics.rabbitmq.instrument",
       "type": "java.lang.Boolean",
