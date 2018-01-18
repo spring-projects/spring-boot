@@ -31,8 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class WhitespaceThrowablePatternConverterTests {
 
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
 	private final ThrowablePatternConverter converter = WhitespaceThrowablePatternConverter
 			.newInstance(new DefaultConfiguration(), new String[] {});
 
@@ -49,8 +47,8 @@ public class WhitespaceThrowablePatternConverterTests {
 		LogEvent event = Log4jLogEvent.newBuilder().setThrown(new Exception()).build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
-		assertThat(builder.toString()).startsWith(LINE_SEPARATOR)
-				.endsWith(LINE_SEPARATOR);
+		assertThat(builder.toString()).startsWith(System.lineSeparator())
+				.endsWith(System.lineSeparator());
 	}
 
 }
