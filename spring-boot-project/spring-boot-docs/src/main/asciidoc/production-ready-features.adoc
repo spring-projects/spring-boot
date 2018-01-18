@@ -1068,6 +1068,14 @@ Metrics are also tagged by the name of the `DataSource` computed based on the be
 
 
 
+[[production-ready-metrics-rabbitmq]]
+=== RabbitMQ metrics
+Auto-configuration will enable the instrumentation of all available RabbitMQ connection
+factories with a metric named `rabbitmq`. The prefix can be customized by using the
+`management.metrics.rabbitmq.metric-name` property.
+
+
+
 [[production-ready-metrics-integration]]
 === Spring Integration Metrics
 Auto-configuration enables binding of a number of Spring Integration-related metrics:

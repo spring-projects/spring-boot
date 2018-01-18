@@ -24,30 +24,42 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
 
+import org.springframework.util.Assert;
+
 /**
  * A {@link MeterBinder} for RabbitMQ Java Client metrics.
  *
  * @author Arnaud Cogoluègnes
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class RabbitMetrics implements MeterBinder {
 
 	private final Iterable<Tag> tags;
 
+	private final String name;
+
 	private final ConnectionFactory connectionFactory;
 
-	public RabbitMetrics(ConnectionFactory connectionFactory) {
-		this(connectionFactory, Collections.emptyList());
-	}
-
-	public RabbitMetrics(ConnectionFactory connectionFactory, Iterable<Tag> tags) {
+	/**
+	 * Create a new meter binder recording  the specified {@link ConnectionFactory}.
+	 * @param connectionFactory the {@link ConnectionFactory} to instrument
+	 * @param name the name prefix of the metrics
+	 * @param tags tags to apply to all recorded metrics
+	 */
+	public RabbitMetrics(ConnectionFactory connectionFactory, String name,
+			Iterable<Tag> tags) {
+		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+		Assert.notNull(name, "Name must not be null");
 		this.connectionFactory = connectionFactory;
-		this.tags = tags;
+		this.name = name;
+		this.tags = (tags  != null ?  tags : Collections.EMPTY_LIST);
 	}
 
 	@Override
 	public void bindTo(MeterRegistry registry) {
-		this.connectionFactory.setMetricsCollector(new MicrometerMetricsCollector(registry, "rabbitmq", this.tags));
+		this.connectionFactory.setMetricsCollector(new MicrometerMetricsCollector(
+				registry, this.name, this.tags));
 	}
 
 }
