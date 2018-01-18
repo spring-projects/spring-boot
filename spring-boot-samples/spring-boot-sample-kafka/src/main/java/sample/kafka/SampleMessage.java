@@ -15,14 +15,39 @@
  */
 package sample.kafka;
 
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
+public class SampleMessage {
+	private Integer id;
+	private String message;
 
-@Component
-public class Consumer {
+	public Integer getId() {
+		return id;
+	}
 
-	@KafkaListener(topics = "myTopic")
-	public void processMessage(SampleMessage message) {
-		System.out.println("consumer has received message : [" + message + "]");
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public SampleMessage() {
+	}
+
+	public SampleMessage(Integer id, String message) {
+		this.id = id;
+		this.message = message;
+	}
+
+	@Override
+	public String toString() {
+		return "SampleMessage{" +
+				"id=" + id +
+				", message='" + message + '\'' +
+				'}';
 	}
 }

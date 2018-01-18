@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,9 +42,20 @@ public class SampleKafkaApplicationTests {
 	private Producer producer;
 
 	@Test
-	public void sendSimpleMessage() throws InterruptedException {
-		producer.send("Test message");
-		Thread.sleep(2000L);
+	public void sendSimpleMessage() throws Exception {
+		initKafkaEmbedded();
+		SampleMessage message = new SampleMessage(1, "Test message");
+		producer.send(message);
+		Thread.sleep(1000L);
 		assertThat(this.outputCapture.toString().contains("Test message")).isTrue();
+	}
+
+	public void initKafkaEmbedded() throws Exception {
+		KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true);
+		embeddedKafka.setKafkaPorts(9092);
+		embeddedKafka.afterPropertiesSet();
+		//Need 10s, waiting for the Kafka server start.
+		Thread.sleep(10000L);
+
 	}
 }

@@ -25,8 +25,8 @@ public class Producer {
 	@Autowired
 	private KafkaTemplate kafkaTemplate;
 
-	public void send(String message) {
+	public void send(SampleMessage message) {
 		kafkaTemplate.send("myTopic", message);
-		System.out.println("producer has sent message : [" + message + "]");
+		System.out.println("producer has sent message.");
 	}
 }
