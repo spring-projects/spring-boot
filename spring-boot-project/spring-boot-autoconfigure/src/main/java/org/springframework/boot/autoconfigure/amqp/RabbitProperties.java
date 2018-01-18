@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Josh Thornhill
  * @author Gary Russell
+ * @author Arnaud Cogoluègnes
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -111,6 +112,11 @@ public class RabbitProperties {
 	private final Template template = new Template();
 
 	private List<Address> parsedAddresses;
+
+	/**
+	 * Enable metrics.
+	 */
+	private boolean metrics = true;
 
 	public String getHost() {
 		return this.host;
@@ -305,6 +311,14 @@ public class RabbitProperties {
 
 	public Template getTemplate() {
 		return this.template;
+	}
+
+	public boolean isMetrics() {
+		return this.metrics;
+	}
+
+	public void setMetrics(boolean metrics) {
+		this.metrics = metrics;
 	}
 
 	public static class Ssl {
