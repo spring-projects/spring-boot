@@ -40,13 +40,16 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(DatadogProperties.class)
 public class DatadogExportConfiguration {
 
+	public static final String DATALOG_EXPORTER_NAME = "datadogExporter";
+
 	@Bean
 	@ConditionalOnMissingBean
 	public DatadogConfig datadogConfig(DatadogProperties datadogProperties) {
 		return new DatadogPropertiesConfigAdapter(datadogProperties);
 	}
 
-	@Bean
+	@Bean(name = DATALOG_EXPORTER_NAME)
+	@ConditionalOnMissingBean(name = DATALOG_EXPORTER_NAME)
 	@ConditionalOnProperty(value = "management.metrics.export.datadog.enabled", matchIfMissing = true)
 	public MetricsExporter datadogExporter(DatadogConfig datadogConfig, Clock clock) {
 		return () -> new DatadogMeterRegistry(datadogConfig, clock);

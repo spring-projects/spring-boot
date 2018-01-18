@@ -40,13 +40,16 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(GraphiteProperties.class)
 public class GraphiteExportConfiguration {
 
+	public static final String GRAPHITE_EXPORTER_NAME = "graphiteExporter";
+
 	@Bean
 	@ConditionalOnMissingBean
 	public GraphiteConfig graphiteConfig(GraphiteProperties graphiteProperties) {
 		return new GraphitePropertiesConfigAdapter(graphiteProperties);
 	}
 
-	@Bean
+	@Bean(name = GRAPHITE_EXPORTER_NAME)
+	@ConditionalOnMissingBean(name = GRAPHITE_EXPORTER_NAME)
 	@ConditionalOnProperty(value = "management.metrics.export.graphite.enabled", matchIfMissing = true)
 	public MetricsExporter graphiteExporter(GraphiteConfig graphiteConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {

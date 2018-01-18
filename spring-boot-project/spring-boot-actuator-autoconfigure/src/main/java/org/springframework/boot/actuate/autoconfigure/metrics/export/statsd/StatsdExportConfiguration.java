@@ -40,13 +40,16 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(StatsdProperties.class)
 public class StatsdExportConfiguration {
 
+	public static final String STATSD_EXPORTER_NAME = "statsdExporter";
+
 	@Bean
 	@ConditionalOnMissingBean(StatsdConfig.class)
 	public StatsdConfig statsdConfig(StatsdProperties statsdProperties) {
 		return new StatsdPropertiesConfigAdapter(statsdProperties);
 	}
 
-	@Bean
+	@Bean(name = STATSD_EXPORTER_NAME)
+	@ConditionalOnMissingBean(name = STATSD_EXPORTER_NAME)
 	@ConditionalOnProperty(value = "management.metrics.export.statsd.enabled", matchIfMissing = true)
 	public MetricsExporter statsdExporter(StatsdConfig statsdConfig,
 			HierarchicalNameMapper hierarchicalNameMapper, Clock clock) {

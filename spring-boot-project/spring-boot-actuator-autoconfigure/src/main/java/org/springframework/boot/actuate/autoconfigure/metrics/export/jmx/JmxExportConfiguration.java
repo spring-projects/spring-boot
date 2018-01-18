@@ -40,13 +40,16 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(JmxProperties.class)
 public class JmxExportConfiguration {
 
+	public static final String JMX_EXPORTER_NAME = "jmxExporter";
+
 	@Bean
 	@ConditionalOnMissingBean
 	public JmxConfig jmxConfig(JmxProperties jmxProperties) {
 		return new JmxPropertiesConfigAdapter(jmxProperties);
 	}
 
-	@Bean
+	@Bean(name = JMX_EXPORTER_NAME)
+	@ConditionalOnMissingBean(name = JMX_EXPORTER_NAME)
 	@ConditionalOnProperty(value = "management.metrics.export.jmx.enabled", matchIfMissing = true)
 	public MetricsExporter jmxExporter(JmxConfig config,
 			HierarchicalNameMapper nameMapper, Clock clock) {
