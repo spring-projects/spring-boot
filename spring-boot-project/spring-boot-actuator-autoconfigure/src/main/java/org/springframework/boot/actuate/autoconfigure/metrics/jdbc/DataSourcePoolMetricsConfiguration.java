@@ -60,7 +60,7 @@ public class DataSourcePoolMetricsConfiguration {
 			JdbcMetricsProperties jdbcMetricsProperties) {
 		this.registry = registry;
 		this.metadataProviders = metadataProviders;
-		this.metricName = jdbcMetricsProperties.getDatasourceMetricName();
+		this.metricName = jdbcMetricsProperties.getMetricName();
 	}
 
 	@Autowired

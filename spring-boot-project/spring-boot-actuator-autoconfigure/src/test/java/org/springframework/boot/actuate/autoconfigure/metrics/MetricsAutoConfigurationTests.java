@@ -65,7 +65,7 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.datasource-metric-name=custom.name")
+						"management.metrics.jdbc.metric-name=custom.name")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);

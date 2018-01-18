@@ -59,7 +59,7 @@ public class CacheMetricsConfigurationTests {
 	public void autoConfiguredCacheManagerWithCustomMetricName() {
 		this.contextRunner
 				.withPropertyValues(
-						"management.metrics.cache.cache-metric-name=custom.name",
+						"management.metrics.cache.metric-name=custom.name",
 						"spring.cache.type=caffeine", "spring.cache.cache-names=cache1")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);

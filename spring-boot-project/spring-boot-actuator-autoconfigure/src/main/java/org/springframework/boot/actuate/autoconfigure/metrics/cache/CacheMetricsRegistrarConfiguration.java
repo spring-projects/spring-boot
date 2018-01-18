@@ -66,7 +66,7 @@ class CacheMetricsRegistrarConfiguration {
 	@Bean
 	public CacheMetricsRegistrar cacheMetricsRegistrar() {
 		return new CacheMetricsRegistrar(this.registry,
-				this.properties.getCacheMetricName(), this.binderProviders);
+				this.properties.getMetricName(), this.binderProviders);
 	}
 
 	@PostConstruct
