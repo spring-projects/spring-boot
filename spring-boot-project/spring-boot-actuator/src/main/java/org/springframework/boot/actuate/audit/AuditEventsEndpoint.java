@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -40,8 +41,8 @@ public class AuditEventsEndpoint {
 	}
 
 	@ReadOperation
-	public AuditEventsDescriptor events(String principal, OffsetDateTime after,
-			String type) {
+	public AuditEventsDescriptor events(@Nullable String principal,
+			@Nullable OffsetDateTime after, @Nullable String type) {
 		return new AuditEventsDescriptor(this.auditEventRepository.find(principal,
 				after == null ? null : after.toInstant(), type));
 	}

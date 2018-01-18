@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-import org.springframework.boot.actuate.audit.AuditEventsEndpointWebExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,13 +54,13 @@ public class AuditEventsEndpointDocumentationTests
 	private AuditEventRepository repository;
 
 	@Test
-	public void allAuditEventsAfter() throws Exception {
+	public void allAuditEvents() throws Exception {
 		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find(any(), any(), any())).willReturn(
 				Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
 		this.mockMvc.perform(get("/actuator/auditevents").param("after", queryTimestamp))
 				.andExpect(status().isOk())
-				.andDo(document("auditevents/after", responseFields(
+				.andDo(document("auditevents/all", responseFields(
 						fieldWithPath("events").description("An array of audit events."),
 						fieldWithPath("events.[].timestamp")
 								.description("The timestamp of when the event occurred."),
@@ -85,7 +84,7 @@ public class AuditEventsEndpointDocumentationTests
 						requestParameters(
 								parameterWithName("after").description(
 										"Restricts the events to those that occurred "
-												+ "after the given time. Required."),
+												+ "after the given time. Optional."),
 								parameterWithName("principal").description(
 										"Restricts the events to those with the given "
 												+ "principal. Optional."),
@@ -102,12 +101,6 @@ public class AuditEventsEndpointDocumentationTests
 		@Bean
 		public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository repository) {
 			return new AuditEventsEndpoint(repository);
-		}
-
-		@Bean
-		public AuditEventsEndpointWebExtension adAuditEventsWebEndpointExtension(
-				AuditEventsEndpoint delegate) {
-			return new AuditEventsEndpointWebExtension(delegate);
 		}
 
 	}

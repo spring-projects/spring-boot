@@ -41,13 +41,16 @@ public class AuditEventsEndpointWebIntegrationTests {
 	private static WebTestClient client;
 
 	@Test
-	public void eventsWithoutParams() {
+	public void allEvents() {
 		client.get().uri((builder) -> builder.path("/actuator/auditevents").build())
-				.exchange().expectStatus().isBadRequest();
+				.exchange().expectStatus().isOk().expectBody()
+				.jsonPath("events.[*].principal")
+				.isEqualTo(new JSONArray().appendElement("admin").appendElement("admin")
+						.appendElement("user"));
 	}
 
 	@Test
-	public void eventsWithDateAfter() {
+	public void eventsAfter() {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
 						.queryParam("after", "2016-11-01T13:00:00%2B00:00").build())
@@ -56,10 +59,9 @@ public class AuditEventsEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void eventsWithPrincipalAndDateAfter() {
+	public void eventsWithPrincipal() {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
-						.queryParam("after", "2016-11-01T10:00:00%2B00:00")
 						.queryParam("principal", "user").build())
 				.exchange().expectStatus().isOk().expectBody()
 				.jsonPath("events.[*].principal")
@@ -67,12 +69,10 @@ public class AuditEventsEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void eventsWithPrincipalDateAfterAndType() {
+	public void eventsWithType() {
 		client.get()
 				.uri((builder) -> builder.path("/actuator/auditevents")
-						.queryParam("after", "2016-11-01T10:00:00%2B00:00")
-						.queryParam("principal", "admin").queryParam("type", "logout")
-						.build())
+						.queryParam("type", "logout").build())
 				.exchange().expectStatus().isOk().expectBody()
 				.jsonPath("events.[*].principal")
 				.isEqualTo(new JSONArray().appendElement("admin"))
@@ -95,12 +95,6 @@ public class AuditEventsEndpointWebIntegrationTests {
 		@Bean
 		public AuditEventsEndpoint auditEventsEndpoint() {
 			return new AuditEventsEndpoint(auditEventsRepository());
-		}
-
-		@Bean
-		public AuditEventsEndpointWebExtension auditEventsEndpointWebExtension(
-				AuditEventsEndpoint auditEventsEndpoint) {
-			return new AuditEventsEndpointWebExtension(auditEventsEndpoint);
 		}
 
 		private AuditEvent createEvent(String instant, String principal, String type) {
