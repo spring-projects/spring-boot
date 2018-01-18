@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
@@ -195,6 +196,11 @@ class TypeUtils {
 				sb.append("<").append(String.join(",", parameters)).append(">");
 			}
 			return sb.toString();
+		}
+
+		@Override
+		public String visitArray(ArrayType t, Void none) {
+			return t.getComponentType().accept(this, none) + "[]";
 		}
 
 		@Override
