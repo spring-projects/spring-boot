@@ -26,8 +26,6 @@ import java.util.Locale;
  */
 class DescriptionExtractor {
 
-	private static final String NEW_LINE = System.getProperty("line.separator");
-
 	public String getShortDescription(String description) {
 		if (description == null) {
 			return null;
@@ -41,13 +39,13 @@ class DescriptionExtractor {
 			return removeSpaceBetweenLine(text);
 		}
 		else {
-			String[] lines = description.split(NEW_LINE);
+			String[] lines = description.split(System.lineSeparator());
 			return lines[0].trim();
 		}
 	}
 
 	private String removeSpaceBetweenLine(String text) {
-		String[] lines = text.split(NEW_LINE);
+		String[] lines = text.split(System.lineSeparator());
 		StringBuilder sb = new StringBuilder();
 		for (String line : lines) {
 			sb.append(line.trim()).append(" ");
