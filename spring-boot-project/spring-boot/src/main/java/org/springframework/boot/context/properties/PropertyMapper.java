@@ -169,7 +169,7 @@ public final class PropertyMapper {
 	 * A source that is in the process of being mapped.
 	 * @param <T> the source type
 	 */
-	public final static class Source<T> {
+	public static final class Source<T> {
 
 		private final Supplier<T> supplier;
 

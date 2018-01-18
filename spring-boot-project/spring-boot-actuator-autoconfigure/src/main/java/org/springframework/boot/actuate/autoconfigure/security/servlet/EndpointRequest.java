@@ -89,7 +89,7 @@ public final class EndpointRequest {
 	/**
 	 * The request matcher used to match against {@link Endpoint actuator endpoints}.
 	 */
-	public final static class EndpointRequestMatcher
+	public static final class EndpointRequestMatcher
 			extends ApplicationContextRequestMatcher<EndpointPathProvider> {
 
 		private final List<Object> includes;

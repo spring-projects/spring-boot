@@ -124,7 +124,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	/**
 	 * Base class for profile matchers.
 	 */
-	private static abstract class ProfilesMatcher {
+	private abstract static class ProfilesMatcher {
 
 		public final MatchStatus matches(Set<String> profiles) {
 			if (CollectionUtils.isEmpty(profiles)) {

@@ -104,7 +104,7 @@ public class SessionAutoConfiguration {
 	/**
 	 * {@link ImportSelector} base class to add {@link StoreType} configuration classes.
 	 */
-	static abstract class SessionConfigurationImportSelector implements ImportSelector {
+	abstract static class SessionConfigurationImportSelector implements ImportSelector {
 
 		protected final String[] selectImports(AnnotationMetadata importingClassMetadata,
 				WebApplicationType webApplicationType) {
@@ -153,7 +153,7 @@ public class SessionAutoConfiguration {
 	 * Base class for beans used to validate that only one supported implementation is
 	 * available in the classpath when the store-type property is not set.
 	 */
-	static abstract class AbstractSessionRepositoryImplementationValidator {
+	abstract static class AbstractSessionRepositoryImplementationValidator {
 
 		private final List<String> candidates;
 
@@ -233,7 +233,7 @@ public class SessionAutoConfiguration {
 	/**
 	 * Base class for validating that a (reactive) session repository bean exists.
 	 */
-	static abstract class AbstractSessionRepositoryValidator {
+	abstract static class AbstractSessionRepositoryValidator {
 
 		private final SessionProperties sessionProperties;
 

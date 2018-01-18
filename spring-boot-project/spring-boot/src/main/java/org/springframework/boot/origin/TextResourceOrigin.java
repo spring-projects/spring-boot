@@ -94,7 +94,7 @@ public class TextResourceOrigin implements Origin {
 	/**
 	 * A location (line and column number) within the resource.
 	 */
-	public final static class Location {
+	public static final class Location {
 
 		private final int line;
 
