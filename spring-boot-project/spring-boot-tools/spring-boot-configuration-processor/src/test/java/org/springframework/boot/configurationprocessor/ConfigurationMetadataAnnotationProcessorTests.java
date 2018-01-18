@@ -66,6 +66,7 @@ import org.springframework.boot.configurationsample.simple.SimpleCollectionPrope
 import org.springframework.boot.configurationsample.simple.SimplePrefixValueProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
 import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
+import org.springframework.boot.configurationsample.specific.AnnotatedGetter;
 import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
@@ -335,6 +336,15 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 						.fromSource(
 								org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
+	}
+
+	@Test
+	public void annotatedGetter() {
+		ConfigurationMetadata metadata = compile(AnnotatedGetter.class);
+		assertThat(metadata).has(Metadata.withGroup("specific")
+				.fromSource(AnnotatedGetter.class));
+		assertThat(metadata).has(Metadata.withProperty("specific.name", String.class)
+				.fromSource(AnnotatedGetter.class));
 	}
 
 	@Test
