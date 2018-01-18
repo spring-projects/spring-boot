@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -186,7 +187,21 @@ class TypeUtils {
 				return getQualifiedName(enclosingElement) + "$"
 						+ type.asElement().getSimpleName().toString();
 			}
-			return type.toString();
+			StringBuilder sb  = new StringBuilder();
+			sb.append(getQualifiedName(type.asElement()));
+			if (!type.getTypeArguments().isEmpty()) {
+				sb.append("<");
+				Iterator<?> it = type.getTypeArguments().iterator();
+				while (it.hasNext()) {
+					sb.append(it.next());
+					if (it.hasNext()) {
+						sb.append(",");
+					}
+				}
+				sb.append(">");
+
+			}
+			return sb.toString();
 		}
 
 		@Override
