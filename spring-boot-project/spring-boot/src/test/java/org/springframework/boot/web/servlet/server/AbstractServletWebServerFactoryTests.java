@@ -999,15 +999,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void sessionConfiguration() {
 		AbstractServletWebServerFactory factory = getFactory();
-		// map.put("server.servlet.session.timeout", "123");
-		// map.put("server.servlet.session.tracking-modes", "cookie,url");
-		// map.put("server.servlet.session.cookie.name", "testname");
-		// map.put("server.servlet.session.cookie.domain", "testdomain");
-		// map.put("server.servlet.session.cookie.path", "/testpath");
-		// map.put("server.servlet.session.cookie.comment", "testcomment");
-		// map.put("server.servlet.session.cookie.http-only", "true");
-		// map.put("server.servlet.session.cookie.secure", "true");
-		// map.put("server.servlet.session.cookie.max-age", "60");
 		factory.getSession().setTimeout(Duration.ofSeconds(123));
 		factory.getSession().setTrackingModes(
 				EnumSet.of(SessionTrackingMode.COOKIE, SessionTrackingMode.URL));
@@ -1035,7 +1026,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(servletContext.getSessionCookieConfig().isHttpOnly()).isTrue();
 		assertThat(servletContext.getSessionCookieConfig().isSecure()).isTrue();
 		assertThat(servletContext.getSessionCookieConfig().getMaxAge()).isEqualTo(60);
-
 	}
 
 	protected abstract void addConnector(int port,

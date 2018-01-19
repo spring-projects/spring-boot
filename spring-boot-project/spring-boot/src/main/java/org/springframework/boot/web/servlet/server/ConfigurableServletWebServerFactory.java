@@ -62,30 +62,9 @@ public interface ConfigurableServletWebServerFactory
 	/**
 	 * Sets the configuration that will be applied to the container's HTTP session
 	 * support.
-	 *
 	 * @param session the session configuration
 	 */
 	void setSession(Session session);
-
-	// /**
-	// * The session timeout in seconds (default 30 minutes). If {@code null} then
-	// sessions
-	// * never expire.
-	// * @param sessionTimeout the session timeout
-	// */
-	// void setSessionTimeout(Duration sessionTimeout);
-	//
-	// /**
-	// * Sets if session data should be persisted between restarts.
-	// * @param persistSession {@code true} if session data should be persisted
-	// */
-	// void setPersistSession(boolean persistSession);
-	//
-	// /**
-	// * Set the directory used to store serialized session data.
-	// * @param sessionStoreDir the directory or {@code null} to use a default location.
-	// */
-	// void setSessionStoreDir(File sessionStoreDir);
 
 	/**
 	 * Set if the DefaultServlet should be registered. Defaults to {@code true} so that
@@ -141,7 +120,6 @@ public interface ConfigurableServletWebServerFactory
 	/**
 	 * Sets the init parameters that are applied to the container's
 	 * {@link ServletContext}.
-	 *
 	 * @param initParameters the init parameters
 	 */
 	void setInitParameters(Map<String, String> initParameters);

@@ -2939,8 +2939,10 @@ for the properties of the user).
 * Form-based login or HTTP Basic security (depending on Content-Type) for the entire
 application (including actuator endpoints if actuator is on the classpath).
 
-== MVC Security
 
+
+[[boot-features-security-mvc]]
+== MVC Security
 The default security configuration is implemented in `SecurityAutoConfiguration` and in
 the classes imported from there (`SpringBootWebSecurityConfiguration` for web security
 and `AuthenticationManagerConfiguration` for authentication configuration, which is also
@@ -2960,8 +2962,10 @@ that is based on the `management.endpoints.web.base-path` property.
 `StaticResourceRequest` can be used to create a `RequestMatcher` for static resources in
 commonly used locations.
 
-== WebFlux Security
 
+
+[[boot-features-security-webflux]]
+== WebFlux Security
 The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and in
 the classes imported from there (`WebFluxSecurityConfiguration` for web security
 and `ReactiveAuthenticationManagerConfiguration` for authentication configuration, which is also
@@ -2977,12 +2981,15 @@ Boot provides convenience methods that can be used to override access rules for 
 endpoints and static resources. `EndpointRequest` can be used to create a `ServerWebExchangeMatcher`
 that is based on the `management.endpoints.web.base-path` property.
 
+
+
 [[boot-features-security-oauth2]]
 === OAuth2
-
 https://oauth.net/2/[OAuth2] is a widely used authorization framework that is supported by
 Spring.
 
+
+[[boot-features-security-oauth2-client]]
 ==== Client
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of
 some auto-configuration to make it easy to set up an OAuth2 Client. This configuration

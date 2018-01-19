@@ -283,11 +283,15 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		Duration timeoutDuration = getSession().getTimeout();
-		int sessionTimeout = (timeoutDuration == null || timeoutDuration.isZero()
-				|| timeoutDuration.isNegative() ? -1
-						: (int) timeoutDuration.getSeconds());
+		int sessionTimeout = (isZeroOrLess(timeoutDuration) ? -1
+				: (int) timeoutDuration.getSeconds());
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
+	}
+
+	private boolean isZeroOrLess(Duration timeoutDuration) {
+		return timeoutDuration == null || timeoutDuration.isZero()
+				|| timeoutDuration.isNegative();
 	}
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {

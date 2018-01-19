@@ -327,6 +327,7 @@ public class WebMvcProperties {
 		public void setParameterName(String parameterName) {
 			this.parameterName = parameterName;
 		}
+
 	}
 
 	public static class PathMatch {
@@ -360,6 +361,7 @@ public class WebMvcProperties {
 		public void setUseRegisteredSuffixPattern(boolean useRegisteredSuffixPattern) {
 			this.useRegisteredSuffixPattern = useRegisteredSuffixPattern;
 		}
+
 	}
 
 	public enum LocaleResolver {

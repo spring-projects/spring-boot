@@ -85,9 +85,7 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 	@SuppressWarnings("unchecked")
 	private C createContext(ServerWebExchange exchange) {
 		ApplicationContext context = exchange.getApplicationContext();
-		if (context == null) {
-			throw new IllegalStateException("No WebApplicationContext found.");
-		}
+		Assert.state(context != null, "No WebApplicationContext found.");
 		if (this.contextClass.isInstance(context)) {
 			return (C) context;
 		}

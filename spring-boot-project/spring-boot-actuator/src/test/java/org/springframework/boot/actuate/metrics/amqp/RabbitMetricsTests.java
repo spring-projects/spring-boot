@@ -45,10 +45,10 @@ public class RabbitMetricsTests {
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, "test", Tags.zip("env", "prod"))
 				.bindTo(registry);
-		assertThat(registry.find("test.connections")
-				.tags("env", "prod").meter()).isPresent();
-		assertThat(registry.find("test.connections")
-				.tags("env", "dev").meter()).isNotPresent();
+		assertThat(registry.find("test.connections").tags("env", "prod").meter())
+				.isPresent();
+		assertThat(registry.find("test.connections").tags("env", "dev").meter())
+				.isNotPresent();
 	}
 
 	private ConnectionFactory mockConnectionFactory() {

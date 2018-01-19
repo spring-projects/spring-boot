@@ -386,11 +386,15 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private long getSessionTimeoutInMinutes() {
 		Duration sessionTimeout = getSession().getTimeout();
-		if (sessionTimeout == null || sessionTimeout.isNegative()
-				|| sessionTimeout.isZero()) {
+		if (isZeroOrLess(sessionTimeout)) {
 			return 0;
 		}
 		return Math.max(sessionTimeout.toMinutes(), 1);
+	}
+
+	private boolean isZeroOrLess(Duration sessionTimeout) {
+		return sessionTimeout == null || sessionTimeout.isNegative()
+				|| sessionTimeout.isZero();
 	}
 
 	/**

@@ -62,7 +62,6 @@ public final class JettyCustomizer {
 		if (jettyProperties.getMaxHttpPostSize() > 0) {
 			customizeMaxHttpPostSize(factory, jettyProperties.getMaxHttpPostSize());
 		}
-
 		if (serverProperties.getConnectionTimeout() != null) {
 			customizeConnectionTimeout(factory, serverProperties.getConnectionTimeout());
 		}
@@ -176,4 +175,5 @@ public final class JettyCustomizer {
 			server.setRequestLog(log);
 		});
 	}
+
 }

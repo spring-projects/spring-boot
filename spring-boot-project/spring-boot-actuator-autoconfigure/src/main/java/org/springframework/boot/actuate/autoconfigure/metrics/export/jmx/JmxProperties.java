@@ -41,4 +41,5 @@ public class JmxProperties {
 	public void setStep(Duration step) {
 		this.step = step;
 	}
+
 }

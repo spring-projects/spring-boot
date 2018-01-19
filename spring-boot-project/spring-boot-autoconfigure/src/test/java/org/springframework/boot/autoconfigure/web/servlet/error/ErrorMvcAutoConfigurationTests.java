@@ -25,12 +25,11 @@ import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ErrorMvcAutoConfiguration}.
@@ -50,26 +49,31 @@ public class ErrorMvcAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
-			DispatcherServletWebRequest webRequest =
-					createCommittedWebRequest(new IllegalStateException("Exception message"));
+			DispatcherServletWebRequest webRequest = createCommittedWebRequest(
+					new IllegalStateException("Exception message"));
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
 					webRequest.getRequest(), webRequest.getResponse());
-			this.outputCapture.expect(allOf(
-					containsString("Cannot render error page for request [/path]" +
-							" and exception [Exception message]] as the response has already been committed."),
-					containsString("As a result, the response may have the wrong status code.")));
+			assertThat(this.outputCapture.toString())
+					.contains("Cannot render error page for request [/path] "
+							+ "and exception [Exception message] as the response has "
+							+ "already been committed. As a result, the response may "
+							+ "have the wrong status code.");
 		});
 	}
 
-	protected DispatcherServletWebRequest createCommittedWebRequest(Exception e) {
+	protected DispatcherServletWebRequest createCommittedWebRequest(Exception ex) {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/path");
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		DispatcherServletWebRequest webRequest = new DispatcherServletWebRequest(request, response);
-		webRequest.setAttribute("javax.servlet.error.exception", e, WebRequest.SCOPE_REQUEST);
-		webRequest.setAttribute("javax.servlet.error.request_uri", "/path", WebRequest.SCOPE_REQUEST);
+		DispatcherServletWebRequest webRequest = new DispatcherServletWebRequest(request,
+				response);
+		webRequest.setAttribute("javax.servlet.error.exception", ex,
+				RequestAttributes.SCOPE_REQUEST);
+		webRequest.setAttribute("javax.servlet.error.request_uri", "/path",
+				RequestAttributes.SCOPE_REQUEST);
 		response.setCommitted(true);
 		response.setOutputStreamAccessAllowed(false);
 		response.setWriterAccessAllowed(false);
 		return webRequest;
 	}
+
 }

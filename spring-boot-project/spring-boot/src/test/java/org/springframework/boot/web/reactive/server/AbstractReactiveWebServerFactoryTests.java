@@ -156,7 +156,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
-
 		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector());
 	}
 
@@ -168,7 +167,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
-
 		testClientAuthSuccess(ssl, buildTrustAllSslConnector());
 	}
 
@@ -192,10 +190,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			ReactorClientHttpConnector clientConnector) {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setSsl(sslConfiguration);
-
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-
 		WebClient client = WebClient.builder()
 				.baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(clientConnector).build();
@@ -213,7 +209,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
-
 		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector());
 	}
 
@@ -228,7 +223,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
-
 		testClientAuthFailure(ssl, buildTrustAllSslConnector());
 	}
 
@@ -236,17 +230,14 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			ReactorClientHttpConnector clientConnector) {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setSsl(sslConfiguration);
-
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-
 		WebClient client = WebClient.builder()
 				.baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(clientConnector).build();
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromObject("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
-
 		StepVerifier.create(result).expectError(SSLException.class)
 				.verify(Duration.ofSeconds(10));
 	}
@@ -372,6 +363,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			}
 			ctx.fireChannelRead(msg);
 		}
+
 	}
 
 	protected static class CharsHandler implements HttpHandler {
@@ -395,6 +387,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			response.getHeaders().setContentType(this.mediaType);
 			return response.writeWith(Mono.just(this.bytes));
 		}
+
 	}
 
 }

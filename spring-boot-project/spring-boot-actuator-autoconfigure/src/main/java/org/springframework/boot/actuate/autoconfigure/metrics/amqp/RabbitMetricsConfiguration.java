@@ -80,7 +80,8 @@ public class RabbitMetricsConfiguration {
 	private String getConnectionFactoryName(String beanName) {
 		if (beanName.length() > CONNECTION_FACTORY_SUFFIX.length()
 				&& StringUtils.endsWithIgnoreCase(beanName, CONNECTION_FACTORY_SUFFIX)) {
-			return beanName.substring(0, beanName.length() - CONNECTION_FACTORY_SUFFIX.length());
+			return beanName.substring(0,
+					beanName.length() - CONNECTION_FACTORY_SUFFIX.length());
 		}
 		return beanName;
 	}

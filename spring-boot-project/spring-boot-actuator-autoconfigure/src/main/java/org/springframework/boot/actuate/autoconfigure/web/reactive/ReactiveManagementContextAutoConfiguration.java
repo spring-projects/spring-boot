@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Servlet-specific management
+ * {@link EnableAutoConfiguration Auto-configuration} for Reactive-specific management
  * context concerns.
  *
  * @author Phillip Webb

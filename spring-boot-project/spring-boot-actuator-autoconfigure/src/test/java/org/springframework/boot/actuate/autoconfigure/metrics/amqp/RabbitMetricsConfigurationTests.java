@@ -42,7 +42,6 @@ public class RabbitMetricsConfigurationTests {
 					RabbitAutoConfiguration.class))
 			.withPropertyValues("management.metrics.use-global-registry=false");
 
-
 	@Test
 	public void autoConfiguredConnectionFactoryIsInstrumented() {
 		this.contextRunner.run((context) -> {
@@ -67,13 +66,13 @@ public class RabbitMetricsConfigurationTests {
 	@Test
 	public void rabbitmqNativeConnectionFactoryInstrumentationCanBeDisabled() {
 		this.contextRunner
-				.withPropertyValues(
-						"management.metrics.rabbitmq.instrument=false").run((context) -> {
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			assertThat(registry.find("rabbitmq.connections").meter()).isNotPresent();
-		});
+				.withPropertyValues("management.metrics.rabbitmq.instrument=false")
+				.run((context) -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					assertThat(registry.find("rabbitmq.connections").meter())
+							.isNotPresent();
+				});
 	}
-
 
 	@Configuration
 	static class RegistryConfiguration {

@@ -234,8 +234,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		SessionHandler handler = context.getSessionHandler();
 		Duration sessionTimeout = getSession().getTimeout();
 		handler.setMaxInactiveInterval(
-				(sessionTimeout == null || sessionTimeout.isNegative()) ? -1
-						: (int) sessionTimeout.getSeconds());
+				isNegative(sessionTimeout) ? -1 : (int) sessionTimeout.getSeconds());
 		if (getSession().isPersistent()) {
 			DefaultSessionCache cache = new DefaultSessionCache(handler);
 			FileSessionDataStore store = new FileSessionDataStore();
@@ -243,6 +242,10 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			cache.setSessionDataStore(store);
 			handler.setSessionCache(cache);
 		}
+	}
+
+	private boolean isNegative(Duration sessionTimeout) {
+		return sessionTimeout == null || sessionTimeout.isNegative();
 	}
 
 	private void addLocaleMappings(WebAppContext context) {

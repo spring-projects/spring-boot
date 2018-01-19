@@ -238,22 +238,21 @@ public class ErrorMvcAutoConfiguration {
 			if (response.getContentType() == null) {
 				response.setContentType(getContentType());
 			}
-			PlaceholderResolver resolver = new ExpressionResolver(getExpressions(), model);
+			PlaceholderResolver resolver = new ExpressionResolver(getExpressions(),
+					model);
 			String result = this.helper.replacePlaceholders(this.template, resolver);
 			response.getWriter().append(result);
 		}
 
 		private String getMessage(Map<String, ?> model) {
-			StringBuilder builder = new StringBuilder();
-			builder.append("Cannot render error page for request [")
-					.append(model.get("path")).append("]");
+			Object path = model.get("path");
+			String message = "Cannot render error page for request [" + path + "]";
 			if (model.get("message") != null) {
-				builder.append(" and exception [").append(model.get("message"))
-						.append("]");
+				message += " and exception [" + model.get("message") + "]";
 			}
-			return builder.append("] as the response has already been committed.")
-					.append("As a result, the response may have the wrong status code.")
-					.toString();
+			message += " as the response has already been committed.";
+			message += " As a result, the response may have the wrong status code.";
+			return message;
 		}
 
 		private Map<String, Expression> getExpressions() {

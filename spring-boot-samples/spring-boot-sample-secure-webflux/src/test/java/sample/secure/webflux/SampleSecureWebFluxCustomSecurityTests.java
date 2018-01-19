@@ -41,7 +41,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { SampleSecureWebFluxCustomSecurityTests.SecurityConfiguration.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		SampleSecureWebFluxCustomSecurityTests.SecurityConfiguration.class,
 		SampleSecureWebFluxApplication.class })
 public class SampleSecureWebFluxCustomSecurityTests {
 
@@ -61,7 +62,7 @@ public class SampleSecureWebFluxCustomSecurityTests {
 		this.webClient.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON)
 				.exchange().expectStatus().isOk();
 	}
-	
+
 	@Test
 	public void actuatorsSecuredByRole() {
 		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
@@ -82,22 +83,18 @@ public class SampleSecureWebFluxCustomSecurityTests {
 		@Bean
 		public MapReactiveUserDetailsService userDetailsService() {
 			return new MapReactiveUserDetailsService(
-					User.withDefaultPasswordEncoder().username("user").password("password")
-							.authorities("ROLE_USER").build(),
+					User.withDefaultPasswordEncoder().username("user")
+							.password("password").authorities("ROLE_USER").build(),
 					User.withDefaultPasswordEncoder().username("admin").password("admin")
 							.authorities("ROLE_ACTUATOR", "ROLE_USER").build());
 		}
 
 		@Bean
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			http
-					.authorizeExchange()
-					.matchers(EndpointRequest.to("health", "info")).permitAll()
-					.matchers(EndpointRequest.toAnyEndpoint()).hasRole("ACTUATOR")
-					.pathMatchers("/login").permitAll()
-					.anyExchange().authenticated()
-					.and()
-					.httpBasic();
+			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
+					.permitAll().matchers(EndpointRequest.toAnyEndpoint())
+					.hasRole("ACTUATOR").pathMatchers("/login").permitAll().anyExchange()
+					.authenticated().and().httpBasic();
 			return http.build();
 		}
 
@@ -112,4 +109,3 @@ public class SampleSecureWebFluxCustomSecurityTests {
 	}
 
 }
-

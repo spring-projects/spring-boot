@@ -197,7 +197,6 @@ public final class TomcatCustomizer {
 
 	private static void customizeAccessLog(ServerProperties.Tomcat tomcatProperties,
 			ConfigurableTomcatWebServerFactory factory) {
-
 		AccessLogValve valve = new AccessLogValve();
 		valve.setPattern(tomcatProperties.getAccesslog().getPattern());
 		valve.setDirectory(tomcatProperties.getAccesslog().getDirectory());

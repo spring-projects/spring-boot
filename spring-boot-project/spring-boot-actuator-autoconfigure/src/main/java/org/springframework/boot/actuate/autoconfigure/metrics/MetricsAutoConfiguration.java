@@ -61,6 +61,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics.
@@ -96,10 +97,8 @@ public class MetricsAutoConfiguration {
 				.forEach((configurer) -> configurer.configureRegistry(composite));
 		exporters.getIfAvailable(Collections::emptyList).forEach((exporter) -> {
 			MeterRegistry childRegistry = exporter.registry();
-			if (composite == childRegistry) {
-				throw new IllegalStateException(
-						"cannot add a CompositeMeterRegistry to itself");
-			}
+			Assert.state(composite != childRegistry,
+					"cannot add a CompositeMeterRegistry to itself");
 			composite.add(childRegistry);
 		});
 		return composite;

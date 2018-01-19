@@ -27,6 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DescriptionExtractorTests {
 
+	private static final String NEW_LINE = System.lineSeparator();
+
 	private DescriptionExtractor extractor = new DescriptionExtractor();
 
 	@Test
@@ -39,16 +41,14 @@ public class DescriptionExtractorTests {
 	@Test
 	public void extractShortDescriptionNewLineBeforeDot() {
 		String description = this.extractor.getShortDescription(
-				"My short" + System.lineSeparator() + "description."
-						+ System.lineSeparator() + "More stuff.");
+				"My short" + NEW_LINE + "description." + NEW_LINE + "More stuff.");
 		assertThat(description).isEqualTo("My short description.");
 	}
 
 	@Test
 	public void extractShortDescriptionNewLineBeforeDotWithSpaces() {
 		String description = this.extractor.getShortDescription(
-				"My short  " + System.lineSeparator() + " description.  "
-						+ System.lineSeparator() + "More stuff.");
+				"My short  " + NEW_LINE + " description.  " + NEW_LINE + "More stuff.");
 		assertThat(description).isEqualTo("My short description.");
 	}
 
@@ -61,8 +61,7 @@ public class DescriptionExtractorTests {
 	@Test
 	public void extractShortDescriptionNoDotMultipleLines() {
 		String description = this.extractor
-				.getShortDescription("My short description " + System.lineSeparator()
-						+ " More stuff");
+				.getShortDescription("My short description " + NEW_LINE + " More stuff");
 		assertThat(description).isEqualTo("My short description");
 	}
 

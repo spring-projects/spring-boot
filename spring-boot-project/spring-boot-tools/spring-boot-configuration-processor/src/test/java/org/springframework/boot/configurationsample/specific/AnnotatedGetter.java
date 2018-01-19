@@ -21,8 +21,8 @@ import javax.validation.constraints.NotEmpty;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * An annotated getter with {@code NotEmpty} that triggers a different class type
- * in the compiler. See #11512
+ * An annotated getter with {@code NotEmpty} that triggers a different class type in the
+ * compiler. See #11512
  *
  * @author Stephane Nicoll
  */

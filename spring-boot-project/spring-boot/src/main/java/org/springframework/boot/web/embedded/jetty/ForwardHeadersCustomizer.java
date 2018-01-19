@@ -24,6 +24,7 @@ import org.eclipse.jetty.server.Server;
 
 /**
  * {@link JettyServerCustomizer} to add {@link ForwardedRequestCustomizer}.
+ *
  * @author Phillip Webb
  */
 class ForwardHeadersCustomizer implements JettyServerCustomizer {

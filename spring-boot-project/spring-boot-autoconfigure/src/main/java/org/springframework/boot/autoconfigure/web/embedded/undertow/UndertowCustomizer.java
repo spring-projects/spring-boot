@@ -38,7 +38,6 @@ public final class UndertowCustomizer {
 
 	public static void customizeUndertow(ServerProperties serverProperties,
 			Environment environment, ConfigurableUndertowWebServerFactory factory) {
-
 		ServerProperties.Undertow undertowProperties = serverProperties.getUndertow();
 		ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties
 				.getAccesslog();
