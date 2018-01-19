@@ -747,13 +747,20 @@ Spring Boot does not support `h2c`, the cleartext version of the HTTP/2 protocol
 must <<howto-configure-ssl, configure SSL first>>.
 ====
 
-Currently, only Undertow and Tomcat are supported with this configuration key.
-
 
 
 [[howto-configure-http2-undertow]]
 ==== HTTP/2 with Undertow
 As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement on JDK8.
+
+
+
+[[howto-configure-http2-jetty]]
+==== HTTP/2 with Jetty
+As of Jetty 9.4.8, HTTP/2 is also supported with the
+https://www.conscrypt.org/[Conscrypt library].
+To enable that support, your application needs to have two additional dependencies:
+`org.eclipse.jetty:jetty-alpn-conscrypt-server` and `org.eclipse.jetty.http2:http2-server`.
 
 
 
