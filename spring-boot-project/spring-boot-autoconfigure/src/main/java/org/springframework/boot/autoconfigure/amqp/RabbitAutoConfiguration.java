@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
 /**
@@ -151,12 +149,16 @@ public class RabbitAutoConfiguration {
 
 		private final ObjectProvider<MessageConverter> messageConverter;
 
+		private final ObjectProvider<RabbitTemplateRetryTemplateConfigurer> retryTemplateConfigurer;
+
 		private final RabbitProperties properties;
 
 		public RabbitTemplateConfiguration(
 				ObjectProvider<MessageConverter> messageConverter,
+				ObjectProvider<RabbitTemplateRetryTemplateConfigurer> retryTemplateConfigurer,
 				RabbitProperties properties) {
 			this.messageConverter = messageConverter;
+			this.retryTemplateConfigurer = retryTemplateConfigurer;
 			this.properties = properties;
 		}
 
@@ -190,17 +192,12 @@ public class RabbitAutoConfiguration {
 		}
 
 		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {
-			PropertyMapper map = PropertyMapper.get();
 			RetryTemplate template = new RetryTemplate();
-			SimpleRetryPolicy policy = new SimpleRetryPolicy();
-			map.from(properties::getMaxAttempts).to(policy::setMaxAttempts);
-			template.setRetryPolicy(policy);
-			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-			map.from(properties::getInitialInterval)
-					.to(backOffPolicy::setInitialInterval);
-			map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
-			map.from(properties::getMaxInterval).to(backOffPolicy::setMaxInterval);
-			template.setBackOffPolicy(backOffPolicy);
+			RabbitTemplateRetryTemplateConfigurer configurer = this.retryTemplateConfigurer.getIfUnique();
+			if (configurer == null) {
+				configurer = new RabbitTemplateRetryTemplateConfigurer();
+			}
+			configurer.configure(template, properties);
 			return template;
 		}
 

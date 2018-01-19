@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.rabbitmq.client.Address;
+
 import org.aopalliance.aop.Advice;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,11 +47,15 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Retry;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.RetryListener;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.interceptor.MethodInvocationRecoverer;
 import org.springframework.retry.policy.SimpleRetryPolicy;
@@ -332,11 +337,30 @@ public class RabbitAutoConfigurationTests {
 	@Test
 	public void testRabbitMessagingTemplateBackOff() {
 		this.contextRunner.withUserConfiguration(TestConfiguration4.class)
+				.withPropertyValues("spring.rabbitmq.listener.simple.retry.enabled=true",
+						"spring.rabbitmq.template.retry.enabled=true")
 				.run((context) -> {
 					RabbitMessagingTemplate messagingTemplate = context
 							.getBean(RabbitMessagingTemplate.class);
 					assertThat(messagingTemplate.getDefaultDestination())
 							.isEqualTo("fooBar");
+					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+							.getBean("rabbitListenerContainerFactory",
+									SimpleRabbitListenerContainerFactory.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(
+							rabbitListenerContainerFactory);
+					Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
+					assertThat(adviceChain).isNotNull();
+					assertThat(adviceChain.length).isEqualTo(1);
+					dfa = new DirectFieldAccessor(adviceChain[0]);
+					RetryTemplate retryTemplate = (RetryTemplate) dfa.getPropertyValue("retryOperations");
+					dfa = new DirectFieldAccessor(retryTemplate);
+					assertThat(((RetryListener[]) dfa.getPropertyValue("listeners")).length).isEqualTo(1);
+					RabbitTemplate rabbitTemplate = context.getBean("rabbitTemplate", RabbitTemplate.class);
+					dfa = new DirectFieldAccessor(rabbitTemplate);
+					retryTemplate = (RetryTemplate) dfa.getPropertyValue("retryTemplate");
+					dfa = new DirectFieldAccessor(retryTemplate);
+					assertThat(((RetryListener[]) dfa.getPropertyValue("listeners")).length).isEqualTo(1);
 				});
 	}
 
@@ -706,6 +730,62 @@ public class RabbitAutoConfigurationTests {
 					rabbitTemplate);
 			messagingTemplate.setDefaultDestination("fooBar");
 			return messagingTemplate;
+		}
+
+		@Bean
+		public RabbitTemplateRetryTemplateConfigurer trtc() {
+			return new RabbitTemplateRetryTemplateConfigurer() {
+
+				@Override
+				public void configure(RetryTemplate template, Retry properties) {
+					super.configure(template, properties);
+					template.registerListener(new RetryListener() {
+
+						@Override
+						public <T, E extends Throwable> boolean open(RetryContext arg0, RetryCallback<T, E> arg1) {
+							return true;
+						}
+
+						@Override
+						public <T, E extends Throwable> void onError(RetryContext arg0, RetryCallback<T, E> arg1, Throwable arg2) {
+						}
+
+						@Override
+						public <T, E extends Throwable> void close(RetryContext arg0, RetryCallback<T, E> arg1, Throwable arg2) {
+						}
+
+					});
+				}
+
+			};
+		}
+
+		@Bean
+		public RabbitListenerRetryTemplateConfigurer lrtc() {
+			return new RabbitListenerRetryTemplateConfigurer() {
+
+				@Override
+				public void configure(RetryTemplate template, Retry properties) {
+					super.configure(template, properties);
+					template.registerListener(new RetryListener() {
+
+						@Override
+						public <T, E extends Throwable> boolean open(RetryContext arg0, RetryCallback<T, E> arg1) {
+							return true;
+						}
+
+						@Override
+						public <T, E extends Throwable> void onError(RetryContext arg0, RetryCallback<T, E> arg1, Throwable arg2) {
+						}
+
+						@Override
+						public <T, E extends Throwable> void close(RetryContext arg0, RetryCallback<T, E> arg1, Throwable arg2) {
+						}
+
+					});
+				}
+
+			};
 		}
 
 	}
