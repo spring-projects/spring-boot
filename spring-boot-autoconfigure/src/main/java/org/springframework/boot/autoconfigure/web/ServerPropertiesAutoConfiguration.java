@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import reactor.core.support.Assert;
+
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -80,14 +82,11 @@ public class ServerPropertiesAutoConfiguration {
 			// a single bean
 			String[] serverPropertiesBeans = this.applicationContext
 					.getBeanNamesForType(ServerProperties.class);
-			if (serverPropertiesBeans.length == 0) {
-				throw new IllegalStateException("No ServerProperties bean registered");
-			}
-			if (serverPropertiesBeans.length > 1) {
-				throw new IllegalStateException(
-						"Multiple ServerProperties beans registered " + StringUtils
-								.arrayToCommaDelimitedString(serverPropertiesBeans));
-			}
+			Assert.state(serverPropertiesBeans.length != 0,
+					"No ServerProperties registered");
+			Assert.state(serverPropertiesBeans.length == 1,
+					"Multiple ServerProperties registered " + StringUtils
+							.arrayToCommaDelimitedString(serverPropertiesBeans));
 		}
 
 	}

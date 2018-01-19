@@ -168,7 +168,6 @@ class TypeUtils {
 		return WRAPPER_TO_PRIMITIVE.get(type.toString());
 	}
 
-
 	/**
 	 * A visitor that extracts the full qualified name of a type, including generic
 	 * information.
@@ -188,21 +187,24 @@ class TypeUtils {
 				return getQualifiedName(enclosingElement) + "$"
 						+ type.asElement().getSimpleName().toString();
 			}
-			StringBuilder sb  = new StringBuilder();
-			sb.append(getQualifiedName(type.asElement()));
+			StringBuilder name = new StringBuilder();
+			name.append(getQualifiedName(type.asElement()));
 			if (!type.getTypeArguments().isEmpty()) {
-				sb.append("<");
-				Iterator<?> it = type.getTypeArguments().iterator();
-				while (it.hasNext()) {
-					sb.append(it.next());
-					if (it.hasNext()) {
-						sb.append(",");
-					}
-				}
-				sb.append(">");
-
+				appendTypeArguments(type, name);
 			}
-			return sb.toString();
+			return name.toString();
+		}
+
+		private void appendTypeArguments(DeclaredType type, StringBuilder name) {
+			name.append("<");
+			Iterator<?> iterator = type.getTypeArguments().iterator();
+			while (iterator.hasNext()) {
+				name.append(iterator.next());
+				if (iterator.hasNext()) {
+					name.append(",");
+				}
+			}
+			name.append(">");
 		}
 
 		@Override
@@ -223,7 +225,7 @@ class TypeUtils {
 			if (enclosingElement != null) {
 				return getQualifiedName(enclosingElement) + "$"
 						+ ((DeclaredType) element.asType()).asElement().getSimpleName()
-						.toString();
+								.toString();
 			}
 			if (element instanceof TypeElement) {
 				return ((TypeElement) element).getQualifiedName().toString();

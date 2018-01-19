@@ -261,12 +261,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void parseArrayConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(SimpleArrayProperties.class);
-		assertThat(metadata).has(Metadata.withGroup("array")
-				.ofType(SimpleArrayProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("array.primitive",
-				"java.lang.Integer[]"));
-		assertThat(metadata).has(Metadata.withProperty("array.simple",
-				"java.lang.String[]"));
+		assertThat(metadata)
+				.has(Metadata.withGroup("array").ofType(SimpleArrayProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("array.primitive", "java.lang.Integer[]"));
+		assertThat(metadata)
+				.has(Metadata.withProperty("array.simple", "java.lang.String[]"));
 		assertThat(metadata).has(Metadata.withProperty("array.inner",
 				"org.springframework.boot.configurationsample.simple.SimpleArrayProperties$Holder[]"));
 		assertThat(metadata).has(Metadata.withProperty("array.name-to-integer",
@@ -464,8 +464,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void wildcardTypes() throws IOException {
 		ConfigurationMetadata metadata = compile(WildcardConfig.class);
-		assertThat(metadata).has(Metadata.withGroup("wildcard")
-				.ofType(WildcardConfig.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("wildcard").ofType(WildcardConfig.class));
 		assertThat(metadata).has(Metadata.withProperty("wildcard.string-to-number")
 				.ofType("java.util.Map<java.lang.String,? extends java.lang.Number>")
 				.fromSource(WildcardConfig.class));

@@ -68,8 +68,8 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 		SpringApplication application = new SpringApplication(Conf.class);
 		application.setWebEnvironment(false);
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-		resourceLoader.setClassLoader(new ClassHidingClassLoader(
-				CustomResolverServiceLocator.class));
+		resourceLoader.setClassLoader(
+				new ClassHidingClassLoader(CustomResolverServiceLocator.class));
 		application.setResourceLoader(resourceLoader);
 		this.context = application.run();
 		Object resolver = getServiceLocator();
@@ -93,7 +93,8 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 		private final List<Class<?>> hiddenClasses;
 
 		private ClassHidingClassLoader(Class<?>... hiddenClasses) {
-			super(new URL[0], LiquibaseServiceLocatorApplicationListenerTests.class.getClassLoader());
+			super(new URL[0], LiquibaseServiceLocatorApplicationListenerTests.class
+					.getClassLoader());
 			this.hiddenClasses = Arrays.asList(hiddenClasses);
 		}
 

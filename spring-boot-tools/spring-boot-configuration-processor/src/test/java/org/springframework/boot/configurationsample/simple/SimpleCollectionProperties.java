@@ -89,6 +89,7 @@ public class SimpleCollectionProperties {
 
 	public static class Holder<T> {
 
+		@SuppressWarnings("unused")
 		private T target;
 
 		public void setTarget(T target) {
