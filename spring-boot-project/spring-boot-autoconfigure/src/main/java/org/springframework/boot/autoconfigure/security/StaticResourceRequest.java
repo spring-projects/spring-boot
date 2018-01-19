@@ -127,7 +127,7 @@ public final class StaticResourceRequest {
 	/**
 	 * The request matcher used to match against resource {@link Location Locations}.
 	 */
-	public final static class StaticResourceRequestMatcher
+	public static final class StaticResourceRequestMatcher
 			extends ApplicationContextRequestMatcher<ServerProperties> {
 
 		private final Set<Location> locations;

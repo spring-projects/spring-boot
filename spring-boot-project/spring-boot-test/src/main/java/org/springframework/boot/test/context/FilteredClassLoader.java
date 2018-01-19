@@ -73,7 +73,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	/**
 	 * Filter to restrict the classes that can be loaded.
 	 */
-	public final static class ClassFilter implements Predicate<String> {
+	public static final class ClassFilter implements Predicate<String> {
 
 		private Class<?>[] hiddenClasses;
 
@@ -100,7 +100,7 @@ public class FilteredClassLoader extends URLClassLoader {
 	/**
 	 * Filter to restrict the packages that can be loaded.
 	 */
-	public final static class PackageFilter implements Predicate<String> {
+	public static final class PackageFilter implements Predicate<String> {
 
 		private final String[] hiddenPackages;
 

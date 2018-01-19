@@ -354,7 +354,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 *
 	 * @param <M> The marshaller type
 	 */
-	protected static abstract class FieldInitializer<M> {
+	protected abstract static class FieldInitializer<M> {
 
 		private final Class<?> testerClass;
 

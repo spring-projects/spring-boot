@@ -321,7 +321,7 @@ public class UndertowServletWebServer implements WebServer {
 	/**
 	 * An active Undertow port.
 	 */
-	private final static class Port {
+	private static final class Port {
 
 		private final int number;
 

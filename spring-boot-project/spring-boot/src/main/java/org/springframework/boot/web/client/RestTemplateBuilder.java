@@ -630,7 +630,7 @@ public class RestTemplateBuilder {
 	/**
 	 * {@link RequestFactoryCustomizer} to call a "set timeout" method.
 	 */
-	private static abstract class TimeoutRequestFactoryCustomizer
+	private abstract static class TimeoutRequestFactoryCustomizer
 			implements RequestFactoryCustomizer {
 
 		private final int timeout;

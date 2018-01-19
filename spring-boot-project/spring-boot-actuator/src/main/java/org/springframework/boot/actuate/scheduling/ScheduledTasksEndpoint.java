@@ -105,7 +105,7 @@ public class ScheduledTasksEndpoint {
 	/**
 	 * Base class for descriptions of a {@link Task}.
 	 */
-	public static abstract class TaskDescription {
+	public abstract static class TaskDescription {
 
 		private static final Map<Class<? extends Task>, Function<Task, TaskDescription>> DESCRIBERS = new LinkedHashMap<>();
 

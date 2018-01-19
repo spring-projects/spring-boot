@@ -139,7 +139,7 @@ public abstract class AutoConfigurationPackages {
 	/**
 	 * Wrapper for a package import.
 	 */
-	private final static class PackageImport {
+	private static final class PackageImport {
 
 		private final String packageName;
 
