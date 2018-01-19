@@ -101,21 +101,15 @@ public final class EndpointRequest {
 		private ServerWebExchangeMatcher delegate;
 
 		private EndpointServerWebExchangeMatcher() {
-			super(EndpointPathProvider.class);
-			this.includes = Collections.emptyList();
-			this.excludes = Collections.emptyList();
+			this(Collections.emptyList(), Collections.emptyList());
 		}
 
 		private EndpointServerWebExchangeMatcher(Class<?>[] endpoints) {
-			super(EndpointPathProvider.class);
-			this.includes = Arrays.asList((Object[]) endpoints);
-			this.excludes = Collections.emptyList();
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList());
 		}
 
 		private EndpointServerWebExchangeMatcher(String[] endpoints) {
-			super(EndpointPathProvider.class);
-			this.includes = Arrays.asList((Object[]) endpoints);
-			this.excludes = Collections.emptyList();
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList());
 		}
 
 		private EndpointServerWebExchangeMatcher(List<Object> includes,
