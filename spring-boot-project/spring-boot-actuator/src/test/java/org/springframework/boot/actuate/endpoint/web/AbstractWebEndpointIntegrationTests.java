@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
@@ -339,7 +340,9 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 				"test", Collections.singletonMap("endpointPath", endpointPath)));
 		context.refresh();
 		try {
-			String url = "http://localhost:" + getPort(context) + endpointPath;
+			InetSocketAddress address = new InetSocketAddress(getPort(context));
+			String url = "http://" + address.getHostString() + ":" + address.getPort()
+					+ endpointPath;
 			consumer.accept(context, WebTestClient.bindToServer().baseUrl(url)
 					.responseTimeout(TIMEOUT).build());
 		}
