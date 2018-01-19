@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties.ListenerRetry;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -42,6 +43,8 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 
 	private RabbitProperties rabbitProperties;
 
+	private RabbitListenerRetryTemplateConfigurer retryTemplateConfigurer;
+
 	/**
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
 	 * converter should be used.
@@ -57,6 +60,14 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 */
 	protected void setMessageRecoverer(MessageRecoverer messageRecoverer) {
 		this.messageRecoverer = messageRecoverer;
+	}
+
+	/**
+	 * Set the {@link RabbitListenerRetryTemplateConfigurer} to use.
+	 * @param retryTemplateConfigurer the configurer.
+	 */
+	public void setRetryTemplateConfigurer(RabbitListenerRetryTemplateConfigurer retryTemplateConfigurer) {
+		this.retryTemplateConfigurer = retryTemplateConfigurer;
 	}
 
 	/**
@@ -107,9 +118,13 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless()
 					? RetryInterceptorBuilder.stateless()
 					: RetryInterceptorBuilder.stateful());
-			builder.maxAttempts(retryConfig.getMaxAttempts());
-			builder.backOffOptions(retryConfig.getInitialInterval(),
-					retryConfig.getMultiplier(), retryConfig.getMaxInterval());
+			RabbitListenerRetryTemplateConfigurer retryConfigurer = this.retryTemplateConfigurer;
+			if (retryConfigurer == null) {
+				retryConfigurer = new RabbitListenerRetryTemplateConfigurer();
+			}
+			RetryTemplate template = new RetryTemplate();
+			retryConfigurer.configure(template, retryConfig);
+			builder.retryOperations(template);
 			MessageRecoverer recoverer = (this.messageRecoverer != null
 					? this.messageRecoverer : new RejectAndDontRequeueRecoverer());
 			builder.recoverer(recoverer);
