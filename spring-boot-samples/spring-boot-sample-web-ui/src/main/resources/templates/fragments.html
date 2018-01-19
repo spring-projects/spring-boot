@@ -7,14 +7,12 @@
 	</head>
 	<body>
 		<div class="container">
-			<div th:fragment="navbar" class="navbar">
-				<div class="navbar-inner">
-					<a class="brand" href="http://thymeleaf.org">Thymeleaf</a>
-					<ul class="nav">
-						<li><a th:href="@{/}" href="messages.html"> Messages </a></li>
-					</ul>
-				</div>
-			</div>
+			<nav th:fragment="navbar" class="navbar navbar-dark bg-primary">
+				<a class="navbar-brand" href="http://thymeleaf.org">Thymeleaf</a>
+				<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+					<li class="nav-item"><a class="nav-link" th:href="@{/}" href="messages.html">Messages</a></li>
+				</ul>
+			</nav>
 		</div>
 	</body>
 </html>
