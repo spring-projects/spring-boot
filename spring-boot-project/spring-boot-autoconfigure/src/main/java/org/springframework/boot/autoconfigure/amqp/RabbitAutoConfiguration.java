@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.retry.RetryTemplateCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
@@ -151,12 +152,16 @@ public class RabbitAutoConfiguration {
 
 		private final ObjectProvider<MessageConverter> messageConverter;
 
+		private final ObjectProvider<RabbitTemplateRetryTemplateCustomizer> retryTemplateCustomizer;
+
 		private final RabbitProperties properties;
 
 		public RabbitTemplateConfiguration(
 				ObjectProvider<MessageConverter> messageConverter,
+				ObjectProvider<RabbitTemplateRetryTemplateCustomizer> retryTemplateCustomizer,
 				RabbitProperties properties) {
 			this.messageConverter = messageConverter;
+			this.retryTemplateCustomizer = retryTemplateCustomizer;
 			this.properties = properties;
 		}
 
@@ -173,7 +178,8 @@ public class RabbitAutoConfiguration {
 			template.setMandatory(determineMandatoryFlag());
 			RabbitProperties.Template properties = this.properties.getTemplate();
 			if (properties.getRetry().isEnabled()) {
-				template.setRetryTemplate(createRetryTemplate(properties.getRetry()));
+				template.setRetryTemplate(createRetryTemplate(properties.getRetry(),
+						this.retryTemplateCustomizer.getIfUnique()));
 			}
 			map.from(properties::getReceiveTimeout).whenNonNull()
 					.to(template::setReceiveTimeout);
@@ -187,21 +193,6 @@ public class RabbitAutoConfiguration {
 		private boolean determineMandatoryFlag() {
 			Boolean mandatory = this.properties.getTemplate().getMandatory();
 			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
-		}
-
-		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {
-			PropertyMapper map = PropertyMapper.get();
-			RetryTemplate template = new RetryTemplate();
-			SimpleRetryPolicy policy = new SimpleRetryPolicy();
-			map.from(properties::getMaxAttempts).to(policy::setMaxAttempts);
-			template.setRetryPolicy(policy);
-			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-			map.from(properties::getInitialInterval)
-					.to(backOffPolicy::setInitialInterval);
-			map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
-			map.from(properties::getMaxInterval).to(backOffPolicy::setMaxInterval);
-			template.setBackOffPolicy(backOffPolicy);
-			return template;
 		}
 
 		@Bean
@@ -227,6 +218,25 @@ public class RabbitAutoConfiguration {
 			return new RabbitMessagingTemplate(rabbitTemplate);
 		}
 
+	}
+
+	static RetryTemplate createRetryTemplate(RabbitProperties.Retry properties,
+			RetryTemplateCustomizer customizer) {
+		PropertyMapper map = PropertyMapper.get();
+		RetryTemplate template = new RetryTemplate();
+		SimpleRetryPolicy policy = new SimpleRetryPolicy();
+		map.from(properties::getMaxAttempts).to(policy::setMaxAttempts);
+		template.setRetryPolicy(policy);
+		ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+		map.from(properties::getInitialInterval)
+				.to(backOffPolicy::setInitialInterval);
+		map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
+		map.from(properties::getMaxInterval).to(backOffPolicy::setMaxInterval);
+		template.setBackOffPolicy(backOffPolicy);
+		if (customizer != null) {
+			customizer.customize(template);
+		}
+		return template;
 	}
 
 }
