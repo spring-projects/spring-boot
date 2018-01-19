@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.annotation;
+package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * An {@link ExposableEndpoint endpoint} discovered by a {@link EndpointDiscoverer}.
+ * Information describing an endpoint that can be exposed over Spring MVC or Spring
+ * WebFlux. Mappings should be discovered directly from {@link #getController()} and
+ * {@link #getOperations() operation} should always return an empty collection.
  *
- * @param <O> The operation type
  * @author Phillip Webb
  * @since 2.0.0
  */
-public interface DiscoveredEndpoint<O extends Operation> extends ExposableEndpoint<O> {
+public interface ExposableControllerEndpoint
+		extends ExposableEndpoint<Operation>, PathMappedEndpoint {
 
 	/**
-	 * Return {@code true} if the endpoint was discovered by the specified discoverer.
-	 * @param discoverer the discoverer type
-	 * @return {@code true} if discovered using the specified discoverer
+	 * Return the source controller that contains {@link RequestMapping} methods.
+	 * @return the source controller
 	 */
-	boolean wasDiscoveredBy(Class<? extends EndpointDiscoverer<?, ?>> discoverer);
-
-	/**
-	 * Return the source bean that was used to construct the {@link DiscoveredEndpoint}.
-	 * @return the source endpoint bean
-	 */
-	Object getEndpointBean();
+	Object getController();
 
 }

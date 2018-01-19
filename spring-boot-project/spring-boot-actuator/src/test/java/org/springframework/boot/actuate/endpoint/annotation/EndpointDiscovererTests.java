@@ -477,9 +477,10 @@ public class EndpointDiscovererTests {
 		}
 
 		@Override
-		protected TestExposableEndpoint createEndpoint(String id,
+		protected TestExposableEndpoint createEndpoint(Object endpointBean, String id,
 				boolean enabledByDefault, Collection<TestOperation> operations) {
-			return new TestExposableEndpoint(this, id, enabledByDefault, operations);
+			return new TestExposableEndpoint(this, endpointBean, id, enabledByDefault,
+					operations);
 		}
 
 		@Override
@@ -510,10 +511,11 @@ public class EndpointDiscovererTests {
 		}
 
 		@Override
-		protected SpecializedExposableEndpoint createEndpoint(String id,
-				boolean enabledByDefault, Collection<SpecializedOperation> operations) {
-			return new SpecializedExposableEndpoint(this, id, enabledByDefault,
-					operations);
+		protected SpecializedExposableEndpoint createEndpoint(Object endpointBean,
+				String id, boolean enabledByDefault,
+				Collection<SpecializedOperation> operations) {
+			return new SpecializedExposableEndpoint(this, endpointBean, id,
+					enabledByDefault, operations);
 		}
 
 		@Override
@@ -532,10 +534,10 @@ public class EndpointDiscovererTests {
 
 	static class TestExposableEndpoint extends AbstractDiscoveredEndpoint<TestOperation> {
 
-		TestExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, String id,
-				boolean enabledByDefault,
+		TestExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
+				String id, boolean enabledByDefault,
 				Collection<? extends TestOperation> operations) {
-			super(discoverer, id, enabledByDefault, operations);
+			super(discoverer, endpointBean, id, enabledByDefault, operations);
 		}
 
 	}
@@ -543,10 +545,10 @@ public class EndpointDiscovererTests {
 	static class SpecializedExposableEndpoint
 			extends AbstractDiscoveredEndpoint<SpecializedOperation> {
 
-		SpecializedExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, String id,
-				boolean enabledByDefault,
+		SpecializedExposableEndpoint(EndpointDiscoverer<?, ?> discoverer,
+				Object endpointBean, String id, boolean enabledByDefault,
 				Collection<? extends SpecializedOperation> operations) {
-			super(discoverer, id, enabledByDefault, operations);
+			super(discoverer, endpointBean, id, enabledByDefault, operations);
 		}
 
 	}

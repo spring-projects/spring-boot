@@ -42,13 +42,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
@@ -298,25 +296,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		public Object handle(HttpServletRequest request,
 				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
-		}
-
-	}
-
-	/**
-	 * {@link HandlerInterceptorAdapter} to ensure that
-	 * {@link PathExtensionContentNegotiationStrategy} is skipped for web endpoints.
-	 */
-	private static final class SkipPathExtensionContentNegotiation
-			extends HandlerInterceptorAdapter {
-
-		private static final String SKIP_ATTRIBUTE = PathExtensionContentNegotiationStrategy.class
-				.getName() + ".SKIP";
-
-		@Override
-		public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-				Object handler) throws Exception {
-			request.setAttribute(SKIP_ATTRIBUTE, Boolean.TRUE);
-			return true;
 		}
 
 	}

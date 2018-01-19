@@ -209,7 +209,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		List<O> operations = indexed.values().stream().map(this::getLast)
 				.filter(Objects::nonNull).collect(Collectors.collectingAndThen(
 						Collectors.toList(), Collections::unmodifiableList));
-		return createEndpoint(id, endpointBean.isEnabledByDefault(), operations);
+		return createEndpoint(endpointBean.getBean(), id,
+				endpointBean.isEnabledByDefault(), operations);
 	}
 
 	private void addOperations(MultiValueMap<OperationKey, O> indexed, String id,
@@ -265,7 +266,18 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private boolean isEndpointExposed(EndpointBean endpointBean) {
 		return isFilterMatch(endpointBean.getFilter(), endpointBean)
-				&& !isEndpointFiltered(endpointBean);
+				&& !isEndpointFiltered(endpointBean)
+				&& isEndpointExposed(endpointBean.getBean());
+	}
+
+	/**
+	 * Determine if an endpoint bean should be exposed. Subclasses can override this
+	 * method to provide additional logic.
+	 * @param extensionBean the extension bean
+	 * @return {@code true} if the extension is exposed
+	 */
+	protected boolean isEndpointExposed(Object extensionBean) {
+		return true;
 	}
 
 	private boolean isEndpointFiltered(EndpointBean endpointBean) {
@@ -320,7 +332,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	private E getFilterEndpoint(EndpointBean endpointBean) {
 		E endpoint = this.filterEndpoints.get(endpointBean);
 		if (endpoint == null) {
-			endpoint = createEndpoint(endpointBean.getId(),
+			endpoint = createEndpoint(endpointBean.getBean(), endpointBean.getId(),
 					endpointBean.isEnabledByDefault(), Collections.emptySet());
 			this.filterEndpoints.put(endpointBean, endpoint);
 		}
@@ -335,13 +347,14 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	/**
 	 * Factory method called to create the {@link ExposableEndpoint endpoint}.
+	 * @param endpointBean the source endpoint bean
 	 * @param id the ID of the endpoint
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
 	 * @return a created endpoint (a {@link DiscoveredEndpoint} is recommended)
 	 */
-	protected abstract E createEndpoint(String id, boolean enabledByDefault,
-			Collection<O> operations);
+	protected abstract E createEndpoint(Object endpointBean, String id,
+			boolean enabledByDefault, Collection<O> operations);
 
 	/**
 	 * Factory method to create an {@link Operation endpoint operation}.

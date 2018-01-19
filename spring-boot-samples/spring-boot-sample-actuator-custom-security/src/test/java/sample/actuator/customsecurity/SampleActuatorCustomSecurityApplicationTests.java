@@ -109,6 +109,22 @@ public class SampleActuatorCustomSecurityApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
+	@Test
+	public void actuatorCustomMvcSecureEndpointWithUnauthorizedUser() {
+		ResponseEntity<String> entity = userRestTemplate()
+				.getForEntity("/actuator/example/echo?text={t}", String.class, "test");
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Test
+	public void actuatorCustomMvcSecureEndpointWithAuthorizedUser() {
+		ResponseEntity<String> entity = adminRestTemplate()
+				.getForEntity("/actuator/example/echo?text={t}", String.class, "test");
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("test");
+		assertThat(entity.getHeaders().getFirst("echo")).isEqualTo("test");
+	}
+
 	private TestRestTemplate restTemplate() {
 		return configure(new TestRestTemplate());
 	}

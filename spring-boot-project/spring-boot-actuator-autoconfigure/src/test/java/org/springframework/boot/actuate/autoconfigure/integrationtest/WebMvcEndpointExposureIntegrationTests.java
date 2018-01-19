@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -34,6 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
@@ -59,7 +61,8 @@ public class WebMvcEndpointExposureIntegrationTests {
 					ManagementContextAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class))
 			.withConfiguration(
-					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
+					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
+			.withUserConfiguration(CustomMvcEndpoint.class);
 
 	@Test
 	public void webEndpointsAreDisabledByDefault() {
@@ -68,6 +71,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "conditions")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "custommvc")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isTrue();
@@ -87,6 +91,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "conditions")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "custommvc")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isTrue();
@@ -106,6 +111,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "conditions")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "custommvc")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isFalse();
@@ -126,6 +132,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "beans")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "conditions")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "configprops")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "custommvc")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "env")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "health")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.GET, "info")).isTrue();
@@ -149,6 +156,16 @@ public class WebMvcEndpointExposureIntegrationTests {
 		}
 		throw new IllegalStateException(String
 				.format("Unexpected %s HTTP status for " + "endpoint %s", status, path));
+	}
+
+	@RestControllerEndpoint(id = "custommvc")
+	static class CustomMvcEndpoint {
+
+		@GetMapping("/")
+		public String main() {
+			return "test";
+		}
+
 	}
 
 }

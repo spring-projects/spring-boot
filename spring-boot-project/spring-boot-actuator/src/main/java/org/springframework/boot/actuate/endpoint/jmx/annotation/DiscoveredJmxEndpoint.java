@@ -31,9 +31,9 @@ import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 class DiscoveredJmxEndpoint extends AbstractDiscoveredEndpoint<JmxOperation>
 		implements ExposableJmxEndpoint {
 
-	DiscoveredJmxEndpoint(EndpointDiscoverer<?, ?> discoverer, String id,
-			boolean enabledByDefault, Collection<JmxOperation> operations) {
-		super(discoverer, id, enabledByDefault, operations);
+	DiscoveredJmxEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
+			String id, boolean enabledByDefault, Collection<JmxOperation> operations) {
+		super(discoverer, endpointBean, id, enabledByDefault, operations);
 	}
 
 }

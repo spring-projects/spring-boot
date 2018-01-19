@@ -68,11 +68,11 @@ public class WebEndpointDiscoverer
 	}
 
 	@Override
-	protected ExposableWebEndpoint createEndpoint(String id, boolean enabledByDefault,
-			Collection<WebOperation> operations) {
+	protected ExposableWebEndpoint createEndpoint(Object endpointBean, String id,
+			boolean enabledByDefault, Collection<WebOperation> operations) {
 		String rootPath = this.endpointPathMapper.getRootPath(id);
-		return new DiscoveredWebEndpoint(this, id, rootPath, enabledByDefault,
-				operations);
+		return new DiscoveredWebEndpoint(this, endpointBean, id, rootPath,
+				enabledByDefault, operations);
 	}
 
 	@Override
