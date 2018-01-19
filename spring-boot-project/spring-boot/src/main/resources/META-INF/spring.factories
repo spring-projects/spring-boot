@@ -16,6 +16,7 @@ org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer,\
 org.springframework.boot.context.ContextIdApplicationContextInitializer,\
 org.springframework.boot.context.config.DelegatingApplicationContextInitializer,\
+org.springframework.boot.context.logging.LoggingSystemLifecycle,\
 org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer
 
 # Application Listeners
@@ -27,7 +28,7 @@ org.springframework.boot.context.config.AnsiOutputApplicationListener,\
 org.springframework.boot.context.config.ConfigFileApplicationListener,\
 org.springframework.boot.context.config.DelegatingApplicationListener,\
 org.springframework.boot.context.logging.ClasspathLoggingApplicationListener,\
-org.springframework.boot.context.logging.LoggingApplicationListener,\
+org.springframework.boot.context.logging.LoggingSystemLifecycle,\
 org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
 
 # Environment Post Processors
