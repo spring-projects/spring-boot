@@ -99,21 +99,15 @@ public final class EndpointRequest {
 		private RequestMatcher delegate;
 
 		private EndpointRequestMatcher() {
-			super(EndpointPathProvider.class);
-			this.includes = Collections.emptyList();
-			this.excludes = Collections.emptyList();
+			this(Collections.emptyList(), Collections.emptyList());
 		}
 
 		private EndpointRequestMatcher(Class<?>[] endpoints) {
-			super(EndpointPathProvider.class);
-			this.includes = Arrays.asList((Object[]) endpoints);
-			this.excludes = Collections.emptyList();
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList());
 		}
 
 		private EndpointRequestMatcher(String[] endpoints) {
-			super(EndpointPathProvider.class);
-			this.includes = Arrays.asList((Object[]) endpoints);
-			this.excludes = Collections.emptyList();
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList());
 		}
 
 		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes) {
