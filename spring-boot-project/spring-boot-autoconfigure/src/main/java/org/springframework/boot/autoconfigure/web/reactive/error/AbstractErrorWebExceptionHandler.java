@@ -195,9 +195,13 @@ public abstract class AbstractErrorWebExceptionHandler
 				.append(HtmlUtils.htmlEscape(error.get("error").toString()))
 				.append(", status=")
 				.append(HtmlUtils.htmlEscape(error.get("status").toString()))
-				.append(").</div>").append("<div>")
-				.append(HtmlUtils.htmlEscape(error.get("message").toString()))
-				.append("</div>").append("</body></html>");
+				.append(").</div>");
+		if (error.get("message") != null) {
+			builder.append("<div>")
+					.append(HtmlUtils.htmlEscape(error.get("message").toString()))
+					.append("</div>");
+		}
+		builder.append("</body></html>");
 		return responseBody.syncBody(builder.toString());
 	}
 

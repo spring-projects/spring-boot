@@ -241,6 +241,23 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
+	public void testExceptionWithNullMessage() throws Exception {
+		this.contextRunner
+				.withPropertyValues("spring.mustache.prefix=classpath:/unknown/")
+				.run((context) -> {
+					WebTestClient client = WebTestClient.bindToApplicationContext(context)
+							.build();
+					String body = client.get().uri("/notfound").accept(MediaType.TEXT_HTML)
+							.exchange().expectStatus()
+							.isEqualTo(HttpStatus.NOT_FOUND).expectHeader()
+							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
+							.returnResult().getResponseBody();
+					assertThat(body).contains("Whitelabel Error Page")
+							.contains("type=Not Found, status=404");
+				});
+	}
+
+	@Test
 	public void responseCommitted() throws Exception {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = WebTestClient.bindToApplicationContext(context)
