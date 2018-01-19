@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Andy Wilkinson
  * @author Yogesh Lonkar
+ * @author Adrien Colson
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.mongodb.embedded")
@@ -40,6 +41,8 @@ public class EmbeddedMongoProperties {
 	private String version = "3.2.2";
 
 	private final Storage storage = new Storage();
+
+	private final CmdOptions cmdOptions = new CmdOptions();
 
 	/**
 	 * Comma-separated list of features to enable.
@@ -65,6 +68,10 @@ public class EmbeddedMongoProperties {
 
 	public Storage getStorage() {
 		return this.storage;
+	}
+
+	public CmdOptions getCmdOptions() {
+		return this.cmdOptions;
 	}
 
 	public static class Storage {
@@ -110,4 +117,97 @@ public class EmbeddedMongoProperties {
 
 	}
 
+	public static class CmdOptions {
+
+		private Integer syncDelay;
+
+		private String storageEngine;
+
+		private Boolean isVerbose;
+
+		private Boolean useNoPrealloc;
+
+		private Boolean useSmallFiles;
+
+		private Boolean useNoJournal;
+
+		private Boolean enableTextSearch;
+
+		private Boolean auth;
+
+		private Boolean master;
+
+		public Integer getSyncDelay() {
+			return this.syncDelay;
+		}
+
+		public void setSyncDelay(final Integer syncDelay) {
+			this.syncDelay = syncDelay;
+		}
+
+		public String getStorageEngine() {
+			return this.storageEngine;
+		}
+
+		public void setStorageEngine(final String storageEngine) {
+			this.storageEngine = storageEngine;
+		}
+
+		public Boolean isVerbose() {
+			return this.isVerbose;
+		}
+
+		public void setVerbose(final Boolean isVerbose) {
+			this.isVerbose = isVerbose;
+		}
+
+		public Boolean isUseNoPrealloc() {
+			return this.useNoPrealloc;
+		}
+
+		public void setUseNoPrealloc(final Boolean useNoPrealloc) {
+			this.useNoPrealloc = useNoPrealloc;
+		}
+
+		public Boolean isUseSmallFiles() {
+			return this.useSmallFiles;
+		}
+
+		public void setUseSmallFiles(final Boolean useSmallFiles) {
+			this.useSmallFiles = useSmallFiles;
+		}
+
+		public Boolean isUseNoJournal() {
+			return this.useNoJournal;
+		}
+
+		public void setUseNoJournal(final Boolean useNoJournal) {
+			this.useNoJournal = useNoJournal;
+		}
+
+		public Boolean isEnableTextSearch() {
+			return this.enableTextSearch;
+		}
+
+		public void setEnableTextSearch(final Boolean enableTextSearch) {
+			this.enableTextSearch = enableTextSearch;
+		}
+
+		public Boolean isAuth() {
+			return this.auth;
+		}
+
+		public void setAuth(final Boolean auth) {
+			this.auth = auth;
+		}
+
+		public Boolean isMaster() {
+			return this.master;
+		}
+
+		public void setMaster(final Boolean master) {
+			this.master = master;
+		}
+
+	}
 }
