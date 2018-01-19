@@ -43,9 +43,9 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 
 	private final Class<? extends C> contextClass;
 
-	private C context;
+	private volatile C context;
 
-	private Object contextLock = new Object();
+	private final Object contextLock = new Object();
 
 	public ApplicationContextServerWebExchangeMatcher(Class<? extends C> contextClass) {
 		Assert.notNull(contextClass, "Context class must not be null");
@@ -68,8 +68,10 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 	protected C getContext(ServerWebExchange exchange) {
 		if (this.context == null) {
 			synchronized (this.contextLock) {
-				this.context = createContext(exchange);
-				initialized(this.context);
+				if (this.context == null) {
+					this.context = createContext(exchange);
+					initialized(this.context);
+				}
 			}
 		}
 		return this.context;

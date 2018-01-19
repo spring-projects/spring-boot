@@ -45,7 +45,7 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 
 	private volatile C context;
 
-	private Object contextLock = new Object();
+	private final Object contextLock = new Object();
 
 	public ApplicationContextRequestMatcher(Class<? extends C> contextClass) {
 		Assert.notNull(contextClass, "Context class must not be null");
@@ -68,8 +68,10 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 	private C getContext(HttpServletRequest request) {
 		if (this.context == null) {
 			synchronized (this.contextLock) {
-				this.context = createContext(request);
-				initialized(this.context);
+				if (this.context == null) {
+					this.context = createContext(request);
+					initialized(this.context);
+				}
 			}
 		}
 		return this.context;
