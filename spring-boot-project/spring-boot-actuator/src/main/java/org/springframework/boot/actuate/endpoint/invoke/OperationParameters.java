@@ -43,12 +43,12 @@ public interface OperationParameters extends Iterable<OperationParameter> {
 	/**
 	 * Return the parameter at the specified index.
 	 * @param index the parameter index
-	 * @return the paramter
+	 * @return the parameter
 	 */
 	OperationParameter get(int index);
 
 	/**
-	 * Return a stream of the contained paramteres.
+	 * Return a stream of the contained parameters.
 	 * @return a stream of the parameters
 	 */
 	Stream<OperationParameter> stream();

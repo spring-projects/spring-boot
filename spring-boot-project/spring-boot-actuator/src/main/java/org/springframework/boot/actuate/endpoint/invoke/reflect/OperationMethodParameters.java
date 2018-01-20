@@ -48,11 +48,11 @@ class OperationMethodParameters implements OperationParameters {
 		Assert.notNull(method, "Method must not be null");
 		Assert.notNull(parameterNameDiscoverer,
 				"ParameterNameDiscoverer must not be null");
-		String[] paramterNames = parameterNameDiscoverer.getParameterNames(method);
+		String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
 		Parameter[] parameters = method.getParameters();
-		Assert.state(paramterNames != null,
+		Assert.state(parameterNames != null,
 				"Failed to extract parameter names for " + method);
-		this.operationParameters = getOperationParameters(parameters, paramterNames);
+		this.operationParameters = getOperationParameters(parameters, parameterNames);
 	}
 
 	private List<OperationParameter> getOperationParameters(Parameter[] parameters,
