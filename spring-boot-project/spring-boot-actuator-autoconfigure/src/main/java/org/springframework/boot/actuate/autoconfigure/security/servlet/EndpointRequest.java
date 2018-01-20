@@ -28,8 +28,8 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -89,8 +89,8 @@ public final class EndpointRequest {
 	/**
 	 * The request matcher used to match against {@link Endpoint actuator endpoints}.
 	 */
-	public static final class EndpointRequestMatcher
-			extends ApplicationContextRequestMatcher<EndpointPathProvider> {
+	public final static class EndpointRequestMatcher
+			extends ApplicationContextRequestMatcher<PathMappedEndpoints> {
 
 		private final List<Object> includes;
 
@@ -111,7 +111,7 @@ public final class EndpointRequest {
 		}
 
 		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes) {
-			super(EndpointPathProvider.class);
+			super(PathMappedEndpoints.class);
 			this.includes = includes;
 			this.excludes = excludes;
 		}
@@ -129,31 +129,33 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(EndpointPathProvider endpointPathProvider) {
-			Set<String> paths = new LinkedHashSet<>(this.includes.isEmpty()
-					? endpointPathProvider.getPaths() : Collections.emptyList());
-			streamPaths(this.includes, endpointPathProvider).forEach(paths::add);
-			streamPaths(this.excludes, endpointPathProvider).forEach(paths::remove);
+		protected void initialized(PathMappedEndpoints pathMappedEndpoints) {
+			Set<String> paths = new LinkedHashSet<>();
+			if (this.includes.isEmpty()) {
+				paths.addAll(pathMappedEndpoints.getAllPaths());
+			}
+			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
+			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			this.delegate = new OrRequestMatcher(getDelegateMatchers(paths));
 		}
 
 		private Stream<String> streamPaths(List<Object> source,
-				EndpointPathProvider endpointPathProvider) {
-			return source.stream().filter(Objects::nonNull).map(this::getPathId)
-					.map(endpointPathProvider::getPath);
+				PathMappedEndpoints pathMappedEndpoints) {
+			return source.stream().filter(Objects::nonNull).map(this::getEndpointId)
+					.map(pathMappedEndpoints::getPath);
 		}
 
-		private String getPathId(Object source) {
+		private String getEndpointId(Object source) {
 			if (source instanceof String) {
 				return (String) source;
 			}
 			if (source instanceof Class) {
-				return getPathId((Class<?>) source);
+				return getEndpointId((Class<?>) source);
 			}
 			throw new IllegalStateException("Unsupported source " + source);
 		}
 
-		private String getPathId(Class<?> source) {
+		private String getEndpointId(Class<?> source) {
 			Endpoint annotation = AnnotationUtils.findAnnotation(source, Endpoint.class);
 			Assert.state(annotation != null,
 					() -> "Class " + source + " is not annotated with @Endpoint");
@@ -167,7 +169,7 @@ public final class EndpointRequest {
 
 		@Override
 		protected boolean matches(HttpServletRequest request,
-				EndpointPathProvider context) {
+				PathMappedEndpoints context) {
 			return this.delegate.matches(request);
 		}
 

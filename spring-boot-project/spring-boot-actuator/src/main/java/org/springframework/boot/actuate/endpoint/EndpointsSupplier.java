@@ -27,6 +27,7 @@ import java.util.Collection;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@FunctionalInterface
 public interface EndpointsSupplier<E extends ExposableEndpoint<?>> {
 
 	/**

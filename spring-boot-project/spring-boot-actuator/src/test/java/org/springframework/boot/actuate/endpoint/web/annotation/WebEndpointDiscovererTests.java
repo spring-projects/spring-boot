@@ -43,8 +43,8 @@ import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationI
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
@@ -255,9 +255,8 @@ public class WebEndpointDiscovererTests {
 		this.load((id) -> null, (id) -> id, configuration, consumer);
 	}
 
-	private void load(Function<String, Long> timeToLive,
-			EndpointPathResolver endpointPathResolver, Class<?> configuration,
-			Consumer<WebEndpointDiscoverer> consumer) {
+	private void load(Function<String, Long> timeToLive, PathMapper endpointPathMapper,
+			Class<?> configuration, Consumer<WebEndpointDiscoverer> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration);
 		try {
@@ -267,7 +266,7 @@ public class WebEndpointDiscovererTests {
 					Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(context,
-					parameterMapper, mediaTypes, endpointPathResolver,
+					parameterMapper, mediaTypes, endpointPathMapper,
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
 					Collections.emptyList());
 			consumer.accept(discoverer);

@@ -27,12 +27,12 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 /**
  * Factory to create a {@link WebOperationRequestPredicate}.
@@ -45,18 +45,15 @@ class RequestPredicateFactory {
 
 	private final EndpointMediaTypes endpointMediaTypes;
 
-	private final EndpointPathResolver endpointPathResolver;
-
-	RequestPredicateFactory(EndpointMediaTypes endpointMediaTypes,
-			EndpointPathResolver endpointPathResolver) {
+	RequestPredicateFactory(EndpointMediaTypes endpointMediaTypes) {
+		Assert.notNull(endpointMediaTypes, "EndpointMediaTypes must not be null");
 		this.endpointMediaTypes = endpointMediaTypes;
-		this.endpointPathResolver = endpointPathResolver;
 	}
 
 	public WebOperationRequestPredicate getRequestPredicate(String endpointId,
-			DiscoveredOperationMethod operationMethod) {
+			String rootPath, DiscoveredOperationMethod operationMethod) {
 		Method method = operationMethod.getMethod();
-		String path = getPath(endpointId, method);
+		String path = getPath(endpointId, rootPath, method);
 		WebEndpointHttpMethod httpMethod = determineHttpMethod(
 				operationMethod.getOperationType());
 		Collection<String> consumes = getConsumes(httpMethod, method);
@@ -64,10 +61,9 @@ class RequestPredicateFactory {
 		return new WebOperationRequestPredicate(path, httpMethod, consumes, produces);
 	}
 
-	private String getPath(String endpointId, Method method) {
-		return this.endpointPathResolver.resolvePath(endpointId)
-				+ Stream.of(method.getParameters()).filter(this::hasSelector)
-						.map(this::slashName).collect(Collectors.joining());
+	private String getPath(String endpointId, String rootPath, Method method) {
+		return rootPath + Stream.of(method.getParameters()).filter(this::hasSelector)
+				.map(this::slashName).collect(Collectors.joining());
 	}
 
 	private boolean hasSelector(Parameter parameter) {

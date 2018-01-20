@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,29 +20,27 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DefaultEndpointPathResolver}.
+ * Tests for {@link MappingWebEndpointPathMapper}.
  *
  * @author Stephane Nicoll
  */
-public class DefaultEndpointPathResolverTests {
+public class MappingWebEndpointPathMapperTests {
 
 	@Test
 	public void defaultConfiguration() {
-		EndpointPathResolver resolver = new DefaultEndpointPathResolver(
+		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
 				Collections.emptyMap());
-		assertThat(resolver.resolvePath("test")).isEqualTo("test");
+		assertThat(mapper.getRootPath("test")).isEqualTo("test");
 	}
 
 	@Test
 	public void userConfiguration() {
-		EndpointPathResolver resolver = new DefaultEndpointPathResolver(
+		MappingWebEndpointPathMapper mapper = new MappingWebEndpointPathMapper(
 				Collections.singletonMap("test", "custom"));
-		assertThat(resolver.resolvePath("test")).isEqualTo("custom");
+		assertThat(mapper.getRootPath("test")).isEqualTo("custom");
 	}
 
 }

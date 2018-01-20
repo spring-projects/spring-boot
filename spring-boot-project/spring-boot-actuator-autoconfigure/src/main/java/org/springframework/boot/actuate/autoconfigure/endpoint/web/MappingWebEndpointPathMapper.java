@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,25 +18,24 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
 
 /**
- * Default {@link EndpointPathResolver} implementation that uses the {@link Environment}
- * to determine if an endpoint has a custom path.
+ * A {@link PathMapper} implementation that uses a simple {@link Map} to
+ * determine the endpoint path.
  *
  * @author Stephane Nicoll
  */
-class DefaultEndpointPathResolver implements EndpointPathResolver {
+class MappingWebEndpointPathMapper implements PathMapper {
 
 	private final Map<String, String> pathMapping;
 
-	DefaultEndpointPathResolver(Map<String, String> pathMapping) {
+	MappingWebEndpointPathMapper(Map<String, String> pathMapping) {
 		this.pathMapping = pathMapping;
 	}
 
 	@Override
-	public String resolvePath(String endpointId) {
+	public String getRootPath(String endpointId) {
 		return this.pathMapping.getOrDefault(endpointId, endpointId);
 	}
 

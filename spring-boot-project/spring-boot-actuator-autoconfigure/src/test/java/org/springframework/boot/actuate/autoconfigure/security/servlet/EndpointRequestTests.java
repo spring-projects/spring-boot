@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +24,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
+import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -33,6 +36,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EndpointRequest}.
@@ -94,13 +99,27 @@ public class EndpointRequestTests {
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
-		return assertMatcher(matcher, new MockEndpointPathProvider());
+		return assertMatcher(matcher, mockPathMappedEndpoints());
+	}
+
+	private PathMappedEndpoints mockPathMappedEndpoints() {
+		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
+		endpoints.add(mockEndpoint("foo", "foo"));
+		endpoints.add(mockEndpoint("bar", "bar"));
+		return new PathMappedEndpoints("/actuator", () -> endpoints);
+	}
+
+	private TestEndpoint mockEndpoint(String id, String rootPath) {
+		TestEndpoint endpoint = mock(TestEndpoint.class);
+		given(endpoint.getId()).willReturn(id);
+		given(endpoint.getRootPath()).willReturn(rootPath);
+		return endpoint;
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
-			EndpointPathProvider endpointPathProvider) {
+			PathMappedEndpoints pathMappedEndpoints) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
-		context.registerBean(EndpointPathProvider.class, () -> endpointPathProvider);
+		context.registerBean(PathMappedEndpoints.class, () -> pathMappedEndpoints);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
@@ -160,28 +179,13 @@ public class EndpointRequestTests {
 
 	}
 
-	private static class MockEndpointPathProvider implements EndpointPathProvider {
-
-		@Override
-		public List<String> getPaths() {
-			return Arrays.asList("/actuator/foo", "/actuator/bar");
-		}
-
-		@Override
-		public String getPath(String id) {
-			if ("foo".equals(id)) {
-				return "/actuator/foo";
-			}
-			if ("bar".equals(id)) {
-				return "/actuator/bar";
-			}
-			return null;
-		}
-
-	}
-
 	@Endpoint(id = "foo")
 	private static class FooEndpoint {
 
 	}
+
+	interface TestEndpoint extends ExposableEndpoint<Operation>, PathMappedEndpoint {
+
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,24 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
+
 /**
- * Resolve the path of an endpoint.
+ * Interface that can be implemented by an {@link ExposableEndpoint} that is mapped to a
+ * root web path.
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.0.0
+ * @see PathMapper
  */
-@FunctionalInterface
-public interface EndpointPathResolver {
+public interface PathMappedEndpoint {
 
 	/**
-	 * Resolve the path for the endpoint with the specified {@code endpointId}.
-	 * @param endpointId the id of an endpoint
-	 * @return the path of the endpoint
+	 * Return the root path of the endpoint, relative to the context that exposes it. For
+	 * example, a root path of {@code example} would be exposed under the URL
+	 * "/{actuator-context}/example".
+	 * @return the root path for the endpoint
 	 */
-	String resolvePath(String endpointId);
-
-	/**
-	 * Returns an {@link EndpointPathResolver} that uses the endpoint ID as the path.
-	 * @return an {@link EndpointPathResolver} that uses the endpoint ID as the path
-	 */
-	static EndpointPathResolver useEndpointId() {
-		return (endpointId) -> endpointId;
-	}
+	String getRootPath();
 
 }

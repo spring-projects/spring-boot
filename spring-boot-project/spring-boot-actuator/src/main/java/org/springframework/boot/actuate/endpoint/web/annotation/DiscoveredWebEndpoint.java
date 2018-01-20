@@ -31,9 +31,17 @@ import org.springframework.boot.actuate.endpoint.web.WebOperation;
 class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation>
 		implements ExposableWebEndpoint {
 
-	DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, String id,
+	private final String rootPath;
+
+	DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, String id, String rootPath,
 			boolean enabledByDefault, Collection<WebOperation> operations) {
 		super(discoverer, id, enabledByDefault, operations);
+		this.rootPath = rootPath;
+	}
+
+	@Override
+	public String getRootPath() {
+		return this.rootPath;
 	}
 
 }
