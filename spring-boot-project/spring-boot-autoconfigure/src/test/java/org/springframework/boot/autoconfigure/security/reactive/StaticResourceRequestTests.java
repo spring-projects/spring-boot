@@ -68,7 +68,8 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void toLocationShouldMatchLocation() {
-		ServerWebExchangeMatcher matcher = StaticResourceRequest.to(StaticResourceLocation.CSS);
+		ServerWebExchangeMatcher matcher = StaticResourceRequest
+				.to(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
@@ -87,10 +88,12 @@ public class StaticResourceRequestTests {
 		StaticResourceRequest.toCommonLocations().excluding(null);
 	}
 
-	private StaticResourceRequestTests.RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {
+	private StaticResourceRequestTests.RequestMatcherAssert assertMatcher(
+			ServerWebExchangeMatcher matcher) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		context.registerBean(ServerProperties.class);
-		return assertThat(new StaticResourceRequestTests.RequestMatcherAssert(context, matcher));
+		return assertThat(
+				new StaticResourceRequestTests.RequestMatcherAssert(context, matcher));
 	}
 
 	private static class RequestMatcherAssert implements AssertDelegateTarget {
@@ -99,13 +102,16 @@ public class StaticResourceRequestTests {
 
 		private final ServerWebExchangeMatcher matcher;
 
-		RequestMatcherAssert(StaticApplicationContext context, ServerWebExchangeMatcher matcher) {
+		RequestMatcherAssert(StaticApplicationContext context,
+				ServerWebExchangeMatcher matcher) {
 			this.context = context;
 			this.matcher = matcher;
 		}
 
 		void matches(String path) {
-			ServerWebExchange exchange = webHandler().createExchange(MockServerHttpRequest.get(path).build(), new MockServerHttpResponse());
+			ServerWebExchange exchange = webHandler().createExchange(
+					MockServerHttpRequest.get(path).build(),
+					new MockServerHttpResponse());
 			matches(exchange);
 		}
 
@@ -115,7 +121,9 @@ public class StaticResourceRequestTests {
 		}
 
 		void doesNotMatch(String path) {
-			ServerWebExchange exchange = webHandler().createExchange(MockServerHttpRequest.get(path).build(), new MockServerHttpResponse());
+			ServerWebExchange exchange = webHandler().createExchange(
+					MockServerHttpRequest.get(path).build(),
+					new MockServerHttpResponse());
 			doesNotMatch(exchange);
 		}
 
@@ -125,7 +133,8 @@ public class StaticResourceRequestTests {
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {
-			TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(mock(WebHandler.class));
+			TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(
+					mock(WebHandler.class));
 			adapter.setApplicationContext(this.context);
 			return adapter;
 		}
@@ -143,7 +152,8 @@ public class StaticResourceRequestTests {
 		}
 
 		@Override
-		protected ServerWebExchange createExchange(ServerHttpRequest request, ServerHttpResponse response) {
+		protected ServerWebExchange createExchange(ServerHttpRequest request,
+				ServerHttpResponse response) {
 			return super.createExchange(request, response);
 		}
 

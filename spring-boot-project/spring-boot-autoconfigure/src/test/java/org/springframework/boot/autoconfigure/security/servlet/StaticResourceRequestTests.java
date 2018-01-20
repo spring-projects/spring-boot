@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,8 @@ public class StaticResourceRequestTests {
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Locations must not be null");
-		StaticResourceRequest.toCommonLocations().excluding((Set<StaticResourceLocation>) null);
+		StaticResourceRequest.toCommonLocations()
+				.excluding((Set<StaticResourceLocation>) null);
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {

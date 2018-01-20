@@ -80,8 +80,8 @@ public class SampleSecureWebFluxCustomSecurityTests {
 
 	@Test
 	public void staticResourceShouldBeAccessible() {
-		this.webClient.get().uri("/css/bootstrap.min.css").accept(MediaType.APPLICATION_JSON).exchange()
-				.expectStatus().isOk();
+		this.webClient.get().uri("/css/bootstrap.min.css")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
 	}
 
 	@Configuration
@@ -100,9 +100,10 @@ public class SampleSecureWebFluxCustomSecurityTests {
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
 					.permitAll().matchers(EndpointRequest.toAnyEndpoint())
-					.hasRole("ACTUATOR").matchers(StaticResourceRequest.toCommonLocations()).permitAll()
-					.pathMatchers("/login").permitAll().anyExchange()
-					.authenticated().and().httpBasic();
+					.hasRole("ACTUATOR")
+					.matchers(StaticResourceRequest.toCommonLocations()).permitAll()
+					.pathMatchers("/login").permitAll().anyExchange().authenticated()
+					.and().httpBasic();
 			return http.build();
 		}
 

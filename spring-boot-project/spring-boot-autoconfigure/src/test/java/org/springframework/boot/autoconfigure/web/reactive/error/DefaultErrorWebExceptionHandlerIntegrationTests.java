@@ -247,8 +247,8 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 				.run((context) -> {
 					WebTestClient client = WebTestClient.bindToApplicationContext(context)
 							.build();
-					String body = client.get().uri("/notfound").accept(MediaType.TEXT_HTML)
-							.exchange().expectStatus()
+					String body = client.get().uri("/notfound")
+							.accept(MediaType.TEXT_HTML).exchange().expectStatus()
 							.isEqualTo(HttpStatus.NOT_FOUND).expectHeader()
 							.contentType(MediaType.TEXT_HTML).expectBody(String.class)
 							.returnResult().getResponseBody();

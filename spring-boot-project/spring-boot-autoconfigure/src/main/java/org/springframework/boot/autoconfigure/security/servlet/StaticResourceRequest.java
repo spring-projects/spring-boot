@@ -47,10 +47,11 @@ public final class StaticResourceRequest {
 	}
 
 	/**
-	 * Returns a matcher that includes all commonly used {@link StaticResourceLocation Locations}. The
-	 * {@link StaticResourceRequestMatcher#excluding(StaticResourceLocation, StaticResourceLocation...) excluding}
-	 * method can be used to remove specific locations if required. For example:
-	 * <pre class="code">
+	 * Returns a matcher that includes all commonly used {@link StaticResourceLocation
+	 * Locations}. The
+	 * {@link StaticResourceRequestMatcher#excluding(StaticResourceLocation, StaticResourceLocation...)
+	 * excluding} method can be used to remove specific locations if required. For
+	 * example: <pre class="code">
 	 * StaticResourceRequest.toCommonLocations().excluding(StaticResourceLocation.CSS)
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
@@ -60,21 +61,22 @@ public final class StaticResourceRequest {
 	}
 
 	/**
-	 * Returns a matcher that includes the specified {@link StaticResourceLocation Locations}. For
-	 * example: <pre class="code">
+	 * Returns a matcher that includes the specified {@link StaticResourceLocation
+	 * Locations}. For example: <pre class="code">
 	 * StaticResourceRequest.to(StaticResourceLocation.CSS, StaticResourceLocation.JAVA_SCRIPT)
 	 * </pre>
 	 * @param first the first location to include
 	 * @param rest additional locations to include
 	 * @return the configured {@link RequestMatcher}
 	 */
-	public static StaticResourceRequestMatcher to(StaticResourceLocation first, StaticResourceLocation... rest) {
+	public static StaticResourceRequestMatcher to(StaticResourceLocation first,
+			StaticResourceLocation... rest) {
 		return to(EnumSet.of(first, rest));
 	}
 
 	/**
-	 * Returns a matcher that includes the specified {@link StaticResourceLocation Locations}. For
-	 * example: <pre class="code">
+	 * Returns a matcher that includes the specified {@link StaticResourceLocation
+	 * Locations}. For example: <pre class="code">
 	 * StaticResourceRequest.to(locations)
 	 * </pre>
 	 * @param locations the locations to include
@@ -86,7 +88,8 @@ public final class StaticResourceRequest {
 	}
 
 	/**
-	 * The request matcher used to match against resource {@link StaticResourceLocation Locations}.
+	 * The request matcher used to match against resource {@link StaticResourceLocation
+	 * Locations}.
 	 */
 	public static final class StaticResourceRequestMatcher
 			extends ApplicationContextRequestMatcher<ServerProperties> {
@@ -107,7 +110,8 @@ public final class StaticResourceRequest {
 		 * @param rest additional locations to exclude
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */
-		public StaticResourceRequestMatcher excluding(StaticResourceLocation first, StaticResourceLocation... rest) {
+		public StaticResourceRequestMatcher excluding(StaticResourceLocation first,
+				StaticResourceLocation... rest) {
 			return excluding(EnumSet.of(first, rest));
 		}
 
@@ -117,7 +121,8 @@ public final class StaticResourceRequest {
 		 * @param locations the locations to exclude
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */
-		public StaticResourceRequestMatcher excluding(Set<StaticResourceLocation> locations) {
+		public StaticResourceRequestMatcher excluding(
+				Set<StaticResourceLocation> locations) {
 			Assert.notNull(locations, "Locations must not be null");
 			Set<StaticResourceLocation> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);

@@ -187,22 +187,23 @@ public abstract class AbstractErrorWebExceptionHandler
 	protected Mono<ServerResponse> renderDefaultErrorView(
 			ServerResponse.BodyBuilder responseBody, Map<String, Object> error) {
 		StringBuilder builder = new StringBuilder();
+		Object message = error.get("message");
 		Date timestamp = (Date) error.get("timestamp");
 		builder.append("<html><body><h1>Whitelabel Error Page</h1>")
 				.append("<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
 				.append("<div id='created'>").append(timestamp.toString())
 				.append("</div>").append("<div>There was an unexpected error (type=")
-				.append(HtmlUtils.htmlEscape(error.get("error").toString()))
-				.append(", status=")
-				.append(HtmlUtils.htmlEscape(error.get("status").toString()))
-				.append(").</div>");
-		if (error.get("message") != null) {
-			builder.append("<div>")
-					.append(HtmlUtils.htmlEscape(error.get("message").toString()))
-					.append("</div>");
+				.append(htmlEscape(error.get("error"))).append(", status=")
+				.append(htmlEscape(error.get("status"))).append(").</div>");
+		if (message != null) {
+			builder.append("<div>").append(htmlEscape(message)).append("</div>");
 		}
 		builder.append("</body></html>");
 		return responseBody.syncBody(builder.toString());
+	}
+
+	private String htmlEscape(Object input) {
+		return (input == null ? null : HtmlUtils.htmlEscape(input.toString()));
 	}
 
 	@Override
