@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.WebEndpoint;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
@@ -55,8 +54,8 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
 /**
- * A custom {@link HandlerMapping} that makes {@link WebEndpoint web endpoints} available
- * over HTTP using Spring MVC.
+ * A custom {@link HandlerMapping} that makes {@link ExposableWebEndpoint web endpoints}
+ * available over HTTP using Spring MVC.
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
