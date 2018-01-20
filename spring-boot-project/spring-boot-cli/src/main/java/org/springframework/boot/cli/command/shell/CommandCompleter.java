@@ -127,12 +127,12 @@ public class CommandCompleter extends StringsCompleter {
 		private final String usage;
 
 		OptionHelpLine(OptionHelp optionHelp) {
-			StringBuilder options = new StringBuilder();
+			StringBuilder optionsBuilder = new StringBuilder();
 			for (String option : optionHelp.getOptions()) {
-				options.append(options.length() == 0 ? "" : ", ");
-				options.append(option);
+				optionsBuilder.append(optionsBuilder.length() == 0 ? "" : ", ");
+				optionsBuilder.append(option);
 			}
-			this.options = options.toString();
+			this.options = optionsBuilder.toString();
 			this.usage = optionHelp.getUsageHelp();
 		}
 

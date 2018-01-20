@@ -78,25 +78,25 @@ public class GsonAutoConfiguration {
 
 		@Override
 		public void customize(GsonBuilder builder) {
-			GsonProperties properties = this.properties;
+			GsonProperties gsonProperties = this.properties;
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(properties::getGenerateNonExecutableJson)
+			map.from(gsonProperties::getGenerateNonExecutableJson)
 					.toCall(builder::generateNonExecutableJson);
-			map.from(properties::getExcludeFieldsWithoutExposeAnnotation)
+			map.from(gsonProperties::getExcludeFieldsWithoutExposeAnnotation)
 					.toCall(builder::excludeFieldsWithoutExposeAnnotation);
-			map.from(properties::getSerializeNulls).toCall(builder::serializeNulls);
-			map.from(properties::getEnableComplexMapKeySerialization)
+			map.from(gsonProperties::getSerializeNulls).toCall(builder::serializeNulls);
+			map.from(gsonProperties::getEnableComplexMapKeySerialization)
 					.toCall(builder::enableComplexMapKeySerialization);
-			map.from(properties::getDisableInnerClassSerialization)
+			map.from(gsonProperties::getDisableInnerClassSerialization)
 					.toCall(builder::disableInnerClassSerialization);
-			map.from(properties::getLongSerializationPolicy)
+			map.from(gsonProperties::getLongSerializationPolicy)
 					.to(builder::setLongSerializationPolicy);
-			map.from(properties::getFieldNamingPolicy).to(builder::setFieldNamingPolicy);
-			map.from(properties::getPrettyPrinting).toCall(builder::setPrettyPrinting);
-			map.from(properties::getLenient).toCall(builder::setLenient);
-			map.from(properties::getDisableHtmlEscaping)
+			map.from(gsonProperties::getFieldNamingPolicy).to(builder::setFieldNamingPolicy);
+			map.from(gsonProperties::getPrettyPrinting).toCall(builder::setPrettyPrinting);
+			map.from(gsonProperties::getLenient).toCall(builder::setLenient);
+			map.from(gsonProperties::getDisableHtmlEscaping)
 					.toCall(builder::disableHtmlEscaping);
-			map.from(properties::getDateFormat).to(builder::setDateFormat);
+			map.from(gsonProperties::getDateFormat).to(builder::setDateFormat);
 		}
 
 	}

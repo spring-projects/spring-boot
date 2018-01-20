@@ -93,19 +93,19 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {
-		Cache cache = getCache();
-		List<ConfigurationPropertyName> names = (cache != null ? cache.getNames() : null);
+		Cache propertyNamesCache = getCache();
+		List<ConfigurationPropertyName> names = (propertyNamesCache != null ? propertyNamesCache.getNames() : null);
 		if (names != null) {
 			return names;
 		}
-		PropertyMapping[] mappings = getPropertyMappings(cache);
+		PropertyMapping[] mappings = getPropertyMappings(propertyNamesCache);
 		names = new ArrayList<>(mappings.length);
 		for (PropertyMapping mapping : mappings) {
 			names.add(mapping.getConfigurationPropertyName());
 		}
 		names = Collections.unmodifiableList(names);
-		if (cache != null) {
-			cache.setNames(names);
+		if (propertyNamesCache != null) {
+			propertyNamesCache.setNames(names);
 		}
 		return names;
 	}
@@ -130,15 +130,15 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private Cache getCache() {
-		Object cacheKey = getCacheKey();
-		if (cacheKey == null) {
+		Object cacheKeyValue = getCacheKey();
+		if (cacheKeyValue == null) {
 			return null;
 		}
-		if (ObjectUtils.nullSafeEquals(cacheKey, this.cacheKey)) {
+		if (ObjectUtils.nullSafeEquals(cacheKeyValue, this.cacheKey)) {
 			return this.cache;
 		}
 		this.cache = new Cache();
-		this.cacheKey = cacheKey;
+		this.cacheKey = cacheKeyValue;
 		return this.cache;
 	}
 

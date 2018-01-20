@@ -84,16 +84,16 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 
 	@SuppressWarnings("unchecked")
 	private C createContext(ServerWebExchange exchange) {
-		ApplicationContext context = exchange.getApplicationContext();
-		Assert.state(context != null, "No WebApplicationContext found.");
-		if (this.contextClass.isInstance(context)) {
-			return (C) context;
+		ApplicationContext applicationContext = exchange.getApplicationContext();
+		Assert.state(applicationContext != null, "No WebApplicationContext found.");
+		if (this.contextClass.isInstance(applicationContext)) {
+			return (C) applicationContext;
 		}
 		try {
-			return context.getBean(this.contextClass);
+			return applicationContext.getBean(this.contextClass);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
-			return (C) context.getAutowireCapableBeanFactory().createBean(
+			return (C) applicationContext.getAutowireCapableBeanFactory().createBean(
 					this.contextClass, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR,
 					false);
 		}

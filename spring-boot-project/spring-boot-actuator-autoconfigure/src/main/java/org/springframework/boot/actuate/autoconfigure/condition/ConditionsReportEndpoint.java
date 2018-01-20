@@ -211,9 +211,9 @@ public class ConditionsReportEndpoint {
 		private final String message;
 
 		public MessageAndCondition(ConditionAndOutcome conditionAndOutcome) {
-			Condition condition = conditionAndOutcome.getCondition();
+			Condition outcomeCondition = conditionAndOutcome.getCondition();
 			ConditionOutcome outcome = conditionAndOutcome.getOutcome();
-			this.condition = ClassUtils.getShortName(condition.getClass());
+			this.condition = ClassUtils.getShortName(outcomeCondition.getClass());
 			if (StringUtils.hasLength(outcome.getMessage())) {
 				this.message = outcome.getMessage();
 			}

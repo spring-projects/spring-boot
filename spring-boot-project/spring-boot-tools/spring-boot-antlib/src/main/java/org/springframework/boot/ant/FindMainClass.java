@@ -49,16 +49,16 @@ public class FindMainClass extends Task {
 
 	@Override
 	public void execute() throws BuildException {
-		String mainClass = this.mainClass;
-		if (!StringUtils.hasText(mainClass)) {
-			mainClass = findMainClass();
-			if (!StringUtils.hasText(mainClass)) {
+		String mainClassName = this.mainClass;
+		if (!StringUtils.hasText(mainClassName)) {
+			mainClassName = findMainClass();
+			if (!StringUtils.hasText(mainClassName)) {
 				throw new BuildException(
 						"Could not determine main class given @classesRoot "
 								+ this.classesRoot);
 			}
 		}
-		handle(mainClass);
+		handle(mainClassName);
 	}
 
 	private String findMainClass() {

@@ -72,11 +72,11 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	public DataSource dataSource() throws Exception {
-		XADataSource xaDataSource = this.xaDataSource;
-		if (xaDataSource == null) {
-			xaDataSource = createXaDataSource();
+		XADataSource jdbcXaDataSource = this.xaDataSource;
+		if (jdbcXaDataSource == null) {
+			jdbcXaDataSource = createXaDataSource();
 		}
-		return this.wrapper.wrapDataSource(xaDataSource);
+		return this.wrapper.wrapDataSource(jdbcXaDataSource);
 	}
 
 	@Override

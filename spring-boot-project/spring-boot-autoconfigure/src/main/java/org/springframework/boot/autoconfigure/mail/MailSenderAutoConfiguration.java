@@ -92,9 +92,9 @@ public class MailSenderAutoConfiguration {
 	}
 
 	private Properties asProperties(Map<String, String> source) {
-		Properties properties = new Properties();
-		properties.putAll(source);
-		return properties;
+		Properties senderProperties = new Properties();
+		senderProperties.putAll(source);
+		return senderProperties;
 	}
 
 	/**

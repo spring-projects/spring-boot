@@ -50,12 +50,12 @@ class Container implements TestRule {
 			Consumer<T> customizer) {
 		this.port = port;
 		this.containerFactory = () -> {
-			T container = (T) new GenericContainer<>(dockerImageName)
+			T genericContainer = (T) new GenericContainer<>(dockerImageName)
 					.withExposedPorts(port);
 			if (customizer != null) {
-				customizer.accept(container);
+				customizer.accept(genericContainer);
 			}
-			return container;
+			return genericContainer;
 		};
 	}
 

@@ -154,11 +154,11 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Manifest getManifest() throws IOException {
-		Manifest manifest = (this.manifest == null ? null : this.manifest.get());
-		if (manifest == null) {
+		Manifest jarManifest = (this.manifest == null ? null : this.manifest.get());
+		if (jarManifest == null) {
 			if (this.type == JarFileType.NESTED_DIRECTORY) {
 				try (JarFile rootJarFile = new JarFile(this.getRootJarFile())) {
-					manifest = rootJarFile.getManifest();
+					jarManifest = rootJarFile.getManifest();
 				}
 			}
 			else {
@@ -167,12 +167,12 @@ public class JarFile extends java.util.jar.JarFile {
 					if (inputStream == null) {
 						return null;
 					}
-					manifest = new Manifest(inputStream);
+					jarManifest = new Manifest(inputStream);
 				}
 			}
-			this.manifest = new SoftReference<>(manifest);
+			this.manifest = new SoftReference<>(jarManifest);
 		}
-		return manifest;
+		return jarManifest;
 	}
 
 	@Override

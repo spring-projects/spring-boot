@@ -1007,12 +1007,12 @@ public class TestRestTemplate {
 	 * @since 1.4.1
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setMessageConverters(getRestTemplate().getMessageConverters());
-		restTemplate.setInterceptors(getRestTemplate().getInterceptors());
-		restTemplate.setRequestFactory(getRestTemplate().getRequestFactory());
-		restTemplate.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
-		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
+		RestTemplate newRestTemplate = new RestTemplate();
+		newRestTemplate.setMessageConverters(getRestTemplate().getMessageConverters());
+		newRestTemplate.setInterceptors(getRestTemplate().getInterceptors());
+		newRestTemplate.setRequestFactory(getRestTemplate().getRequestFactory());
+		newRestTemplate.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
+		TestRestTemplate testRestTemplate = new TestRestTemplate(newRestTemplate, username,
 				password, this.httpClientOptions);
 		testRestTemplate.getRestTemplate()
 				.setErrorHandler(getRestTemplate().getErrorHandler());

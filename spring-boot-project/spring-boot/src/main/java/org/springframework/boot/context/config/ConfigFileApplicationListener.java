@@ -466,14 +466,14 @@ public class ConfigFileApplicationListener
 				}
 				String name = "applicationConfig: [" + location + "]"
 						+ (loadProfile == null ? "" : "#" + loadProfile);
-				PropertySource<?> loaded = loader.load(name, resource, loadProfile);
-				if (loaded == null) {
+				PropertySource<?> loadedConfig = loader.load(name, resource, loadProfile);
+				if (loadedConfig == null) {
 					this.logger.trace("Skipped unloaded config " + description);
 					return;
 				}
-				handleProfileProperties(loaded);
+				handleProfileProperties(loadedConfig);
 				this.loaded.computeIfAbsent(profile, (k) -> new MutablePropertySources())
-						.addLast(loaded);
+						.addLast(loadedConfig);
 				this.logger.debug("Loaded config file " + description);
 			}
 			catch (Exception ex) {
@@ -510,12 +510,12 @@ public class ConfigFileApplicationListener
 		}
 
 		private Set<Profile> asProfileSet(String[] profileNames) {
-			List<Profile> profiles = new ArrayList<>();
+			List<Profile> contextProfiles = new ArrayList<>();
 			for (String profileName : profileNames) {
-				profiles.add(new Profile(profileName));
+				contextProfiles.add(new Profile(profileName));
 			}
-			Collections.reverse(profiles);
-			return new LinkedHashSet<>(profiles);
+			Collections.reverse(contextProfiles);
+			return new LinkedHashSet<>(contextProfiles);
 		}
 
 		private void maybeActivateProfiles(Set<Profile> profiles) {
@@ -560,12 +560,12 @@ public class ConfigFileApplicationListener
 
 		private void prependProfile(ConfigurableEnvironment environment,
 				Profile profile) {
-			Set<String> profiles = new LinkedHashSet<>();
+			Set<String> profilesContext = new LinkedHashSet<>();
 			environment.getActiveProfiles(); // ensure they are initialized
 			// But this one should go first (last wins in a property key clash)
-			profiles.add(profile.getName());
-			profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
-			environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
+			profilesContext.add(profile.getName());
+			profilesContext.addAll(Arrays.asList(environment.getActiveProfiles()));
+			environment.setActiveProfiles(profilesContext.toArray(new String[profilesContext.size()]));
 		}
 
 		private Set<String> getSearchLocations() {
@@ -616,9 +616,9 @@ public class ConfigFileApplicationListener
 		private void addLoadedPropertySources() {
 			MutablePropertySources destination = this.environment.getPropertySources();
 			String lastAdded = null;
-			List<MutablePropertySources> loaded = new ArrayList<>(this.loaded.values());
-			Collections.reverse(loaded);
-			for (MutablePropertySources sources : loaded) {
+			List<MutablePropertySources> loadedProperty = new ArrayList<>(this.loaded.values());
+			Collections.reverse(loadedProperty);
+			for (MutablePropertySources sources : loadedProperty) {
 				for (PropertySource<?> source : sources) {
 					if (lastAdded == null) {
 						if (destination.contains(DEFAULT_PROPERTIES)) {

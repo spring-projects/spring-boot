@@ -113,10 +113,10 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	}
 
 	protected JobLauncher createJobLauncher() throws Exception {
-		SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
-		jobLauncher.setJobRepository(getJobRepository());
-		jobLauncher.afterPropertiesSet();
-		return jobLauncher;
+		SimpleJobLauncher newJobLauncher = new SimpleJobLauncher();
+		newJobLauncher.setJobRepository(getJobRepository());
+		newJobLauncher.afterPropertiesSet();
+		return newJobLauncher;
 	}
 
 	protected JobRepository createJobRepository() throws Exception {
@@ -145,11 +145,11 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	}
 
 	private PlatformTransactionManager buildTransactionManager() {
-		PlatformTransactionManager transactionManager = createTransactionManager();
+		PlatformTransactionManager newTransactionManager = createTransactionManager();
 		if (this.transactionManagerCustomizers != null) {
-			this.transactionManagerCustomizers.customize(transactionManager);
+			this.transactionManagerCustomizers.customize(newTransactionManager);
 		}
-		return transactionManager;
+		return newTransactionManager;
 	}
 
 }

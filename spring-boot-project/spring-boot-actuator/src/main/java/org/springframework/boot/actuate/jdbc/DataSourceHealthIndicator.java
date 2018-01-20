@@ -125,15 +125,15 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	}
 
 	protected String getValidationQuery(String product) {
-		String query = this.query;
-		if (!StringUtils.hasText(query)) {
+		String validationQuery = this.query;
+		if (!StringUtils.hasText(validationQuery)) {
 			DatabaseDriver specific = DatabaseDriver.fromProductName(product);
-			query = specific.getValidationQuery();
+			validationQuery = specific.getValidationQuery();
 		}
-		if (!StringUtils.hasText(query)) {
-			query = DEFAULT_QUERY;
+		if (!StringUtils.hasText(validationQuery)) {
+			validationQuery = DEFAULT_QUERY;
 		}
-		return query;
+		return validationQuery;
 	}
 
 	/**

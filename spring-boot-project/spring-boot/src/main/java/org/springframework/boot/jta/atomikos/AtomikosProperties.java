@@ -340,12 +340,12 @@ public class AtomikosProperties {
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());
 		set(properties, "threaded_2pc", isThreadedTwoPhaseCommit());
-		Recovery recovery = getRecovery();
+		Recovery transactionsRecovery = getRecovery();
 		set(properties, "forget_orphaned_log_entries_delay",
-				recovery.getForgetOrphanedLogEntriesDelay());
-		set(properties, "recovery_delay", recovery.getDelay());
-		set(properties, "oltp_max_retries", recovery.getMaxRetries());
-		set(properties, "oltp_retry_interval", recovery.getRetryInterval());
+				transactionsRecovery.getForgetOrphanedLogEntriesDelay());
+		set(properties, "recovery_delay", transactionsRecovery.getDelay());
+		set(properties, "oltp_max_retries", transactionsRecovery.getMaxRetries());
+		set(properties, "oltp_retry_interval", transactionsRecovery.getRetryInterval());
 		return properties;
 	}
 

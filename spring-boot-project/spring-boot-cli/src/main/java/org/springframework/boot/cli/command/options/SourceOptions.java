@@ -71,7 +71,7 @@ public class SourceOptions {
 	}
 
 	private SourceOptions(List<?> nonOptionArguments, ClassLoader classLoader) {
-		List<String> sources = new ArrayList<>();
+		List<String> optionSources = new ArrayList<>();
 		int sourceArgCount = 0;
 		for (Object option : nonOptionArguments) {
 			if (option instanceof String) {
@@ -89,7 +89,7 @@ public class SourceOptions {
 				}
 				for (String url : urls) {
 					if (isSource(url)) {
-						sources.add(url);
+						optionSources.add(url);
 					}
 				}
 				if (isSource(filename)) {
@@ -104,8 +104,8 @@ public class SourceOptions {
 		}
 		this.args = Collections.unmodifiableList(
 				nonOptionArguments.subList(sourceArgCount, nonOptionArguments.size()));
-		Assert.isTrue(!sources.isEmpty(), "Please specify at least one file");
-		this.sources = Collections.unmodifiableList(sources);
+		Assert.isTrue(!optionSources.isEmpty(), "Please specify at least one file");
+		this.sources = Collections.unmodifiableList(optionSources);
 	}
 
 	private boolean isAbsoluteWindowsFile(File file) {

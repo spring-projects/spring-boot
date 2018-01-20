@@ -292,17 +292,17 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
-		List<String> paths = new ArrayList<>();
+		List<String> pathsProperties = new ArrayList<>();
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
 			// "" means the user wants root of archive but not current directory
 			path = ("".equals(path) ? "/" : path);
-			paths.add(path);
+			pathsProperties.add(path);
 		}
-		if (paths.isEmpty()) {
-			paths.add("lib");
+		if (pathsProperties.isEmpty()) {
+			pathsProperties.add("lib");
 		}
-		return paths;
+		return pathsProperties;
 	}
 
 	protected String[] getArgs(String... args) throws Exception {
@@ -491,10 +491,10 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private List<Archive> getNestedArchives(String path) throws Exception {
-		Archive parent = this.parent;
+		Archive parentArchive = this.parent;
 		String root = path;
 		if (!root.equals("/") && root.startsWith("/")
-				|| parent.getUrl().equals(this.home.toURI().toURL())) {
+				|| parentArchive.getUrl().equals(this.home.toURI().toURL())) {
 			// If home dir is same as parent archive, no need to add it twice.
 			return null;
 		}
@@ -504,7 +504,7 @@ public class PropertiesLauncher extends Launcher {
 			if (root.startsWith("jar:file:")) {
 				file = new File(root.substring("jar:file:".length(), index));
 			}
-			parent = new JarFileArchive(file);
+			parentArchive = new JarFileArchive(file);
 			root = root.substring(index + 1, root.length());
 			while (root.startsWith("/")) {
 				root = root.substring(1);
@@ -513,7 +513,7 @@ public class PropertiesLauncher extends Launcher {
 		if (root.endsWith(".jar")) {
 			File file = new File(this.home, root);
 			if (file.exists()) {
-				parent = new JarFileArchive(file);
+				parentArchive = new JarFileArchive(file);
 				root = "";
 			}
 		}
@@ -522,12 +522,12 @@ public class PropertiesLauncher extends Launcher {
 			root = "";
 		}
 		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
-		List<Archive> archives = new ArrayList<>(parent.getNestedArchives(filter));
+		List<Archive> archives = new ArrayList<>(parentArchive.getNestedArchives(filter));
 		if (("".equals(root) || ".".equals(root)) && !path.endsWith(".jar")
-				&& parent != this.parent) {
+				&& parentArchive != this.parent) {
 			// You can't find the root with an entry filter so it has to be added
 			// explicitly. But don't add the root of the parent archive.
-			archives.add(parent);
+			archives.add(parentArchive);
 		}
 		return archives;
 	}

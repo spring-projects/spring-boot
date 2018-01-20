@@ -113,11 +113,11 @@ final class AsciiBytes {
 	}
 
 	public AsciiBytes substring(int beginIndex, int endIndex) {
-		int length = endIndex - beginIndex;
-		if (this.offset + length > this.bytes.length) {
+		int stringLength = endIndex - beginIndex;
+		if (this.offset + stringLength > this.bytes.length) {
 			throw new IndexOutOfBoundsException();
 		}
-		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);
+		return new AsciiBytes(this.bytes, this.offset + beginIndex, stringLength);
 	}
 
 	@Override
@@ -174,8 +174,8 @@ final class AsciiBytes {
 
 	@Override
 	public int hashCode() {
-		int hash = this.hash;
-		if (hash == 0 && this.bytes.length > 0) {
+		int asciiHash = this.hash;
+		if (asciiHash == 0 && this.bytes.length > 0) {
 			for (int i = this.offset; i < this.offset + this.length; i++) {
 				int b = this.bytes[i];
 				if (b < 0) {
@@ -187,16 +187,16 @@ final class AsciiBytes {
 					b -= EXCESS[limit];
 				}
 				if (b <= 0xFFFF) {
-					hash = 31 * hash + b;
+					asciiHash = 31 * asciiHash + b;
 				}
 				else {
-					hash = 31 * hash + ((b >> 0xA) + 0xD7C0);
-					hash = 31 * hash + ((b & 0x3FF) + 0xDC00);
+					asciiHash = 31 * asciiHash + ((b >> 0xA) + 0xD7C0);
+					asciiHash = 31 * asciiHash + ((b & 0x3FF) + 0xDC00);
 				}
 			}
-			this.hash = hash;
+			this.hash = asciiHash;
 		}
-		return hash;
+		return asciiHash;
 	}
 
 	private int getRemainingUtfBytes(int b) {

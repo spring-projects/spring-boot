@@ -131,9 +131,9 @@ class ManagementContextConfigurationImportSelector
 		private int readOrder(AnnotationMetadata annotationMetadata) {
 			Map<String, Object> attributes = annotationMetadata
 					.getAnnotationAttributes(Order.class.getName());
-			Integer order = (attributes == null ? null
+			Integer readOrder = (attributes == null ? null
 					: (Integer) attributes.get("value"));
-			return (order == null ? Ordered.LOWEST_PRECEDENCE : order);
+			return (readOrder == null ? Ordered.LOWEST_PRECEDENCE : readOrder);
 		}
 
 		public String getClassName() {

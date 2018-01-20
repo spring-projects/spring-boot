@@ -49,11 +49,11 @@ class RestDocsMockMvcBuilderCustomizer
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		PropertyMapper map = PropertyMapper.get();
-		RestDocsProperties properties = this.properties;
+		RestDocsProperties restDocsProperties = this.properties;
 		UriConfigurer uri = this.delegate.uris();
-		map.from(properties::getUriScheme).whenHasText().to(uri::withScheme);
-		map.from(properties::getUriHost).whenHasText().to(uri::withHost);
-		map.from(properties::getUriPort).whenNonNull().to(uri::withPort);
+		map.from(restDocsProperties::getUriScheme).whenHasText().to(uri::withScheme);
+		map.from(restDocsProperties::getUriHost).whenHasText().to(uri::withHost);
+		map.from(restDocsProperties::getUriPort).whenNonNull().to(uri::withPort);
 	}
 
 	@Override

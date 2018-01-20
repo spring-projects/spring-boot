@@ -217,9 +217,9 @@ public class JpaProperties {
 			getNaming().applyNamingStrategies(result,
 					settings.getImplicitNamingStrategy(),
 					settings.getPhysicalNamingStrategy());
-			String ddlAuto = determineDdlAuto(existing, settings.getDdlAuto());
-			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
-				result.put("hibernate.hbm2ddl.auto", ddlAuto);
+			String ddlAutoMode = determineDdlAuto(existing, settings.getDdlAuto());
+			if (StringUtils.hasText(ddlAutoMode) && !"none".equals(ddlAutoMode)) {
+				result.put("hibernate.hbm2ddl.auto", ddlAutoMode);
 			}
 			else {
 				result.remove("hibernate.hbm2ddl.auto");
@@ -244,10 +244,10 @@ public class JpaProperties {
 
 		private String determineDdlAuto(Map<String, String> existing,
 				String defaultDdlAuto) {
-			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto);
+			String ddlAutoMode = (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto);
 			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
-					&& !"none".equals(ddlAuto)) {
-				return ddlAuto;
+					&& !"none".equals(ddlAutoMode)) {
+				return ddlAutoMode;
 			}
 			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
 				return existing.get("hibernate.hbm2ddl.auto");

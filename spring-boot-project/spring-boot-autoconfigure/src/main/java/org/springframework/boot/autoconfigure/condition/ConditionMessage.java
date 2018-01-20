@@ -383,20 +383,19 @@ public final class ConditionMessage {
 		 */
 		public ConditionMessage items(Style style, Collection<?> items) {
 			Assert.notNull(style, "Style must not be null");
-			StringBuilder message = new StringBuilder(this.reason);
+			StringBuilder causeMessage = new StringBuilder(this.reason);
 			items = style.applyTo(items);
 			if ((this.condition == null || items.size() <= 1)
 					&& StringUtils.hasLength(this.singular)) {
-				message.append(" " + this.singular);
+				causeMessage.append(" ").append(this.singular);
 			}
 			else if (StringUtils.hasLength(this.plural)) {
-				message.append(" " + this.plural);
+				causeMessage.append(" ").append(this.plural);
 			}
 			if (items != null && !items.isEmpty()) {
-				message.append(
-						" " + StringUtils.collectionToDelimitedString(items, ", "));
+				causeMessage.append(" ").append(StringUtils.collectionToDelimitedString(items, ", "));
 			}
-			return this.condition.because(message.toString());
+			return this.condition.because(causeMessage.toString());
 		}
 
 	}

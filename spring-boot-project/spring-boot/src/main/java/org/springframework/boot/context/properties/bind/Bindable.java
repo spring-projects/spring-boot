@@ -138,8 +138,8 @@ public final class Bindable<T> {
 				existingValue == null || this.type.isArray()
 						|| this.boxedType.resolve().isInstance(existingValue),
 				"ExistingValue must be an instance of " + this.type);
-		Supplier<T> value = (existingValue == null ? null : () -> existingValue);
-		return new Bindable<>(this.type, this.boxedType, value, NO_ANNOTATIONS);
+		Supplier<T> supplierValue = (existingValue == null ? null : () -> existingValue);
+		return new Bindable<>(this.type, this.boxedType, supplierValue, NO_ANNOTATIONS);
 	}
 
 	public Bindable<T> withSuppliedValue(Supplier<T> suppliedValue) {

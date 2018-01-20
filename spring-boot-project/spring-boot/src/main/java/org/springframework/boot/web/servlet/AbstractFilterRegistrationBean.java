@@ -229,32 +229,32 @@ abstract class AbstractFilterRegistrationBean<T extends Filter>
 	@Override
 	protected void configure(FilterRegistration.Dynamic registration) {
 		super.configure(registration);
-		EnumSet<DispatcherType> dispatcherTypes = this.dispatcherTypes;
-		if (dispatcherTypes == null) {
-			dispatcherTypes = EnumSet.of(DispatcherType.REQUEST);
+		EnumSet<DispatcherType> filterDispatcherTypes = this.dispatcherTypes;
+		if (filterDispatcherTypes == null) {
+			filterDispatcherTypes = EnumSet.of(DispatcherType.REQUEST);
 		}
-		Set<String> servletNames = new LinkedHashSet<>();
+		Set<String> filterServletNames = new LinkedHashSet<>();
 		for (ServletRegistrationBean<?> servletRegistrationBean : this.servletRegistrationBeans) {
-			servletNames.add(servletRegistrationBean.getServletName());
+			filterServletNames.add(servletRegistrationBean.getServletName());
 		}
-		servletNames.addAll(this.servletNames);
-		if (servletNames.isEmpty() && this.urlPatterns.isEmpty()) {
+		filterServletNames.addAll(this.servletNames);
+		if (filterServletNames.isEmpty() && this.urlPatterns.isEmpty()) {
 			this.logger.info("Mapping filter: '" + registration.getName() + "' to: "
 					+ Arrays.asList(DEFAULT_URL_MAPPINGS));
-			registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
+			registration.addMappingForUrlPatterns(filterDispatcherTypes, this.matchAfter,
 					DEFAULT_URL_MAPPINGS);
 		}
 		else {
-			if (!servletNames.isEmpty()) {
+			if (!filterServletNames.isEmpty()) {
 				this.logger.info("Mapping filter: '" + registration.getName()
-						+ "' to servlets: " + servletNames);
-				registration.addMappingForServletNames(dispatcherTypes, this.matchAfter,
-						servletNames.toArray(new String[servletNames.size()]));
+						+ "' to servlets: " + filterServletNames);
+				registration.addMappingForServletNames(filterDispatcherTypes, this.matchAfter,
+						filterServletNames.toArray(new String[filterServletNames.size()]));
 			}
 			if (!this.urlPatterns.isEmpty()) {
 				this.logger.info("Mapping filter: '" + registration.getName()
 						+ "' to urls: " + this.urlPatterns);
-				registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
+				registration.addMappingForUrlPatterns(filterDispatcherTypes, this.matchAfter,
 						this.urlPatterns.toArray(new String[this.urlPatterns.size()]));
 			}
 		}

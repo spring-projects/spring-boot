@@ -305,8 +305,8 @@ public class ServerProperties {
 		public String[] getPathsArray(Collection<String> paths) {
 			String[] result = new String[paths.size()];
 			int i = 0;
-			for (String path : paths) {
-				result[i++] = getPath(path);
+			for (String servletPath : paths) {
+				result[i++] = getPath(servletPath);
 			}
 			return result;
 		}
@@ -314,8 +314,8 @@ public class ServerProperties {
 		public String[] getPathsArray(String[] paths) {
 			String[] result = new String[paths.length];
 			int i = 0;
-			for (String path : paths) {
-				result[i++] = getPath(path);
+			for (String servletPath : paths) {
+				result[i++] = getPath(servletPath);
 			}
 			return result;
 		}

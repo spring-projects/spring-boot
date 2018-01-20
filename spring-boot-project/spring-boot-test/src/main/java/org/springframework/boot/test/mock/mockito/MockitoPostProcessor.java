@@ -138,8 +138,8 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		for (Class<?> configurationClass : getConfigurationClasses(beanFactory)) {
 			parser.parse(configurationClass);
 		}
-		Set<Definition> definitions = parser.getDefinitions();
-		for (Definition definition : definitions) {
+		Set<Definition> mockSpyDefinitions = parser.getDefinitions();
+		for (Definition definition : mockSpyDefinitions) {
 			Field field = parser.getField(definition);
 			register(beanFactory, registry, definition, field);
 		}
@@ -158,14 +158,14 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private Map<String, BeanDefinition> getConfigurationBeanDefinitions(
 			ConfigurableListableBeanFactory beanFactory) {
-		Map<String, BeanDefinition> definitions = new LinkedHashMap<>();
+		Map<String, BeanDefinition> mockSpyDefinitions = new LinkedHashMap<>();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
 			if (definition.getAttribute(CONFIGURATION_CLASS_ATTRIBUTE) != null) {
-				definitions.put(beanName, definition);
+				mockSpyDefinitions.put(beanName, definition);
 			}
 		}
-		return definitions;
+		return mockSpyDefinitions;
 	}
 
 	private void register(ConfigurableListableBeanFactory beanFactory,

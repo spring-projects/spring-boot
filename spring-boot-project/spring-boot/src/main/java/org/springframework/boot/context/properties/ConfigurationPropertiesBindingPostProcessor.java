@@ -143,15 +143,15 @@ public class ConfigurationPropertiesBindingPostProcessor
 		// Take care not to cause early instantiation of all FactoryBeans
 		if (this.beanFactory instanceof ListableBeanFactory) {
 			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) this.beanFactory;
-			Map<String, PropertySourcesPlaceholderConfigurer> beans = listableBeanFactory
+			Map<String, PropertySourcesPlaceholderConfigurer> properyPlaceholderBeans = listableBeanFactory
 					.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false,
 							false);
-			if (beans.size() == 1) {
-				return beans.values().iterator().next();
+			if (properyPlaceholderBeans.size() == 1) {
+				return properyPlaceholderBeans.values().iterator().next();
 			}
-			if (beans.size() > 1 && logger.isWarnEnabled()) {
+			if (properyPlaceholderBeans.size() > 1 && logger.isWarnEnabled()) {
 				logger.warn("Multiple PropertySourcesPlaceholderConfigurer "
-						+ "beans registered " + beans.keySet()
+						+ "beans registered " + properyPlaceholderBeans.keySet()
 						+ ", falling back to Environment");
 			}
 		}

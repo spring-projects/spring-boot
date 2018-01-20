@@ -104,14 +104,14 @@ public class HttpEncodingProperties {
 	}
 
 	public boolean shouldForce(Type type) {
-		Boolean force = (type == Type.REQUEST ? this.forceRequest : this.forceResponse);
-		if (force == null) {
-			force = this.force;
+		Boolean shouldForce = (type == Type.REQUEST ? this.forceRequest : this.forceResponse);
+		if (shouldForce == null) {
+			shouldForce = this.force;
 		}
-		if (force == null) {
-			force = (type == Type.REQUEST);
+		if (shouldForce == null) {
+			shouldForce = (type == Type.REQUEST);
 		}
-		return force;
+		return shouldForce;
 	}
 
 	public enum Type {

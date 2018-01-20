@@ -200,14 +200,14 @@ public final class PropertyMapper {
 		public <R> Source<R> as(Function<T, R> adapter) {
 			Assert.notNull(adapter, "Adapter must not be null");
 			Supplier<Boolean> test = () -> this.predicate.test(this.supplier.get());
-			Predicate<R> predicate = (t) -> test.get();
-			Supplier<R> supplier = () -> {
+			Predicate<R> predicateFunction = (t) -> test.get();
+			Supplier<R> supplierFunction = () -> {
 				if (test.get()) {
 					return adapter.apply(this.supplier.get());
 				}
 				return null;
 			};
-			return new Source<>(supplier, predicate);
+			return new Source<>(supplierFunction, predicateFunction);
 		}
 
 		/**

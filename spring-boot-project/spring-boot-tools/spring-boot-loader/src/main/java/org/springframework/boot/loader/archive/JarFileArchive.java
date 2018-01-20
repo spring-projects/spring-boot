@@ -101,8 +101,8 @@ public class JarFileArchive implements Archive {
 			return getUnpackedNestedArchive(jarEntry);
 		}
 		try {
-			JarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
-			return new JarFileArchive(jarFile);
+			JarFile nestedJarFile = this.jarFile.getNestedJarFile(jarEntry);
+			return new JarFileArchive(nestedJarFile);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(

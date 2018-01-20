@@ -102,14 +102,14 @@ final class StringSequence implements CharSequence {
 
 	@Override
 	public int hashCode() {
-		int hash = this.hash;
-		if (hash == 0 && length() > 0) {
+		int stringHash = this.hash;
+		if (stringHash == 0 && length() > 0) {
 			for (int i = this.start; i < this.end; i++) {
-				hash = 31 * hash + this.source.charAt(i);
+				stringHash = 31 * stringHash + this.source.charAt(i);
 			}
-			this.hash = hash;
+			this.hash = stringHash;
 		}
-		return hash;
+		return stringHash;
 	}
 
 	@Override

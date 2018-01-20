@@ -72,18 +72,18 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	}
 
 	private void publishEventIfRequired(EntityManagerFactory entityManagerFactory) {
-		DataSource dataSource = findDataSource(entityManagerFactory);
-		if (dataSource != null && isInitializingDatabase(dataSource)) {
+		DataSource dataSourceEvent = findDataSource(entityManagerFactory);
+		if (dataSourceEvent != null && isInitializingDatabase(dataSourceEvent)) {
 			this.applicationContext
-					.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
+					.publishEvent(new DataSourceSchemaCreatedEvent(dataSourceEvent));
 		}
 	}
 
 	private DataSource findDataSource(EntityManagerFactory entityManagerFactory) {
-		Object dataSource = entityManagerFactory.getProperties()
+		Object nonJtaDataSource = entityManagerFactory.getProperties()
 				.get("javax.persistence.nonJtaDataSource");
-		return (dataSource != null && dataSource instanceof DataSource
-				? (DataSource) dataSource : this.dataSource);
+		return (nonJtaDataSource != null && nonJtaDataSource instanceof DataSource
+				? (DataSource) nonJtaDataSource : this.dataSource);
 	}
 
 	private boolean isInitializingDatabase(DataSource dataSource) {

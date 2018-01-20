@@ -59,8 +59,8 @@ public class DefaultLaunchScript implements LaunchScript {
 	 * @throws IOException if the script cannot be loaded
 	 */
 	public DefaultLaunchScript(File file, Map<?, ?> properties) throws IOException {
-		String content = loadContent(file);
-		this.content = expandPlaceholders(content, properties);
+		String scriptContent = loadContent(file);
+		this.content = expandPlaceholders(scriptContent, properties);
 	}
 
 	private String loadContent(File file) throws IOException {

@@ -136,12 +136,12 @@ public class MavenSettings {
 		if (!problemCollector.getProblems().isEmpty()) {
 			throw new IllegalStateException(createFailureMessage(problemCollector));
 		}
-		List<Profile> activeProfiles = new ArrayList<>();
+		List<Profile> mavenActiveProfiles = new ArrayList<>();
 		Map<String, Profile> profiles = settings.getProfilesAsMap();
 		for (org.apache.maven.model.Profile modelProfile : activeModelProfiles) {
-			activeProfiles.add(profiles.get(modelProfile.getId()));
+			mavenActiveProfiles.add(profiles.get(modelProfile.getId()));
 		}
-		return activeProfiles;
+		return mavenActiveProfiles;
 	}
 
 	private String createFailureMessage(

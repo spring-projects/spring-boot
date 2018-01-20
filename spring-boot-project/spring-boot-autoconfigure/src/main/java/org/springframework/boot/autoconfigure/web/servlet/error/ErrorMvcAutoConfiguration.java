@@ -304,10 +304,10 @@ public class ErrorMvcAutoConfiguration {
 		}
 
 		private EvaluationContext getContext(Map<String, ?> map) {
-			StandardEvaluationContext context = new StandardEvaluationContext();
-			context.addPropertyAccessor(new MapAccessor());
-			context.setRootObject(map);
-			return context;
+			StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
+			evaluationContext.addPropertyAccessor(new MapAccessor());
+			evaluationContext.setRootObject(map);
+			return evaluationContext;
 		}
 
 		@Override

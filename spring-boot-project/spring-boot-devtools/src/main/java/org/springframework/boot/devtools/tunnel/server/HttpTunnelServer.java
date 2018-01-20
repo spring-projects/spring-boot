@@ -391,10 +391,10 @@ public class HttpTunnelServer {
 		protected ServerHttpAsyncRequestControl startAsync() {
 			try {
 				// Try to use async to save blocking
-				ServerHttpAsyncRequestControl async = this.request
+				ServerHttpAsyncRequestControl asyncRequestController = this.request
 						.getAsyncRequestControl(this.response);
-				async.start();
-				return async;
+				asyncRequestController.start();
+				return asyncRequestController;
 			}
 			catch (Exception ex) {
 				return null;

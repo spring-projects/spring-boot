@@ -55,9 +55,9 @@ class FolderSnapshot {
 		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
 		this.folder = folder;
 		this.time = new Date();
-		Set<FileSnapshot> files = new LinkedHashSet<>();
-		collectFiles(folder, files);
-		this.files = Collections.unmodifiableSet(files);
+		Set<FileSnapshot> fileSnapshots = new LinkedHashSet<>();
+		collectFiles(folder, fileSnapshots);
+		this.files = Collections.unmodifiableSet(fileSnapshots);
 	}
 
 	private void collectFiles(File source, Set<FileSnapshot> result) {
@@ -77,29 +77,29 @@ class FolderSnapshot {
 	public ChangedFiles getChangedFiles(FolderSnapshot snapshot,
 			FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
-		File folder = this.folder;
-		Assert.isTrue(snapshot.folder.equals(folder),
-				"Snapshot source folder must be '" + folder + "'");
+		File sourceFolder = this.folder;
+		Assert.isTrue(snapshot.folder.equals(sourceFolder),
+				"Snapshot source folder must be '" + sourceFolder + "'");
 		Set<ChangedFile> changes = new LinkedHashSet<>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {
 			if (acceptChangedFile(triggerFilter, currentFile)) {
 				FileSnapshot previousFile = previousFiles.remove(currentFile.getFile());
 				if (previousFile == null) {
-					changes.add(new ChangedFile(folder, currentFile.getFile(), Type.ADD));
+					changes.add(new ChangedFile(sourceFolder, currentFile.getFile(), Type.ADD));
 				}
 				else if (!previousFile.equals(currentFile)) {
 					changes.add(
-							new ChangedFile(folder, currentFile.getFile(), Type.MODIFY));
+							new ChangedFile(sourceFolder, currentFile.getFile(), Type.MODIFY));
 				}
 			}
 		}
 		for (FileSnapshot previousFile : previousFiles.values()) {
 			if (acceptChangedFile(triggerFilter, previousFile)) {
-				changes.add(new ChangedFile(folder, previousFile.getFile(), Type.DELETE));
+				changes.add(new ChangedFile(sourceFolder, previousFile.getFile(), Type.DELETE));
 			}
 		}
-		return new ChangedFiles(folder, changes);
+		return new ChangedFiles(sourceFolder, changes);
 	}
 
 	private boolean acceptChangedFile(FileFilter triggerFilter, FileSnapshot file) {
@@ -107,11 +107,11 @@ class FolderSnapshot {
 	}
 
 	private Map<File, FileSnapshot> getFilesMap() {
-		Map<File, FileSnapshot> files = new LinkedHashMap<>();
+		Map<File, FileSnapshot> filesMap = new LinkedHashMap<>();
 		for (FileSnapshot file : this.files) {
-			files.put(file.getFile(), file);
+			filesMap.put(file.getFile(), file);
 		}
-		return files;
+		return filesMap;
 	}
 
 	@Override

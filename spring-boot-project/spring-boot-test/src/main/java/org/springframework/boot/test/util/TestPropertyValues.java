@@ -69,9 +69,9 @@ public final class TestPropertyValues {
 	}
 
 	private TestPropertyValues and(Stream<Pair> pairs) {
-		Map<String, Object> properties = new LinkedHashMap<>(this.properties);
-		pairs.filter(Objects::nonNull).forEach((pair) -> pair.addTo(properties));
-		return new TestPropertyValues(properties);
+		Map<String, Object> testProperties = new LinkedHashMap<>(this.properties);
+		pairs.filter(Objects::nonNull).forEach((pair) -> pair.addTo(testProperties));
+		return new TestPropertyValues(testProperties);
 	}
 
 	/**

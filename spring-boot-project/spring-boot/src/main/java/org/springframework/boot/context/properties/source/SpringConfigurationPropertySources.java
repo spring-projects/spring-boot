@@ -57,9 +57,9 @@ class SpringConfigurationPropertySources
 	}
 
 	private void checkForChanges() {
-		PropertySourcesKey lastKey = this.lastKey;
+		PropertySourcesKey lastSourceKey = this.lastKey;
 		PropertySourcesKey currentKey = new PropertySourcesKey(this.sources);
-		if (!currentKey.equals(lastKey)) {
+		if (!currentKey.equals(lastSourceKey)) {
 			onChange(this.sources);
 			this.lastKey = currentKey;
 		}

@@ -223,9 +223,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 		addLocaleMappings(context);
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		Configuration[] configurations = getWebAppContextConfigurations(context,
+		Configuration[] appContextConfigurations = getWebAppContextConfigurations(context,
 				initializersToUse);
-		context.setConfigurations(configurations);
+		context.setConfigurations(appContextConfigurations);
 		configureSession(context);
 		postProcessWebAppContext(context);
 	}
@@ -339,13 +339,13 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	protected Configuration[] getWebAppContextConfigurations(WebAppContext webAppContext,
 			ServletContextInitializer... initializers) {
-		List<Configuration> configurations = new ArrayList<>();
-		configurations.add(
+		List<Configuration> webContextConfigurations = new ArrayList<>();
+		webContextConfigurations.add(
 				getServletContextInitializerConfiguration(webAppContext, initializers));
-		configurations.addAll(getConfigurations());
-		configurations.add(getErrorPageConfiguration());
-		configurations.add(getMimeTypeConfiguration());
-		return configurations.toArray(new Configuration[configurations.size()]);
+		webContextConfigurations.addAll(getConfigurations());
+		webContextConfigurations.add(getErrorPageConfiguration());
+		webContextConfigurations.add(getMimeTypeConfiguration());
+		return webContextConfigurations.toArray(new Configuration[webContextConfigurations.size()]);
 	}
 
 	/**

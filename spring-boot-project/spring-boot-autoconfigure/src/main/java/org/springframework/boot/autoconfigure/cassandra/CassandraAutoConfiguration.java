@@ -62,24 +62,24 @@ public class CassandraAutoConfiguration {
 	@ConditionalOnMissingBean
 	public Cluster cassandraCluster() {
 		PropertyMapper map = PropertyMapper.get();
-		CassandraProperties properties = this.properties;
+		CassandraProperties cassandraProperties = this.properties;
 		Cluster.Builder builder = Cluster.builder()
-				.withClusterName(properties.getClusterName())
-				.withPort(properties.getPort());
-		map.from(properties::getUsername).whenNonNull().to((username) -> builder
-				.withCredentials(username, properties.getPassword()));
-		map.from(properties::getCompression).whenNonNull().to(builder::withCompression);
-		map.from(properties::getLoadBalancingPolicy).whenNonNull()
+				.withClusterName(cassandraProperties.getClusterName())
+				.withPort(cassandraProperties.getPort());
+		map.from(cassandraProperties::getUsername).whenNonNull().to((username) -> builder
+				.withCredentials(username, cassandraProperties.getPassword()));
+		map.from(cassandraProperties::getCompression).whenNonNull().to(builder::withCompression);
+		map.from(cassandraProperties::getLoadBalancingPolicy).whenNonNull()
 				.as(BeanUtils::instantiateClass).to(builder::withLoadBalancingPolicy);
 		map.from(this::getQueryOptions).to(builder::withQueryOptions);
-		map.from(properties::getReconnectionPolicy).whenNonNull()
+		map.from(cassandraProperties::getReconnectionPolicy).whenNonNull()
 				.as(BeanUtils::instantiateClass).to(builder::withReconnectionPolicy);
-		map.from(properties::getRetryPolicy).whenNonNull().as(BeanUtils::instantiateClass)
+		map.from(cassandraProperties::getRetryPolicy).whenNonNull().as(BeanUtils::instantiateClass)
 				.to(builder::withRetryPolicy);
 		map.from(this::getSocketOptions).to(builder::withSocketOptions);
-		map.from(properties::isSsl).whenTrue().toCall(builder::withSSL);
+		map.from(cassandraProperties::isSsl).whenTrue().toCall(builder::withSSL);
 		map.from(this::getPoolingOptions).to(builder::withPoolingOptions);
-		map.from(properties::getContactPoints)
+		map.from(cassandraProperties::getContactPoints)
 				.as((list) -> list.toArray(new String[list.size()]))
 				.to(builder::addContactPoints);
 		customize(builder);
@@ -97,12 +97,12 @@ public class CassandraAutoConfiguration {
 	private QueryOptions getQueryOptions() {
 		PropertyMapper map = PropertyMapper.get();
 		QueryOptions options = new QueryOptions();
-		CassandraProperties properties = this.properties;
-		map.from(properties::getConsistencyLevel).whenNonNull()
+		CassandraProperties cassandraProperties = this.properties;
+		map.from(cassandraProperties::getConsistencyLevel).whenNonNull()
 				.to(options::setConsistencyLevel);
-		map.from(properties::getSerialConsistencyLevel).whenNonNull()
+		map.from(cassandraProperties::getSerialConsistencyLevel).whenNonNull()
 				.to(options::setSerialConsistencyLevel);
-		map.from(properties::getFetchSize).to(options::setFetchSize);
+		map.from(cassandraProperties::getFetchSize).to(options::setFetchSize);
 		return options;
 	}
 
@@ -118,15 +118,15 @@ public class CassandraAutoConfiguration {
 
 	private PoolingOptions getPoolingOptions() {
 		PropertyMapper map = PropertyMapper.get();
-		CassandraProperties.Pool properties = this.properties.getPool();
+		CassandraProperties.Pool propertiesPool = this.properties.getPool();
 		PoolingOptions options = new PoolingOptions();
-		map.from(properties::getIdleTimeout).whenNonNull().asInt(Duration::getSeconds)
+		map.from(propertiesPool::getIdleTimeout).whenNonNull().asInt(Duration::getSeconds)
 				.to(options::setIdleTimeoutSeconds);
-		map.from(properties::getPoolTimeout).whenNonNull().asInt(Duration::toMillis)
+		map.from(propertiesPool::getPoolTimeout).whenNonNull().asInt(Duration::toMillis)
 				.to(options::setPoolTimeoutMillis);
-		map.from(properties::getHeartbeatInterval).whenNonNull()
+		map.from(propertiesPool::getHeartbeatInterval).whenNonNull()
 				.asInt(Duration::getSeconds).to(options::setHeartbeatIntervalSeconds);
-		map.from(properties::getMaxQueueSize).to(options::setMaxQueueSize);
+		map.from(propertiesPool::getMaxQueueSize).to(options::setMaxQueueSize);
 		return options;
 	}
 

@@ -52,23 +52,23 @@ public class ConditionEvaluationReportMessage {
 	}
 
 	private StringBuilder getLogMessage(ConditionEvaluationReport report, String title) {
-		StringBuilder message = new StringBuilder();
-		message.append(String.format("%n%n%n"));
+		StringBuilder logMessage = new StringBuilder();
+		logMessage.append(String.format("%n%n%n"));
 		StringBuilder separator = new StringBuilder();
 		for (int i = 0; i < title.length(); i++) {
 			separator.append("=");
 		}
-		message.append(String.format("%s%n", separator));
-		message.append(String.format("%s%n", title));
-		message.append(String.format("%s%n%n%n", separator));
+		logMessage.append(String.format("%s%n", separator));
+		logMessage.append(String.format("%s%n", title));
+		logMessage.append(String.format("%s%n%n%n", separator));
 		Map<String, ConditionAndOutcomes> shortOutcomes = orderByName(
 				report.getConditionAndOutcomesBySource());
-		logPositiveMatches(message, shortOutcomes);
-		logNegativeMatches(message, shortOutcomes);
-		logExclusions(report, message);
-		logUnconditionalClasses(report, message);
-		message.append(String.format("%n%n"));
-		return message;
+		logPositiveMatches(logMessage, shortOutcomes);
+		logNegativeMatches(logMessage, shortOutcomes);
+		logExclusions(report, logMessage);
+		logUnconditionalClasses(report, logMessage);
+		logMessage.append(String.format("%n%n"));
+		return logMessage;
 	}
 
 	private void logPositiveMatches(StringBuilder message,

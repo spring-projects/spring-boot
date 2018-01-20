@@ -236,21 +236,21 @@ public class DataSourceProperties
 					() -> "Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
-		String driverClassName = null;
+		String jdbcDriverClassName = null;
 
 		if (StringUtils.hasText(this.url)) {
-			driverClassName = DatabaseDriver.fromJdbcUrl(this.url).getDriverClassName();
+			jdbcDriverClassName = DatabaseDriver.fromJdbcUrl(this.url).getDriverClassName();
 		}
 
-		if (!StringUtils.hasText(driverClassName)) {
-			driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
+		if (!StringUtils.hasText(jdbcDriverClassName)) {
+			jdbcDriverClassName = this.embeddedDatabaseConnection.getDriverClassName();
 		}
 
-		if (!StringUtils.hasText(driverClassName)) {
+		if (!StringUtils.hasText(jdbcDriverClassName)) {
 			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
 					this.environment, "driver class");
 		}
-		return driverClassName;
+		return jdbcDriverClassName;
 	}
 
 	private boolean driverClassIsLoadable() {
@@ -289,12 +289,12 @@ public class DataSourceProperties
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
-		String url = this.embeddedDatabaseConnection.getUrl(determineDatabaseName());
-		if (!StringUtils.hasText(url)) {
+		String jdbcUrl = this.embeddedDatabaseConnection.getUrl(determineDatabaseName());
+		if (!StringUtils.hasText(jdbcUrl)) {
 			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
 					this.environment, "url");
 		}
-		return url;
+		return jdbcUrl;
 	}
 
 	private String determineDatabaseName() {

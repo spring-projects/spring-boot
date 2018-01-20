@@ -69,20 +69,20 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	private List<FailureAnalyzer> loadFailureAnalyzers(ClassLoader classLoader) {
 		List<String> analyzerNames = SpringFactoriesLoader
 				.loadFactoryNames(FailureAnalyzer.class, classLoader);
-		List<FailureAnalyzer> analyzers = new ArrayList<>();
+		List<FailureAnalyzer> failureAnalyzers = new ArrayList<>();
 		for (String analyzerName : analyzerNames) {
 			try {
 				Constructor<?> constructor = ClassUtils.forName(analyzerName, classLoader)
 						.getDeclaredConstructor();
 				ReflectionUtils.makeAccessible(constructor);
-				analyzers.add((FailureAnalyzer) constructor.newInstance());
+				failureAnalyzers.add((FailureAnalyzer) constructor.newInstance());
 			}
 			catch (Throwable ex) {
 				logger.trace("Failed to load " + analyzerName, ex);
 			}
 		}
-		AnnotationAwareOrderComparator.sort(analyzers);
-		return analyzers;
+		AnnotationAwareOrderComparator.sort(failureAnalyzers);
+		return failureAnalyzers;
 	}
 
 	private void prepareFailureAnalyzers(List<FailureAnalyzer> analyzers,

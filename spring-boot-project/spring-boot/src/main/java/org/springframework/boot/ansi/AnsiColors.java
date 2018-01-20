@@ -110,10 +110,10 @@ public final class AnsiColors {
 		}
 
 		private float[] fromXyz(float x, float y, float z) {
-			double l = (f(y) - 16.0) * 116.0;
-			double a = (f(x) - f(y)) * 500.0;
-			double b = (f(y) - f(z)) * 200.0;
-			return new float[] { (float) l, (float) a, (float) b };
+			double lChannel = (f(y) - 16.0) * 116.0;
+			double aChannel = (f(x) - f(y)) * 500.0;
+			double bChannel = (f(y) - f(z)) * 200.0;
+			return new float[] { (float) lChannel, (float) aChannel, (float) bChannel };
 		}
 
 		private double f(double t) {

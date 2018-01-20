@@ -84,16 +84,16 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 
 	@SuppressWarnings("unchecked")
 	private C createContext(HttpServletRequest request) {
-		WebApplicationContext context = WebApplicationContextUtils
+		WebApplicationContext webApplicationContext = WebApplicationContextUtils
 				.getRequiredWebApplicationContext(request.getServletContext());
-		if (this.contextClass.isInstance(context)) {
-			return (C) context;
+		if (this.contextClass.isInstance(webApplicationContext)) {
+			return (C) webApplicationContext;
 		}
 		try {
-			return context.getBean(this.contextClass);
+			return webApplicationContext.getBean(this.contextClass);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
-			return (C) context.getAutowireCapableBeanFactory().createBean(
+			return (C) webApplicationContext.getAutowireCapableBeanFactory().createBean(
 					this.contextClass, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR,
 					false);
 		}

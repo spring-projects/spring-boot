@@ -73,9 +73,9 @@ public final class ChangedFile {
 	 */
 	public String getRelativeName() {
 		File folder = this.sourceFolder.getAbsoluteFile();
-		File file = this.file.getAbsoluteFile();
+		File changedFile = this.file.getAbsoluteFile();
 		String folderName = StringUtils.cleanPath(folder.getPath());
-		String fileName = StringUtils.cleanPath(file.getPath());
+		String fileName = StringUtils.cleanPath(changedFile.getPath());
 		Assert.state(fileName.startsWith(folderName), () -> "The file " + fileName
 				+ " is not contained in the source folder " + folderName);
 		return fileName.substring(folderName.length() + 1);

@@ -58,8 +58,8 @@ public class SpringApplicationWebApplicationInitializer
 		if (manifest == null) {
 			throw new IllegalStateException("Unable to read manifest");
 		}
-		String sources = manifest.getMainAttributes().getValue(SOURCE_ENTRY);
-		return sources.split(",");
+		String classSources = manifest.getMainAttributes().getValue(SOURCE_ENTRY);
+		return classSources.split(",");
 	}
 
 	private Manifest getManifest(ServletContext servletContext) throws IOException {

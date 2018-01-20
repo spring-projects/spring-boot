@@ -230,7 +230,7 @@ public class SpringApplicationRunner {
 		}
 
 		private List<File> getSourceFiles() {
-			List<File> sources = new ArrayList<>();
+			List<File> sourceFiles = new ArrayList<>();
 			for (String source : SpringApplicationRunner.this.sources) {
 				List<String> paths = ResourceUtils.getUrls(source,
 						SpringApplicationRunner.this.compiler.getLoader());
@@ -238,7 +238,7 @@ public class SpringApplicationRunner {
 					try {
 						URL url = new URL(path);
 						if ("file".equals(url.getProtocol())) {
-							sources.add(new File(url.getFile()));
+							sourceFiles.add(new File(url.getFile()));
 						}
 					}
 					catch (MalformedURLException ex) {
@@ -246,7 +246,7 @@ public class SpringApplicationRunner {
 					}
 				}
 			}
-			return sources;
+			return sourceFiles;
 		}
 
 		@Override

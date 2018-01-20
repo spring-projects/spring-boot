@@ -62,10 +62,10 @@ public class ElasticsearchAutoConfiguration {
 	}
 
 	private Properties createProperties() {
-		Properties properties = new Properties();
-		properties.put("cluster.name", this.properties.getClusterName());
-		properties.putAll(this.properties.getProperties());
-		return properties;
+		Properties elasticsearchProperties = new Properties();
+		elasticsearchProperties.put("cluster.name", this.properties.getClusterName());
+		elasticsearchProperties.putAll(this.properties.getProperties());
+		return elasticsearchProperties;
 	}
 
 }

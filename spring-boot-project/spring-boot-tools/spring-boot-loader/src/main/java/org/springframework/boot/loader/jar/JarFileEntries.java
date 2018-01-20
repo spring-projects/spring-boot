@@ -114,10 +114,10 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	@Override
 	public void visitEnd() {
 		sort(0, this.size - 1);
-		int[] positions = this.positions;
-		this.positions = new int[positions.length];
+		int[] filePositions = this.positions;
+		this.positions = new int[filePositions.length];
 		for (int i = 0; i < this.size; i++) {
-			this.positions[positions[i]] = i;
+			this.positions[filePositions[i]] = i;
 		}
 	}
 

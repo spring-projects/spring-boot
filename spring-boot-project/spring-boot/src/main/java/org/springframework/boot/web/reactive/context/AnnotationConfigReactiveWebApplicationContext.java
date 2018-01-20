@@ -196,22 +196,22 @@ public class AnnotationConfigReactiveWebApplicationContext
 	private void applyBeanNameGenerator(DefaultListableBeanFactory beanFactory,
 			AnnotatedBeanDefinitionReader reader,
 			ClassPathBeanDefinitionScanner scanner) {
-		BeanNameGenerator beanNameGenerator = getBeanNameGenerator();
-		if (beanNameGenerator != null) {
-			reader.setBeanNameGenerator(beanNameGenerator);
-			scanner.setBeanNameGenerator(beanNameGenerator);
+		BeanNameGenerator applyBeanNameGenerator = getBeanNameGenerator();
+		if (applyBeanNameGenerator != null) {
+			reader.setBeanNameGenerator(applyBeanNameGenerator);
+			scanner.setBeanNameGenerator(applyBeanNameGenerator);
 			beanFactory.registerSingleton(
 					AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-					beanNameGenerator);
+					applyBeanNameGenerator);
 		}
 	}
 
 	private void applyScopeMetadataResolver(AnnotatedBeanDefinitionReader reader,
 			ClassPathBeanDefinitionScanner scanner) {
-		ScopeMetadataResolver scopeMetadataResolver = getScopeMetadataResolver();
-		if (scopeMetadataResolver != null) {
-			reader.setScopeMetadataResolver(scopeMetadataResolver);
-			scanner.setScopeMetadataResolver(scopeMetadataResolver);
+		ScopeMetadataResolver applyScopeMetadataResolver = getScopeMetadataResolver();
+		if (applyScopeMetadataResolver != null) {
+			reader.setScopeMetadataResolver(applyScopeMetadataResolver);
+			scanner.setScopeMetadataResolver(applyScopeMetadataResolver);
 		}
 	}
 

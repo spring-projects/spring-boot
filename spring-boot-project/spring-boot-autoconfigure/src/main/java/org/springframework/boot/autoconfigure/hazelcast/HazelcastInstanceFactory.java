@@ -61,14 +61,14 @@ public class HazelcastInstanceFactory {
 
 	private Config getConfig(Resource configLocation) throws IOException {
 		URL configUrl = configLocation.getURL();
-		Config config = new XmlConfigBuilder(configUrl).build();
+		Config hazelcastConfig = new XmlConfigBuilder(configUrl).build();
 		if (ResourceUtils.isFileURL(configUrl)) {
-			config.setConfigurationFile(configLocation.getFile());
+			hazelcastConfig.setConfigurationFile(configLocation.getFile());
 		}
 		else {
-			config.setConfigurationUrl(configUrl);
+			hazelcastConfig.setConfigurationUrl(configUrl);
 		}
-		return config;
+		return hazelcastConfig;
 	}
 
 	/**

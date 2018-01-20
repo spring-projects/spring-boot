@@ -109,9 +109,9 @@ class CentralDirectoryEndRecord {
 	 * @return the central directory data
 	 */
 	public RandomAccessData getCentralDirectory(RandomAccessData data) {
-		long offset = Bytes.littleEndianValue(this.block, this.offset + 16, 4);
+		long dataOffset = Bytes.littleEndianValue(this.block, this.offset + 16, 4);
 		long length = Bytes.littleEndianValue(this.block, this.offset + 12, 4);
-		return data.getSubsection(offset, length);
+		return data.getSubsection(dataOffset, length);
 	}
 
 	/**

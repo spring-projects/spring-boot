@@ -63,9 +63,9 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	private final Properties properties = new Properties();
 
 	public AutoConfigureAnnotationProcessor() {
-		Map<String, String> annotations = new LinkedHashMap<>();
-		addAnnotations(annotations);
-		this.annotations = Collections.unmodifiableMap(annotations);
+		Map<String, String> configAnnotations = new LinkedHashMap<>();
+		addAnnotations(configAnnotations);
+		this.annotations = Collections.unmodifiableMap(configAnnotations);
 	}
 
 	protected void addAnnotations(Map<String, String> annotations) {

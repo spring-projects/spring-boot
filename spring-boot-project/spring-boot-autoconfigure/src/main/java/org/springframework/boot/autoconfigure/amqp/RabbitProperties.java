@@ -183,11 +183,11 @@ public class RabbitProperties {
 	}
 
 	private List<Address> parseAddresses(String addresses) {
-		List<Address> parsedAddresses = new ArrayList<>();
+		List<Address> addressList = new ArrayList<>();
 		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
-			parsedAddresses.add(new Address(address));
+			addressList.add(new Address(address));
 		}
-		return parsedAddresses;
+		return addressList;
 	}
 
 	public String getUsername() {

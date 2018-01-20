@@ -167,9 +167,9 @@ final class CentralDirectoryFileHeader implements FileHeader {
 
 	@Override
 	public CentralDirectoryFileHeader clone() {
-		byte[] header = new byte[46];
-		System.arraycopy(this.header, this.headerOffset, header, 0, header.length);
-		return new CentralDirectoryFileHeader(header, 0, this.name, header, this.comment,
+		byte[] dataHeader = new byte[46];
+		System.arraycopy(this.header, this.headerOffset, dataHeader, 0, dataHeader.length);
+		return new CentralDirectoryFileHeader(dataHeader, 0, this.name, dataHeader, this.comment,
 				this.localHeaderOffset);
 	}
 
