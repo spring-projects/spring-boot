@@ -230,6 +230,7 @@ public class ServerProperties {
 		@NestedConfigurationProperty
 		private final Jsp jsp = new Jsp();
 
+		@NestedConfigurationProperty
 		private final Session session = new Session();
 
 		public String getContextPath() {
