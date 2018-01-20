@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,6 +25,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -47,94 +47,55 @@ public final class StaticResourceRequest {
 	}
 
 	/**
-	 * Returns a matcher that includes all commonly used {@link Location Locations}. The
-	 * {@link StaticResourceRequestMatcher#excluding(Location, Location...) excluding}
+	 * Returns a matcher that includes all commonly used {@link StaticResourceLocation Locations}. The
+	 * {@link StaticResourceRequestMatcher#excluding(StaticResourceLocation, StaticResourceLocation...) excluding}
 	 * method can be used to remove specific locations if required. For example:
 	 * <pre class="code">
-	 * StaticResourceRequest.toCommonLocations().excluding(Location.CSS)
+	 * StaticResourceRequest.toCommonLocations().excluding(StaticResourceLocation.CSS)
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public static StaticResourceRequestMatcher toCommonLocations() {
-		return to(EnumSet.allOf(Location.class));
+		return to(EnumSet.allOf(StaticResourceLocation.class));
 	}
 
 	/**
-	 * Returns a matcher that includes the specified {@link Location Locations}. For
+	 * Returns a matcher that includes the specified {@link StaticResourceLocation Locations}. For
 	 * example: <pre class="code">
-	 * StaticResourceRequest.to(Location.CSS, Location.JAVA_SCRIPT)
+	 * StaticResourceRequest.to(StaticResourceLocation.CSS, StaticResourceLocation.JAVA_SCRIPT)
 	 * </pre>
 	 * @param first the first location to include
 	 * @param rest additional locations to include
 	 * @return the configured {@link RequestMatcher}
 	 */
-	public static StaticResourceRequestMatcher to(Location first, Location... rest) {
+	public static StaticResourceRequestMatcher to(StaticResourceLocation first, StaticResourceLocation... rest) {
 		return to(EnumSet.of(first, rest));
 	}
 
 	/**
-	 * Returns a matcher that includes the specified {@link Location Locations}. For
+	 * Returns a matcher that includes the specified {@link StaticResourceLocation Locations}. For
 	 * example: <pre class="code">
 	 * StaticResourceRequest.to(locations)
 	 * </pre>
 	 * @param locations the locations to include
 	 * @return the configured {@link RequestMatcher}
 	 */
-	public static StaticResourceRequestMatcher to(Set<Location> locations) {
+	public static StaticResourceRequestMatcher to(Set<StaticResourceLocation> locations) {
 		Assert.notNull(locations, "Locations must not be null");
 		return new StaticResourceRequestMatcher(new LinkedHashSet<>(locations));
 	}
 
-	public enum Location {
-
-		/**
-		 * Resources under {@code "/css"}.
-		 */
-		CSS("/css/**"),
-
-		/**
-		 * Resources under {@code "/js"}.
-		 */
-		JAVA_SCRIPT("/js/**"),
-
-		/**
-		 * Resources under {@code "/images"}.
-		 */
-		IMAGES("/images/**"),
-
-		/**
-		 * Resources under {@code "/webjars"}.
-		 */
-		WEB_JARS("/webjars/**"),
-
-		/**
-		 * The {@code "favicon.ico"} resource.
-		 */
-		FAVICON("/**/favicon.ico");
-
-		private String[] patterns;
-
-		Location(String... patterns) {
-			this.patterns = patterns;
-		}
-
-		Stream<String> getPatterns() {
-			return Arrays.stream(this.patterns);
-		}
-
-	}
-
 	/**
-	 * The request matcher used to match against resource {@link Location Locations}.
+	 * The request matcher used to match against resource {@link StaticResourceLocation Locations}.
 	 */
 	public static final class StaticResourceRequestMatcher
 			extends ApplicationContextRequestMatcher<ServerProperties> {
 
-		private final Set<Location> locations;
+		private final Set<StaticResourceLocation> locations;
 
 		private RequestMatcher delegate;
 
-		private StaticResourceRequestMatcher(Set<Location> locations) {
+		private StaticResourceRequestMatcher(Set<StaticResourceLocation> locations) {
 			super(ServerProperties.class);
 			this.locations = locations;
 		}
@@ -146,7 +107,7 @@ public final class StaticResourceRequest {
 		 * @param rest additional locations to exclude
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */
-		public StaticResourceRequestMatcher excluding(Location first, Location... rest) {
+		public StaticResourceRequestMatcher excluding(StaticResourceLocation first, StaticResourceLocation... rest) {
 			return excluding(EnumSet.of(first, rest));
 		}
 
@@ -156,9 +117,9 @@ public final class StaticResourceRequest {
 		 * @param locations the locations to exclude
 		 * @return a new {@link StaticResourceRequestMatcher}
 		 */
-		public StaticResourceRequestMatcher excluding(Set<Location> locations) {
+		public StaticResourceRequestMatcher excluding(Set<StaticResourceLocation> locations) {
 			Assert.notNull(locations, "Locations must not be null");
-			Set<Location> subset = new LinkedHashSet<>(this.locations);
+			Set<StaticResourceLocation> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);
 			return new StaticResourceRequestMatcher(subset);
 		}
@@ -175,7 +136,7 @@ public final class StaticResourceRequest {
 		}
 
 		private Stream<String> getPatterns(ServerProperties serverProperties) {
-			return this.locations.stream().flatMap(Location::getPatterns)
+			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns)
 					.map(serverProperties.getServlet()::getPath);
 		}
 

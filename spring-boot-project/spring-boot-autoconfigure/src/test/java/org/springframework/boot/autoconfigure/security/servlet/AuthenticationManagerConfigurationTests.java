@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.security.servlet;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.autoconfigure.security.servlet.AuthenticationManagerConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;

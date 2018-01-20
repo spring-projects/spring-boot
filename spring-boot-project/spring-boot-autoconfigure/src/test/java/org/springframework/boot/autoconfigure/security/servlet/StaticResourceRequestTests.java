@@ -25,8 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.autoconfigure.security.servlet.StaticResourceRequest;
-import org.springframework.boot.autoconfigure.security.servlet.StaticResourceRequest.Location;
+import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
@@ -61,14 +60,14 @@ public class StaticResourceRequestTests {
 	@Test
 	public void toCommonLocationsWithExcludeShouldNotMatchExcluded() {
 		RequestMatcher matcher = StaticResourceRequest.toCommonLocations()
-				.excluding(Location.CSS);
+				.excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 	}
 
 	@Test
 	public void toLocationShouldMatchLocation() {
-		RequestMatcher matcher = StaticResourceRequest.to(Location.CSS);
+		RequestMatcher matcher = StaticResourceRequest.to(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
@@ -77,7 +76,7 @@ public class StaticResourceRequestTests {
 	public void toLocationWhenHasServletPathShouldMatchLocation() {
 		ServerProperties serverProperties = new ServerProperties();
 		serverProperties.getServlet().setPath("/foo");
-		RequestMatcher matcher = StaticResourceRequest.to(Location.CSS);
+		RequestMatcher matcher = StaticResourceRequest.to(StaticResourceLocation.CSS);
 		assertMatcher(matcher, serverProperties).matches("/foo", "/css/file.css");
 		assertMatcher(matcher, serverProperties).doesNotMatch("/foo", "/js/file.js");
 	}
@@ -86,14 +85,14 @@ public class StaticResourceRequestTests {
 	public void toLocationsFromSetWhenSetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Locations must not be null");
-		StaticResourceRequest.to((Set<Location>) null);
+		StaticResourceRequest.to((Set<StaticResourceLocation>) null);
 	}
 
 	@Test
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Locations must not be null");
-		StaticResourceRequest.toCommonLocations().excluding((Set<Location>) null);
+		StaticResourceRequest.toCommonLocations().excluding((Set<StaticResourceLocation>) null);
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {

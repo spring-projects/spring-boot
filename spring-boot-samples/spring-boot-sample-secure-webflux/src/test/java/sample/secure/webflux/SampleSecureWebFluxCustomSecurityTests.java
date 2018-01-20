@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
+import org.springframework.boot.autoconfigure.security.reactive.StaticResourceRequest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,6 +78,12 @@ public class SampleSecureWebFluxCustomSecurityTests {
 				.expectStatus().isOk();
 	}
 
+	@Test
+	public void staticResourceShouldBeAccessible() {
+		this.webClient.get().uri("/css/bootstrap.min.css").accept(MediaType.APPLICATION_JSON).exchange()
+				.expectStatus().isOk();
+	}
+
 	@Configuration
 	static class SecurityConfiguration {
 
@@ -93,7 +100,8 @@ public class SampleSecureWebFluxCustomSecurityTests {
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
 					.permitAll().matchers(EndpointRequest.toAnyEndpoint())
-					.hasRole("ACTUATOR").pathMatchers("/login").permitAll().anyExchange()
+					.hasRole("ACTUATOR").matchers(StaticResourceRequest.toCommonLocations()).permitAll()
+					.pathMatchers("/login").permitAll().anyExchange()
 					.authenticated().and().httpBasic();
 			return http.build();
 		}
