@@ -17,6 +17,7 @@
 package org.springframework.boot.web.servlet.filter;
 
 import org.springframework.core.Ordered;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 /**
@@ -26,7 +27,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * @since 2.0.0
  */
 public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
-		implements Ordered {
+		implements PriorityOrdered {
 
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 
