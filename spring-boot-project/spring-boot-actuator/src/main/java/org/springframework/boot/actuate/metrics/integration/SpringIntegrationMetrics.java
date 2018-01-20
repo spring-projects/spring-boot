@@ -66,15 +66,15 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 		registerGauge(registry, this.configurer, this.tags,
 				"spring.integration.channelNames",
 				"The number of spring integration channels",
-				(configurer) -> configurer.getChannelNames().length);
+				(configurerMeasure) -> configurerMeasure.getChannelNames().length);
 		registerGauge(registry, this.configurer, this.tags,
 				"spring.integration.handlerNames",
 				"The number of spring integration handlers",
-				(configurer) -> configurer.getHandlerNames().length);
+				(configurerMeasure) -> configurerMeasure.getHandlerNames().length);
 		registerGauge(registry, this.configurer, this.tags,
 				"spring.integration.sourceNames",
 				"The number of spring integration sources",
-				(configurer) -> configurer.getSourceNames().length);
+				(configurerMeasure) -> configurerMeasure.getSourceNames().length);
 		this.registries.add(registry);
 	}
 

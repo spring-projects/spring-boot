@@ -181,13 +181,13 @@ public abstract class AutoConfigurationPackages {
 		private boolean loggedBasePackageInfo;
 
 		BasePackages(String... names) {
-			List<String> packages = new ArrayList<>();
+			List<String> basePackages = new ArrayList<>();
 			for (String name : names) {
 				if (StringUtils.hasText(name)) {
-					packages.add(name);
+					basePackages.add(name);
 				}
 			}
-			this.packages = packages;
+			this.packages = basePackages;
 		}
 
 		public List<String> get() {

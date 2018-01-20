@@ -189,10 +189,10 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	}
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
-		List<HttpMessageConverter<?>> converters = new ArrayList<>();
+		List<HttpMessageConverter<?>> defaultConverters = new ArrayList<>();
 		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation."
 				+ "WebMvcConfigurationSupport", null)) {
-			converters.addAll(new WebMvcConfigurationSupport() {
+			defaultConverters.addAll(new WebMvcConfigurationSupport() {
 
 				public List<HttpMessageConverter<?>> defaultMessageConverters() {
 					return super.getMessageConverters();
@@ -201,10 +201,10 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 			}.defaultMessageConverters());
 		}
 		else {
-			converters.addAll(new RestTemplate().getMessageConverters());
+			defaultConverters.addAll(new RestTemplate().getMessageConverters());
 		}
-		reorderXmlConvertersToEnd(converters);
-		return converters;
+		reorderXmlConvertersToEnd(defaultConverters);
+		return defaultConverters;
 	}
 
 	private void reorderXmlConvertersToEnd(List<HttpMessageConverter<?>> converters) {

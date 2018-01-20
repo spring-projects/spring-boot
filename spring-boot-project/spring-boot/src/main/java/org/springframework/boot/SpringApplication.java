@@ -309,20 +309,20 @@ public class SpringApplication {
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
-		SpringApplicationRunListeners listeners = getRunListeners(args);
-		listeners.starting();
+		SpringApplicationRunListeners runListeners = getRunListeners(args);
+		runListeners.starting();
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
 					args);
-			ConfigurableEnvironment environment = prepareEnvironment(listeners,
+			ConfigurableEnvironment configurableEnvironment = prepareEnvironment(runListeners,
 					applicationArguments);
-			configureIgnoreBeanInfo(environment);
-			Banner printedBanner = printBanner(environment);
+			configureIgnoreBeanInfo(configurableEnvironment);
+			Banner printedBanner = printBanner(configurableEnvironment);
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(
 					SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
-			prepareContext(context, environment, listeners, applicationArguments,
+			prepareContext(context, configurableEnvironment, runListeners, applicationArguments,
 					printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
@@ -331,14 +331,14 @@ public class SpringApplication {
 				new StartupInfoLogger(this.mainApplicationClass)
 						.logStarted(getApplicationLog(), stopWatch);
 			}
-			listeners.started(context);
+			runListeners.started(context);
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, listeners, exceptionReporters, ex);
+			handleRunFailure(context, runListeners, exceptionReporters, ex);
 			throw new IllegalStateException(ex);
 		}
-		listeners.running(context);
+		runListeners.running(context);
 		return context;
 	}
 
@@ -346,16 +346,16 @@ public class SpringApplication {
 			SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments) {
 		// Create and configure the environment
-		ConfigurableEnvironment environment = getOrCreateEnvironment();
-		configureEnvironment(environment, applicationArguments.getSourceArgs());
-		listeners.environmentPrepared(environment);
-		bindToSpringApplication(environment);
+		ConfigurableEnvironment configurableEnvironment = getOrCreateEnvironment();
+		configureEnvironment(configurableEnvironment, applicationArguments.getSourceArgs());
+		listeners.environmentPrepared(configurableEnvironment);
+		bindToSpringApplication(configurableEnvironment);
 		if (this.webApplicationType == WebApplicationType.NONE) {
-			environment = new EnvironmentConverter(getClassLoader())
-					.convertToStandardEnvironmentIfNecessary(environment);
+			configurableEnvironment = new EnvironmentConverter(getClassLoader())
+					.convertToStandardEnvironmentIfNecessary(configurableEnvironment);
 		}
-		ConfigurationPropertySources.attach(environment);
-		return environment;
+		ConfigurationPropertySources.attach(configurableEnvironment);
+		return configurableEnvironment;
 	}
 
 	private void prepareContext(ConfigurableApplicationContext context,
@@ -378,9 +378,9 @@ public class SpringApplication {
 		}
 
 		// Load the sources
-		Set<Object> sources = getAllSources();
-		Assert.notEmpty(sources, "Sources must not be empty");
-		load(context, sources.toArray(new Object[sources.size()]));
+		Set<Object> loadSources = getAllSources();
+		Assert.notEmpty(loadSources, "Sources must not be empty");
+		load(context, loadSources.toArray(new Object[loadSources.size()]));
 		listeners.contextLoaded(context);
 	}
 
@@ -481,23 +481,23 @@ public class SpringApplication {
 	 */
 	protected void configurePropertySources(ConfigurableEnvironment environment,
 			String[] args) {
-		MutablePropertySources sources = environment.getPropertySources();
+		MutablePropertySources propertySources = environment.getPropertySources();
 		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
-			sources.addLast(
+			propertySources.addLast(
 					new MapPropertySource("defaultProperties", this.defaultProperties));
 		}
 		if (this.addCommandLineProperties && args.length > 0) {
 			String name = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
-			if (sources.contains(name)) {
-				PropertySource<?> source = sources.get(name);
+			if (propertySources.contains(name)) {
+				PropertySource<?> source = propertySources.get(name);
 				CompositePropertySource composite = new CompositePropertySource(name);
 				composite.addPropertySource(new SimpleCommandLinePropertySource(
 						"springApplicationCommandLineArgs", args));
 				composite.addPropertySource(source);
-				sources.replace(name, composite);
+				propertySources.replace(name, composite);
 			}
 			else {
-				sources.addFirst(new SimpleCommandLinePropertySource(args));
+				propertySources.addFirst(new SimpleCommandLinePropertySource(args));
 			}
 		}
 	}
@@ -546,10 +546,10 @@ public class SpringApplication {
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
-		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
+		ResourceLoader currentResourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(
-				resourceLoader, this.banner);
+				currentResourceLoader, this.banner);
 		if (this.bannerMode == Mode.LOG) {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
 		}

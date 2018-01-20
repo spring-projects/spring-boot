@@ -93,14 +93,14 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private ProgressReporter getProgressReporter(DefaultRepositorySystemSession session,
 			boolean quiet) {
-		String progressReporter = (quiet ? "none"
+		String artifactProgressReporter = (quiet ? "none"
 				: System.getProperty(
 						"org.springframework.boot.cli.compiler.grape.ProgressReporter"));
-		if ("detail".equals(progressReporter)
+		if ("detail".equals(artifactProgressReporter)
 				|| Boolean.getBoolean("groovy.grape.report.downloads")) {
 			return new DetailedProgressReporter(session, System.out);
 		}
-		if ("none".equals(progressReporter)) {
+		if ("none".equals(artifactProgressReporter)) {
 			return () -> {
 			};
 		}
@@ -118,9 +118,9 @@ public class AetherGrapeEngine implements GrapeEngine {
 		List<Dependency> dependencies = createDependencies(dependencyMaps, exclusions);
 		try {
 			List<File> files = resolve(dependencies);
-			GroovyClassLoader classLoader = getClassLoader(args);
+			GroovyClassLoader groovyClassLoader = getClassLoader(args);
 			for (File file : files) {
-				classLoader.addURL(file.toURI().toURL());
+				groovyClassLoader.addURL(file.toURI().toURL());
 			}
 		}
 		catch (ArtifactResolutionException | MalformedURLException ex) {
@@ -219,8 +219,8 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	private GroovyClassLoader getClassLoader(Map args) {
-		GroovyClassLoader classLoader = (GroovyClassLoader) args.get("classLoader");
-		return (classLoader == null ? this.classLoader : classLoader);
+		GroovyClassLoader groovyClassLoader = (GroovyClassLoader) args.get("classLoader");
+		return (groovyClassLoader == null ? this.classLoader : groovyClassLoader);
 	}
 
 	@Override

@@ -88,17 +88,17 @@ public class MongoClientFactory {
 	}
 
 	private MongoClient createNetworkMongoClient(MongoClientOptions options) {
-		MongoProperties properties = this.properties;
-		if (properties.getUri() != null) {
-			return createMongoClient(properties.getUri(), options);
+		MongoProperties mongoProperties = this.properties;
+		if (mongoProperties.getUri() != null) {
+			return createMongoClient(mongoProperties.getUri(), options);
 		}
 		if (hasCustomAddress() || hasCustomCredentials()) {
 			if (options == null) {
 				options = MongoClientOptions.builder().build();
 			}
-			MongoCredential credentials = getCredentials(properties);
-			String host = getValue(properties.getHost(), "localhost");
-			int port = getValue(properties.getPort(), MongoProperties.DEFAULT_PORT);
+			MongoCredential credentials = getCredentials(mongoProperties);
+			String host = getValue(mongoProperties.getHost(), "localhost");
+			int port = getValue(mongoProperties.getPort(), MongoProperties.DEFAULT_PORT);
 			List<ServerAddress> seeds = Collections
 					.singletonList(new ServerAddress(host, port));
 			return credentials == null ? new MongoClient(seeds, options)

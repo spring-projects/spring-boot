@@ -71,16 +71,16 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 
 	@Override
 	public List<AuditEvent> find(String principal, Instant after, String type) {
-		LinkedList<AuditEvent> events = new LinkedList<>();
+		LinkedList<AuditEvent> auditEvents = new LinkedList<>();
 		synchronized (this.monitor) {
 			for (int i = 0; i < this.events.length; i++) {
 				AuditEvent event = resolveTailEvent(i);
 				if (event != null && isMatch(principal, after, type, event)) {
-					events.addFirst(event);
+					auditEvents.addFirst(event);
 				}
 			}
 		}
-		return events;
+		return auditEvents;
 	}
 
 	private boolean isMatch(String principal, Instant after, String type,

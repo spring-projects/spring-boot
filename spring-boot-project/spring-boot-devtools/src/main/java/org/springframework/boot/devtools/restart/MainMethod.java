@@ -42,9 +42,9 @@ class MainMethod {
 	private Method getMainMethod(Thread thread) {
 		for (StackTraceElement element : thread.getStackTrace()) {
 			if ("main".equals(element.getMethodName())) {
-				Method method = getMainMethod(element);
-				if (method != null) {
-					return method;
+				Method mainMethod = getMainMethod(element);
+				if (mainMethod != null) {
+					return mainMethod;
 				}
 			}
 		}
@@ -54,9 +54,9 @@ class MainMethod {
 	private Method getMainMethod(StackTraceElement element) {
 		try {
 			Class<?> elementClass = Class.forName(element.getClassName());
-			Method method = elementClass.getDeclaredMethod("main", String[].class);
-			if (Modifier.isStatic(method.getModifiers())) {
-				return method;
+			Method mainMethod = elementClass.getDeclaredMethod("main", String[].class);
+			if (Modifier.isStatic(mainMethod.getModifiers())) {
+				return mainMethod;
 			}
 		}
 		catch (Exception ex) {

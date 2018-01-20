@@ -132,8 +132,8 @@ class InitializrServiceMetadata {
 		if (!root.has(DEPENDENCIES_EL)) {
 			return result;
 		}
-		JSONObject dependencies = root.getJSONObject(DEPENDENCIES_EL);
-		JSONArray array = dependencies.getJSONArray(VALUES_EL);
+		JSONObject dependenciesExpression = root.getJSONObject(DEPENDENCIES_EL);
+		JSONArray array = dependenciesExpression.getJSONArray(VALUES_EL);
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject group = array.getJSONObject(i);
 			parseGroup(group, result);

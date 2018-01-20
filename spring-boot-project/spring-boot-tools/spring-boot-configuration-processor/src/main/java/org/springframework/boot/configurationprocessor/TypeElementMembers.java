@@ -77,9 +77,9 @@ class TypeElementMembers {
 			processField(field);
 		}
 		try {
-			Map<String, Object> fieldValues = this.fieldValuesParser
+			Map<String, Object> typeFieldValues = this.fieldValuesParser
 					.getFieldValues(element);
-			for (Map.Entry<String, Object> entry : fieldValues.entrySet()) {
+			for (Map.Entry<String, Object> entry : typeFieldValues.entrySet()) {
 				if (!this.fieldValues.containsKey(entry.getKey())) {
 					this.fieldValues.put(entry.getKey(), entry.getValue());
 				}

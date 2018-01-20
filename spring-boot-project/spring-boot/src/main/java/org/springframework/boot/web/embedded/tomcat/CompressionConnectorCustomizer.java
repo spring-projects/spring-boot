@@ -48,11 +48,11 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 	}
 
 	private void customize(AbstractHttp11Protocol<?> protocol) {
-		Compression compression = this.compression;
+		Compression contentCompression = this.compression;
 		protocol.setCompression("on");
-		protocol.setCompressionMinSize(compression.getMinResponseSize());
+		protocol.setCompressionMinSize(contentCompression.getMinResponseSize());
 		protocol.setCompressibleMimeType(
-				StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
+				StringUtils.arrayToCommaDelimitedString(contentCompression.getMimeTypes()));
 		if (this.compression.getExcludedUserAgents() != null) {
 			protocol.setNoCompressionUserAgents(StringUtils.arrayToCommaDelimitedString(
 					this.compression.getExcludedUserAgents()));

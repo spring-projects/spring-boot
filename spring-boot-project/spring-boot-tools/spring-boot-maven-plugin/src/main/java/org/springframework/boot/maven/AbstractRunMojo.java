@@ -210,10 +210,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void run(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
-		boolean fork = isFork();
+		boolean isFork = isFork();
 		this.project.getProperties().setProperty("_spring.boot.fork.enabled",
-				Boolean.toString(fork));
-		if (fork) {
+				Boolean.toString(isFork));
+		if (isFork) {
 			doRunWithForkedJvm(startClassName);
 		}
 		else {
@@ -296,16 +296,16 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addJvmArgs(List<String> args) {
-		RunArguments jvmArguments = resolveJvmArguments();
-		Collections.addAll(args, jvmArguments.asArray());
-		logArguments("JVM argument(s): ", jvmArguments.asArray());
+		RunArguments pluginJvmArguments = resolveJvmArguments();
+		Collections.addAll(args, pluginJvmArguments.asArray());
+		logArguments("JVM argument(s): ", pluginJvmArguments.asArray());
 	}
 
 	private void addAgents(List<String> args) {
 		if (this.agent != null) {
 			getLog().info("Attaching agents: " + Arrays.asList(this.agent));
-			for (File agent : this.agent) {
-				args.add("-javaagent:" + agent);
+			for (File pluginAgent : this.agent) {
+				args.add("-javaagent:" + pluginAgent);
 			}
 		}
 		if (this.noverify) {
@@ -345,21 +345,21 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private String getStartClass() throws MojoExecutionException {
-		String mainClass = this.mainClass;
-		if (mainClass == null) {
+		String applicationMainClass = this.mainClass;
+		if (applicationMainClass == null) {
 			try {
-				mainClass = MainClassFinder.findSingleMainClass(this.classesDirectory,
+				applicationMainClass = MainClassFinder.findSingleMainClass(this.classesDirectory,
 						SPRING_BOOT_APPLICATION_CLASS_NAME);
 			}
 			catch (IOException ex) {
 				throw new MojoExecutionException(ex.getMessage(), ex);
 			}
 		}
-		if (mainClass == null) {
+		if (applicationMainClass == null) {
 			throw new MojoExecutionException("Unable to find a suitable main class, "
 					+ "please add a 'mainClass' property");
 		}
-		return mainClass;
+		return applicationMainClass;
 	}
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {

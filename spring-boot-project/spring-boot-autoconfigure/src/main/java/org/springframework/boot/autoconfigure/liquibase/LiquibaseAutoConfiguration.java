@@ -125,10 +125,10 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private SpringLiquibase createSpringLiquibase() {
-			DataSource liquibaseDataSource = getDataSource();
-			if (liquibaseDataSource != null) {
+			DataSource liquibaseSpringDataSource = getDataSource();
+			if (liquibaseSpringDataSource != null) {
 				SpringLiquibase liquibase = new SpringLiquibase();
-				liquibase.setDataSource(liquibaseDataSource);
+				liquibase.setDataSource(liquibaseSpringDataSource);
 				return liquibase;
 			}
 			SpringLiquibase liquibase = new DataSourceClosingSpringLiquibase();

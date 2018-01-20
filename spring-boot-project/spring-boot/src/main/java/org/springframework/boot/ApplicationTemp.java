@@ -64,9 +64,9 @@ public class ApplicationTemp {
 	 * @return a sub-directory
 	 */
 	public File getDir(String subDir) {
-		File dir = new File(getDir(), subDir);
-		dir.mkdirs();
-		return dir;
+		File directory = new File(getDir(), subDir);
+		directory.mkdirs();
+		return directory;
 	}
 
 	/**

@@ -83,32 +83,32 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private void configureListenerFactory(
 			ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
 		PropertyMapper map = PropertyMapper.get();
-		Listener properties = this.properties.getListener();
-		map.from(properties::getConcurrency).whenNonNull().to(factory::setConcurrency);
+		Listener listenerProperties = this.properties.getListener();
+		map.from(listenerProperties::getConcurrency).whenNonNull().to(factory::setConcurrency);
 		map.from(() -> this.messageConverter).whenNonNull()
 				.to(factory::setMessageConverter);
 		map.from(() -> this.replyTemplate).whenNonNull().to(factory::setReplyTemplate);
-		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH)
+		map.from(listenerProperties::getType).whenEqualTo(Listener.Type.BATCH)
 				.toCall(() -> factory.setBatchListener(true));
 	}
 
 	private void configureContainer(ContainerProperties container) {
 		PropertyMapper map = PropertyMapper.get();
-		Listener properties = this.properties.getListener();
-		map.from(properties::getAckMode).whenNonNull().to(container::setAckMode);
-		map.from(properties::getClientId).whenNonNull().to(container::setClientId);
-		map.from(properties::getAckCount).whenNonNull().to(container::setAckCount);
-		map.from(properties::getAckTime).whenNonNull().as(Duration::toMillis)
+		Listener listenerProperties = this.properties.getListener();
+		map.from(listenerProperties::getAckMode).whenNonNull().to(container::setAckMode);
+		map.from(listenerProperties::getClientId).whenNonNull().to(container::setClientId);
+		map.from(listenerProperties::getAckCount).whenNonNull().to(container::setAckCount);
+		map.from(listenerProperties::getAckTime).whenNonNull().as(Duration::toMillis)
 				.to(container::setAckTime);
-		map.from(properties::getPollTimeout).whenNonNull().as(Duration::toMillis)
+		map.from(listenerProperties::getPollTimeout).whenNonNull().as(Duration::toMillis)
 				.to(container::setPollTimeout);
-		map.from(properties::getNoPollThreshold).whenNonNull()
+		map.from(listenerProperties::getNoPollThreshold).whenNonNull()
 				.to(container::setNoPollThreshold);
-		map.from(properties::getIdleEventInterval).whenNonNull().as(Duration::toMillis)
+		map.from(listenerProperties::getIdleEventInterval).whenNonNull().as(Duration::toMillis)
 				.to(container::setIdleEventInterval);
-		map.from(properties::getMonitorInterval).whenNonNull().as(Duration::getSeconds)
+		map.from(listenerProperties::getMonitorInterval).whenNonNull().as(Duration::getSeconds)
 				.as(Number::intValue).to(container::setMonitorInterval);
-		map.from(properties::getLogContainerConfig).whenNonNull()
+		map.from(listenerProperties::getLogContainerConfig).whenNonNull()
 				.to(container::setLogContainerConfig);
 	}
 

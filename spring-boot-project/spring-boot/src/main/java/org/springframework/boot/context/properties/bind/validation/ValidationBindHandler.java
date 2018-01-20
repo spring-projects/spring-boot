@@ -120,10 +120,10 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 	private void throwBindValidationException(ConfigurationPropertyName name,
 			BindingResult errors) {
-		Set<ConfigurationProperty> boundProperties = this.boundProperties.stream()
+		Set<ConfigurationProperty> errorBoundProperties = this.boundProperties.stream()
 				.filter((property) -> name.isAncestorOf(property.getName()))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
-		ValidationErrors validationErrors = new ValidationErrors(name, boundProperties,
+		ValidationErrors validationErrors = new ValidationErrors(name, errorBoundProperties,
 				errors.getAllErrors());
 		throw new BindValidationException(validationErrors);
 	}

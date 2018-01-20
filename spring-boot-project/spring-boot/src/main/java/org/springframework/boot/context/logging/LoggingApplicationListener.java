@@ -292,8 +292,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	protected void initializeLogLevel(LoggingSystem system, LogLevel level) {
 		List<String> loggers = LOG_LEVEL_LOGGERS.get(level);
 		if (loggers != null) {
-			for (String logger : loggers) {
-				system.setLogLevel(logger, level);
+			for (String registredLogger : loggers) {
+				system.setLogLevel(registredLogger, level);
 			}
 		}
 	}

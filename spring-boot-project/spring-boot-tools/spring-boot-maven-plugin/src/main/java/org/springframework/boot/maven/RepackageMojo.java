@@ -227,14 +227,14 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private File getTargetFile() {
-		String classifier = (this.classifier == null ? "" : this.classifier.trim());
-		if (!classifier.isEmpty() && !classifier.startsWith("-")) {
-			classifier = "-" + classifier;
+		String artifactClassifier = (this.classifier == null ? "" : this.classifier.trim());
+		if (!artifactClassifier.isEmpty() && !artifactClassifier.startsWith("-")) {
+			artifactClassifier = "-" + artifactClassifier;
 		}
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-		return new File(this.outputDirectory, this.finalName + classifier + "."
+		return new File(this.outputDirectory, this.finalName + artifactClassifier + "."
 				+ this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 

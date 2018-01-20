@@ -92,9 +92,9 @@ public class ApplicationHome {
 					: sourceClass.getProtectionDomain());
 			CodeSource codeSource = (domain == null ? null : domain.getCodeSource());
 			URL location = (codeSource == null ? null : codeSource.getLocation());
-			File source = (location == null ? null : findSource(location));
-			if (source != null && source.exists() && !isUnitTest()) {
-				return source.getAbsoluteFile();
+			File sourceFile = (location == null ? null : findSource(location));
+			if (sourceFile != null && sourceFile.exists() && !isUnitTest()) {
+				return sourceFile.getAbsoluteFile();
 			}
 			return null;
 		}

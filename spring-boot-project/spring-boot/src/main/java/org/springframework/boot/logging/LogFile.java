@@ -98,11 +98,11 @@ public class LogFile {
 		if (StringUtils.hasLength(this.file)) {
 			return this.file;
 		}
-		String path = this.path;
-		if (!path.endsWith("/")) {
-			path = path + "/";
+		String loggingPath = this.path;
+		if (!loggingPath.endsWith("/")) {
+			loggingPath = loggingPath + "/";
 		}
-		return StringUtils.applyRelativePath(path, "spring.log");
+		return StringUtils.applyRelativePath(loggingPath, "spring.log");
 	}
 
 	/**

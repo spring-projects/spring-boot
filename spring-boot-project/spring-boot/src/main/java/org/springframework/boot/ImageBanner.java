@@ -150,8 +150,8 @@ public class ImageBanner implements Banner {
 
 	private Frame readFrame(int width, int height, ImageReader reader, int imageIndex,
 			ImageReadParam readParam) throws IOException {
-		BufferedImage image = reader.read(imageIndex, readParam);
-		BufferedImage resized = resizeImage(image, width, height);
+		BufferedImage sourceImage = reader.read(imageIndex, readParam);
+		BufferedImage resized = resizeImage(sourceImage, width, height);
 		int delayTime = getDelayTime(reader, imageIndex);
 		return new Frame(resized, delayTime);
 	}

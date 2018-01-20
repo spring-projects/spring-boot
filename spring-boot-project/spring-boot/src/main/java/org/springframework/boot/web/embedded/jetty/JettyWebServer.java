@@ -140,8 +140,8 @@ public class JettyWebServer implements WebServer {
 				for (Handler handler : this.server.getHandlers()) {
 					handleDeferredInitialize(handler);
 				}
-				Connector[] connectors = this.server.getConnectors();
-				for (Connector connector : connectors) {
+				Connector[] serverConnectors = this.server.getConnectors();
+				for (Connector connector : serverConnectors) {
 					try {
 						connector.start();
 					}
@@ -233,8 +233,8 @@ public class JettyWebServer implements WebServer {
 
 	@Override
 	public int getPort() {
-		Connector[] connectors = this.server.getConnectors();
-		for (Connector connector : connectors) {
+		Connector[] serverConnectors = this.server.getConnectors();
+		for (Connector connector : serverConnectors) {
 			// Probably only one...
 			return getLocalPort(connector);
 		}

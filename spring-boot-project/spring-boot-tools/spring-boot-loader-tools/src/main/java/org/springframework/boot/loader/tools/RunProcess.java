@@ -82,15 +82,15 @@ public class RunProcess {
 		builder.redirectErrorStream(true);
 		boolean inheritedIO = inheritIO(builder);
 		try {
-			Process process = builder.start();
-			this.process = process;
+			Process runningProcess = builder.start();
+			this.process = runningProcess;
 			if (!inheritedIO) {
-				redirectOutput(process);
+				redirectOutput(runningProcess);
 			}
 			SignalUtils.attachSignalHandler(this::handleSigInt);
 			if (waitForProcess) {
 				try {
-					return process.waitFor();
+					return runningProcess.waitFor();
 				}
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
@@ -190,11 +190,11 @@ public class RunProcess {
 
 	private boolean doKill() {
 		// destroy the running process
-		Process process = this.process;
-		if (process != null) {
+		Process processToKill = this.process;
+		if (processToKill != null) {
 			try {
-				process.destroy();
-				process.waitFor();
+				processToKill.destroy();
+				processToKill.waitFor();
 				this.process = null;
 				return true;
 			}

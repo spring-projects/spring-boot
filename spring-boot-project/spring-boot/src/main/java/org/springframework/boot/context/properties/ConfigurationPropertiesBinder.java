@@ -72,8 +72,8 @@ class ConfigurationPropertiesBinder {
 	 * @throws ConfigurationPropertiesBindingException if the binding failed
 	 */
 	void bind(Object target, ConfigurationProperties annotation) {
-		Validator validator = determineValidator(target);
-		BindHandler handler = getBindHandler(annotation, validator);
+		Validator configurationValidator = determineValidator(target);
+		BindHandler handler = getBindHandler(annotation, configurationValidator);
 		Bindable<?> bindable = Bindable.ofInstance(target);
 		try {
 			this.binder.bind(annotation.prefix(), bindable, handler);

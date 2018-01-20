@@ -82,14 +82,14 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 
 	@Override
 	public void customize(RestTemplate restTemplate) {
-		RequestExpectationManager expectationManager = createExpectationManager();
+		RequestExpectationManager requestExpectationManager = createExpectationManager();
 		if (this.detectRootUri) {
-			expectationManager = RootUriRequestExpectationManager
-					.forRestTemplate(restTemplate, expectationManager);
+			requestExpectationManager = RootUriRequestExpectationManager
+					.forRestTemplate(restTemplate, requestExpectationManager);
 		}
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate)
-				.build(expectationManager);
-		this.expectationManagers.put(restTemplate, expectationManager);
+				.build(requestExpectationManager);
+		this.expectationManagers.put(restTemplate, requestExpectationManager);
 		this.servers.put(restTemplate, server);
 	}
 

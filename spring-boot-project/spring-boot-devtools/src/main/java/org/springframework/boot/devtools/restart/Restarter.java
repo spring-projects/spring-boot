@@ -273,13 +273,13 @@ public class Restarter {
 
 	private Throwable doStart() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
-		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
+		URL[] classloaderUrls = this.urls.toArray(new URL[this.urls.size()]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
 		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader,
-				urls, updatedFiles, this.logger);
+				classloaderUrls, updatedFiles, this.logger);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Starting application " + this.mainClassName + " with URLs "
-					+ Arrays.asList(urls));
+					+ Arrays.asList(classloaderUrls));
 		}
 		return relaunch(classLoader);
 	}
@@ -356,12 +356,12 @@ public class Restarter {
 	private void clear(Class<?> type, String fieldName) throws Exception {
 		Field field = type.getDeclaredField(fieldName);
 		field.setAccessible(true);
-		Object instance = field.get(null);
-		if (instance instanceof Set) {
-			((Set<?>) instance).clear();
+		Object fieldInstance = field.get(null);
+		if (fieldInstance instanceof Set) {
+			((Set<?>) fieldInstance).clear();
 		}
-		if (instance instanceof Map) {
-			((Map<?, ?>) instance).keySet().removeIf(this::isFromRestartClassLoader);
+		if (fieldInstance instanceof Map) {
+			((Map<?, ?>) fieldInstance).keySet().removeIf(this::isFromRestartClassLoader);
 		}
 	}
 

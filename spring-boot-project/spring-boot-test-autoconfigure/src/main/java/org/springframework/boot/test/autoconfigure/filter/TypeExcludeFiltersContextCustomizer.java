@@ -50,11 +50,11 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 
 	private Set<TypeExcludeFilter> instantiateTypeExcludeFilters(Class<?> testClass,
 			Set<Class<? extends TypeExcludeFilter>> filterClasses) {
-		Set<TypeExcludeFilter> filters = new LinkedHashSet<>();
+		Set<TypeExcludeFilter> excludeFilters = new LinkedHashSet<>();
 		for (Class<? extends TypeExcludeFilter> filterClass : filterClasses) {
-			filters.add(instantiateTypeExcludeFilter(testClass, filterClass));
+			excludeFilters.add(instantiateTypeExcludeFilter(testClass, filterClass));
 		}
-		return Collections.unmodifiableSet(filters);
+		return Collections.unmodifiableSet(excludeFilters);
 	}
 
 	private TypeExcludeFilter instantiateTypeExcludeFilter(Class<?> testClass,

@@ -139,12 +139,12 @@ public class RestartServer {
 
 	private Set<URL> getClassLoaderUrls() {
 		Set<URL> urls = new LinkedHashSet<>();
-		ClassLoader classLoader = this.classLoader;
-		while (classLoader != null) {
-			if (classLoader instanceof URLClassLoader) {
-				Collections.addAll(urls, ((URLClassLoader) classLoader).getURLs());
+		ClassLoader serverClassLoader = this.classLoader;
+		while (serverClassLoader != null) {
+			if (serverClassLoader instanceof URLClassLoader) {
+				Collections.addAll(urls, ((URLClassLoader) serverClassLoader).getURLs());
 			}
-			classLoader = classLoader.getParent();
+			serverClassLoader = serverClassLoader.getParent();
 		}
 		return urls;
 

@@ -166,21 +166,21 @@ public class RabbitAutoConfiguration {
 		public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
 			PropertyMapper map = PropertyMapper.get();
 			RabbitTemplate template = new RabbitTemplate(connectionFactory);
-			MessageConverter messageConverter = this.messageConverter.getIfUnique();
-			if (messageConverter != null) {
-				template.setMessageConverter(messageConverter);
+			MessageConverter temlateMessageConverter = this.messageConverter.getIfUnique();
+			if (temlateMessageConverter != null) {
+				template.setMessageConverter(temlateMessageConverter);
 			}
 			template.setMandatory(determineMandatoryFlag());
-			RabbitProperties.Template properties = this.properties.getTemplate();
-			if (properties.getRetry().isEnabled()) {
-				template.setRetryTemplate(createRetryTemplate(properties.getRetry()));
+			RabbitProperties.Template rabbitMqProperties = this.properties.getTemplate();
+			if (rabbitMqProperties.getRetry().isEnabled()) {
+				template.setRetryTemplate(createRetryTemplate(rabbitMqProperties.getRetry()));
 			}
-			map.from(properties::getReceiveTimeout).whenNonNull()
+			map.from(rabbitMqProperties::getReceiveTimeout).whenNonNull()
 					.to(template::setReceiveTimeout);
-			map.from(properties::getReplyTimeout).whenNonNull()
+			map.from(rabbitMqProperties::getReplyTimeout).whenNonNull()
 					.to(template::setReplyTimeout);
-			map.from(properties::getExchange).to(template::setExchange);
-			map.from(properties::getRoutingKey).to(template::setRoutingKey);
+			map.from(rabbitMqProperties::getExchange).to(template::setExchange);
+			map.from(rabbitMqProperties::getRoutingKey).to(template::setRoutingKey);
 			return template;
 		}
 

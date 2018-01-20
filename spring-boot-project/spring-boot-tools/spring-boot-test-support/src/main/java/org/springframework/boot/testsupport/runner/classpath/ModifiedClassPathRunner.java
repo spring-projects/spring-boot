@@ -218,10 +218,10 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		private ClassPathEntryFilter(Class<?> testClass) throws Exception {
 			this.exclusions = new ArrayList<>();
 			this.exclusions.add("log4j-*.jar");
-			ClassPathExclusions exclusions = AnnotationUtils.findAnnotation(testClass,
+			ClassPathExclusions classPathExclusions = AnnotationUtils.findAnnotation(testClass,
 					ClassPathExclusions.class);
-			if (exclusions != null) {
-				this.exclusions.addAll(Arrays.asList(exclusions.value()));
+			if (classPathExclusions != null) {
+				this.exclusions.addAll(Arrays.asList(classPathExclusions.value()));
 			}
 		}
 

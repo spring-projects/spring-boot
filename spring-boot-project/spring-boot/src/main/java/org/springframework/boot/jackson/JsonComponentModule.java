@@ -52,13 +52,13 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	@PostConstruct
 	public void registerJsonComponents() {
-		BeanFactory beanFactory = this.beanFactory;
-		while (beanFactory != null) {
-			if (beanFactory instanceof ListableBeanFactory) {
-				addJsonBeans((ListableBeanFactory) beanFactory);
+		BeanFactory contextBeanFactory = this.beanFactory;
+		while (contextBeanFactory != null) {
+			if (contextBeanFactory instanceof ListableBeanFactory) {
+				addJsonBeans((ListableBeanFactory) contextBeanFactory);
 			}
-			beanFactory = (beanFactory instanceof HierarchicalBeanFactory
-					? ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory()
+			contextBeanFactory = (contextBeanFactory instanceof HierarchicalBeanFactory
+					? ((HierarchicalBeanFactory) contextBeanFactory).getParentBeanFactory()
 					: null);
 		}
 	}

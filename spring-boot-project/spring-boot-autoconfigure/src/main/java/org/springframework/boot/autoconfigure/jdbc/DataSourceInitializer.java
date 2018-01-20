@@ -200,14 +200,14 @@ class DataSourceInitializer {
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}
-		DataSource dataSource = this.dataSource;
+		DataSource jdbcDataSource = this.dataSource;
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-			dataSource = DataSourceBuilder.create(this.properties.getClassLoader())
+			jdbcDataSource = DataSourceBuilder.create(this.properties.getClassLoader())
 					.driverClassName(this.properties.determineDriverClassName())
 					.url(this.properties.determineUrl()).username(username)
 					.password(password).build();
 		}
-		DatabasePopulatorUtils.execute(populator, dataSource);
+		DatabasePopulatorUtils.execute(populator, jdbcDataSource);
 	}
 
 }

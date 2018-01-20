@@ -189,12 +189,12 @@ public final class ConfigurationPropertyName
 					ElementValidator.getInvalidChars(elementValue));
 		}
 		int length = this.elements.length;
-		CharSequence[] elements = new CharSequence[length + 1];
-		System.arraycopy(this.elements, 0, elements, 0, length);
-		elements[length] = elementValue;
-		CharSequence[] uniformElements = new CharSequence[length + 1];
-		System.arraycopy(this.uniformElements, 0, uniformElements, 0, length);
-		return new ConfigurationPropertyName(elements, uniformElements);
+		CharSequence[] elementSequence = new CharSequence[length + 1];
+		System.arraycopy(this.elements, 0, elementSequence, 0, length);
+		elementSequence[length] = elementValue;
+		CharSequence[] uniformElementSequence = new CharSequence[length + 1];
+		System.arraycopy(this.uniformElements, 0, uniformElementSequence, 0, length);
+		return new ConfigurationPropertyName(elementSequence, uniformElementSequence);
 	}
 
 	/**
@@ -208,11 +208,11 @@ public final class ConfigurationPropertyName
 		if (size >= getNumberOfElements()) {
 			return this;
 		}
-		CharSequence[] elements = new CharSequence[size];
-		System.arraycopy(this.elements, 0, elements, 0, size);
-		CharSequence[] uniformElements = new CharSequence[size];
-		System.arraycopy(this.uniformElements, 0, uniformElements, 0, size);
-		return new ConfigurationPropertyName(elements, uniformElements);
+		CharSequence[] elementSequence = new CharSequence[size];
+		System.arraycopy(this.elements, 0, elementSequence, 0, size);
+		CharSequence[] uniformElementSequence = new CharSequence[size];
+		System.arraycopy(this.uniformElements, 0, uniformElementSequence, 0, size);
+		return new ConfigurationPropertyName(elementSequence, uniformElementSequence);
 	}
 
 	/**

@@ -157,9 +157,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
-		WebServer webServer = startWebServer();
-		if (webServer != null) {
-			publishEvent(new ServletWebServerInitializedEvent(webServer, this));
+		WebServer currentWebServer = startWebServer();
+		if (currentWebServer != null) {
+			publishEvent(new ServletWebServerInitializedEvent(currentWebServer, this));
 		}
 	}
 
@@ -170,9 +170,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	private void createWebServer() {
-		WebServer webServer = this.webServer;
+		WebServer currentWebServer = this.webServer;
 		ServletContext servletContext = getServletContext();
-		if (webServer == null && servletContext == null) {
+		if (currentWebServer == null && servletContext == null) {
 			ServletWebServerFactory factory = getWebServerFactory();
 			this.webServer = factory.getWebServer(getSelfInitializer());
 		}
@@ -293,18 +293,18 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	private WebServer startWebServer() {
-		WebServer webServer = this.webServer;
-		if (webServer != null) {
-			webServer.start();
+		WebServer currentWebServer = this.webServer;
+		if (currentWebServer != null) {
+			currentWebServer.start();
 		}
-		return webServer;
+		return currentWebServer;
 	}
 
 	private void stopAndReleaseWebServer() {
-		WebServer webServer = this.webServer;
-		if (webServer != null) {
+		WebServer currentWebServer = this.webServer;
+		if (currentWebServer != null) {
 			try {
-				webServer.stop();
+				currentWebServer.stop();
 				this.webServer = null;
 			}
 			catch (Exception ex) {

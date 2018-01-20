@@ -115,9 +115,9 @@ public class QuartzAutoConfiguration {
 	}
 
 	private Properties asProperties(Map<String, String> source) {
-		Properties properties = new Properties();
-		properties.putAll(source);
-		return properties;
+		Properties quartzProperties = new Properties();
+		quartzProperties.putAll(source);
+		return quartzProperties;
 	}
 
 	private void customize(SchedulerFactoryBean schedulerFactoryBean) {

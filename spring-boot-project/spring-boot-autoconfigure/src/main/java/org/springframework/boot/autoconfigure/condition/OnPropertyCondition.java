@@ -123,11 +123,11 @@ class OnPropertyCondition extends SpringBootCondition {
 		private final boolean matchIfMissing;
 
 		Spec(AnnotationAttributes annotationAttributes) {
-			String prefix = annotationAttributes.getString("prefix").trim();
-			if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
-				prefix = prefix + ".";
+			String propertyPrefix = annotationAttributes.getString("prefix").trim();
+			if (StringUtils.hasText(propertyPrefix) && !propertyPrefix.endsWith(".")) {
+				propertyPrefix = propertyPrefix + ".";
 			}
-			this.prefix = prefix;
+			this.prefix = propertyPrefix;
 			this.havingValue = annotationAttributes.getString("havingValue");
 			this.names = getNames(annotationAttributes);
 			this.matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");

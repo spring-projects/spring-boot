@@ -143,18 +143,18 @@ public class GroovyCompiler {
 	private ExtendedGroovyClassLoader createLoader(
 			GroovyCompilerConfiguration configuration) {
 
-		ExtendedGroovyClassLoader loader = new ExtendedGroovyClassLoader(
+		ExtendedGroovyClassLoader groovyLoader = new ExtendedGroovyClassLoader(
 				configuration.getScope());
 
 		for (URL url : getExistingUrls()) {
-			loader.addURL(url);
+			groovyLoader.addURL(url);
 		}
 
 		for (String classpath : configuration.getClasspath()) {
-			loader.addClasspath(classpath);
+			groovyLoader.addClasspath(classpath);
 		}
 
-		return loader;
+		return groovyLoader;
 	}
 
 	private URL[] getExistingUrls() {
@@ -187,9 +187,9 @@ public class GroovyCompiler {
 		this.loader.clearCache();
 		List<Class<?>> classes = new ArrayList<>();
 
-		CompilerConfiguration configuration = this.loader.getConfiguration();
+		CompilerConfiguration compilerConfiguration = this.loader.getConfiguration();
 
-		CompilationUnit compilationUnit = new CompilationUnit(configuration, null,
+		CompilationUnit compilationUnit = new CompilationUnit(compilerConfiguration, null,
 				this.loader);
 		ClassCollector collector = this.loader.createCollector(compilationUnit, null);
 		compilationUnit.setClassgenCallback(collector);
