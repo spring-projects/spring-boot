@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.Session;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 
 /**
@@ -39,7 +40,7 @@ import org.springframework.session.web.http.SessionRepositoryFilter;
 class SessionRepositoryFilterConfiguration {
 
 	@Bean
-	public FilterRegistrationBean<SessionRepositoryFilter<?>> sessionRepositoryFilterRegistration(
+	public FilterRegistrationBean<SessionRepositoryFilter<? extends Session>> sessionRepositoryFilterRegistration(
 			SessionProperties sessionProperties, SessionRepositoryFilter<?> filter) {
 		FilterRegistrationBean<SessionRepositoryFilter<?>> registration = new FilterRegistrationBean<>(
 				filter);

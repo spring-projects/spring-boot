@@ -33,6 +33,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -509,7 +510,7 @@ public class SpringApplicationBuilder {
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder initializers(
-			ApplicationContextInitializer<?>... initializers) {
+			ApplicationContextInitializer<? extends ConfigurableApplicationContext>... initializers) {
 		this.application.addInitializers(initializers);
 		return this;
 	}
@@ -522,7 +523,7 @@ public class SpringApplicationBuilder {
 	 * @param listeners some listeners to add
 	 * @return the current builder
 	 */
-	public SpringApplicationBuilder listeners(ApplicationListener<?>... listeners) {
+	public SpringApplicationBuilder listeners(ApplicationListener<? extends ApplicationEvent>... listeners) {
 		this.application.addListeners(listeners);
 		return this;
 	}

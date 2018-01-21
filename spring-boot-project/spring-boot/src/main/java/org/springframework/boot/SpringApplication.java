@@ -45,6 +45,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
@@ -225,9 +226,9 @@ public class SpringApplication {
 
 	private boolean registerShutdownHook = true;
 
-	private List<ApplicationContextInitializer<?>> initializers;
+	private List<ApplicationContextInitializer<? extends ConfigurableApplicationContext>> initializers;
 
-	private List<ApplicationListener<?>> listeners;
+	private List<ApplicationListener<? extends ApplicationEvent>> listeners;
 
 	private Map<String, Object> defaultProperties;
 
@@ -1170,7 +1171,7 @@ public class SpringApplication {
 	 * @param initializers the initializers to set
 	 */
 	public void setInitializers(
-			Collection<? extends ApplicationContextInitializer<?>> initializers) {
+			Collection<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>> initializers) {
 		this.initializers = new ArrayList<>();
 		this.initializers.addAll(initializers);
 	}
@@ -1180,7 +1181,7 @@ public class SpringApplication {
 	 * {@link ApplicationContext}.
 	 * @param initializers the initializers to add
 	 */
-	public void addInitializers(ApplicationContextInitializer<?>... initializers) {
+	public void addInitializers(ApplicationContextInitializer<? extends ConfigurableApplicationContext>... initializers) {
 		this.initializers.addAll(Arrays.asList(initializers));
 	}
 
@@ -1189,7 +1190,7 @@ public class SpringApplication {
 	 * will be applied to the Spring {@link ApplicationContext}.
 	 * @return the initializers
 	 */
-	public Set<ApplicationContextInitializer<?>> getInitializers() {
+	public Set<ApplicationContextInitializer<? extends ConfigurableApplicationContext>> getInitializers() {
 		return asUnmodifiableOrderedSet(this.initializers);
 	}
 
@@ -1198,7 +1199,7 @@ public class SpringApplication {
 	 * and registered with the {@link ApplicationContext}.
 	 * @param listeners the listeners to set
 	 */
-	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
+	public void setListeners(Collection<? extends ApplicationListener<? extends ApplicationEvent>> listeners) {
 		this.listeners = new ArrayList<>();
 		this.listeners.addAll(listeners);
 	}
@@ -1208,7 +1209,7 @@ public class SpringApplication {
 	 * registered with the {@link ApplicationContext}.
 	 * @param listeners the listeners to add
 	 */
-	public void addListeners(ApplicationListener<?>... listeners) {
+	public void addListeners(ApplicationListener<? extends ApplicationEvent>... listeners) {
 		this.listeners.addAll(Arrays.asList(listeners));
 	}
 
@@ -1218,7 +1219,7 @@ public class SpringApplication {
 	 * .
 	 * @return the listeners
 	 */
-	public Set<ApplicationListener<?>> getListeners() {
+	public Set<ApplicationListener<? extends ApplicationEvent>> getListeners() {
 		return asUnmodifiableOrderedSet(this.listeners);
 	}
 

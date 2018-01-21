@@ -57,11 +57,11 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	private Map<String, String> properties = new HashMap<>();
 
-	public static DataSourceBuilder<?> create() {
+	public static DataSourceBuilder<? extends DataSource> create() {
 		return new DataSourceBuilder<>(null);
 	}
 
-	public static DataSourceBuilder<?> create(ClassLoader classLoader) {
+	public static DataSourceBuilder<? extends DataSource> create(ClassLoader classLoader) {
 		return new DataSourceBuilder<>(classLoader);
 	}
 
