@@ -27,6 +27,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 import javax.servlet.FilterRegistration.Dynamic;
+import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
@@ -93,7 +94,7 @@ abstract class AbstractFilterRegistrationBean<T extends Filter>
 	 * @see #setServletNames
 	 * @see #setUrlPatterns
 	 */
-	public Collection<ServletRegistrationBean<?>> getServletRegistrationBeans() {
+	public Collection<ServletRegistrationBean<? extends Servlet>> getServletRegistrationBeans() {
 		return this.servletRegistrationBeans;
 	}
 
