@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import reactor.core.support.Assert;
-
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,6 +29,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
