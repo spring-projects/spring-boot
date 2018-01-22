@@ -619,6 +619,7 @@ make sure to check the
 section.
 
 
+
 [[howto-disable-registration-of-a-servlet-or-filter]]
 ===== Disable Registration of a Servlet or Filter
 As <<howto-add-a-servlet-filter-or-listener-as-spring-bean,described earlier>>, any
