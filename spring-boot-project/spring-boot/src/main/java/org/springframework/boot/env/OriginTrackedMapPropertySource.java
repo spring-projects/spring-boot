@@ -29,13 +29,14 @@ import org.springframework.core.env.MapPropertySource;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 2.0.0
  * @see OriginTrackedValue
  */
-class OriginTrackedMapPropertySource extends MapPropertySource
+public final class OriginTrackedMapPropertySource extends MapPropertySource
 		implements OriginLookup<String> {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	OriginTrackedMapPropertySource(String name, Map source) {
+	public OriginTrackedMapPropertySource(String name, Map source) {
 		super(name, source);
 	}
 
