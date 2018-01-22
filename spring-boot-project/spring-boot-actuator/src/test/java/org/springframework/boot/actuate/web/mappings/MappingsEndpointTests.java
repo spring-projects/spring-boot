@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web;
+package org.springframework.boot.actuate.web.mappings;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,16 +29,16 @@ import javax.servlet.ServletRegistration;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.web.MappingsEndpoint.ApplicationMappings;
-import org.springframework.boot.actuate.web.MappingsEndpoint.ContextMappings;
-import org.springframework.boot.actuate.web.reactive.DispatcherHandlerMappingDescription;
-import org.springframework.boot.actuate.web.reactive.DispatcherHandlersMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.servlet.DispatcherServletMappingDescription;
-import org.springframework.boot.actuate.web.servlet.DispatcherServletsMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.servlet.FilterRegistrationMappingDescription;
-import org.springframework.boot.actuate.web.servlet.FiltersMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.servlet.ServletRegistrationMappingDescription;
-import org.springframework.boot.actuate.web.servlet.ServletsMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappings;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ContextMappings;
+import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlerMappingDescription;
+import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlersMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletMappingDescription;
+import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletsMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.FilterRegistrationMappingDescription;
+import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.ServletRegistrationMappingDescription;
+import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;

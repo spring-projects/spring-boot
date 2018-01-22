@@ -23,11 +23,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.web.MappingDescriptionProvider;
-import org.springframework.boot.actuate.web.MappingsEndpoint;
-import org.springframework.boot.actuate.web.servlet.DispatcherServletsMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.servlet.FiltersMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.servlet.ServletsMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
+import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletsMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;

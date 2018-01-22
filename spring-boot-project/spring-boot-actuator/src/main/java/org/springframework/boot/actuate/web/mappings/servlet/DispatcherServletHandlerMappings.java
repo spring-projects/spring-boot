@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.servlet;
+package org.springframework.boot.actuate.web.mappings.servlet;
 
 import java.util.Collections;
 import java.util.List;

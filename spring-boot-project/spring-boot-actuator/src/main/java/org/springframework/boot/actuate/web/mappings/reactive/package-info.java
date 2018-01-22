@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator web support.
+ * Actuator reactive request mappings support.
  */
-package org.springframework.boot.actuate.web;
+package org.springframework.boot.actuate.web.mappings.reactive;

@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web;
+package org.springframework.boot.actuate.autoconfigure.web.mappings;
 
 import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.web.MappingDescriptionProvider;
-import org.springframework.boot.actuate.web.MappingsEndpoint;
-import org.springframework.boot.actuate.web.reactive.DispatcherHandlersMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.servlet.DispatcherServletsMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.servlet.FiltersMappingDescriptionProvider;
-import org.springframework.boot.actuate.web.servlet.ServletsMappingDescriptionProvider;
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
+import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlersMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletsMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

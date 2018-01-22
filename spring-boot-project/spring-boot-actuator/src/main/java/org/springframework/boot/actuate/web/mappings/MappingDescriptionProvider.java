@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web;
+package org.springframework.boot.actuate.web.mappings;
 
 import java.util.List;
 

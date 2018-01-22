@@ -14,33 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.reactive;
-
-import org.springframework.web.servlet.DispatcherServlet;
-
 /**
- * A description of a mapping known to a {@link DispatcherServlet}.
- *
- * @author Andy Wilkinson
- * @since 2.0.0
+ * Actuator web request mappings support.
  */
-public class DispatcherHandlerMappingDescription {
-
-	private final String predicate;
-
-	private final String handler;
-
-	DispatcherHandlerMappingDescription(String predicate, String handler) {
-		this.predicate = predicate;
-		this.handler = handler;
-	}
-
-	public String getHandler() {
-		return this.handler;
-	}
-
-	public String getPredicate() {
-		return this.predicate;
-	}
-
-}
+package org.springframework.boot.actuate.web.mappings;

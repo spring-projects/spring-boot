@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.servlet;
+package org.springframework.boot.actuate.web.mappings.servlet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.boot.actuate.web.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping;
 import org.springframework.util.ClassUtils;

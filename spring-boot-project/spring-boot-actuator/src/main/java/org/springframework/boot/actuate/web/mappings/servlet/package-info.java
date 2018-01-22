@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator web support using Spring MVC.
+ * Actuator servlet request mappings support.
  */
-package org.springframework.boot.actuate.web.servlet;
+package org.springframework.boot.actuate.web.mappings.servlet;

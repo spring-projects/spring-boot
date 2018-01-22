@@ -23,9 +23,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.actuate.web.MappingDescriptionProvider;
-import org.springframework.boot.actuate.web.MappingsEndpoint;
-import org.springframework.boot.actuate.web.reactive.DispatcherHandlersMappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
+import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlersMappingDescriptionProvider;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;

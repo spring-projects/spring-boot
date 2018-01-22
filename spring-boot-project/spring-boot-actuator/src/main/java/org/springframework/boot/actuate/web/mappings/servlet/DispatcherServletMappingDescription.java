@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.servlet;
+package org.springframework.boot.actuate.web.mappings.servlet;
 
 import org.springframework.web.servlet.DispatcherServlet;
 

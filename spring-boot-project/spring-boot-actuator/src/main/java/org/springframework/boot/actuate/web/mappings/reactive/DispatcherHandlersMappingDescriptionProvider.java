@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.reactive;
+package org.springframework.boot.actuate.web.mappings.reactive;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.web.MappingDescriptionProvider;
+import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.web.method.HandlerMethod;
