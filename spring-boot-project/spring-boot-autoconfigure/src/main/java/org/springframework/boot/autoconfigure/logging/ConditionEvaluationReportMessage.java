@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,6 @@ public class ConditionEvaluationReportMessage {
 
 	private Map<String, ConditionAndOutcomes> orderByName(
 			Map<String, ConditionAndOutcomes> outcomes) {
-		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<>();
 		List<String> names = new ArrayList<>();
 		Map<String, String> classNames = new HashMap<>();
 		for (String name : outcomes.keySet()) {
@@ -144,6 +143,7 @@ public class ConditionEvaluationReportMessage {
 			classNames.put(shortName, name);
 		}
 		Collections.sort(names);
+		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<>();
 		for (String shortName : names) {
 			result.put(shortName, outcomes.get(classNames.get(shortName)));
 		}
