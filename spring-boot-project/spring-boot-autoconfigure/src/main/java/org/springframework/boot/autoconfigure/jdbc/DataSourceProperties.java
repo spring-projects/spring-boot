@@ -520,22 +520,22 @@ public class DataSourceProperties
 		private static String getMessage(EmbeddedDatabaseConnection connection,
 				Environment environment, String property) {
 			StringBuilder message = new StringBuilder();
-			message.append("Cannot determine embedded database " + property
-					+ " for database type " + connection + ". ");
-			message.append("If you want an embedded database please put a supported "
-					+ "one on the classpath. ");
-			message.append("If you have database settings to be loaded from a "
-					+ "particular profile you may need to active it");
+			message.append("Cannot determine embedded database ").append(property).
+					append(" for database type ").append(connection).append(". ");
+			message.append("If you want an embedded database please put a supported ").
+					append("one on the classpath. ");
+			message.append("If you have database settings to be loaded from a ").
+					append("particular profile you may need to active it");
 			if (environment != null) {
 				String[] profiles = environment.getActiveProfiles();
 				if (ObjectUtils.isEmpty(profiles)) {
 					message.append(" (no profiles are currently active)");
 				}
 				else {
-					message.append(" (the profiles \""
-							+ StringUtils.arrayToCommaDelimitedString(
-									environment.getActiveProfiles())
-							+ "\" are currently active)");
+					message.append(" (the profiles \"").
+							append(StringUtils.arrayToCommaDelimitedString(
+										environment.getActiveProfiles())).
+							append("\" are currently active)");
 
 				}
 			}

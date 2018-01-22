@@ -80,13 +80,13 @@ class ServiceCapabilitiesReportGenerator {
 
 	private void reportAvailableDependencies(InitializrServiceMetadata metadata,
 			StringBuilder report) {
-		report.append("Available dependencies:" + NEW_LINE);
-		report.append("-----------------------" + NEW_LINE);
+		report.append("Available dependencies:").append(NEW_LINE);
+		report.append("-----------------------").append(NEW_LINE);
 		List<Dependency> dependencies = getSortedDependencies(metadata);
 		for (Dependency dependency : dependencies) {
-			report.append(dependency.getId() + " - " + dependency.getName());
+			report.append(dependency.getId()).append(" - ").append(dependency.getName());
 			if (dependency.getDescription() != null) {
-				report.append(": " + dependency.getDescription());
+				report.append(": ").append(dependency.getDescription());
 			}
 			report.append(NEW_LINE);
 		}
@@ -100,8 +100,8 @@ class ServiceCapabilitiesReportGenerator {
 
 	private void reportAvailableProjectTypes(InitializrServiceMetadata metadata,
 			StringBuilder report) {
-		report.append("Available project types:" + NEW_LINE);
-		report.append("------------------------" + NEW_LINE);
+		report.append("Available project types:").append(NEW_LINE);
+		report.append("------------------------").append(NEW_LINE);
 		SortedSet<Entry<String, ProjectType>> entries = new TreeSet<>(
 				Comparator.comparing(Entry::getKey));
 		entries.addAll(metadata.getProjectTypes().entrySet());
@@ -134,8 +134,8 @@ class ServiceCapabilitiesReportGenerator {
 
 	private void reportDefaults(StringBuilder report,
 			InitializrServiceMetadata metadata) {
-		report.append("Defaults:" + NEW_LINE);
-		report.append("---------" + NEW_LINE);
+		report.append("Defaults:").append(NEW_LINE);
+		report.append("---------").append(NEW_LINE);
 		List<String> defaultsKeys = new ArrayList<>(metadata.getDefaults().keySet());
 		Collections.sort(defaultsKeys);
 		for (String defaultsKey : defaultsKeys) {

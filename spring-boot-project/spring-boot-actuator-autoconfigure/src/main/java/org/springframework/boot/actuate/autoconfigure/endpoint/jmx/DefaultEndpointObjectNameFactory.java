@@ -52,14 +52,14 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 			throws MalformedObjectNameException {
 		StringBuilder builder = new StringBuilder(this.properties.getDomain());
 		builder.append(":type=Endpoint");
-		builder.append(",name=" + StringUtils.capitalize(endpoint.getId()));
+		builder.append(",name=").append(StringUtils.capitalize(endpoint.getId()));
 		String baseName = builder.toString();
 		if (this.mBeanServer != null && hasMBean(baseName)) {
-			builder.append(",context=" + this.contextId);
+			builder.append(",context=").append(this.contextId);
 		}
 		if (this.properties.isUniqueNames()) {
 			String identity = ObjectUtils.getIdentityHexString(endpoint);
-			builder.append(",identity=" + identity);
+			builder.append(",identity=").append(identity);
 		}
 		builder.append(getStaticNames());
 		return ObjectNameManager.getInstance(builder.toString());
@@ -76,7 +76,7 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 		}
 		StringBuilder builder = new StringBuilder();
 		this.properties.getStaticNames()
-				.forEach((name, value) -> builder.append("," + name + "=" + value));
+				.forEach((name, value) -> builder.append(",").append(name).append("=").append(value));
 		return builder.toString();
 	}
 

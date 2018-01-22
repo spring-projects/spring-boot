@@ -50,13 +50,13 @@ class UnresolvedDependenciesAnalyzer {
 		if (!this.dependenciesWithNoVersion.isEmpty()
 				&& !project.getPlugins().hasPlugin(DependencyManagementPlugin.class)) {
 			StringBuilder message = new StringBuilder();
-			message.append("\nDuring the build, one or more dependencies that were "
-					+ "declared without a version failed to resolve:\n");
+			message.append("\nDuring the build, one or more dependencies that were ").
+					append("declared without a version failed to resolve:\n");
 			this.dependenciesWithNoVersion
 					.forEach((dependency) -> message.append("    " + dependency + "\n"));
-			message.append("\nDid you forget to apply the "
-					+ "io.spring.dependency-management plugin to the " + project.getName()
-					+ " project?\n");
+			message.append("\nDid you forget to apply the " + "io.spring.dependency-management plugin to the ").
+					append(project.getName()).
+					append(" project?\n");
 			logger.warn(message.toString());
 		}
 	}
