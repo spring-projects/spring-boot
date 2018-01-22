@@ -1225,7 +1225,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.loggers.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.loggers.enabled= # Whether to enable the loggers endpoint.
 
-	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator}/web/MappingsEndpoint.{sc-ext}[MappingsEndpoint])
+	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator}/web/mappings/MappingsEndpoint.{sc-ext}[MappingsEndpoint])
 	management.endpoint.mappings.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.mappings.enabled= # Whether to enable the mappings endpoint.
 

@@ -186,7 +186,7 @@ public class FileSystemWatcher {
 	 * @param remainingScans the number of remaining scans
 	 */
 	void stopAfter(int remainingScans) {
-		Thread thread = null;
+		Thread thread;
 		synchronized (this.monitor) {
 			thread = this.watchThread;
 			if (thread != null) {
