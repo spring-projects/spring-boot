@@ -18,6 +18,7 @@ package org.springframework.boot.web.reactive.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
@@ -249,9 +250,11 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	protected WebClient.Builder getWebClient(
 			Consumer<? super HttpClientOptions.Builder> clientOptions) {
+		InetSocketAddress address = new InetSocketAddress(this.webServer.getPort());
+		String baseUrl = "http://" + address.getHostString() + ":" + address.getPort();
 		return WebClient.builder()
 				.clientConnector(new ReactorClientHttpConnector(clientOptions))
-				.baseUrl("http://localhost:" + this.webServer.getPort());
+				.baseUrl(baseUrl);
 	}
 
 	@Test
