@@ -43,7 +43,7 @@ public class OperationMethodParameterTests {
 	}
 
 	@Test
-	public void getTypeShouldReturnTyoe() {
+	public void getTypeShouldReturnType() {
 		OperationMethodParameter parameter = new OperationMethodParameter("name",
 				this.method.getParameters()[0]);
 		assertThat(parameter.getType()).isEqualTo(String.class);

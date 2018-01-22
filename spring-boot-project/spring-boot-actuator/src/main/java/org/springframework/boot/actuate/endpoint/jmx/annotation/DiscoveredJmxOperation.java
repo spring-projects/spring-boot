@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  * A discovered {@link JmxOperation JMX operation}.
  *
  * @author Stephane Nicoll
- * @author Philip Webb
+ * @author Phillip Webb
  */
 class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxOperation {
 

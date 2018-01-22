@@ -610,9 +610,8 @@ public class MapBinderTests {
 
 		@Override
 		public Map<String, String> convert(String s) {
-			Map<String, String> map = new HashMap<>();
-			StringUtils.commaDelimitedListToSet(s).forEach((k) -> map.put(k, ""));
-			return map;
+			return StringUtils.commaDelimitedListToSet(s).stream()
+					.collect(Collectors.toMap((k) -> k, (k) -> ""));
 		}
 
 	}
