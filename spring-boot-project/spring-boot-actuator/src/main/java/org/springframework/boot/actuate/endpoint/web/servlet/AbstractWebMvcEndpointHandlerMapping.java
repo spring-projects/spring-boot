@@ -214,8 +214,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	}
 
 	/**
-	 * An reactive web operation that can be handled by WebFlux.
+	 * A servlet web operation that can be handled by Spring MVC.
 	 */
+	@FunctionalInterface
 	protected interface ServletWebOperation {
 
 		Object handle(HttpServletRequest request, Map<String, String> body);

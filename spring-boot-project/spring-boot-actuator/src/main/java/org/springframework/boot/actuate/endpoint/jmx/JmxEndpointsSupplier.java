@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@FunctionalInterface
 public interface JmxEndpointsSupplier extends EndpointsSupplier<ExposableJmxEndpoint> {
 
 }

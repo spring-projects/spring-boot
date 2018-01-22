@@ -67,31 +67,27 @@ public class ControllerEndpointHandlerMappingIntegrationTests {
 
 	@Test
 	public void get() {
-		this.contextRunner.run(withWebTestClient(webTestClient -> {
-			webTestClient.get().uri("/actuator/example/one").accept(MediaType.TEXT_PLAIN)
-					.exchange().expectStatus().isOk().expectHeader()
-					.contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
-					.expectBody(String.class).isEqualTo("One");
-		}));
+		this.contextRunner.run(withWebTestClient(
+				(webTestClient) -> webTestClient.get().uri("/actuator/example/one")
+						.accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk()
+						.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
+						.expectBody(String.class).isEqualTo("One")));
 	}
 
 	@Test
 	public void getWithUnacceptableContentType() {
-		this.contextRunner.run(withWebTestClient(webTestClient -> {
-			webTestClient.get().uri("/actuator/example/one")
-					.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-					.isEqualTo(HttpStatus.NOT_ACCEPTABLE);
-		}));
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get()
+				.uri("/actuator/example/one").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)));
 	}
 
 	@Test
 	public void post() {
-		this.contextRunner.run(withWebTestClient(webTestClient -> {
-			webTestClient.post().uri("/actuator/example/two")
-					.syncBody(Collections.singletonMap("id", "test")).exchange()
-					.expectStatus().isCreated().expectHeader()
-					.valueEquals(HttpHeaders.LOCATION, "/example/test");
-		}));
+		this.contextRunner.run(withWebTestClient(
+				(webTestClient) -> webTestClient.post().uri("/actuator/example/two")
+						.syncBody(Collections.singletonMap("id", "test")).exchange()
+						.expectStatus().isCreated().expectHeader()
+						.valueEquals(HttpHeaders.LOCATION, "/example/test")));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> withWebTestClient(

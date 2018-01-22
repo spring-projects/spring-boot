@@ -238,8 +238,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	}
 
 	/**
-	 * An reactive web operation that can be handled by WebFlux.
+	 * A reactive web operation that can be handled by WebFlux.
 	 */
+	@FunctionalInterface
 	protected interface ReactiveWebOperation {
 
 		Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange,
