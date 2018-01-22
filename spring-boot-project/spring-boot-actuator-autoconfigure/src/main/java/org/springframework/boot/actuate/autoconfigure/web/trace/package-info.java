@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.trace;
-
-import java.util.List;
-import java.util.Map;
-
 /**
- * A repository for {@link Trace}s.
- *
- * @author Dave Syer
+ * Auto-configuration for actuator tracing concerns.
  */
-public interface TraceRepository {
-
-	/**
-	 * Find all {@link Trace} objects contained in the repository.
-	 * @return the results
-	 */
-	List<Trace> findAll();
-
-	/**
-	 * Add a new {@link Trace} object at the current time.
-	 * @param traceInfo trace information
-	 */
-	void add(Map<String, Object> traceInfo);
-
-}
+package org.springframework.boot.actuate.autoconfigure.web.trace;

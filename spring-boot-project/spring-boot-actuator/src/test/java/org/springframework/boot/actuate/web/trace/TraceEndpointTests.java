@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.trace;
+package org.springframework.boot.actuate.web.trace;
 
-import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link TraceEndpoint}.
+ * Tests for {@link HttpTraceEndpoint}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -32,10 +34,18 @@ public class TraceEndpointTests {
 
 	@Test
 	public void trace() {
-		TraceRepository repository = new InMemoryTraceRepository();
-		repository.add(Collections.singletonMap("a", "b"));
-		Trace trace = new TraceEndpoint(repository).traces().getTraces().get(0);
-		assertThat(trace.getInfo().get("a")).isEqualTo("b");
+		HttpTraceRepository repository = new InMemoryHttpTraceRepository();
+		repository.add(new HttpTrace(createRequest("GET")));
+		List<HttpTrace> traces = new HttpTraceEndpoint(repository).traces().getTraces();
+		assertThat(traces).hasSize(1);
+		HttpTrace trace = traces.get(0);
+		assertThat(trace.getRequest().getMethod()).isEqualTo("GET");
+	}
+
+	private TraceableRequest createRequest(String method) {
+		TraceableRequest request = mock(TraceableRequest.class);
+		given(request.getMethod()).willReturn(method);
+		return request;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.trace;
+package org.springframework.boot.actuate.web.trace;
 
 import java.util.List;
 
@@ -23,21 +23,21 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
 
 /**
- * {@link Endpoint} to expose {@link Trace} information.
+ * {@link Endpoint} to expose {@link HttpTrace} information.
  *
  * @author Dave Syer
  * @since 2.0.0
  */
 @Endpoint(id = "trace")
-public class TraceEndpoint {
+public class HttpTraceEndpoint {
 
-	private final TraceRepository repository;
+	private final HttpTraceRepository repository;
 
 	/**
-	 * Create a new {@link TraceEndpoint} instance.
+	 * Create a new {@link HttpTraceEndpoint} instance.
 	 * @param repository the trace repository
 	 */
-	public TraceEndpoint(TraceRepository repository) {
+	public HttpTraceEndpoint(HttpTraceRepository repository) {
 		Assert.notNull(repository, "Repository must not be null");
 		this.repository = repository;
 	}
@@ -48,18 +48,18 @@ public class TraceEndpoint {
 	}
 
 	/**
-	 * A description of an application's {@link Trace} entries. Primarily intended for
+	 * A description of an application's {@link HttpTrace} entries. Primarily intended for
 	 * serialization to JSON.
 	 */
 	public static final class TraceDescriptor {
 
-		private final List<Trace> traces;
+		private final List<HttpTrace> traces;
 
-		private TraceDescriptor(List<Trace> traces) {
+		private TraceDescriptor(List<HttpTrace> traces) {
 			this.traces = traces;
 		}
 
-		public List<Trace> getTraces() {
+		public List<HttpTrace> getTraces() {
 			return this.traces;
 		}
 

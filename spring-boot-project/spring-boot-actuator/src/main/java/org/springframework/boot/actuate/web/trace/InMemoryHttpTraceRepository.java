@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.trace;
+package org.springframework.boot.actuate.web.trace;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * In-memory implementation of {@link TraceRepository}.
+ * In-memory implementation of {@link HttpTraceRepository}.
  *
  * @author Dave Syer
  * @author Olivier Bourgain
+ * @since 2.0.0
  */
-public class InMemoryTraceRepository implements TraceRepository {
+public class InMemoryHttpTraceRepository implements HttpTraceRepository {
 
 	private int capacity = 100;
 
 	private boolean reverse = true;
 
-	private final List<Trace> traces = new LinkedList<>();
+	private final List<HttpTrace> traces = new LinkedList<>();
 
 	/**
 	 * Flag to say that the repository lists traces in reverse order.
@@ -58,15 +57,14 @@ public class InMemoryTraceRepository implements TraceRepository {
 	}
 
 	@Override
-	public List<Trace> findAll() {
+	public List<HttpTrace> findAll() {
 		synchronized (this.traces) {
 			return Collections.unmodifiableList(new ArrayList<>(this.traces));
 		}
 	}
 
 	@Override
-	public void add(Map<String, Object> map) {
-		Trace trace = new Trace(Instant.now(), map);
+	public void add(HttpTrace trace) {
 		synchronized (this.traces) {
 			while (this.traces.size() >= this.capacity) {
 				this.traces.remove(this.reverse ? this.capacity - 1 : 0);

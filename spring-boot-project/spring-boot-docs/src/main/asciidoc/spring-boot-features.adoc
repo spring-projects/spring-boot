@@ -2660,6 +2660,9 @@ does so, the orders shown in the following table will be used:
 |`WebFilterChainProxy` (Spring Security)
 |`-100`
 
+|`HttpTraceWebFilter`
+|`Ordered.LOWEST_PRECEDENCE - 10`
+
 |===
 
 
@@ -2794,7 +2797,7 @@ precedence):
 |`ErrorPageFilter`
 |`Ordered.HIGHEST_PRECEDENCE + 1`
 
-|`WebRequestTraceFilter`
+|`HttpTraceFilter`
 |`Ordered.LOWEST_PRECEDENCE - 10`
 |===
 

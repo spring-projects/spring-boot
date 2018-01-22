@@ -115,7 +115,7 @@ store. Not available when using Spring Session's support for reactive web applic
 |Performs a thread dump.
 
 |`trace`
-|Displays trace information (by default, the last 100 HTTP requests).
+|Displays HTTP trace information (by default, the last 100 HTTP requests).
 |===
 
 If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), you can
@@ -1161,71 +1161,14 @@ implementing `ApplicationEventPublisherAware`).
 [[production-ready-tracing]]
 == Tracing
 Tracing is automatically enabled for all HTTP requests. You can view the `trace` endpoint
-and obtain basic information about the last 100 requests. The following listing shows
-sample output:
-
-[source,json,indent=0]
-----
-	[{
-		"timestamp": 1394343677415,
-		"info": {
-			"method": "GET",
-			"path": "/trace",
-			"headers": {
-				"request": {
-					"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-					"Connection": "keep-alive",
-					"Accept-Encoding": "gzip, deflate",
-					"User-Agent": "Mozilla/5.0 Gecko/Firefox",
-					"Accept-Language": "en-US,en;q=0.5",
-					"Cookie": "_ga=GA1.1.827067509.1390890128; ..."
-					"Authorization": "Basic ...",
-					"Host": "localhost:8080"
-				},
-				"response": {
-					"Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
-					"X-Application-Context": "application:8080",
-					"Content-Type": "application/json;charset=UTF-8",
-					"status": "200"
-				}
-			}
-		}
-	},{
-		"timestamp": 1394343684465,
-		...
-	}]
-----
-
-By default, the trace includes the following information:
-
-[cols="1,2"]
-|===
-|Name |Description
-
-|Request Headers
-|Headers from the request.
-
-|Response Headers
-|Headers from the response.
-
-|Cookies
-|`Cookie` from request headers and `Set-Cookie` from response headers.
-
-|Errors
-|The error attributes (if any).
-
-|Time Taken
-|The time taken to service the request in milliseconds.
-|===
+and obtain basic information about the last 100 requests.
 
 
 
 [[production-ready-custom-tracing]]
 === Custom tracing
-If you need to trace additional events, you can inject a
-{sc-spring-boot-actuator}/trace/TraceRepository.{sc-ext}[`TraceRepository`] into your
-Spring beans. The `add` method accepts a single `Map` structure that is converted to JSON
-and logged.
+To customize the items that are included in each trace, use the
+`management.trace.include` configuration property.
 
 By default, an `InMemoryTraceRepository` that stores the last 100 events is used. If you
 need to expand the capacity, you can define your own instance of the

@@ -39,13 +39,12 @@ org.springframework.boot.actuate.autoconfigure.scheduling.ScheduledTasksEndpoint
 org.springframework.boot.actuate.autoconfigure.session.SessionsEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.solr.SolrHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthIndicatorAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.trace.TraceEndpointAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.trace.TraceRepositoryAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.trace.TraceWebFilterAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.web.trace.TraceAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.web.trace.TraceEndpointAutoConfiguration
 
 org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration=\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration,\

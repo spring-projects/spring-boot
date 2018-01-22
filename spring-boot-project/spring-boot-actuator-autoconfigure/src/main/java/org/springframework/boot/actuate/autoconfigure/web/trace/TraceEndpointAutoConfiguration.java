@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.trace;
+package org.springframework.boot.actuate.autoconfigure.web.trace;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
-import org.springframework.boot.actuate.trace.TraceEndpoint;
-import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.actuate.web.trace.HttpTraceEndpoint;
+import org.springframework.boot.actuate.web.trace.HttpTraceRepository;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for the {@link TraceEndpoint}.
+ * {@link EnableAutoConfiguration Auto-configuration} for the {@link HttpTraceEndpoint}.
  *
  * @author Phillip Webb
  * @since 2.0.0
  */
 @Configuration
+@AutoConfigureAfter(TraceAutoConfiguration.class)
 public class TraceEndpointAutoConfiguration {
 
 	@Bean
+	@ConditionalOnBean(HttpTraceRepository.class)
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public TraceEndpoint traceEndpoint(ObjectProvider<TraceRepository> traceRepository) {
-		return new TraceEndpoint(
-				traceRepository.getIfAvailable(() -> new InMemoryTraceRepository()));
+	public HttpTraceEndpoint traceEndpoint(HttpTraceRepository traceRepository) {
+		return new HttpTraceEndpoint(traceRepository);
 	}
 
 }

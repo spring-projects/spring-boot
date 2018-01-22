@@ -167,41 +167,6 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	public void testTrace() {
-		this.restTemplate.getForEntity("/health", String.class);
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate
-				.withBasicAuth("user", getPassword())
-				.getForEntity("/actuator/trace", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = entity.getBody();
-		Map<String, Object> trace = ((List<Map<String, Object>>) body.get("traces"))
-				.get(0);
-		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) trace
-				.get("info")).get("headers")).get("response");
-		assertThat(map.get("status")).isEqualTo("200");
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void traceWithParameterMap() {
-		this.restTemplate.withBasicAuth("user", getPassword())
-				.getForEntity("/actuator/health?param1=value1", String.class);
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate
-				.withBasicAuth("user", getPassword())
-				.getForEntity("/actuator/trace", Map.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		Map<String, Object> body = entity.getBody();
-		Map<String, Object> trace = ((List<Map<String, Object>>) body.get("traces"))
-				.get(0);
-		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
-				.get("info")).get("parameters");
-		assertThat(map.get("param1")).isNotNull();
-	}
-
-	@Test
 	public void testErrorPageDirectAccess() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate

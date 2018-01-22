@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.trace.TraceAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -59,7 +60,8 @@ public class WebMvcEndpointExposureIntegrationTests {
 					ManagementContextAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class,
 					ManagementContextAutoConfiguration.class,
-					ServletManagementContextAutoConfiguration.class))
+					ServletManagementContextAutoConfiguration.class,
+					TraceAutoConfiguration.class))
 			.withConfiguration(
 					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 			.withUserConfiguration(CustomMvcEndpoint.class);

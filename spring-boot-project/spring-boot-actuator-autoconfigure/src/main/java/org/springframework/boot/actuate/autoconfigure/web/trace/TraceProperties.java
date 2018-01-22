@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.trace;
+package org.springframework.boot.actuate.autoconfigure.web.trace;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.boot.actuate.trace.Include;
+import org.springframework.boot.actuate.web.trace.Include;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -30,14 +30,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Venil Noronha
  * @author Madhura Bhave
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.trace")
-public class TraceEndpointProperties {
+public class TraceProperties {
 
 	/**
-	 * Items to be included in the trace. Defaults to request/response headers (including
-	 * cookies) and errors.
+	 * Items to be included in the trace. Defaults to request headers (excluding
+	 * Authorization but including Cookie), response headers (including Set-Cookie), and
+	 * time taken.
 	 */
 	private Set<Include> include = new HashSet<>(Include.defaultIncludes());
 

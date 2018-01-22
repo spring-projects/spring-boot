@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,30 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.actuate.web.trace;
+
+import java.util.List;
+import java.util.Map;
+
 /**
- * Actuator tracing support.
+ * A representation of an HTTP response that is suitable for tracing.
  *
- * @see org.springframework.boot.actuate.trace.TraceRepository
+ * @author Andy Wilkinson
+ * @since 2.0.0
+ * @see HttpExchangeTracer
  */
-package org.springframework.boot.actuate.trace;
+public interface TraceableResponse {
+
+	/**
+	 * The status of the response.
+	 * @return the status
+	 */
+	int getStatus();
+
+	/**
+	 * Returns a modifiable copy of the headers of the response.
+	 * @return the headers
+	 */
+	Map<String, List<String>> getHeaders();
+
+}

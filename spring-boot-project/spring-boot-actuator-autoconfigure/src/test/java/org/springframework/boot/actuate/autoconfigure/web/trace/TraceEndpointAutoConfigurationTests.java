@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.trace;
+package org.springframework.boot.actuate.autoconfigure.web.trace;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.trace.TraceEndpoint;
+import org.springframework.boot.actuate.web.trace.HttpTraceEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,21 +31,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TraceEndpointAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(TraceEndpointAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(TraceAutoConfiguration.class,
+					TraceEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner
-				.run((context) -> assertThat(context).hasSingleBean(TraceEndpoint.class));
+		this.contextRunner.run(
+				(context) -> assertThat(context).hasSingleBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.trace.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(TraceEndpoint.class));
+						.doesNotHaveBean(HttpTraceEndpoint.class));
+	}
+
+	@Test
+	public void endpointBacksOffWhenRepositoryIsNotAvailable() {
+		this.contextRunner.withPropertyValues("management.trace.enabled:false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(HttpTraceEndpoint.class));
 	}
 
 }

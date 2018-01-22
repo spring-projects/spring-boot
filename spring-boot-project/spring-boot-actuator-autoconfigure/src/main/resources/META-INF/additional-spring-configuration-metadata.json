@@ -186,12 +186,6 @@
       "defaultValue": "simple"
     },
     {
-      "name": "management.trace.filter.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable the trace servlet filter.",
-      "defaultValue": true
-    },
-    {
       "name": "management.metrics.binders.jvm.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JVM metrics.",
@@ -238,6 +232,21 @@
       "type": "java.lang.Boolean",
       "description": "Instrument all available connection factories.",
       "defaultValue": true
+    },
+    {
+      "name": "management.trace.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable HTTP request-response tracing.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.trace.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the trace servlet filter.",
+      "deprecation": {
+        "replacement": "management.trace.enabled",
+        "level": "error"
+      }
     },
     {
       "name": "endpoints.actuator.enabled",
