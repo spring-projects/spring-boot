@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationalayzer;
+package org.springframework.boot.deprecatedproperties;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,19 +40,20 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
- * Analyse {@link LegacyProperty legacy properties}.
+ * Report on {@link DeprecatedProperty deprecated properties}.
  *
  * @author Stephane Nicoll
  */
-class LegacyPropertiesAnalyzer {
+class DeprecatedPropertiesReporter {
 
 	private final Map<String, ConfigurationMetadataProperty> allProperties;
 
 	private final ConfigurableEnvironment environment;
 
-	LegacyPropertiesAnalyzer(ConfigurationMetadataRepository metadataRepository,
+	DeprecatedPropertiesReporter(ConfigurationMetadataRepository metadataRepository,
 			ConfigurableEnvironment environment) {
-		this.allProperties = Collections.unmodifiableMap(metadataRepository.getAllProperties());
+		this.allProperties = Collections
+				.unmodifiableMap(metadataRepository.getAllProperties());
 		this.environment = environment;
 	}
 
@@ -61,60 +62,59 @@ class LegacyPropertiesAnalyzer {
 	 * legacy properties if a replacement exists.
 	 * @return the analysis
 	 */
-	public LegacyPropertiesAnalysis analyseLegacyProperties() {
-		LegacyPropertiesAnalysis analysis = new LegacyPropertiesAnalysis();
-		Map<String, List<LegacyProperty>> properties = getMatchingProperties(deprecatedFilter());
+	public DeprecatedPropertiesReport getReport() {
+		DeprecatedPropertiesReport report = new DeprecatedPropertiesReport();
+		Map<String, List<DeprecatedProperty>> properties = getMatchingProperties(
+				deprecatedFilter());
 		if (properties.isEmpty()) {
-			return analysis;
+			return report;
 		}
 		properties.forEach((name, candidates) -> {
-			PropertySource<?> propertySource = mapPropertiesWithReplacement(analysis,
+			PropertySource<?> propertySource = mapPropertiesWithReplacement(report,
 					name, candidates);
 			if (propertySource != null) {
 				this.environment.getPropertySources().addBefore(name, propertySource);
 			}
 		});
-		return analysis;
+		return report;
 	}
 
 	private PropertySource<?> mapPropertiesWithReplacement(
-			LegacyPropertiesAnalysis analysis, String name,
-			List<LegacyProperty> properties) {
-		List<LegacyProperty> matches = new ArrayList<>();
-		List<LegacyProperty> unhandled = new ArrayList<>();
-		for (LegacyProperty property : properties) {
-			if (hasValidReplacement(property)) {
-				matches.add(property);
-			}
-			else {
-				unhandled.add(property);
-			}
-		}
-		analysis.register(name, matches, unhandled);
-		if (matches.isEmpty()) {
+			DeprecatedPropertiesReport report, String name,
+			List<DeprecatedProperty> properties) {
+		List<DeprecatedProperty> renamed = new ArrayList<>();
+		List<DeprecatedProperty> unsupported = new ArrayList<>();
+		properties.forEach((property) -> {
+			(isRenamed(property) ? renamed : unsupported).add(property);
+		});
+		report.add(name, renamed, unsupported);
+		if (renamed.isEmpty()) {
 			return null;
 		}
 		String target = "migrate-" + name;
 		Map<String, OriginTrackedValue> content = new LinkedHashMap<>();
-		for (LegacyProperty candidate : matches) {
+		for (DeprecatedProperty candidate : renamed) {
 			OriginTrackedValue value = OriginTrackedValue.of(
-					candidate.getProperty().getValue(), candidate.getProperty().getOrigin());
+					candidate.getProperty().getValue(),
+					candidate.getProperty().getOrigin());
 			content.put(candidate.getMetadata().getDeprecation().getReplacement(), value);
 		}
 		return new OriginTrackedMapPropertySource(target, content);
 	}
 
-	private boolean hasValidReplacement(LegacyProperty property) {
-		String replacementId = property.getMetadata().getDeprecation().getReplacement();
+	private boolean isRenamed(DeprecatedProperty property) {
+		ConfigurationMetadataProperty metadata = property.getMetadata();
+		String replacementId = metadata.getDeprecation().getReplacement();
 		if (StringUtils.hasText(replacementId)) {
-			ConfigurationMetadataProperty replacement = this.allProperties.get(replacementId);
+			ConfigurationMetadataProperty replacement = this.allProperties
+					.get(replacementId);
 			if (replacement != null) {
-				return replacement.getType().equals(property.getMetadata().getType());
+				return replacement.getType().equals(metadata.getType());
 			}
 			replacement = getMapProperty(replacementId);
 			if (replacement != null) {
 				return replacement.getType().startsWith("java.util.Map")
-						&& replacement.getType().endsWith(property.getMetadata().getType() + ">");
+						&& replacement.getType().endsWith(metadata.getType() + ">");
 			}
 		}
 		return false;
@@ -128,17 +128,19 @@ class LegacyPropertiesAnalyzer {
 		return null;
 	}
 
-	private Map<String, List<LegacyProperty>> getMatchingProperties(
+	private Map<String, List<DeprecatedProperty>> getMatchingProperties(
 			Predicate<ConfigurationMetadataProperty> filter) {
-		MultiValueMap<String, LegacyProperty> result = new LinkedMultiValueMap<>();
+		MultiValueMap<String, DeprecatedProperty> result = new LinkedMultiValueMap<>();
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values()
 				.stream().filter(filter).collect(Collectors.toList());
 		getPropertySourcesAsMap().forEach((name, source) -> {
 			candidates.forEach(metadata -> {
-				ConfigurationProperty configurationProperty = source.getConfigurationProperty(
-						ConfigurationPropertyName.of(metadata.getId()));
+				ConfigurationProperty configurationProperty = source
+						.getConfigurationProperty(
+								ConfigurationPropertyName.of(metadata.getId()));
 				if (configurationProperty != null) {
-					result.add(name, new LegacyProperty(metadata, configurationProperty));
+					result.add(name,
+							new DeprecatedProperty(metadata, configurationProperty));
 				}
 			});
 		});
@@ -146,14 +148,15 @@ class LegacyPropertiesAnalyzer {
 	}
 
 	private Predicate<ConfigurationMetadataProperty> deprecatedFilter() {
-		return p -> p.getDeprecation() != null
-				&& p.getDeprecation().getLevel() == Deprecation.Level.ERROR;
+		return (property) -> property.getDeprecation() != null
+				&& property.getDeprecation().getLevel() == Deprecation.Level.ERROR;
 	}
 
 	private Map<String, ConfigurationPropertySource> getPropertySourcesAsMap() {
 		Map<String, ConfigurationPropertySource> map = new LinkedHashMap<>();
 		ConfigurationPropertySources.get(this.environment);
-		for (ConfigurationPropertySource source : ConfigurationPropertySources.get(this.environment)) {
+		for (ConfigurationPropertySource source : ConfigurationPropertySources
+				.get(this.environment)) {
 			map.put(determinePropertySourceName(source), source);
 		}
 		return map;

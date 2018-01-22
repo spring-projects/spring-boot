@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationalayzer;
+package org.springframework.boot.deprecatedproperties;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -28,11 +28,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LegacyPropertiesAnalyzerListener}.
+ * Tests for {@link DeprecatedPropertiesListener}.
  *
  * @author Stephane Nicoll
  */
-public class LegacyPropertiesAnalyzerListenerTests {
+public class DeprecatedPropertiesListenerTests {
 
 	@Rule
 	public final OutputCapture output = new OutputCapture();
@@ -48,8 +48,7 @@ public class LegacyPropertiesAnalyzerListenerTests {
 
 	@Test
 	public void sampleReport() {
-		this.context = createSampleApplication()
-				.run("--banner.charset=UTF8");
+		this.context = createSampleApplication().run("--banner.charset=UTF8");
 		assertThat(this.output.toString()).contains("commandLineArgs")
 				.contains("spring.banner.charset")
 				.contains("Each configuration key has been temporarily mapped")
@@ -59,7 +58,6 @@ public class LegacyPropertiesAnalyzerListenerTests {
 	private SpringApplication createSampleApplication() {
 		return new SpringApplication(TestApplication.class);
 	}
-
 
 	@Configuration
 	public static class TestApplication {

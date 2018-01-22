@@ -8,9 +8,9 @@
 		<version>${revision}</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
-	<artifactId>spring-boot-configuration-analyzer</artifactId>
-	<name>Spring Boot Configuration Analyzer</name>
-	<description>Spring Boot Configuration Analyzer</description>
+	<artifactId>spring-boot-deprecated-properties-support</artifactId>
+	<name>Spring Boot Deprecated Properties Support</name>
+	<description>Spring Boot Deprecated Properties Support</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>

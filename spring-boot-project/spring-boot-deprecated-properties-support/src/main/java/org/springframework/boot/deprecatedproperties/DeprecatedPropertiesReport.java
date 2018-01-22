@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationalayzer;
+package org.springframework.boot.deprecatedproperties;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,32 +28,30 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataPrope
 import org.springframework.util.StringUtils;
 
 /**
- * Describes the outcome of the environment analysis.
+ * Provides a deprecated properties report.
  *
  * @author Stephane Nicoll
  */
-class LegacyPropertiesAnalysis {
+class DeprecatedPropertiesReport {
 
-	private final Map<String, PropertySourceAnalysis> content = new LinkedHashMap<>();
+	private final Map<String, DeprecatedProperties> content = new LinkedHashMap<>();
 
 	/**
-	 * Create a report for all the legacy properties that were automatically renamed. If
+	 * Return a report for all the legacy properties that were automatically renamed. If
 	 * no such legacy properties were found, return {@code null}.
 	 * @return a report with the configurations keys that should be renamed
 	 */
-	public String createWarningReport() {
-		Map<String, List<LegacyProperty>> content = this.content.entrySet().stream()
-				.filter(e -> !e.getValue().handledProperties.isEmpty())
-				.collect(Collectors.toMap(Map.Entry::getKey,
-						e -> new ArrayList<>(e.getValue().handledProperties)));
+	public String getWarningReport() {
+		Map<String, List<DeprecatedProperty>> content = getContent(
+				DeprecatedProperties::getRenamed);
 		if (content.isEmpty()) {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
 		report.append(String.format("%nThe use of configuration keys that have been "
 				+ "renamed was found in the environment:%n%n"));
-		appendProperties(report, content, metadata ->
-				"Replacement: " + metadata.getDeprecation().getReplacement());
+		append(report, content, (metadata) -> "Replacement: "
+				+ metadata.getDeprecation().getReplacement());
 		report.append(String.format("%n"));
 		report.append("Each configuration key has been temporarily mapped to its "
 				+ "replacement for your convenience. To silence this warning, please "
@@ -63,24 +61,23 @@ class LegacyPropertiesAnalysis {
 	}
 
 	/**
-	 * Create a report for all the legacy properties that are no longer supported. If
-	 * no such legacy properties were found, return {@code null}.
+	 * Return a report for all the legacy properties that are no longer supported. If no
+	 * such legacy properties were found, return {@code null}.
 	 * @return a report with the configurations keys that are no longer supported
 	 */
-	public String createErrorReport() {
-		Map<String, List<LegacyProperty>> content = this.content.entrySet().stream()
-				.filter(e -> !e.getValue().notHandledProperties.isEmpty())
-				.collect(Collectors.toMap(Map.Entry::getKey,
-						e -> new ArrayList<>(e.getValue().notHandledProperties)));
+	public String getErrorReport() {
+		Map<String, List<DeprecatedProperty>> content = getContent(
+				DeprecatedProperties::getUnsupported);
 		if (content.isEmpty()) {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
 		report.append(String.format("%nThe use of configuration keys that are no longer "
 				+ "supported was found in the environment:%n%n"));
-		appendProperties(report, content, metadata ->
-				"Reason: " + (StringUtils.hasText(metadata.getDeprecation().getReason())
-						? metadata.getDeprecation().getReason() : "none"));
+		append(report, content,
+				metadata -> "Reason: "
+						+ (StringUtils.hasText(metadata.getDeprecation().getReason())
+								? metadata.getDeprecation().getReason() : "none"));
 		report.append(String.format("%n"));
 		report.append("Please refer to the migration guide or reference guide for "
 				+ "potential alternatives.");
@@ -88,21 +85,29 @@ class LegacyPropertiesAnalysis {
 		return report.toString();
 	}
 
-	private void appendProperties(StringBuilder report,
-			Map<String, List<LegacyProperty>> content,
+	private Map<String, List<DeprecatedProperty>> getContent(
+			Function<DeprecatedProperties, List<DeprecatedProperty>> extractor) {
+		return this.content.entrySet().stream()
+				.filter((entry) -> !extractor.apply(entry.getValue()).isEmpty())
+				.collect(Collectors.toMap(Map.Entry::getKey,
+						(entry) -> new ArrayList<>(extractor.apply(entry.getValue()))));
+	}
+
+	private void append(StringBuilder report,
+			Map<String, List<DeprecatedProperty>> content,
 			Function<ConfigurationMetadataProperty, String> deprecationMessage) {
 		content.forEach((name, properties) -> {
 			report.append(String.format("Property source '%s':%n", name));
-			properties.sort(LegacyProperty.COMPARATOR);
+			properties.sort(DeprecatedProperty.COMPARATOR);
 			properties.forEach((property) -> {
 				ConfigurationMetadataProperty metadata = property.getMetadata();
 				report.append(String.format("\tKey: %s%n", metadata.getId()));
 				if (property.getLineNumber() != null) {
-					report.append(String.format("\t\tLine: %d%n",
-							property.getLineNumber()));
+					report.append(
+							String.format("\t\tLine: %d%n", property.getLineNumber()));
 				}
-				report.append(String.format("\t\t%s%n",
-						deprecationMessage.apply(metadata)));
+				report.append(
+						String.format("\t\t%s%n", deprecationMessage.apply(metadata)));
 			});
 			report.append(String.format("%n"));
 		});
@@ -111,29 +116,36 @@ class LegacyPropertiesAnalysis {
 	/**
 	 * Register a new property source.
 	 * @param name the name of the property source
-	 * @param handledProperties the properties that were renamed
-	 * @param notHandledProperties the properties that are no longer supported
+	 * @param renamed the properties that were renamed
+	 * @param unsupported the properties that are no longer supported
 	 */
-	void register(String name, List<LegacyProperty> handledProperties,
-			List<LegacyProperty> notHandledProperties) {
-		List<LegacyProperty> handled = (handledProperties != null
-				? new ArrayList<>(handledProperties) : Collections.emptyList());
-		List<LegacyProperty> notHandled = (notHandledProperties != null
-				? new ArrayList<>(notHandledProperties) : Collections.emptyList());
-		this.content.put(name, new PropertySourceAnalysis(handled, notHandled));
+	void add(String name, List<DeprecatedProperty> renamed,
+			List<DeprecatedProperty> unsupported) {
+		this.content.put(name, new DeprecatedProperties(renamed, unsupported));
 	}
 
+	private static class DeprecatedProperties {
 
-	private static class PropertySourceAnalysis {
+		private final List<DeprecatedProperty> renamed;
 
-		private final List<LegacyProperty> handledProperties;
+		private final List<DeprecatedProperty> unsupported;
 
-		private final List<LegacyProperty> notHandledProperties;
+		DeprecatedProperties(List<DeprecatedProperty> renamed,
+				List<DeprecatedProperty> unsupported) {
+			this.renamed = asNewList(renamed);
+			this.unsupported = asNewList(unsupported);
+		}
 
-		PropertySourceAnalysis(List<LegacyProperty> handledProperties,
-				List<LegacyProperty> notHandledProperties) {
-			this.handledProperties = handledProperties;
-			this.notHandledProperties = notHandledProperties;
+		private <T> List<T> asNewList(List<T> source) {
+			return (source == null ? Collections.emptyList() : new ArrayList<T>(source));
+		}
+
+		public List<DeprecatedProperty> getRenamed() {
+			return this.renamed;
+		}
+
+		public List<DeprecatedProperty> getUnsupported() {
+			return this.unsupported;
 		}
 
 	}

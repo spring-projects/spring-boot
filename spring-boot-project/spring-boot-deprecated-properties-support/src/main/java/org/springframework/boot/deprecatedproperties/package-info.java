@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for analyzing the environment.
+ * Support for migrating deprecated Spring Boot properties.
  */
-package org.springframework.boot.configurationalayzer;
+package org.springframework.boot.deprecatedproperties;

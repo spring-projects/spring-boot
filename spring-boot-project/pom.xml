@@ -21,7 +21,7 @@
 		<module>spring-boot-actuator</module>
 		<module>spring-boot-actuator-autoconfigure</module>
 		<module>spring-boot-autoconfigure</module>
-		<module>spring-boot-configuration-analyzer</module>
+		<module>spring-boot-deprecated-properties-support</module>
 		<module>spring-boot-devtools</module>
 		<module>spring-boot-test</module>
 		<module>spring-boot-test-autoconfigure</module>
