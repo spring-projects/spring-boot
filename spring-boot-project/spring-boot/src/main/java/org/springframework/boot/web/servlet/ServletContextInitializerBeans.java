@@ -216,7 +216,6 @@ public class ServletContextInitializerBeans
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(
 			ListableBeanFactory beanFactory, Class<T> type, Set<?> excludes) {
-		List<Entry<String, T>> beans = new ArrayList<>();
 		Comparator<Entry<String, T>> comparator = (o1,
 				o2) -> AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(),
 						o2.getValue());
@@ -230,6 +229,7 @@ public class ServletContextInitializerBeans
 				}
 			}
 		}
+		List<Entry<String, T>> beans = new ArrayList<>();
 		beans.addAll(map.entrySet());
 		beans.sort(comparator);
 		return beans;
