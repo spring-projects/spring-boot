@@ -105,7 +105,7 @@
 		<junit.version>4.12</junit.version>
 		<junit-jupiter.version>5.0.3</junit-jupiter.version>
 		<junit-platform.version>1.0.3</junit-platform.version>
-		<kotlin.version>1.2.10</kotlin.version>
+		<kotlin.version>1.2.20</kotlin.version>
 		<lettuce.version>5.0.1.RELEASE</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
 		<log4j2.version>2.10.0</log4j2.version>
