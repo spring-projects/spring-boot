@@ -55,9 +55,9 @@ class LegacyPropertiesAnalysis {
 		appendProperties(report, content, metadata ->
 				"Replacement: " + metadata.getDeprecation().getReplacement());
 		report.append(String.format("%n"));
-		report.append("Each configuration key has been temporarily mapped to its "
-				+ "replacement for your convenience. To silence this warning, please "
-				+ "update your configuration to use the new keys.");
+		report.append("Each configuration key has been temporarily mapped to its ").
+				append("replacement for your convenience. To silence this warning, please ").
+				append("update your configuration to use the new keys.");
 		report.append(String.format("%n"));
 		return report.toString();
 	}
@@ -82,8 +82,8 @@ class LegacyPropertiesAnalysis {
 				"Reason: " + (StringUtils.hasText(metadata.getDeprecation().getReason())
 						? metadata.getDeprecation().getReason() : "none"));
 		report.append(String.format("%n"));
-		report.append("Please refer to the migration guide or reference guide for "
-				+ "potential alternatives.");
+		report.append("Please refer to the migration guide or reference guide for ").
+				append("potential alternatives.");
 		report.append(String.format("%n"));
 		return report.toString();
 	}
