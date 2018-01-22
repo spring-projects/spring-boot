@@ -2755,6 +2755,37 @@ If convention-based mapping is not flexible enough, you can use the
 `ServletRegistrationBean`, `FilterRegistrationBean`, and
 `ServletListenerRegistrationBean` classes for complete control.
 
+Spring Boot ships with many auto-configurations that can define Servlet filter beans.
+Depending on the outcome of these auto-configuration conditions, Spring Boot
+can configure predefined Servlet filters in in your application.
+
+Here are a few examples of Servlet filters and their respective order (lower order
+value means higher precedence):
+
+|===
+| Servlet Filter | Order
+
+|`OrderedCharacterEncodingFilter`
+|`Ordered.HIGHEST_PRECEDENCE`
+
+|`WebMvcMetricsFilter`
+|`Ordered.HIGHEST_PRECEDENCE + 1`
+
+|`ErrorPageFilter`
+|`Ordered.HIGHEST_PRECEDENCE + 1`
+
+|`WebRequestTraceFilter`
+|`Ordered.LOWEST_PRECEDENCE - 10`
+|===
+
+It is usually safe to leave filter beans unordered.
+
+If a specific order is required, you should avoid
+configuring a Servlet filter that reads the request body at
+`Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding
+configuration of your application. Servlet filters should be configured
+at less or equal than `FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER`
+if they wrap the servlet request.
 
 
 [[boot-features-embedded-container-context-initializer]]

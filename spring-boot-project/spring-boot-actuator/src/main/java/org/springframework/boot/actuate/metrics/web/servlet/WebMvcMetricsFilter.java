@@ -43,7 +43,7 @@ import org.springframework.web.util.NestedServletException;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private static final Logger logger = LoggerFactory

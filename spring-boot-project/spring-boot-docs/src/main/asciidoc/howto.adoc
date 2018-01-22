@@ -613,6 +613,11 @@ If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
 aligns with the Servlet Specification's default dispatcher type.
 ====
 
+Like any other Spring bean, you can define the order of Servlet filter beans; please
+make sure to check the
+"`<<spring-boot-features.adoc#boot-features-embedded-container-servlets-filters-listeners-beans>>`"
+section.
+
 
 [[howto-disable-registration-of-a-servlet-or-filter]]
 ===== Disable Registration of a Servlet or Filter
