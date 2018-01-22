@@ -65,7 +65,7 @@ public class FailureAnalyzersTests {
 	}
 
 	@Test
-	public void environmentIsInjectedIntEnvironmentAwareFailureAnalyzers() {
+	public void environmentIsInjectedIntoEnvironmentAwareFailureAnalyzers() {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure);
 		verify(failureAnalyzer).setEnvironment(any(Environment.class));

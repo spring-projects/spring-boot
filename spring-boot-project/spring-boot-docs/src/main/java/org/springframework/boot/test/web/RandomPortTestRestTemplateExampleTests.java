@@ -42,4 +42,4 @@ public class RandomPortTestRestTemplateExampleTests {
 	}
 
 }
-// tag::test-random-port[]
+// end::test-random-port[]

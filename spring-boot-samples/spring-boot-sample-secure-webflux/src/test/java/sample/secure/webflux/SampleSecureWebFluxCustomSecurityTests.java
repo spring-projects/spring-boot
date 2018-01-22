@@ -97,7 +97,7 @@ public class SampleSecureWebFluxCustomSecurityTests {
 		}
 
 		@Bean
-		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
 					.permitAll().matchers(EndpointRequest.toAnyEndpoint())
 					.hasRole("ACTUATOR")

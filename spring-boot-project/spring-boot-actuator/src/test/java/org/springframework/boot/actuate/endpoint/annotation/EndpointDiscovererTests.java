@@ -161,7 +161,7 @@ public class EndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointsWhenTtlSetByIdAndIdDoesntMatchShouldNotCacheInvokeCalls() {
+	public void getEndpointsWhenTtlSetByIdAndIdDoesNotMatchShouldNotCacheInvokeCalls() {
 		load(TestEndpointConfiguration.class, (context) -> {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context,
 					(endpointId) -> (endpointId.equals("foo") ? 500L : 0L));
