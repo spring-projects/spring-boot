@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,11 @@ public class LdapProperties {
 	 */
 	private Map<String, String> baseEnvironment = new HashMap<>();
 
+	/**
+	 * Whether read-only operations should use an anonymous environment.
+	 */
+	private boolean anonymousReadOnly;
+
 	public String[] getUrls() {
 		return this.urls;
 	}
@@ -98,6 +103,14 @@ public class LdapProperties {
 
 	public void setBaseEnvironment(Map<String, String> baseEnvironment) {
 		this.baseEnvironment = baseEnvironment;
+	}
+
+	public boolean getAnonymousReadOnly() {
+		return this.anonymousReadOnly;
+	}
+
+	public void setAnonymousReadOnly(boolean anonymousReadOnly) {
+		this.anonymousReadOnly = anonymousReadOnly;
 	}
 
 	public String[] determineUrls(Environment environment) {
