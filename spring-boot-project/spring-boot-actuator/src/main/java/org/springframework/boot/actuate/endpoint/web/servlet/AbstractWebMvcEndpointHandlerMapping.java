@@ -27,9 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.invoke.ParameterMappingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -44,6 +43,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
@@ -243,8 +243,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 				return handleResult(this.invoker.invoke(arguments),
 						HttpMethod.valueOf(request.getMethod()));
 			}
-			catch (MissingParametersException | ParameterMappingException ex) {
-				return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+			catch (InvalidEndpointRequestException ex) {
+				throw new BadOperationRequestException(ex.getReason());
 			}
 		}
 
@@ -296,6 +296,15 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		public Object handle(HttpServletRequest request,
 				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
+		}
+
+	}
+
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	private static class BadOperationRequestException extends RuntimeException {
+
+		BadOperationRequestException(String message) {
+			super(message);
 		}
 
 	}

@@ -31,8 +31,7 @@ import javax.management.ReflectionException;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
-import org.springframework.boot.actuate.endpoint.invoke.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -103,7 +102,7 @@ public class EndpointMBean implements DynamicMBean {
 			}
 			return this.responseMapper.mapResponse(result);
 		}
-		catch (MissingParametersException | ParameterMappingException ex) {
+		catch (InvalidEndpointRequestException ex) {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
 	}

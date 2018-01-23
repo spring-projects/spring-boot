@@ -26,10 +26,9 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 import reactor.core.scheduler.Schedulers;
 
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.invoke.ParameterMappingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -52,6 +51,7 @@ import org.springframework.web.reactive.result.condition.ProducesRequestConditio
 import org.springframework.web.reactive.result.condition.RequestMethodsRequestCondition;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPatternParser;
 
@@ -288,10 +288,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result,
 				HttpMethod httpMethod) {
 			return Mono.from(result).map(this::toResponseEntity)
-					.onErrorReturn(MissingParametersException.class,
-							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
-					.onErrorReturn(ParameterMappingException.class,
-							new ResponseEntity<>(HttpStatus.BAD_REQUEST))
+					.onErrorMap(InvalidEndpointRequestException.class, (ex) ->
+							new ResponseStatusException(HttpStatus.BAD_REQUEST,
+									ex.getReason()))
 					.defaultIfEmpty(new ResponseEntity<>(httpMethod == HttpMethod.GET
 							? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));
 		}

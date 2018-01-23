@@ -23,6 +23,8 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.AbstractWebEndpointIntegrationTests;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
@@ -95,6 +97,7 @@ public class WebFluxEndpointIntegrationTests
 
 	@Configuration
 	@EnableWebFlux
+	@ImportAutoConfiguration(ErrorWebFluxAutoConfiguration.class)
 	static class ReactiveConfiguration {
 
 		private int port;

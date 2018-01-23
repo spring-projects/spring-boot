@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.invoke;
 
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
+
 /**
  * A {@code ParameterMappingException} is thrown when a failure occurs during
  * {@link ParameterValueMapper#mapParameterValue operation parameter mapping}.
@@ -23,7 +25,7 @@ package org.springframework.boot.actuate.endpoint.invoke;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class ParameterMappingException extends RuntimeException {
+public final class ParameterMappingException extends InvalidEndpointRequestException {
 
 	private final OperationParameter parameter;
 
@@ -39,7 +41,7 @@ public class ParameterMappingException extends RuntimeException {
 	public ParameterMappingException(OperationParameter parameter, Object value,
 			Throwable cause) {
 		super("Failed to map " + value + " of type " + value.getClass() + " to "
-				+ parameter, cause);
+				+ parameter, "Parameter mapping failure", cause);
 		this.parameter = parameter;
 		this.value = value;
 	}

@@ -38,8 +38,7 @@ import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.Resource.Builder;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
-import org.springframework.boot.actuate.endpoint.invoke.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
@@ -155,7 +154,7 @@ public class JerseyEndpointResourceFactory {
 				Object response = this.operation.invoke(arguments);
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}
-			catch (MissingParametersException | ParameterMappingException ex) {
+			catch (InvalidEndpointRequestException ex) {
 				return Response.status(Status.BAD_REQUEST).build();
 			}
 		}
