@@ -279,7 +279,7 @@ public class JSONTokener {
 	private Object readLiteral() throws JSONException {
 		String literal = nextToInternal("{}[]/\\:,=;# \t\f");
 
-		if (literal.length() == 0) {
+		if (literal.isEmpty()) {
 			throw syntaxError("Expected literal value");
 		}
 		else if ("null".equalsIgnoreCase(literal)) {
