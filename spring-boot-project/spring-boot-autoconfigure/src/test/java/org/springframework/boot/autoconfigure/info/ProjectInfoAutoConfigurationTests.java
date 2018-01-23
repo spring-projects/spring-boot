@@ -16,17 +16,15 @@
 
 package org.springframework.boot.autoconfigure.info;
 
-import java.util.Map;
 import java.util.Properties;
 
-import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,90 +37,86 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ProjectInfoAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
+					ProjectInfoAutoConfiguration.class));
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
 
 	@Test
 	public void gitPropertiesUnavailableIfResourceNotAvailable() {
-		load();
-		Map<String, GitProperties> beans = this.context
-				.getBeansOfType(GitProperties.class);
-		assertThat(beans).hasSize(0);
+		this.contextRunner.run((context) -> {
+			assertThat(context.getBeansOfType(GitProperties.class)).isEmpty();
+		});
 	}
 
 	@Test
 	public void gitPropertiesWithNoData() {
-		load("spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties");
-		GitProperties gitProperties = this.context.getBean(GitProperties.class);
-		assertThat(gitProperties.getBranch()).isNull();
+		this.contextRunner.withPropertyValues(
+				"spring.info.git.location=" +
+						"classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties")
+				.run((context) -> {
+					GitProperties gitProperties = context.getBean(GitProperties.class);
+					assertThat(gitProperties.getBranch()).isNull();
+				});
 	}
 
 	@Test
 	public void gitPropertiesFallbackWithGitPropertiesBean() {
-		load(CustomInfoPropertiesConfiguration.class,
-				"spring.info.git.location=classpath:/org/springframework/boot/autoconfigure/info/git.properties");
-		GitProperties gitProperties = this.context.getBean(GitProperties.class);
-		assertThat(gitProperties).isSameAs(this.context.getBean("customGitProperties"));
+		this.contextRunner.withUserConfiguration(CustomInfoPropertiesConfiguration.class)
+				.withPropertyValues("spring.info.git.location=" +
+						"classpath:/org/springframework/boot/autoconfigure/info/git.properties")
+				.run((context) -> {
+					GitProperties gitProperties = context.getBean(GitProperties.class);
+					assertThat(gitProperties).isSameAs(context.getBean("customGitProperties"));
+				});
 	}
 
 	@Test
 	public void buildPropertiesDefaultLocation() {
-		load();
-		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
-		assertThat(buildProperties.getGroup()).isEqualTo("com.example");
-		assertThat(buildProperties.getArtifact()).isEqualTo("demo");
-		assertThat(buildProperties.getName()).isEqualTo("Demo Project");
-		assertThat(buildProperties.getVersion()).isEqualTo("0.0.1-SNAPSHOT");
-		assertThat(buildProperties.getTime().toEpochMilli()).isEqualTo(1457100965000L);
+		this.contextRunner.run((context) -> {
+			BuildProperties buildProperties = context.getBean(BuildProperties.class);
+			assertThat(buildProperties.getGroup()).isEqualTo("com.example");
+			assertThat(buildProperties.getArtifact()).isEqualTo("demo");
+			assertThat(buildProperties.getName()).isEqualTo("Demo Project");
+			assertThat(buildProperties.getVersion()).isEqualTo("0.0.1-SNAPSHOT");
+			assertThat(buildProperties.getTime().toEpochMilli()).isEqualTo(1457100965000L);
+		});
 	}
 
 	@Test
 	public void buildPropertiesCustomLocation() {
-		load("spring.info.build.location=classpath:/org/springframework/boot/autoconfigure/info/build-info.properties");
-		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
-		assertThat(buildProperties.getGroup()).isEqualTo("com.example.acme");
-		assertThat(buildProperties.getArtifact()).isEqualTo("acme");
-		assertThat(buildProperties.getName()).isEqualTo("acme");
-		assertThat(buildProperties.getVersion()).isEqualTo("1.0.1-SNAPSHOT");
-		assertThat(buildProperties.getTime().toEpochMilli()).isEqualTo(1457088120000L);
+		this.contextRunner
+				.withPropertyValues("spring.info.build.location=" +
+						"classpath:/org/springframework/boot/autoconfigure/info/build-info.properties")
+				.run((context) -> {
+					BuildProperties buildProperties = context.getBean(BuildProperties.class);
+					assertThat(buildProperties.getGroup()).isEqualTo("com.example.acme");
+					assertThat(buildProperties.getArtifact()).isEqualTo("acme");
+					assertThat(buildProperties.getName()).isEqualTo("acme");
+					assertThat(buildProperties.getVersion()).isEqualTo("1.0.1-SNAPSHOT");
+					assertThat(buildProperties.getTime().toEpochMilli()).isEqualTo(1457088120000L);
+				});
 	}
 
 	@Test
 	public void buildPropertiesCustomInvalidLocation() {
-		load("spring.info.build.location=classpath:/org/acme/no-build-info.properties");
-		Map<String, BuildProperties> beans = this.context
-				.getBeansOfType(BuildProperties.class);
-		assertThat(beans).hasSize(0);
+		this.contextRunner
+				.withPropertyValues("spring.info.build.location=" +
+						"classpath:/org/acme/no-build-info.properties")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(BuildProperties.class)).hasSize(0);
+				});
 	}
 
 	@Test
 	public void buildPropertiesFallbackWithBuildInfoBean() {
-		load(CustomInfoPropertiesConfiguration.class);
-		BuildProperties buildProperties = this.context.getBean(BuildProperties.class);
-		assertThat(buildProperties)
-				.isSameAs(this.context.getBean("customBuildProperties"));
-	}
-
-	private void load(String... environment) {
-		load(null, environment);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		if (config != null) {
-			context.register(config);
-		}
-		context.register(PropertyPlaceholderAutoConfiguration.class,
-				ProjectInfoAutoConfiguration.class);
-		TestPropertyValues.of(environment).applyTo(context);
-		context.refresh();
-		this.context = context;
+		this.contextRunner
+				.withUserConfiguration(CustomInfoPropertiesConfiguration.class)
+				.run((context) -> {
+					BuildProperties buildProperties = context.getBean(BuildProperties.class);
+					assertThat(buildProperties)
+							.isSameAs(context.getBean("customBuildProperties"));
+				});
 	}
 
 	@Configuration
