@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.reactive.error;
-
-import org.springframework.web.server.WebExceptionHandler;
-
 /**
- * Marker interface that indicates that a {@link WebExceptionHandler} is used to render
- * errors.
- *
- * @author Brian Clozel
- * @since 2.0.0
+ * Spring MVC error handling infrastructure.
  */
-@FunctionalInterface
-public interface ErrorWebExceptionHandler extends WebExceptionHandler {
-
-}
+package org.springframework.boot.web.servlet.error;

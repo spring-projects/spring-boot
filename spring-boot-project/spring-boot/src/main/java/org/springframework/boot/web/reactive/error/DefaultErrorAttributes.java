@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.reactive.error;
+package org.springframework.boot.web.reactive.error;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

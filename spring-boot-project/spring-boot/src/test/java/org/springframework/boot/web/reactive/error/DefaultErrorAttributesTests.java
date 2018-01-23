@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.reactive.error;
+package org.springframework.boot.web.reactive.error;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -198,7 +198,7 @@ public class DefaultErrorAttributesTests {
 				.getErrorAttributes(buildServerRequest(request, ex), false);
 		assertThat(attributes.get("message")).asString()
 				.startsWith("Validation failed for argument at index 0 in method: "
-						+ "public int org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorAttributesTests"
+						+ "public int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
 						+ ".method(java.lang.String), with 1 error(s)");
 		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
 	}
