@@ -40,7 +40,7 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation>
 	private final Object endpointBean;
 
 	/**
-	 * Create a mew {@link AbstractDiscoveredEndpoint} instance.
+	 * Create a new {@link AbstractDiscoveredEndpoint} instance.
 	 * @param discoverer the discoverer that discovered the endpoint
 	 * @param endpointBean the primary source bean
 	 * @param id the ID of the endpoint

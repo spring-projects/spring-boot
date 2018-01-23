@@ -2391,7 +2391,7 @@ following example:
 		}
 
 		@GetMapping("/{user}/customers")
-		Flux<Customer> getUserCustomers(@PathVariable Long user) {
+		public Flux<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
@@ -2437,7 +2437,7 @@ actual handling of the requests, as shown in the following example:
 	}
 ----
 
-WebFlux is part of the Spring Framework. and detailed information is available in its
+WebFlux is part of the Spring Framework and detailed information is available in its
 {spring-reference}web-reactive.html#webflux-fn[reference documentation].
 
 TIP: You can define as many `RouterFunction` beans as you like to modularize the
@@ -6313,7 +6313,7 @@ Often, `@WebFluxTest` is limited to a single controller and used in combination 
 `@MockBean` annotation to provide mock implementations for required collaborators.
 
 `@WebFluxTest` also auto-configures
-{spring-reference}testing.html#webtestclient[`WebTestClient`]`WebTestClient`, which offers
+{spring-reference}testing.html#webtestclient[`WebTestClient`], which offers
 a powerful way to quickly test WebFlux controllers without needing to start a full HTTP
 server.
 

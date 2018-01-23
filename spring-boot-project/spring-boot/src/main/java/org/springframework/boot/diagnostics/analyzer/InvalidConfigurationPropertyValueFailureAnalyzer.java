@@ -36,7 +36,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link FailureAnalyzer} that performs analysis of failures caused by a
+ * A {@link FailureAnalyzer} that performs analysis of failures caused by an
  * {@link InvalidConfigurationPropertyValueException}.
  *
  * @author Stephane Nicoll

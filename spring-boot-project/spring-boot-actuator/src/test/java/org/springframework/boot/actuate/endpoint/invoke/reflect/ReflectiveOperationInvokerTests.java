@@ -73,7 +73,7 @@ public class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
-	public void createWhenParamaterValueMapperIsNullShouldThrowException() {
+	public void createWhenParameterValueMapperIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ParameterValueMapper must not be null");
 		new ReflectiveOperationInvoker(this.target, this.operationMethod, null);
@@ -88,7 +88,7 @@ public class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
-	public void invokeWhenMissingNonNullableArgmentShouldThrowException() {
+	public void invokeWhenMissingNonNullableArgumentShouldThrowException() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
 				this.operationMethod, this.parameterValueMapper);
 		this.thrown.expect(MissingParametersException.class);

@@ -55,7 +55,7 @@ public final class EndpointRequest {
 	 * {@link EndpointServerWebExchangeMatcher#excluding(Class...) excluding} method can
 	 * be used to further remove specific endpoints if required. For example:
 	 * <pre class="code">
-	 * EndpointServerWebExchangeMatcher.toAnyEndpoint().excluding(ShutdownEndpoint.class)
+	 * EndpointRequest.toAnyEndpoint().excluding(ShutdownEndpoint.class)
 	 * </pre>
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
