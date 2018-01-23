@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
@@ -65,6 +66,7 @@ import org.springframework.util.ObjectUtils;
  * @author Stephane Nicoll
  * @author Jacques-Etienne Beaudet
  * @author Eddú Meléndez
+ * @author Dominic Gunn
  * @since 1.1.0
  */
 @Configuration
@@ -95,6 +97,8 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayProperties properties;
 
+		private final DataSourceProperties dataSourceProperties;
+
 		private final ResourceLoader resourceLoader;
 
 		private final DataSource dataSource;
@@ -106,11 +110,13 @@ public class FlywayAutoConfiguration {
 		private List<FlywayCallback> flywayCallbacks;
 
 		public FlywayConfiguration(FlywayProperties properties,
-				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
+				ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
 				ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
 			this.properties = properties;
+			this.dataSourceProperties = dataSourceProperties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
@@ -123,8 +129,19 @@ public class FlywayAutoConfiguration {
 		public Flyway flyway() {
 			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {
-				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
-						this.properties.getPassword(),
+				String url = this.properties.getUrl() == null
+						? this.dataSourceProperties.getUrl()
+						: this.properties.getUrl();
+
+				String user = this.properties.getUser() == null
+						? this.dataSourceProperties.getUsername()
+						: this.properties.getUser();
+
+				String password = this.properties.getPassword() == null
+						? this.dataSourceProperties.getPassword()
+						: this.properties.getPassword();
+
+				flyway.setDataSource(url, user, password,
 						this.properties.getInitSqls().toArray(new String[0]));
 			}
 			else if (this.flywayDataSource != null) {
@@ -147,9 +164,8 @@ public class FlywayAutoConfiguration {
 				Assert.state(locations.length != 0,
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation(locations);
-				Assert.state(exists,
-						() -> "Cannot find migrations location in: " + Arrays.asList(
-								locations)
+				Assert.state(exists, () -> "Cannot find migrations location in: "
+						+ Arrays.asList(locations)
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}

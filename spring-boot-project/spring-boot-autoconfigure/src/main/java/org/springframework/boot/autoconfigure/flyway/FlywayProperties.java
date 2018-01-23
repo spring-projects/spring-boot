@@ -133,7 +133,7 @@ public class FlywayProperties {
 	}
 
 	public boolean isCreateDataSource() {
-		return this.url != null && this.user != null;
+		return this.url != null || this.user != null;
 	}
 
 }
