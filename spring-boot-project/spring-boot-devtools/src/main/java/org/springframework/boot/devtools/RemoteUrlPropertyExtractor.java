@@ -48,7 +48,7 @@ class RemoteUrlPropertyExtractor
 		ConfigurableEnvironment environment = event.getEnvironment();
 		String url = cleanRemoteUrl(environment.getProperty(NON_OPTION_ARGS));
 		Assert.state(StringUtils.hasLength(url), "No remote URL specified");
-		Assert.state(url.indexOf(",") == -1, "Multiple URLs specified");
+		Assert.state(url.indexOf(',') == -1, "Multiple URLs specified");
 		try {
 			new URI(url);
 		}

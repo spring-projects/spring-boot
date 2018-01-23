@@ -93,7 +93,7 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 	private String[] extractBeanNames(NoUniqueBeanDefinitionException cause) {
 		if (cause.getMessage().indexOf("but found") > -1) {
 			return StringUtils.commaDelimitedListToStringArray(cause.getMessage()
-					.substring(cause.getMessage().lastIndexOf(":") + 1).trim());
+					.substring(cause.getMessage().lastIndexOf(':') + 1).trim());
 		}
 		return null;
 	}

@@ -94,7 +94,7 @@ public class AuditEvent implements Serializable {
 	private static Map<String, Object> convert(String[] data) {
 		Map<String, Object> result = new HashMap<>();
 		for (String entry : data) {
-			int index = entry.indexOf("=");
+			int index = entry.indexOf('=');
 			if (index != -1) {
 				result.put(entry.substring(0, index), entry.substring(index + 1));
 			}

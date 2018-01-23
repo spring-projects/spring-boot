@@ -243,7 +243,7 @@ class BeanDefinitionLoader {
 			// a file list of the package content. We double check here that it's not
 			// actually a package.
 			String path = ((ClassPathResource) resource).getPath();
-			if (path.indexOf(".") == -1) {
+			if (path.indexOf('.') == -1) {
 				try {
 					return Package.getPackage(path) == null;
 				}
