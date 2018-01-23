@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,6 +79,21 @@ public class LdapAutoConfigurationTests {
 		LdapProperties ldapProperties = this.context.getBean(LdapProperties.class);
 		assertThat(ldapProperties.getBaseEnvironment())
 				.containsEntry("java.naming.security.authentication", "DIGEST-MD5");
+	}
+
+	@Test
+	public void testContextSourceWithDefaultAnonymousReadOnly() {
+		load("spring.ldap.urls:ldap://localhost:123,ldap://mycompany:123");
+		LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+		assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+	}
+
+	@Test
+	public void testContextSourceWithAnonymousReadOnly() {
+		load("spring.ldap.urls:ldap://localhost:123,ldap://mycompany:123",
+				"spring.ldap.anonymousReadOnly:true");
+		LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+		assertThat(contextSource.isAnonymousReadOnly()).isTrue();
 	}
 
 	private void load(String... properties) {
