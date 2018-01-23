@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -58,6 +59,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Andy Wilkinson
+ * @author Dominic Gunn
  * @since 1.1.0
  */
 @Configuration
@@ -83,6 +85,8 @@ public class LiquibaseAutoConfiguration {
 
 		private final LiquibaseProperties properties;
 
+		private final DataSourceProperties dataSourceProperties;
+
 		private final ResourceLoader resourceLoader;
 
 		private final DataSource dataSource;
@@ -90,9 +94,11 @@ public class LiquibaseAutoConfiguration {
 		private final DataSource liquibaseDataSource;
 
 		public LiquibaseConfiguration(LiquibaseProperties properties,
-				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
+				ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource) {
 			this.properties = properties;
+			this.dataSourceProperties = dataSourceProperties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.liquibaseDataSource = liquibaseDataSource.getIfAvailable();
@@ -140,16 +146,27 @@ public class LiquibaseAutoConfiguration {
 			if (this.liquibaseDataSource != null) {
 				return this.liquibaseDataSource;
 			}
-			if (this.properties.getUrl() == null) {
+			if (this.properties.getUrl() == null && this.properties.getUser() == null) {
 				return this.dataSource;
 			}
 			return null;
 		}
 
 		private DataSource createNewDataSource() {
-			return DataSourceBuilder.create().url(this.properties.getUrl())
-					.username(this.properties.getUser())
-					.password(this.properties.getPassword()).build();
+			String url = this.properties.getUrl() == null
+					? this.dataSourceProperties.getUrl()
+					: this.properties.getUrl();
+
+			String user = this.properties.getUser() == null
+					? this.dataSourceProperties.getUsername()
+					: this.properties.getUser();
+
+			String password = this.properties.getPassword() == null
+					? this.dataSourceProperties.getPassword()
+					: this.properties.getPassword();
+
+			return DataSourceBuilder.create().url(url).username(user).password(password)
+					.build();
 		}
 
 	}
