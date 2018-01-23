@@ -267,8 +267,8 @@ public final class TestPropertyValues {
 		}
 
 		private static int getSeparatorIndex(String pair) {
-			int colonIndex = pair.indexOf(":");
-			int equalIndex = pair.indexOf("=");
+			int colonIndex = pair.indexOf(':');
+			int equalIndex = pair.indexOf('=');
 			if (colonIndex == -1) {
 				return equalIndex;
 			}

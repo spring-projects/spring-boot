@@ -112,8 +112,8 @@ public class JarFileArchive implements Archive {
 
 	private Archive getUnpackedNestedArchive(JarEntry jarEntry) throws IOException {
 		String name = jarEntry.getName();
-		if (name.lastIndexOf("/") != -1) {
-			name = name.substring(name.lastIndexOf("/") + 1);
+		if (name.lastIndexOf('/') != -1) {
+			name = name.substring(name.lastIndexOf('/') + 1);
 		}
 		File file = new File(getTempUnpackFolder(), name);
 		if (!file.exists() || file.length() != jarEntry.getSize()) {

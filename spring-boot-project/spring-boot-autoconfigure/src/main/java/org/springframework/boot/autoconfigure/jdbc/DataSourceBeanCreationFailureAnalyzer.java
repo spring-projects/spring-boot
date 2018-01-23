@@ -33,8 +33,8 @@ class DataSourceBeanCreationFailureAnalyzer
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			DataSourceBeanCreationException cause) {
 		String message = cause.getMessage();
-		String description = message.substring(0, message.indexOf(".")).trim();
-		String action = message.substring(message.indexOf(".") + 1).trim();
+		String description = message.substring(0, message.indexOf('.')).trim();
+		String action = message.substring(message.indexOf('.') + 1).trim();
 		return new FailureAnalysis(description, action, cause);
 	}
 

@@ -30,7 +30,7 @@ class DescriptionExtractor {
 		if (description == null) {
 			return null;
 		}
-		int dot = description.indexOf(".");
+		int dot = description.indexOf('.');
 		if (dot != -1) {
 			BreakIterator breakIterator = BreakIterator.getSentenceInstance(Locale.US);
 			breakIterator.setText(description);
