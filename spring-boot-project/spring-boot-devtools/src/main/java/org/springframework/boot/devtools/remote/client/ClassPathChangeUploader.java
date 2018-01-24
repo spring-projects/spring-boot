@@ -25,7 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -61,7 +61,7 @@ public class ClassPathChangeUploader
 	private static final Map<ChangedFile.Type, ClassLoaderFile.Kind> TYPE_MAPPINGS;
 
 	static {
-		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new HashMap<>();
+		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new EnumMap<>(ChangedFile.Type.class);
 		map.put(ChangedFile.Type.ADD, ClassLoaderFile.Kind.ADDED);
 		map.put(ChangedFile.Type.DELETE, ClassLoaderFile.Kind.DELETED);
 		map.put(ChangedFile.Type.MODIFY, ClassLoaderFile.Kind.MODIFIED);

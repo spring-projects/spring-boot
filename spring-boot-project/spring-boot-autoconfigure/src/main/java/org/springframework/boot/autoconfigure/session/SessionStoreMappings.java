@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.session;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.springframework.boot.WebApplicationType;
@@ -34,7 +34,7 @@ final class SessionStoreMappings {
 	private static final Map<StoreType, Map<WebApplicationType, Class<?>>> MAPPINGS;
 
 	static {
-		Map<StoreType, Map<WebApplicationType, Class<?>>> mappings = new HashMap<>();
+		Map<StoreType, Map<WebApplicationType, Class<?>>> mappings = new EnumMap<>(StoreType.class);
 		mappings.put(StoreType.REDIS, createMapping(RedisSessionConfiguration.class,
 				RedisReactiveSessionConfiguration.class));
 		mappings.put(StoreType.MONGODB, createMapping(MongoSessionConfiguration.class,
@@ -54,7 +54,7 @@ final class SessionStoreMappings {
 
 	static Map<WebApplicationType, Class<?>> createMapping(Class<?> servletConfiguration,
 			Class<?> reactiveConfiguration) {
-		Map<WebApplicationType, Class<?>> mapping = new HashMap<>();
+		Map<WebApplicationType, Class<?>> mapping = new EnumMap<>(WebApplicationType.class);
 		mapping.put(WebApplicationType.SERVLET, servletConfiguration);
 		if (reactiveConfiguration != null) {
 			mapping.put(WebApplicationType.REACTIVE, reactiveConfiguration);

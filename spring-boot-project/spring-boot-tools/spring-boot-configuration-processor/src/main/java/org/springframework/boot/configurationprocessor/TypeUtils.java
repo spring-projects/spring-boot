@@ -18,6 +18,7 @@ package org.springframework.boot.configurationprocessor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ class TypeUtils {
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
 
 	static {
-		Map<TypeKind, Class<?>> wrappers = new HashMap<>();
+		Map<TypeKind, Class<?>> wrappers = new EnumMap<>(TypeKind.class);
 		wrappers.put(TypeKind.BOOLEAN, Boolean.class);
 		wrappers.put(TypeKind.BYTE, Byte.class);
 		wrappers.put(TypeKind.CHAR, Character.class);
