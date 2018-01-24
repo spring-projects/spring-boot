@@ -51,6 +51,8 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 
 	private static final String WEB_LISTENER_CHECK_CLASS = "org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent";
 
+	private static final String AUTHENTICATION_DETAILS = "details";
+
 	private WebAuditListener webListener = maybeCreateWebListener();
 
 	private static WebAuditListener maybeCreateWebListener() {
@@ -78,7 +80,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 		data.put("type", event.getException().getClass().getName());
 		data.put("message", event.getException().getMessage());
 		if (event.getAuthentication().getDetails() != null) {
-			data.put("details", event.getAuthentication().getDetails());
+			data.put(AUTHENTICATION_DETAILS, event.getAuthentication().getDetails());
 		}
 		publish(new AuditEvent(event.getAuthentication().getName(),
 				AUTHENTICATION_FAILURE, data));
@@ -87,7 +89,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	private void onAuthenticationSuccessEvent(AuthenticationSuccessEvent event) {
 		Map<String, Object> data = new HashMap<>();
 		if (event.getAuthentication().getDetails() != null) {
-			data.put("details", event.getAuthentication().getDetails());
+			data.put(AUTHENTICATION_DETAILS, event.getAuthentication().getDetails());
 		}
 		publish(new AuditEvent(event.getAuthentication().getName(),
 				AUTHENTICATION_SUCCESS, data));
@@ -101,7 +103,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 				AuthenticationSwitchUserEvent event = (AuthenticationSwitchUserEvent) input;
 				Map<String, Object> data = new HashMap<>();
 				if (event.getAuthentication().getDetails() != null) {
-					data.put("details", event.getAuthentication().getDetails());
+					data.put(AUTHENTICATION_DETAILS, event.getAuthentication().getDetails());
 				}
 				data.put("target", event.getTargetUser().getUsername());
 				listener.publish(new AuditEvent(event.getAuthentication().getName(),

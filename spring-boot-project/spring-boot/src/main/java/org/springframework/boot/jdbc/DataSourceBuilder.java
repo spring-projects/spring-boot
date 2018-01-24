@@ -51,6 +51,14 @@ public final class DataSourceBuilder<T extends DataSource> {
 			"org.apache.tomcat.jdbc.pool.DataSource",
 			"org.apache.commons.dbcp2.BasicDataSource" };
 
+	private static final String DRIVER_CLASS_NAME_PROPERTY = "driverClassName";
+
+	private static final String URL_PROPERTY = "url";
+
+	private static final String USERNAME_PROPERTY = "username";
+
+	private static final String PASSWORD_PROPERTY = "password";
+
 	private Class<? extends DataSource> type;
 
 	private ClassLoader classLoader;
@@ -79,11 +87,11 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	private void maybeGetDriverClassName() {
-		if (!this.properties.containsKey("driverClassName")
-				&& this.properties.containsKey("url")) {
-			String url = this.properties.get("url");
+		if (!this.properties.containsKey(DRIVER_CLASS_NAME_PROPERTY)
+				&& this.properties.containsKey(URL_PROPERTY)) {
+			String url = this.properties.get(URL_PROPERTY);
 			String driverClass = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
-			this.properties.put("driverClassName", driverClass);
+			this.properties.put(DRIVER_CLASS_NAME_PROPERTY, driverClass);
 		}
 	}
 
@@ -91,8 +99,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 		ConfigurationPropertySource source = new MapConfigurationPropertySource(
 				this.properties);
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAliases("url", "jdbc-url");
-		aliases.addAliases("username", "user");
+		aliases.addAliases(URL_PROPERTY, "jdbc-url");
+		aliases.addAliases(USERNAME_PROPERTY, "user");
 		Binder binder = new Binder(source.withAliases(aliases));
 		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(result));
 	}
@@ -104,22 +112,22 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	public DataSourceBuilder<T> url(String url) {
-		this.properties.put("url", url);
+		this.properties.put(URL_PROPERTY, url);
 		return this;
 	}
 
 	public DataSourceBuilder<T> driverClassName(String driverClassName) {
-		this.properties.put("driverClassName", driverClassName);
+		this.properties.put(DRIVER_CLASS_NAME_PROPERTY, driverClassName);
 		return this;
 	}
 
 	public DataSourceBuilder<T> username(String username) {
-		this.properties.put("username", username);
+		this.properties.put(USERNAME_PROPERTY, username);
 		return this;
 	}
 
 	public DataSourceBuilder<T> password(String password) {
-		this.properties.put("password", password);
+		this.properties.put(PASSWORD_PROPERTY, password);
 		return this;
 	}
 
