@@ -136,7 +136,12 @@ content.
 |`prometheus`
 |Exposes metrics in a format that can be scraped by a Prometheus server.
 
+
+|`jolokia`
+|Exposes JMX beans over HTTP (when Jolokia is on the classpath, not availble for WebFlux).
+
 |===
+
 
 To learn more about the Actuator's endpoints and their request and response formats,
 please refer to the separate API documentation ({spring-boot-actuator-api}/html[HTML] or
@@ -857,8 +862,9 @@ Maven, you would add the following dependency:
  	</dependency>
 ----
 
-Jolokia can then be accessed by using `/actuator/jolokia` on your management HTTP
-server.
+The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the
+`management.endpoints.web.expose` property. You can then be accessed it by using
+`/actuator/jolokia` on your management HTTP server.
 
 
 
@@ -866,11 +872,12 @@ server.
 ==== Customizing Jolokia
 Jolokia has a number of settings that you would traditionally configure by setting servlet
 parameters. With Spring Boot, you can use your `application.properties` file. To do so,
-prefix the parameter with `management.jolokia.config.`, as shown in the following example:
+prefix the parameter with `management.endpont.jolokia.config.`, as shown in the following
+example:
 
 [source,properties,indent=0]
 ----
-	management.jolokia.config.debug=true
+	management.endpoint.jolokia.config.debug=true
 ----
 
 
@@ -878,7 +885,7 @@ prefix the parameter with `management.jolokia.config.`, as shown in the followin
 [[production-ready-disabling-jolokia]]
 ==== Disabling Jolokia
 If you use Jolokia but do not want Spring Boot to configure it, set the
-`management.jolokia.enabled` property to `false`, as follows:
+`management.endpoint.jolokia.enabled` property to `false`, as follows:
 
 [source,properties,indent=0]
 ----

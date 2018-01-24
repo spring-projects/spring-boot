@@ -1258,6 +1258,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.trace.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.trace.enabled= # Whether to enable the trace endpoint.
 
+	# JOLOKIA ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
+	management.endpoint.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
+	management.endpoint.jolokia.enabled=true # Whether to enable Jolokia.
+
 	# HEALTH INDICATORS
 	management.health.db.enabled=true # Whether to enable database health check.
 	management.health.cassandra.enabled=true # Whether to enable Cassandra health check.
@@ -1287,11 +1291,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.info.env.enabled=true # Whether to enable environment info.
 	management.info.git.enabled=true # Whether to enable git info.
 	management.info.git.mode=simple # Mode to use to expose git information.
-
-	# JOLOKIA ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
-	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
-	management.jolokia.enabled=false # Whether to enable Jolokia.
-	management.jolokia.path=/jolokia # Path at which Jolokia is available.
 
 	# METRICS
 	management.metrics.binders.jvm.enabled=true # Whether to enable JVM metrics.

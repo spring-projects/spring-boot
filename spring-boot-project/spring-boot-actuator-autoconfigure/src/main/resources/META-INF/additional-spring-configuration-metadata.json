@@ -795,7 +795,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "reason": "Endpoint path is no longer customizable.",
+        "replacement": "management.endpoints.web.path-mapping.jolokia",
         "level": "error"
       }
     },
@@ -1734,4 +1734,3 @@
     }
   ]
 }
-

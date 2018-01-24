@@ -26,6 +26,11 @@ package org.springframework.boot.actuate.endpoint.invoke;
 public interface ParameterValueMapper {
 
 	/**
+	 * A {@link ParameterValueMapper} that does nothing.
+	 */
+	ParameterValueMapper NONE = (paramere, value) -> value;
+
+	/**
 	 * Map the specified {@code input} parameter to the given {@code parameterType}.
 	 * @param parameter the parameter to map
 	 * @param value a parameter value

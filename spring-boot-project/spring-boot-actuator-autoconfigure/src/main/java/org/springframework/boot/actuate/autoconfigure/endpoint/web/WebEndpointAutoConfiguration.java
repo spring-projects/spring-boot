@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
@@ -39,12 +40,15 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint;
+import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -136,6 +140,22 @@ public class WebEndpointAutoConfiguration {
 		Set<String> exclude = this.properties.getExclude();
 		return new ExposeExcludePropertyEndpointFilter<>(
 				ExposableControllerEndpoint.class, expose, exclude);
+	}
+
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	static class WebEndpointServletAutoConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(ServletEndpointsSupplier.class)
+		public ServletEndpointDiscoverer servletEndpointDiscoverer(
+				ApplicationContext applicationContext, PathMapper webEndpointPathMapper,
+				ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
+				ObjectProvider<Collection<EndpointFilter<ExposableServletEndpoint>>> filters) {
+			return new ServletEndpointDiscoverer(applicationContext,
+					webEndpointPathMapper,
+					filters.getIfAvailable(Collections::emptyList));
+		}
+
 	}
 
 }

@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
+import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
@@ -61,6 +62,7 @@ public class ControllerEndpointDiscovererTests {
 			assertThat(endpoint.getId()).isEqualTo("testcontroller");
 			assertThat(endpoint.getController())
 					.isInstanceOf(TestControllerEndpoint.class);
+			assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
 		});
 	}
 

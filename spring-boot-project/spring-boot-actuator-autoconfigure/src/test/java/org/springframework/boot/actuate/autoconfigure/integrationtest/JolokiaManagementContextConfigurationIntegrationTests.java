@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,10 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpoint;
+import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -53,14 +55,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link JolokiaManagementContextConfiguration}.
+ * Integration tests for {@link JolokiaEndpoint}.
  *
  * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-@TestPropertySource(properties = "management.jolokia.enabled=true")
+@TestPropertySource(properties = "management.endpoints.web.expose=jolokia")
 public class JolokiaManagementContextConfigurationIntegrationTests {
 
 	@Autowired
@@ -70,7 +72,7 @@ public class JolokiaManagementContextConfigurationIntegrationTests {
 	public void jolokiaIsExposed() {
 		ResponseEntity<String> response = this.restTemplate
 				.getForEntity("/actuator/jolokia", String.class);
-		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).contains("\"agent\"");
 		assertThat(response.getBody()).contains("\"request\":{\"type\"");
 	}
@@ -79,7 +81,7 @@ public class JolokiaManagementContextConfigurationIntegrationTests {
 	public void search() {
 		ResponseEntity<String> response = this.restTemplate
 				.getForEntity("/actuator/jolokia/search/java.lang:*", String.class);
-		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).contains("GarbageCollector");
 	}
 
@@ -87,7 +89,7 @@ public class JolokiaManagementContextConfigurationIntegrationTests {
 	public void read() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity(
 				"/actuator/jolokia/read/java.lang:type=Memory", String.class);
-		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).contains("NonHeapMemoryUsage");
 	}
 
@@ -95,18 +97,19 @@ public class JolokiaManagementContextConfigurationIntegrationTests {
 	public void list() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity(
 				"/actuator/jolokia/list/java.lang/type=Memory/attr", String.class);
-		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).contains("NonHeapMemoryUsage");
 	}
 
 	@Configuration
 	@MinimalWebConfiguration
 	@Import({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			JolokiaEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
 			WebEndpointAutoConfiguration.class,
 			ServletManagementContextAutoConfiguration.class,
 			ManagementContextAutoConfiguration.class,
-			ServletManagementContextAutoConfiguration.class })
+			ServletEndpointManagementContextConfiguration.class })
 	protected static class Application {
 
 	}

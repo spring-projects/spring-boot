@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,40 +29,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.jolokia")
+@ConfigurationProperties(prefix = "management.endpoint.jolokia")
 public class JolokiaProperties {
-
-	/**
-	 * Whether to enable Jolokia.
-	 */
-	private boolean enabled;
-
-	/**
-	 * Path at which Jolokia is available.
-	 */
-	private String path = "/jolokia";
 
 	/**
 	 * Jolokia settings. These are traditionally set using servlet parameters. Refer to
 	 * the documentation of Jolokia for more details.
 	 */
 	private final Map<String, String> config = new HashMap<>();
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public String getPath() {
-		return this.path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
 
 	public Map<String, String> getConfig() {
 		return this.config;

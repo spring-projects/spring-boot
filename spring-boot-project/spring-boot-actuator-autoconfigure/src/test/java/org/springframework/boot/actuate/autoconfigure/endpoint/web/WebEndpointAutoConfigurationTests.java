@@ -24,8 +24,10 @@ import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,12 +37,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Yunkun Huang
+ * @author Phillip Webb
  */
 public class WebEndpointAutoConfigurationTests {
 
+	private static final AutoConfigurations CONFIGURATIONS = AutoConfigurations
+			.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class);
+
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class));
+			.withConfiguration(CONFIGURATIONS);
 
 	@Test
 	public void webApplicationConfiguresEndpointMediaTypes() {
@@ -80,6 +85,20 @@ public class WebEndpointAutoConfigurationTests {
 					.containsKeys("webIncludeExcludePropertyEndpointFilter",
 							"controllerIncludeExcludePropertyEndpointFilter");
 		});
+	}
+
+	@Test
+	public void contextShouldConfigureServletEndpointDiscoverer() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ServletEndpointDiscoverer.class);
+		});
+	}
+
+	@Test
+	public void contextWhenNotServletShouldNotConfigureServletEndpointDiscoverer() {
+		new ApplicationContextRunner().withConfiguration(CONFIGURATIONS)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ServletEndpointDiscoverer.class));
 	}
 
 }

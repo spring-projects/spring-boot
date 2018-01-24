@@ -291,6 +291,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	@SuppressWarnings("unchecked")
 	private boolean isFilterMatch(Class<?> filter, EndpointBean endpointBean) {
+		if (!isEndpointExposed(endpointBean.getBean())) {
+			return false;
+		}
 		if (filter == null) {
 			return true;
 		}
