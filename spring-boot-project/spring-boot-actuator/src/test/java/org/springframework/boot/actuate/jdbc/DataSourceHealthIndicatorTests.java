@@ -50,7 +50,8 @@ public class DataSourceHealthIndicatorTests {
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
-		this.dataSource = new SingleConnectionDataSource(db.getUrl() + ";shutdown=true",
+		this.dataSource = new SingleConnectionDataSource(db.getUrl(
+				EmbeddedDatabaseConnection.DEFAULT_DATABASE_NAME) + ";shutdown=true",
 				"sa", "", false);
 		this.dataSource.setDriverClassName(db.getDriverClassName());
 	}

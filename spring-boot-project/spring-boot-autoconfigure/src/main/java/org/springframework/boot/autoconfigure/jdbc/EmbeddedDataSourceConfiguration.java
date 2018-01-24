@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration for embedded data sources.
@@ -56,7 +57,10 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 	public EmbeddedDatabase dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
 				.setType(EmbeddedDatabaseConnection.get(this.classLoader).getType());
-		this.database = builder.setName(this.properties.getName())
+		String name = (StringUtils.hasText(this.properties.getName())
+				? this.properties.getName()
+				: EmbeddedDatabaseConnection.DEFAULT_DATABASE_NAME);
+		this.database = builder.setName(name)
 				.generateUniqueName(this.properties.isGenerateUniqueName()).build();
 		return this.database;
 	}

@@ -51,9 +51,15 @@ public class EmbeddedDatabaseConnectionTests {
 	}
 
 	@Test
-	public void getUrlWithNoDatabaseName() {
-		this.thrown.expect(IllegalArgumentException.class);
-		EmbeddedDatabaseConnection.H2.getUrl("  ");
+	public void getUrlWithNullDatabaseName() {
+		assertThat(EmbeddedDatabaseConnection.HSQL.getUrl(null))
+				.isEqualTo("jdbc:hsqldb:mem:testdb");
+	}
+
+	@Test
+	public void getUrlWithEmptyDatabaseName() {
+		assertThat(EmbeddedDatabaseConnection.HSQL.getUrl("  "))
+				.isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 
 }

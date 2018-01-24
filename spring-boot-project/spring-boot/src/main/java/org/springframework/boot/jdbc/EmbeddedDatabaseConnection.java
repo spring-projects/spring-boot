@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Connection details for {@link EmbeddedDatabaseType embedded databases}.
@@ -60,7 +60,10 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:%s");
 
-	private static final String DEFAULT_DATABASE_NAME = "testdb";
+	/**
+	 * Default database name.
+	 */
+	public static final String DEFAULT_DATABASE_NAME = "testdb";
 
 	private final EmbeddedDatabaseType type;
 
@@ -92,21 +95,15 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-	 * Returns the URL for the connection using the default database name.
-	 * @return the connection URL
-	 */
-	public String getUrl() {
-		return getUrl(DEFAULT_DATABASE_NAME);
-	}
-
-	/**
-	 * Returns the URL for the connection using the specified {@code databaseName}.
+	 * Returns the URL for the connection using the specified {@code databaseName} or
+	 * {@value DEFAULT_DATABASE_NAME} if {@code databaseName} is empty or {@code null}.
 	 * @param databaseName the name of the database
 	 * @return the connection URL
 	 */
 	public String getUrl(String databaseName) {
-		Assert.hasText(databaseName, "DatabaseName must not be null.");
-		return (this.url != null ? String.format(this.url, databaseName) : null);
+		String name = (StringUtils.hasText(databaseName)
+				? databaseName : DEFAULT_DATABASE_NAME);
+		return (this.url != null ? String.format(this.url, name) : null);
 	}
 
 	/**

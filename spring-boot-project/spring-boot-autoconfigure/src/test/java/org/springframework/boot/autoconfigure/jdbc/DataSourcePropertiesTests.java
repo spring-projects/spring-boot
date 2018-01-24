@@ -62,7 +62,8 @@ public class DataSourcePropertiesTests {
 		properties.afterPropertiesSet();
 		assertThat(properties.getUrl()).isNull();
 		assertThat(properties.determineUrl())
-				.isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
+				.isEqualTo(EmbeddedDatabaseConnection.H2.getUrl(
+						EmbeddedDatabaseConnection.DEFAULT_DATABASE_NAME));
 	}
 
 	@Test

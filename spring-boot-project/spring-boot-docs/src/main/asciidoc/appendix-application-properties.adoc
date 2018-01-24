@@ -689,7 +689,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.datasource.initialization-mode=embedded # Initialize the datasource with available DDL and DML scripts.
 	spring.datasource.jmx-enabled=false # Whether to enable JMX support (if provided by the underlying pool).
 	spring.datasource.jndi-name= # JNDI location of the datasource. Class, url, username & password are ignored when set.
-	spring.datasource.name=testdb # Name of the datasource.
+	spring.datasource.name= # Name of the datasource. Default to "testdb" when using an embedded database.
 	spring.datasource.password= # Login password of the database.
 	spring.datasource.platform=all # Platform to use in the DDL or DML scripts (such as schema-${platform}.sql or data-${platform}.sql).
 	spring.datasource.schema= # Schema (DDL) script resource references.
