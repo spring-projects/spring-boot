@@ -37,8 +37,8 @@ public class CassandraContainer extends Container {
 	private static final int PORT = 9042;
 
 	public CassandraContainer() {
-		super("cassandra:3.11.1", PORT,
-				(container) -> container.waitingFor(new WaitStrategy()));
+		super("cassandra:3.11.1", PORT, (container) -> container
+				.waitingFor(new WaitStrategy()).withStartupAttempts(3));
 	}
 
 	private static class WaitStrategy extends HostPortWaitStrategy {
