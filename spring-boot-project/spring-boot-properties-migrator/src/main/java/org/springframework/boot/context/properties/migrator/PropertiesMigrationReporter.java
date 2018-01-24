@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.legacyproperties;
+package org.springframework.boot.context.properties.migrator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,17 +40,17 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
- * Report on {@link LegacyProperty legacy properties}.
+ * Report on {@link PropertyMigration legacy properties}.
  *
  * @author Stephane Nicoll
  */
-class LegacyPropertiesReporter {
+class PropertiesMigrationReporter {
 
 	private final Map<String, ConfigurationMetadataProperty> allProperties;
 
 	private final ConfigurableEnvironment environment;
 
-	LegacyPropertiesReporter(ConfigurationMetadataRepository metadataRepository,
+	PropertiesMigrationReporter(ConfigurationMetadataRepository metadataRepository,
 			ConfigurableEnvironment environment) {
 		this.allProperties = Collections
 				.unmodifiableMap(metadataRepository.getAllProperties());
@@ -62,9 +62,9 @@ class LegacyPropertiesReporter {
 	 * legacy properties if a replacement exists.
 	 * @return the analysis
 	 */
-	public LegacyPropertiesReport getReport() {
-		LegacyPropertiesReport report = new LegacyPropertiesReport();
-		Map<String, List<LegacyProperty>> properties = getMatchingProperties(
+	public PropertiesMigrationReport getReport() {
+		PropertiesMigrationReport report = new PropertiesMigrationReport();
+		Map<String, List<PropertyMigration>> properties = getMatchingProperties(
 				deprecatedFilter());
 		if (properties.isEmpty()) {
 			return report;
@@ -80,10 +80,10 @@ class LegacyPropertiesReporter {
 	}
 
 	private PropertySource<?> mapPropertiesWithReplacement(
-			LegacyPropertiesReport report, String name,
-			List<LegacyProperty> properties) {
-		List<LegacyProperty> renamed = new ArrayList<>();
-		List<LegacyProperty> unsupported = new ArrayList<>();
+			PropertiesMigrationReport report, String name,
+			List<PropertyMigration> properties) {
+		List<PropertyMigration> renamed = new ArrayList<>();
+		List<PropertyMigration> unsupported = new ArrayList<>();
 		properties.forEach((property) ->
 				(isRenamed(property) ? renamed : unsupported).add(property));
 		report.add(name, renamed, unsupported);
@@ -92,7 +92,7 @@ class LegacyPropertiesReporter {
 		}
 		String target = "migrate-" + name;
 		Map<String, OriginTrackedValue> content = new LinkedHashMap<>();
-		for (LegacyProperty candidate : renamed) {
+		for (PropertyMigration candidate : renamed) {
 			OriginTrackedValue value = OriginTrackedValue.of(
 					candidate.getProperty().getValue(),
 					candidate.getProperty().getOrigin());
@@ -101,7 +101,7 @@ class LegacyPropertiesReporter {
 		return new OriginTrackedMapPropertySource(target, content);
 	}
 
-	private boolean isRenamed(LegacyProperty property) {
+	private boolean isRenamed(PropertyMigration property) {
 		ConfigurationMetadataProperty metadata = property.getMetadata();
 		String replacementId = metadata.getDeprecation().getReplacement();
 		if (StringUtils.hasText(replacementId)) {
@@ -127,9 +127,9 @@ class LegacyPropertiesReporter {
 		return null;
 	}
 
-	private Map<String, List<LegacyProperty>> getMatchingProperties(
+	private Map<String, List<PropertyMigration>> getMatchingProperties(
 			Predicate<ConfigurationMetadataProperty> filter) {
-		MultiValueMap<String, LegacyProperty> result = new LinkedMultiValueMap<>();
+		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values()
 				.stream().filter(filter).collect(Collectors.toList());
 		getPropertySourcesAsMap().forEach((name, source) -> {
@@ -139,7 +139,7 @@ class LegacyPropertiesReporter {
 								ConfigurationPropertyName.of(metadata.getId()));
 				if (configurationProperty != null) {
 					result.add(name,
-							new LegacyProperty(metadata, configurationProperty));
+							new PropertyMigration(metadata, configurationProperty));
 				}
 			});
 		});

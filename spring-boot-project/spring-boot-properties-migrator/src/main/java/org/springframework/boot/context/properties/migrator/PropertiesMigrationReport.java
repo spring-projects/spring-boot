@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.legacyproperties;
+package org.springframework.boot.context.properties.migrator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,21 +28,21 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataPrope
 import org.springframework.util.StringUtils;
 
 /**
- * Provides a legacy properties report.
+ * Provides a properties migration report.
  *
  * @author Stephane Nicoll
  */
-class LegacyPropertiesReport {
+class PropertiesMigrationReport {
 
 	private final Map<String, LegacyProperties> content = new LinkedHashMap<>();
 
 	/**
-	 * Return a report for all the legacy properties that were automatically renamed. If
-	 * no such legacy properties were found, return {@code null}.
+	 * Return a report for all the properties that were automatically renamed. If no such
+	 * properties were found, return {@code null}.
 	 * @return a report with the configurations keys that should be renamed
 	 */
 	public String getWarningReport() {
-		Map<String, List<LegacyProperty>> content = getContent(
+		Map<String, List<PropertyMigration>> content = getContent(
 				LegacyProperties::getRenamed);
 		if (content.isEmpty()) {
 			return null;
@@ -61,12 +61,12 @@ class LegacyPropertiesReport {
 	}
 
 	/**
-	 * Return a report for all the legacy properties that are no longer supported. If no
-	 * such legacy properties were found, return {@code null}.
+	 * Return a report for all the properties that are no longer supported. If no such
+	 * properties were found, return {@code null}.
 	 * @return a report with the configurations keys that are no longer supported
 	 */
 	public String getErrorReport() {
-		Map<String, List<LegacyProperty>> content = getContent(
+		Map<String, List<PropertyMigration>> content = getContent(
 				LegacyProperties::getUnsupported);
 		if (content.isEmpty()) {
 			return null;
@@ -85,8 +85,8 @@ class LegacyPropertiesReport {
 		return report.toString();
 	}
 
-	private Map<String, List<LegacyProperty>> getContent(
-			Function<LegacyProperties, List<LegacyProperty>> extractor) {
+	private Map<String, List<PropertyMigration>> getContent(
+			Function<LegacyProperties, List<PropertyMigration>> extractor) {
 		return this.content.entrySet().stream()
 				.filter((entry) -> !extractor.apply(entry.getValue()).isEmpty())
 				.collect(Collectors.toMap(Map.Entry::getKey,
@@ -94,11 +94,11 @@ class LegacyPropertiesReport {
 	}
 
 	private void append(StringBuilder report,
-			Map<String, List<LegacyProperty>> content,
+			Map<String, List<PropertyMigration>> content,
 			Function<ConfigurationMetadataProperty, String> deprecationMessage) {
 		content.forEach((name, properties) -> {
 			report.append(String.format("Property source '%s':%n", name));
-			properties.sort(LegacyProperty.COMPARATOR);
+			properties.sort(PropertyMigration.COMPARATOR);
 			properties.forEach((property) -> {
 				ConfigurationMetadataProperty metadata = property.getMetadata();
 				report.append(String.format("\tKey: %s%n", metadata.getId()));
@@ -119,19 +119,19 @@ class LegacyPropertiesReport {
 	 * @param renamed the properties that were renamed
 	 * @param unsupported the properties that are no longer supported
 	 */
-	void add(String name, List<LegacyProperty> renamed,
-			List<LegacyProperty> unsupported) {
+	void add(String name, List<PropertyMigration> renamed,
+			List<PropertyMigration> unsupported) {
 		this.content.put(name, new LegacyProperties(renamed, unsupported));
 	}
 
 	private static class LegacyProperties {
 
-		private final List<LegacyProperty> renamed;
+		private final List<PropertyMigration> renamed;
 
-		private final List<LegacyProperty> unsupported;
+		private final List<PropertyMigration> unsupported;
 
-		LegacyProperties(List<LegacyProperty> renamed,
-				List<LegacyProperty> unsupported) {
+		LegacyProperties(List<PropertyMigration> renamed,
+				List<PropertyMigration> unsupported) {
 			this.renamed = asNewList(renamed);
 			this.unsupported = asNewList(unsupported);
 		}
@@ -140,11 +140,11 @@ class LegacyPropertiesReport {
 			return (source == null ? Collections.emptyList() : new ArrayList<>(source));
 		}
 
-		public List<LegacyProperty> getRenamed() {
+		public List<PropertyMigration> getRenamed() {
 			return this.renamed;
 		}
 
-		public List<LegacyProperty> getUnsupported() {
+		public List<PropertyMigration> getUnsupported() {
 			return this.unsupported;
 		}
 

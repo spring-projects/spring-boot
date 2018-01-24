@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.legacyproperties;
+package org.springframework.boot.context.properties.migrator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,19 +35,19 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
  * An {@link ApplicationListener} that inspects the {@link ConfigurableEnvironment
- * environment} for legacy configuration keys. Automatically renames the keys that
- * have a matching replacement and log a report of what was discovered.
+ * environment} for configuration keys that need to be migrated. Automatically renames the
+ * keys that have a matching replacement and log a report of what was discovered.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class LegacyPropertiesListener
+public class PropertiesMigrationListener
 		implements ApplicationListener<SpringApplicationEvent> {
 
 	private static final Log logger = LogFactory
-			.getLog(LegacyPropertiesListener.class);
+			.getLog(PropertiesMigrationListener.class);
 
-	private LegacyPropertiesReport report;
+	private PropertiesMigrationReport report;
 
 	private boolean reported;
 
@@ -64,7 +64,7 @@ public class LegacyPropertiesListener
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
 		ConfigurationMetadataRepository repository = loadRepository();
-		LegacyPropertiesReporter reporter = new LegacyPropertiesReporter(repository,
+		PropertiesMigrationReporter reporter = new PropertiesMigrationReporter(repository,
 				event.getApplicationContext().getEnvironment());
 		this.report = reporter.getReport();
 	}

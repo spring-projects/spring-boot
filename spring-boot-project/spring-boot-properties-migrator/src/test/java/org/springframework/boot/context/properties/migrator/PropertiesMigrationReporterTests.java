@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.legacyproperties;
+package org.springframework.boot.context.properties.migrator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,11 +39,11 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LegacyPropertiesReporter}.
+ * Tests for {@link PropertiesMigrationReporter}.
  *
  * @author Stephane Nicoll
  */
-public class LegacyPropertiesReporterTests {
+public class PropertiesMigrationReporterTests {
 
 	private ConfigurableEnvironment environment = new MockEnvironment();
 
@@ -172,9 +172,9 @@ public class LegacyPropertiesReporterTests {
 		return createAnalyzer(repository).getReport().getErrorReport();
 	}
 
-	private LegacyPropertiesReporter createAnalyzer(
+	private PropertiesMigrationReporter createAnalyzer(
 			ConfigurationMetadataRepository repository) {
-		return new LegacyPropertiesReporter(repository, this.environment);
+		return new PropertiesMigrationReporter(repository, this.environment);
 	}
 
 }

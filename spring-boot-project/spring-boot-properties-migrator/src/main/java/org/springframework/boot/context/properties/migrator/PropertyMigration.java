@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.legacyproperties;
+package org.springframework.boot.context.properties.migrator;
 
 import java.util.Comparator;
 
@@ -28,9 +28,9 @@ import org.springframework.boot.origin.TextResourceOrigin;
  *
  * @author Stephane Nicoll
  */
-class LegacyProperty {
+class PropertyMigration {
 
-	public static final Comparator<LegacyProperty> COMPARATOR = Comparator
+	public static final Comparator<PropertyMigration> COMPARATOR = Comparator
 			.comparing((property) -> property.getMetadata().getId());
 
 	private final ConfigurationMetadataProperty metadata;
@@ -39,7 +39,7 @@ class LegacyProperty {
 
 	private final Integer lineNumber;
 
-	LegacyProperty(ConfigurationMetadataProperty metadata,
+	PropertyMigration(ConfigurationMetadataProperty metadata,
 			ConfigurationProperty property) {
 		this.metadata = metadata;
 		this.property = property;
