@@ -1,2 +1,0 @@
-org.springframework.context.ApplicationListener=\
-org.springframework.boot.deprecatedproperties.DeprecatedPropertiesListener

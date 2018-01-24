@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.deprecatedproperties;
+package org.springframework.boot.legacyproperties;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,19 +35,19 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
  * An {@link ApplicationListener} that inspects the {@link ConfigurableEnvironment
- * environment} for deprecated configuration keys. Automatically renames the keys that
+ * environment} for legacy configuration keys. Automatically renames the keys that
  * have a matching replacement and log a report of what was discovered.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class DeprecatedPropertiesListener
+public class LegacyPropertiesListener
 		implements ApplicationListener<SpringApplicationEvent> {
 
 	private static final Log logger = LogFactory
-			.getLog(DeprecatedPropertiesListener.class);
+			.getLog(LegacyPropertiesListener.class);
 
-	private DeprecatedPropertiesReport report;
+	private LegacyPropertiesReport report;
 
 	private boolean reported;
 
@@ -58,13 +58,13 @@ public class DeprecatedPropertiesListener
 		}
 		if (event instanceof ApplicationReadyEvent
 				|| event instanceof ApplicationFailedEvent) {
-			logLegacyPropertiesAnalysis();
+			logLegacyPropertiesReport();
 		}
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
 		ConfigurationMetadataRepository repository = loadRepository();
-		DeprecatedPropertiesReporter reporter = new DeprecatedPropertiesReporter(repository,
+		LegacyPropertiesReporter reporter = new LegacyPropertiesReporter(repository,
 				event.getApplicationContext().getEnvironment());
 		this.report = reporter.getReport();
 	}
@@ -90,7 +90,7 @@ public class DeprecatedPropertiesListener
 		return builder.build();
 	}
 
-	private void logLegacyPropertiesAnalysis() {
+	private void logLegacyPropertiesReport() {
 		if (this.report == null || this.reported) {
 			return;
 		}

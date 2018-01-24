@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.deprecatedproperties;
+package org.springframework.boot.legacyproperties;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,17 +40,17 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
- * Report on {@link DeprecatedProperty deprecated properties}.
+ * Report on {@link LegacyProperty legacy properties}.
  *
  * @author Stephane Nicoll
  */
-class DeprecatedPropertiesReporter {
+class LegacyPropertiesReporter {
 
 	private final Map<String, ConfigurationMetadataProperty> allProperties;
 
 	private final ConfigurableEnvironment environment;
 
-	DeprecatedPropertiesReporter(ConfigurationMetadataRepository metadataRepository,
+	LegacyPropertiesReporter(ConfigurationMetadataRepository metadataRepository,
 			ConfigurableEnvironment environment) {
 		this.allProperties = Collections
 				.unmodifiableMap(metadataRepository.getAllProperties());
@@ -62,9 +62,9 @@ class DeprecatedPropertiesReporter {
 	 * legacy properties if a replacement exists.
 	 * @return the analysis
 	 */
-	public DeprecatedPropertiesReport getReport() {
-		DeprecatedPropertiesReport report = new DeprecatedPropertiesReport();
-		Map<String, List<DeprecatedProperty>> properties = getMatchingProperties(
+	public LegacyPropertiesReport getReport() {
+		LegacyPropertiesReport report = new LegacyPropertiesReport();
+		Map<String, List<LegacyProperty>> properties = getMatchingProperties(
 				deprecatedFilter());
 		if (properties.isEmpty()) {
 			return report;
@@ -80,20 +80,19 @@ class DeprecatedPropertiesReporter {
 	}
 
 	private PropertySource<?> mapPropertiesWithReplacement(
-			DeprecatedPropertiesReport report, String name,
-			List<DeprecatedProperty> properties) {
-		List<DeprecatedProperty> renamed = new ArrayList<>();
-		List<DeprecatedProperty> unsupported = new ArrayList<>();
-		properties.forEach((property) -> {
-			(isRenamed(property) ? renamed : unsupported).add(property);
-		});
+			LegacyPropertiesReport report, String name,
+			List<LegacyProperty> properties) {
+		List<LegacyProperty> renamed = new ArrayList<>();
+		List<LegacyProperty> unsupported = new ArrayList<>();
+		properties.forEach((property) ->
+				(isRenamed(property) ? renamed : unsupported).add(property));
 		report.add(name, renamed, unsupported);
 		if (renamed.isEmpty()) {
 			return null;
 		}
 		String target = "migrate-" + name;
 		Map<String, OriginTrackedValue> content = new LinkedHashMap<>();
-		for (DeprecatedProperty candidate : renamed) {
+		for (LegacyProperty candidate : renamed) {
 			OriginTrackedValue value = OriginTrackedValue.of(
 					candidate.getProperty().getValue(),
 					candidate.getProperty().getOrigin());
@@ -102,7 +101,7 @@ class DeprecatedPropertiesReporter {
 		return new OriginTrackedMapPropertySource(target, content);
 	}
 
-	private boolean isRenamed(DeprecatedProperty property) {
+	private boolean isRenamed(LegacyProperty property) {
 		ConfigurationMetadataProperty metadata = property.getMetadata();
 		String replacementId = metadata.getDeprecation().getReplacement();
 		if (StringUtils.hasText(replacementId)) {
@@ -128,9 +127,9 @@ class DeprecatedPropertiesReporter {
 		return null;
 	}
 
-	private Map<String, List<DeprecatedProperty>> getMatchingProperties(
+	private Map<String, List<LegacyProperty>> getMatchingProperties(
 			Predicate<ConfigurationMetadataProperty> filter) {
-		MultiValueMap<String, DeprecatedProperty> result = new LinkedMultiValueMap<>();
+		MultiValueMap<String, LegacyProperty> result = new LinkedMultiValueMap<>();
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values()
 				.stream().filter(filter).collect(Collectors.toList());
 		getPropertySourcesAsMap().forEach((name, source) -> {
@@ -140,7 +139,7 @@ class DeprecatedPropertiesReporter {
 								ConfigurationPropertyName.of(metadata.getId()));
 				if (configurationProperty != null) {
 					result.add(name,
-							new DeprecatedProperty(metadata, configurationProperty));
+							new LegacyProperty(metadata, configurationProperty));
 				}
 			});
 		});

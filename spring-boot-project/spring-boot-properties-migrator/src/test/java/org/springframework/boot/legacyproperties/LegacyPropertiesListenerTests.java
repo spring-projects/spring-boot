@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.deprecatedproperties;
+package org.springframework.boot.legacyproperties;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -28,11 +28,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DeprecatedPropertiesListener}.
+ * Tests for {@link LegacyPropertiesListener}.
  *
  * @author Stephane Nicoll
  */
-public class DeprecatedPropertiesListenerTests {
+public class LegacyPropertiesListenerTests {
 
 	@Rule
 	public final OutputCapture output = new OutputCapture();

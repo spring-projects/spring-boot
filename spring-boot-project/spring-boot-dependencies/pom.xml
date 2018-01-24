@@ -241,11 +241,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-configuration-analyzer</artifactId>
-				<version>${revision}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-configuration-metadata</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -267,6 +262,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-loader-tools</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-properties-migrator</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>

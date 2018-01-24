@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for migrating deprecated Spring Boot properties.
+ * Support for migrating legacy Spring Boot properties.
  */
-package org.springframework.boot.deprecatedproperties;
+package org.springframework.boot.legacyproperties;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.deprecatedproperties;
+package org.springframework.boot.legacyproperties;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,11 +39,11 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DeprecatedPropertiesReporter}.
+ * Tests for {@link LegacyPropertiesReporter}.
  *
  * @author Stephane Nicoll
  */
-public class DeprecatedPropertiesReporterTests {
+public class LegacyPropertiesReporterTests {
 
 	private ConfigurableEnvironment environment = new MockEnvironment();
 
@@ -172,9 +172,9 @@ public class DeprecatedPropertiesReporterTests {
 		return createAnalyzer(repository).getReport().getErrorReport();
 	}
 
-	private DeprecatedPropertiesReporter createAnalyzer(
+	private LegacyPropertiesReporter createAnalyzer(
 			ConfigurationMetadataRepository repository) {
-		return new DeprecatedPropertiesReporter(repository, this.environment);
+		return new LegacyPropertiesReporter(repository, this.environment);
 	}
 
 }

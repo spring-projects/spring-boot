@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.deprecatedproperties;
+package org.springframework.boot.legacyproperties;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,13 +28,13 @@ import org.springframework.boot.configurationmetadata.ConfigurationMetadataPrope
 import org.springframework.util.StringUtils;
 
 /**
- * Provides a deprecated properties report.
+ * Provides a legacy properties report.
  *
  * @author Stephane Nicoll
  */
-class DeprecatedPropertiesReport {
+class LegacyPropertiesReport {
 
-	private final Map<String, DeprecatedProperties> content = new LinkedHashMap<>();
+	private final Map<String, LegacyProperties> content = new LinkedHashMap<>();
 
 	/**
 	 * Return a report for all the legacy properties that were automatically renamed. If
@@ -42,8 +42,8 @@ class DeprecatedPropertiesReport {
 	 * @return a report with the configurations keys that should be renamed
 	 */
 	public String getWarningReport() {
-		Map<String, List<DeprecatedProperty>> content = getContent(
-				DeprecatedProperties::getRenamed);
+		Map<String, List<LegacyProperty>> content = getContent(
+				LegacyProperties::getRenamed);
 		if (content.isEmpty()) {
 			return null;
 		}
@@ -66,8 +66,8 @@ class DeprecatedPropertiesReport {
 	 * @return a report with the configurations keys that are no longer supported
 	 */
 	public String getErrorReport() {
-		Map<String, List<DeprecatedProperty>> content = getContent(
-				DeprecatedProperties::getUnsupported);
+		Map<String, List<LegacyProperty>> content = getContent(
+				LegacyProperties::getUnsupported);
 		if (content.isEmpty()) {
 			return null;
 		}
@@ -85,8 +85,8 @@ class DeprecatedPropertiesReport {
 		return report.toString();
 	}
 
-	private Map<String, List<DeprecatedProperty>> getContent(
-			Function<DeprecatedProperties, List<DeprecatedProperty>> extractor) {
+	private Map<String, List<LegacyProperty>> getContent(
+			Function<LegacyProperties, List<LegacyProperty>> extractor) {
 		return this.content.entrySet().stream()
 				.filter((entry) -> !extractor.apply(entry.getValue()).isEmpty())
 				.collect(Collectors.toMap(Map.Entry::getKey,
@@ -94,11 +94,11 @@ class DeprecatedPropertiesReport {
 	}
 
 	private void append(StringBuilder report,
-			Map<String, List<DeprecatedProperty>> content,
+			Map<String, List<LegacyProperty>> content,
 			Function<ConfigurationMetadataProperty, String> deprecationMessage) {
 		content.forEach((name, properties) -> {
 			report.append(String.format("Property source '%s':%n", name));
-			properties.sort(DeprecatedProperty.COMPARATOR);
+			properties.sort(LegacyProperty.COMPARATOR);
 			properties.forEach((property) -> {
 				ConfigurationMetadataProperty metadata = property.getMetadata();
 				report.append(String.format("\tKey: %s%n", metadata.getId()));
@@ -119,32 +119,32 @@ class DeprecatedPropertiesReport {
 	 * @param renamed the properties that were renamed
 	 * @param unsupported the properties that are no longer supported
 	 */
-	void add(String name, List<DeprecatedProperty> renamed,
-			List<DeprecatedProperty> unsupported) {
-		this.content.put(name, new DeprecatedProperties(renamed, unsupported));
+	void add(String name, List<LegacyProperty> renamed,
+			List<LegacyProperty> unsupported) {
+		this.content.put(name, new LegacyProperties(renamed, unsupported));
 	}
 
-	private static class DeprecatedProperties {
+	private static class LegacyProperties {
 
-		private final List<DeprecatedProperty> renamed;
+		private final List<LegacyProperty> renamed;
 
-		private final List<DeprecatedProperty> unsupported;
+		private final List<LegacyProperty> unsupported;
 
-		DeprecatedProperties(List<DeprecatedProperty> renamed,
-				List<DeprecatedProperty> unsupported) {
+		LegacyProperties(List<LegacyProperty> renamed,
+				List<LegacyProperty> unsupported) {
 			this.renamed = asNewList(renamed);
 			this.unsupported = asNewList(unsupported);
 		}
 
 		private <T> List<T> asNewList(List<T> source) {
-			return (source == null ? Collections.emptyList() : new ArrayList<T>(source));
+			return (source == null ? Collections.emptyList() : new ArrayList<>(source));
 		}
 
-		public List<DeprecatedProperty> getRenamed() {
+		public List<LegacyProperty> getRenamed() {
 			return this.renamed;
 		}
 
-		public List<DeprecatedProperty> getUnsupported() {
+		public List<LegacyProperty> getUnsupported() {
 			return this.unsupported;
 		}
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.deprecatedproperties;
+package org.springframework.boot.legacyproperties;
 
 import java.util.Comparator;
 
@@ -28,9 +28,9 @@ import org.springframework.boot.origin.TextResourceOrigin;
  *
  * @author Stephane Nicoll
  */
-class DeprecatedProperty {
+class LegacyProperty {
 
-	public static final Comparator<DeprecatedProperty> COMPARATOR = Comparator
+	public static final Comparator<LegacyProperty> COMPARATOR = Comparator
 			.comparing((property) -> property.getMetadata().getId());
 
 	private final ConfigurationMetadataProperty metadata;
@@ -39,7 +39,7 @@ class DeprecatedProperty {
 
 	private final Integer lineNumber;
 
-	DeprecatedProperty(ConfigurationMetadataProperty metadata,
+	LegacyProperty(ConfigurationMetadataProperty metadata,
 			ConfigurationProperty property) {
 		this.metadata = metadata;
 		this.property = property;
