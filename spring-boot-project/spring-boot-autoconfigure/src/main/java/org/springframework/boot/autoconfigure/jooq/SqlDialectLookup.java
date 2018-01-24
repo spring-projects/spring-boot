@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.jooq;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -42,7 +42,7 @@ final class SqlDialectLookup {
 	private static final Map<DatabaseDriver, SQLDialect> LOOKUP;
 
 	static {
-		Map<DatabaseDriver, SQLDialect> map = new HashMap<>();
+		Map<DatabaseDriver, SQLDialect> map = new EnumMap<>(DatabaseDriver.class);
 		map.put(DatabaseDriver.DERBY, SQLDialect.DERBY);
 		map.put(DatabaseDriver.H2, SQLDialect.H2);
 		map.put(DatabaseDriver.HSQLDB, SQLDialect.HSQLDB);

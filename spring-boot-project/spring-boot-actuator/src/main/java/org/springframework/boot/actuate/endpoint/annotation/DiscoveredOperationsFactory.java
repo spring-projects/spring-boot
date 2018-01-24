@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -50,7 +50,8 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 	private static final Map<OperationType, Class<? extends Annotation>> OPERATION_TYPES;
 
 	static {
-		Map<OperationType, Class<? extends Annotation>> operationTypes = new LinkedHashMap<>();
+		Map<OperationType, Class<? extends Annotation>> operationTypes = new EnumMap<>(
+				OperationType.class);
 		operationTypes.put(OperationType.READ, ReadOperation.class);
 		operationTypes.put(OperationType.WRITE, WriteOperation.class);
 		operationTypes.put(OperationType.DELETE, DeleteOperation.class);

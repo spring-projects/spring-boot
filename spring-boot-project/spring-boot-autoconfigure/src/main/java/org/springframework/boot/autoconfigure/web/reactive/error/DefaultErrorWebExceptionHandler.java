@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +79,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 			.getLog(DefaultErrorWebExceptionHandler.class);
 
 	static {
-		Map<HttpStatus.Series, String> views = new HashMap<>();
+		Map<HttpStatus.Series, String> views = new EnumMap<>(HttpStatus.Series.class);
 		views.put(HttpStatus.Series.CLIENT_ERROR, "4xx");
 		views.put(HttpStatus.Series.SERVER_ERROR, "5xx");
 		SERIES_VIEWS = Collections.unmodifiableMap(views);

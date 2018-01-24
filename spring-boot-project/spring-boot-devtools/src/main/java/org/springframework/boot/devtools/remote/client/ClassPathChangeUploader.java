@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -61,7 +61,8 @@ public class ClassPathChangeUploader
 	private static final Map<ChangedFile.Type, ClassLoaderFile.Kind> TYPE_MAPPINGS;
 
 	static {
-		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new HashMap<>();
+		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new EnumMap<>(
+				ChangedFile.Type.class);
 		map.put(ChangedFile.Type.ADD, ClassLoaderFile.Kind.ADDED);
 		map.put(ChangedFile.Type.DELETE, ClassLoaderFile.Kind.DELETED);
 		map.put(ChangedFile.Type.MODIFY, ClassLoaderFile.Kind.MODIFIED);
