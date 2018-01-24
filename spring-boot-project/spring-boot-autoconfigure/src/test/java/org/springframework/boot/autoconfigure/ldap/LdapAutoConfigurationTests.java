@@ -89,4 +89,13 @@ public class LdapAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void testContextSourceWithDefaultAnonymousReadOnly() {
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123")
+				.run(context -> {
+					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+					assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+				});
+	}
+
 }
