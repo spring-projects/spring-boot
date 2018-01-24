@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.metrics;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +114,7 @@ public class MetricsEndpoint {
 	}
 
 	private Map<Statistic, Double> getSamples(List<Meter> meters) {
-		Map<Statistic, Double> samples = new LinkedHashMap<>();
+		Map<Statistic, Double> samples = new EnumMap<>(Statistic.class);
 		meters.forEach((meter) -> mergeMeasurements(samples, meter));
 		return samples;
 	}

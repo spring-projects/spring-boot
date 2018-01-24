@@ -19,7 +19,7 @@ package org.springframework.boot.ansi;
 import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -39,7 +39,7 @@ public final class AnsiColors {
 	private static final Map<AnsiColor, LabColor> ANSI_COLOR_MAP;
 
 	static {
-		Map<AnsiColor, LabColor> colorMap = new LinkedHashMap<>();
+		Map<AnsiColor, LabColor> colorMap = new EnumMap<>(AnsiColor.class);
 		colorMap.put(AnsiColor.BLACK, new LabColor(0x000000));
 		colorMap.put(AnsiColor.RED, new LabColor(0xAA0000));
 		colorMap.put(AnsiColor.GREEN, new LabColor(0x00AA00));
