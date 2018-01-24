@@ -56,7 +56,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
  * @author Andy Wilkinson
  */
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
-		"management.endpoints.web.expose=*" })
+		"management.endpoints.web.expose=*",
+		"spring.jackson.default-property-inclusion=non_null" })
 public class AbstractEndpointDocumentationTests {
 
 	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {

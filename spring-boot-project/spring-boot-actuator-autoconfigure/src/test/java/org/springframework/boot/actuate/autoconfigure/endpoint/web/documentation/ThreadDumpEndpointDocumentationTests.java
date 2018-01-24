@@ -123,8 +123,8 @@ public class ThreadDumpEndpointDocumentationTests
 								fieldWithPath("threads.[].lockOwnerName")
 										.description("Name of the thread that owns the "
 												+ "object on which the thread is "
-												+ "blocked.")
-										.optional(),
+												+ "blocked, if any.")
+										.optional().type(JsonFieldType.STRING),
 								fieldWithPath("threads.[].priority")
 										.description("Priority of the thread. Only "
 												+ "available on Java 9 or later.")

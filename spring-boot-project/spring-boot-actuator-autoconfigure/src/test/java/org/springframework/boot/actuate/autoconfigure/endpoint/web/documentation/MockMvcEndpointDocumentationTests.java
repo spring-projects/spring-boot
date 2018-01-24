@@ -36,8 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Andy Wilkinson
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = { "spring.jackson.serialization.indent_output=true",
-		"management.endpoints.web.expose=*" })
+@SpringBootTest
 public abstract class MockMvcEndpointDocumentationTests
 		extends AbstractEndpointDocumentationTests {
 
