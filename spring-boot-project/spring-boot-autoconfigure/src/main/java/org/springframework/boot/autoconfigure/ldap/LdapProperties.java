@@ -56,14 +56,14 @@ public class LdapProperties {
 	private String password;
 
 	/**
-	 * LDAP specification settings.
-	 */
-	private Map<String, String> baseEnvironment = new HashMap<>();
-
-	/**
 	 * Whether read-only operations should use an anonymous environment.
 	 */
 	private boolean anonymousReadOnly;
+
+	/**
+	 * LDAP specification settings.
+	 */
+	private final Map<String, String> baseEnvironment = new HashMap<>();
 
 	public String[] getUrls() {
 		return this.urls;
@@ -97,20 +97,16 @@ public class LdapProperties {
 		this.password = password;
 	}
 
-	public Map<String, String> getBaseEnvironment() {
-		return this.baseEnvironment;
-	}
-
-	public void setBaseEnvironment(Map<String, String> baseEnvironment) {
-		this.baseEnvironment = baseEnvironment;
-	}
-
 	public boolean getAnonymousReadOnly() {
 		return this.anonymousReadOnly;
 	}
 
 	public void setAnonymousReadOnly(boolean anonymousReadOnly) {
 		this.anonymousReadOnly = anonymousReadOnly;
+	}
+
+	public Map<String, String> getBaseEnvironment() {
+		return this.baseEnvironment;
 	}
 
 	public String[] determineUrls(Environment environment) {

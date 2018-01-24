@@ -54,11 +54,11 @@ public class LdapAutoConfiguration {
 		LdapContextSource source = new LdapContextSource();
 		source.setUserDn(this.properties.getUsername());
 		source.setPassword(this.properties.getPassword());
+		source.setAnonymousReadOnly(this.properties.getAnonymousReadOnly());
 		source.setBase(this.properties.getBase());
 		source.setUrls(this.properties.determineUrls(this.environment));
 		source.setBaseEnvironmentProperties(
 				Collections.unmodifiableMap(this.properties.getBaseEnvironment()));
-		source.setAnonymousReadOnly(this.properties.getAnonymousReadOnly());
 		return source;
 	}
 
