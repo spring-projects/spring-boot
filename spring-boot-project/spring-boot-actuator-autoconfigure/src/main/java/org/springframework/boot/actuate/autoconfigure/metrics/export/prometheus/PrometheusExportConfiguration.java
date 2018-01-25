@@ -21,7 +21,6 @@ import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -50,10 +49,9 @@ public class PrometheusExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.prometheus.enabled", matchIfMissing = true)
-	public MetricsExporter prometheusExporter(PrometheusConfig prometheusConfig,
+	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
 			CollectorRegistry collectorRegistry, Clock clock) {
-		return () -> new PrometheusMeterRegistry(prometheusConfig, collectorRegistry,
-				clock);
+		return new PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock);
 	}
 
 	@Bean

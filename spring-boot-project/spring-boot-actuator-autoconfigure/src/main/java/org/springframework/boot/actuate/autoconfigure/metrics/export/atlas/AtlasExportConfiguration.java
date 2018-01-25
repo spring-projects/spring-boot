@@ -20,7 +20,6 @@ import com.netflix.spectator.atlas.AtlasConfig;
 import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,8 +47,8 @@ public class AtlasExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.atlas.enabled", matchIfMissing = true)
-	public MetricsExporter atlasExporter(AtlasConfig atlasConfig, Clock clock) {
-		return () -> new AtlasMeterRegistry(atlasConfig, clock);
+	public AtlasMeterRegistry atlasMeterRegistry(AtlasConfig atlasConfig, Clock clock) {
+		return new AtlasMeterRegistry(atlasConfig, clock);
 	}
 
 	@Bean

@@ -51,8 +51,7 @@ public class RestTemplateMetricsConfiguration {
 			RestTemplateExchangeTagsProvider restTemplateTagConfigurer,
 			MetricsProperties properties) {
 		return new MetricsRestTemplateCustomizer(meterRegistry, restTemplateTagConfigurer,
-				properties.getWeb().getClient().getRequestsMetricName(),
-				properties.getWeb().getClient().isRecordRequestPercentiles());
+				properties.getWeb().getClient().getRequestsMetricName());
 	}
 
 }

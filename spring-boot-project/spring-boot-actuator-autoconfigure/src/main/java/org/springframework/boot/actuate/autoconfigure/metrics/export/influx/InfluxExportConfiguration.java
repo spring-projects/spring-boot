@@ -20,7 +20,6 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,8 +46,8 @@ public class InfluxExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.influx.enabled", matchIfMissing = true)
-	public MetricsExporter influxExporter(InfluxConfig influxConfig, Clock clock) {
-		return () -> new InfluxMeterRegistry(influxConfig, clock);
+	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig, Clock clock) {
+		return new InfluxMeterRegistry(influxConfig, clock);
 	}
 
 	@Bean

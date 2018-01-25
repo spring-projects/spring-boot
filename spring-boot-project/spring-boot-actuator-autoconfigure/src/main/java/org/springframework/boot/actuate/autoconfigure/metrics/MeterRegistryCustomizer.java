@@ -30,7 +30,7 @@ import io.micrometer.core.instrument.MeterRegistry;
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface MeterRegistryConfigurer {
+public interface MeterRegistryCustomizer {
 
 	/**
 	 * Configure the given {@code registry}.

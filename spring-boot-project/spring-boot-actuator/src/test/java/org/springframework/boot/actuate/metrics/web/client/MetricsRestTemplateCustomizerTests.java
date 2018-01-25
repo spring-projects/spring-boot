@@ -47,19 +47,19 @@ public class MetricsRestTemplateCustomizerTests {
 
 	private RestTemplate restTemplate = new RestTemplate();
 
-	private MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+	private MockRestServiceServer mockServer = MockRestServiceServer.createServer(this.restTemplate);
 
 	private MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
 			this.registry, new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests");
 
 	@Before
 	public void setup() {
-		customizer.customize(restTemplate);
+		this.customizer.customize(this.restTemplate);
 	}
 
 	@Test
 	public void interceptRestTemplate() {
-		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
 						MediaType.APPLICATION_JSON));
@@ -72,13 +72,13 @@ public class MetricsRestTemplateCustomizerTests {
 				.tags("method", "GET", "uri", "/test/{id}", "status", "200")
 				.timer().count()).isEqualTo(1);
 		assertThat(result).isEqualTo("OK");
-		mockServer.verify();
+		this.mockServer.verify();
 	}
 
 	@Test
 	public void avoidDuplicateRegistration() {
 		assertThat(this.restTemplate.getInterceptors()).hasSize(1);
-		customizer.customize(this.restTemplate);
+		this.customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate.getInterceptors()).hasSize(1);
 	}
 
@@ -87,17 +87,17 @@ public class MetricsRestTemplateCustomizerTests {
 	 */
 	@Test
 	public void normalizeUriToContainLeadingSlash() {
-		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
 						MediaType.APPLICATION_JSON));
 
-		String result = restTemplate.getForObject("test/{id}", String.class, 123);
+		String result = this.restTemplate.getForObject("test/{id}", String.class, 123);
 
-		registry.mustFind("http.client.requests").tags("uri", "/test/{id}").timer();
+		this.registry.mustFind("http.client.requests").tags("uri", "/test/{id}").timer();
 		assertThat(result).isEqualTo("OK");
 
-		mockServer.verify();
+		this.mockServer.verify();
 	}
 
 }
