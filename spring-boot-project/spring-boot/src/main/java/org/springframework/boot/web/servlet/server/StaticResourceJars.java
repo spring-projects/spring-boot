@@ -79,19 +79,16 @@ class StaticResourceJars {
 	}
 
 	private void addUrlFile(List<URL> urls, URL url, File file) {
-		if (file.isDirectory() && new File(file, "META-INF/resources").isDirectory()) {
-			urls.add(url);
-		}
-		else if (isResourcesJar(file)) {
+		if ((file.isDirectory() && new File(file, "META-INF/resources").isDirectory())
+				|| isResourcesJar(file)) {
 			urls.add(url);
 		}
 	}
 
 	private void addUrlConnection(List<URL> urls, URL url, URLConnection connection) {
-		if (connection instanceof JarURLConnection) {
-			if (isResourcesJar((JarURLConnection) connection)) {
-				urls.add(url);
-			}
+		if (connection instanceof JarURLConnection
+				&& isResourcesJar((JarURLConnection) connection)) {
+			urls.add(url);
 		}
 	}
 
