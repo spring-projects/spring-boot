@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.embedded.jetty.JettyCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.undertow.UndertowCustomizer;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -37,6 +38,7 @@ import org.springframework.util.ObjectUtils;
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @author Olivier Lamy
+ * @author Yunkun Huang
  * @since 2.0.0
  */
 public class DefaultServletWebServerFactoryCustomizer
@@ -67,49 +69,30 @@ public class DefaultServletWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableServletWebServerFactory factory) {
-		if (this.serverProperties.getPort() != null) {
-			factory.setPort(this.serverProperties.getPort());
-		}
-		if (this.serverProperties.getAddress() != null) {
-			factory.setAddress(this.serverProperties.getAddress());
-		}
-		if (this.serverProperties.getServlet().getContextPath() != null) {
-			factory.setContextPath(this.serverProperties.getServlet().getContextPath());
-		}
-		if (this.serverProperties.getDisplayName() != null) {
-			factory.setDisplayName(this.serverProperties.getDisplayName());
-		}
-		factory.setSession(this.serverProperties.getServlet().getSession());
-		if (this.serverProperties.getSsl() != null) {
-			factory.setSsl(this.serverProperties.getSsl());
-		}
-		if (this.serverProperties.getServlet() != null) {
-			factory.setJsp(this.serverProperties.getServlet().getJsp());
-		}
-		if (this.serverProperties.getCompression() != null) {
-			factory.setCompression(this.serverProperties.getCompression());
-		}
-		if (this.serverProperties.getHttp2() != null) {
-			factory.setHttp2(this.serverProperties.getHttp2());
-		}
-		factory.setServerHeader(this.serverProperties.getServerHeader());
-		if (factory instanceof TomcatServletWebServerFactory) {
-			TomcatServletWebServerFactory tomcatFactory = (TomcatServletWebServerFactory) factory;
-			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,
-					tomcatFactory);
-			TomcatServletCustomizer.customizeTomcat(this.serverProperties,
-					this.environment, tomcatFactory);
-		}
-		if (factory instanceof JettyServletWebServerFactory) {
-			JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
-					(JettyServletWebServerFactory) factory);
-		}
-		if (factory instanceof UndertowServletWebServerFactory) {
-			UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
-					(UndertowServletWebServerFactory) factory);
-		}
-		factory.setInitParameters(
-				this.serverProperties.getServlet().getContextParameters());
+		PropertyMapper map = PropertyMapper.get();
+		map.from(this.serverProperties::getPort).whenNonNull().to(factory::setPort);
+		map.from(this.serverProperties::getAddress).whenNonNull().to(factory::setAddress);
+		map.from(this.serverProperties.getServlet()::getContextPath).whenNonNull().to(factory::setContextPath);
+		map.from(this.serverProperties::getDisplayName).whenNonNull().to(factory::setDisplayName);
+		map.from(this.serverProperties.getServlet()::getSession).to(factory::setSession);
+		map.from(this.serverProperties::getSsl).whenNonNull().to(factory::setSsl);
+		map.from(this.serverProperties::getServlet).whenNonNull().as(ServerProperties.Servlet::getJsp).to(factory::setJsp);
+		map.from(this.serverProperties::getCompression).whenNonNull().to(factory::setCompression);
+		map.from(this.serverProperties::getHttp2).whenNonNull().to(factory::setHttp2);
+		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
+		map.from(() -> factory).when(configurableServletWebServerFactory -> factory instanceof TomcatServletWebServerFactory)
+				.to(configurableServletWebServerFactory -> {
+					TomcatServletWebServerFactory tomcatFactory = (TomcatServletWebServerFactory) factory;
+					TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment, tomcatFactory);
+					TomcatServletCustomizer.customizeTomcat(this.serverProperties, this.environment, tomcatFactory);
+				});
+		map.from(() -> factory).when(configurableServletWebServerFactory -> factory instanceof JettyServletWebServerFactory)
+				.to(configurableServletWebServerFactory -> JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
+						(JettyServletWebServerFactory) factory));
+		map.from(() -> factory).when(configurableServletWebServerFactory -> factory instanceof UndertowServletWebServerFactory)
+				.to(configurableServletWebServerFactory -> UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
+						(UndertowServletWebServerFactory) factory));
+		map.from(this.serverProperties.getServlet()::getContextParameters).to(factory::setInitParameters);
 	}
 
 	private static class TomcatServletCustomizer {
