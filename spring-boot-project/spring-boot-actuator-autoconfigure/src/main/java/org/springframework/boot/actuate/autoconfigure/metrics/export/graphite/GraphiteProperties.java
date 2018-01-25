@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,12 @@ public class GraphiteProperties {
 	 */
 	private GraphiteProtocol protocol;
 
+	/**
+	 * For the default naming convention, turn the specified tag keys into part of the
+	 * metric prefix.
+	 */
+	private String[] tagsAsPrefix;
+
 	public Boolean getEnabled() {
 		return this.enabled;
 	}
@@ -121,6 +127,14 @@ public class GraphiteProperties {
 
 	public void setProtocol(GraphiteProtocol protocol) {
 		this.protocol = protocol;
+	}
+
+	public String[] getTagsAsPrefix() {
+		return this.tagsAsPrefix;
+	}
+
+	public void setTagsAsPrefix(String[] tagsAsPrefix) {
+		this.tagsAsPrefix = tagsAsPrefix;
 	}
 
 }
