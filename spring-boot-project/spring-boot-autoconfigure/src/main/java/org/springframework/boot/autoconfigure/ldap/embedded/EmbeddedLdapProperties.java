@@ -40,9 +40,9 @@ public class EmbeddedLdapProperties {
 	private Credential credential = new Credential();
 
 	/**
-	 * The base DN.
+	 * List of base DN.
 	 */
-	private String baseDn;
+	private String[] baseDn = new String[0];
 
 	/**
 	 * Schema (LDIF) script resource reference.
@@ -70,11 +70,11 @@ public class EmbeddedLdapProperties {
 		this.credential = credential;
 	}
 
-	public String getBaseDn() {
+	public String[] getBaseDn() {
 		return this.baseDn;
 	}
 
-	public void setBaseDn(String baseDn) {
+	public void setBaseDn(String[] baseDn) {
 		this.baseDn = baseDn;
 	}
 

@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
@@ -33,7 +34,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapProperties;
 import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties.Credential;
@@ -50,6 +50,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -64,7 +65,6 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties({ LdapProperties.class, EmbeddedLdapProperties.class })
 @AutoConfigureBefore(LdapAutoConfiguration.class)
 @ConditionalOnClass(InMemoryDirectoryServer.class)
-@ConditionalOnProperty(prefix = "spring.ldap.embedded", name = "base-dn")
 public class EmbeddedLdapAutoConfiguration {
 
 	private static final String PROPERTY_SOURCE_NAME = "ldap.ports";
@@ -86,6 +86,11 @@ public class EmbeddedLdapAutoConfiguration {
 		this.properties = properties;
 		this.applicationContext = applicationContext;
 		this.environment = environment;
+	}
+
+	@PostConstruct
+	public void validateBaseDns() {
+		Assert.notEmpty(this.embeddedProperties.getBaseDn(), "No baseDn found.");
 	}
 
 	@Bean
