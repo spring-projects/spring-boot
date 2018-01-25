@@ -160,11 +160,9 @@ public class RedisAutoConfigurationTests {
 				.withPropertyValues("spring.redis.sentinel.master:mymaster",
 						"spring.redis.sentinel.nodes:"
 								+ StringUtils.collectionToCommaDelimitedString(sentinels))
-				.run((context) -> {
-					assertThat(context.getBean(LettuceConnectionFactory.class)
-							.isRedisSentinelAware()).isTrue();
-
-				});
+				.run((context) -> assertThat(context
+						.getBean(LettuceConnectionFactory.class).isRedisSentinelAware())
+								.isTrue());
 	}
 
 	@Test
@@ -192,11 +190,9 @@ public class RedisAutoConfigurationTests {
 				.withPropertyValues(
 						"spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
 						"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1))
-				.run((context) -> {
-					assertThat(context.getBean(LettuceConnectionFactory.class)
-							.getClusterConnection()).isNotNull();
-
-				});
+				.run((context) -> assertThat(context
+						.getBean(LettuceConnectionFactory.class).getClusterConnection())
+								.isNotNull());
 	}
 
 	@Test
@@ -206,12 +202,11 @@ public class RedisAutoConfigurationTests {
 				.withPropertyValues("spring.redis.password=password",
 						"spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
 						"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1))
-				.run((context) -> {
-					assertThat(
-							context.getBean(LettuceConnectionFactory.class).getPassword())
-									.isEqualTo("password");
+				.run((context) -> assertThat(
+						context.getBean(LettuceConnectionFactory.class).getPassword())
+								.isEqualTo("password")
 
-				});
+		);
 	}
 
 	private LettucePoolingClientConfiguration getPoolingClientConfiguration(

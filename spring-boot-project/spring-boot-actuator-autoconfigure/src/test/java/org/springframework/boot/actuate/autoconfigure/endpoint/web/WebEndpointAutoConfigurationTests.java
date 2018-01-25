@@ -80,18 +80,16 @@ public class WebEndpointAutoConfigurationTests {
 
 	@Test
 	public void webApplicationConfiguresExposeExcludePropertyEndpointFilter() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).getBeans(ExposeExcludePropertyEndpointFilter.class)
-					.containsKeys("webIncludeExcludePropertyEndpointFilter",
-							"controllerIncludeExcludePropertyEndpointFilter");
-		});
+		this.contextRunner.run((context) -> assertThat(context)
+				.getBeans(ExposeExcludePropertyEndpointFilter.class)
+				.containsKeys("webIncludeExcludePropertyEndpointFilter",
+						"controllerIncludeExcludePropertyEndpointFilter"));
 	}
 
 	@Test
 	public void contextShouldConfigureServletEndpointDiscoverer() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(ServletEndpointDiscoverer.class);
-		});
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(ServletEndpointDiscoverer.class));
 	}
 
 	@Test

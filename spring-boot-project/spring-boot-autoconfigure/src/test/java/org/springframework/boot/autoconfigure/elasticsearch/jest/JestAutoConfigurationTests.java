@@ -74,9 +74,9 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void jestClientOnLocalhostByDefault() {
-		this.contextRunner.run((context) -> {
-			assertThat(context.getBeansOfType(JestClient.class)).hasSize(1);
-		});
+		this.contextRunner
+				.run((context) -> assertThat(context.getBeansOfType(JestClient.class))
+						.hasSize(1));
 	}
 
 	@Test
@@ -84,9 +84,8 @@ public class JestAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomJestClient.class)
 				.withPropertyValues(
 						"spring.elasticsearch.jest.uris[0]=http://localhost:9200")
-				.run((context) -> {
-					assertThat(context.getBeansOfType(JestClient.class)).hasSize(1);
-				});
+				.run((context) -> assertThat(context.getBeansOfType(JestClient.class))
+						.hasSize(1));
 	}
 
 	@Test
@@ -120,11 +119,9 @@ public class JestAutoConfigurationTests {
 				.withPropertyValues(
 						"spring.elasticsearch.jest.uris=http://localhost:9200",
 						"spring.elasticsearch.jest.proxy.host=proxy.example.com")
-				.run((context) -> {
-					assertThat(context.getStartupFailure())
-							.isInstanceOf(BeanCreationException.class)
-							.hasMessageContaining("Proxy port must not be null");
-				});
+				.run((context) -> assertThat(context.getStartupFailure())
+						.isInstanceOf(BeanCreationException.class)
+						.hasMessageContaining("Proxy port must not be null"));
 	}
 
 	@Test

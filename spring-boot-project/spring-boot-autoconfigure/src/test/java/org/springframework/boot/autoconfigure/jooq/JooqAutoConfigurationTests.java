@@ -66,9 +66,9 @@ public class JooqAutoConfigurationTests {
 
 	@Test
 	public void noDataSource() {
-		this.contextRunner.run((context) -> {
-			assertThat(context.getBeansOfType(DSLContext.class)).isEmpty();
-		});
+		this.contextRunner
+				.run((context) -> assertThat(context.getBeansOfType(DSLContext.class))
+						.isEmpty());
 	}
 
 	@Test
@@ -151,10 +151,10 @@ public class JooqAutoConfigurationTests {
 	@Test
 	public void relaxedBindingOfSqlDialect() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class)
-				.withPropertyValues("spring.jooq.sql-dialect:PoSTGrES").run((context) -> {
-					assertThat(context.getBean(org.jooq.Configuration.class).dialect())
-							.isEqualTo(SQLDialect.POSTGRES);
-				});
+				.withPropertyValues("spring.jooq.sql-dialect:PoSTGrES")
+				.run((context) -> assertThat(
+						context.getBean(org.jooq.Configuration.class).dialect())
+								.isEqualTo(SQLDialect.POSTGRES));
 	}
 
 	private static class AssertFetch implements TransactionalRunnable {

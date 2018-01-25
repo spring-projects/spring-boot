@@ -44,9 +44,9 @@ public class ProjectInfoAutoConfigurationTests {
 
 	@Test
 	public void gitPropertiesUnavailableIfResourceNotAvailable() {
-		this.contextRunner.run((context) -> {
-			assertThat(context.getBeansOfType(GitProperties.class)).isEmpty();
-		});
+		this.contextRunner
+				.run((context) -> assertThat(context.getBeansOfType(GitProperties.class))
+						.isEmpty());
 	}
 
 	@Test
@@ -107,9 +107,8 @@ public class ProjectInfoAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.info.build.location="
 						+ "classpath:/org/acme/no-build-info.properties")
-				.run((context) -> {
-					assertThat(context.getBeansOfType(BuildProperties.class)).hasSize(0);
-				});
+				.run((context) -> assertThat(
+						context.getBeansOfType(BuildProperties.class)).hasSize(0));
 	}
 
 	@Test

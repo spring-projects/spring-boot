@@ -39,7 +39,7 @@ public class LdapAutoConfigurationTests {
 
 	@Test
 	public void contextSourceWithDefaultUrl() {
-		this.contextRunner.run(context -> {
+		this.contextRunner.run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 			String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
 					"urls");
@@ -51,7 +51,7 @@ public class LdapAutoConfigurationTests {
 	@Test
 	public void contextSourceWithSingleUrl() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123")
-				.run(context -> {
+				.run((context) -> {
 					ContextSource contextSource = context.getBean(ContextSource.class);
 					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
 							"urls");
@@ -64,7 +64,7 @@ public class LdapAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.ldap.urls:ldap://localhost:123,ldap://mycompany:123")
-				.run(context -> {
+				.run((context) -> {
 					ContextSource contextSource = context.getBean(ContextSource.class);
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
 					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
@@ -83,7 +83,7 @@ public class LdapAutoConfigurationTests {
 						"spring.ldap.anonymous-read-only:true",
 						"spring.ldap.base:cn=SpringDevelopers",
 						"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5")
-				.run(context -> {
+				.run((context) -> {
 					LdapContextSource contextSource = context
 							.getBean(LdapContextSource.class);
 					assertThat(contextSource.getUserDn()).isEqualTo("root");

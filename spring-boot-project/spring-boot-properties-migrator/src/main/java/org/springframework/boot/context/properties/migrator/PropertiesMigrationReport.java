@@ -75,7 +75,7 @@ class PropertiesMigrationReport {
 		report.append(String.format("%nThe use of configuration keys that are no longer "
 				+ "supported was found in the environment:%n%n"));
 		append(report, content,
-				metadata -> "Reason: "
+				(metadata) -> "Reason: "
 						+ (StringUtils.hasText(metadata.getDeprecation().getReason())
 								? metadata.getDeprecation().getReason() : "none"));
 		report.append(String.format("%n"));
