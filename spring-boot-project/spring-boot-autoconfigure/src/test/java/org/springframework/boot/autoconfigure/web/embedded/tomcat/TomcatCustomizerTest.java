@@ -56,8 +56,8 @@ public class TomcatCustomizerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		given(this.serverProperties.getTomcat()).willReturn(this.tomcatProperties);
 		MockitoAnnotations.initMocks(this);
+		given(this.serverProperties.getTomcat()).willReturn(this.tomcatProperties);
 	}
 
 	@Test
