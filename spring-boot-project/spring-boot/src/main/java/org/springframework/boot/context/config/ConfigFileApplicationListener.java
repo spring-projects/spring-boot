@@ -498,8 +498,8 @@ public class ConfigFileApplicationListener
 		private void handleProfileProperties(PropertySource<?> propertySource) {
 			Binder binder = new Binder(ConfigurationPropertySources.from(propertySource),
 					new PropertySourcesPlaceholdersResolver(this.environment));
-			Set<Profile> active = getProfiles(binder, "spring.profiles.active");
-			Set<Profile> include = getProfiles(binder, "spring.profiles.include");
+			Set<Profile> active = getProfiles(binder, ACTIVE_PROFILES_PROPERTY);
+			Set<Profile> include = getProfiles(binder, INCLUDE_PROFILES_PROPERTY);
 			maybeActivateProfiles(active);
 			addProfiles(include);
 		}

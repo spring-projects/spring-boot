@@ -51,6 +51,8 @@ abstract class AbstractFilterRegistrationBean<T extends Filter>
 
 	private final Log logger = LogFactory.getLog(getClass());
 
+	private static final String MAPPING_FILTER_PREFIX = "Mapping filter: '";
+
 	private static final String[] DEFAULT_URL_MAPPINGS = { "/*" };
 
 	private Set<ServletRegistrationBean<?>> servletRegistrationBeans = new LinkedHashSet<>();
@@ -239,20 +241,20 @@ abstract class AbstractFilterRegistrationBean<T extends Filter>
 		}
 		servletNames.addAll(this.servletNames);
 		if (servletNames.isEmpty() && this.urlPatterns.isEmpty()) {
-			this.logger.info("Mapping filter: '" + registration.getName() + "' to: "
+			this.logger.info(MAPPING_FILTER_PREFIX + registration.getName() + "' to: "
 					+ Arrays.asList(DEFAULT_URL_MAPPINGS));
 			registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
 					DEFAULT_URL_MAPPINGS);
 		}
 		else {
 			if (!servletNames.isEmpty()) {
-				this.logger.info("Mapping filter: '" + registration.getName()
+				this.logger.info(MAPPING_FILTER_PREFIX + registration.getName()
 						+ "' to servlets: " + servletNames);
 				registration.addMappingForServletNames(dispatcherTypes, this.matchAfter,
 						servletNames.toArray(new String[servletNames.size()]));
 			}
 			if (!this.urlPatterns.isEmpty()) {
-				this.logger.info("Mapping filter: '" + registration.getName()
+				this.logger.info(MAPPING_FILTER_PREFIX + registration.getName()
 						+ "' to urls: " + this.urlPatterns);
 				registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
 						this.urlPatterns.toArray(new String[this.urlPatterns.size()]));
