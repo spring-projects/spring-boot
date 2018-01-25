@@ -81,7 +81,7 @@ public class DataSourceJmxConfigurationTests {
 		assertThat(this.context.getBeansOfType(HikariDataSource.class)).hasSize(1);
 		assertThat(this.context.getBean(HikariDataSource.class).isRegisterMbeans())
 				.isTrue();
-		// We can rely on the number of MBeans so we're checking that the pool and pool
+		// We can't rely on the number of MBeans so we're checking that the pool and pool
 		// config mBeans were registered
 		assertThat(mBeanServer
 				.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null).size())
