@@ -85,13 +85,14 @@ public class TunnelClient implements SmartInitializingSingleton {
 	public int start() throws IOException {
 		synchronized (this.monitor) {
 			Assert.state(this.serverThread == null, "Server already started");
-			ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-			serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
-			int port = serverSocketChannel.socket().getLocalPort();
-			logger.trace("Listening for TCP traffic to tunnel on port " + port);
-			this.serverThread = new ServerThread(serverSocketChannel);
-			this.serverThread.start();
-			return port;
+			try(ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
+    			serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
+    			int port = serverSocketChannel.socket().getLocalPort();
+    			logger.trace("Listening for TCP traffic to tunnel on port " + port);
+    			this.serverThread = new ServerThread(serverSocketChannel);
+    			this.serverThread.start();
+    			return port;
+			}
 		}
 	}
 

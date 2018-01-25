@@ -56,9 +56,10 @@ public class SocketTargetServerConnection implements TargetServerConnection {
 	public ByteChannel open(int socketTimeout) throws IOException {
 		SocketAddress address = new InetSocketAddress(this.portProvider.getPort());
 		logger.trace("Opening tunnel connection to target server on " + address);
-		SocketChannel channel = SocketChannel.open(address);
-		channel.socket().setSoTimeout(socketTimeout);
-		return new TimeoutAwareChannel(channel);
+		try(SocketChannel channel = SocketChannel.open(address)) {
+    		channel.socket().setSoTimeout(socketTimeout);
+    		return new TimeoutAwareChannel(channel);
+		}
 	}
 
 	/**

@@ -81,13 +81,14 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 */
 	public JarWriter(File file, LaunchScript launchScript)
 			throws FileNotFoundException, IOException {
-		FileOutputStream fileOutputStream = new FileOutputStream(file);
-		if (launchScript != null) {
-			fileOutputStream.write(launchScript.toByteArray());
-			setExecutableFilePermission(file);
+		try(FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+    		if (launchScript != null) {
+    			fileOutputStream.write(launchScript.toByteArray());
+    			setExecutableFilePermission(file);
+    		}
+    		this.jarOutput = new JarArchiveOutputStream(fileOutputStream);
+    		this.jarOutput.setEncoding("UTF-8");
 		}
-		this.jarOutput = new JarArchiveOutputStream(fileOutputStream);
-		this.jarOutput.setEncoding("UTF-8");
 	}
 
 	private void setExecutableFilePermission(File file) {

@@ -182,11 +182,12 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
-		InputStream stream = url.openStream();
-		if (FILE_PROTOCOL.equals(url.getProtocol())) {
-			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
+		try(InputStream stream = url.openStream()) {
+    		if (FILE_PROTOCOL.equals(url.getProtocol())) {
+    			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
+    		}
+    		return new ConfigurationSource(stream, url);
 		}
-		return new ConfigurationSource(stream, url);
 	}
 
 	@Override

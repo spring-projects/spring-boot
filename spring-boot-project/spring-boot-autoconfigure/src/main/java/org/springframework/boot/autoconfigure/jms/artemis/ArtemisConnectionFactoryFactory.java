@@ -110,10 +110,11 @@ class ArtemisConnectionFactoryFactory {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
 					InVMConnectorFactory.class.getName(),
 					this.properties.getEmbedded().generateTransportParameters());
-			ServerLocator serviceLocator = ActiveMQClient
-					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class)
-					.newInstance(serviceLocator);
+			try(ServerLocator serviceLocator = ActiveMQClient
+					.createServerLocatorWithoutHA(transportConfiguration)){
+			    return factoryClass.getConstructor(ServerLocator.class)
+	                    .newInstance(serviceLocator);
+			}
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "
