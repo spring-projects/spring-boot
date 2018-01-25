@@ -253,6 +253,7 @@ public class ImageBanner implements Banner {
 			Thread.sleep(delay);
 		}
 		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
