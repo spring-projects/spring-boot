@@ -23,39 +23,46 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+
 /**
- * Default implementation of {@link WebMvcTagsProvider}.
+ * Default implementation of {@link ServletTagsProvider}.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
+public class DefaultServletTagsProvider implements ServletTagsProvider {
 
 	/**
 	 * Supplies default tags to long task timers.
+	 *
 	 * @param request The HTTP request.
 	 * @param handler The request method that is responsible for handling the request.
 	 * @return A set of tags added to every Spring MVC HTTP request
 	 */
 	@Override
-	public Iterable<Tag> httpLongRequestTags(HttpServletRequest request, Object handler) {
-		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request, null));
+	@NonNull
+	public Iterable<Tag> httpLongRequestTags(@Nullable HttpServletRequest request, @Nullable Object handler) {
+		return Arrays.asList(ServletTags.method(request), ServletTags.uri(request, null));
 	}
 
 	/**
 	 * Supplies default tags to the Web MVC server programming model.
-	 * @param request The HTTP request.
-	 * @param handler the Spring MVC handler for the request
+	 *
+	 * @param request  The HTTP request.
 	 * @param response The HTTP response.
-	 * @param ex The current exception, if any
+	 * @param ex       The current exception, if any
 	 * @return A set of tags added to every Spring MVC HTTP request.
 	 */
 	@Override
-	public Iterable<Tag> httpRequestTags(HttpServletRequest request, Object handler,
-			HttpServletResponse response, Throwable ex) {
-		return Arrays.asList(WebMvcTags.method(request),
-				WebMvcTags.uri(request, response), WebMvcTags.exception(ex),
-				WebMvcTags.status(response));
+	@NonNull
+	public Iterable<Tag> httpRequestTags(@Nullable HttpServletRequest request,
+			@Nullable HttpServletResponse response,
+			@Nullable Object handler,
+			@Nullable Throwable ex) {
+		return Arrays.asList(ServletTags.method(request), ServletTags.uri(request, response),
+				ServletTags.exception(ex), ServletTags.status(response));
 	}
 
 }

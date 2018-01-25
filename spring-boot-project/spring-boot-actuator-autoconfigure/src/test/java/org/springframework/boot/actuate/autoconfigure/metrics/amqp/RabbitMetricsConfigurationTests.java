@@ -46,7 +46,7 @@ public class RabbitMetricsConfigurationTests {
 	public void autoConfiguredConnectionFactoryIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			assertThat(registry.find("rabbitmq.connections").meter()).isPresent();
+			registry.mustFind("rabbitmq.connections").meter();
 		});
 	}
 
@@ -56,10 +56,9 @@ public class RabbitMetricsConfigurationTests {
 				.withPropertyValues("management.metrics.rabbitmq.metric-name=custom.name")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("custom.name.connections").meter())
-							.isPresent();
+					registry.mustFind("custom.name.connections").meter();
 					assertThat(registry.find("rabbitmq.connections").meter())
-							.isNotPresent();
+							.isNull();
 				});
 	}
 
@@ -70,7 +69,7 @@ public class RabbitMetricsConfigurationTests {
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("rabbitmq.connections").meter())
-							.isNotPresent();
+							.isNull();
 				});
 	}
 

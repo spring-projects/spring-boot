@@ -19,17 +19,16 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
-import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetrics;
-import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
-import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
+import org.springframework.boot.actuate.metrics.web.servlet.DefaultServletTagsProvider;
+import org.springframework.boot.actuate.metrics.web.servlet.MetricsFilter;
+import org.springframework.boot.actuate.metrics.web.servlet.ServletTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -42,26 +41,21 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @EnableConfigurationProperties(MetricsProperties.class)
-public class WebMvcMetricsConfiguration {
+public class ServletMetricsConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(WebMvcTagsProvider.class)
-	public DefaultWebMvcTagsProvider webmvcTagConfigurer() {
-		return new DefaultWebMvcTagsProvider();
+	@ConditionalOnMissingBean(ServletTagsProvider.class)
+	public DefaultServletTagsProvider servletTagsProvider() {
+		return new DefaultServletTagsProvider();
 	}
 
 	@Bean
-	public WebMvcMetrics controllerMetrics(MeterRegistry registry,
-			MetricsProperties properties, WebMvcTagsProvider configurer) {
-		return new WebMvcMetrics(registry, configurer,
+	public MetricsFilter webMetricsFilter(MeterRegistry registry, MetricsProperties properties,
+			ServletTagsProvider tagsProvider,
+			WebApplicationContext ctx) {
+		return new MetricsFilter(registry, tagsProvider,
 				properties.getWeb().getServer().getRequestsMetricName(),
 				properties.getWeb().getServer().isAutoTimeRequests(),
-				properties.getWeb().getServer().isRecordRequestPercentiles());
+				ctx);
 	}
-
-	@Bean
-	public WebMvcMetricsFilter webMetricsFilter(ApplicationContext context) {
-		return new WebMvcMetricsFilter(context);
-	}
-
 }

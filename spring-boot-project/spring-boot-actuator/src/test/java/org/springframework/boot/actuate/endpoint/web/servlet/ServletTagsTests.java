@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class WebMvcTagsTests {
+public class ServletTagsTests {
 
 	private final MockHttpServletRequest request = new MockHttpServletRequest();
 

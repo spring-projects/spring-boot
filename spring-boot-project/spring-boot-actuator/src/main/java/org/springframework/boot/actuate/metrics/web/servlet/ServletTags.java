@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -33,28 +35,34 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public final class WebMvcTags {
+public final class ServletTags {
 
-	private WebMvcTags() {
+	private ServletTags() {
 	}
 
 	/**
 	 * Creates a {@code method} tag based on the {@link HttpServletRequest#getMethod()
 	 * method} of the given {@code request}.
+	 *
 	 * @param request the request
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
-	public static Tag method(HttpServletRequest request) {
-		return Tag.of("method", request.getMethod());
+	@NonNull
+	public static Tag method(@Nullable HttpServletRequest request) {
+		return request == null ? Tag.of("method", "UNKNOWN")
+				: Tag.of("method", request.getMethod());
 	}
 
 	/**
 	 * Creates a {@code method} tag based on the status of the given {@code response}.
+	 *
 	 * @param response the HTTP response
 	 * @return the status tag derived from the status of the response
 	 */
-	public static Tag status(HttpServletResponse response) {
-		return Tag.of("status", ((Integer) response.getStatus()).toString());
+	@NonNull
+	public static Tag status(@Nullable HttpServletResponse response) {
+		return response == null ? Tag.of("status", "UNKNOWN")
+				: Tag.of("status", ((Integer) response.getStatus()).toString());
 	}
 
 	/**
@@ -62,20 +70,33 @@ public final class WebMvcTags {
 	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
 	 * available, falling back to the request's {@link HttpServletRequest#getPathInfo()
 	 * path info} if necessary.
+	 *
 	 * @param request the request
 	 * @param response the response
 	 * @return the uri tag derived from the request
 	 */
-	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
+	@NonNull
+	public static Tag uri(@Nullable HttpServletRequest request,
+			@Nullable HttpServletResponse response) {
 		if (response != null) {
-			HttpStatus status = extractStatus(response);
-			if (status != null && status.is3xxRedirection()) {
+			HttpStatus status = HttpStatus.valueOf(response.getStatus());
+			if (status.is3xxRedirection()) {
 				return Tag.of("uri", "REDIRECTION");
 			}
-			if (HttpStatus.NOT_FOUND.equals(status)) {
+			else if (status.equals(HttpStatus.NOT_FOUND)) {
 				return Tag.of("uri", "NOT_FOUND");
 			}
 		}
+		else {
+			// Long task timers won't be initiated if there is no handler found, as they
+			// aren't auto-timed.
+			// If no handler is found, 30
+		}
+
+		if (request == null) {
+			return Tag.of("uri", "UNKNOWN");
+		}
+
 		String uri = (String) request
 				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (uri == null) {
@@ -84,29 +105,21 @@ public final class WebMvcTags {
 		if (!StringUtils.hasText(uri)) {
 			uri = "/";
 		}
-		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
-	}
+		uri = uri.replaceAll("//+", "/").replaceAll("/$", "");
 
-	private static HttpStatus extractStatus(HttpServletResponse response) {
-		try {
-			return HttpStatus.valueOf(response.getStatus());
-		}
-		catch (IllegalArgumentException ex) {
-			return null;
-		}
+		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
 	}
 
 	/**
 	 * Creates a {@code exception} tag based on the {@link Class#getSimpleName() simple
 	 * name} of the class of the given {@code exception}.
+	 *
 	 * @param exception the exception, may be {@code null}
 	 * @return the exception tag derived from the exception
 	 */
-	public static Tag exception(Throwable exception) {
-		if (exception != null) {
-			return Tag.of("exception", exception.getClass().getSimpleName());
-		}
-		return Tag.of("exception", "None");
+	@NonNull
+	public static Tag exception(@Nullable Throwable exception) {
+		return exception == null ? Tag.of("exception", "None")
+				: Tag.of("exception", exception.getClass().getSimpleName());
 	}
-
 }

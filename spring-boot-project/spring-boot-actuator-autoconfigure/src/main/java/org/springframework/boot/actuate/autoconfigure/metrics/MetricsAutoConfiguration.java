@@ -42,7 +42,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.Stat
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.WebFluxMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.ServletMetricsConfiguration;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -73,7 +73,7 @@ import org.springframework.util.Assert;
 @Configuration
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
-@Import({ MeterBindersConfiguration.class, WebMvcMetricsConfiguration.class,
+@Import({ MeterBindersConfiguration.class, ServletMetricsConfiguration.class,
 		WebFluxMetricsConfiguration.class, RestTemplateMetricsConfiguration.class,
 		CacheMetricsConfiguration.class, DataSourcePoolMetricsConfiguration.class,
 		RabbitMetricsConfiguration.class, AtlasExportConfiguration.class,

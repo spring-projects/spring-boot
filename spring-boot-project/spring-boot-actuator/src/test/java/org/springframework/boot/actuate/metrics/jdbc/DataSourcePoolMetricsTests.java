@@ -32,8 +32,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Tests for {@link DataSourcePoolMetrics}.
  *
@@ -52,8 +50,7 @@ public class DataSourcePoolMetricsTests {
 						"metrics.use-global-registry=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
-					assertThat(context.getBean(MeterRegistry.class)
-							.find("data.source.max.connections").meter()).isPresent();
+					context.getBean(MeterRegistry.class).mustFind("data.source.max.connections").meter();
 				});
 	}
 
