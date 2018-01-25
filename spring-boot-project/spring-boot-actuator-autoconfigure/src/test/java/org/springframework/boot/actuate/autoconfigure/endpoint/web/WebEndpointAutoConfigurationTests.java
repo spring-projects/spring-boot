@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,57 +34,52 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link WebEndpointAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Yunkun Huang
  */
 public class WebEndpointAutoConfigurationTests {
 
+	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class));
+
 	@Test
 	public void webApplicationConfiguresEndpointMediaTypes() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations
-				.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
-				.run((context) -> {
-					EndpointMediaTypes endpointMediaTypes = context
-							.getBean(EndpointMediaTypes.class);
-					assertThat(endpointMediaTypes.getConsumed()).containsExactly(
-							ActuatorMediaType.V2_JSON, "application/json");
-				});
+		this.contextRunner.run((context) -> {
+			EndpointMediaTypes endpointMediaTypes = context
+					.getBean(EndpointMediaTypes.class);
+			assertThat(endpointMediaTypes.getConsumed())
+					.containsExactly(ActuatorMediaType.V2_JSON, "application/json");
+		});
 	}
-
 
 	@Test
 	public void webApplicationConfiguresPathMapper() {
-		new WebApplicationContextRunner()
-				.withPropertyValues("management.endpoints.web.path-mapping.health=healthcheck")
-				.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class))
+		this.contextRunner
+				.withPropertyValues(
+						"management.endpoints.web.path-mapping.health=healthcheck")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(PathMapper.class);
-					String pathMapping = context.getBean(PathMapper.class).getRootPath("health");
+					String pathMapping = context.getBean(PathMapper.class)
+							.getRootPath("health");
 					assertThat(pathMapping).isEqualTo("healthcheck");
 				});
 	}
 
 	@Test
 	public void webApplicationConfiguresEndpointDiscoverer() {
-		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ControllerEndpointDiscoverer.class);
-					assertThat(context).hasSingleBean(WebEndpointDiscoverer.class);
-				});
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ControllerEndpointDiscoverer.class);
+			assertThat(context).hasSingleBean(WebEndpointDiscoverer.class);
+		});
 	}
 
 	@Test
 	public void webApplicationConfiguresExposeExcludePropertyEndpointFilter() {
-		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).getBeans(ExposeExcludePropertyEndpointFilter.class).containsKeys(
-									"webIncludeExcludePropertyEndpointFilter",
-									"controllerIncludeExcludePropertyEndpointFilter"
-					);
-				});
+		this.contextRunner.run((context) -> {
+			assertThat(context).getBeans(ExposeExcludePropertyEndpointFilter.class)
+					.containsKeys("webIncludeExcludePropertyEndpointFilter",
+							"controllerIncludeExcludePropertyEndpointFilter");
+		});
 	}
 
 }
