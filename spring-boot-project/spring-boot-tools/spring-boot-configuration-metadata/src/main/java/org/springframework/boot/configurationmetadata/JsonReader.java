@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class JsonReader {
 
 	private static final int BUFFER_SIZE = 4096;
 
-	private final DescriptionExtractor descriptionExtractor = new DescriptionExtractor();
+	private final SentenceExtractor sentenceExtractor = new SentenceExtractor();
 
 	public RawConfigurationMetadata read(InputStream in, Charset charset)
 			throws IOException {
@@ -108,7 +108,7 @@ class JsonReader {
 		String description = json.optString("description", null);
 		source.setDescription(description);
 		source.setShortDescription(
-				this.descriptionExtractor.getShortDescription(description));
+				this.sentenceExtractor.getFirstSentence(description));
 		source.setSourceType(json.optString("sourceType", null));
 		source.setSourceMethod(json.optString("sourceMethod", null));
 		return source;
@@ -121,7 +121,7 @@ class JsonReader {
 		String description = json.optString("description", null);
 		item.setDescription(description);
 		item.setShortDescription(
-				this.descriptionExtractor.getShortDescription(description));
+				this.sentenceExtractor.getFirstSentence(description));
 		item.setDefaultValue(readItemValue(json.opt("defaultValue")));
 		item.setDeprecation(parseDeprecation(json));
 		item.setSourceType(json.optString("sourceType", null));
@@ -141,7 +141,7 @@ class JsonReader {
 				String description = value.optString("description", null);
 				valueHint.setDescription(description);
 				valueHint.setShortDescription(
-						this.descriptionExtractor.getShortDescription(description));
+						this.sentenceExtractor.getFirstSentence(description));
 				hint.getValueHints().add(valueHint);
 			}
 		}
@@ -172,7 +172,10 @@ class JsonReader {
 			Deprecation deprecation = new Deprecation();
 			deprecation.setLevel(parseDeprecationLevel(
 					deprecationJsonObject.optString("level", null)));
-			deprecation.setReason(deprecationJsonObject.optString("reason", null));
+			String reason = deprecationJsonObject.optString("reason", null);
+			deprecation.setReason(reason);
+			deprecation.setShortReason(
+					this.sentenceExtractor.getFirstSentence(reason));
 			deprecation
 					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;

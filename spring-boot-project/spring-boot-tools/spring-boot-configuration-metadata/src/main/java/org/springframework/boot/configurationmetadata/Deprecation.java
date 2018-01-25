@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ public class Deprecation implements Serializable {
 
 	private String reason;
 
+	private String shortReason;
+
 	private String replacement;
 
 	/**
@@ -49,6 +51,7 @@ public class Deprecation implements Serializable {
 	/**
 	 * A reason why the related property is deprecated, if any. Can be multi-lines.
 	 * @return the deprecation reason
+	 * @see #getShortReason()
 	 */
 	public String getReason() {
 		return this.reason;
@@ -56,6 +59,20 @@ public class Deprecation implements Serializable {
 
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+
+	/**
+	 * A single-line, single-sentence reason why the related property is deprecated, if
+	 * any.
+	 * @return the short deprecation reason
+	 * @see #getShortReason()
+	 */
+	public String getShortReason() {
+		return this.shortReason;
+	}
+
+	public void setShortReason(String shortReason) {
+		this.shortReason = shortReason;
 	}
 
 	/**

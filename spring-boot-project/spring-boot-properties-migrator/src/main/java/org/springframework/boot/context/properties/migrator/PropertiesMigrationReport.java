@@ -76,8 +76,8 @@ class PropertiesMigrationReport {
 				+ "supported was found in the environment:%n%n"));
 		append(report, content,
 				(metadata) -> "Reason: "
-						+ (StringUtils.hasText(metadata.getDeprecation().getReason())
-								? metadata.getDeprecation().getReason() : "none"));
+						+ (StringUtils.hasText(metadata.getDeprecation().getShortReason())
+								? metadata.getDeprecation().getShortReason() : "none"));
 		report.append(String.format("%n"));
 		report.append("Please refer to the migration guide or reference guide for "
 				+ "potential alternatives.");

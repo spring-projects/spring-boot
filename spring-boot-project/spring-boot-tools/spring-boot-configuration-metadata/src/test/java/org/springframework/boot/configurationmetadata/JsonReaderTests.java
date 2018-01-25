@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,6 +156,8 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertThat(item.isDeprecated()).isTrue();
 		assertThat(item.getDeprecation().getReason())
 				.isEqualTo("Server namespace has moved to spring.server");
+		assertThat(item.getDeprecation().getShortReason())
+				.isEqualTo("Server namespace has moved to spring.server");
 		assertThat(item.getDeprecation().getReplacement())
 				.isEqualTo("server.spring.port");
 		assertThat(item.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.WARNING);
@@ -165,6 +167,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 				null);
 		assertThat(item2.isDeprecated()).isTrue();
 		assertThat(item2.getDeprecation().getReason()).isNull();
+		assertThat(item2.getDeprecation().getShortReason()).isNull();
 		assertThat(item2.getDeprecation().getReplacement()).isNull();
 		assertThat(item.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.WARNING);
 
@@ -179,6 +182,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 				null);
 		assertThat(item4.isDeprecated()).isTrue();
 		assertThat(item4.getDeprecation().getReason()).isNull();
+		assertThat(item2.getDeprecation().getShortReason()).isNull();
 		assertThat(item4.getDeprecation().getReplacement())
 				.isEqualTo("spring.server.name");
 		assertThat(item4.getDeprecation().getLevel()).isEqualTo(Deprecation.Level.ERROR);
@@ -188,6 +192,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 				null);
 		assertThat(item5.isDeprecated()).isTrue();
 		assertThat(item5.getDeprecation().getReason()).isNull();
+		assertThat(item2.getDeprecation().getShortReason()).isNull();
 		assertThat(item5.getDeprecation().getReplacement())
 				.isEqualTo("spring.server.name");
 		assertThat(item5.getDeprecation().getLevel())

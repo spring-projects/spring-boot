@@ -20,26 +20,26 @@ import java.text.BreakIterator;
 import java.util.Locale;
 
 /**
- * Utility to extract a description.
+ * Utility to extract the first sentence of a text.
  *
  * @author Stephane Nicoll
  */
-class DescriptionExtractor {
+class SentenceExtractor {
 
-	public String getShortDescription(String description) {
-		if (description == null) {
+	public String getFirstSentence(String text) {
+		if (text == null) {
 			return null;
 		}
-		int dot = description.indexOf('.');
+		int dot = text.indexOf('.');
 		if (dot != -1) {
 			BreakIterator breakIterator = BreakIterator.getSentenceInstance(Locale.US);
-			breakIterator.setText(description);
-			String text = description
+			breakIterator.setText(text);
+			String sentence = text
 					.substring(breakIterator.first(), breakIterator.next()).trim();
-			return removeSpaceBetweenLine(text);
+			return removeSpaceBetweenLine(sentence);
 		}
 		else {
-			String[] lines = description.split(System.lineSeparator());
+			String[] lines = text.split(System.lineSeparator());
 			return lines[0].trim();
 		}
 	}
