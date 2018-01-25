@@ -2641,6 +2641,29 @@ follows:
 
 
 
+[[boot-features-webflux-web-filters]]
+==== Web Filters
+Spring WebFlux provides a `WebFilter` interface that can be implemented to filter HTTP
+request-response exchanges. `WebFilter` beans found in the application context will
+be automatically used to filter each exchange.
+
+Where the order of the filters is important they can implemented `Ordered` or be annotated
+with `@Order`. Spring Boot auto-configuration may configure web filters for you. When it
+does so, the orders shown in the following table will be used:
+
+|===
+| Web Filter | Order
+
+|`MetricsWebFilter`
+|`Ordered.HIGHEST_PRECEDENCE + 1`
+
+|`WebFilterChainProxy` (Spring Security)
+|`-100`
+
+|===
+
+
+
 [[boot-features-jersey]]
 === JAX-RS and Jersey
 If you prefer the JAX-RS programming model for REST endpoints, you can use one of the
