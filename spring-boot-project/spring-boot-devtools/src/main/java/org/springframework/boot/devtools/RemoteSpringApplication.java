@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.context.logging.ClasspathLoggingApplicationListener;
-import org.springframework.boot.context.logging.LoggingSystemLifecycle;
+import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration;
 import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
@@ -74,7 +74,7 @@ public final class RemoteSpringApplication {
 		listeners.add(new AnsiOutputApplicationListener());
 		listeners.add(new ConfigFileApplicationListener());
 		listeners.add(new ClasspathLoggingApplicationListener());
-		listeners.add(new LoggingSystemLifecycle());
+		listeners.add(new LoggingApplicationListener());
 		listeners.add(new RemoteUrlPropertyExtractor());
 		return listeners;
 	}

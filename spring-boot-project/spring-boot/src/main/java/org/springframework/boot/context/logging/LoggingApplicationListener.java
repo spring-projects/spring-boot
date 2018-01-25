@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -43,9 +38,8 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
@@ -58,11 +52,10 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@code LoggingSystemLifecyle} configures the {@link LoggingSystem} and manages its
- * lifecycle. If the environment contains a {@code logging.config} property it will be
- * used to bootstrap the logging system, otherwise a default configuration is used.
- * Regardless, logging levels will be customized if the environment contains
- * {@code logging.level.*} entries.
+ * An {@link ApplicationListener} that configures the {@link LoggingSystem}. If the
+ * environment contains a {@code logging.config} property it will be used to bootstrap the
+ * logging system, otherwise a default configuration is used. Regardless, logging levels
+ * will be customized if the environment contains {@code logging.level.*} entries.
  * <p>
  * Debug and trace logging for Spring, Tomcat, Jetty and Hibernate will be enabled when
  * the environment contains {@code debug} or {@code trace} properties that aren't set to
@@ -89,8 +82,7 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  * @see LoggingSystem#get(ClassLoader)
  */
-public class LoggingSystemLifecycle implements GenericApplicationListener,
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
 			.mapOf(String.class, String.class);
@@ -183,6 +175,10 @@ public class LoggingSystemLifecycle implements GenericApplicationListener,
 		else if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
+		else if (event instanceof ContextClosedEvent && ((ContextClosedEvent) event)
+				.getApplicationContext().getParent() == null) {
+			onContextClosedEvent();
+		}
 		else if (event instanceof ApplicationFailedEvent) {
 			onApplicationFailedEvent();
 		}
@@ -208,6 +204,12 @@ public class LoggingSystemLifecycle implements GenericApplicationListener,
 				.getBeanFactory();
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
+		}
+	}
+
+	private void onContextClosedEvent() {
+		if (this.loggingSystem != null) {
+			this.loggingSystem.cleanUp();
 		}
 	}
 
@@ -363,43 +365,6 @@ public class LoggingSystemLifecycle implements GenericApplicationListener,
 	 */
 	public void setParseArgs(boolean parseArgs) {
 		this.parseArgs = parseArgs;
-	}
-
-	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
-		registerCleanupBean(applicationContext);
-	}
-
-	private void registerCleanupBean(ConfigurableApplicationContext applicationContext) {
-		BeanFactory beanFactory = applicationContext.getBeanFactory();
-		BeanDefinition beanDefinition = BeanDefinitionBuilder
-				.genericBeanDefinition(LoggingSystemCleanup.class)
-				.addConstructorArgValue(this.loggingSystem)
-				.addConstructorArgValue(applicationContext).getBeanDefinition();
-		((BeanDefinitionRegistry) beanFactory).registerBeanDefinition(
-				LoggingSystemCleanup.class.getName(), beanDefinition);
-	}
-
-	private static final class LoggingSystemCleanup implements DisposableBean {
-
-		private final LoggingSystem loggingSystem;
-
-		private final ApplicationContext applicationContext;
-
-		private LoggingSystemCleanup(LoggingSystem loggingSystem,
-				ApplicationContext applicationContext) {
-			this.loggingSystem = loggingSystem;
-			this.applicationContext = applicationContext;
-		}
-
-		@Override
-		public void destroy() throws Exception {
-			if (this.applicationContext.getParent() == null
-					&& this.loggingSystem != null) {
-				this.loggingSystem.cleanUp();
-			}
-		}
-
 	}
 
 }

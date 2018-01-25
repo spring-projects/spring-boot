@@ -30,7 +30,7 @@ import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
-import org.springframework.boot.context.logging.LoggingSystemLifecycle;
+import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.format.support.DefaultFormattingConversionService;
@@ -45,7 +45,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@Order(LoggingSystemLifecycle.DEFAULT_ORDER + 1)
+@Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
 public class BackgroundPreinitializer
 		implements ApplicationListener<SpringApplicationEvent> {
 

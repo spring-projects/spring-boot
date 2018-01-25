@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,7 @@ import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -69,7 +70,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
 /**
- * Tests for {@link LoggingSystemLifecycle} with Logback.
+ * Tests for {@link LoggingApplicationListener} with Logback.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -79,7 +80,7 @@ import static org.hamcrest.Matchers.not;
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("log4j*.jar")
-public class LoggingSystemLifecycleTests {
+public class LoggingApplicationListenerTests {
 
 	private static final String[] NO_ARGS = {};
 
@@ -92,7 +93,7 @@ public class LoggingSystemLifecycleTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	private final LoggingSystemLifecycle initializer = new LoggingSystemLifecycle();
+	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 
 	private final Log logger = new SLF4JLogFactory().getInstance(getClass());
 
@@ -217,7 +218,7 @@ public class LoggingSystemLifecycleTests {
 				"logging.file=target/foo.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingSystemLifecycleTests.class);
+		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
 		assertThat(output).startsWith("target/foo.log");
@@ -230,7 +231,7 @@ public class LoggingSystemLifecycleTests {
 				"logging.file=target/foo.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingSystemLifecycleTests.class);
+		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		assertThat(new File("target/foo.log").exists()).isTrue();
 	}
@@ -242,7 +243,7 @@ public class LoggingSystemLifecycleTests {
 				"logging.path=target/foo/");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		Log logger = LogFactory.getLog(LoggingSystemLifecycleTests.class);
+		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
 		assertThat(output).startsWith("target/foo/spring.log");
@@ -386,10 +387,8 @@ public class LoggingSystemLifecycleTests {
 
 	@Test
 	public void bridgeHandlerLifecycle() {
-		this.initializer.initialize(this.context);
-		this.context.refresh();
 		assertThat(bridgeHandlerInstalled()).isTrue();
-		this.context.close();
+		multicastEvent(new ContextClosedEvent(this.context));
 		assertThat(bridgeHandlerInstalled()).isFalse();
 	}
 
@@ -450,12 +449,10 @@ public class LoggingSystemLifecycleTests {
 				TestCleanupLoggingSystem.class.getName());
 		multicastEvent(
 				new ApplicationStartingEvent(this.springApplication, new String[0]));
-		this.initializer.initialize(this.context);
-		this.context.refresh();
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();
-		this.context.close();
+		multicastEvent(new ContextClosedEvent(this.context));
 		assertThat(loggingSystem.cleanedUp).isTrue();
 	}
 
@@ -465,19 +462,16 @@ public class LoggingSystemLifecycleTests {
 				TestCleanupLoggingSystem.class.getName());
 		multicastEvent(
 				new ApplicationStartingEvent(this.springApplication, new String[0]));
-		this.initializer.initialize(this.context);
-		this.context.refresh();
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();
 		GenericApplicationContext childContext = new GenericApplicationContext();
 		childContext.setParent(this.context);
-		this.initializer.initialize(childContext);
-		childContext.refresh();
-		childContext.close();
+		multicastEvent(new ContextClosedEvent(childContext));
 		assertThat(loggingSystem.cleanedUp).isFalse();
-		this.context.close();
+		multicastEvent(new ContextClosedEvent(this.context));
 		assertThat(loggingSystem.cleanedUp).isTrue();
+		childContext.close();
 	}
 
 	@Test
@@ -619,7 +613,8 @@ public class LoggingSystemLifecycleTests {
 
 	}
 
-	public static class TestLoggingApplicationListener extends LoggingSystemLifecycle {
+	public static class TestLoggingApplicationListener
+			extends LoggingApplicationListener {
 
 		private Thread shutdownHook;
 
