@@ -84,10 +84,10 @@ public class HttpTunnelPayload {
 		headers.setContentLength(this.data.remaining());
 		headers.add(SEQ_HEADER, Long.toString(getSequence()));
 		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-		try(WritableByteChannel body = Channels.newChannel(message.getBody())) {
-    		while (this.data.hasRemaining()) {
-    			body.write(this.data);
-    		}
+		try (WritableByteChannel body = Channels.newChannel(message.getBody())) {
+			while (this.data.hasRemaining()) {
+				body.write(this.data);
+			}
 		}
 	}
 
@@ -117,13 +117,13 @@ public class HttpTunnelPayload {
 		}
 		String seqHeader = message.getHeaders().getFirst(SEQ_HEADER);
 		Assert.state(StringUtils.hasLength(seqHeader), "Missing sequence header");
-		try(ReadableByteChannel body = Channels.newChannel(message.getBody())) {
-    		ByteBuffer payload = ByteBuffer.allocate((int) length);
-    		while (payload.hasRemaining()) {
-    			body.read(payload);
-    		}
-    		payload.flip();
-    		return new HttpTunnelPayload(Long.valueOf(seqHeader), payload);
+		try (ReadableByteChannel body = Channels.newChannel(message.getBody())) {
+			ByteBuffer payload = ByteBuffer.allocate((int) length);
+			while (payload.hasRemaining()) {
+				body.read(payload);
+			}
+			payload.flip();
+			return new HttpTunnelPayload(Long.valueOf(seqHeader), payload);
 		}
 	}
 
