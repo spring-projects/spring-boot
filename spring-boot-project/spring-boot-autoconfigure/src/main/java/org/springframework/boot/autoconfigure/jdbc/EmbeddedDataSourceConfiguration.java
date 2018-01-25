@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.util.StringUtils;
 
 /**
  * Configuration for embedded data sources.
@@ -56,12 +55,9 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 	@Bean
 	public EmbeddedDatabase dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
-				.setType(EmbeddedDatabaseConnection.get(this.classLoader).getType());
-		String name = (StringUtils.hasText(this.properties.getName())
-				? this.properties.getName()
-				: EmbeddedDatabaseConnection.DEFAULT_DATABASE_NAME);
-		this.database = builder.setName(name)
-				.generateUniqueName(this.properties.isGenerateUniqueName()).build();
+				.setType(EmbeddedDatabaseConnection.get(this.classLoader).getType())
+				.setName(this.properties.determineDatabaseName());
+		this.database = builder.build();
 		return this.database;
 	}
 

@@ -25,8 +25,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Connection details for {@link EmbeddedDatabaseType embedded databases}.
@@ -60,11 +60,6 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:%s");
 
-	/**
-	 * Default database name.
-	 */
-	public static final String DEFAULT_DATABASE_NAME = "testdb";
-
 	private final EmbeddedDatabaseType type;
 
 	private final String driverClass;
@@ -95,15 +90,13 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-	 * Returns the URL for the connection using the specified {@code databaseName} or
-	 * {@value DEFAULT_DATABASE_NAME} if {@code databaseName} is empty or {@code null}.
+	 * Returns the URL for the connection using the specified {@code databaseName}.
 	 * @param databaseName the name of the database
 	 * @return the connection URL
 	 */
 	public String getUrl(String databaseName) {
-		String name = (StringUtils.hasText(databaseName)
-				? databaseName : DEFAULT_DATABASE_NAME);
-		return (this.url != null ? String.format(this.url, name) : null);
+		Assert.hasText(databaseName, "DatabaseName must not be empty");
+		return (this.url != null ? String.format(this.url, databaseName) : null);
 	}
 
 	/**

@@ -237,15 +237,12 @@ public class DataSourceProperties
 			return this.driverClassName;
 		}
 		String driverClassName = null;
-
 		if (StringUtils.hasText(this.url)) {
 			driverClassName = DatabaseDriver.fromJdbcUrl(this.url).getDriverClassName();
 		}
-
 		if (!StringUtils.hasText(driverClassName)) {
 			driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
 		}
-
 		if (!StringUtils.hasText(driverClassName)) {
 			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
 					this.environment, "driver class");
@@ -289,7 +286,9 @@ public class DataSourceProperties
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
-		String url = this.embeddedDatabaseConnection.getUrl(determineDatabaseName());
+		String databaseName = determineDatabaseName();
+		String url = (databaseName == null ? null
+				: this.embeddedDatabaseConnection.getUrl(databaseName));
 		if (!StringUtils.hasText(url)) {
 			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
 					this.environment, "url");
@@ -297,14 +296,25 @@ public class DataSourceProperties
 		return url;
 	}
 
-	private String determineDatabaseName() {
+	/**
+	 * Determine the name to used based on this configuration.
+	 * @return the database name to use or {@code null}
+	 * @since 2.0.0
+	 */
+	public String determineDatabaseName() {
 		if (this.generateUniqueName) {
 			if (this.uniqueName == null) {
 				this.uniqueName = UUID.randomUUID().toString();
 			}
 			return this.uniqueName;
 		}
-		return this.name;
+		if (StringUtils.hasLength(this.name)) {
+			return this.name;
+		}
+		if (this.embeddedDatabaseConnection != EmbeddedDatabaseConnection.NONE) {
+			return "testdb";
+		}
+		return null;
 	}
 
 	/**
