@@ -42,7 +42,7 @@ public class SampleActuatorUiApplication {
 		throw new RuntimeException("Expected exception in controller");
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleActuatorUiApplication.class, args);
 	}
 

@@ -29,7 +29,7 @@ public class SampleJettyJspApplication extends SpringBootServletInitializer {
 		return application.sources(SampleJettyJspApplication.class);
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleJettyJspApplication.class, args);
 	}
 

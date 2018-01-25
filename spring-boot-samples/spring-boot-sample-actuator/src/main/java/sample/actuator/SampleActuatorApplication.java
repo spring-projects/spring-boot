@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(ServiceProperties.class)
 public class SampleActuatorApplication {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleActuatorApplication.class, args);
 	}
 

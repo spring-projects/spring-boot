@@ -56,7 +56,7 @@ public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 		registry.addViewController("/login").setViewName("login");
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(SampleWebSecureJdbcApplication.class).run(args);
 	}
 

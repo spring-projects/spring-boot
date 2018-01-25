@@ -36,7 +36,7 @@ public class SampleSpringXmlApplication implements CommandLineRunner {
 		System.out.println(this.helloWorldService.getHelloMessage());
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication application = new SpringApplication();
 		application.setSources(Collections.singleton(CONTEXT_XML));
 		application.run(args);

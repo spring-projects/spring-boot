@@ -53,7 +53,7 @@ public class SampleServletApplication extends SpringBootServletInitializer {
 		return application.sources(SampleServletApplication.class);
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleServletApplication.class, args);
 	}
 

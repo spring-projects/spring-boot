@@ -62,7 +62,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		registry.addViewController("/access").setViewName("access");
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
 	}
 

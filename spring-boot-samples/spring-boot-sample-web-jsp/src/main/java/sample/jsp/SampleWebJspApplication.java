@@ -29,7 +29,7 @@ public class SampleWebJspApplication extends SpringBootServletInitializer {
 		return application.sources(SampleWebJspApplication.class);
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleWebJspApplication.class, args);
 	}
 

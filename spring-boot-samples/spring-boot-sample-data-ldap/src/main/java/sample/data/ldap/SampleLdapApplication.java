@@ -46,7 +46,7 @@ public class SampleLdapApplication implements CommandLineRunner {
 		System.out.println(this.repository.findByPhone("+46 555-123456"));
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleLdapApplication.class, args).close();
 	}
 

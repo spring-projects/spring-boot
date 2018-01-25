@@ -28,7 +28,7 @@ public class SampleAntApplication implements CommandLineRunner {
 		System.out.println("Spring Boot Ant Example");
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleAntApplication.class, args);
 	}
 

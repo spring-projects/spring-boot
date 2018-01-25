@@ -28,7 +28,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @SpringBootApplication
 public class SampleWebFluxApplication {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleWebFluxApplication.class);
 	}
 

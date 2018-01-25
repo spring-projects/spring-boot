@@ -44,7 +44,7 @@ public class SamplePropertyValidationApplication implements CommandLineRunner {
 		System.out.println("=========================================");
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(SamplePropertyValidationApplication.class).run(args);
 	}
 

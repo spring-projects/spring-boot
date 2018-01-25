@@ -36,7 +36,7 @@ public class SampleAopApplication implements CommandLineRunner {
 		System.out.println(this.helloWorldService.getHelloMessage());
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleAopApplication.class, args);
 	}
 

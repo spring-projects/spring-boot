@@ -40,7 +40,7 @@ public class ProducerApplication implements CommandLineRunner {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(ProducerApplication.class, args);
 	}
 

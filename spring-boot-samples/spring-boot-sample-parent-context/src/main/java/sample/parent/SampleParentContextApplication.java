@@ -83,7 +83,7 @@ public class SampleParentContextApplication {
 
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(Parent.class)
 				.child(SampleParentContextApplication.class).run(args);
 	}

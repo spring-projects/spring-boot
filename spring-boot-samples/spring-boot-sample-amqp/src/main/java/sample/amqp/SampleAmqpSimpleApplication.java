@@ -47,7 +47,7 @@ public class SampleAmqpSimpleApplication {
 		System.out.println(new Date() + ": " + foo);
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleAmqpSimpleApplication.class, args);
 	}
 

@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(ServiceProperties.class)
 public class SampleActuatorNoWebApplication {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleActuatorNoWebApplication.class, args);
 	}
 

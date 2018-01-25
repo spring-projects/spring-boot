@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class SampleFlywayApplication {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleFlywayApplication.class, args);
 	}
 

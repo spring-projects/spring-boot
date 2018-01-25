@@ -38,7 +38,7 @@ public class SampleProfileApplication implements CommandLineRunner {
 		System.out.println(this.helloWorldService.getMessage());
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleProfileApplication.class, args);
 	}
 

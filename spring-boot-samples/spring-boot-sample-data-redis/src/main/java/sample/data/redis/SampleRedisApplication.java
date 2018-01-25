@@ -39,7 +39,7 @@ public class SampleRedisApplication implements CommandLineRunner {
 		System.out.println("Found key " + key + ", value=" + ops.get(key));
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		// Close the context so it doesn't stay awake listening for redis
 		SpringApplication.run(SampleRedisApplication.class, args).close();
 	}

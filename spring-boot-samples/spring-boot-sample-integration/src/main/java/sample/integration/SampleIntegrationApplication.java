@@ -67,7 +67,7 @@ public class SampleIntegrationApplication {
 				.handle(fileWriter()).get();
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleIntegrationApplication.class, args);
 	}
 

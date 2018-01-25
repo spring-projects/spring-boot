@@ -63,7 +63,7 @@ public class SampleBatchApplication {
 		return this.steps.get("step1").tasklet(tasklet()).build();
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		// System.exit is common for Batch applications since the exit code can be used to
 		// drive a workflow
 		System.exit(SpringApplication

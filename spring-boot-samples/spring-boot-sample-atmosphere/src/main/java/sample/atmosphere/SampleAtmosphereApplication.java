@@ -79,7 +79,7 @@ public class SampleAtmosphereApplication {
 
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleAtmosphereApplication.class, args);
 	}
 
