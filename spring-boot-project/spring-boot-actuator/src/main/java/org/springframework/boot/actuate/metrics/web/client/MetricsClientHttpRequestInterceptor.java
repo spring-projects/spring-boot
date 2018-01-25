@@ -50,15 +50,11 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 	private final String metricName;
 
-	private final boolean recordPercentiles;
-
 	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
-			RestTemplateExchangeTagsProvider tagProvider, String metricName,
-			boolean recordPercentiles) {
+			RestTemplateExchangeTagsProvider tagProvider, String metricName) {
 		this.tagProvider = tagProvider;
 		this.meterRegistry = meterRegistry;
 		this.metricName = metricName;
-		this.recordPercentiles = recordPercentiles;
 	}
 
 	@Override
@@ -98,9 +94,13 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	private Timer.Builder getTimeBuilder(HttpRequest request,
 			ClientHttpResponse response) {
 		return Timer.builder(this.metricName)
-				.tags(this.tagProvider.getTags(urlTemplate.get(), request, response))
-				.description("Timer of RestTemplate operation")
-				.publishPercentileHistogram(this.recordPercentiles);
+				.tags(this.tagProvider.getTags(ensureLeadingSlash(urlTemplate.get()), request, response))
+				.description("Timer of RestTemplate operation");
 	}
 
+	// This normalization improves tag value matching when one code path requests test/{id} and another
+	// requests /test/{id}
+	private String ensureLeadingSlash(String url) {
+		return url.startsWith("/") ? url : "/" + url;
+	}
 }

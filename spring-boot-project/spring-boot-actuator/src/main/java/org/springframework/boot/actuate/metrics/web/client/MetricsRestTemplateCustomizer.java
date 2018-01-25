@@ -45,13 +45,11 @@ public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 	 * @param meterRegistry the meter registry
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
-	 * @param recordPercentiles whether percentile histogram buckets should be recorded
 	 */
 	public MetricsRestTemplateCustomizer(MeterRegistry meterRegistry,
-			RestTemplateExchangeTagsProvider tagProvider, String metricName,
-			boolean recordPercentiles) {
+			RestTemplateExchangeTagsProvider tagProvider, String metricName) {
 		this.interceptor = new MetricsClientHttpRequestInterceptor(meterRegistry,
-				tagProvider, metricName, recordPercentiles);
+				tagProvider, metricName);
 	}
 
 	@Override

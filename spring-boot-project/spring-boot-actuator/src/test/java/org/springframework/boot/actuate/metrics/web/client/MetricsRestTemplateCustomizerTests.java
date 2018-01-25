@@ -43,24 +43,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MetricsRestTemplateCustomizerTests {
 
-	private MeterRegistry registry;
+	private MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 
-	private RestTemplate restTemplate;
+	private RestTemplate restTemplate = new RestTemplate();
+
+	private MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+
+	private MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
+			this.registry, new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests");
 
 	@Before
 	public void setup() {
-		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
-		this.restTemplate = new RestTemplate();
+		customizer.customize(restTemplate);
 	}
 
 	@Test
 	public void interceptRestTemplate() {
-		MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
-				this.registry, new DefaultRestTemplateExchangeTagsProvider(),
-				"http.client.requests", true);
-		customizer.customize(this.restTemplate);
-		MockRestServiceServer mockServer = MockRestServiceServer
-				.createServer(this.restTemplate);
 		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
@@ -68,8 +66,8 @@ public class MetricsRestTemplateCustomizerTests {
 		String result = this.restTemplate.getForObject("/test/{id}", String.class, 123);
 		assertThat(this.registry.find("http.client.requests")
 				.meters()).anySatisfy((m) -> assertThat(
-						StreamSupport.stream(m.getId().getTags().spliterator(), false)
-								.map(Tag::getKey)).doesNotContain("bucket"));
+				StreamSupport.stream(m.getId().getTags().spliterator(), false)
+						.map(Tag::getKey)).doesNotContain("bucket"));
 		assertThat(this.registry.mustFind("http.client.requests")
 				.tags("method", "GET", "uri", "/test/{id}", "status", "200")
 				.timer().count()).isEqualTo(1);
@@ -79,13 +77,27 @@ public class MetricsRestTemplateCustomizerTests {
 
 	@Test
 	public void avoidDuplicateRegistration() {
-		MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
-				this.registry, new DefaultRestTemplateExchangeTagsProvider(),
-				"http.client.requests", true);
-		customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate.getInterceptors()).hasSize(1);
 		customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate.getInterceptors()).hasSize(1);
+	}
+
+	/**
+	 * Issue #283
+	 */
+	@Test
+	public void normalizeUriToContainLeadingSlash() {
+		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK",
+						MediaType.APPLICATION_JSON));
+
+		String result = restTemplate.getForObject("test/{id}", String.class, 123);
+
+		registry.mustFind("http.client.requests").tags("uri", "/test/{id}").timer();
+		assertThat(result).isEqualTo("OK");
+
+		mockServer.verify();
 	}
 
 }
