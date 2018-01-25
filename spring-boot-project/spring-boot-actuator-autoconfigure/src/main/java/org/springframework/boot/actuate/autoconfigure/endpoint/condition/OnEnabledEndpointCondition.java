@@ -78,7 +78,7 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 	private Boolean isEnabledByDefault(Environment environment) {
 		Optional<Boolean> enabledByDefault = enabledByDefaultCache.get(environment);
-		if (enabledByDefault == null) {
+		if (!enabledByDefault.isPresent()) {
 			enabledByDefault = Optional.ofNullable(
 					environment.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class));
 			enabledByDefaultCache.put(environment, enabledByDefault);
