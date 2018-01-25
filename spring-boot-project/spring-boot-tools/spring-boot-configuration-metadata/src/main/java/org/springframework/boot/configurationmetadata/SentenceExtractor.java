@@ -34,9 +34,8 @@ class SentenceExtractor {
 		if (dot != -1) {
 			BreakIterator breakIterator = BreakIterator.getSentenceInstance(Locale.US);
 			breakIterator.setText(text);
-			String sentence = text
-					.substring(breakIterator.first(), breakIterator.next()).trim();
-			return removeSpaceBetweenLine(sentence);
+			String sentence = text.substring(breakIterator.first(), breakIterator.next());
+			return removeSpaceBetweenLine(sentence.trim());
 		}
 		else {
 			String[] lines = text.split(System.lineSeparator());

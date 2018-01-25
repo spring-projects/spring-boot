@@ -107,8 +107,7 @@ class JsonReader {
 		source.setType(json.optString("type", null));
 		String description = json.optString("description", null);
 		source.setDescription(description);
-		source.setShortDescription(
-				this.sentenceExtractor.getFirstSentence(description));
+		source.setShortDescription(this.sentenceExtractor.getFirstSentence(description));
 		source.setSourceType(json.optString("sourceType", null));
 		source.setSourceMethod(json.optString("sourceMethod", null));
 		return source;
@@ -120,8 +119,7 @@ class JsonReader {
 		item.setType(json.optString("type", null));
 		String description = json.optString("description", null);
 		item.setDescription(description);
-		item.setShortDescription(
-				this.sentenceExtractor.getFirstSentence(description));
+		item.setShortDescription(this.sentenceExtractor.getFirstSentence(description));
 		item.setDefaultValue(readItemValue(json.opt("defaultValue")));
 		item.setDeprecation(parseDeprecation(json));
 		item.setSourceType(json.optString("sourceType", null));
@@ -174,8 +172,7 @@ class JsonReader {
 					deprecationJsonObject.optString("level", null)));
 			String reason = deprecationJsonObject.optString("reason", null);
 			deprecation.setReason(reason);
-			deprecation.setShortReason(
-					this.sentenceExtractor.getFirstSentence(reason));
+			deprecation.setShortReason(this.sentenceExtractor.getFirstSentence(reason));
 			deprecation
 					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;

@@ -245,11 +245,11 @@ public class JpaProperties {
 		private String determineDdlAuto(Map<String, String> existing,
 				String defaultDdlAuto) {
 			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto);
-			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
+			if (!existing.containsKey("hibernate.hbm2ddl.auto")
 					&& !"none".equals(ddlAuto)) {
 				return ddlAuto;
 			}
-			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
+			if (existing.containsKey("hibernate.hbm2ddl.auto")) {
 				return existing.get("hibernate.hbm2ddl.auto");
 			}
 			return "none";
