@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.embedded.jetty;
 
+import java.time.Duration;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +28,6 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.core.env.Environment;
-
-import java.time.Duration;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;

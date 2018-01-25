@@ -54,25 +54,26 @@ public final class TomcatCustomizer {
 		propertyMapper.from(tomcatProperties::getBackgroundProcessorDelay).whenNonNull()
 				.to((backgroundProcessorDelay) -> factory.setBackgroundProcessorDelay((int) backgroundProcessorDelay.getSeconds()));
 		customizeRemoteIpValve(serverProperties, environment, factory);
-		propertyMapper.from(tomcatProperties::getMaxThreads).when((maxThreads) -> maxThreads > 0)
-				.to((maxThreads) -> customizeMaxThreads(factory, tomcatProperties.getMaxThreads()));
-		propertyMapper.from(tomcatProperties::getMinSpareThreads).when((minSpareThreads) -> minSpareThreads > 0)
-				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
+		propertyMapper.from(tomcatProperties::getMaxThreads).when(maxThreads -> maxThreads > 0)
+				.to(maxThreads -> customizeMaxThreads(factory, tomcatProperties.getMaxThreads()));
+		propertyMapper.from(tomcatProperties::getMinSpareThreads).when(minSpareThreads -> minSpareThreads > 0)
+				.to(minSpareThreads -> customizeMinThreads(factory, minSpareThreads));
 		propertyMapper.from(() -> (serverProperties.getMaxHttpHeaderSize() > 0
 				? serverProperties.getMaxHttpHeaderSize()
 				: tomcatProperties.getMaxHttpHeaderSize()))
-				.when((maxHttpHeaderSize) -> maxHttpHeaderSize > 0)
-				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
+				.when(maxHttpHeaderSize -> maxHttpHeaderSize > 0)
+				.to(maxHttpHeaderSize -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpPostSize).when(maxHttpPostSize -> maxHttpPostSize != 0)
 				.to(maxHttpPostSize -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
-		propertyMapper.from(tomcatProperties::getAccesslog).when((ServerProperties.Tomcat.Accesslog::isEnabled))
-				.to((enabled) -> customizeAccessLog(tomcatProperties, factory));
+		propertyMapper.from(tomcatProperties::getAccesslog).when(ServerProperties.Tomcat.Accesslog::isEnabled)
+				.to(enabled -> customizeAccessLog(tomcatProperties, factory));
 		propertyMapper.from(tomcatProperties::getUriEncoding).whenNonNull().to(factory::setUriEncoding);
 		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
 				.to(connectionTimeout -> customizeConnectionTimeout(factory, connectionTimeout));
 		propertyMapper.from(tomcatProperties::getMaxConnections).when(maxConnections -> maxConnections > 0)
 				.to(maxConnections -> customizeMaxConnections(factory, maxConnections));
-		propertyMapper.from(tomcatProperties::getAcceptCount).when(acceptCount -> acceptCount > 0).to(acceptCount -> customizeAcceptCount(factory, acceptCount));
+		propertyMapper.from(tomcatProperties::getAcceptCount).when(acceptCount -> acceptCount > 0)
+				.to(acceptCount -> customizeAcceptCount(factory, acceptCount));
 		customizeStaticResources(serverProperties.getTomcat().getResource(), factory);
 	}
 

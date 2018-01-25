@@ -57,13 +57,13 @@ public final class UndertowCustomizer {
 		propertyMapper.from(accesslogProperties::isRotate).to(factory::setAccessLogRotate);
 		propertyMapper.from(() -> getOrDeduceUseForwardHeaders(serverProperties, environment)).to(factory::setUseForwardHeaders);
 
-		propertyMapper.from(serverProperties::getMaxHttpHeaderSize).when((maxHttpHeaderSize) -> maxHttpHeaderSize > 0)
-				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
-		propertyMapper.from(undertowProperties::getMaxHttpPostSize).when((maxHttpPostSize) -> maxHttpPostSize > 0)
-				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
-		propertyMapper.from(serverProperties::getConnectionTimeout).when((connectionTimeout) -> connectionTimeout != null)
-				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
-		factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
+		propertyMapper.from(serverProperties::getMaxHttpHeaderSize).when(maxHttpHeaderSize -> maxHttpHeaderSize > 0)
+				.to(maxHttpHeaderSize -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
+		propertyMapper.from(undertowProperties::getMaxHttpPostSize).when(maxHttpPostSize -> maxHttpPostSize > 0)
+				.to(maxHttpPostSize -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
+		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
+				.to(connectionTimeout -> customizeConnectionTimeout(factory, connectionTimeout));
+		factory.addDeploymentInfoCustomizers(deploymentInfo -> deploymentInfo
 				.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
 	}
 
