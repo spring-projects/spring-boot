@@ -176,7 +176,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		DefaultScopeParentClassLoader(ClassLoader parent) {
 			super(parent);
 			this.groovyOnlyClassLoader = new URLClassLoader(getGroovyJars(parent),
-					parent.getParent().getParent());
+					getClass().getClassLoader().getParent());
 		}
 
 		private URL[] getGroovyJars(ClassLoader parent) {
