@@ -334,16 +334,15 @@ public class PropertiesLauncher extends Launcher {
 		for (Archive archive : archives) {
 			urls.add(archive.getUrl());
 		}
-		try(ClassLoader loader = new LaunchedURLClassLoader(urls.toArray(new URL[0]),
-				getClass().getClassLoader())) {
-    		debug("Classpath: " + urls);
-    		String customLoaderClassName = getProperty("loader.classLoader");
-    		if (customLoaderClassName != null) {
-    			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
-    			debug("Using custom class loader: " + customLoaderClassName);
-    		}
-    		return loader;
+		ClassLoader loader = new LaunchedURLClassLoader(urls.toArray(new URL[0]),
+				getClass().getClassLoader());
+		debug("Classpath: " + urls);
+		String customLoaderClassName = getProperty("loader.classLoader");
+		if (customLoaderClassName != null) {
+			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
+			debug("Using custom class loader: " + customLoaderClassName);
 		}
+		return loader;
 	}
 
 	@SuppressWarnings("unchecked")
