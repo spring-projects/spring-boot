@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.web.reactive;
+package org.springframework.boot.test.web.reactive.server;
 
 import java.util.Collection;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.codec.CodecCustomizer;
@@ -30,6 +36,8 @@ import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFac
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -63,8 +71,11 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 	private void registerWebTestClient(ConfigurableApplicationContext context,
 			BeanDefinitionRegistry registry) {
-		registry.registerBeanDefinition(WebTestClient.class.getName(),
-				new RootBeanDefinition(WebTestClientFactory.class));
+		RootBeanDefinition definition = new RootBeanDefinition(
+				WebTestClientRegistrar.class);
+		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		registry.registerBeanDefinition(WebTestClientRegistrar.class.getName(),
+				definition);
 	}
 
 	@Override
@@ -75,6 +86,45 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	@Override
 	public boolean equals(Object obj) {
 		return (obj != null && obj.getClass() == getClass());
+	}
+
+	/**
+	 * {@link BeanDefinitionRegistryPostProcessor} that runs after the
+	 * {@link ConfigurationClassPostProcessor} and add a {@link WebTestClientFactory} bean
+	 * definition when a {@link WebTestClient} hasn't already been registered.
+	 */
+	private static class WebTestClientRegistrar
+			implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
+
+		private BeanFactory beanFactory;
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			this.beanFactory = beanFactory;
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.LOWEST_PRECEDENCE;
+		}
+
+		@Override
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+				throws BeansException {
+			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+					(ListableBeanFactory) this.beanFactory,
+					WebTestClient.class).length == 0) {
+				registry.registerBeanDefinition(WebTestClient.class.getName(),
+						new RootBeanDefinition(WebTestClientFactory.class));
+			}
+
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+		}
+
 	}
 
 	/**
