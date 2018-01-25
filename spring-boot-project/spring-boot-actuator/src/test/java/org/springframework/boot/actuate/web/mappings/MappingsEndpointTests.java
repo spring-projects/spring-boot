@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.function.Supplier;
 
 import javax.servlet.FilterRegistration;
@@ -75,9 +74,9 @@ public class MappingsEndpointTests {
 	public void servletWebMappings() {
 		ServletContext servletContext = mock(ServletContext.class);
 		given(servletContext.getInitParameterNames())
-				.willReturn(new Vector<String>().elements());
+				.willReturn(Collections.emptyEnumeration());
 		given(servletContext.getAttributeNames())
-				.willReturn(new Vector<String>().elements());
+				.willReturn(Collections.emptyEnumeration());
 		FilterRegistration filterRegistration = mock(FilterRegistration.class);
 		given((Map<String, FilterRegistration>) servletContext.getFilterRegistrations())
 				.willReturn(Collections.singletonMap("testFilter", filterRegistration));
