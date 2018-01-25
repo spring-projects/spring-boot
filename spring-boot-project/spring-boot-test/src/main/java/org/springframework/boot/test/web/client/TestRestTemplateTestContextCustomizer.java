@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.web.client;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -40,7 +47,7 @@ import org.springframework.test.context.MergedContextConfiguration;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class SpringBootTestContextCustomizer implements ContextCustomizer {
+class TestRestTemplateTestContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
@@ -61,8 +68,11 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 
 	private void registerTestRestTemplate(ConfigurableApplicationContext context,
 			BeanDefinitionRegistry registry) {
-		registry.registerBeanDefinition(TestRestTemplate.class.getName(),
-				new RootBeanDefinition(TestRestTemplateFactory.class));
+		RootBeanDefinition definition = new RootBeanDefinition(
+				TestRestTemplateRegistrar.class);
+		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		registry.registerBeanDefinition(TestRestTemplateRegistrar.class.getName(),
+				definition);
 	}
 
 	@Override
@@ -79,6 +89,45 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
+	 * {@link BeanDefinitionRegistryPostProcessor} that runs after the
+	 * {@link ConfigurationClassPostProcessor} and add a {@link TestRestTemplateFactory}
+	 * bean definition when a {@link TestRestTemplate} hasn't already been registered.
+	 */
+	private static class TestRestTemplateRegistrar
+			implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
+
+		private BeanFactory beanFactory;
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			this.beanFactory = beanFactory;
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.LOWEST_PRECEDENCE;
+		}
+
+		@Override
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+				throws BeansException {
+			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+					(ListableBeanFactory) this.beanFactory,
+					TestRestTemplate.class).length == 0) {
+				registry.registerBeanDefinition(TestRestTemplate.class.getName(),
+						new RootBeanDefinition(TestRestTemplateFactory.class));
+			}
+
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+		}
+
+	}
+
+	/**
 	 * {@link FactoryBean} used to create and configure a {@link TestRestTemplate}.
 	 */
 	public static class TestRestTemplateFactory
@@ -88,7 +137,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 
 		private static final HttpClientOption[] SSL_OPTIONS = { HttpClientOption.SSL };
 
-		private TestRestTemplate object;
+		private TestRestTemplate template;
 
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext)
@@ -100,7 +149,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 			LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 					applicationContext.getEnvironment(), sslEnabled ? "https" : "http");
 			template.setUriTemplateHandler(handler);
-			this.object = template;
+			this.template = template;
 		}
 
 		private boolean isSslEnabled(ApplicationContext context) {
@@ -137,7 +186,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public TestRestTemplate getObject() throws Exception {
-			return this.object;
+			return this.template;
 		}
 
 	}

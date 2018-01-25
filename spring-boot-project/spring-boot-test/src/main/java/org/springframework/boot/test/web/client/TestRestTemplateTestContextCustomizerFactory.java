@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.context;
+package org.springframework.boot.test.web.client;
 
 import java.util.List;
 
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
@@ -27,16 +28,16 @@ import org.springframework.test.context.ContextCustomizerFactory;
  * {@link ContextCustomizerFactory} for {@link SpringBootTest}.
  *
  * @author Andy Wilkinson
- * @see SpringBootTestContextCustomizer
+ * @see TestRestTemplateTestContextCustomizer
  */
-class SpringBootTestContextCustomizerFactory implements ContextCustomizerFactory {
+class TestRestTemplateTestContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		if (AnnotatedElementUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class) != null) {
-			return new SpringBootTestContextCustomizer();
+			return new TestRestTemplateTestContextCustomizer();
 		}
 		return null;
 	}
