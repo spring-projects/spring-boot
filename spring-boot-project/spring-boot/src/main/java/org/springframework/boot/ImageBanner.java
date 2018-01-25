@@ -57,6 +57,8 @@ public class ImageBanner implements Banner {
 
 	private static final String PROPERTY_PREFIX = "spring.banner.image.";
 
+	private static final String HEADLESS_PROPERTY_NAME = "java.awt.headless";
+
 	private static final Log logger = LogFactory.getLog(ImageBanner.class);
 
 	private static final double[] RGB_WEIGHT = { 0.2126d, 0.7152d, 0.0722d };
@@ -78,9 +80,9 @@ public class ImageBanner implements Banner {
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass,
 			PrintStream out) {
-		String headless = System.getProperty("java.awt.headless");
+		String headless = System.getProperty(HEADLESS_PROPERTY_NAME);
 		try {
-			System.setProperty("java.awt.headless", "true");
+			System.setProperty(HEADLESS_PROPERTY_NAME, "true");
 			printBanner(environment, out);
 		}
 		catch (Throwable ex) {
@@ -90,10 +92,10 @@ public class ImageBanner implements Banner {
 		}
 		finally {
 			if (headless == null) {
-				System.clearProperty("java.awt.headless");
+				System.clearProperty(HEADLESS_PROPERTY_NAME);
 			}
 			else {
-				System.setProperty("java.awt.headless", headless);
+				System.setProperty(HEADLESS_PROPERTY_NAME, headless);
 			}
 		}
 	}

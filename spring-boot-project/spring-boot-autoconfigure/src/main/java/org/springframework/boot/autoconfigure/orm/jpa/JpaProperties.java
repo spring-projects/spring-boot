@@ -173,6 +173,8 @@ public class JpaProperties {
 		private static final String USE_NEW_ID_GENERATOR_MAPPINGS = "hibernate.id."
 				+ "new_generator_mappings";
 
+		private static final String HIBERNATE_DDL_AUTO_PROPERTY = "hibernate.hbm2ddl.auto";
+
 		/**
 		 * DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto"
 		 * property. Defaults to "create-drop" when using an embedded database and no
@@ -219,10 +221,10 @@ public class JpaProperties {
 					settings.getPhysicalNamingStrategy());
 			String ddlAuto = determineDdlAuto(existing, settings.getDdlAuto());
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
-				result.put("hibernate.hbm2ddl.auto", ddlAuto);
+				result.put(HIBERNATE_DDL_AUTO_PROPERTY, ddlAuto);
 			}
 			else {
-				result.remove("hibernate.hbm2ddl.auto");
+				result.remove(HIBERNATE_DDL_AUTO_PROPERTY);
 			}
 			Collection<HibernatePropertiesCustomizer> customizers = settings
 					.getHibernatePropertiesCustomizers();
@@ -245,12 +247,12 @@ public class JpaProperties {
 		private String determineDdlAuto(Map<String, String> existing,
 				String defaultDdlAuto) {
 			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto);
-			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
+			if (!existing.containsKey(HIBERNATE_DDL_AUTO_PROPERTY)
 					&& !"none".equals(ddlAuto)) {
 				return ddlAuto;
 			}
-			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
-				return existing.get("hibernate.hbm2ddl.auto");
+			if (existing.containsKey(HIBERNATE_DDL_AUTO_PROPERTY)) {
+				return existing.get(HIBERNATE_DDL_AUTO_PROPERTY);
 			}
 			return "none";
 		}

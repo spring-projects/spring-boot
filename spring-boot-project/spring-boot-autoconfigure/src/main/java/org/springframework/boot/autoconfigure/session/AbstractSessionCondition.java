@@ -37,6 +37,8 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 abstract class AbstractSessionCondition extends SpringBootCondition {
 
+	private static final String STORE_TYPE_PROPERTY = "spring.session.store-type";
+
 	private final WebApplicationType webApplicationType;
 
 	protected AbstractSessionCondition(WebApplicationType webApplicationType) {
@@ -51,13 +53,13 @@ abstract class AbstractSessionCondition extends SpringBootCondition {
 		Environment environment = context.getEnvironment();
 		StoreType required = SessionStoreMappings.getType(this.webApplicationType,
 				((AnnotationMetadata) metadata).getClassName());
-		if (!environment.containsProperty("spring.session.store-type")) {
+		if (!environment.containsProperty(STORE_TYPE_PROPERTY)) {
 			return ConditionOutcome.match(message.didNotFind("property", "properties")
-					.items(ConditionMessage.Style.QUOTE, "spring.session.store-type"));
+					.items(ConditionMessage.Style.QUOTE, STORE_TYPE_PROPERTY));
 		}
 		try {
 			Binder binder = Binder.get(environment);
-			return binder.bind("spring.session.store-type", StoreType.class)
+			return binder.bind(STORE_TYPE_PROPERTY, StoreType.class)
 					.map((t) -> new ConditionOutcome(t == required,
 							message.found("spring.session.store-type property").items(t)))
 					.orElse(ConditionOutcome.noMatch(message
