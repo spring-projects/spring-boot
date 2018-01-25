@@ -67,7 +67,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 	@ConditionalOnMissingBean
 	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
 			ControllerEndpointsSupplier controllerEndpointsSupplier,
-			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
+			CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
 		EndpointMapping endpointMapping = new EndpointMapping(
 				webEndpointProperties.getBasePath());
