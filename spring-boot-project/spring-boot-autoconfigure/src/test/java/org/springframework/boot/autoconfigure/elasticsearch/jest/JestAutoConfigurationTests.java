@@ -59,8 +59,8 @@ import static org.mockito.Mockito.mock;
 public class JestAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(GsonAutoConfiguration.class, JestAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class,
+					JestAutoConfiguration.class));
 
 	@Before
 	public void preventElasticsearchFromConfiguringNetty() {
@@ -81,32 +81,34 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void customJestClient() {
-		this.contextRunner
-				.withUserConfiguration(CustomJestClient.class)
-				.withPropertyValues("spring.elasticsearch.jest.uris[0]=http://localhost:9200")
+		this.contextRunner.withUserConfiguration(CustomJestClient.class)
+				.withPropertyValues(
+						"spring.elasticsearch.jest.uris[0]=http://localhost:9200")
 				.run((context) -> {
-			assertThat(context.getBeansOfType(JestClient.class)).hasSize(1);
-		});
+					assertThat(context.getBeansOfType(JestClient.class)).hasSize(1);
+				});
 	}
 
 	@Test
 	public void customGson() {
-		this.contextRunner
-				.withUserConfiguration(CustomGson.class)
-				.withPropertyValues("spring.elasticsearch.jest.uris=http://localhost:9200")
+		this.contextRunner.withUserConfiguration(CustomGson.class)
+				.withPropertyValues(
+						"spring.elasticsearch.jest.uris=http://localhost:9200")
 				.run((context) -> {
-					JestHttpClient client = (JestHttpClient) context.getBean(JestClient.class);
+					JestHttpClient client = (JestHttpClient) context
+							.getBean(JestClient.class);
 					assertThat(client.getGson()).isSameAs(context.getBean("customGson"));
 				});
 	}
 
 	@Test
 	public void customizerOverridesAutoConfig() {
-		this.contextRunner
-				.withUserConfiguration(BuilderCustomizer.class)
-				.withPropertyValues("spring.elasticsearch.jest.uris=http://localhost:9200")
+		this.contextRunner.withUserConfiguration(BuilderCustomizer.class)
+				.withPropertyValues(
+						"spring.elasticsearch.jest.uris=http://localhost:9200")
 				.run((context) -> {
-					JestHttpClient client = (JestHttpClient) context.getBean(JestClient.class);
+					JestHttpClient client = (JestHttpClient) context
+							.getBean(JestClient.class);
 					assertThat(client.getGson())
 							.isSameAs(context.getBean(BuilderCustomizer.class).getGson());
 				});
@@ -115,37 +117,36 @@ public class JestAutoConfigurationTests {
 	@Test
 	public void proxyHostWithoutPort() {
 		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.jest.uris=http://localhost:9200",
-				"spring.elasticsearch.jest.proxy.host=proxy.example.com")
-		.run((context) -> {
-			assertThat(context.getStartupFailure())
-					.isInstanceOf(BeanCreationException.class)
-					.hasMessageContaining("Proxy port must not be null");
-		});
+				.withPropertyValues(
+						"spring.elasticsearch.jest.uris=http://localhost:9200",
+						"spring.elasticsearch.jest.proxy.host=proxy.example.com")
+				.run((context) -> {
+					assertThat(context.getStartupFailure())
+							.isInstanceOf(BeanCreationException.class)
+							.hasMessageContaining("Proxy port must not be null");
+				});
 	}
 
 	@Test
 	public void jestCanCommunicateWithElasticsearchInstance() {
-		new ElasticsearchNodeTemplate().doWithNode((node) ->
-				this.contextRunner
-						.withPropertyValues("spring.elasticsearch.jest.uris=http://localhost:"
-								+ node.getHttpPort())
-						.run((context) -> {
-							JestClient client = context.getBean(JestClient.class);
-							Map<String, String> source = new HashMap<>();
-							source.put("a", "alpha");
-							source.put("b", "bravo");
-							Index index = new Index.Builder(source).index("foo").type("bar").build();
-							execute(client, index);
-							SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-							searchSourceBuilder.query(QueryBuilders.matchQuery("a", "alpha"));
-							assertThat(
-									execute(client,
-											new Search.Builder(searchSourceBuilder.toString())
-													.addIndex("foo").build()).getResponseCode())
-									.isEqualTo(200);
-						})
-		);
+		new ElasticsearchNodeTemplate().doWithNode((node) -> this.contextRunner
+				.withPropertyValues("spring.elasticsearch.jest.uris=http://localhost:"
+						+ node.getHttpPort())
+				.run((context) -> {
+					JestClient client = context.getBean(JestClient.class);
+					Map<String, String> source = new HashMap<>();
+					source.put("a", "alpha");
+					source.put("b", "bravo");
+					Index index = new Index.Builder(source).index("foo").type("bar")
+							.build();
+					execute(client, index);
+					SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+					searchSourceBuilder.query(QueryBuilders.matchQuery("a", "alpha"));
+					assertThat(execute(client,
+							new Search.Builder(searchSourceBuilder.toString())
+									.addIndex("foo").build()).getResponseCode())
+											.isEqualTo(200);
+				}));
 	}
 
 	private JestResult execute(JestClient client, Action<? extends JestResult> action) {

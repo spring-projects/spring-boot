@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.function.Supplier;
 
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
@@ -47,6 +48,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.reactive.config.EnableWebFlux;
@@ -68,8 +70,8 @@ import static org.mockito.Mockito.mock;
  */
 public class MappingsEndpointTests {
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings("unchecked")
 	public void servletWebMappings() {
 		ServletContext servletContext = mock(ServletContext.class);
 		given(servletContext.getInitParameterNames())
@@ -82,49 +84,51 @@ public class MappingsEndpointTests {
 		ServletRegistration servletRegistration = mock(ServletRegistration.class);
 		given((Map<String, ServletRegistration>) servletContext.getServletRegistrations())
 				.willReturn(Collections.singletonMap("testServlet", servletRegistration));
-		WebApplicationContextRunner runner = new WebApplicationContextRunner(() -> {
+		Supplier<ConfigurableWebApplicationContext> contextSupplier = () -> {
 			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 			context.setServletContext(servletContext);
 			return context;
-		}).withUserConfiguration(EndpointConfiguration.class,
-				ServletWebConfiguration.class);
-		runner.run((context) -> {
-			ContextMappings contextMappings = contextMappings(context);
-			assertThat(contextMappings.getParentId()).isNull();
-			assertThat(contextMappings.getMappings())
-					.containsOnlyKeys("dispatcherServlets", "servletFilters", "servlets");
-			Map<String, List<DispatcherServletMappingDescription>> dispatcherServlets = mappings(
-					contextMappings, "dispatcherServlets");
-			assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet");
-			List<DispatcherServletMappingDescription> handlerMappings = dispatcherServlets
-					.get("dispatcherServlet");
-			assertThat(handlerMappings).hasSize(1);
-			List<ServletRegistrationMappingDescription> servlets = mappings(
-					contextMappings, "servlets");
-			assertThat(servlets).hasSize(1);
-			List<FilterRegistrationMappingDescription> filters = mappings(contextMappings,
-					"servletFilters");
-			assertThat(filters).hasSize(1);
-		});
+		};
+		new WebApplicationContextRunner(contextSupplier)
+				.withUserConfiguration(EndpointConfiguration.class,
+						ServletWebConfiguration.class)
+				.run((context) -> {
+					ContextMappings contextMappings = contextMappings(context);
+					assertThat(contextMappings.getParentId()).isNull();
+					assertThat(contextMappings.getMappings()).containsOnlyKeys(
+							"dispatcherServlets", "servletFilters", "servlets");
+					Map<String, List<DispatcherServletMappingDescription>> dispatcherServlets = mappings(
+							contextMappings, "dispatcherServlets");
+					assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet");
+					List<DispatcherServletMappingDescription> handlerMappings = dispatcherServlets
+							.get("dispatcherServlet");
+					assertThat(handlerMappings).hasSize(1);
+					List<ServletRegistrationMappingDescription> servlets = mappings(
+							contextMappings, "servlets");
+					assertThat(servlets).hasSize(1);
+					List<FilterRegistrationMappingDescription> filters = mappings(
+							contextMappings, "servletFilters");
+					assertThat(filters).hasSize(1);
+				});
 	}
 
 	@Test
 	public void reactiveWebMappings() {
-		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner()
+		new ReactiveWebApplicationContextRunner()
 				.withUserConfiguration(EndpointConfiguration.class,
-						ReactiveWebConfiguration.class);
-		runner.run((context) -> {
-			ContextMappings contextMappings = contextMappings(context);
-			assertThat(contextMappings.getParentId()).isNull();
-			assertThat(contextMappings.getMappings())
-					.containsOnlyKeys("dispatcherHandlers");
-			Map<String, List<DispatcherHandlerMappingDescription>> dispatcherHandlers = mappings(
-					contextMappings, "dispatcherHandlers");
-			assertThat(dispatcherHandlers).containsOnlyKeys("webHandler");
-			List<DispatcherHandlerMappingDescription> handlerMappings = dispatcherHandlers
-					.get("webHandler");
-			assertThat(handlerMappings).hasSize(3);
-		});
+						ReactiveWebConfiguration.class)
+				.run((context) -> {
+					ContextMappings contextMappings = contextMappings(context);
+					assertThat(contextMappings.getParentId()).isNull();
+					assertThat(contextMappings.getMappings())
+							.containsOnlyKeys("dispatcherHandlers");
+					Map<String, List<DispatcherHandlerMappingDescription>> dispatcherHandlers = mappings(
+							contextMappings, "dispatcherHandlers");
+					assertThat(dispatcherHandlers).containsOnlyKeys("webHandler");
+					List<DispatcherHandlerMappingDescription> handlerMappings = dispatcherHandlers
+							.get("webHandler");
+					assertThat(handlerMappings).hasSize(3);
+				});
 	}
 
 	private ContextMappings contextMappings(ApplicationContext context) {

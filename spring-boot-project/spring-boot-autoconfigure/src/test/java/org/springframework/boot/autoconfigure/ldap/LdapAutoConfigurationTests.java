@@ -41,8 +41,8 @@ public class LdapAutoConfigurationTests {
 	public void contextSourceWithDefaultUrl() {
 		this.contextRunner.run(context -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
-			String[] urls = (String[]) ReflectionTestUtils
-					.getField(contextSource, "urls");
+			String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
+					"urls");
 			assertThat(urls).containsExactly("ldap://localhost:389");
 			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
 		});
@@ -53,8 +53,8 @@ public class LdapAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123")
 				.run(context -> {
 					ContextSource contextSource = context.getBean(ContextSource.class);
-					String[] urls = (String[]) ReflectionTestUtils.getField(
-							contextSource, "urls");
+					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
+							"urls");
 					assertThat(urls).containsExactly("ldap://localhost:123");
 				});
 	}
@@ -67,8 +67,8 @@ public class LdapAutoConfigurationTests {
 				.run(context -> {
 					ContextSource contextSource = context.getBean(ContextSource.class);
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
-					String[] urls = (String[]) ReflectionTestUtils.getField(
-							contextSource, "urls");
+					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
+							"urls");
 					assertThat(urls).containsExactly("ldap://localhost:123",
 							"ldap://mycompany:123");
 					assertThat(ldapProperties.getUrls()).hasSize(2);
@@ -78,21 +78,19 @@ public class LdapAutoConfigurationTests {
 	@Test
 	public void contextSourceWithExtraCustomization() {
 		this.contextRunner
-				.withPropertyValues(
-						"spring.ldap.urls:ldap://localhost:123",
-						"spring.ldap.username:root",
-						"spring.ldap.password:secret",
+				.withPropertyValues("spring.ldap.urls:ldap://localhost:123",
+						"spring.ldap.username:root", "spring.ldap.password:secret",
 						"spring.ldap.anonymous-read-only:true",
 						"spring.ldap.base:cn=SpringDevelopers",
 						"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5")
 				.run(context -> {
-					LdapContextSource contextSource = context.getBean(
-							LdapContextSource.class);
+					LdapContextSource contextSource = context
+							.getBean(LdapContextSource.class);
 					assertThat(contextSource.getUserDn()).isEqualTo("root");
 					assertThat(contextSource.getPassword()).isEqualTo("secret");
 					assertThat(contextSource.isAnonymousReadOnly()).isTrue();
-					assertThat(contextSource.getBaseLdapPathAsString()).isEqualTo(
-							"cn=SpringDevelopers");
+					assertThat(contextSource.getBaseLdapPathAsString())
+							.isEqualTo("cn=SpringDevelopers");
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
 					assertThat(ldapProperties.getBaseEnvironment()).containsEntry(
 							"java.naming.security.authentication", "DIGEST-MD5");

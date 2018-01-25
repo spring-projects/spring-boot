@@ -54,8 +54,7 @@ public class HikariDataSourceConfigurationTests {
 	public void testDataSourcePropertiesOverridden() {
 		this.contextRunner.withPropertyValues(
 				"spring.datasource.hikari.jdbc-url=jdbc:foo//bar/spam",
-				"spring.datasource.hikari.max-lifetime=1234")
-				.run((context) -> {
+				"spring.datasource.hikari.max-lifetime=1234").run((context) -> {
 					HikariDataSource ds = context.getBean(HikariDataSource.class);
 					assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
 					assertThat(ds.getMaxLifetime()).isEqualTo(1234);
@@ -65,13 +64,14 @@ public class HikariDataSourceConfigurationTests {
 
 	@Test
 	public void testDataSourceGenericPropertiesOverridden() {
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.hikari.data-source-properties" +
-						".dataSourceClassName=org.h2.JDBCDataSource")
+		this.contextRunner
+				.withPropertyValues("spring.datasource.hikari.data-source-properties"
+						+ ".dataSourceClassName=org.h2.JDBCDataSource")
 				.run((context) -> {
 					HikariDataSource ds = context.getBean(HikariDataSource.class);
-					assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
-							.isEqualTo("org.h2.JDBCDataSource");
+					assertThat(ds.getDataSourceProperties()
+							.getProperty("dataSourceClassName"))
+									.isEqualTo("org.h2.JDBCDataSource");
 
 				});
 	}
@@ -96,9 +96,9 @@ public class HikariDataSourceConfigurationTests {
 
 	@Test
 	public void poolNameTakesPrecedenceOverName() {
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.name=myDS",
-				"spring.datasource.hikari.pool-name=myHikariDS")
+		this.contextRunner
+				.withPropertyValues("spring.datasource.name=myDS",
+						"spring.datasource.hikari.pool-name=myHikariDS")
 				.run((context) -> {
 					HikariDataSource ds = context.getBean(HikariDataSource.class);
 					assertThat(ds.getPoolName()).isEqualTo("myHikariDS");

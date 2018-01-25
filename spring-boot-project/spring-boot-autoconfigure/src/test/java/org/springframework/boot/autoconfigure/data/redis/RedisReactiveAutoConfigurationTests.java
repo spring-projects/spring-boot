@@ -34,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RedisReactiveAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations
-					.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class,
+					RedisReactiveAutoConfiguration.class));
 
 	@Test
 	public void testDefaultRedisConfiguration() {

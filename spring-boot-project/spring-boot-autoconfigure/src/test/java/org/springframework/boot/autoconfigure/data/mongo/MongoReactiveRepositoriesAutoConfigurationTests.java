@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MongoReactiveRepositoriesAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
 					MongoDataAutoConfiguration.class,
 					MongoReactiveAutoConfiguration.class,
@@ -58,7 +58,7 @@ public class MongoReactiveRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		this.runner.withUserConfiguration(TestConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ReactiveCityRepository.class);
 			assertThat(context).hasSingleBean(MongoClient.class);
 			MongoMappingContext mappingContext = context
@@ -72,27 +72,27 @@ public class MongoReactiveRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testNoRepositoryConfiguration() {
-		this.runner.withUserConfiguration(EmptyConfiguration.class)
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		this.runner.withUserConfiguration(CustomizedConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ReactiveCityMongoDbRepository.class));
 	}
 
 	@Test
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
-		this.runner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
+		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ReactiveCityRepository.class));
 	}
 
 	@Test
 	public void enablingImperativeRepositoriesDisablesReactiveRepositories() {
-		this.runner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.mongodb.repositories.type=imperative")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ReactiveCityRepository.class));
@@ -100,7 +100,7 @@ public class MongoReactiveRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void enablingNoRepositoriesDisablesReactiveRepositories() {
-		this.runner.withUserConfiguration(TestConfiguration.class)
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.mongodb.repositories.type=none")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ReactiveCityRepository.class));
