@@ -52,7 +52,7 @@ public abstract class AbstractDiscoveredEndpoint<O extends Operation>
 			Collection<? extends O> operations) {
 		super(id, enabledByDefault, operations);
 		Assert.notNull(discoverer, "Discoverer must not be null");
-		Assert.notNull(discoverer, "EndpointBean must not be null");
+		Assert.notNull(endpointBean, "EndpointBean must not be null");
 		this.discoverer = discoverer;
 		this.endpointBean = endpointBean;
 	}

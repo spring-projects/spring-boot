@@ -108,7 +108,7 @@ public class ControllerEndpointWebMvcIntegrationTests {
 			WebEndpointAutoConfiguration.class,
 			ServletManagementContextAutoConfiguration.class, AuditAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			ManagementContextAutoConfiguration.class, AuditAutoConfiguration.class,
+			ManagementContextAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
 			BeansEndpointAutoConfiguration.class })
 	static class DefaultConfiguration {
