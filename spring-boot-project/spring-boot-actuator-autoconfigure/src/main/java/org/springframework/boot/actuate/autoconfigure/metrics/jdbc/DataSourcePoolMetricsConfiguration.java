@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +67,9 @@ public class DataSourcePoolMetricsConfiguration {
 	}
 
 	private void bindDataSourceToRegistry(String beanName, DataSource dataSource) {
-		Iterable<Tag> tags = Tags.zip("name", getDataSourceName(beanName));
+		String dataSourceName = getDataSourceName(beanName);
 		new DataSourcePoolMetrics(dataSource, this.metadataProviders, this.metricName,
-				tags).bindTo(this.registry);
+				Tags.of("name", dataSourceName)).bindTo(this.registry);
 	}
 
 	/**

@@ -34,7 +34,6 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.annotation.TimedSet;
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import org.apache.commons.logging.Log;
@@ -252,7 +251,7 @@ public class WebMvcMetrics {
 
 		private final String name;
 
-		private final Iterable<Tag> extraTags;
+		private final Tags extraTags;
 
 		private final double[] percentiles;
 
@@ -260,14 +259,14 @@ public class WebMvcMetrics {
 
 		TimerConfig(String name, boolean histogram) {
 			this.name = name;
-			this.extraTags = Collections.emptyList();
+			this.extraTags = Tags.empty();
 			this.percentiles = new double[0];
 			this.histogram = histogram;
 		}
 
 		TimerConfig(Timed timed, Supplier<String> name) {
 			this.name = buildName(timed, name);
-			this.extraTags = Tags.zip(timed.extraTags());
+			this.extraTags = Tags.of(timed.extraTags());
 			this.percentiles = timed.percentiles();
 			this.histogram = timed.histogram();
 		}
@@ -285,7 +284,7 @@ public class WebMvcMetrics {
 			return this.name;
 		}
 
-		Iterable<Tag> getExtraTags() {
+		Tags getExtraTags() {
 			return this.extraTags;
 		}
 

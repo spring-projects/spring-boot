@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.cache;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -69,8 +66,7 @@ public class CacheMetricsRegistrar {
 	 * @return {@code true} if the {@code cache} is supported and was registered
 	 */
 	public boolean bindCacheToRegistry(Cache cache, Tag... tags) {
-		List<Tag> allTags = new ArrayList<>(Arrays.asList(tags));
-		MeterBinder meterBinder = getMeterBinder(cache, allTags);
+		MeterBinder meterBinder = getMeterBinder(cache, Tags.of(tags));
 		if (meterBinder != null) {
 			meterBinder.bindTo(this.registry);
 			return true;
@@ -79,8 +75,8 @@ public class CacheMetricsRegistrar {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private MeterBinder getMeterBinder(Cache cache, Iterable<Tag> tags) {
-		Iterable<Tag> withAdditionalTags = Tags.concat(tags, getAdditionalTags(cache));
+	private MeterBinder getMeterBinder(Cache cache, Tags tags) {
+		tags = tags.and(getAdditionalTags(cache));
 		for (CacheMeterBinderProvider<?> binderProvider : this.binderProviders) {
 			Class<?> cacheType = ResolvableType
 					.forClass(CacheMeterBinderProvider.class, binderProvider.getClass())
@@ -88,7 +84,7 @@ public class CacheMetricsRegistrar {
 			if (cacheType.isInstance(cache)) {
 				try {
 					MeterBinder meterBinder = ((CacheMeterBinderProvider) binderProvider)
-							.getMeterBinder(cache, this.metricName, withAdditionalTags);
+							.getMeterBinder(cache, this.metricName, tags);
 					if (meterBinder != null) {
 						return meterBinder;
 					}
@@ -121,7 +117,7 @@ public class CacheMetricsRegistrar {
 	 * @return a list of additional tags to associate to that {@code cache}.
 	 */
 	protected Iterable<Tag> getAdditionalTags(Cache cache) {
-		return Tags.zip("name", cache.getName());
+		return Tags.of("name", cache.getName());
 	}
 
 }

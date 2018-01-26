@@ -20,7 +20,6 @@ import java.util.Map;
 
 import com.rabbitmq.client.ConnectionFactory;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
@@ -66,9 +65,11 @@ public class RabbitMetricsConfiguration {
 
 	private void bindConnectionFactoryToRegistry(String beanName,
 			AbstractConnectionFactory connectionFactory) {
-		Iterable<Tag> tags = Tags.zip("name", getConnectionFactoryName(beanName));
-		new RabbitMetrics(connectionFactory.getRabbitConnectionFactory(), this.metricName,
-				tags).bindTo(this.registry);
+		ConnectionFactory rabbitConnectionFactory = connectionFactory
+				.getRabbitConnectionFactory();
+		String connectionFactoryName = getConnectionFactoryName(beanName);
+		new RabbitMetrics(rabbitConnectionFactory, this.metricName,
+				Tags.of("name", connectionFactoryName)).bindTo(this.registry);
 	}
 
 	/**
