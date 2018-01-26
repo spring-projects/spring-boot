@@ -53,95 +53,115 @@ Actuator endpoints let you monitor and interact with your application. Spring Bo
 includes a number of built-in endpoints and lets you add your own. For example, the
 `health` endpoint provides basic application health information.
 
-The way that endpoints are exposed depends on the type of technology that you choose.
-Most applications choose HTTP monitoring, where the ID of the endpoint along with a
-prefix of `/actuator` is mapped to a URL. For example, by default, the `health`
-endpoint is mapped to `/actuator/health`.
+Each individual endpoint can be <<production-ready-endpoints-enabling-endpoints, enabled
+or disabled>>. This controls whether or not the endpoint is created and its bean exists in
+the application context. To be remotely accessible an endpoint also has to be
+<<production-ready-endpoints-exposing-endpoints, exposed>>.
 
 The following technology-agnostic endpoints are available:
 
-[cols="2,5"]
+[cols="2,5,2"]
 |===
-| ID | Description
+| ID | Description | Enabled by default
 
 |`auditevents`
 |Exposes audit events information for the current application.
+|Yes
 
 |`beans`
 |Displays a complete list of all the Spring beans in your application.
+|Yes
 
 |`conditions`
 |Shows the conditions that were evaluated on configuration and auto-configuration
 classes and the reasons why they did or did not match.
+|Yes
 
 |`configprops`
 |Displays a collated list of all `@ConfigurationProperties`.
+|Yes
 
 |`env`
 |Exposes properties from Spring's `ConfigurableEnvironment`.
+|Yes
 
 |`flyway`
 |Shows any Flyway database migrations that have been applied.
+|Yes
 
 |`health`
 |Shows application health information.
+|Yes
 
 |`info`
 |Displays arbitrary application info.
+|Yes
 
 |`loggers`
 |Shows and modifies the configuration of loggers in the application.
+|Yes
 
 |`liquibase`
 |Shows any Liquibase database migrations that have been applied.
+|Yes
 
 |`metrics`
 |Shows '`metrics`' information for the current application.
+|Yes
 
 |`mappings`
 |Displays a collated list of all `@RequestMapping` paths.
+|Yes
 
 |`scheduledtasks`
 |Displays the scheduled tasks in your application.
+|Yes
 
 |`sessions`
 |Allows retrieval and deletion of user sessions from a Spring Session-backed session
 store. Not available when using Spring Session's support for reactive web applications.
+|Yes
 
 |`shutdown`
-|Lets the application be gracefully shutdown (not enabled by default).
+|Lets the application be gracefully shutdown.
+|No
 
 |`threaddump`
 |Performs a thread dump.
+|Yes
 
 |`trace`
 |Displays HTTP trace information (by default, the last 100 HTTP requests).
+|Yes
+
 |===
 
 If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), you can
 use the following additional endpoints:
 
-[cols="2,5"]
+[cols="2,5,2"]
 |===
-| ID | Description
+| ID | Description | Enabled by default
 
 |`heapdump`
 |Returns a GZip compressed `hprof` heap dump file.
+|Yes
+
+|`jolokia`
+|Exposes JMX beans over HTTP (when Jolokia is on the classpath, not availble for WebFlux).
+|Yes
 
 |`logfile`
 |Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
 been set). Supports the use of the HTTP `Range` header to retrieve part of the log file's
 content.
+|Yes
 
 |`prometheus`
 |Exposes metrics in a format that can be scraped by a Prometheus server.
-
-
-|`jolokia`
-|Exposes JMX beans over HTTP (when Jolokia is on the classpath, not availble for WebFlux).
+|Yes
 
 |===
-
 
 To learn more about the Actuator's endpoints and their request and response formats,
 please refer to the separate API documentation ({spring-boot-actuator-api}/html[HTML] or
@@ -149,26 +169,167 @@ please refer to the separate API documentation ({spring-boot-actuator-api}/html[
 
 
 
+[[production-ready-endpoints-enabling-endpoints]]
+=== Enabling Endpoints
+By default, all endpoints except for `shutdown` are enabled. To configure the enablement
+of an endpoint, use its `management.endpoints.<id>.enabled` property. The following
+example enables the `shutdown` endpoint:
+
+[source,properties,indent=0]
+----
+	management.endpoint.shutdown.enabled=true
+----
+
+If you prefer endpoint enablement to be opt-in rather than opt-out, set the
+`management.endpoints.enabled-by-default` property to `false` and use individual endpoint
+`enabled` properties to opt back in. The following example enables the `info` endpoint and
+disables all other endpoints:
+
+[source,properties,indent=0]
+----
+	management.endpoints.enabled-by-default=false
+	management.endpoint.info.enabled=true
+----
+
+NOTE: Disabled endpoints are removed entirely from the application context. If you want
+to change only the technologies over which an endpoint is exposed, use the
+<<production-ready-endpoints-exposing-endpoints, `expose` and `exclude` properties>>
+instead.
+
+
+
 [[production-ready-endpoints-exposing-endpoints]]
 === Exposing Endpoints
 Since Endpoints may contain sensitive information, careful consideration should be given
-about when to expose them. By default, Spring Boot exposes all enabled endpoints
-over JMX but only the `health` and `info` endpoints over HTTP.
+about when to expose them. The following table shows the default exposure for the built-in
+endpoints:
 
-To change the endpoints that are exposed, you can use the `expose` and `exclude` property
-for the technology. For example, to only expose the `health` over JMX you would set the
-following property:
+[cols="1,1,1"]
+|===
+| ID | JMX | Web
 
-.application.properties
+|`auditevents`
+|Yes
+|No
+
+|`beans`
+|Yes
+|No
+
+|`conditions`
+|Yes
+|No
+
+|`configprops`
+|Yes
+|No
+
+|`env`
+|Yes
+|No
+
+|`flyway`
+|Yes
+|No
+
+|`health`
+|Yes
+|Yes
+
+|`heapdump`
+|N/A
+|No
+
+|`info`
+|Yes
+|Yes
+
+|`jolokia`
+|N/A
+|No
+
+|`logfile`
+|N/A
+|No
+
+|`loggers`
+|Yes
+|No
+
+|`liquibase`
+|Yes
+|No
+
+|`metrics`
+|Yes
+|No
+
+|`mappings`
+|Yes
+|No
+
+|`prometheus`
+|N/A
+|No
+
+|`scheduledtasks`
+|Yes
+|No
+
+|`sessions`
+|Yes
+|No
+
+|`shutdown`
+|Yes
+|No
+
+|`threaddump`
+|Yes
+|No
+
+|`trace`
+|Yes
+|No
+
+|===
+
+To change which endpoints are exposed, use the following technology-specific `expose` and
+`exclude` properties:
+
+[cols="3,1"]
+|===
+|Property | Default
+
+|`management.endpoints.jmx.exclude`
+|
+
+|`management.endpoints.jmx.expose`
+| `*`
+
+|`management.endpoints.web.exclude`
+|
+
+|`management.endpoints.web.expose`
+| `info, health`
+
+|===
+
+The `expose` property lists the IDs of the endpoints that are exposed. The `exclude`
+property lists the IDs of the endpoints that should not be exposed.  The `exclude`
+property takes precedence over the `expose` property.
+
+For example, to stop exposing all endpoints over JMX and only expose the `health`
+endpoint, use the following property:
+
 [source,properties,indent=0]
 ----
 	management.endpoints.jmx.expose=health
 ----
 
-The `*` character can be used to indicate all endpoints. For example, to expose everything
-over HTTP except the `env` endpoint, you would use the following properties:
+`*` can be used to select all endpoints. For example, to expose everything over HTTP
+except the `env` endpoint, use the following properties:
 
-.application.properties
 [source,properties,indent=0]
 ----
 	management.endpoints.web.expose=*
@@ -186,10 +347,11 @@ register an `EndpointFilter` bean.
 [[production-ready-endpoints-security]]
 === Securing HTTP Endpoints
 You should take care to secure HTTP endpoints in the same way that you would any other
-sensitive URL. If Spring Security is present, endpoints are secured by default using Spring Security’s
-content-negotiation strategy. If you wish to configure custom security for HTTP endpoints, for example, only allow users
-with a certain role to access them, Spring Boot provides some convenient `RequestMatcher` objects that can be used in combination with
-Spring Security.
+sensitive URL. If Spring Security is present, endpoints are secured by default using
+Spring Security’s content-negotiation strategy. If you wish to configure custom security
+for HTTP endpoints, for example, only allow users with a certain role to access them,
+Spring Boot provides some convenient `RequestMatcher` objects that can be used in
+combination with Spring Security.
 
 A typical Spring Security configuration might look something like the following example:
 
@@ -225,8 +387,9 @@ endpoints can be accessed without requiring authentication. You can do so by cha
 	management.endpoints.web.expose=*
 ----
 
-Additionally, if Spring Security is present, you would need to add custom security configuration
-that allows unauthenticated access to the endpoints. For example,
+Additionally, if Spring Security is present, you would need to add custom security
+configuration that allows unauthenticated access to the endpoints as shown in the
+following example:
 
 [source,java,indent=0]
 ----
@@ -244,37 +407,21 @@ that allows unauthenticated access to the endpoints. For example,
 
 
 
-[[production-ready-customizing-endpoints]]
-=== Customizing Endpoints
-Endpoints can be customized by using Spring properties. You can change whether an
-endpoint is `enabled` and the amount of time for which it caches responses.
+[[production-ready-endpoints-caching]]
+=== Configuring Endpoints
+Endpoints automatically cache responses to read operations that do not take any
+parameters. To configure the amount of time for which an endpoint will cache a response,
+use its `cache.time-to-live` property. The following example sets the time-to-live of
+the `beans` endpoint's cache to 10 seconds:
 
-For example, the following `application.properties` file changes the time-to-live of the
-`beans` endpoint to 10 seconds and also enables `shutdown`:
-
+.application.properties
 [source,properties,indent=0]
 ----
 	management.endpoint.beans.cache.time-to-live=10s
-	management.endpoint.shutdown.enabled=true
 ----
 
 NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the
 endpoint that is being configured.
-
-By default, all endpoints except for `shutdown` are enabled. If you prefer to
-specifically "`opt-in`" endpoint enablement, you can use the
-`management.endpoints.enabled-by-default` property. For example, the following settings
-disable _all_ endpoints except for `info`:
-
-[source,properties,indent=0]
-----
-	management.endpoints.enabled-by-default=false
-	management.endpoint.info.enabled=true
-----
-
-NOTE: Disabled endpoints are removed entirely from the `ApplicationContext`. If you want
-to change only the technologies over which an endpoint is exposed, you can use the
-`expose` and `exclude` properties (see <<production-ready-endpoints-exposing-endpoints>>).
 
 
 
@@ -418,6 +565,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 
 |{sc-spring-boot-actuator}/solr/SolrHealthIndicator.{sc-ext}[`SolrHealthIndicator`]
 |Checks that a Solr server is up.
+
 |===
 
 TIP: You can disable them all by setting the `management.health.defaults.enabled`
@@ -839,11 +987,11 @@ settings show an example of doing so in `application.properties`:
 [[production-ready-disable-jmx-endpoints]]
 === Disabling JMX Endpoints
 If you do not want to expose endpoints over JMX, you can set the
-`management.endpoints.jmx.enabled` property to `false`, as shown in the following example:
+`management.endpoints.jmx.exclude` property to `*`, as shown in the following example:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.jmx.enabled=false
+	management.endpoints.jmx.exclude=*
 ----
 
 

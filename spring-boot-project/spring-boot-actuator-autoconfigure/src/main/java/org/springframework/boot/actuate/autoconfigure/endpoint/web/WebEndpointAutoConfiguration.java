@@ -46,7 +46,6 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDisco
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -66,7 +65,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnWebApplication
 @AutoConfigureAfter(EndpointAutoConfiguration.class)
 @EnableConfigurationProperties(WebEndpointProperties.class)
-@ConditionalOnProperty(name = "management.endpoints.web.enabled", matchIfMissing = true)
 public class WebEndpointAutoConfiguration {
 
 	private static final List<String> MEDIA_TYPES = Arrays

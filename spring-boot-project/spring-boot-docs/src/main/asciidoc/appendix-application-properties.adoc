@@ -1151,7 +1151,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoints.enabled-by-default= # Enable or disable all endpoints by default.
 
 	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointProperties.{sc-ext}[JmxEndpointProperties])
-	management.endpoints.jmx.enabled=true # Whether JMX endpoints are enabled.
 	management.endpoints.jmx.expose=* # Endpoint IDs that should be exposed or '*' for all.
 	management.endpoints.jmx.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
@@ -1159,7 +1158,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoints.jmx.unique-names=false # Whether to ensure that ObjectNames are modified in case of conflict.
 
 	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
-	management.endpoints.web.enabled=true # Whether web endpoints are enabled
 	management.endpoints.web.expose=info,health # Endpoint IDs that should be exposed or '*' for all.
 	management.endpoints.web.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.web.base-path=/actuator # Base path for Web endpoints. Relative to server.servlet.context-path or management.server.servlet.context-path if management.server.port is configured.

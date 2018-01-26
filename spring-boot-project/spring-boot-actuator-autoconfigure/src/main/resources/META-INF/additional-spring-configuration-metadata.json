@@ -28,20 +28,8 @@
       "description": "Whether to enable or disable all endpoints by default."
     },
     {
-      "name": "management.endpoints.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether JMX endpoints are enabled.",
-      "defaultValue": true
-    },
-    {
       "name": "management.endpoints.jmx.expose",
       "defaultValue": "*"
-    },
-    {
-      "name": "management.endpoints.web.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether web endpoints are enabled.",
-      "defaultValue": true
     },
     {
       "name": "management.endpoints.web.expose",
