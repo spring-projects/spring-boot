@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Brian Clozel
  * @author Yulin Qin
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public final class TomcatCustomizer {
@@ -48,33 +49,50 @@ public final class TomcatCustomizer {
 	public static void customizeTomcat(ServerProperties serverProperties,
 			Environment environment, ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat tomcatProperties = serverProperties.getTomcat();
-
 		PropertyMapper propertyMapper = PropertyMapper.get();
-		propertyMapper.from(tomcatProperties::getBasedir).whenNonNull().to(factory::setBaseDirectory);
+		propertyMapper.from(tomcatProperties::getBasedir).whenNonNull()
+				.to(factory::setBaseDirectory);
 		propertyMapper.from(tomcatProperties::getBackgroundProcessorDelay).whenNonNull()
-				.to((backgroundProcessorDelay) -> factory.setBackgroundProcessorDelay((int) backgroundProcessorDelay.getSeconds()));
+				.as(Duration::getSeconds).as(Long::intValue)
+				.to(factory::setBackgroundProcessorDelay);
 		customizeRemoteIpValve(serverProperties, environment, factory);
-		propertyMapper.from(tomcatProperties::getMaxThreads).when(maxThreads -> maxThreads > 0)
+		propertyMapper.from(tomcatProperties::getMaxThreads)
+				.when(TomcatCustomizer::isPositive)
 				.to(maxThreads -> customizeMaxThreads(factory, tomcatProperties.getMaxThreads()));
-		propertyMapper.from(tomcatProperties::getMinSpareThreads).when(minSpareThreads -> minSpareThreads > 0)
+		propertyMapper.from(tomcatProperties::getMinSpareThreads)
+				.when(TomcatCustomizer::isPositive)
 				.to(minSpareThreads -> customizeMinThreads(factory, minSpareThreads));
-		propertyMapper.from(() -> (serverProperties.getMaxHttpHeaderSize() > 0
-				? serverProperties.getMaxHttpHeaderSize()
-				: tomcatProperties.getMaxHttpHeaderSize()))
-				.when(maxHttpHeaderSize -> maxHttpHeaderSize > 0)
+		propertyMapper.from(() -> determineMaxHttpHeaderSize(serverProperties, tomcatProperties))
+				.when(TomcatCustomizer::isPositive)
 				.to(maxHttpHeaderSize -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
-		propertyMapper.from(tomcatProperties::getMaxHttpPostSize).when(maxHttpPostSize -> maxHttpPostSize != 0)
+		propertyMapper.from(tomcatProperties::getMaxHttpPostSize)
+				.when(maxHttpPostSize -> maxHttpPostSize != 0)
 				.to(maxHttpPostSize -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
-		propertyMapper.from(tomcatProperties::getAccesslog).when(ServerProperties.Tomcat.Accesslog::isEnabled)
+		propertyMapper.from(tomcatProperties::getAccesslog)
+				.when(ServerProperties.Tomcat.Accesslog::isEnabled)
 				.to(enabled -> customizeAccessLog(tomcatProperties, factory));
-		propertyMapper.from(tomcatProperties::getUriEncoding).whenNonNull().to(factory::setUriEncoding);
+		propertyMapper.from(tomcatProperties::getUriEncoding).whenNonNull()
+				.to(factory::setUriEncoding);
 		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
 				.to(connectionTimeout -> customizeConnectionTimeout(factory, connectionTimeout));
-		propertyMapper.from(tomcatProperties::getMaxConnections).when(maxConnections -> maxConnections > 0)
+		propertyMapper.from(tomcatProperties::getMaxConnections)
+				.when(TomcatCustomizer::isPositive)
 				.to(maxConnections -> customizeMaxConnections(factory, maxConnections));
-		propertyMapper.from(tomcatProperties::getAcceptCount).when(acceptCount -> acceptCount > 0)
+		propertyMapper.from(tomcatProperties::getAcceptCount)
+				.when(TomcatCustomizer::isPositive)
 				.to(acceptCount -> customizeAcceptCount(factory, acceptCount));
 		customizeStaticResources(serverProperties.getTomcat().getResource(), factory);
+	}
+
+	private static boolean isPositive(int value) {
+		return value > 0;
+	}
+
+	private static int determineMaxHttpHeaderSize(ServerProperties serverProperties,
+			ServerProperties.Tomcat tomcatProperties) {
+		return serverProperties.getMaxHttpHeaderSize() > 0
+				? serverProperties.getMaxHttpHeaderSize()
+				: tomcatProperties.getMaxHttpHeaderSize();
 	}
 
 	private static void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory,

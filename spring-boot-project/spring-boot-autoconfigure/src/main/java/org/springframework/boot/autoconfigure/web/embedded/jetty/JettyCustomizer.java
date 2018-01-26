@@ -52,16 +52,25 @@ public final class JettyCustomizer {
 		factory.setUseForwardHeaders(
 				getOrDeduceUseForwardHeaders(serverProperties, environment));
 		PropertyMapper propertyMapper = PropertyMapper.get();
-		propertyMapper.from(jettyProperties::getAcceptors).whenNonNull().to(factory::setAcceptors);
-		propertyMapper.from(jettyProperties::getSelectors).whenNonNull().to(factory::setSelectors);
-		propertyMapper.from(serverProperties::getMaxHttpHeaderSize).when(maxHttpHeaderSize -> maxHttpHeaderSize > 0)
-				.to(maxHttpHeaderSize -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
-		propertyMapper.from(jettyProperties::getMaxHttpPostSize).when(maxHttpPostSize -> maxHttpPostSize > 0)
+		propertyMapper.from(jettyProperties::getAcceptors).whenNonNull()
+				.to(factory::setAcceptors);
+		propertyMapper.from(jettyProperties::getSelectors).whenNonNull()
+				.to(factory::setSelectors);
+		propertyMapper.from(serverProperties::getMaxHttpHeaderSize)
+				.when(JettyCustomizer::isPositive).to(maxHttpHeaderSize ->
+				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
+		propertyMapper.from(jettyProperties::getMaxHttpPostSize)
+				.when(JettyCustomizer::isPositive)
 				.to(maxHttpPostSize -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
 		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
 				.to(connectionTimeout -> customizeConnectionTimeout(factory, connectionTimeout));
-		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)
+		propertyMapper.from(jettyProperties::getAccesslog)
+				.when(ServerProperties.Jetty.Accesslog::isEnabled)
 				.to(accesslog -> customizeAccessLog(factory, accesslog));
+	}
+
+	private static boolean isPositive(Integer value) {
+		return value > 0;
 	}
 
 	private static boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,

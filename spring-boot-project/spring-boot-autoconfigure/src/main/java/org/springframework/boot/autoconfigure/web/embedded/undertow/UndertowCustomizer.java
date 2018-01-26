@@ -32,6 +32,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Brian Clozel
  * @author Yulin Qin
+ * @author Stephane Nicoll
  */
 public final class UndertowCustomizer {
 
@@ -43,28 +44,45 @@ public final class UndertowCustomizer {
 		ServerProperties.Undertow undertowProperties = serverProperties.getUndertow();
 		ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties
 				.getAccesslog();
-
-		PropertyMapper propertyMapper = PropertyMapper.get();
-		propertyMapper.from(undertowProperties::getBufferSize).whenNonNull().to(factory::setBufferSize);
-		propertyMapper.from(undertowProperties::getIoThreads).whenNonNull().to(factory::setIoThreads);
-		propertyMapper.from(undertowProperties::getWorkerThreads).whenNonNull().to(factory::setWorkerThreads);
-		propertyMapper.from(undertowProperties::getDirectBuffers).whenNonNull().to(factory::setUseDirectBuffers);
-		propertyMapper.from(accesslogProperties::getEnabled).whenNonNull().to(factory::setAccessLogEnabled);
-		propertyMapper.from(accesslogProperties::getDir).to(factory::setAccessLogDirectory);
-		propertyMapper.from(accesslogProperties::getPattern).to(factory::setAccessLogPattern);
-		propertyMapper.from(accesslogProperties::getPrefix).to(factory::setAccessLogPrefix);
-		propertyMapper.from(accesslogProperties::getSuffix).to(factory::setAccessLogSuffix);
-		propertyMapper.from(accesslogProperties::isRotate).to(factory::setAccessLogRotate);
-		propertyMapper.from(() -> getOrDeduceUseForwardHeaders(serverProperties, environment)).to(factory::setUseForwardHeaders);
-
-		propertyMapper.from(serverProperties::getMaxHttpHeaderSize).when(maxHttpHeaderSize -> maxHttpHeaderSize > 0)
-				.to(maxHttpHeaderSize -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
-		propertyMapper.from(undertowProperties::getMaxHttpPostSize).when(maxHttpPostSize -> maxHttpPostSize > 0)
-				.to(maxHttpPostSize -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
-		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
-				.to(connectionTimeout -> customizeConnectionTimeout(factory, connectionTimeout));
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		propertyMapper.from(undertowProperties::getBufferSize).to(factory::setBufferSize);
+		propertyMapper.from(undertowProperties::getIoThreads).to(factory::setIoThreads);
+		propertyMapper.from(undertowProperties::getWorkerThreads)
+				.to(factory::setWorkerThreads);
+		propertyMapper.from(undertowProperties::getDirectBuffers)
+				.to(factory::setUseDirectBuffers);
+		propertyMapper.from(accesslogProperties::getEnabled)
+				.to(factory::setAccessLogEnabled);
+		propertyMapper.from(accesslogProperties::getDir)
+				.to(factory::setAccessLogDirectory);
+		propertyMapper.from(accesslogProperties::getPattern)
+				.to(factory::setAccessLogPattern);
+		propertyMapper.from(accesslogProperties::getPrefix)
+				.to(factory::setAccessLogPrefix);
+		propertyMapper.from(accesslogProperties::getSuffix)
+				.to(factory::setAccessLogSuffix);
+		propertyMapper.from(accesslogProperties::isRotate)
+				.to(factory::setAccessLogRotate);
+		propertyMapper.from(() ->
+				getOrDeduceUseForwardHeaders(serverProperties, environment)).to(
+						factory::setUseForwardHeaders);
+		propertyMapper.from(serverProperties::getMaxHttpHeaderSize)
+				.when(UndertowCustomizer::isPositive)
+				.to(maxHttpHeaderSize ->
+						customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
+		propertyMapper.from(undertowProperties::getMaxHttpPostSize)
+				.when(UndertowCustomizer::isPositive)
+				.to(maxHttpPostSize ->
+						customizeMaxHttpPostSize(factory, maxHttpPostSize));
+		propertyMapper.from(serverProperties::getConnectionTimeout)
+				.to(connectionTimeout ->
+						customizeConnectionTimeout(factory, connectionTimeout));
 		factory.addDeploymentInfoCustomizers(deploymentInfo -> deploymentInfo
 				.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
+	}
+
+	private static boolean isPositive(Number value) {
+		return value.longValue() > 0;
 	}
 
 	private static void customizeConnectionTimeout(
