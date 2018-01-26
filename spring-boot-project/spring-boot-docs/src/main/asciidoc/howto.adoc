@@ -2140,7 +2140,7 @@ one and mark its `@Bean` as `@FlywayDataSource`. If you do so and want two data 
 remember to create another one and mark it as `@Primary`. Alternatively, you can use
 Flyway's native `DataSource` by setting `spring.flyway.[url,user,password]`
 in external properties. Setting either `spring.flyway.url` or `spring.flyway.user`
-is sufficent to cause Flyway to use its own `DataSource`. If any of the three
+is sufficient to cause Flyway to use its own `DataSource`. If any of the three
 properties has not be set, the value of its equivalent `spring.datasource` property will
 be used.
 
@@ -2179,7 +2179,7 @@ mark its `@Bean` as `@LiquibaseDataSource`. If you do so and you want two data s
 remember to create another one and mark it as `@Primary`. Alternatively, you can use
 Liquibase's native `DataSource` by setting `spring.liquibase.[url,user,password]` in
 external properties. Setting either `spring.liquibase.url` or `spring.liquibase.user`
-is sufficent to cause Liquibase to use its own `DataSource`. If any of the three
+is sufficient to cause Liquibase to use its own `DataSource`. If any of the three
 properties has not be set, the value of its equivalent `spring.datasource` property will
 be used.
 
