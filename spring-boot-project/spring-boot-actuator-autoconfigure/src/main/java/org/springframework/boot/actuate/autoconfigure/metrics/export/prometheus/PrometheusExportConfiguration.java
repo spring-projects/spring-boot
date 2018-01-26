@@ -42,13 +42,16 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusExportConfiguration {
 
+	public static final String PROMETHEUS_EXPORTER_NAME = "prometheusExporter";
+
 	@Bean
 	@ConditionalOnMissingBean
 	public PrometheusConfig prometheusConfig(PrometheusProperties prometheusProperties) {
 		return new PrometheusPropertiesConfigAdapter(prometheusProperties);
 	}
 
-	@Bean
+	@Bean(name = PROMETHEUS_EXPORTER_NAME)
+	@ConditionalOnMissingBean(name = PROMETHEUS_EXPORTER_NAME)
 	@ConditionalOnProperty(value = "management.metrics.export.prometheus.enabled", matchIfMissing = true)
 	public MetricsExporter prometheusExporter(PrometheusConfig prometheusConfig,
 			CollectorRegistry collectorRegistry, Clock clock) {

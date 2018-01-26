@@ -40,13 +40,16 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(GangliaProperties.class)
 public class GangliaExportConfiguration {
 
+	public static final String GANGLIA_EXPORTER_NAME = "gangliaExporter";
+
 	@Bean
 	@ConditionalOnMissingBean
 	public GangliaConfig gangliaConfig(GangliaProperties gangliaProperties) {
 		return new GangliaPropertiesConfigAdapter(gangliaProperties);
 	}
 
-	@Bean
+	@Bean(name = GANGLIA_EXPORTER_NAME)
+	@ConditionalOnMissingBean(name = GANGLIA_EXPORTER_NAME)
 	@ConditionalOnProperty(value = "management.metrics.export.ganglia.enabled", matchIfMissing = true)
 	public MetricsExporter gangliaExporter(GangliaConfig gangliaConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {
