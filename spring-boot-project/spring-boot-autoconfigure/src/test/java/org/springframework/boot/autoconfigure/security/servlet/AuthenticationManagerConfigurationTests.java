@@ -74,7 +74,8 @@ public class AuthenticationManagerConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(TestConfigWithClientRegistrationRepository.class,
 						AuthenticationManagerConfiguration.class)
-				.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
+				.run(((context) -> assertThat(context)
+						.doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword,

@@ -75,8 +75,7 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", null);
 		FailureAnalysis analysis = performAnalysis(failure);
-		assertThat(analysis.getAction())
-				.contains("Review the value of the property.");
+		assertThat(analysis.getAction()).contains("Review the value of the property.");
 		assertThat(analysis.getDescription()).contains("No reason was provided.")
 				.doesNotContain("Additionally, this property is also set");
 	}

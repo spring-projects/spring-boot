@@ -94,8 +94,8 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	private void appendReason(StringBuilder message,
 			InvalidConfigurationPropertyValueException cause) {
 		if (StringUtils.hasText(cause.getReason())) {
-			message.append(String.format(" Validation failed for the following "
-					+ "reason:%n%n"));
+			message.append(String
+					.format(" Validation failed for the following " + "reason:%n%n"));
 			message.append(cause.getReason());
 		}
 		else {

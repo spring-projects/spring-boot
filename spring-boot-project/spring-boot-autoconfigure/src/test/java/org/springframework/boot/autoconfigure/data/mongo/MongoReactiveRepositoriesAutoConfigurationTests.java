@@ -58,16 +58,17 @@ public class MongoReactiveRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ReactiveCityRepository.class);
-			assertThat(context).hasSingleBean(MongoClient.class);
-			MongoMappingContext mappingContext = context
-					.getBean(MongoMappingContext.class);
-			@SuppressWarnings("unchecked")
-			Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
-					.getField(mappingContext, "initialEntitySet");
-			assertThat(entities).hasSize(1);
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ReactiveCityRepository.class);
+					assertThat(context).hasSingleBean(MongoClient.class);
+					MongoMappingContext mappingContext = context
+							.getBean(MongoMappingContext.class);
+					@SuppressWarnings("unchecked")
+					Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
+							.getField(mappingContext, "initialEntitySet");
+					assertThat(entities).hasSize(1);
+				});
 	}
 
 	@Test

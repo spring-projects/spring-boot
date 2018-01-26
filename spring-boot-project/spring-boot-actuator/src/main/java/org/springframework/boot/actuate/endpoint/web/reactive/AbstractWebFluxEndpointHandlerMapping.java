@@ -288,8 +288,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result,
 				HttpMethod httpMethod) {
 			return Mono.from(result).map(this::toResponseEntity)
-					.onErrorMap(InvalidEndpointRequestException.class, (ex) ->
-							new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					.onErrorMap(InvalidEndpointRequestException.class,
+							(ex) -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 									ex.getReason()))
 					.defaultIfEmpty(new ResponseEntity<>(httpMethod == HttpMethod.GET
 							? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT));

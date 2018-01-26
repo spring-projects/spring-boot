@@ -51,8 +51,7 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 	 */
 	public CloudFoundryWebEndpointDiscoverer(ApplicationContext applicationContext,
 			ParameterValueMapper parameterValueMapper,
-			EndpointMediaTypes endpointMediaTypes,
-			PathMapper endpointPathMapper,
+			EndpointMediaTypes endpointMediaTypes, PathMapper endpointPathMapper,
 			Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
 		super(applicationContext, parameterValueMapper, endpointMediaTypes,

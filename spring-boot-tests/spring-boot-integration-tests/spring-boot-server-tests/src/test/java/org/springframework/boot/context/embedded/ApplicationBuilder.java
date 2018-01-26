@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,8 +97,7 @@ class ApplicationBuilder {
 		return resourcesJar;
 	}
 
-	private void writePom(File appFolder, File resourcesJar)
-			throws IOException {
+	private void writePom(File appFolder, File resourcesJar) throws IOException {
 		Map<String, Object> context = new HashMap<>();
 		context.put("packaging", this.packaging);
 		context.put("container", this.container);

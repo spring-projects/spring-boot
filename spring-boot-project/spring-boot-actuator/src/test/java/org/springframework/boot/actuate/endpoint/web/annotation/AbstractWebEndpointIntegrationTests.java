@@ -159,9 +159,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	@Test
 	public void readOperationWithMappingFailureProducesBadRequestResponse() {
 		load(QueryEndpointConfiguration.class, (client) -> {
-			WebTestClient.BodyContentSpec body = client.get()
-					.uri("/query?two=two").exchange().expectStatus().isBadRequest()
-					.expectBody();
+			WebTestClient.BodyContentSpec body = client.get().uri("/query?two=two")
+					.exchange().expectStatus().isBadRequest().expectBody();
 			validateErrorBody(body, HttpStatus.BAD_REQUEST, "/endpoints/query",
 					"Missing parameters: one");
 		});
@@ -282,9 +281,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	@Test
 	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() {
 		load(RequiredParameterEndpointConfiguration.class, (client) -> {
-			WebTestClient.BodyContentSpec body = client.get()
-					.uri("/requiredparameters").exchange().expectStatus().isBadRequest()
-					.expectBody();
+			WebTestClient.BodyContentSpec body = client.get().uri("/requiredparameters")
+					.exchange().expectStatus().isBadRequest().expectBody();
 			validateErrorBody(body, HttpStatus.BAD_REQUEST,
 					"/endpoints/requiredparameters", "Missing parameters: foo");
 		});
@@ -334,9 +332,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	protected void validateErrorBody(WebTestClient.BodyContentSpec body,
 			HttpStatus status, String path, String message) {
-		body.jsonPath("status").isEqualTo(status.value())
-				.jsonPath("error").isEqualTo(status.getReasonPhrase())
-				.jsonPath("path").isEqualTo(path)
+		body.jsonPath("status").isEqualTo(status.value()).jsonPath("error")
+				.isEqualTo(status.getReasonPhrase()).jsonPath("path").isEqualTo(path)
 				.jsonPath("message").isEqualTo(message);
 	}
 

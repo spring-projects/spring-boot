@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,12 +75,12 @@ public class RouterFunctionMetrics {
 			Iterable<Tag> tags) {
 		return (request, next) -> {
 			final long start = System.nanoTime();
-			return next.handle(request).doOnSuccess(response -> {
+			return next.handle(request).doOnSuccess((response) -> {
 				Iterable<Tag> allTags = Tags.concat(tags,
 						this.defaultTags.apply(request, response));
 				this.registry.timer(name, allTags).record(System.nanoTime() - start,
 						TimeUnit.NANOSECONDS);
-			}).doOnError(error -> {
+			}).doOnError((error) -> {
 				// FIXME how do we get the response under an error condition?
 				Iterable<Tag> allTags = Tags.concat(tags,
 						this.defaultTags.apply(request, null));

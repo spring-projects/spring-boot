@@ -359,8 +359,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void annotatedGetter() {
 		ConfigurationMetadata metadata = compile(AnnotatedGetter.class);
-		assertThat(metadata).has(Metadata.withGroup("specific")
-				.fromSource(AnnotatedGetter.class));
+		assertThat(metadata)
+				.has(Metadata.withGroup("specific").fromSource(AnnotatedGetter.class));
 		assertThat(metadata).has(Metadata.withProperty("specific.name", String.class)
 				.fromSource(AnnotatedGetter.class));
 	}

@@ -53,16 +53,17 @@ public class MongoRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(CityRepository.class);
-			assertThat(context).hasSingleBean(MongoClient.class);
-			MongoMappingContext mappingContext = context
-					.getBean(MongoMappingContext.class);
-			@SuppressWarnings("unchecked")
-			Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
-					.getField(mappingContext, "initialEntitySet");
-			assertThat(entities).hasSize(1);
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(CityRepository.class);
+					assertThat(context).hasSingleBean(MongoClient.class);
+					MongoMappingContext mappingContext = context
+							.getBean(MongoMappingContext.class);
+					@SuppressWarnings("unchecked")
+					Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
+							.getField(mappingContext, "initialEntitySet");
+					assertThat(entities).hasSize(1);
+				});
 	}
 
 	@Test
@@ -80,8 +81,9 @@ public class MongoRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
-		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class).run(
-				(context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test

@@ -42,7 +42,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 				.run((parent) -> {
 					new ApplicationContextRunner()
 							.withUserConfiguration(ClassConfigurationProperties.class)
-							.withParent(parent).run(child -> {
+							.withParent(parent).run((child) -> {
 						ConfigurationPropertiesReportEndpoint endpoint = child
 								.getBean(ConfigurationPropertiesReportEndpoint.class);
 						ApplicationConfigurationProperties applicationProperties = endpoint
@@ -65,7 +65,7 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 					new ApplicationContextRunner()
 							.withUserConfiguration(
 									BeanMethodConfigurationProperties.class)
-							.withParent(parent).run(child -> {
+							.withParent(parent).run((child) -> {
 						ConfigurationPropertiesReportEndpoint endpoint = child
 								.getBean(ConfigurationPropertiesReportEndpoint.class);
 						ApplicationConfigurationProperties applicationProperties = endpoint

@@ -57,16 +57,19 @@ public final class JettyCustomizer {
 		propertyMapper.from(jettyProperties::getSelectors).whenNonNull()
 				.to(factory::setSelectors);
 		propertyMapper.from(serverProperties::getMaxHttpHeaderSize)
-				.when(JettyCustomizer::isPositive).to(maxHttpHeaderSize ->
-				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
+				.when(JettyCustomizer::isPositive)
+				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
+						maxHttpHeaderSize));
 		propertyMapper.from(jettyProperties::getMaxHttpPostSize)
 				.when(JettyCustomizer::isPositive)
-				.to(maxHttpPostSize -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
+				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
+						maxHttpPostSize));
 		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
-				.to(connectionTimeout -> customizeConnectionTimeout(factory, connectionTimeout));
+				.to((connectionTimeout) -> customizeConnectionTimeout(factory,
+						connectionTimeout));
 		propertyMapper.from(jettyProperties::getAccesslog)
 				.when(ServerProperties.Jetty.Accesslog::isEnabled)
-				.to(accesslog -> customizeAccessLog(factory, accesslog));
+				.to((accesslog) -> customizeAccessLog(factory, accesslog));
 	}
 
 	private static boolean isPositive(Integer value) {

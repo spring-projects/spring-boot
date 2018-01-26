@@ -60,11 +60,12 @@ public class CassandraRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(CityRepository.class);
-			assertThat(context).hasSingleBean(Cluster.class);
-			assertThat(getInitialEntitySet(context)).hasSize(1);
-		});
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(CityRepository.class);
+					assertThat(context).hasSingleBean(Cluster.class);
+					assertThat(getInitialEntitySet(context)).hasSize(1);
+				});
 	}
 
 	@Test

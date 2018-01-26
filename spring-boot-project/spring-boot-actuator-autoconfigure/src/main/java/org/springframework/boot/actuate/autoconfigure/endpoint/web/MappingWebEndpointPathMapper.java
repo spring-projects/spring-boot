@@ -21,8 +21,8 @@ import java.util.Map;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 
 /**
- * A {@link PathMapper} implementation that uses a simple {@link Map} to
- * determine the endpoint path.
+ * A {@link PathMapper} implementation that uses a simple {@link Map} to determine the
+ * endpoint path.
  *
  * @author Stephane Nicoll
  */

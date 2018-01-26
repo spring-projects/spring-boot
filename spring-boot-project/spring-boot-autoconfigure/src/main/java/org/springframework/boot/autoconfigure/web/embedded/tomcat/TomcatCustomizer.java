@@ -58,29 +58,35 @@ public final class TomcatCustomizer {
 		customizeRemoteIpValve(serverProperties, environment, factory);
 		propertyMapper.from(tomcatProperties::getMaxThreads)
 				.when(TomcatCustomizer::isPositive)
-				.to(maxThreads -> customizeMaxThreads(factory, tomcatProperties.getMaxThreads()));
+				.to((maxThreads) -> customizeMaxThreads(factory,
+						tomcatProperties.getMaxThreads()));
 		propertyMapper.from(tomcatProperties::getMinSpareThreads)
 				.when(TomcatCustomizer::isPositive)
-				.to(minSpareThreads -> customizeMinThreads(factory, minSpareThreads));
-		propertyMapper.from(() -> determineMaxHttpHeaderSize(serverProperties, tomcatProperties))
+				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
+		propertyMapper
+				.from(() -> determineMaxHttpHeaderSize(serverProperties,
+						tomcatProperties))
 				.when(TomcatCustomizer::isPositive)
-				.to(maxHttpHeaderSize -> customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
+				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
+						maxHttpHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpPostSize)
-				.when(maxHttpPostSize -> maxHttpPostSize != 0)
-				.to(maxHttpPostSize -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
+				.when((maxHttpPostSize) -> maxHttpPostSize != 0)
+				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
+						maxHttpPostSize));
 		propertyMapper.from(tomcatProperties::getAccesslog)
 				.when(ServerProperties.Tomcat.Accesslog::isEnabled)
-				.to(enabled -> customizeAccessLog(tomcatProperties, factory));
+				.to((enabled) -> customizeAccessLog(tomcatProperties, factory));
 		propertyMapper.from(tomcatProperties::getUriEncoding).whenNonNull()
 				.to(factory::setUriEncoding);
 		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
-				.to(connectionTimeout -> customizeConnectionTimeout(factory, connectionTimeout));
+				.to((connectionTimeout) -> customizeConnectionTimeout(factory,
+						connectionTimeout));
 		propertyMapper.from(tomcatProperties::getMaxConnections)
 				.when(TomcatCustomizer::isPositive)
-				.to(maxConnections -> customizeMaxConnections(factory, maxConnections));
+				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount)
 				.when(TomcatCustomizer::isPositive)
-				.to(acceptCount -> customizeAcceptCount(factory, acceptCount));
+				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
 		customizeStaticResources(serverProperties.getTomcat().getResource(), factory);
 	}
 
@@ -234,4 +240,5 @@ public final class TomcatCustomizer {
 			});
 		});
 	}
+
 }

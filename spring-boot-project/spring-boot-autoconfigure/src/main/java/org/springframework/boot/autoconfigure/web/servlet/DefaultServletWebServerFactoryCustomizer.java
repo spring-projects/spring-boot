@@ -83,17 +83,17 @@ public class DefaultServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
 		map.from(() -> factory).whenInstanceOf(TomcatServletWebServerFactory.class)
-				.to(tomcatFactory -> {
+				.to((tomcatFactory) -> {
 					TomcatCustomizer.customizeTomcat(this.serverProperties,
 							this.environment, tomcatFactory);
 					TomcatServletCustomizer.customizeTomcat(this.serverProperties,
 							this.environment, tomcatFactory);
 				});
-		map.from(() -> factory).whenInstanceOf(JettyServletWebServerFactory.class)
-				.to(jettyFactory -> JettyCustomizer.customizeJetty(this.serverProperties,
+		map.from(() -> factory).whenInstanceOf(JettyServletWebServerFactory.class).to(
+				(jettyFactory) -> JettyCustomizer.customizeJetty(this.serverProperties,
 						this.environment, jettyFactory));
 		map.from(() -> factory).whenInstanceOf(UndertowServletWebServerFactory.class)
-				.to(undertowFactory -> UndertowCustomizer.customizeUndertow(
+				.to((undertowFactory) -> UndertowCustomizer.customizeUndertow(
 						this.serverProperties, this.environment, undertowFactory));
 		map.from(this.serverProperties.getServlet()::getContextParameters)
 				.to(factory::setInitParameters);

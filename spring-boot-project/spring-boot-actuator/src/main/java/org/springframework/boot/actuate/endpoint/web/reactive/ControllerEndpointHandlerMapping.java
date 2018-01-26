@@ -72,8 +72,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	private Map<Object, ExposableControllerEndpoint> getHandlers(
 			Collection<ExposableControllerEndpoint> endpoints) {
 		Map<Object, ExposableControllerEndpoint> handlers = new LinkedHashMap<>();
-		endpoints
-				.forEach((endpoint) -> handlers.put(endpoint.getController(), endpoint));
+		endpoints.forEach((endpoint) -> handlers.put(endpoint.getController(), endpoint));
 		return Collections.unmodifiableMap(handlers);
 	}
 

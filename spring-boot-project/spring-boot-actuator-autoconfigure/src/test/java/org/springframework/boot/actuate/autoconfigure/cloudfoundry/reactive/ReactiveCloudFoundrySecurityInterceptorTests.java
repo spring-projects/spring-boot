@@ -54,8 +54,8 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.interceptor = new CloudFoundrySecurityInterceptor(
-				this.tokenValidator, this.securityService, "my-app-id");
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
+				this.securityService, "my-app-id");
 	}
 
 	@Test
@@ -90,8 +90,8 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	@Test
 	public void preHandleWhenApplicationIdIsNullShouldReturnError() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(
-				this.tokenValidator, this.securityService, null);
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
+				this.securityService, null);
 		MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/a")
 						.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
@@ -105,8 +105,8 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	@Test
 	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnError() {
-		this.interceptor = new CloudFoundrySecurityInterceptor(
-				this.tokenValidator, null, "my-app-id");
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null,
+				"my-app-id");
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest
 				.get("/a").header(HttpHeaders.AUTHORIZATION, mockAccessToken()).build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))

@@ -31,7 +31,8 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.Assert;
 
 /**
- * {@link EndpointDiscoverer} for {@link ExposableControllerEndpoint controller endpoints}.
+ * {@link EndpointDiscoverer} for {@link ExposableControllerEndpoint controller
+ * endpoints}.
  *
  * @author Phillip Webb
  * @since 2.0.0

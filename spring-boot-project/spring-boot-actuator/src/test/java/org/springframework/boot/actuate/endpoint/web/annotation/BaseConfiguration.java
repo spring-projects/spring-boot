@@ -68,8 +68,8 @@ class BaseConfiguration {
 		ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 				DefaultConversionService.getSharedInstance());
 		return new WebEndpointDiscoverer(applicationContext, parameterMapper,
-				endpointMediaTypes(), PathMapper.useEndpointId(),
-				Collections.emptyList(), Collections.emptyList());
+				endpointMediaTypes(), PathMapper.useEndpointId(), Collections.emptyList(),
+				Collections.emptyList());
 	}
 
 	@Bean

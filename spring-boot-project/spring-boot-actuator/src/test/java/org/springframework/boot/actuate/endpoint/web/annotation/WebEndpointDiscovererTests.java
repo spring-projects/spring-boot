@@ -298,9 +298,9 @@ public class WebEndpointDiscovererTests {
 			Map<WebOperationRequestPredicate, Long> matchCounts = new HashMap<>();
 			for (WebOperationRequestPredicate predicate : predicates) {
 				matchCounts.put(predicate, Stream.of(matchers)
-						.filter(matcher -> matcher.matches(predicate)).count());
+						.filter((matcher) -> matcher.matches(predicate)).count());
 			}
-			return matchCounts.values().stream().noneMatch(count -> count != 1);
+			return matchCounts.values().stream().noneMatch((count) -> count != 1);
 		}, Arrays.toString(matchers));
 	}
 

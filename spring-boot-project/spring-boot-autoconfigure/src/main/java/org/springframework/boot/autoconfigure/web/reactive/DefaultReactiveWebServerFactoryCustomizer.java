@@ -67,14 +67,14 @@ public class DefaultReactiveWebServerFactoryCustomizer
 		map.from(this.serverProperties::getSsl).to(factory::setSsl);
 		map.from(this.serverProperties::getCompression).to(factory::setCompression);
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
-		map.from(() -> factory).whenInstanceOf(TomcatReactiveWebServerFactory.class)
-				.to(tomcatFactory -> TomcatCustomizer.customizeTomcat(
-						this.serverProperties, this.environment, tomcatFactory));
-		map.from(() -> factory).whenInstanceOf(JettyReactiveWebServerFactory.class)
-				.to(jettyFactory -> JettyCustomizer.customizeJetty(this.serverProperties,
+		map.from(() -> factory).whenInstanceOf(TomcatReactiveWebServerFactory.class).to(
+				(tomcatFactory) -> TomcatCustomizer.customizeTomcat(this.serverProperties,
+						this.environment, tomcatFactory));
+		map.from(() -> factory).whenInstanceOf(JettyReactiveWebServerFactory.class).to(
+				(jettyFactory) -> JettyCustomizer.customizeJetty(this.serverProperties,
 						this.environment, jettyFactory));
 		map.from(() -> factory).whenInstanceOf(UndertowReactiveWebServerFactory.class)
-				.to(undertowFactory -> UndertowCustomizer.customizeUndertow(
+				.to((undertowFactory) -> UndertowCustomizer.customizeUndertow(
 						this.serverProperties, this.environment, undertowFactory));
 	}
 

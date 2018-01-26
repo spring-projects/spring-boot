@@ -70,8 +70,8 @@ class PropertiesMigrationReporter {
 			return report;
 		}
 		properties.forEach((name, candidates) -> {
-			PropertySource<?> propertySource = mapPropertiesWithReplacement(report,
-					name, candidates);
+			PropertySource<?> propertySource = mapPropertiesWithReplacement(report, name,
+					candidates);
 			if (propertySource != null) {
 				this.environment.getPropertySources().addBefore(name, propertySource);
 			}
@@ -84,8 +84,8 @@ class PropertiesMigrationReporter {
 			List<PropertyMigration> properties) {
 		List<PropertyMigration> renamed = new ArrayList<>();
 		List<PropertyMigration> unsupported = new ArrayList<>();
-		properties.forEach((property) ->
-				(isRenamed(property) ? renamed : unsupported).add(property));
+		properties.forEach((property) -> (isRenamed(property) ? renamed : unsupported)
+				.add(property));
 		report.add(name, renamed, unsupported);
 		if (renamed.isEmpty()) {
 			return null;
@@ -133,7 +133,7 @@ class PropertiesMigrationReporter {
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values()
 				.stream().filter(filter).collect(Collectors.toList());
 		getPropertySourcesAsMap().forEach((name, source) -> {
-			candidates.forEach(metadata -> {
+			candidates.forEach((metadata) -> {
 				ConfigurationProperty configurationProperty = source
 						.getConfigurationProperty(
 								ConfigurationPropertyName.of(metadata.getId()));
