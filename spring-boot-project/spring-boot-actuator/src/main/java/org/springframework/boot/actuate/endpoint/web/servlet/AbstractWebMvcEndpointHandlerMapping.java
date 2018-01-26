@@ -83,7 +83,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
 	 * operations of the given {@code webEndpoints}.
 	 * @param endpointMapping the base mapping for all endpoints
-	 * @param endpoints the web endpoints operations
+	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 */
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,

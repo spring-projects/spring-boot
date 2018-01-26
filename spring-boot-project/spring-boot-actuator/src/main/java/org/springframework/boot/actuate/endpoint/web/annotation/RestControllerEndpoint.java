@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * Identifies a type as being an rest endpoint that is only exposed over Spring MVC or
+ * Identifies a type as being a REST endpoint that is only exposed over Spring MVC or
  * Spring WebFlux. Mapped methods must be annotated with {@link GetMapping @GetMapping},
  * {@link PostMapping @PostMapping}, {@link DeleteMapping @DeleteMapping}, etc annotations
  * rather than {@link ReadOperation @ReadOperation},

@@ -62,7 +62,7 @@ public class HttpExchangeTracer {
 	 * Ends the tracing of the exchange that is being concluded by sending the given
 	 * {@code response}.
 	 * @param trace the trace for the exchange
-	 * @param response the response the concludes the exchange
+	 * @param response the response that concludes the exchange
 	 * @param principal a supplier for the exchange's principal
 	 * @param sessionId a supplier for the id of the exchange's session
 	 */
