@@ -61,6 +61,7 @@ public class AuthenticationManagerConfiguration {
 			.getLog(AuthenticationManagerConfiguration.class);
 
 	@Bean
+	@ConditionalOnMissingBean(type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
 			SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) throws Exception {

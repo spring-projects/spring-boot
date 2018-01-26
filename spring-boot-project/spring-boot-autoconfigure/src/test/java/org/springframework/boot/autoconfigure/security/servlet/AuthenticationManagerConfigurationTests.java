@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,6 +69,14 @@ public class AuthenticationManagerConfigurationTests {
 		testPasswordEncoding(TestConfigWithPasswordEncoder.class, "secret", "secret");
 	}
 
+	@Test
+	public void userDetailsServiceWhenClientRegistrationRepositoryBeanPresent() {
+		this.contextRunner
+				.withUserConfiguration(TestConfigWithClientRegistrationRepository.class,
+						AuthenticationManagerConfiguration.class)
+				.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
+	}
+
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword,
 			String expectedPassword) {
 		this.contextRunner
@@ -97,6 +106,17 @@ public class AuthenticationManagerConfigurationTests {
 		@Bean
 		public PasswordEncoder passwordEncoder() {
 			return mock(PasswordEncoder.class);
+		}
+
+	}
+
+	@Configuration
+	@Import(TestSecurityConfiguration.class)
+	protected static class TestConfigWithClientRegistrationRepository {
+
+		@Bean
+		public ClientRegistrationRepository clientRegistrationRepository() {
+			return mock(ClientRegistrationRepository.class);
 		}
 
 	}
