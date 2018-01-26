@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class TraceEndpointTests {
+public class HttpTraceEndpointTests {
 
 	@Test
 	public void trace() {
