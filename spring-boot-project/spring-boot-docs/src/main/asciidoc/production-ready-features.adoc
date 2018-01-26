@@ -56,7 +56,10 @@ includes a number of built-in endpoints and lets you add your own. For example, 
 Each individual endpoint can be <<production-ready-endpoints-enabling-endpoints, enabled
 or disabled>>. This controls whether or not the endpoint is created and its bean exists in
 the application context. To be remotely accessible an endpoint also has to be
-<<production-ready-endpoints-exposing-endpoints, exposed>>.
+<<production-ready-endpoints-exposing-endpoints, exposed via JMX or HTTP>>. Most
+applications choose HTTP, where the ID of the endpoint along with a prefix of `/actuator`
+is mapped to a URL. For example, by default, the `health` endpoint is mapped to
+`/actuator/health`.
 
 The following technology-agnostic endpoints are available:
 
