@@ -141,6 +141,7 @@ public class WebEndpointAutoConfiguration {
 				ExposableControllerEndpoint.class, expose, exclude);
 	}
 
+	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class WebEndpointServletAutoConfiguration {
 
