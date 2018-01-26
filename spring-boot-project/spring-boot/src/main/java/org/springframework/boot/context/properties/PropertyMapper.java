@@ -264,7 +264,7 @@ public final class PropertyMapper {
 		 * @param target the target type to match
 		 * @return a new filtered source instance
 		 */
-		public <R> Source<R> whenInstanceOf(Class<R> target) {
+		public <R extends T> Source<R> whenInstanceOf(Class<R> target) {
 			return when(target::isInstance).as(target::cast);
 		}
 
