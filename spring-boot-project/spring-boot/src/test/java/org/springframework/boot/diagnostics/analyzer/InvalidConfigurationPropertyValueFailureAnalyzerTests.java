@@ -58,6 +58,8 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertCommonParts(failure, analysis);
+		assertThat(analysis.getAction())
+				.contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getDescription())
 				.contains("Validation failed for the following reason")
 				.contains("This is not valid.")
@@ -73,7 +75,8 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", null);
 		FailureAnalysis analysis = performAnalysis(failure);
-		assertCommonParts(failure, analysis);
+		assertThat(analysis.getAction())
+				.contains("Review the value of the property.");
 		assertThat(analysis.getDescription()).contains("No reason was provided.")
 				.doesNotContain("Additionally, this property is also set");
 	}
@@ -95,6 +98,8 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertCommonParts(failure, analysis);
+		assertThat(analysis.getAction())
+				.contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getDescription())
 				.contains("Additionally, this property is also set in the following "
 						+ "property sources:")
@@ -113,8 +118,6 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 			FailureAnalysis analysis) {
 		assertThat(analysis.getDescription()).contains("test.property")
 				.contains("invalid").contains("TestOrigin test.property");
-		assertThat(analysis.getAction()
-				.contains("Review the value of the property with the provided reason."));
 		assertThat(analysis.getCause()).isSameAs(failure);
 	}
 

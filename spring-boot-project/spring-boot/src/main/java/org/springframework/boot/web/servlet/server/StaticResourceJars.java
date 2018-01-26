@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,19 +79,16 @@ class StaticResourceJars {
 	}
 
 	private void addUrlFile(List<URL> urls, URL url, File file) {
-		if (file.isDirectory() && new File(file, "META-INF/resources").isDirectory()) {
-			urls.add(url);
-		}
-		else if (isResourcesJar(file)) {
+		if ((file.isDirectory() && new File(file, "META-INF/resources").isDirectory())
+				|| isResourcesJar(file)) {
 			urls.add(url);
 		}
 	}
 
 	private void addUrlConnection(List<URL> urls, URL url, URLConnection connection) {
-		if (connection instanceof JarURLConnection) {
-			if (isResourcesJar((JarURLConnection) connection)) {
-				urls.add(url);
-			}
+		if (connection instanceof JarURLConnection
+				&& isResourcesJar((JarURLConnection) connection)) {
+			urls.add(url);
 		}
 	}
 
