@@ -65,6 +65,15 @@ public final class ServletTags {
 				: Tag.of("status", ((Integer) response.getStatus()).toString());
 	}
 
+	private static HttpStatus extractStatus(HttpServletResponse response) {
+		try {
+			return HttpStatus.valueOf(response.getStatus());
+		}
+		catch (IllegalArgumentException ex) {
+			return null;
+		}
+	}
+
 	/**
 	 * Creates a {@code uri} tag based on the URI of the given {@code request}. Uses the
 	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
@@ -79,11 +88,11 @@ public final class ServletTags {
 	public static Tag uri(@Nullable HttpServletRequest request,
 			@Nullable HttpServletResponse response) {
 		if (response != null) {
-			HttpStatus status = HttpStatus.valueOf(response.getStatus());
-			if (status.is3xxRedirection()) {
+			HttpStatus status = extractStatus(response);
+			if (status != null && status.is3xxRedirection()) {
 				return Tag.of("uri", "REDIRECTION");
 			}
-			else if (status.equals(HttpStatus.NOT_FOUND)) {
+			if (HttpStatus.NOT_FOUND.equals(status)) {
 				return Tag.of("uri", "NOT_FOUND");
 			}
 		}
@@ -107,7 +116,7 @@ public final class ServletTags {
 		}
 		uri = uri.replaceAll("//+", "/").replaceAll("/$", "");
 
-		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
+		return Tag.of("uri", uri.isEmpty() ? "/" : uri);
 	}
 
 	/**
@@ -119,7 +128,9 @@ public final class ServletTags {
 	 */
 	@NonNull
 	public static Tag exception(@Nullable Throwable exception) {
-		return exception == null ? Tag.of("exception", "None")
-				: Tag.of("exception", exception.getClass().getSimpleName());
+		if (exception != null) {
+			return Tag.of("exception", exception.getClass().getSimpleName());
+		}
+		return Tag.of("exception", "None");
 	}
 }
