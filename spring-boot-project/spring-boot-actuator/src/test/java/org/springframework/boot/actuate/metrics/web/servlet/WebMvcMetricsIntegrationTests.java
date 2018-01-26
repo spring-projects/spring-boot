@@ -20,7 +20,6 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
-import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
@@ -79,18 +78,18 @@ public class WebMvcMetricsIntegrationTests {
 	@Test
 	public void handledExceptionIsRecordedInMetricTag() throws Exception {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
-		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception1", "status", "500")
-				.value(Statistic.Count, 1.0).timer()).isPresent();
+		assertThat(this.registry.get("http.server.requests")
+				.tags("exception", "Exception1", "status", "500").timer().count())
+						.isEqualTo(1L);
 	}
 
 	@Test
 	public void rethrownExceptionIsRecordedInMetricTag() {
 		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError"))
 				.andExpect(status().is5xxServerError()));
-		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception2", "status", "500")
-				.value(Statistic.Count, 1.0).timer()).isPresent();
+		assertThat(this.registry.get("http.server.requests")
+				.tags("exception", "Exception2", "status", "500").timer().count())
+						.isEqualTo(1L);
 	}
 
 	@Configuration

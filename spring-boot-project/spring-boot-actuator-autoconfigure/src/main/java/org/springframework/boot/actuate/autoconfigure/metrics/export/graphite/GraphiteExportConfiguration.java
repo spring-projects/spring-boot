@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class GraphiteExportConfiguration {
 	@ConditionalOnProperty(value = "management.metrics.export.graphite.enabled", matchIfMissing = true)
 	public MetricsExporter graphiteExporter(GraphiteConfig graphiteConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {
-		return () -> new GraphiteMeterRegistry(graphiteConfig, nameMapper, clock);
+		return () -> new GraphiteMeterRegistry(graphiteConfig, clock, nameMapper);
 	}
 
 	@Bean

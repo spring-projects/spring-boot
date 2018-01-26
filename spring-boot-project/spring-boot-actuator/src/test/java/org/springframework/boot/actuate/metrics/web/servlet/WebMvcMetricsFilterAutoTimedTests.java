@@ -72,9 +72,8 @@ public class WebMvcMetricsFilterAutoTimedTests {
 	@Test
 	public void metricsCanBeAutoTimed() throws Exception {
 		this.mvc.perform(get("/api/10")).andExpect(status().isOk());
-		assertThat(
-				this.registry.find("http.server.requests").tags("status", "200").timer())
-						.hasValueSatisfying((t) -> assertThat(t.count()).isEqualTo(1));
+		assertThat(this.registry.get("http.server.requests").tags("status", "200").timer()
+				.count()).isEqualTo(1L);
 	}
 
 	@Configuration

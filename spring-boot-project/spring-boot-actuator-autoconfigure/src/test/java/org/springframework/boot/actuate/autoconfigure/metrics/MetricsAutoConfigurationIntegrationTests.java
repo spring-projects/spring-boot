@@ -22,7 +22,6 @@ import java.util.Set;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
-import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
@@ -94,15 +93,15 @@ public class MetricsAutoConfigurationIntegrationTests {
 						"{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
 		assertThat(this.external.getForObject("/api/external", Map.class))
 				.containsKey("message");
-		assertThat(this.registry.find("http.client.requests").value(Statistic.Count, 1.0)
-				.timer()).isPresent();
+		assertThat(this.registry.get("http.client.requests").timer().count())
+				.isEqualTo(1);
 	}
 
 	@Test
 	public void requestMappingIsInstrumented() {
 		this.loopback.getForObject("/api/people", Set.class);
-		assertThat(this.registry.find("http.server.requests").value(Statistic.Count, 1.0)
-				.timer()).isPresent();
+		assertThat(this.registry.get("http.server.requests").timer().count())
+				.isEqualTo(1);
 	}
 
 	@Test

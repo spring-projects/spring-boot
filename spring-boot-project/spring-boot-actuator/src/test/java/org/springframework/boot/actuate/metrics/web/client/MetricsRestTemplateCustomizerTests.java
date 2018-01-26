@@ -20,7 +20,6 @@ import java.util.stream.StreamSupport;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
-import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -71,9 +70,9 @@ public class MetricsRestTemplateCustomizerTests {
 				.meters()).anySatisfy((m) -> assertThat(
 						StreamSupport.stream(m.getId().getTags().spliterator(), false)
 								.map(Tag::getKey)).doesNotContain("bucket"));
-		assertThat(this.registry.find("http.client.requests")
-				.tags("method", "GET", "uri", "/test/{id}", "status", "200")
-				.value(Statistic.Count, 1.0).timer()).isPresent();
+		assertThat(this.registry.get("http.client.requests")
+				.tags("method", "GET", "uri", "/test/{id}", "status", "200").timer()
+				.count()).isEqualTo(1);
 		assertThat(result).isEqualTo("OK");
 		mockServer.verify();
 	}

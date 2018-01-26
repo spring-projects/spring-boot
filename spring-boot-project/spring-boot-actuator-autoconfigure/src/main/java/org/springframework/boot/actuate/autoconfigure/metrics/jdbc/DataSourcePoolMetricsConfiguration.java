@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -69,7 +68,7 @@ public class DataSourcePoolMetricsConfiguration {
 	}
 
 	private void bindDataSourceToRegistry(String beanName, DataSource dataSource) {
-		List<Tag> tags = Tags.zip("name", getDataSourceName(beanName));
+		Iterable<Tag> tags = Tags.zip("name", getDataSourceName(beanName));
 		new DataSourcePoolMetrics(dataSource, this.metadataProviders, this.metricName,
 				tags).bindTo(this.registry);
 	}

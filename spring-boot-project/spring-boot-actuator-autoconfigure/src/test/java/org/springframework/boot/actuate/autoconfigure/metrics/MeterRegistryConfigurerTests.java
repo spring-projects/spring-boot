@@ -42,8 +42,8 @@ public class MeterRegistryConfigurerTests {
 						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
 				.withPropertyValues("management.metrics.use-global-registry=false")
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
-						.find("jvm.memory.used").tags("region", "us-east-1").gauge())
-								.isPresent());
+						.get("jvm.memory.used").tags("region", "us-east-1").gauge())
+								.isNotNull());
 	}
 
 	@Test
@@ -54,8 +54,8 @@ public class MeterRegistryConfigurerTests {
 						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
 				.withPropertyValues("management.metrics.use-global-registry=false")
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
-						.find("my.thing").tags("region", "us-east-1").gauge())
-								.isPresent());
+						.get("my.thing").tags("region", "us-east-1").gauge())
+								.isNotNull());
 	}
 
 	static class MeterRegistryConfigurerConfiguration {

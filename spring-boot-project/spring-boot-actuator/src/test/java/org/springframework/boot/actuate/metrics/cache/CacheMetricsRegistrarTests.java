@@ -42,8 +42,8 @@ public class CacheMetricsRegistrarTests {
 				"root", Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(
 				new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
-		assertThat(this.meterRegistry.find("root.requests").tags("name", "test").meter())
-				.isPresent();
+		assertThat(this.meterRegistry.get("root.requests").tags("name", "test").meter())
+				.isNotNull();
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class CacheMetricsRegistrarTests {
 		assertThat(registrar.bindCacheToRegistry(
 				new CaffeineCache("test", Caffeine.newBuilder().build()))).isFalse();
 		assertThat(this.meterRegistry.find("root.requests").tags("name", "test").meter())
-				.isNotPresent();
+				.isNull();
 	}
 
 }

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.amqp;
 
-import java.util.List;
 import java.util.Map;
 
 import com.rabbitmq.client.ConnectionFactory;
@@ -67,7 +66,7 @@ public class RabbitMetricsConfiguration {
 
 	private void bindConnectionFactoryToRegistry(String beanName,
 			AbstractConnectionFactory connectionFactory) {
-		List<Tag> tags = Tags.zip("name", getConnectionFactoryName(beanName));
+		Iterable<Tag> tags = Tags.zip("name", getConnectionFactoryName(beanName));
 		new RabbitMetrics(connectionFactory.getRabbitConnectionFactory(), this.metricName,
 				tags).bindTo(this.registry);
 	}

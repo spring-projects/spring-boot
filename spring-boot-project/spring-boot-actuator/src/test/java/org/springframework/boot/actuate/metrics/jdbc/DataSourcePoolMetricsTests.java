@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Tests for {@link DataSourcePoolMetrics}.
  *
@@ -52,8 +50,8 @@ public class DataSourcePoolMetricsTests {
 						"metrics.use-global-registry=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
-					assertThat(context.getBean(MeterRegistry.class)
-							.find("data.source.max.connections").meter()).isPresent();
+					context.getBean(MeterRegistry.class)
+							.get("data.source.max.connections").meter();
 				});
 	}
 

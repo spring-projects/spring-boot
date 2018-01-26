@@ -36,7 +36,7 @@ public class RabbitMetricsTests {
 		ConnectionFactory connectionFactory = mockConnectionFactory();
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, "rabbit", null).bindTo(registry);
-		assertThat(registry.find("rabbit.connections").meter()).isPresent();
+		registry.get("rabbit.connections");
 	}
 
 	@Test
@@ -45,10 +45,9 @@ public class RabbitMetricsTests {
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, "test", Tags.zip("env", "prod"))
 				.bindTo(registry);
-		assertThat(registry.find("test.connections").tags("env", "prod").meter())
-				.isPresent();
-		assertThat(registry.find("test.connections").tags("env", "dev").meter())
-				.isNotPresent();
+		assertThat(registry.get("test.connections").tags("env", "prod").meter())
+				.isNotNull();
+		assertThat(registry.find("test.connections").tags("env", "dev").meter()).isNull();
 	}
 
 	private ConnectionFactory mockConnectionFactory() {

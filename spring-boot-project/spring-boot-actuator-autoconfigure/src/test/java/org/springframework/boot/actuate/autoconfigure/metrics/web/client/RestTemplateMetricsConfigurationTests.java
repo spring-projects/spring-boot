@@ -74,10 +74,10 @@ public class RestTemplateMetricsConfigurationTests {
 	private void validateRestTemplate(RestTemplate restTemplate, MeterRegistry registry) {
 		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
 		server.expect(requestTo("/test")).andRespond(withStatus(HttpStatus.OK));
-		assertThat(registry.find("http.client.requests").meter()).isNotPresent();
+		assertThat(registry.find("http.client.requests").meter()).isNull();
 		assertThat(restTemplate.getForEntity("/test", Void.class).getStatusCode())
 				.isEqualTo(HttpStatus.OK);
-		assertThat(registry.find("http.client.requests").meter()).isPresent();
+		registry.get("http.client.requests").meter();
 	}
 
 	@Configuration

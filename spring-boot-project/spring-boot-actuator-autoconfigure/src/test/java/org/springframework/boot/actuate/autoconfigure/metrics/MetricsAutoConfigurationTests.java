@@ -54,8 +54,8 @@ public class MetricsAutoConfigurationTests {
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isPresent();
+					registry.get("data.source.max.connections").tags("name", "dataSource")
+							.meter();
 				});
 	}
 
@@ -69,8 +69,8 @@ public class MetricsAutoConfigurationTests {
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("custom.name.max.connections")
-							.tags("name", "dataSource").meter()).isPresent();
+					registry.get("custom.name.max.connections").tags("name", "dataSource")
+							.meter();
 				});
 	}
 
@@ -85,7 +85,7 @@ public class MetricsAutoConfigurationTests {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isNotPresent();
+							.tags("name", "dataSource").meter()).isNull();
 				});
 	}
 
@@ -100,10 +100,10 @@ public class MetricsAutoConfigurationTests {
 					context.getBean("secondOne", DataSource.class).getConnection()
 							.getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "first").meter()).isPresent();
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "secondOne").meter()).isPresent();
+					registry.get("data.source.max.connections").tags("name", "first")
+							.meter();
+					registry.get("data.source.max.connections").tags("name", "secondOne")
+							.meter();
 				});
 	}
 
