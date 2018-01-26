@@ -221,7 +221,7 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Return a filtered version of the source that will only map values that
+		 * Return a filtered version of the source that will only map values that are
 		 * {@code true}.
 		 * @return a new filtered source instance
 		 */
@@ -230,7 +230,7 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Return a filtered version of the source that will only map values that
+		 * Return a filtered version of the source that will only map values that are
 		 * {@code false}.
 		 * @return a new filtered source instance
 		 */
