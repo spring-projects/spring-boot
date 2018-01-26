@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Dominic Gunn
  */
 public class LiquibaseAutoConfigurationTests {
 
@@ -153,13 +154,27 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	public void overrideDataSource() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase",
-						"spring.liquibase.user:sa")
+				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
 				.run(assertLiquibase((liquibase) -> {
 					DataSource dataSource = liquibase.getDataSource();
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
 					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
 							.isEqualTo("jdbc:hsqldb:mem:liquibase");
+				}));
+	}
+
+	@Test
+	public void overrideUser() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:normal",
+						"spring.datasource.username:not-sa", "spring.liquibase.user:sa")
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
+							.isEqualTo("jdbc:hsqldb:mem:normal");
+					assertThat(((HikariDataSource) dataSource).getUsername())
+							.isEqualTo("sa");
 				}));
 	}
 

@@ -60,6 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Dominic Gunn
  */
 public class FlywayAutoConfigurationTests {
 
@@ -74,9 +75,19 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void createDataSource() {
+	public void createDataSourceWithUrl() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:flywaytest",
+				.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:flywaytest")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
+				});
+	}
+
+	@Test
+	public void createDataSourceWithUser() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:normal",
 						"spring.flyway.user:sa")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
