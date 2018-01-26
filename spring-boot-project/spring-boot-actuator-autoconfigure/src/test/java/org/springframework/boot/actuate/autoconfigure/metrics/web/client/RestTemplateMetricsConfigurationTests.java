@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsContextBuilder;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
@@ -62,6 +63,27 @@ public class RestTemplateMetricsConfigurationTests {
 					.build();
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			validateRestTemplate(restTemplate, registry);
+		});
+	}
+
+	@Test
+	public void afterMaxUrisReachedFurtherUrisAreDenied() {
+		this.contextRunner.run((context) -> {
+			int maxUriTags = context.getBean(MetricsProperties.class).getWeb().getClient().getMaxUriTags();
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
+
+			MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+
+			for (int i = 0; i < maxUriTags + 10; i++) {
+				server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
+			}
+
+			for (int i = 0; i < maxUriTags + 10; i++) {
+				restTemplate.getForObject("/test/" + i, String.class);
+			}
+
+			assertThat(registry.mustFind("http.client.requests").meters()).hasSize(maxUriTags);
 		});
 	}
 
