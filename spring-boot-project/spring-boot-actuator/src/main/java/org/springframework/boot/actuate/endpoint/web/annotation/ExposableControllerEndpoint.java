@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 /**
  * Information describing an endpoint that can be exposed over Spring MVC or Spring
  * WebFlux. Mappings should be discovered directly from {@link #getController()} and
- * {@link #getOperations() operation} should always return an empty collection.
+ * {@link #getOperations()} should always return an empty collection.
  *
  * @author Phillip Webb
  * @since 2.0.0

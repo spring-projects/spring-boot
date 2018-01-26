@@ -142,7 +142,7 @@ class BootArchiveSupport {
 				Map<RelativePath, FileCopyDetailsInternal> detailsByPath = new TreeMap<>();
 				stream.process((details) -> detailsByPath.put(details.getRelativePath(),
 						details));
-				detailsByPath.values().stream().forEach(action::processFile);
+				detailsByPath.values().forEach(action::processFile);
 			});
 		}
 
