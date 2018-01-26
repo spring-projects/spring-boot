@@ -111,7 +111,6 @@ public class WebEndpointAutoConfiguration {
 	@ConditionalOnMissingBean(ControllerEndpointsSupplier.class)
 	public ControllerEndpointDiscoverer controllerEndpointDiscoverer(
 			PathMapper webEndpointPathMapper,
-			ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
 			ObjectProvider<Collection<EndpointFilter<ExposableControllerEndpoint>>> filters) {
 		return new ControllerEndpointDiscoverer(this.applicationContext,
 				webEndpointPathMapper, filters.getIfAvailable(Collections::emptyList));
@@ -149,7 +148,6 @@ public class WebEndpointAutoConfiguration {
 		@ConditionalOnMissingBean(ServletEndpointsSupplier.class)
 		public ServletEndpointDiscoverer servletEndpointDiscoverer(
 				ApplicationContext applicationContext, PathMapper webEndpointPathMapper,
-				ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
 				ObjectProvider<Collection<EndpointFilter<ExposableServletEndpoint>>> filters) {
 			return new ServletEndpointDiscoverer(applicationContext,
 					webEndpointPathMapper,
