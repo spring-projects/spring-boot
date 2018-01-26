@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 /**
- * Identifies a type as being a rest endpoint that is only exposed over Spring MVC or
+ * Identifies a type as being an endpoint that is only exposed over Spring MVC or
  * Spring WebFlux. Mapped methods must be annotated with {@link GetMapping @GetMapping},
  * {@link PostMapping @PostMapping}, {@link DeleteMapping @DeleteMapping}, etc annotations
  * rather than {@link ReadOperation @ReadOperation},
@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.PostMapping;
  * @author Phillip Webb
  * @since 2.0.0
  * @see WebEndpoint
- * @see ControllerEndpoint
+ * @see RestControllerEndpoint
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

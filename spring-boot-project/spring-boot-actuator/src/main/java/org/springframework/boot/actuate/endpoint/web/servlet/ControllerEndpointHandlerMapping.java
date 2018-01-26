@@ -55,7 +55,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	 * Create a new {@link ControllerEndpointHandlerMapping} instance providing mappings
 	 * for the specified endpoints.
 	 * @param endpointMapping the base mapping for all endpoints
-	 * @param endpoints the web endpoints operations
+	 * @param endpoints the web endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 */
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
@@ -73,7 +73,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	private Map<Object, ExposableControllerEndpoint> getHandlers(
 			Collection<ExposableControllerEndpoint> endpoints) {
 		Map<Object, ExposableControllerEndpoint> handlers = new LinkedHashMap<>();
-		endpoints.stream()
+		endpoints
 				.forEach((endpoint) -> handlers.put(endpoint.getController(), endpoint));
 		return Collections.unmodifiableMap(handlers);
 	}

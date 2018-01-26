@@ -151,7 +151,7 @@ use the following additional endpoints:
 |Yes
 
 |`jolokia`
-|Exposes JMX beans over HTTP (when Jolokia is on the classpath, not availble for WebFlux).
+|Exposes JMX beans over HTTP (when Jolokia is on the classpath, not available for WebFlux).
 |Yes
 
 |`logfile`
@@ -1023,7 +1023,7 @@ The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the
 ==== Customizing Jolokia
 Jolokia has a number of settings that you would traditionally configure by setting servlet
 parameters. With Spring Boot, you can use your `application.properties` file. To do so,
-prefix the parameter with `management.endpont.jolokia.config.`, as shown in the following
+prefix the parameter with `management.endpoint.jolokia.config.`, as shown in the following
 example:
 
 [source,properties,indent=0]
