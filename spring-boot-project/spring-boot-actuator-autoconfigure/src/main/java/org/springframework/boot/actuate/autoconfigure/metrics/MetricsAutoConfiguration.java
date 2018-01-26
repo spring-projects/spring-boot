@@ -30,7 +30,9 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia.Gan
 import org.springframework.boot.actuate.autoconfigure.metrics.export.graphite.GraphiteExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.influx.InfluxExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxExportConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic.NewRelicExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusExportConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsConfiguration;
@@ -81,7 +83,8 @@ import org.springframework.integration.support.management.IntegrationManagementC
 		AtlasExportConfiguration.class, DatadogExportConfiguration.class,
 		GangliaExportConfiguration.class, GraphiteExportConfiguration.class,
 		InfluxExportConfiguration.class, JmxExportConfiguration.class,
-		PrometheusExportConfiguration.class, SimpleExportConfiguration.class,
+		NewRelicExportConfiguration.class, PrometheusExportConfiguration.class,
+		SignalFxExportConfiguration.class, SimpleExportConfiguration.class,
 		StatsdExportConfiguration.class,
 
 		// conditionally build a composite registry out of more than one registry present
@@ -92,7 +95,7 @@ import org.springframework.integration.support.management.IntegrationManagementC
 public class MetricsAutoConfiguration {
 	@Bean
 	@Order(0)
-	public MeterFilter g(MetricsProperties props) {
+	public MeterFilter metricsPropertiesFilter(MetricsProperties props) {
 		return new PropertiesMeterFilter(props);
 	}
 
