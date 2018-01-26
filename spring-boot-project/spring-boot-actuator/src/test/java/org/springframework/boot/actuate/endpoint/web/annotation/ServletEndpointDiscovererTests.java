@@ -112,7 +112,7 @@ public class ServletEndpointDiscovererTests {
 	}
 
 	@Test
-	public void getEndpointWhenEndpoinSuppliesNullShouldThrowException() {
+	public void getEndpointWhenEndpointSuppliesNullShouldThrowException() {
 		load(TestServletEndpointSupplierOfNull.class, (discoverer) -> {
 			this.thrown.expect(IllegalStateException.class);
 			this.thrown.expectMessage("must not supply null");

@@ -142,7 +142,7 @@ public class HttpExchangeTracerTests {
 	public void mixedCaseCookieHeaderIsNotIncludedByDefault() {
 		HttpTrace trace = new HttpExchangeTracer(EnumSet.of(Include.REQUEST_HEADERS))
 				.receivedRequest(createRequest(Collections.singletonMap(
-						mixedCase(HttpHeaders.COOKIE), Arrays.asList("valuet"))));
+						mixedCase(HttpHeaders.COOKIE), Arrays.asList("value"))));
 		Request request = trace.getRequest();
 		assertThat(request.getHeaders()).isEmpty();
 	}
@@ -285,7 +285,7 @@ public class HttpExchangeTracerTests {
 	}
 
 	@Test
-	public void timeTakedCanBeIncluded() {
+	public void timeTakenCanBeIncluded() {
 		HttpTrace trace = new HttpTrace(createRequest());
 		new HttpExchangeTracer(EnumSet.of(Include.TIME_TAKEN)).sendingResponse(trace,
 				createResponse(), null, null);

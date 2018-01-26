@@ -28,7 +28,7 @@ public interface ParameterValueMapper {
 	/**
 	 * A {@link ParameterValueMapper} that does nothing.
 	 */
-	ParameterValueMapper NONE = (paramere, value) -> value;
+	ParameterValueMapper NONE = (parameter, value) -> value;
 
 	/**
 	 * Map the specified {@code input} parameter to the given {@code parameterType}.
