@@ -130,7 +130,6 @@ public class RouterFunctionMetrics {
 			return next.handle(request).doOnSuccess((response) -> {
 				timer(start, request, response);
 			}).doOnError((error) -> {
-				// FIXME how do we get the response under an error condition?
 				timer(start, request, null);
 			});
 		}
