@@ -1254,7 +1254,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.threaddump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.threaddump.enabled= # Whether to enable the threaddump endpoint.
 
-	# TRACE ENDPOINT ({sc-spring-boot-actuator}/trace/TraceEndpoint.{sc-ext}[TraceEndpoint])
+	# TRACE ENDPOINT ({sc-spring-boot-actuator}/web/trace/HttpTraceEndpoint.{sc-ext}[HttpTraceEndpoint])
 	management.endpoint.trace.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.trace.enabled= # Whether to enable the trace endpoint.
 
@@ -1378,8 +1378,8 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.web.server.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	management.metrics.web.server.requests-metric-name=http.server.requests # Name of the metric for received requests.
 
-	# TRACING ({sc-spring-boot-actuator-autoconfigure}/trace/TraceEndpointProperties.{sc-ext}[TraceEndpointProperties])
-	management.trace.filter.enabled=true # Whether to enable the trace servlet filter.
+	# TRACING ({sc-spring-boot-actuator-autoconfigure}/web/trace/TraceProperties.{sc-ext}[TraceProperties])
+	management.trace.enabled=true # Whether to enable HTTP request-response tracing.
 	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 
