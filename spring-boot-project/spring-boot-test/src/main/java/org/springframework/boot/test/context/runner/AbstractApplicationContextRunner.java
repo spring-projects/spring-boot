@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.test.context.runner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
@@ -218,6 +219,16 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 		return newInstance(this.contextFactory, this.environmentProperties,
 				this.systemProperties, this.classLoader, this.parent,
 				add(this.configurations, configurations));
+	}
+
+	/**
+	 * Apply customization to this runner.
+	 * @param customizer the customizer to call
+	 * @return a new instance with the customizations applied
+	 */
+	@SuppressWarnings("unchecked")
+	public SELF with(Function<SELF, SELF> customizer) {
+		return customizer.apply((SELF) this);
 	}
 
 	private <T> List<T> add(List<T> list, T element) {

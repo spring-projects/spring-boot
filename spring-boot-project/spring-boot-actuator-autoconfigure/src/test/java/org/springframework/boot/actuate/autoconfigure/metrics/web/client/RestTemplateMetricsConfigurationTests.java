@@ -17,17 +17,14 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsRun;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -44,10 +41,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 public class RestTemplateMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("management.metrics.use-global-registry=false")
-			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-					MetricsAutoConfiguration.class))
-			.withUserConfiguration(RegistryConfiguration.class);
+			.with(MetricsRun.simple()).withConfiguration(
+					AutoConfigurations.of(RestTemplateAutoConfiguration.class));
 
 	@Test
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
@@ -78,16 +73,6 @@ public class RestTemplateMetricsConfigurationTests {
 		assertThat(restTemplate.getForEntity("/test", Void.class).getStatusCode())
 				.isEqualTo(HttpStatus.OK);
 		registry.get("http.client.requests").meter();
-	}
-
-	@Configuration
-	static class RegistryConfiguration {
-
-		@Bean
-		public MeterRegistry registry() {
-			return new SimpleMeterRegistry();
-		}
-
 	}
 
 }

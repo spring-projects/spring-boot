@@ -17,15 +17,13 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.cache;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,10 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CacheMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(RegistryConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-					CacheAutoConfiguration.class))
-			.withPropertyValues("management.metrics.use-global-registry=false");
+			.with(MetricsRun.simple()).withUserConfiguration(CachingConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguredCacheManagerIsInstrumented() {
@@ -93,12 +89,7 @@ public class CacheMetricsConfigurationTests {
 
 	@Configuration
 	@EnableCaching
-	static class RegistryConfiguration {
-
-		@Bean
-		public MeterRegistry meterRegistry() {
-			return new SimpleMeterRegistry();
-		}
+	static class CachingConfiguration {
 
 	}
 

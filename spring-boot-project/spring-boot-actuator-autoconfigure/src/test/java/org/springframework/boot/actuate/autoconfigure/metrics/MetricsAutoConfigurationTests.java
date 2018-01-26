@@ -21,7 +21,6 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -40,10 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("management.metrics.use-global-registry=false")
-			.withUserConfiguration(RegistryConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.with(MetricsRun.simple());
 
 	@Test
 	public void autoConfiguredDataSourceIsInstrumented() {
@@ -105,16 +102,6 @@ public class MetricsAutoConfigurationTests {
 					registry.get("data.source.max.connections").tags("name", "secondOne")
 							.meter();
 				});
-	}
-
-	@Configuration
-	static class RegistryConfiguration {
-
-		@Bean
-		public MeterRegistry meterRegistry() {
-			return new SimpleMeterRegistry();
-		}
-
 	}
 
 	@Configuration

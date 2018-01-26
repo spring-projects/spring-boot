@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 
@@ -34,13 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MeterRegistryConfigurerTests {
 
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.with(MetricsRun.simple());
+
 	@Test
 	public void commonTagsAreAppliedToAutoConfiguredBinders() {
-		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withConfiguration(
-						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
-				.withPropertyValues("management.metrics.use-global-registry=false")
+		this.contextRunner
+				.withUserConfiguration(MeterRegistryConfigurerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
 						.get("jvm.memory.used").tags("region", "us-east-1").gauge())
 								.isNotNull());
@@ -48,11 +46,8 @@ public class MeterRegistryConfigurerTests {
 
 	@Test
 	public void commonTagsAreAppliedBeforeRegistryIsInjectableElsewhere() {
-		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withConfiguration(
-						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
-				.withPropertyValues("management.metrics.use-global-registry=false")
+		this.contextRunner
+				.withUserConfiguration(MeterRegistryConfigurerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
 						.get("my.thing").tags("region", "us-east-1").gauge())
 								.isNotNull());
@@ -72,6 +67,7 @@ public class MeterRegistryConfigurerTests {
 		}
 
 		class MyThing {
+
 		}
 
 	}
