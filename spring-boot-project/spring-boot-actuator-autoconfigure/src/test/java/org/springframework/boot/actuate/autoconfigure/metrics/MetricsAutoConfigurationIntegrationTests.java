@@ -19,10 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
-import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
@@ -47,6 +50,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -84,6 +88,9 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Autowired
 	private MeterRegistry registry;
 
+	@Autowired
+	private CyclicBarrier cyclicBarrier;
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void restTemplateIsInstrumented() {
@@ -94,15 +101,15 @@ public class MetricsAutoConfigurationIntegrationTests {
 						"{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
 		assertThat(this.external.getForObject("/api/external", Map.class))
 				.containsKey("message");
-		assertThat(this.registry.find("http.client.requests").value(Statistic.Count, 1.0)
-				.timer()).isPresent();
+		assertThat(this.registry.mustFind("http.client.requests")
+				.timer().count()).isEqualTo(1);
 	}
 
 	@Test
 	public void requestMappingIsInstrumented() {
 		this.loopback.getForObject("/api/people", Set.class);
-		assertThat(this.registry.find("http.server.requests").value(Statistic.Count, 1.0)
-				.timer()).isPresent();
+		assertThat(this.registry.mustFind("http.server.requests")
+				.timer().count()).isEqualTo(1);
 	}
 
 	@Test
@@ -110,6 +117,21 @@ public class MetricsAutoConfigurationIntegrationTests {
 		assertThat(this.context.getBeansOfType(MeterBinder.class).values())
 				.hasAtLeastOneElementOfType(LogbackMetrics.class)
 				.hasAtLeastOneElementOfType(JvmMemoryMetrics.class);
+	}
+
+	@Test
+	public void asyncRequestMappingIsInstrumented() throws InterruptedException, BrokenBarrierException {
+		Thread backgroundRequest = new Thread(() -> this.loopback.getForObject("/api/async", String.class));
+		backgroundRequest.start();
+		this.cyclicBarrier.await();
+		MockClock.clock(this.registry).addSeconds(2);
+		this.cyclicBarrier.await();
+		backgroundRequest.join();
+
+		assertThat(this.registry.find("http.server.requests")
+				.tags("uri", "/api/async").timer())
+				.matches(t -> t.count() == 1)
+				.matches(t -> t.totalTime(TimeUnit.SECONDS) == 2);
 	}
 
 	@Configuration
@@ -121,6 +143,7 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Import(PersonController.class)
 	static class MetricsApp {
 
+		@Primary
 		@Bean
 		public MeterRegistry registry() {
 			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
@@ -131,16 +154,38 @@ public class MetricsAutoConfigurationIntegrationTests {
 			return restTemplateBuilder.build();
 		}
 
+		@Bean
+		public CyclicBarrier cyclicBarrier() {
+			return new CyclicBarrier(2);
+		}
 	}
 
 	@RestController
 	static class PersonController {
+		private final CyclicBarrier cyclicBarrier;
+
+		PersonController(CyclicBarrier cyclicBarrier) {
+			this.cyclicBarrier = cyclicBarrier;
+		}
 
 		@GetMapping("/api/people")
 		Set<String> personName() {
 			return Collections.singleton("Jon");
 		}
 
+		@GetMapping("/api/async")
+		CompletableFuture<String> asyncHello() throws BrokenBarrierException, InterruptedException {
+			this.cyclicBarrier.await();
+			return CompletableFuture.supplyAsync(() -> {
+				try {
+					this.cyclicBarrier.await();
+				}
+				catch (InterruptedException | BrokenBarrierException e) {
+					throw new RuntimeException(e);
+				}
+				return "async-hello";
+			});
+		}
 	}
 
 }

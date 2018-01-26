@@ -21,13 +21,11 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,28 +38,34 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("management.metrics.use-global-registry=false")
-			.withUserConfiguration(RegistryConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
+	@Test
+	public void propertyBasedMeterFilter() {
+		MetricsContextBuilder.contextRunner("simple")
+				.withPropertyValues("management.metrics.enabled.my.org=false")
+				.run(context -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					registry.timer("my.org.timer");
+					assertThat(registry.find("my.org.timer").timer()).isNull();
+				});
+	}
 
 	@Test
 	public void autoConfiguredDataSourceIsInstrumented() {
-		this.contextRunner
+		MetricsContextBuilder.contextRunner("simple")
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isPresent();
+					registry.mustFind("data.source.max.connections")
+							.tags("name", "dataSource").meter();
 				});
 	}
 
 	@Test
 	public void autoConfiguredDataSourceWithCustomMetricName() {
-		this.contextRunner
+		MetricsContextBuilder.contextRunner("simple")
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
@@ -69,14 +73,14 @@ public class MetricsAutoConfigurationTests {
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("custom.name.max.connections")
-							.tags("name", "dataSource").meter()).isPresent();
+					registry.mustFind("custom.name.max.connections")
+							.tags("name", "dataSource").meter();
 				});
 	}
 
 	@Test
 	public void dataSourceInstrumentationCanBeDisabled() {
-		this.contextRunner
+		MetricsContextBuilder.contextRunner("simple")
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
@@ -85,13 +89,14 @@ public class MetricsAutoConfigurationTests {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isNotPresent();
+							.tags("name", "dataSource").meter()).isNull();
 				});
 	}
 
 	@Test
 	public void allDataSourcesCanBeInstrumented() {
-		this.contextRunner.withUserConfiguration(TwoDataSourcesConfiguration.class)
+		MetricsContextBuilder.contextRunner("simple")
+				.withUserConfiguration(TwoDataSourcesConfiguration.class)
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.run((context) -> {
@@ -100,21 +105,11 @@ public class MetricsAutoConfigurationTests {
 					context.getBean("secondOne", DataSource.class).getConnection()
 							.getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "first").meter()).isPresent();
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "secondOne").meter()).isPresent();
+					registry.mustFind("data.source.max.connections")
+							.tags("name", "first").meter();
+					registry.mustFind("data.source.max.connections")
+							.tags("name", "secondOne").meter();
 				});
-	}
-
-	@Configuration
-	static class RegistryConfiguration {
-
-		@Bean
-		public MeterRegistry meterRegistry() {
-			return new SimpleMeterRegistry();
-		}
-
 	}
 
 	@Configuration

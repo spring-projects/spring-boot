@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.util.HierarchicalNameMapper;
-import io.micrometer.statsd.StatsdConfig;
-import io.micrometer.statsd.StatsdMeterRegistry;
+import io.micrometer.newrelic.NewRelicConfig;
+import io.micrometer.newrelic.NewRelicMeterRegistry;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,39 +28,33 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for exporting metrics to StatsD.
+ * Configuration for exporting metrics to New Relic.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(StatsdMeterRegistry.class)
-@EnableConfigurationProperties(StatsdProperties.class)
-public class StatsdExportConfiguration {
+@ConditionalOnClass(NewRelicMeterRegistry.class)
+@EnableConfigurationProperties(NewRelicProperties.class)
+public class NewRelicExportConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(StatsdConfig.class)
-	public StatsdConfig statsdConfig(StatsdProperties statsdProperties) {
-		return new StatsdPropertiesConfigAdapter(statsdProperties);
+	@ConditionalOnMissingBean
+	public NewRelicConfig newRelicConfig(NewRelicProperties props) {
+		return new NewRelicPropertiesConfigAdapter(props);
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.export.statsd.enabled", matchIfMissing = true)
-	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig,
-			HierarchicalNameMapper hierarchicalNameMapper, Clock clock) {
-		return new StatsdMeterRegistry(statsdConfig, hierarchicalNameMapper, clock);
+	@ConditionalOnProperty(value = "management.metrics.export.newrelic.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean
+	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig config, Clock clock) {
+		return new NewRelicMeterRegistry(config, clock);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public Clock micrometerClock() {
 		return Clock.SYSTEM;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HierarchicalNameMapper hierarchicalNameMapper() {
-		return HierarchicalNameMapper.DEFAULT;
 	}
 
 }

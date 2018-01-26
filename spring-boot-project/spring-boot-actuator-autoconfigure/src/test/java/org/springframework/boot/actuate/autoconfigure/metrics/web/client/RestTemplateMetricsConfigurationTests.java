@@ -17,17 +17,15 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsContextBuilder;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -43,11 +41,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 public class RestTemplateMetricsConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("management.metrics.use-global-registry=false")
-			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-					MetricsAutoConfiguration.class))
-			.withUserConfiguration(RegistryConfiguration.class);
+	private final ApplicationContextRunner contextRunner = MetricsContextBuilder.contextRunner("simple")
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class));
 
 	@Test
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
@@ -71,23 +66,34 @@ public class RestTemplateMetricsConfigurationTests {
 		});
 	}
 
+	@Test
+	public void afterMaxUrisReachedFurtherUrisAreDenied() {
+		this.contextRunner.run((context) -> {
+			int maxUriTags = context.getBean(MetricsProperties.class).getWeb().getClient().getMaxUriTags();
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
+
+			MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+
+			for (int i = 0; i < maxUriTags + 10; i++) {
+				server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
+			}
+
+			for (int i = 0; i < maxUriTags + 10; i++) {
+				restTemplate.getForObject("/test/" + i, String.class);
+			}
+
+			assertThat(registry.mustFind("http.client.requests").meters()).hasSize(maxUriTags);
+		});
+	}
+
 	private void validateRestTemplate(RestTemplate restTemplate, MeterRegistry registry) {
 		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
 		server.expect(requestTo("/test")).andRespond(withStatus(HttpStatus.OK));
-		assertThat(registry.find("http.client.requests").meter()).isNotPresent();
+		assertThat(registry.find("http.client.requests").meter()).isNull();
 		assertThat(restTemplate.getForEntity("/test", Void.class).getStatusCode())
 				.isEqualTo(HttpStatus.OK);
-		assertThat(registry.find("http.client.requests").meter()).isPresent();
-	}
-
-	@Configuration
-	static class RegistryConfiguration {
-
-		@Bean
-		public MeterRegistry registry() {
-			return new SimpleMeterRegistry();
-		}
-
+		registry.mustFind("http.client.requests").meter();
 	}
 
 }

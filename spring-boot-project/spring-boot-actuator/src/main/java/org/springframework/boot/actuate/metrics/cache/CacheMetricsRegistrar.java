@@ -79,8 +79,8 @@ public class CacheMetricsRegistrar {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private MeterBinder getMeterBinder(Cache cache, List<Tag> tags) {
-		tags.addAll(getAdditionalTags(cache));
+	private MeterBinder getMeterBinder(Cache cache, Iterable<Tag> tags) {
+		Iterable<Tag> withAdditionalTags = Tags.concat(tags, getAdditionalTags(cache));
 		for (CacheMeterBinderProvider<?> binderProvider : this.binderProviders) {
 			Class<?> cacheType = ResolvableType
 					.forClass(CacheMeterBinderProvider.class, binderProvider.getClass())
@@ -88,7 +88,7 @@ public class CacheMetricsRegistrar {
 			if (cacheType.isInstance(cache)) {
 				try {
 					MeterBinder meterBinder = ((CacheMeterBinderProvider) binderProvider)
-							.getMeterBinder(cache, this.metricName, tags);
+							.getMeterBinder(cache, this.metricName, withAdditionalTags);
 					if (meterBinder != null) {
 						return meterBinder;
 					}
@@ -120,7 +120,7 @@ public class CacheMetricsRegistrar {
 	 * @param cache the cache
 	 * @return a list of additional tags to associate to that {@code cache}.
 	 */
-	protected List<Tag> getAdditionalTags(Cache cache) {
+	protected Iterable<Tag> getAdditionalTags(Cache cache) {
 		return Tags.zip("name", cache.getName());
 	}
 

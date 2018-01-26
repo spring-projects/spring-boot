@@ -22,6 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+
 /**
  * Provides {@link Tag Tags} for Spring MVC-based request handling.
  *
@@ -29,26 +32,30 @@ import io.micrometer.core.instrument.Tag;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public interface WebMvcTagsProvider {
-
+public interface ServletTagsProvider {
 	/**
 	 * Provides tags to be used by {@link LongTaskTimer long task timers}.
+	 *
 	 * @param request the HTTP request
 	 * @param handler the handler for the request
 	 * @return tags to associate with metrics recorded for the request
 	 */
-	Iterable<Tag> httpLongRequestTags(HttpServletRequest request, Object handler);
+	@NonNull
+	Iterable<Tag> httpLongRequestTags(@Nullable HttpServletRequest request,
+			@Nullable Object handler);
 
 	/**
 	 * Provides tags to be associated with metrics for the given {@code request} and
-	 * {@code response} exchange. The request was handled by the given {@code handler}.
+	 * {@code response} exchange.
+	 *
 	 * @param request the request
-	 * @param handler the handler
 	 * @param response the response
+	 * @param handler the handler for the request
 	 * @param ex the current exception, if any
 	 * @return tags to associate with metrics for the request and response exchange
 	 */
-	Iterable<Tag> httpRequestTags(HttpServletRequest request, Object handler,
-			HttpServletResponse response, Throwable ex);
-
+	@NonNull
+	Iterable<Tag> httpRequestTags(@Nullable HttpServletRequest request,
+			@Nullable HttpServletResponse response, @Nullable Object handler,
+			@Nullable Throwable ex);
 }

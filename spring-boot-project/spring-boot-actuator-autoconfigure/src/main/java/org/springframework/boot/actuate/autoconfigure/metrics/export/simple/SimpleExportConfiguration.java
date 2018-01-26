@@ -17,10 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,9 +39,9 @@ public class SimpleExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.simple.enabled", matchIfMissing = true)
-	@ConditionalOnMissingBean(MetricsExporter.class)
-	public MetricsExporter simpleExporter(SimpleConfig config, Clock clock) {
-		return () -> new SimpleMeterRegistry(config, clock);
+	@ConditionalOnMissingBean(MeterRegistry.class)
+	public SimpleMeterRegistry simpleMeterRegistry(SimpleConfig config, Clock clock) {
+		return new SimpleMeterRegistry(config, clock);
 	}
 
 	@Bean

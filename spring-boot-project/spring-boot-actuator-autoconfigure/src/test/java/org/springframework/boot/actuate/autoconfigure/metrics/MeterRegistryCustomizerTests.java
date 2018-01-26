@@ -19,50 +19,41 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.context.annotation.UserConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for applying {@link MeterRegistryConfigurer MeterRegistryConfigurers}.
+ * Tests for applying {@link MeterRegistryCustomizer MeterRegistryConfigurers}.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
  */
-public class MeterRegistryConfigurerTests {
+public class MeterRegistryCustomizerTests {
 
 	@Test
 	public void commonTagsAreAppliedToAutoConfiguredBinders() {
-		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withConfiguration(
-						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
-				.withPropertyValues("management.metrics.use-global-registry=false")
+		MetricsContextBuilder.contextRunner("simple")
+				.withUserConfiguration(MeterRegistryCustomizerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
-						.find("jvm.memory.used").tags("region", "us-east-1").gauge())
-								.isPresent());
+						.mustFind("jvm.memory.used").tags("region", "us-east-1").gauge())
+						.isNotNull());
 	}
 
 	@Test
 	public void commonTagsAreAppliedBeforeRegistryIsInjectableElsewhere() {
-		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withConfiguration(
-						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
-				.withPropertyValues("management.metrics.use-global-registry=false")
+		MetricsContextBuilder.contextRunner("simple")
+				.withUserConfiguration(MeterRegistryCustomizerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
-						.find("my.thing").tags("region", "us-east-1").gauge())
-								.isPresent());
+						.mustFind("my.thing").tags("region", "us-east-1").gauge())
+						.isNotNull());
 	}
 
-	static class MeterRegistryConfigurerConfiguration {
+	static class MeterRegistryCustomizerConfiguration {
 
 		@Bean
-		public MeterRegistryConfigurer registryConfigurer() {
-			return (registry) -> registry.config().commonTags("region", "us-east-1");
+		public MeterRegistryCustomizer commonTags() {
+			return registry -> registry.config().commonTags("region", "us-east-1");
 		}
 
 		@Bean

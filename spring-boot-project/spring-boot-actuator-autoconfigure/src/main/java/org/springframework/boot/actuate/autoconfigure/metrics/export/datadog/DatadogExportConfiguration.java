@@ -20,7 +20,6 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,8 +47,8 @@ public class DatadogExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.datadog.enabled", matchIfMissing = true)
-	public MetricsExporter datadogExporter(DatadogConfig datadogConfig, Clock clock) {
-		return () -> new DatadogMeterRegistry(datadogConfig, clock);
+	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig, Clock clock) {
+		return new DatadogMeterRegistry(datadogConfig, clock);
 	}
 
 	@Bean

@@ -19,18 +19,18 @@ package org.springframework.boot.actuate.endpoint.web.servlet;
 import io.micrometer.core.instrument.Tag;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags;
+import org.springframework.boot.actuate.metrics.web.servlet.ServletTags;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebMvcTags}.
+ * Tests for {@link ServletTags}.
  *
  * @author Andy Wilkinson
  */
-public class WebMvcTagsTests {
+public class ServletTagsTests {
 
 	private final MockHttpServletRequest request = new MockHttpServletRequest();
 
@@ -39,21 +39,21 @@ public class WebMvcTagsTests {
 	@Test
 	public void uriTagValueIsRedirectionWhenResponseStatusIs3xx() {
 		this.response.setStatus(301);
-		Tag tag = WebMvcTags.uri(this.request, this.response);
+		Tag tag = ServletTags.uri(this.request, this.response);
 		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
 	}
 
 	@Test
 	public void uriTagValueIsNotFoundWhenResponseStatusIs404() {
 		this.response.setStatus(404);
-		Tag tag = WebMvcTags.uri(this.request, this.response);
+		Tag tag = ServletTags.uri(this.request, this.response);
 		assertThat(tag.getValue()).isEqualTo("NOT_FOUND");
 	}
 
 	@Test
 	public void uriTagToleratesCustomResponseStatus() {
 		this.response.setStatus(601);
-		Tag tag = WebMvcTags.uri(this.request, this.response);
+		Tag tag = ServletTags.uri(this.request, this.response);
 		assertThat(tag.getValue()).isEqualTo("/");
 	}
 

@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -33,58 +35,34 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public final class WebMvcTags {
+public final class ServletTags {
 
-	private WebMvcTags() {
+	private ServletTags() {
 	}
 
 	/**
 	 * Creates a {@code method} tag based on the {@link HttpServletRequest#getMethod()
 	 * method} of the given {@code request}.
+	 *
 	 * @param request the request
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
-	public static Tag method(HttpServletRequest request) {
-		return Tag.of("method", request.getMethod());
+	@NonNull
+	public static Tag method(@Nullable HttpServletRequest request) {
+		return request == null ? Tag.of("method", "UNKNOWN")
+				: Tag.of("method", request.getMethod());
 	}
 
 	/**
 	 * Creates a {@code method} tag based on the status of the given {@code response}.
+	 *
 	 * @param response the HTTP response
 	 * @return the status tag derived from the status of the response
 	 */
-	public static Tag status(HttpServletResponse response) {
-		return Tag.of("status", ((Integer) response.getStatus()).toString());
-	}
-
-	/**
-	 * Creates a {@code uri} tag based on the URI of the given {@code request}. Uses the
-	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
-	 * available, falling back to the request's {@link HttpServletRequest#getPathInfo()
-	 * path info} if necessary.
-	 * @param request the request
-	 * @param response the response
-	 * @return the uri tag derived from the request
-	 */
-	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
-		if (response != null) {
-			HttpStatus status = extractStatus(response);
-			if (status != null && status.is3xxRedirection()) {
-				return Tag.of("uri", "REDIRECTION");
-			}
-			if (HttpStatus.NOT_FOUND.equals(status)) {
-				return Tag.of("uri", "NOT_FOUND");
-			}
-		}
-		String uri = (String) request
-				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-		if (uri == null) {
-			uri = request.getPathInfo();
-		}
-		if (!StringUtils.hasText(uri)) {
-			uri = "/";
-		}
-		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
+	@NonNull
+	public static Tag status(@Nullable HttpServletResponse response) {
+		return response == null ? Tag.of("status", "UNKNOWN")
+				: Tag.of("status", ((Integer) response.getStatus()).toString());
 	}
 
 	private static HttpStatus extractStatus(HttpServletResponse response) {
@@ -97,16 +75,62 @@ public final class WebMvcTags {
 	}
 
 	/**
+	 * Creates a {@code uri} tag based on the URI of the given {@code request}. Uses the
+	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
+	 * available, falling back to the request's {@link HttpServletRequest#getPathInfo()
+	 * path info} if necessary.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @return the uri tag derived from the request
+	 */
+	@NonNull
+	public static Tag uri(@Nullable HttpServletRequest request,
+			@Nullable HttpServletResponse response) {
+		if (response != null) {
+			HttpStatus status = extractStatus(response);
+			if (status != null && status.is3xxRedirection()) {
+				return Tag.of("uri", "REDIRECTION");
+			}
+			if (HttpStatus.NOT_FOUND.equals(status)) {
+				return Tag.of("uri", "NOT_FOUND");
+			}
+		}
+		else {
+			// Long task timers won't be initiated if there is no handler found, as they
+			// aren't auto-timed.
+			// If no handler is found, 30
+		}
+
+		if (request == null) {
+			return Tag.of("uri", "UNKNOWN");
+		}
+
+		String uri = (String) request
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		if (uri == null) {
+			uri = request.getPathInfo();
+		}
+		if (!StringUtils.hasText(uri)) {
+			uri = "/";
+		}
+		uri = uri.replaceAll("//+", "/").replaceAll("/$", "");
+
+		return Tag.of("uri", uri.isEmpty() ? "/" : uri);
+	}
+
+	/**
 	 * Creates a {@code exception} tag based on the {@link Class#getSimpleName() simple
 	 * name} of the class of the given {@code exception}.
+	 *
 	 * @param exception the exception, may be {@code null}
 	 * @return the exception tag derived from the exception
 	 */
-	public static Tag exception(Throwable exception) {
+	@NonNull
+	public static Tag exception(@Nullable Throwable exception) {
 		if (exception != null) {
 			return Tag.of("exception", exception.getClass().getSimpleName());
 		}
 		return Tag.of("exception", "None");
 	}
-
 }
