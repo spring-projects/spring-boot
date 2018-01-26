@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.liquibase;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
@@ -153,20 +154,20 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		private DataSource createNewDataSource() {
-			String url = this.properties.getUrl() == null
-					? this.dataSourceProperties.getUrl()
-					: this.properties.getUrl();
-
-			String user = this.properties.getUser() == null
-					? this.dataSourceProperties.getUsername()
-					: this.properties.getUser();
-
-			String password = this.properties.getPassword() == null
-					? this.dataSourceProperties.getPassword()
-					: this.properties.getPassword();
-
+			String url = getProperty(this.properties::getUrl,
+					this.dataSourceProperties::getUrl);
+			String user = getProperty(this.properties::getUser,
+					this.dataSourceProperties::getUsername);
+			String password = getProperty(this.properties::getPassword,
+					this.dataSourceProperties::getPassword);
 			return DataSourceBuilder.create().url(url).username(user).password(password)
 					.build();
+		}
+
+		private String getProperty(Supplier<String> property,
+				Supplier<String> defaultValue) {
+			String value = property.get();
+			return value == null ? defaultValue.get() : value;
 		}
 
 	}

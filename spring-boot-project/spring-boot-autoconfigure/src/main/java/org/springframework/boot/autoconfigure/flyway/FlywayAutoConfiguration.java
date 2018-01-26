@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -129,18 +130,12 @@ public class FlywayAutoConfiguration {
 		public Flyway flyway() {
 			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {
-				String url = this.properties.getUrl() == null
-						? this.dataSourceProperties.getUrl()
-						: this.properties.getUrl();
-
-				String user = this.properties.getUser() == null
-						? this.dataSourceProperties.getUsername()
-						: this.properties.getUser();
-
-				String password = this.properties.getPassword() == null
-						? this.dataSourceProperties.getPassword()
-						: this.properties.getPassword();
-
+				String url = getProperty(this.properties::getUrl,
+						this.dataSourceProperties::getUrl);
+				String user = getProperty(this.properties::getUser,
+						this.dataSourceProperties::getUsername);
+				String password = getProperty(this.properties::getPassword,
+						this.dataSourceProperties::getPassword);
 				flyway.setDataSource(url, user, password,
 						this.properties.getInitSqls().toArray(new String[0]));
 			}
@@ -159,13 +154,20 @@ public class FlywayAutoConfiguration {
 			return flyway;
 		}
 
+		private String getProperty(Supplier<String> property,
+				Supplier<String> defaultValue) {
+			String value = property.get();
+			return value == null ? defaultValue.get() : value;
+		}
+
 		private void checkLocationExists(String... locations) {
 			if (this.properties.isCheckLocation()) {
 				Assert.state(locations.length != 0,
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation(locations);
-				Assert.state(exists, () -> "Cannot find migrations location in: "
-						+ Arrays.asList(locations)
+				Assert.state(exists,
+						() -> "Cannot find migrations location in: " + Arrays.asList(
+								locations)
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}
