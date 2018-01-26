@@ -3013,7 +3013,7 @@ Access rules can be overridden by adding a custom `WebSecurityConfigurerAdapter`
 Boot provides convenience methods that can be used to override access rules for actuator
 endpoints and static resources. `EndpointRequest` can be used to create a `RequestMatcher`
 that is based on the `management.endpoints.web.base-path` property.
-`StaticResourceRequest` can be used to create a `RequestMatcher` for static resources in
+`PathRequest` can be used to create a `RequestMatcher` for resources in
 commonly used locations.
 
 

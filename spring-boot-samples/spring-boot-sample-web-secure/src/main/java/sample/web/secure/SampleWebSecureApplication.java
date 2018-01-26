@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.StaticResourceRequest;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -64,7 +64,7 @@ public class SampleWebSecureApplication implements WebMvcConfigurer {
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
 			http.authorizeRequests()
-					.requestMatchers(StaticResourceRequest.toCommonLocations()).permitAll()
+					.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 					.anyRequest().fullyAuthenticated()
 					.and()
 				.formLogin().loginPage("/login").failureUrl("/login?error").permitAll()
