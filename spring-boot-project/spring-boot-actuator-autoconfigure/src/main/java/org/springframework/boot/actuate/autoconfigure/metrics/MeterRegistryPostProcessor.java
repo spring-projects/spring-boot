@@ -22,6 +22,7 @@ import java.util.Collections;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -41,13 +42,17 @@ public class MeterRegistryPostProcessor implements BeanPostProcessor {
 
 	private final Collection<MeterRegistryCustomizer> customizers;
 
+	private final Collection<MeterFilter> filters;
+
 	@SuppressWarnings("ConstantConditions")
 	MeterRegistryPostProcessor(MetricsProperties config,
 			ObjectProvider<Collection<MeterBinder>> binders,
-			ObjectProvider<Collection<MeterRegistryCustomizer>> customizers) {
+			ObjectProvider<Collection<MeterRegistryCustomizer>> customizers,
+			ObjectProvider<Collection<MeterFilter>> meterFilters) {
 		this.config = config;
-		this.binders = binders.getIfAvailable() != null ? binders.getIfAvailable() : Collections.emptyList();
-		this.customizers = customizers.getIfAvailable() != null ? customizers.getIfAvailable() : Collections.emptyList();
+		this.binders = binders.getIfAvailable(Collections::emptyList);
+		this.customizers = customizers.getIfAvailable(Collections::emptyList);
+		this.filters = meterFilters.getIfAvailable(Collections::emptyList);
 	}
 
 	@Override
@@ -63,6 +68,8 @@ public class MeterRegistryPostProcessor implements BeanPostProcessor {
 			// Customizers must be applied before binders, as they may add custom tags or alter
 			// timer or summary configuration.
 			this.customizers.forEach(c -> c.configureRegistry(registry));
+
+			this.filters.forEach(f -> registry.config().meterFilter(f));
 
 			this.binders.forEach(b -> b.bindTo(registry));
 

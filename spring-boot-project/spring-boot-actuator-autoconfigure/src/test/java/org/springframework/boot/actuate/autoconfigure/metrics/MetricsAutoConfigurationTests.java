@@ -39,6 +39,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MetricsAutoConfigurationTests {
 
 	@Test
+	public void propertyBasedMeterFilter() {
+		MetricsContextBuilder.contextRunner("simple")
+				.withPropertyValues("management.metrics.enabled.my.org=false")
+				.run(context -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					registry.timer("my.org.timer");
+					assertThat(registry.find("my.org.timer").timer()).isNull();
+				});
+	}
+
+	@Test
 	public void autoConfiguredDataSourceIsInstrumented() {
 		MetricsContextBuilder.contextRunner("simple")
 				.withConfiguration(

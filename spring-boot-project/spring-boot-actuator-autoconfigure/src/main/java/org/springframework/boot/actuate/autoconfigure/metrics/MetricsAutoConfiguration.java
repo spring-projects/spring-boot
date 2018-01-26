@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsConfiguration;
@@ -52,6 +53,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 
@@ -88,6 +90,12 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @AutoConfigureAfter({ CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
 		RabbitAutoConfiguration.class, RestTemplateAutoConfiguration.class })
 public class MetricsAutoConfiguration {
+	@Bean
+	@Order(0)
+	public MeterFilter g(MetricsProperties props) {
+		return new PropertiesMeterFilter(props);
+	}
+
 	@Bean
 	@ConditionalOnBean(MeterRegistry.class)
 	@ConditionalOnMissingBean
