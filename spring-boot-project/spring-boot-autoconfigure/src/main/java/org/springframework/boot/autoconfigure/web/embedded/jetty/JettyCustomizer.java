@@ -30,6 +30,7 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.core.env.Environment;
@@ -50,24 +51,26 @@ public final class JettyCustomizer {
 		ServerProperties.Jetty jettyProperties = serverProperties.getJetty();
 		factory.setUseForwardHeaders(
 				getOrDeduceUseForwardHeaders(serverProperties, environment));
-		if (jettyProperties.getAcceptors() != null) {
-			factory.setAcceptors(jettyProperties.getAcceptors());
-		}
-		if (jettyProperties.getSelectors() != null) {
-			factory.setSelectors(jettyProperties.getSelectors());
-		}
-		if (serverProperties.getMaxHttpHeaderSize() > 0) {
-			customizeMaxHttpHeaderSize(factory, serverProperties.getMaxHttpHeaderSize());
-		}
-		if (jettyProperties.getMaxHttpPostSize() > 0) {
-			customizeMaxHttpPostSize(factory, jettyProperties.getMaxHttpPostSize());
-		}
-		if (serverProperties.getConnectionTimeout() != null) {
-			customizeConnectionTimeout(factory, serverProperties.getConnectionTimeout());
-		}
-		if (jettyProperties.getAccesslog().isEnabled()) {
-			customizeAccessLog(factory, jettyProperties.getAccesslog());
-		}
+		PropertyMapper propertyMapper = PropertyMapper.get();
+		propertyMapper.from(jettyProperties::getAcceptors).whenNonNull()
+				.to(factory::setAcceptors);
+		propertyMapper.from(jettyProperties::getSelectors).whenNonNull()
+				.to(factory::setSelectors);
+		propertyMapper.from(serverProperties::getMaxHttpHeaderSize)
+				.when(JettyCustomizer::isPositive).to(maxHttpHeaderSize ->
+				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize));
+		propertyMapper.from(jettyProperties::getMaxHttpPostSize)
+				.when(JettyCustomizer::isPositive)
+				.to(maxHttpPostSize -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
+		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
+				.to(connectionTimeout -> customizeConnectionTimeout(factory, connectionTimeout));
+		propertyMapper.from(jettyProperties::getAccesslog)
+				.when(ServerProperties.Jetty.Accesslog::isEnabled)
+				.to(accesslog -> customizeAccessLog(factory, accesslog));
+	}
+
+	private static boolean isPositive(Integer value) {
+		return value > 0;
 	}
 
 	private static boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
