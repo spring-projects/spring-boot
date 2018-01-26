@@ -49,13 +49,16 @@ import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.boot.web.servlet.server.Session.Cookie;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -66,6 +69,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link DefaultServletWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
+ * @author Yunkun Huang
  */
 public class DefaultServletWebServerFactoryCustomizerTests {
 
@@ -201,6 +205,24 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		this.properties.setDisplayName("TestName");
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("TestName");
+	}
+
+	@Test
+	public void testCustomizeSsl() {
+		ConfigurableServletWebServerFactory factory = mock(
+				ConfigurableServletWebServerFactory.class);
+		Ssl ssl = mock(Ssl.class);
+		this.properties.setSsl(ssl);
+		this.customizer.customize(factory);
+		verify(factory).setSsl(ssl);
+	}
+
+	@Test
+	public void testCustomizeJsp() {
+		ConfigurableServletWebServerFactory factory = mock(
+				ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setJsp(any(Jsp.class));
 	}
 
 	@Test

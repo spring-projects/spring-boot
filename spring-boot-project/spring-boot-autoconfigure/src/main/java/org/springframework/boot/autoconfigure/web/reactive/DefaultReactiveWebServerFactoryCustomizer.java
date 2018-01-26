@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.embedded.jetty.JettyCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.tomcat.TomcatCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.undertow.UndertowCustomizer;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
@@ -33,6 +34,7 @@ import org.springframework.core.env.Environment;
  * Default {@link WebServerFactoryCustomizer} for reactive servers.
  *
  * @author Brian Clozel
+ * @author Yunkun Huang
  * @since 2.0.0
  */
 public class DefaultReactiveWebServerFactoryCustomizer
@@ -59,33 +61,21 @@ public class DefaultReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableReactiveWebServerFactory factory) {
-		if (this.serverProperties.getPort() != null) {
-			factory.setPort(this.serverProperties.getPort());
-		}
-		if (this.serverProperties.getAddress() != null) {
-			factory.setAddress(this.serverProperties.getAddress());
-		}
-		if (this.serverProperties.getSsl() != null) {
-			factory.setSsl(this.serverProperties.getSsl());
-		}
-		if (this.serverProperties.getCompression() != null) {
-			factory.setCompression(this.serverProperties.getCompression());
-		}
-		if (this.serverProperties.getHttp2() != null) {
-			factory.setHttp2(this.serverProperties.getHttp2());
-		}
-		if (factory instanceof TomcatReactiveWebServerFactory) {
-			TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,
-					(TomcatReactiveWebServerFactory) factory);
-		}
-		if (factory instanceof JettyReactiveWebServerFactory) {
-			JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
-					(JettyReactiveWebServerFactory) factory);
-		}
-		if (factory instanceof UndertowReactiveWebServerFactory) {
-			UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
-					(UndertowReactiveWebServerFactory) factory);
-		}
+		PropertyMapper map = PropertyMapper.get();
+		map.from(this.serverProperties::getPort).whenNonNull().to(factory::setPort);
+		map.from(this.serverProperties::getAddress).whenNonNull().to(factory::setAddress);
+		map.from(this.serverProperties::getSsl).whenNonNull().to(factory::setSsl);
+		map.from(this.serverProperties::getCompression).whenNonNull().to(factory::setCompression);
+		map.from(this.serverProperties::getHttp2).whenNonNull().to(factory::setHttp2);
+		map.from(() -> factory).when(configurableReactiveWebServerFactory -> factory instanceof TomcatReactiveWebServerFactory)
+				.to(configurableReactiveWebServerFactory -> TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,
+						(TomcatReactiveWebServerFactory) factory));
+		map.from(() -> factory).when(configurableReactiveWebServerFactory -> factory instanceof JettyReactiveWebServerFactory)
+				.to(configurableReactiveWebServerFactory -> JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
+						(JettyReactiveWebServerFactory) factory));
+		map.from(() -> factory).when(configurableReactiveWebServerFactory -> factory instanceof UndertowReactiveWebServerFactory)
+				.to(configurableReactiveWebServerFactory -> UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
+						(UndertowReactiveWebServerFactory) factory));
 	}
 
 }

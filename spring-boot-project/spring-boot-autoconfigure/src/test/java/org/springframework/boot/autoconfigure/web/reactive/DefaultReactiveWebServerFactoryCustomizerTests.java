@@ -46,6 +46,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFacto
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -60,6 +61,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link DefaultReactiveWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
+ * @author Yunkun Huang
  */
 public class DefaultReactiveWebServerFactoryCustomizerTests {
 
@@ -89,6 +91,16 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		this.properties.setAddress(address);
 		this.customizer.customize(factory);
 		verify(factory).setAddress(address);
+	}
+
+	@Test
+	public void testCustomizeServerSsl() {
+		ConfigurableReactiveWebServerFactory factory = mock(
+				ConfigurableReactiveWebServerFactory.class);
+		Ssl ssl = mock(Ssl.class);
+		this.properties.setSsl(ssl);
+		this.customizer.customize(factory);
+		verify(factory).setSsl(ssl);
 	}
 
 	@Test
