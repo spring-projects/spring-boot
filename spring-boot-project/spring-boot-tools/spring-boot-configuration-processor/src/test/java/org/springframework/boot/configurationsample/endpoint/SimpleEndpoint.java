@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationsample.endpoint;
 
 import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.ReadOperation;
 
 /**
  * A simple endpoint with no default override.
@@ -25,5 +26,10 @@ import org.springframework.boot.configurationsample.Endpoint;
  */
 @Endpoint(id = "simple")
 public class SimpleEndpoint {
+
+	@ReadOperation
+	public String invoke() {
+		return "test";
+	}
 
 }

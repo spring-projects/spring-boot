@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.endpoint;
+package org.springframework.boot.configurationsample;
 
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.ReadOperation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * An endpoint that is enabled unless configured explicitly.
+ * Alternative to Spring Boot's {@code @ReadOperation} for testing (removes the need for a
+ * dependency on the real annotation).
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "enabled")
-public class EnabledEndpoint {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ReadOperation {
 
-	public String someMethod() {
-		return "not a read operation";
-	}
-
-	@ReadOperation
-	public String retrieve(String parameter, Integer anotherParameter)  {
-		return "not a main read operation";
-	}
+	String[] produces() default {};
 
 }

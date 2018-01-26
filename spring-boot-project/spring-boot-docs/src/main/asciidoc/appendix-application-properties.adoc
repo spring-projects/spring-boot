@@ -1241,11 +1241,9 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.scheduledtasks.enabled= # Whether to enable the scheduled tasks endpoint.
 
 	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
-	management.endpoint.sessions.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.sessions.enabled= # Whether to enable the sessions endpoint.
 
 	# SHUTDOWN ENDPOINT ({sc-spring-boot-actuator}/context/ShutdownEndpoint.{sc-ext}[ShutdownEndpoint])
-	management.endpoint.shutdown.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.shutdown.enabled=false # Whether to enable the shutdown endpoint.
 
 	# THREAD DUMP ENDPOINT ({sc-spring-boot-actuator}/management/ThreadDumpEndpoint.{sc-ext}[ThreadDumpEndpoint])

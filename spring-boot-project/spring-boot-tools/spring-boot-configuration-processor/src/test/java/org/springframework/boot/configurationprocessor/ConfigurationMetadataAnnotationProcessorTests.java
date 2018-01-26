@@ -591,8 +591,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.disabled")
 				.fromSource(DisabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("disabled", false));
-		assertThat(metadata).has(cacheTtl("disabled"));
-		assertThat(metadata.getItems()).hasSize(3);
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
@@ -601,8 +600,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled")
 				.fromSource(EnabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("enabled", true));
-		assertThat(metadata).has(cacheTtl("enabled"));
-		assertThat(metadata.getItems()).hasSize(3);
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
@@ -634,8 +632,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.pascal-case")
 				.fromSource(CamelCaseEndpoint.class));
 		assertThat(metadata).has(enabledFlag("PascalCase", "pascal-case", true));
-		assertThat(metadata).has(cacheTtl("pascal-case"));
-		assertThat(metadata.getItems()).hasSize(3);
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
@@ -656,6 +653,25 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	public void incrementalEndpointBuildChangeCacheFlag() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder,
+				IncrementalEndpoint.class);
+		ConfigurationMetadata metadata = project.fullBuild();
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
+				.fromSource(IncrementalEndpoint.class));
+		assertThat(metadata).has(enabledFlag("incremental", true));
+		assertThat(metadata).has(cacheTtl("incremental"));
+		assertThat(metadata.getItems()).hasSize(3);
+		project.replaceText(IncrementalEndpoint.class, "@Nullable String param",
+				"String param");
+		metadata = project.incrementalBuild(IncrementalEndpoint.class);
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
+				.fromSource(IncrementalEndpoint.class));
+		assertThat(metadata).has(enabledFlag("incremental", true));
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
