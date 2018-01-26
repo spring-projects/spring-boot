@@ -61,21 +61,21 @@ public class DefaultReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableReactiveWebServerFactory factory) {
-		PropertyMapper map = PropertyMapper.get();
-		map.from(this.serverProperties::getPort).whenNonNull().to(factory::setPort);
-		map.from(this.serverProperties::getAddress).whenNonNull().to(factory::setAddress);
-		map.from(this.serverProperties::getSsl).whenNonNull().to(factory::setSsl);
-		map.from(this.serverProperties::getCompression).whenNonNull().to(factory::setCompression);
-		map.from(this.serverProperties::getHttp2).whenNonNull().to(factory::setHttp2);
-		map.from(() -> factory).when(configurableReactiveWebServerFactory -> factory instanceof TomcatReactiveWebServerFactory)
-				.to(configurableReactiveWebServerFactory -> TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment,
-						(TomcatReactiveWebServerFactory) factory));
-		map.from(() -> factory).when(configurableReactiveWebServerFactory -> factory instanceof JettyReactiveWebServerFactory)
-				.to(configurableReactiveWebServerFactory -> JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
-						(JettyReactiveWebServerFactory) factory));
-		map.from(() -> factory).when(configurableReactiveWebServerFactory -> factory instanceof UndertowReactiveWebServerFactory)
-				.to(configurableReactiveWebServerFactory -> UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
-						(UndertowReactiveWebServerFactory) factory));
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(this.serverProperties::getPort).to(factory::setPort);
+		map.from(this.serverProperties::getAddress).to(factory::setAddress);
+		map.from(this.serverProperties::getSsl).to(factory::setSsl);
+		map.from(this.serverProperties::getCompression).to(factory::setCompression);
+		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
+		map.from(() -> factory).whenInstanceOf(TomcatReactiveWebServerFactory.class)
+				.to(tomcatFactory -> TomcatCustomizer.customizeTomcat(
+						this.serverProperties, this.environment, tomcatFactory));
+		map.from(() -> factory).whenInstanceOf(JettyReactiveWebServerFactory.class)
+				.to(jettyFactory -> JettyCustomizer.customizeJetty(this.serverProperties,
+						this.environment, jettyFactory));
+		map.from(() -> factory).whenInstanceOf(UndertowReactiveWebServerFactory.class)
+				.to(undertowFactory -> UndertowCustomizer.customizeUndertow(
+						this.serverProperties, this.environment, undertowFactory));
 	}
 
 }

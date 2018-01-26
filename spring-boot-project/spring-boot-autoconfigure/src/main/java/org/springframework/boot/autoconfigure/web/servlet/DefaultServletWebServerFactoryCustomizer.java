@@ -69,30 +69,34 @@ public class DefaultServletWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableServletWebServerFactory factory) {
-		PropertyMapper map = PropertyMapper.get();
-		map.from(this.serverProperties::getPort).whenNonNull().to(factory::setPort);
-		map.from(this.serverProperties::getAddress).whenNonNull().to(factory::setAddress);
-		map.from(this.serverProperties.getServlet()::getContextPath).whenNonNull().to(factory::setContextPath);
-		map.from(this.serverProperties::getDisplayName).whenNonNull().to(factory::setDisplayName);
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(this.serverProperties::getPort).to(factory::setPort);
+		map.from(this.serverProperties::getAddress).to(factory::setAddress);
+		map.from(this.serverProperties.getServlet()::getContextPath)
+				.to(factory::setContextPath);
+		map.from(this.serverProperties::getDisplayName).to(factory::setDisplayName);
 		map.from(this.serverProperties.getServlet()::getSession).to(factory::setSession);
-		map.from(this.serverProperties::getSsl).whenNonNull().to(factory::setSsl);
-		map.from(this.serverProperties::getServlet).whenNonNull().as(ServerProperties.Servlet::getJsp).to(factory::setJsp);
-		map.from(this.serverProperties::getCompression).whenNonNull().to(factory::setCompression);
-		map.from(this.serverProperties::getHttp2).whenNonNull().to(factory::setHttp2);
+		map.from(this.serverProperties::getSsl).to(factory::setSsl);
+		map.from(this.serverProperties::getServlet).as(ServerProperties.Servlet::getJsp)
+				.to(factory::setJsp);
+		map.from(this.serverProperties::getCompression).to(factory::setCompression);
+		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
-		map.from(() -> factory).when(configurableServletWebServerFactory -> factory instanceof TomcatServletWebServerFactory)
-				.to(configurableServletWebServerFactory -> {
-					TomcatServletWebServerFactory tomcatFactory = (TomcatServletWebServerFactory) factory;
-					TomcatCustomizer.customizeTomcat(this.serverProperties, this.environment, tomcatFactory);
-					TomcatServletCustomizer.customizeTomcat(this.serverProperties, this.environment, tomcatFactory);
+		map.from(() -> factory).whenInstanceOf(TomcatServletWebServerFactory.class)
+				.to(tomcatFactory -> {
+					TomcatCustomizer.customizeTomcat(this.serverProperties,
+							this.environment, tomcatFactory);
+					TomcatServletCustomizer.customizeTomcat(this.serverProperties,
+							this.environment, tomcatFactory);
 				});
-		map.from(() -> factory).when(configurableServletWebServerFactory -> factory instanceof JettyServletWebServerFactory)
-				.to(configurableServletWebServerFactory -> JettyCustomizer.customizeJetty(this.serverProperties, this.environment,
-						(JettyServletWebServerFactory) factory));
-		map.from(() -> factory).when(configurableServletWebServerFactory -> factory instanceof UndertowServletWebServerFactory)
-				.to(configurableServletWebServerFactory -> UndertowCustomizer.customizeUndertow(this.serverProperties, this.environment,
-						(UndertowServletWebServerFactory) factory));
-		map.from(this.serverProperties.getServlet()::getContextParameters).to(factory::setInitParameters);
+		map.from(() -> factory).whenInstanceOf(JettyServletWebServerFactory.class)
+				.to(jettyFactory -> JettyCustomizer.customizeJetty(this.serverProperties,
+						this.environment, jettyFactory));
+		map.from(() -> factory).whenInstanceOf(UndertowServletWebServerFactory.class)
+				.to(undertowFactory -> UndertowCustomizer.customizeUndertow(
+						this.serverProperties, this.environment, undertowFactory));
+		map.from(this.serverProperties.getServlet()::getContextParameters)
+				.to(factory::setInitParameters);
 	}
 
 	private static class TomcatServletCustomizer {
