@@ -258,6 +258,17 @@ public final class PropertyMapper {
 		}
 
 		/**
+		 * Return a filtered version of the source that will only map values that are an
+		 * instance of the given type.
+		 * @param <R> the target type
+		 * @param target the target type to match
+		 * @return a new filtered source instance
+		 */
+		public <R> Source<R> whenInstanceOf(Class<R> target) {
+			return when(target::isInstance).as(target::cast);
+		}
+
+		/**
 		 * Return a filtered version of the source that won't map values that match the
 		 * given predicate.
 		 * @param predicate the predicate used to filter values

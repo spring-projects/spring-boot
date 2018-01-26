@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,6 +140,18 @@ public class PropertyMapperTests {
 	@Test
 	public void whenEqualToWhenValueIsNotEqualShouldNotMatch() {
 		this.map.from(() -> "123").whenEqualTo("321").toCall(Assert::fail);
+	}
+
+	@Test
+	public void whenInstanceOfToWhenValueIsTargetTypeShouldMatch() {
+		Long result = this.map.from(() -> 123L).whenInstanceOf(Long.class)
+				.toInstance((value) -> value + 1);
+		assertThat(result).isEqualTo(124L);
+	}
+
+	@Test
+	public void whenInstanceOfWhenValueIsNotTargetTypeShouldNotMatch() {
+		this.map.from(() -> 123).whenInstanceOf(Double.class).toCall(Assert::fail);
 	}
 
 	@Test
