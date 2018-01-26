@@ -113,8 +113,8 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 			FailureAnalysis analysis) {
 		assertThat(analysis.getDescription()).contains("test.property")
 				.contains("invalid").contains("TestOrigin test.property");
-		assertThat(analysis.getAction()
-				.contains("Review the value of the property with the provided reason."));
+		assertThat(analysis.getAction())
+				.contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getCause()).isSameAs(failure);
 	}
 
