@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,14 +47,9 @@ public class DatadogExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.datadog.enabled", matchIfMissing = true)
-	public MetricsExporter datadogExporter(DatadogConfig datadogConfig, Clock clock) {
-		return () -> new DatadogMeterRegistry(datadogConfig, clock);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
+	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig,
+			Clock clock) {
+		return new DatadogMeterRegistry(datadogConfig, clock);
 	}
 
 }

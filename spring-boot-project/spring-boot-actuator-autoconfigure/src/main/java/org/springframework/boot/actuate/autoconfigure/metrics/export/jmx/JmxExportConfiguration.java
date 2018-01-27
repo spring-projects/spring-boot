@@ -21,7 +21,6 @@ import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,15 +47,9 @@ public class JmxExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.jmx.enabled", matchIfMissing = true)
-	public MetricsExporter jmxExporter(JmxConfig config,
+	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config,
 			HierarchicalNameMapper nameMapper, Clock clock) {
-		return () -> new JmxMeterRegistry(config, clock, nameMapper);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
+		return new JmxMeterRegistry(config, clock, nameMapper);
 	}
 
 	@Bean

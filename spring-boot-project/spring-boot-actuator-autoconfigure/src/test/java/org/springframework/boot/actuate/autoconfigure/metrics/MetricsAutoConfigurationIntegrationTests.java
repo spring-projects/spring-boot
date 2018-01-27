@@ -51,6 +51,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -140,6 +141,7 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Import(PersonController.class)
 	static class MetricsApp {
 
+		@Primary
 		@Bean
 		public MeterRegistry registry() {
 			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());

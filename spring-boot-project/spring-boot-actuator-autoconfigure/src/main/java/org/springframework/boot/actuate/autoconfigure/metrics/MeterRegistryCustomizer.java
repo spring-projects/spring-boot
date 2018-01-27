@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,20 @@ import io.micrometer.core.instrument.MeterRegistry;
  * Callback interface that can be used to customize auto-configured {@link MeterRegistry
  * MeterRegistries}.
  * <p>
- * Configurers are guaranteed to be applied before any {@link Meter} is registered with
+ * Customizers are guaranteed to be applied before any {@link Meter} is registered with
  * the registry.
  *
  * @author Jon Schneider
+ * @param <T> The registry type to customize
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface MeterRegistryConfigurer {
+public interface MeterRegistryCustomizer<T extends MeterRegistry> {
 
 	/**
-	 * Configure the given {@code registry}.
-	 * @param registry the registry to configure
+	 * Customize the given {@code registry}.
+	 * @param registry the registry to customize
 	 */
-	void configureRegistry(MeterRegistry registry);
+	void customize(T registry);
 
 }

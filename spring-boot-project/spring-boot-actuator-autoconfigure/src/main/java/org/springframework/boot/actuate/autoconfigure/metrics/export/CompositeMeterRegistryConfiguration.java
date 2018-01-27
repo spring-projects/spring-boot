@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,21 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
-import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * A {@code MetricsExporter} can be used to export metrics, typically to an external
- * server running as a separate process.
+ * Conditionally build a composite registry when more than one registry present.
  *
  * @author Jon Schneider
- * @author Andy Wilkinson
  * @since 2.0.0
  */
-@FunctionalInterface
-public interface MetricsExporter {
+@Configuration
+public class CompositeMeterRegistryConfiguration {
 
-	/**
-	 * Returns the {@link MeterRegistry} used to register metrics with the exporter.
-	 * @return the meter registry
-	 */
-	MeterRegistry registry();
+	@Bean
+	public static CompositeMeterRegistryPostProcessor compositeMeterRegistryPostProcessor() {
+		return new CompositeMeterRegistryPostProcessor();
+	}
 
 }
