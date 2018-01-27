@@ -1335,6 +1335,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.graphite.protocol= # Protocol to use while shipping data to Graphite.
 	management.metrics.export.graphite.rate-units= # Base time unit used to report rates.
 	management.metrics.export.graphite.step= # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.graphite.tags-as-prefix= # For the default naming convention, turn the specified tag keys into part of the metric prefix.
 	management.metrics.export.influx.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.influx.compressed= # Enable GZIP compression of metrics batches published to Influx.
 	management.metrics.export.influx.connect-timeout= # Connection timeout for requests to the backend.
