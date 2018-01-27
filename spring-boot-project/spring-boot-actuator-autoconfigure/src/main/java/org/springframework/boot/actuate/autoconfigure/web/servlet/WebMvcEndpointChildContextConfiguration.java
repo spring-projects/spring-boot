@@ -36,7 +36,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.0.0
  */
 @ManagementContextConfiguration(ManagementContextType.CHILD)
 @ConditionalOnWebApplication(type = Type.SERVLET)

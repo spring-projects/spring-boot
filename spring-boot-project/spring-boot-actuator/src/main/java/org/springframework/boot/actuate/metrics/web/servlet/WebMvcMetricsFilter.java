@@ -83,7 +83,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * Create a new {@link WebMvcMetricsFilter} instance.
 	 * @param context the source application context
 	 * @param registry the meter registry
-	 * @param tagsProvider the tags provier
+	 * @param tagsProvider the tags provider
 	 * @param metricName the metric name
 	 * @param autoTimeRequests if requests should be automatically timed
 	 */
