@@ -99,12 +99,11 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
 		AsciiBytes name = applyFilter(fileHeader.getName());
 		if (name != null) {
-			add(name, fileHeader, dataOffset);
+			add(name, dataOffset);
 		}
 	}
 
-	private void add(AsciiBytes name, CentralDirectoryFileHeader fileHeader,
-			int dataOffset) {
+	private void add(AsciiBytes name, int dataOffset) {
 		this.hashCodes[this.size] = name.hashCode();
 		this.centralDirectoryOffsets[this.size] = dataOffset;
 		this.positions[this.size] = this.size;

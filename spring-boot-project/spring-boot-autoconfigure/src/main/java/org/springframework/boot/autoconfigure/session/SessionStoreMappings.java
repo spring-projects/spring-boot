@@ -80,8 +80,7 @@ final class SessionStoreMappings {
 		return configurationClass.getName();
 	}
 
-	static StoreType getType(WebApplicationType webApplicationType,
-			String configurationClassName) {
+	static StoreType getType(String configurationClassName) {
 		for (Map.Entry<StoreType, Map<WebApplicationType, Class<?>>> storeEntry : MAPPINGS
 				.entrySet()) {
 			for (Map.Entry<WebApplicationType, Class<?>> entry : storeEntry.getValue()

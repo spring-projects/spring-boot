@@ -183,7 +183,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			Set<URL> urls = new HashSet<>();
 			findGroovyJarsDirectly(parent, urls);
 			if (urls.isEmpty()) {
-				findGroovyJarsFromClassPath(parent, urls);
+				findGroovyJarsFromClassPath(urls);
 			}
 			Assert.state(!urls.isEmpty(), "Unable to find groovy JAR");
 			return new ArrayList<>(urls).toArray(new URL[urls.size()]);
@@ -202,7 +202,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			}
 		}
 
-		private void findGroovyJarsFromClassPath(ClassLoader parent, Set<URL> urls) {
+		private void findGroovyJarsFromClassPath(Set<URL> urls) {
 			String classpath = System.getProperty("java.class.path");
 			String[] entries = classpath.split(System.getProperty("path.separator"));
 			for (String entry : entries) {

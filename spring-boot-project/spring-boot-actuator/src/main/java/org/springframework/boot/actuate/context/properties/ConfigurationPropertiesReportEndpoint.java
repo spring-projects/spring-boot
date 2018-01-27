@@ -115,7 +115,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
-			String prefix = extractPrefix(context, beanFactoryMetaData, beanName, bean);
+			String prefix = extractPrefix(context, beanFactoryMetaData, beanName);
 			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(
 					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
 		}
@@ -201,12 +201,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @param context the application context
 	 * @param beanFactoryMetaData the bean factory meta-data
 	 * @param beanName the bean name
-	 * @param bean the bean
 	 * @return the prefix
 	 */
 	private String extractPrefix(ApplicationContext context,
-			ConfigurationBeanFactoryMetaData beanFactoryMetaData, String beanName,
-			Object bean) {
+			ConfigurationBeanFactoryMetaData beanFactoryMetaData, String beanName) {
 		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
 				ConfigurationProperties.class);
 		if (beanFactoryMetaData != null) {

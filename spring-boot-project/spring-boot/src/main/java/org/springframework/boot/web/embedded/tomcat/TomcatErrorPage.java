@@ -48,10 +48,10 @@ class TomcatErrorPage {
 		this.location = errorPage.getPath();
 		this.exceptionType = errorPage.getExceptionName();
 		this.errorCode = errorPage.getStatusCode();
-		this.nativePage = createNativePage(errorPage);
+		this.nativePage = createNativePage();
 	}
 
-	private Object createNativePage(ErrorPage errorPage) {
+	private Object createNativePage() {
 		try {
 			if (ClassUtils.isPresent(ERROR_PAGE_CLASS, null)) {
 				return BeanUtils

@@ -49,11 +49,10 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource,
 			PropertyMapper mapper) {
 		super(propertySource, mapper, null);
-		assertEnumerablePropertySource(propertySource);
+		assertEnumerablePropertySource();
 	}
 
-	private void assertEnumerablePropertySource(
-			EnumerablePropertySource<?> propertySource) {
+	private void assertEnumerablePropertySource() {
 		if (getPropertySource() instanceof MapPropertySource) {
 			try {
 				((MapPropertySource) getPropertySource()).getSource().size();
