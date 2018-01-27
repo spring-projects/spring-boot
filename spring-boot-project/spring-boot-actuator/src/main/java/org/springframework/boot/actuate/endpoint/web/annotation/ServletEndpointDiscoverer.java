@@ -44,7 +44,7 @@ public class ServletEndpointDiscoverer
 	private final PathMapper endpointPathMapper;
 
 	/**
-	 * Create a new {@link ServletEndpointFilter} instance.
+	 * Create a new {@link ServletEndpointDiscoverer} instance.
 	 * @param applicationContext the source application context
 	 * @param endpointPathMapper the endpoint path mapper
 	 * @param filters filters to apply

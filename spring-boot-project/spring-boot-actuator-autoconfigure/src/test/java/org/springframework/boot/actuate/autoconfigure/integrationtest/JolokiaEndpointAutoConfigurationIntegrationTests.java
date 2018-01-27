@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpoint;
 import org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
@@ -55,7 +54,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link JolokiaEndpoint}.
+ * Integration tests for {@link JolokiaEndpointAutoConfiguration}.
  *
  * @author Stephane Nicoll
  */
@@ -63,7 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 @TestPropertySource(properties = "management.endpoints.web.expose=jolokia")
-public class JolokiaManagementContextConfigurationIntegrationTests {
+public class JolokiaEndpointAutoConfigurationIntegrationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;

@@ -46,7 +46,7 @@ class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation>
 				() -> "ServletEndpoint bean " + beanType + " must be a supplier");
 		Object supplied = ((Supplier<?>) endpointBean).get();
 		Assert.state(supplied != null,
-				"ServletEndpoint bean " + beanType + " must not supply null");
+				() -> "ServletEndpoint bean " + beanType + " must not supply null");
 		Assert.state(supplied instanceof EndpointServlet, () -> "ServletEndpoint bean "
 				+ beanType + " must supply an EndpointServlet");
 		this.endpointServlet = (EndpointServlet) supplied;
