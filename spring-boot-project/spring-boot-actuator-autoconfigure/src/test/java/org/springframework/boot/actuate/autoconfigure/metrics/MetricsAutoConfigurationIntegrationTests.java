@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
@@ -128,9 +129,10 @@ public class MetricsAutoConfigurationIntegrationTests {
 		MockClock.clock(this.registry).addSeconds(2);
 		this.cyclicBarrier.await();
 		backgroundRequest.join();
-		assertThat(this.registry.find("http.server.requests").tags("uri", "/api/async")
-				.timer()).matches(t -> t.count() == 1)
-						.matches(t -> t.totalTime(TimeUnit.SECONDS) == 2);
+		Timer timer = this.registry.get("http.server.requests").tags("uri", "/api/async")
+				.timer();
+		assertThat(timer.count()).isEqualTo(1);
+		assertThat(timer.totalTime(TimeUnit.SECONDS)).isEqualTo(2);
 	}
 
 	@Configuration

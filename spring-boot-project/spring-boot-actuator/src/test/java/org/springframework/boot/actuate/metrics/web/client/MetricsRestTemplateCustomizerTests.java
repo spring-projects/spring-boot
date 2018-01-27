@@ -64,9 +64,7 @@ public class MetricsRestTemplateCustomizerTests {
 
 	@Test
 	public void interceptRestTemplate() {
-		MockRestServiceServer mockServer = MockRestServiceServer
-				.createServer(this.restTemplate);
-		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
 						MediaType.APPLICATION_JSON));
@@ -79,7 +77,7 @@ public class MetricsRestTemplateCustomizerTests {
 				.tags("method", "GET", "uri", "/test/{id}", "status", "200").timer()
 				.count()).isEqualTo(1);
 		assertThat(result).isEqualTo("OK");
-		mockServer.verify();
+		this.mockServer.verify();
 	}
 
 	@Test
