@@ -119,18 +119,18 @@ public class MetricsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void asyncRequestMappingIsInstrumented() throws InterruptedException, BrokenBarrierException {
-		Thread backgroundRequest = new Thread(() -> this.loopback.getForObject("/api/async", String.class));
+	public void asyncRequestMappingIsInstrumented()
+			throws InterruptedException, BrokenBarrierException {
+		Thread backgroundRequest = new Thread(
+				() -> this.loopback.getForObject("/api/async", String.class));
 		backgroundRequest.start();
 		this.cyclicBarrier.await();
 		MockClock.clock(this.registry).addSeconds(2);
 		this.cyclicBarrier.await();
 		backgroundRequest.join();
-
-		assertThat(this.registry.find("http.server.requests")
-				.tags("uri", "/api/async").timer())
-				.matches(t -> t.count() == 1)
-				.matches(t -> t.totalTime(TimeUnit.SECONDS) == 2);
+		assertThat(this.registry.find("http.server.requests").tags("uri", "/api/async")
+				.timer()).matches(t -> t.count() == 1)
+						.matches(t -> t.totalTime(TimeUnit.SECONDS) == 2);
 	}
 
 	@Configuration
@@ -156,10 +156,12 @@ public class MetricsAutoConfigurationIntegrationTests {
 		public CyclicBarrier cyclicBarrier() {
 			return new CyclicBarrier(2);
 		}
+
 	}
 
 	@RestController
 	static class PersonController {
+
 		private final CyclicBarrier cyclicBarrier;
 
 		PersonController(CyclicBarrier cyclicBarrier) {
@@ -172,18 +174,22 @@ public class MetricsAutoConfigurationIntegrationTests {
 		}
 
 		@GetMapping("/api/async")
-		CompletableFuture<String> asyncHello() throws BrokenBarrierException, InterruptedException {
+		CompletableFuture<String> asyncHello()
+				throws BrokenBarrierException, InterruptedException {
 			this.cyclicBarrier.await();
-			return CompletableFuture.supplyAsync(() -> {
-				try {
-					this.cyclicBarrier.await();
-				}
-				catch (InterruptedException | BrokenBarrierException e) {
-					throw new RuntimeException(e);
-				}
-				return "async-hello";
-			});
+			return CompletableFuture.supplyAsync(this::awaitAndHello);
 		}
+
+		private String awaitAndHello() {
+			try {
+				this.cyclicBarrier.await();
+				return "async-hello";
+			}
+			catch (InterruptedException | BrokenBarrierException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
 	}
 
 }
