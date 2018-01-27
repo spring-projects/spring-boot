@@ -105,7 +105,7 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	}
 
 	private String ensureLeadingSlash(String url) {
-		return (url.startsWith("/") ? url : "/" + url);
+		return (url == null || url.startsWith("/") ? url : "/" + url);
 	}
 
 }
