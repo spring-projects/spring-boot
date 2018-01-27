@@ -21,9 +21,14 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.Duration;
 import java.util.Collection;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -34,11 +39,14 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
+import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.core.lang.NonNull;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
@@ -47,7 +55,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -68,9 +76,12 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
@@ -100,7 +111,12 @@ public class WebMvcMetricsFilterTests {
 	private MockMvc mvc;
 
 	@Autowired
-	private CountDownLatch asyncLatch;
+	@Qualifier("callableBarrier")
+	private CyclicBarrier callableBarrier;
+
+	@Autowired
+	@Qualifier("completableFutureBarrier")
+	private CyclicBarrier completableFutureBarrier;
 
 	@Before
 	public void setupMockMvc() {
@@ -113,7 +129,7 @@ public class WebMvcMetricsFilterTests {
 		this.mvc.perform(get("/api/c1/10")).andExpect(status().isOk());
 		assertThat(this.registry.get("http.server.requests")
 				.tags("status", "200", "uri", "/api/c1/{id}", "public", "true").timer()
-				.count()).isEqualTo(1L);
+				.count()).isEqualTo(1);
 	}
 
 	@Test
@@ -173,20 +189,80 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void longRunningRequest() throws Exception {
-		MvcResult result = this.mvc.perform(get("/api/c1/long/10"))
-				.andExpect(request().asyncStarted()).andReturn();
-		// the request is not prematurely recorded as complete
+	public void asyncCallableRequest() throws Exception {
+		AtomicReference<MvcResult> result = new AtomicReference<>();
+		Thread backgroundRequest = new Thread(() -> {
+			try {
+				result.set(this.mvc.perform(get("/api/c1/callable/10"))
+						.andExpect(request().asyncStarted()).andReturn());
+			}
+			catch (Exception ex) {
+				fail("Failed to execute async request", ex);
+			}
+		});
+		backgroundRequest.start();
 		assertThat(this.registry.find("http.server.requests").tags("uri", "/api/c1/async")
-				.timer()).isNull();
+				.timer()).describedAs("Request isn't prematurely recorded as complete")
+						.isNull();
+		// once the mapping completes, we can gather information about status, etc.
+		this.callableBarrier.await();
+		MockClock.clock(this.registry).add(Duration.ofSeconds(2));
 		// while the mapping is running, it contributes to the activeTasks count
 		assertThat(this.registry.get("my.long.request").tags("region", "test")
 				.longTaskTimer().activeTasks()).isEqualTo(1);
-		// once the mapping completes, we can gather information about status, etc.
-		this.asyncLatch.countDown();
-		this.mvc.perform(asyncDispatch(result)).andExpect(status().isOk());
-		assertThat(this.registry.get("http.server.requests").tags("status", "200").timer()
-				.count()).isEqualTo(1L);
+		this.callableBarrier.await();
+		backgroundRequest.join();
+		this.mvc.perform(asyncDispatch(result.get())).andExpect(status().isOk());
+		assertThat(this.registry.get("http.server.requests").tags("status", "200")
+				.tags("uri", "/api/c1/callable/{id}").timer().totalTime(TimeUnit.SECONDS))
+						.isEqualTo(2L);
+		// once the async dispatch is complete, it should no longer contribute to the
+		// activeTasks count
+		assertThat(this.registry.get("my.long.request").tags("region", "test")
+				.longTaskTimer().activeTasks()).isEqualTo(0);
+	}
+
+	@Test
+	public void asyncRequestThatThrowsUncheckedException() throws Exception {
+		MvcResult result = this.mvc.perform(get("/api/c1/completableFutureException"))
+				.andExpect(request().asyncStarted()).andReturn();
+		// once the async dispatch is complete, it should no longer contribute to the
+		// activeTasks count
+		assertThat(this.registry.get("my.long.request.exception").longTaskTimer()
+				.activeTasks()).isEqualTo(1);
+		assertThatExceptionOfType(NestedServletException.class)
+				.isThrownBy(() -> this.mvc.perform(asyncDispatch(result)))
+				.withRootCauseInstanceOf(RuntimeException.class);
+		assertThat(this.registry.get("http.server.requests")
+				.tags("uri", "/api/c1/completableFutureException").timer().count())
+						.isEqualTo(1);
+		// once the async dispatch is complete, it should no longer contribute to the
+		// activeTasks count
+		assertThat(this.registry.get("my.long.request.exception").longTaskTimer()
+				.activeTasks()).isEqualTo(0);
+	}
+
+	@Test
+	public void asyncCompletableFutureRequest() throws Exception {
+		AtomicReference<MvcResult> result = new AtomicReference<>();
+		Thread backgroundRequest = new Thread(() -> {
+			try {
+				result.set(this.mvc.perform(get("/api/c1/completableFuture/{id}", 1))
+						.andExpect(request().asyncStarted()).andReturn());
+			}
+			catch (Exception e) {
+				fail("Failed to execute async request", e);
+			}
+		});
+		backgroundRequest.start();
+		this.completableFutureBarrier.await();
+		MockClock.clock(this.registry).add(Duration.ofSeconds(2));
+		this.completableFutureBarrier.await();
+		backgroundRequest.join();
+		this.mvc.perform(asyncDispatch(result.get())).andExpect(status().isOk());
+		assertThat(this.registry.get("http.server.requests")
+				.tags("uri", "/api/c1/completableFuture/{id}").timer()
+				.totalTime(TimeUnit.SECONDS)).isEqualTo(2);
 	}
 
 	@Test
@@ -230,26 +306,32 @@ public class WebMvcMetricsFilterTests {
 	@Import({ Controller1.class, Controller2.class })
 	static class MetricsFilterApp {
 
+		@Bean
+		Clock micrometerClock() {
+			return new MockClock();
+		}
+
 		@Primary
 		@Bean
-		MeterRegistry meterRegistry(Collection<MeterRegistry> registries) {
-			CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		MeterRegistry meterRegistry(Collection<MeterRegistry> registries, Clock clock) {
+			CompositeMeterRegistry composite = new CompositeMeterRegistry(clock);
 			registries.forEach(composite::add);
 			return composite;
 		}
 
 		@Bean
-		SimpleMeterRegistry simple() {
-			return new SimpleMeterRegistry();
+		SimpleMeterRegistry simple(Clock clock) {
+			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
 		}
 
 		@Bean
-		PrometheusMeterRegistry prometheus() {
+		PrometheusMeterRegistry prometheus(Clock clock) {
 			PrometheusMeterRegistry r = new PrometheusMeterRegistry(
-					PrometheusConfig.DEFAULT, new CollectorRegistry(), Clock.SYSTEM);
+					PrometheusConfig.DEFAULT, new CollectorRegistry(), clock);
 			r.config().meterFilter(new MeterFilter() {
 				@Override
-				public MeterFilterReply accept(Meter.Id id) {
+				@NonNull
+				public MeterFilterReply accept(@NonNull Meter.Id id) {
 					for (Tag tag : id.getTags()) {
 						if (tag.getKey().equals("uri")
 								&& (tag.getValue().contains("histogram")
@@ -264,19 +346,25 @@ public class WebMvcMetricsFilterTests {
 		}
 
 		@Bean
-		CountDownLatch asyncLatch() {
-			return new CountDownLatch(1);
+		RedirectAndNotFoundFilter redirectAndNotFoundFilter() {
+			return new RedirectAndNotFoundFilter();
+		}
+
+		@Bean(name = "callableBarrier")
+		CyclicBarrier callableBarrier() {
+			return new CyclicBarrier(2);
+		}
+
+		@Bean(name = "completableFutureBarrier")
+		CyclicBarrier completableFutureBarrier() {
+			return new CyclicBarrier(2);
 		}
 
 		@Bean
-		public WebMvcMetrics controllerMetrics(MeterRegistry registry) {
-			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true, false);
-		}
-
-		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(ApplicationContext context) {
-			return new WebMvcMetricsFilter(context);
+		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
+				WebApplicationContext ctx) {
+			return new WebMvcMetricsFilter(ctx, registry, new DefaultWebMvcTagsProvider(),
+					"http.server.requests", true);
 		}
 
 	}
@@ -285,11 +373,13 @@ public class WebMvcMetricsFilterTests {
 	@RequestMapping("/api/c1")
 	static class Controller1 {
 
-		private final CountDownLatch asyncLatch;
+		@Autowired
+		@Qualifier("callableBarrier")
+		private CyclicBarrier callableBarrier;
 
-		Controller1(CountDownLatch asyncLatch) {
-			this.asyncLatch = asyncLatch;
-		}
+		@Autowired
+		@Qualifier("completableFutureBarrier")
+		private CyclicBarrier completableFutureBarrier;
 
 		@Timed(extraTags = { "public", "true" })
 		@GetMapping("/{id}")
@@ -300,17 +390,43 @@ public class WebMvcMetricsFilterTests {
 		@Timed
 		@Timed(value = "my.long.request", extraTags = { "region",
 				"test" }, longTask = true)
-		@GetMapping("/long/{id}")
-		public Callable<String> takesLongTimeToSatisfy(@PathVariable Long id) {
+		@GetMapping("/callable/{id}")
+		public Callable<String> asyncCallable(@PathVariable Long id) throws Exception {
+			this.callableBarrier.await();
 			return () -> {
 				try {
-					this.asyncLatch.await();
+					this.callableBarrier.await();
 				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
+				catch (InterruptedException ex) {
+					throw new RuntimeException(ex);
 				}
 				return id.toString();
 			};
+		}
+
+		@Timed
+		@GetMapping("/completableFuture/{id}")
+		CompletableFuture<String> asyncCompletableFuture(@PathVariable Long id)
+				throws Exception {
+			this.completableFutureBarrier.await();
+			return CompletableFuture.supplyAsync(() -> {
+				try {
+					this.completableFutureBarrier.await();
+				}
+				catch (InterruptedException | BrokenBarrierException ex) {
+					throw new RuntimeException(ex);
+				}
+				return id.toString();
+			});
+		}
+
+		@Timed
+		@Timed(value = "my.long.request.exception", longTask = true)
+		@GetMapping("/completableFutureException")
+		CompletableFuture<String> asyncCompletableFutureException() {
+			return CompletableFuture.supplyAsync(() -> {
+				throw new RuntimeException("boom");
+			});
 		}
 
 		@GetMapping("/untimed/{id}")

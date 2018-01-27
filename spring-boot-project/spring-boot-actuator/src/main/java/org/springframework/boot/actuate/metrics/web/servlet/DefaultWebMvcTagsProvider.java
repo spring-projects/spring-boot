@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
-import java.util.Arrays;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 
 /**
  * Default implementation of {@link WebMvcTagsProvider}.
@@ -31,31 +30,16 @@ import io.micrometer.core.instrument.Tag;
  */
 public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 
-	/**
-	 * Supplies default tags to long task timers.
-	 * @param request The HTTP request.
-	 * @param handler The request method that is responsible for handling the request.
-	 * @return A set of tags added to every Spring MVC HTTP request
-	 */
 	@Override
-	public Iterable<Tag> httpLongRequestTags(HttpServletRequest request, Object handler) {
-		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request, null));
+	public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response,
+			Object handler, Throwable exception) {
+		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, response),
+				WebMvcTags.exception(exception), WebMvcTags.status(response));
 	}
 
-	/**
-	 * Supplies default tags to the Web MVC server programming model.
-	 * @param request The HTTP request.
-	 * @param handler the Spring MVC handler for the request
-	 * @param response The HTTP response.
-	 * @param ex The current exception, if any
-	 * @return A set of tags added to every Spring MVC HTTP request.
-	 */
 	@Override
-	public Iterable<Tag> httpRequestTags(HttpServletRequest request, Object handler,
-			HttpServletResponse response, Throwable ex) {
-		return Arrays.asList(WebMvcTags.method(request),
-				WebMvcTags.uri(request, response), WebMvcTags.exception(ex),
-				WebMvcTags.status(response));
+	public Iterable<Tag> getLongRequestTags(HttpServletRequest request, Object handler) {
+		return Tags.of(WebMvcTags.method(request), WebMvcTags.uri(request, null));
 	}
 
 }

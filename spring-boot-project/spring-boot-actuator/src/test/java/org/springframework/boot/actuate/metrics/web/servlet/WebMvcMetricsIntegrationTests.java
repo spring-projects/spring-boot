@@ -27,11 +27,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,12 +50,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link WebMvcMetrics}.
+ * Tests for {@link WebMvcMetricsFilter} in the presence of a custom exception handler.
  *
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
+@TestPropertySource(properties = "security.ignored=/**")
 public class WebMvcMetricsIntegrationTests {
 
 	@Autowired
@@ -64,10 +65,10 @@ public class WebMvcMetricsIntegrationTests {
 	@Autowired
 	private SimpleMeterRegistry registry;
 
-	private MockMvc mvc;
-
 	@Autowired
 	private WebMvcMetricsFilter filter;
+
+	private MockMvc mvc;
 
 	@Before
 	public void setupMockMvc() {
@@ -107,14 +108,10 @@ public class WebMvcMetricsIntegrationTests {
 		}
 
 		@Bean
-		public WebMvcMetrics controllerMetrics(MeterRegistry registry) {
-			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true, false);
-		}
-
-		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(ApplicationContext context) {
-			return new WebMvcMetricsFilter(context);
+		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
+				WebApplicationContext ctx) {
+			return new WebMvcMetricsFilter(ctx, registry, new DefaultWebMvcTagsProvider(),
+					"http.server.requests", true);
 		}
 
 		@RestController
@@ -152,12 +149,8 @@ public class WebMvcMetricsIntegrationTests {
 	@ControllerAdvice
 	static class CustomExceptionHandler {
 
-		@Autowired
-		WebMvcMetrics metrics;
-
 		@ExceptionHandler
 		ResponseEntity<String> handleError(Exception1 ex) {
-			this.metrics.tagWithException(ex);
 			return new ResponseEntity<>("this is a custom exception body",
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
