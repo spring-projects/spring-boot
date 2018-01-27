@@ -66,6 +66,7 @@ public interface SpringApplicationRunListener {
 	 * {@link CommandLineRunner CommandLineRunners} and {@link ApplicationRunner
 	 * ApplicationRunners} have not been called.
 	 * @param context the application context.
+	 * @since 2.0.0
 	 */
 	void started(ConfigurableApplicationContext context);
 

@@ -1365,8 +1365,8 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.statsd.polling-frequency=10s # How often gauges will be polled. When a gauge is polled, its value is recalculated and if the value has changed, it is sent to the StatsD server.
 	management.metrics.export.statsd.port=8125 # Port of the StatsD server to receive exported metrics.
 	management.metrics.export.statsd.queue-size=2147483647 # Maximum size of the queue of items waiting to be sent to the StatsD server.
-	management.metrics.jdbc.metric-name=data.source # Name of the metric for data source usage.
 	management.metrics.jdbc.instrument=true # Instrument all available data sources.
+	management.metrics.jdbc.metric-name=data.source # Name of the metric for data source usage.
 	management.metrics.rabbitmq.instrument=true # Instrument all available connection factories.
 	management.metrics.rabbitmq.metric-name=rabbitmq # Name of the metric for RabbitMQ usage.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.

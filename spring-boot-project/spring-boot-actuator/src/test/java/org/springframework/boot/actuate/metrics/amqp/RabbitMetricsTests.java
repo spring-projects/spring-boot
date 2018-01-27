@@ -33,7 +33,7 @@ public class RabbitMetricsTests {
 
 	@Test
 	public void connectionFactoryIsInstrumented() {
-		ConnectionFactory connectionFactory = mockConnectionFactory();
+		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, "rabbit", null).bindTo(registry);
 		registry.get("rabbit.connections");
@@ -41,17 +41,13 @@ public class RabbitMetricsTests {
 
 	@Test
 	public void connectionFactoryWithTagsIsInstrumented() {
-		ConnectionFactory connectionFactory = mockConnectionFactory();
+		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
 		new RabbitMetrics(connectionFactory, "test", Tags.of("env", "prod"))
 				.bindTo(registry);
 		assertThat(registry.get("test.connections").tags("env", "prod").meter())
 				.isNotNull();
 		assertThat(registry.find("test.connections").tags("env", "dev").meter()).isNull();
-	}
-
-	private ConnectionFactory mockConnectionFactory() {
-		return mock(ConnectionFactory.class);
 	}
 
 }
