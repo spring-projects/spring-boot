@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -75,7 +74,6 @@ public class ControllerEndpointWebFluxIntegrationTests {
 			ReactiveManagementContextAutoConfiguration.class,
 			AuditAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 			WebFluxAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-			AuditAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 			BeansEndpointAutoConfiguration.class })
 	static class DefaultConfiguration {
 

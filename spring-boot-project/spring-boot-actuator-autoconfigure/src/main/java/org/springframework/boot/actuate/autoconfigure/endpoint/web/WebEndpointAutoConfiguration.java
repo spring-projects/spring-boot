@@ -124,7 +124,7 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
-	public ExposeExcludePropertyEndpointFilter<ExposableWebEndpoint> webIncludeExcludePropertyEndpointFilter() {
+	public ExposeExcludePropertyEndpointFilter<ExposableWebEndpoint> webExposeExcludePropertyEndpointFilter() {
 		Set<String> expose = this.properties.getExpose();
 		Set<String> exclude = this.properties.getExclude();
 		return new ExposeExcludePropertyEndpointFilter<>(ExposableWebEndpoint.class,
@@ -132,7 +132,7 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
-	public ExposeExcludePropertyEndpointFilter<ExposableControllerEndpoint> controllerIncludeExcludePropertyEndpointFilter() {
+	public ExposeExcludePropertyEndpointFilter<ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
 		Set<String> expose = this.properties.getExpose();
 		Set<String> exclude = this.properties.getExclude();
 		return new ExposeExcludePropertyEndpointFilter<>(
