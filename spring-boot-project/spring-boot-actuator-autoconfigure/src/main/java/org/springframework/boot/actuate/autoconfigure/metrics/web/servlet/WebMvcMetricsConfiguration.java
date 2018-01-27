@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;
 
+import javax.servlet.DispatcherType;
+
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
@@ -27,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.WebApplicationContext;
@@ -51,13 +54,17 @@ public class WebMvcMetricsConfiguration {
 	}
 
 	@Bean
-	public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
-			MetricsProperties properties, WebMvcTagsProvider tagsProvider,
-			WebApplicationContext context) {
+	public FilterRegistrationBean<WebMvcMetricsFilter> webMetricsFilter(
+			MeterRegistry registry, MetricsProperties properties,
+			WebMvcTagsProvider tagsProvider, WebApplicationContext context) {
 		Server serverProperties = properties.getWeb().getServer();
-		return new WebMvcMetricsFilter(context, registry, tagsProvider,
-				serverProperties.getRequestsMetricName(),
+		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(context, registry,
+				tagsProvider, serverProperties.getRequestsMetricName(),
 				serverProperties.isAutoTimeRequests());
+		FilterRegistrationBean<WebMvcMetricsFilter> registration = new FilterRegistrationBean<>(
+				filter);
+		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
+		return registration;
 	}
 
 }

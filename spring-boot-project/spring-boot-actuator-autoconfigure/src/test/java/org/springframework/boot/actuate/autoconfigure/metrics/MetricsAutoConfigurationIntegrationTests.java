@@ -19,6 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
@@ -83,6 +87,9 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Autowired
 	private MeterRegistry registry;
 
+	@Autowired
+	private CyclicBarrier cyclicBarrier;
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void restTemplateIsInstrumented() {
@@ -111,6 +118,21 @@ public class MetricsAutoConfigurationIntegrationTests {
 				.hasAtLeastOneElementOfType(JvmMemoryMetrics.class);
 	}
 
+	@Test
+	public void asyncRequestMappingIsInstrumented()
+			throws InterruptedException, BrokenBarrierException {
+		Thread backgroundRequest = new Thread(
+				() -> this.loopback.getForObject("/api/async", String.class));
+		backgroundRequest.start();
+		this.cyclicBarrier.await();
+		MockClock.clock(this.registry).addSeconds(2);
+		this.cyclicBarrier.await();
+		backgroundRequest.join();
+		assertThat(this.registry.find("http.server.requests").tags("uri", "/api/async")
+				.timer()).matches(t -> t.count() == 1)
+						.matches(t -> t.totalTime(TimeUnit.SECONDS) == 2);
+	}
+
 	@Configuration
 	@ImportAutoConfiguration({ MetricsAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
@@ -130,14 +152,42 @@ public class MetricsAutoConfigurationIntegrationTests {
 			return restTemplateBuilder.build();
 		}
 
+		@Bean
+		public CyclicBarrier cyclicBarrier() {
+			return new CyclicBarrier(2);
+		}
+
 	}
 
 	@RestController
 	static class PersonController {
 
+		private final CyclicBarrier cyclicBarrier;
+
+		PersonController(CyclicBarrier cyclicBarrier) {
+			this.cyclicBarrier = cyclicBarrier;
+		}
+
 		@GetMapping("/api/people")
 		Set<String> personName() {
 			return Collections.singleton("Jon");
+		}
+
+		@GetMapping("/api/async")
+		CompletableFuture<String> asyncHello()
+				throws BrokenBarrierException, InterruptedException {
+			this.cyclicBarrier.await();
+			return CompletableFuture.supplyAsync(this::awaitAndHello);
+		}
+
+		private String awaitAndHello() {
+			try {
+				this.cyclicBarrier.await();
+				return "async-hello";
+			}
+			catch (InterruptedException | BrokenBarrierException ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 
 	}
