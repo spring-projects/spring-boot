@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link EndpointServlet}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class EndpointServletTests {
 
@@ -69,6 +70,20 @@ public class EndpointServletTests {
 		TestServlet servlet = new TestServlet();
 		EndpointServlet endpointServlet = new EndpointServlet(servlet);
 		assertThat(endpointServlet.getServlet()).isEqualTo(servlet);
+	}
+
+	@Test
+	public void withInitParameterNullName() {
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
+		this.thrown.expect(IllegalArgumentException.class);
+		endpointServlet.withInitParameters(Collections.singletonMap(null, "value"));
+	}
+
+	@Test
+	public void withInitParameterEmptyName() {
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
+		this.thrown.expect(IllegalArgumentException.class);
+		endpointServlet.withInitParameters(Collections.singletonMap(" ", "value"));
 	}
 
 	@Test
