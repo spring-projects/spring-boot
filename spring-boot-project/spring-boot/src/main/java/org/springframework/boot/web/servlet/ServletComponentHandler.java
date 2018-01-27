@@ -51,7 +51,7 @@ abstract class ServletComponentHandler {
 	protected String[] extractUrlPatterns(String attribute,
 			Map<String, Object> attributes) {
 		String[] value = (String[]) attributes.get("value");
-		String[] urlPatterns = (String[]) attributes.get("urlPatterns");
+		String[] urlPatterns = (String[]) attributes.get(attribute);
 		if (urlPatterns.length > 0) {
 			Assert.state(value.length == 0,
 					"The urlPatterns and value attributes are mutually exclusive.");

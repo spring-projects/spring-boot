@@ -246,7 +246,7 @@ public class Binder {
 		}
 		if (property != null) {
 			try {
-				return bindProperty(name, target, handler, context, property);
+				return bindProperty(target, context, property);
 			}
 			catch (ConverterNotFoundException ex) {
 				// We might still be able to bind it as a bean
@@ -295,8 +295,7 @@ public class Binder {
 				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
-	private <T> Object bindProperty(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, ConfigurationProperty property) {
+	private <T> Object bindProperty(Bindable<T> target, Context context, ConfigurationProperty property) {
 		context.setConfigurationProperty(property);
 		Object result = property.getValue();
 		result = this.placeholdersResolver.resolvePlaceholders(result);

@@ -17,8 +17,6 @@
 package org.springframework.boot.cli.compiler;
 
 import org.codehaus.groovy.ast.ClassHelper;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
@@ -33,8 +31,7 @@ class SmartImportCustomizer extends ImportCustomizer {
 
 	private SourceUnit source;
 
-	SmartImportCustomizer(SourceUnit source, GeneratorContext context,
-			ClassNode classNode) {
+	SmartImportCustomizer(SourceUnit source) {
 		this.source = source;
 	}
 

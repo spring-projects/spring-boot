@@ -80,7 +80,7 @@ class Connection {
 	public void run() throws Exception {
 		if (this.header.contains("Upgrade: websocket")
 				&& this.header.contains("Sec-WebSocket-Version: 13")) {
-			runWebSocket(this.header);
+			runWebSocket();
 		}
 		if (this.header.contains("GET /livereload.js")) {
 			this.outputStream.writeHttp(getClass().getResourceAsStream("livereload.js"),
@@ -88,7 +88,7 @@ class Connection {
 		}
 	}
 
-	private void runWebSocket(String header) throws Exception {
+	private void runWebSocket() throws Exception {
 		String accept = getWebsocketAcceptResponse();
 		this.outputStream.writeHeaders("HTTP/1.1 101 Switching Protocols",
 				"Upgrade: websocket", "Connection: Upgrade",
