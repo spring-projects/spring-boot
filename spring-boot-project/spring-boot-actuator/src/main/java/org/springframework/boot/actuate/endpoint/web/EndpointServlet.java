@@ -61,9 +61,9 @@ public final class EndpointServlet {
 
 	public EndpointServlet withInitParameters(Map<String, String> initParameters) {
 		Assert.notNull(initParameters, "InitParameters must not be null");
-		boolean hasEmptyKey = initParameters.values().stream()
-				.anyMatch((key) -> !StringUtils.hasText(key));
-		Assert.isTrue(!hasEmptyKey, "InitParameters must not contain empty keys");
+		boolean hasEmptyName = initParameters.keySet().stream()
+				.anyMatch((name) -> !StringUtils.hasText(name));
+		Assert.isTrue(!hasEmptyName, "InitParameters must not contain empty names");
 		Map<String, String> mergedInitParameters = new LinkedHashMap<>(
 				this.initParameters);
 		mergedInitParameters.putAll(initParameters);
