@@ -336,7 +336,7 @@ public class TestRestTemplateTests {
 		request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
 		URI absoluteUri = URI
 				.create("http://localhost:8080/a/b/c.txt?param=%7Bsomething%7D");
-		given(requestFactory.createRequest(eq(absoluteUri), (HttpMethod) any()))
+		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class)))
 				.willReturn(request);
 		RestTemplate delegate = new RestTemplate();
 		TestRestTemplate template = new TestRestTemplate(delegate);
@@ -346,7 +346,7 @@ public class TestRestTemplateTests {
 		template.setUriTemplateHandler(uriTemplateHandler);
 		callback.doWithTestRestTemplate(template,
 				URI.create("/a/b/c.txt?param=%7Bsomething%7D"));
-		verify(requestFactory).createRequest(eq(absoluteUri), (HttpMethod) any());
+		verify(requestFactory).createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}
 
 	private void assertBasicAuthorizationInterceptorCredentials(
