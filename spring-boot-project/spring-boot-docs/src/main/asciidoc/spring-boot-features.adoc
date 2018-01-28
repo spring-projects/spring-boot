@@ -2996,7 +2996,7 @@ application (including actuator endpoints if actuator is on the classpath).
 
 
 [[boot-features-security-mvc]]
-== MVC Security
+=== MVC Security
 The default security configuration is implemented in `SecurityAutoConfiguration` and in
 the classes imported from there (`SpringBootWebSecurityConfiguration` for web security
 and `AuthenticationManagerConfiguration` for authentication configuration, which is also
@@ -3019,7 +3019,7 @@ commonly used locations.
 
 
 [[boot-features-security-webflux]]
-== WebFlux Security
+=== WebFlux Security
 The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and in
 the classes imported from there (`WebFluxSecurityConfiguration` for web security
 and `ReactiveAuthenticationManagerConfiguration` for authentication configuration, which is also
