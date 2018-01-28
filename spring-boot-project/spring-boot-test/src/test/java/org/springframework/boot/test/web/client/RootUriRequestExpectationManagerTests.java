@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ public class RootUriRequestExpectationManagerTests {
 			throws Exception {
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
 		given(request.getURI()).willReturn(new URI(this.uri + "/hello"));
-		given(this.delegate.validateRequest((ClientHttpRequest) any()))
+		given(this.delegate.validateRequest(any(ClientHttpRequest.class)))
 				.willThrow(new AssertionError(
 						"Request URI expected:</hello> was:<http://example.com/bad>"));
 		this.thrown.expect(AssertionError.class);

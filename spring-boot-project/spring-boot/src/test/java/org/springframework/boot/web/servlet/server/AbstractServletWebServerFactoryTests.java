@@ -313,7 +313,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		InOrder ordered = inOrder((Object[]) initializers);
 		for (ServletContextInitializer initializer : initializers) {
-			ordered.verify(initializer).onStartup((ServletContext) any());
+			ordered.verify(initializer).onStartup(any(ServletContext.class));
 		}
 	}
 
