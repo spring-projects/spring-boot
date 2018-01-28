@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ public class UndertowServletWebServerFactoryTests
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowBuilderCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize((Builder) any());
+			ordered.verify(customizer).customize(any(Builder.class));
 		}
 	}
 
@@ -139,7 +139,7 @@ public class UndertowServletWebServerFactoryTests
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowDeploymentInfoCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize((DeploymentInfo) any());
+			ordered.verify(customizer).customize(any(DeploymentInfo.class));
 		}
 	}
 

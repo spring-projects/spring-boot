@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,8 +178,8 @@ public class RemoteClientConfigurationTests {
 
 		public Dispatcher dispatcher() throws IOException {
 			Dispatcher dispatcher = mock(Dispatcher.class);
-			ServerHttpRequest anyRequest = (ServerHttpRequest) any();
-			ServerHttpResponse anyResponse = (ServerHttpResponse) any();
+			ServerHttpRequest anyRequest = any(ServerHttpRequest.class);
+			ServerHttpResponse anyResponse = any(ServerHttpResponse.class);
 			given(dispatcher.handle(anyRequest, anyResponse)).willReturn(true);
 			return dispatcher;
 		}

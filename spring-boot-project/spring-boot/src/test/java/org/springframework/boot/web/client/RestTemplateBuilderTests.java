@@ -350,7 +350,7 @@ public class RestTemplateBuilderTests {
 	public void customizersShouldBeAppliedLast() {
 		RestTemplate template = spy(new RestTemplate());
 		this.builder.additionalCustomizers((restTemplate) -> verify(restTemplate)
-				.setRequestFactory((ClientHttpRequestFactory) any()));
+				.setRequestFactory(any(ClientHttpRequestFactory.class)));
 		this.builder.configure(template);
 	}
 
