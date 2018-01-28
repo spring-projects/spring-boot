@@ -69,7 +69,7 @@ public abstract class MockServletWebServer {
 			given(this.servletContext.addServlet(anyString(), (Servlet) any()))
 					.willAnswer((invocation) -> {
 						RegisteredServlet registeredServlet = new RegisteredServlet(
-								(Servlet) invocation.getArguments()[1]);
+								invocation.getArgument(1));
 						MockServletWebServer.this.registeredServlets
 								.add(registeredServlet);
 						return registeredServlet.getRegistration();
@@ -77,7 +77,7 @@ public abstract class MockServletWebServer {
 			given(this.servletContext.addFilter(anyString(), (Filter) any()))
 					.willAnswer((invocation) -> {
 						RegisteredFilter registeredFilter = new RegisteredFilter(
-								(Filter) invocation.getArguments()[1]);
+								invocation.getArgument(1));
 						MockServletWebServer.this.registeredFilters.add(registeredFilter);
 						return registeredFilter.getRegistration();
 					});
