@@ -62,8 +62,8 @@ public class MockRestarter implements TestRule {
 		given(this.mock.getInitialUrls()).willReturn(new URL[] {});
 		given(this.mock.getOrAddAttribute(anyString(), any(ObjectFactory.class)))
 				.willAnswer((invocation) -> {
-					String name = (String) invocation.getArguments()[0];
-					ObjectFactory factory = (ObjectFactory) invocation.getArguments()[1];
+					String name = invocation.getArgument(0);
+					ObjectFactory factory = invocation.getArgument(1);
 					Object attribute = MockRestarter.this.attributes.get(name);
 					if (attribute == null) {
 						attribute = factory.getObject();
