@@ -21,15 +21,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.core.ResolvableType;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 
@@ -44,9 +41,6 @@ import org.springframework.util.Assert;
  */
 public class WebServerFactoryCustomizerBeanPostProcessor
 		implements BeanPostProcessor, BeanFactoryAware {
-
-	private static final Log logger = LogFactory
-			.getLog(WebServerFactoryCustomizerBeanPostProcessor.class);
 
 	private ListableBeanFactory beanFactory;
 
@@ -75,45 +69,13 @@ public class WebServerFactoryCustomizerBeanPostProcessor
 		return bean;
 	}
 
-	private void postProcessBeforeInitialization(WebServerFactory bean) {
-		for (WebServerFactoryCustomizer<?> customizer : getCustomizers()) {
-			Class<?> type = ResolvableType
-					.forClass(WebServerFactoryCustomizer.class, customizer.getClass())
-					.getGeneric().resolve(WebServerFactory.class);
-			if (type.isInstance(bean)) {
-				invokeCustomizer(customizer, bean);
-			}
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void invokeCustomizer(WebServerFactoryCustomizer customizer,
-			WebServerFactory webServerFactory) {
-		try {
-			customizer.customize(webServerFactory);
-		}
-		catch (ClassCastException ex) {
-			String msg = ex.getMessage();
-			if (msg == null || msg.startsWith(webServerFactory.getClass().getName())) {
-				// Possibly a lambda-defined WebServerFactoryCustomizer which we could not
-				// resolve the
-				// generic WebServerFactory type for
-				logLambdaDebug(customizer, ex);
-			}
-			else {
-				throw ex;
-			}
-		}
-	}
-
-	private void logLambdaDebug(WebServerFactoryCustomizer<?> customizer,
-			ClassCastException ex) {
-		if (logger.isDebugEnabled()) {
-			logger.debug(
-					"Non-matching WebServerFactory type for WebServerFactoryCustomizer: "
-							+ customizer,
-					ex);
-		}
+	@SuppressWarnings("unchecked")
+	private void postProcessBeforeInitialization(WebServerFactory webServerFactory) {
+		LambdaSafe
+				.callbacks(WebServerFactoryCustomizer.class, getCustomizers(),
+						webServerFactory)
+				.withLogger(WebServerFactoryCustomizerBeanPostProcessor.class)
+				.invoke((customizer) -> customizer.customize(webServerFactory));
 	}
 
 	private Collection<WebServerFactoryCustomizer<?>> getCustomizers() {
