@@ -142,7 +142,7 @@
 		<snakeyaml.version>1.19</snakeyaml.version>
 		<solr.version>6.6.2</solr.version>
 		<spring.version>5.0.3.RELEASE</spring.version>
-		<spring-amqp.version>2.0.1.RELEASE</spring-amqp.version>
+		<spring-amqp.version>2.0.2.RELEASE</spring-amqp.version>
 		<spring-batch.version>4.0.0.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.1.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Kay-SR3</spring-data-releasetrain.version>
