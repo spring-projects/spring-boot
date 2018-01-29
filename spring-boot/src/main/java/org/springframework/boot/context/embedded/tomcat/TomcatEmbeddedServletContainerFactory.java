@@ -231,8 +231,8 @@ public class TomcatEmbeddedServletContainerFactory
 
 		});
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		configureContext(context, initializersToUse);
 		host.addChild(context);
+		configureContext(context, initializersToUse);
 		postProcessContext(context);
 	}
 

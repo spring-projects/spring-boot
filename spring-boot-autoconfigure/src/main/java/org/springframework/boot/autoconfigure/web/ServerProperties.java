@@ -36,7 +36,9 @@ import io.undertow.UndertowOptions;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
+import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
@@ -858,6 +860,25 @@ public class ServerProperties
 			}
 			if (!ObjectUtils.isEmpty(this.additionalTldSkipPatterns)) {
 				factory.getTldSkipPatterns().addAll(this.additionalTldSkipPatterns);
+			}
+			if (serverProperties.getError().getIncludeStacktrace() == ErrorProperties.IncludeStacktrace.NEVER) {
+				factory.addContextCustomizers(new TomcatContextCustomizer() {
+					@Override
+					public void customize(Context context) {
+						// org.apache.catalina.core.StandardHost() adds ErrorReportValve
+						// with default options if not there yet, so adding a properly
+						// configured one.
+						ErrorReportValve valve = new ErrorReportValve();
+						valve.setShowServerInfo(false); // disable server name and version
+						valve.setShowReport(false); // disable exception
+						if (context.getParent() != null) {
+							context.getParent().getPipeline().addValve(valve);
+						} else {
+							LogFactory.getLog(context.getClass()).warn("Parent of " + context
+									+ " is not set, skip ErrorReportValve configuration");
+						}
+					}
+				});
 			}
 		}
 
