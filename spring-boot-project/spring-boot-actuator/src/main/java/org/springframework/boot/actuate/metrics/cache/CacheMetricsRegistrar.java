@@ -17,16 +17,15 @@
 package org.springframework.boot.actuate.metrics.cache;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.cache.Cache;
-import org.springframework.core.ResolvableType;
 
 /**
  * Register supported {@link Cache} to a {@link MeterRegistry}.
@@ -35,8 +34,6 @@ import org.springframework.core.ResolvableType;
  * @since 2.0.0
  */
 public class CacheMetricsRegistrar {
-
-	private static final Log logger = LogFactory.getLog(CacheMetricsRegistrar.class);
 
 	private final MeterRegistry registry;
 
@@ -74,41 +71,15 @@ public class CacheMetricsRegistrar {
 		return false;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private MeterBinder getMeterBinder(Cache cache, Tags tags) {
-		tags = tags.and(getAdditionalTags(cache));
-		for (CacheMeterBinderProvider<?> binderProvider : this.binderProviders) {
-			Class<?> cacheType = ResolvableType
-					.forClass(CacheMeterBinderProvider.class, binderProvider.getClass())
-					.resolveGeneric();
-			if (cacheType.isInstance(cache)) {
-				try {
-					MeterBinder meterBinder = ((CacheMeterBinderProvider) binderProvider)
-							.getMeterBinder(cache, this.metricName, tags);
-					if (meterBinder != null) {
-						return meterBinder;
-					}
-				}
-				catch (ClassCastException ex) {
-					String msg = ex.getMessage();
-					if (msg == null || msg.startsWith(cache.getClass().getName())) {
-						// Possibly a lambda-defined CacheMeterBinderProvider which we
-						// could not resolve the generic Cache type for
-						if (logger.isDebugEnabled()) {
-							logger.debug(
-									"Non-matching Cache type for CacheMeterBinderProvider: "
-											+ binderProvider,
-									ex);
-						}
-					}
-					else {
-						throw ex;
-					}
-				}
-			}
-
-		}
-		return null;
+		Tags cacheTags = tags.and(getAdditionalTags(cache));
+		return LambdaSafe
+				.callbacks(CacheMeterBinderProvider.class, this.binderProviders, cache)
+				.withLogger(CacheMetricsRegistrar.class)
+				.invokeAnd((binderProvider) -> binderProvider.getMeterBinder(cache,
+						this.metricName, cacheTags))
+				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	/**

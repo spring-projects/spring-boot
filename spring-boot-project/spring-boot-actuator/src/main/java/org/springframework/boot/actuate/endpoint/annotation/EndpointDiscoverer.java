@@ -26,11 +26,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -41,6 +39,7 @@ import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -65,8 +64,6 @@ import org.springframework.util.StringUtils;
  */
 public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O extends Operation>
 		implements EndpointsSupplier<E> {
-
-	private static final Log logger = LogFactory.getLog(EndpointDiscoverer.class);
 
 	private final ApplicationContext applicationContext;
 
@@ -313,23 +310,15 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		return isFilterMatch(filter, getFilterEndpoint(endpointBean));
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean isFilterMatch(EndpointFilter<E> filter, E endpoint) {
-		try {
-			return filter.match(endpoint);
-		}
-		catch (ClassCastException ex) {
-			String msg = ex.getMessage();
-			if (msg == null || msg.startsWith(endpoint.getClass().getName())) {
-				// Possibly a lambda-defined EndpointFilter which we could not resolve the
-				// generic EndpointInfo type for
-				if (logger.isDebugEnabled()) {
-					logger.debug("Non-matching Endpoint for EndpointFilter: " + filter,
-							ex);
-				}
-				return false;
-			}
-			throw ex;
-		}
+		return LambdaSafe.callback(EndpointFilter.class, filter, endpoint)
+				.withLogger(EndpointDiscoverer.class).invokeAnd((f) -> f.match(endpoint))
+				.get();
+	}
+
+	public <A, B> void doIt(Function<A, B> x) {
+
 	}
 
 	private E getFilterEndpoint(EndpointBean endpointBean) {
