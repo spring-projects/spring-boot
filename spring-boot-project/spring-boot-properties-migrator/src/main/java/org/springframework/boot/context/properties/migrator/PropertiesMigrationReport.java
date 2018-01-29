@@ -25,6 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
+import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.util.StringUtils;
 
 /**
@@ -74,15 +75,24 @@ class PropertiesMigrationReport {
 		StringBuilder report = new StringBuilder();
 		report.append(String.format("%nThe use of configuration keys that are no longer "
 				+ "supported was found in the environment:%n%n"));
-		append(report, content,
-				(metadata) -> "Reason: "
-						+ (StringUtils.hasText(metadata.getDeprecation().getShortReason())
-								? metadata.getDeprecation().getShortReason() : "none"));
+		append(report, content, this::determineReason);
 		report.append(String.format("%n"));
 		report.append("Please refer to the migration guide or reference guide for "
 				+ "potential alternatives.");
 		report.append(String.format("%n"));
 		return report.toString();
+	}
+
+	private String determineReason(ConfigurationMetadataProperty metadata) {
+		Deprecation deprecation = metadata.getDeprecation();
+		if (StringUtils.hasText(deprecation.getShortReason())) {
+			return deprecation.getShortReason();
+		}
+		if (StringUtils.hasText(deprecation.getReplacement())) {
+			return String.format("Reason: Replacement key '%s' uses an incompatible "
+					+ "target type", deprecation.getReplacement());
+		}
+		return "none";
 	}
 
 	private Map<String, List<PropertyMigration>> getContent(

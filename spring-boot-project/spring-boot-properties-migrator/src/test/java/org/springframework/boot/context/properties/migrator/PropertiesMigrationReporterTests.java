@@ -141,6 +141,18 @@ public class PropertiesMigrationReporterTests {
 		assertMappedProperty(propertySource, "test.mapped.ttl", 5678L, null);
 	}
 
+	@Test
+	public void reasonIsProvidedIfPropertyCouldNotBeRenamed() throws IOException {
+		this.environment.getPropertySources().addFirst(loadPropertySource("test",
+				"config/config-error-no-compatible-type.properties"));
+		String report = createErrorReport(
+				loadRepository("metadata/type-conversion-metadata.json"));
+		assertThat(report).isNotNull();
+		assertThat(report).containsSubsequence("Property source 'test'",
+				"wrong.inconvertible", "Line: 1", "Reason: Replacement key "
+						+ "'test.inconvertible' uses an incompatible target type");
+	}
+
 	private List<String> mapToNames(PropertySources sources) {
 		List<String> names = new ArrayList<>();
 		for (PropertySource<?> source : sources) {

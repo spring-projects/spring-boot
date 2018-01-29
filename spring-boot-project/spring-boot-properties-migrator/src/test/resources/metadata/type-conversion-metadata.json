@@ -13,6 +13,10 @@
       "type": "java.util.Map<java.lang.String, java.time.Duration>"
     },
     {
+      "name": "test.inconvertible",
+      "type": "com.example.One"
+    },
+    {
       "name": "test.cache-seconds",
       "type": "java.lang.Integer",
       "deprecation": {
@@ -33,6 +37,14 @@
       "type": "java.lang.Long",
       "deprecation": {
         "replacement": "test.mapped.ttl",
+        "level": "error"
+      }
+    },
+    {
+      "name": "wrong.inconvertible",
+      "type": "com.example.Two",
+      "deprecation": {
+        "replacement": "test.inconvertible",
         "level": "error"
       }
     }
