@@ -257,7 +257,7 @@ public class GroovyCompiler {
 		});
 	}
 
-	private int getIndexOfASTTransformationVisitor(LinkedList<?> conversionOperations) {
+	private int getIndexOfASTTransformationVisitor(List<?> conversionOperations) {
 		for (int index = 0; index < conversionOperations.size(); index++) {
 			if (conversionOperations.get(index).getClass().getName()
 					.startsWith(ASTTransformationVisitor.class.getName())) {

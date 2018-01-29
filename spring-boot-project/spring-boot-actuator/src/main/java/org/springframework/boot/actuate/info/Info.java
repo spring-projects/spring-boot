@@ -40,7 +40,7 @@ public final class Info {
 	private final Map<String, Object> details;
 
 	private Info(Builder builder) {
-		LinkedHashMap<String, Object> content = new LinkedHashMap<>();
+		Map<String, Object> content = new LinkedHashMap<>();
 		content.putAll(builder.content);
 		this.details = Collections.unmodifiableMap(content);
 	}
