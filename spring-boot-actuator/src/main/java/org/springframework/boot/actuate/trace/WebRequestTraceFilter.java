@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,14 +112,21 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		}
 		finally {
 			addTimeTaken(trace, startTime);
+			addSessionIdIfNecessary(request, trace);
 			enhanceTrace(trace, status == response.getStatus() ? response
 					: new CustomStatusResponseWrapper(response, status));
 			this.repository.add(trace);
 		}
 	}
 
-	protected Map<String, Object> getTrace(HttpServletRequest request) {
+	private void addSessionIdIfNecessary(HttpServletRequest request,
+			Map<String, Object> trace) {
 		HttpSession session = request.getSession(false);
+		add(trace, Include.SESSION_ID, "sessionId",
+				(session == null ? null : session.getId()));
+	}
+
+	protected Map<String, Object> getTrace(HttpServletRequest request) {
 		Throwable exception = (Throwable) request
 				.getAttribute("javax.servlet.error.exception");
 		Principal userPrincipal = request.getUserPrincipal();
@@ -143,8 +150,6 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		add(trace, Include.QUERY_STRING, "query", request.getQueryString());
 		add(trace, Include.AUTH_TYPE, "authType", request.getAuthType());
 		add(trace, Include.REMOTE_ADDRESS, "remoteAddress", request.getRemoteAddr());
-		add(trace, Include.SESSION_ID, "sessionId",
-				(session == null ? null : session.getId()));
 		add(trace, Include.REMOTE_USER, "remoteUser", request.getRemoteUser());
 		if (isIncluded(Include.ERRORS) && exception != null
 				&& this.errorAttributes != null) {
