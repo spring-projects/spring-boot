@@ -36,7 +36,7 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 /**
  * Selects configuration classes for the management context configuration. Entries are
  * loaded from {@code /META-INF/spring.factories} under the
- * {@code org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration}
+ * {@code org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration}
  * key.
  *
  * @author Dave Syer
