@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.migrator;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -108,21 +109,42 @@ class PropertiesMigrationReporter {
 			ConfigurationMetadataProperty replacement = this.allProperties
 					.get(replacementId);
 			if (replacement != null) {
-				return replacement.getType().equals(metadata.getType());
+				return isCompatibleType(metadata.getType(), replacement.getType());
 			}
-			replacement = getMapProperty(replacementId);
-			if (replacement != null) {
-				return replacement.getType().startsWith("java.util.Map")
-						&& replacement.getType().endsWith(metadata.getType() + ">");
-			}
+			return isCompatibleType(metadata.getType(),
+					detectMapValueReplacementType(replacementId));
 		}
 		return false;
 	}
 
-	private ConfigurationMetadataProperty getMapProperty(String fullId) {
+	private boolean isCompatibleType(String currentType, String replacementType) {
+		if (replacementType ==  null || currentType == null) {
+			return false;
+		}
+		if (replacementType.equals(currentType)) {
+			return true;
+		}
+		if (replacementType.equals(Duration.class.getName())
+				&& (currentType.equals(Long.class.getName())
+				|| currentType.equals(Integer.class.getName()))) {
+			return true;
+		}
+		return false;
+	}
+
+	private String detectMapValueReplacementType(String fullId) {
 		int i = fullId.lastIndexOf('.');
 		if (i != -1) {
-			return this.allProperties.get(fullId.substring(0, i));
+			ConfigurationMetadataProperty property = this.allProperties.get(
+					fullId.substring(0, i));
+			String type = property.getType();
+			if (type != null
+					&& type.startsWith(Map.class.getName())) {
+				int lastComma = type.lastIndexOf(',');
+				if (lastComma != -1) {
+					return type.substring(lastComma + 1, type.length() - 1).trim();
+				}
+			}
 		}
 		return null;
 	}

@@ -18,7 +18,9 @@ package org.springframework.boot.context.properties.migrator;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -29,6 +31,7 @@ import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
@@ -113,6 +116,29 @@ public class PropertiesMigrationReporterTests {
 				"This is no longer supported.");
 		assertThat(report).doesNotContain("null").doesNotContain("server.port")
 				.doesNotContain("debug");
+	}
+
+	@Test
+	public void durationTypeIsHandledTransparently() {
+		MutablePropertySources propertySources = this.environment.getPropertySources();
+		Map<String, Object> content = new LinkedHashMap<>();
+		content.put("test.cache-seconds", 50);
+		content.put("test.time-to-live-ms", 1234L);
+		content.put("test.ttl", 5678L);
+		propertySources.addFirst(
+				new MapPropertySource("test", content));
+		assertThat(propertySources).hasSize(2);
+		String report = createWarningReport(
+				loadRepository("metadata/type-conversion-metadata.json"));
+		assertThat(report).contains("Property source 'test'", "test.cache-seconds",
+				"test.cache", "test.time-to-live-ms", "test.time-to-live", "test.ttl",
+				"test.mapped.ttl");
+		assertThat(mapToNames(propertySources)).containsExactly("migrate-test", "test",
+				"mockProperties");
+		PropertySource<?> propertySource = propertySources.get("migrate-test");
+		assertMappedProperty(propertySource, "test.cache", 50, null);
+		assertMappedProperty(propertySource, "test.time-to-live", 1234L, null);
+		assertMappedProperty(propertySource, "test.mapped.ttl", 5678L, null);
 	}
 
 	private List<String> mapToNames(PropertySources sources) {

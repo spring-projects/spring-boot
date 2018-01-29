@@ -1,0 +1,40 @@
+{
+  "properties": [
+    {
+      "name": "test.cache",
+      "type": "java.time.Duration"
+    },
+    {
+      "name": "test.time-to-live",
+      "type": "java.time.Duration"
+    },
+    {
+      "name": "test.mapped",
+      "type": "java.util.Map<java.lang.String, java.time.Duration>"
+    },
+    {
+      "name": "test.cache-seconds",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "replacement": "test.cache",
+        "level": "error"
+      }
+    },
+    {
+      "name": "test.time-to-live-ms",
+      "type": "java.lang.Long",
+      "deprecation": {
+        "replacement": "test.time-to-live",
+        "level": "error"
+      }
+    },
+    {
+      "name": "test.ttl",
+      "type": "java.lang.Long",
+      "deprecation": {
+        "replacement": "test.mapped.ttl",
+        "level": "error"
+      }
+    }
+  ]
+}
