@@ -76,14 +76,14 @@ public class EndpointServletTests {
 	public void withInitParameterNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
 		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameters(Collections.singletonMap(null, "value"));
+		endpointServlet.withInitParameter(null, "value");
 	}
 
 	@Test
 	public void withInitParameterEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
 		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameters(Collections.singletonMap(" ", "value"));
+		endpointServlet.withInitParameter(" ", "value");
 	}
 
 	@Test
@@ -100,6 +100,20 @@ public class EndpointServletTests {
 		assertThat(endpointServlet.withInitParameter("a", "b1")
 				.withInitParameter("e", "f").getInitParameters()).containsExactly(
 						entry("a", "b1"), entry("c", "d"), entry("e", "f"));
+	}
+
+	@Test
+	public void withInitParametersNullName() {
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
+		this.thrown.expect(IllegalArgumentException.class);
+		endpointServlet.withInitParameters(Collections.singletonMap(null, "value"));
+	}
+
+	@Test
+	public void withInitParametersEmptyName() {
+		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
+		this.thrown.expect(IllegalArgumentException.class);
+		endpointServlet.withInitParameters(Collections.singletonMap(" ", "value"));
 	}
 
 	@Test

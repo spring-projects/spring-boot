@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 @ServletEndpoint(id = "jolokia")
 public class JolokiaEndpoint implements Supplier<EndpointServlet> {
 
-	private Map<String, String> initParameters;
+	private final Map<String, String> initParameters;
 
 	public JolokiaEndpoint(Map<String, String> initParameters) {
 		this.initParameters = initParameters;

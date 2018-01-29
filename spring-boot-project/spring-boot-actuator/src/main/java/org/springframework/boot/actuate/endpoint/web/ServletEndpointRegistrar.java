@@ -29,8 +29,8 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 
 /**
- * {@link ServletContextInitializer} to register {@link ExposableServletEndpoint} servlet
- * endpoints.
+ * {@link ServletContextInitializer} to register {@link ExposableServletEndpoint servlet
+ * endpoints}.
  *
  * @author Phillip Webb
  * @since 2.0.0
