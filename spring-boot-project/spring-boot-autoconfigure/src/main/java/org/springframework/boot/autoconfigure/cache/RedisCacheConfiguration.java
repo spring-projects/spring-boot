@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheManager.RedisCacheManagerBuilder;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
 /**
  * Redis cache configuration.
@@ -63,9 +65,10 @@ class RedisCacheConfiguration {
 	}
 
 	@Bean
-	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory,
+										RedisSerializer<?> defaultRedisSerializer) {
 		RedisCacheManagerBuilder builder = RedisCacheManager
-				.builder(redisConnectionFactory).cacheDefaults(determineConfiguration());
+				.builder(redisConnectionFactory).cacheDefaults(determineConfiguration(defaultRedisSerializer));
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
@@ -73,7 +76,7 @@ class RedisCacheConfiguration {
 		return this.customizerInvoker.customize(builder.build());
 	}
 
-	private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration() {
+	private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration(RedisSerializer<?> defaultRedisSerializer) {
 		if (this.redisCacheConfiguration != null) {
 			return this.redisCacheConfiguration;
 		}
@@ -92,7 +95,7 @@ class RedisCacheConfiguration {
 		if (!redisProperties.isUseKeyPrefix()) {
 			config = config.disableKeyPrefix();
 		}
-		return config;
+		return config.serializeValuesWith(SerializationPair.fromSerializer(defaultRedisSerializer));
 	}
 
 }
