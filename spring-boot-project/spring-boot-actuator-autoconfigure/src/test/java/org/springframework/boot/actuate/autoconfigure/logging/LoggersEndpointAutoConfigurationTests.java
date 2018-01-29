@@ -58,9 +58,8 @@ public class LoggersEndpointAutoConfigurationTests {
 		this.contextRunner
 				.withSystemProperties(
 						"org.springframework.boot.logging.LoggingSystem=none")
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(LoggersEndpoint.class);
-				});
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(LoggersEndpoint.class));
 	}
 
 	@Configuration

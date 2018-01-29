@@ -127,11 +127,9 @@ public class RouterFunctionMetrics {
 		public Mono<ServerResponse> filter(ServerRequest request,
 				HandlerFunction<ServerResponse> next) {
 			long start = System.nanoTime();
-			return next.handle(request).doOnSuccess((response) -> {
-				timer(start, request, response);
-			}).doOnError((error) -> {
-				timer(start, request, null);
-			});
+			return next.handle(request)
+					.doOnSuccess((response) -> timer(start, request, response))
+					.doOnError((error) -> timer(start, request, null));
 		}
 
 		private Iterable<Tag> getDefaultTags(ServerRequest request,

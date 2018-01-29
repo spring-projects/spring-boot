@@ -75,7 +75,7 @@ public final class MetricsRun {
 		propertyValues.add("management.metrics.use-global-registry=false");
 		List<String> keep = Arrays.asList(implementations);
 		IMPLEMENTATIONS.stream()
-				.filter((implementation) -> !keep.contains(implementations))
+				.filter((implementation) -> !keep.contains(implementation))
 				.map(MetricsRun::disableExport).forEach(propertyValues::add);
 		return propertyValues.toArray(new String[0]);
 	}
