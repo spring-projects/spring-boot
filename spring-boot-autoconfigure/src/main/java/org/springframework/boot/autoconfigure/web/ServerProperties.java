@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import io.undertow.UndertowOptions;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
+import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
@@ -859,6 +860,25 @@ public class ServerProperties
 			if (!ObjectUtils.isEmpty(this.additionalTldSkipPatterns)) {
 				factory.getTldSkipPatterns().addAll(this.additionalTldSkipPatterns);
 			}
+			if (serverProperties.getError()
+					.getIncludeStacktrace() == ErrorProperties.IncludeStacktrace.NEVER) {
+				customizeErrorReportValve(factory);
+			}
+		}
+
+		private void customizeErrorReportValve(
+				TomcatEmbeddedServletContainerFactory factory) {
+			factory.addContextCustomizers(new TomcatContextCustomizer() {
+
+				@Override
+				public void customize(Context context) {
+					ErrorReportValve valve = new ErrorReportValve();
+					valve.setShowServerInfo(false);
+					valve.setShowReport(false);
+					context.getParent().getPipeline().addValve(valve);
+				}
+
+			});
 		}
 
 		private void customizeAcceptCount(TomcatEmbeddedServletContainerFactory factory) {

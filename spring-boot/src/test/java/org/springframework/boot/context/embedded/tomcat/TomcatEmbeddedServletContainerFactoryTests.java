@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,8 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
@@ -68,6 +70,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -144,6 +147,25 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		for (TomcatContextCustomizer listener : listeners) {
 			ordered.verify(listener).customize((Context) anyObject());
 		}
+	}
+
+	@Test
+	public void contextIsAddedToHostBeforeCustomizersAreCalled() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
+		doAnswer(new Answer<Void>() {
+
+			@Override
+			public Void answer(InvocationOnMock invocation) throws Throwable {
+				assertThat(((Context) invocation.getArguments()[0]).getParent())
+						.isNotNull();
+				return null;
+			}
+
+		}).when(customizer).customize(any(Context.class));
+		factory.addContextCustomizers(customizer);
+		this.container = factory.getEmbeddedServletContainer();
+		verify(customizer).customize(any(Context.class));
 	}
 
 	@Test
