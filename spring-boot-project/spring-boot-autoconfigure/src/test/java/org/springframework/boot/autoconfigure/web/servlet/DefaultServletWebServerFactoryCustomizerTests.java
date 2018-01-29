@@ -28,6 +28,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
+import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.eclipse.jetty.server.NCSARequestLog;
@@ -180,6 +181,24 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 			customizer.customize(context);
 		}
 		verify(context).setUseRelativeRedirects(true);
+	}
+
+	@Test
+	public void errorReportValveIsConfiguredToNotReportStackTraces() {
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		bindProperties(map);
+		this.customizer.customize(factory);
+		Valve[] valves = ((TomcatWebServer) factory.getWebServer()).getTomcat().getHost()
+				.getPipeline().getValves();
+		assertThat(valves).hasAtLeastOneElementOfType(ErrorReportValve.class);
+		for (Valve valve : valves) {
+			if (valve instanceof ErrorReportValve) {
+				ErrorReportValve errorReportValve = (ErrorReportValve) valve;
+				assertThat(errorReportValve.isShowReport()).isFalse();
+				assertThat(errorReportValve.isShowServerInfo()).isFalse();
+			}
+		}
 	}
 
 	@Test

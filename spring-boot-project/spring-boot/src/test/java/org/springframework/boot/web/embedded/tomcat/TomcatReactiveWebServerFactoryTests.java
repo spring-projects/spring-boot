@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,18 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link TomcatReactiveWebServerFactory}.
@@ -62,6 +66,25 @@ public class TomcatReactiveWebServerFactoryTests
 		for (TomcatContextCustomizer listener : listeners) {
 			ordered.verify(listener).customize(any(Context.class));
 		}
+	}
+
+	@Test
+	public void contextIsAddedToHostBeforeCustomizersAreCalled() throws Exception {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
+		doAnswer(new Answer<Void>() {
+
+			@Override
+			public Void answer(InvocationOnMock invocation) throws Throwable {
+				assertThat(((Context) invocation.getArguments()[0]).getParent())
+						.isNotNull();
+				return null;
+			}
+
+		}).when(customizer).customize(any(Context.class));
+		factory.addContextCustomizers(customizer);
+		this.webServer = factory.getWebServer(mock(HttpHandler.class));
+		verify(customizer).customize(any(Context.class));
 	}
 
 	@Test

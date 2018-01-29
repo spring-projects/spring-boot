@@ -216,8 +216,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 		context.addLifecycleListener(new StaticResourceConfigurer(context));
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		configureContext(context, initializersToUse);
 		host.addChild(context);
+		configureContext(context, initializersToUse);
 		postProcessContext(context);
 	}
 

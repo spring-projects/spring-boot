@@ -133,8 +133,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		context.setLoader(loader);
 		Tomcat.addServlet(context, "httpHandlerServlet", servlet);
 		context.addServletMappingDecoded("/", "httpHandlerServlet");
-		configureContext(context);
 		host.addChild(context);
+		configureContext(context);
 	}
 
 	private void skipAllTldScanning(TomcatEmbeddedContext context) {

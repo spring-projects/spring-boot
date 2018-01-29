@@ -20,11 +20,14 @@ import java.time.Duration;
 
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.valves.AccessLogValve;
+import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 
+import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -88,6 +91,7 @@ public final class TomcatCustomizer {
 				.when(TomcatCustomizer::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
 		customizeStaticResources(serverProperties.getTomcat().getResource(), factory);
+		customizeErrorReportValve(serverProperties.getError(), factory);
 	}
 
 	private static boolean isPositive(int value) {
@@ -239,6 +243,18 @@ public final class TomcatCustomizer {
 				}
 			});
 		});
+	}
+
+	private static void customizeErrorReportValve(ErrorProperties error,
+			ConfigurableTomcatWebServerFactory factory) {
+		if (error.getIncludeStacktrace() == IncludeStacktrace.NEVER) {
+			factory.addContextCustomizers((context) -> {
+				ErrorReportValve valve = new ErrorReportValve();
+				valve.setShowServerInfo(false);
+				valve.setShowReport(false);
+				context.getParent().getPipeline().addValve(valve);
+			});
+		}
 	}
 
 }
