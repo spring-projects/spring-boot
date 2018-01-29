@@ -89,8 +89,9 @@ class PropertiesMigrationReport {
 			return deprecation.getShortReason();
 		}
 		if (StringUtils.hasText(deprecation.getReplacement())) {
-			return String.format("Reason: Replacement key '%s' uses an incompatible "
-					+ "target type", deprecation.getReplacement());
+			return String.format(
+					"Reason: Replacement key '%s' uses an incompatible " + "target type",
+					deprecation.getReplacement());
 		}
 		return "none";
 	}

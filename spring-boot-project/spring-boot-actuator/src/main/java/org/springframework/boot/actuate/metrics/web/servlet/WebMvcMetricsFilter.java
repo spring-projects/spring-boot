@@ -211,8 +211,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	private void record(TimingContext timingContext, HttpServletResponse response,
 			HttpServletRequest request, Object handlerObject, Throwable exception) {
 		Timer.Sample timerSample = timingContext.getTimerSample();
-		Supplier<Iterable<Tag>> tags = () -> this.tagsProvider.getTags(request,
-				response, handlerObject, exception);
+		Supplier<Iterable<Tag>> tags = () -> this.tagsProvider.getTags(request, response,
+				handlerObject, exception);
 		for (Timed annotation : timingContext.getAnnotations()) {
 			stop(timerSample, tags, Timer.builder(annotation, this.metricName));
 		}

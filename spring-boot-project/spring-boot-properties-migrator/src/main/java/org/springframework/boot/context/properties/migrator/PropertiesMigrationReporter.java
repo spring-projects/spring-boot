@@ -118,7 +118,7 @@ class PropertiesMigrationReporter {
 	}
 
 	private boolean isCompatibleType(String currentType, String replacementType) {
-		if (replacementType ==  null || currentType == null) {
+		if (replacementType == null || currentType == null) {
 			return false;
 		}
 		if (replacementType.equals(currentType)) {
@@ -126,20 +126,19 @@ class PropertiesMigrationReporter {
 		}
 		if (replacementType.equals(Duration.class.getName())
 				&& (currentType.equals(Long.class.getName())
-				|| currentType.equals(Integer.class.getName()))) {
+						|| currentType.equals(Integer.class.getName()))) {
 			return true;
 		}
 		return false;
 	}
 
 	private String detectMapValueReplacementType(String fullId) {
-		int i = fullId.lastIndexOf('.');
-		if (i != -1) {
-			ConfigurationMetadataProperty property = this.allProperties.get(
-					fullId.substring(0, i));
+		int lastDot = fullId.lastIndexOf('.');
+		if (lastDot != -1) {
+			ConfigurationMetadataProperty property = this.allProperties
+					.get(fullId.substring(0, lastDot));
 			String type = property.getType();
-			if (type != null
-					&& type.startsWith(Map.class.getName())) {
+			if (type != null && type.startsWith(Map.class.getName())) {
 				int lastComma = type.lastIndexOf(',');
 				if (lastComma != -1) {
 					return type.substring(lastComma + 1, type.length() - 1).trim();

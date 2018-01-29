@@ -126,8 +126,8 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
 		@Override
-		public void customize(TomcatServletWebServerFactory serverFactory) {
-			AccessLogValve accessLogValve = findAccessLogValve(serverFactory);
+		public void customize(TomcatServletWebServerFactory factory) {
+			AccessLogValve accessLogValve = findAccessLogValve(factory);
 			if (accessLogValve == null) {
 				return;
 			}
@@ -135,8 +135,8 @@ class ServletManagementChildContextConfiguration {
 		}
 
 		private AccessLogValve findAccessLogValve(
-				TomcatServletWebServerFactory serverFactory) {
-			for (Valve engineValve : serverFactory.getEngineValves()) {
+				TomcatServletWebServerFactory factory) {
+			for (Valve engineValve : factory.getEngineValves()) {
 				if (engineValve instanceof AccessLogValve) {
 					return (AccessLogValve) engineValve;
 				}
@@ -150,9 +150,9 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
 		@Override
-		public void customize(UndertowServletWebServerFactory serverFactory) {
-			serverFactory.setAccessLogPrefix(
-					customizePrefix(serverFactory.getAccessLogPrefix()));
+		public void customize(UndertowServletWebServerFactory factory) {
+			factory.setAccessLogPrefix(
+					customizePrefix(factory.getAccessLogPrefix()));
 		}
 
 	}

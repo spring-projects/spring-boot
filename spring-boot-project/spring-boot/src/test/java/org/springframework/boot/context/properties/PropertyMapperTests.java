@@ -151,8 +151,8 @@ public class PropertyMapperTests {
 
 	@Test
 	public void whenInstanceOfWhenValueIsNotTargetTypeShouldNotMatch() {
-		this.map.from(() -> (Number) 123L).whenInstanceOf(Double.class)
-				.toCall(Assert::fail);
+		Supplier<Number> supplier = () -> 123L;
+		this.map.from(supplier).whenInstanceOf(Double.class).toCall(Assert::fail);
 	}
 
 	@Test

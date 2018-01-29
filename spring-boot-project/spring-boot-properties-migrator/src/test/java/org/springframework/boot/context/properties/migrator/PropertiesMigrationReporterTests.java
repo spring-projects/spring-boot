@@ -125,8 +125,7 @@ public class PropertiesMigrationReporterTests {
 		content.put("test.cache-seconds", 50);
 		content.put("test.time-to-live-ms", 1234L);
 		content.put("test.ttl", 5678L);
-		propertySources.addFirst(
-				new MapPropertySource("test", content));
+		propertySources.addFirst(new MapPropertySource("test", content));
 		assertThat(propertySources).hasSize(2);
 		String report = createWarningReport(
 				loadRepository("metadata/type-conversion-metadata.json"));

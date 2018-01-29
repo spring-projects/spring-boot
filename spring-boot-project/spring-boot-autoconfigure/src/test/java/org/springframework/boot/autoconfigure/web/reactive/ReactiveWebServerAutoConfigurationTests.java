@@ -119,7 +119,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 
 		@Bean
 		public WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> reactiveWebServerCustomizer() {
-			return (server) -> server.setPort(9000);
+			return (factory) -> factory.setPort(9000);
 		}
 
 	}

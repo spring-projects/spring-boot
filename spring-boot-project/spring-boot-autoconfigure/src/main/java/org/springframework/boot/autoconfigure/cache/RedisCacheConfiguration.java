@@ -69,7 +69,8 @@ class RedisCacheConfiguration {
 	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory,
 			ResourceLoader resourceLoader) {
 		RedisCacheManagerBuilder builder = RedisCacheManager
-				.builder(redisConnectionFactory).cacheDefaults(determineConfiguration(resourceLoader.getClassLoader()));
+				.builder(redisConnectionFactory)
+				.cacheDefaults(determineConfiguration(resourceLoader.getClassLoader()));
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
@@ -85,8 +86,8 @@ class RedisCacheConfiguration {
 		Redis redisProperties = this.cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 				.defaultCacheConfig();
-		config = config.serializeValuesWith(SerializationPair.fromSerializer(
-				new JdkSerializationRedisSerializer(classLoader)));
+		config = config.serializeValuesWith(SerializationPair
+				.fromSerializer(new JdkSerializationRedisSerializer(classLoader)));
 		if (redisProperties.getTimeToLive() != null) {
 			config = config.entryTtl(redisProperties.getTimeToLive());
 		}

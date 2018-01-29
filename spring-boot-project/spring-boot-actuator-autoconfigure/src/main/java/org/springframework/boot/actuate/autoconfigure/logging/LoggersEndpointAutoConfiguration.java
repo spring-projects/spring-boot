@@ -49,7 +49,6 @@ public class LoggersEndpointAutoConfiguration {
 		return new LoggersEndpoint(loggingSystem);
 	}
 
-
 	static class OnEnabledLoggingSystemCondition extends SpringBootCondition {
 
 		@Override
@@ -66,4 +65,5 @@ public class LoggersEndpointAutoConfiguration {
 		}
 
 	}
+
 }
