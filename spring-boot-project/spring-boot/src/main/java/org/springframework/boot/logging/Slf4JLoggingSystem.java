@@ -16,6 +16,11 @@
 
 package org.springframework.boot.logging;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import org.springframework.util.Assert;
@@ -74,7 +79,21 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 	private void removeJdkLoggingBridgeHandler() {
 		try {
 			if (isBridgeHandlerAvailable()) {
+				removeDefaultRootHandler();
 				SLF4JBridgeHandler.uninstall();
+			}
+		}
+		catch (Throwable ex) {
+			// Ignore and continue
+		}
+	}
+
+	private void removeDefaultRootHandler() {
+		try {
+			Logger rootLogger = LogManager.getLogManager().getLogger("");
+			Handler[] handlers = rootLogger.getHandlers();
+			if (handlers.length == 1 && handlers[0] instanceof ConsoleHandler) {
+				rootLogger.removeHandler(handlers[0]);
 			}
 		}
 		catch (Throwable ex) {
