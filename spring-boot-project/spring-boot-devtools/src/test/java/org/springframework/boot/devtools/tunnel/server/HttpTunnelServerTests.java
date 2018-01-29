@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ public class HttpTunnelServerTests {
 		this.server = new HttpTunnelServer(this.serverConnection);
 		given(this.serverConnection.open(anyInt())).willAnswer((invocation) -> {
 			MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
-			channel.setTimeout((Integer) invocation.getArguments()[0]);
+			channel.setTimeout(invocation.getArgument(0));
 			return channel;
 		});
 		this.servletRequest = new MockHttpServletRequest();
