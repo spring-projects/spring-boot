@@ -20,7 +20,6 @@ import org.apache.coyote.http11.Http11NioProtocol;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathOverrides("org.apache.tomcat.embed:tomcat-embed-core:8.5.24")
 public class CompressionTests {
 
 	@Test
