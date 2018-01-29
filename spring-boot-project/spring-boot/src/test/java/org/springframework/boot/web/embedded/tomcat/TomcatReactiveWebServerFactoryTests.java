@@ -33,7 +33,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -72,7 +72,7 @@ public class TomcatReactiveWebServerFactoryTests
 	public void contextIsAddedToHostBeforeCustomizersAreCalled() throws Exception {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
-		doAnswer(new Answer<Void>() {
+		willAnswer(new Answer<Void>() {
 
 			@Override
 			public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -81,7 +81,7 @@ public class TomcatReactiveWebServerFactoryTests
 				return null;
 			}
 
-		}).when(customizer).customize(any(Context.class));
+		}).given(customizer).customize(any(Context.class));
 		factory.addContextCustomizers(customizer);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		verify(customizer).customize(any(Context.class));

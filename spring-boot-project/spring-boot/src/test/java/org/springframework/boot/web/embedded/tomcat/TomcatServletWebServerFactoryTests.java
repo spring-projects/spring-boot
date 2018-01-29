@@ -63,7 +63,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -150,7 +150,7 @@ public class TomcatServletWebServerFactoryTests
 	public void contextIsAddedToHostBeforeCustomizersAreCalled() throws Exception {
 		TomcatServletWebServerFactory factory = getFactory();
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
-		doAnswer(new Answer<Void>() {
+		willAnswer(new Answer<Void>() {
 
 			@Override
 			public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -159,7 +159,7 @@ public class TomcatServletWebServerFactoryTests
 				return null;
 			}
 
-		}).when(customizer).customize(any(Context.class));
+		}).given(customizer).customize(any(Context.class));
 		factory.addContextCustomizers(customizer);
 		this.webServer = factory.getWebServer();
 		verify(customizer).customize(any(Context.class));
