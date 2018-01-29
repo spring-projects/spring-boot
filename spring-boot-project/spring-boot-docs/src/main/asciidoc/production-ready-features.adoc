@@ -500,9 +500,9 @@ to augment an existing endpoint.
 TIP: If you add endpoints as a library feature, consider adding a configuration class
 annotated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
 following key:
-`org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration`. If you do
-so and if your users ask for a separate management port or address, the endpoint moves to
-a child context with all the other web endpoints.
+`org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration`. If
+you do so and if your users ask for a separate management port or address, the endpoint
+moves to a child context with all the other web endpoints.
 
 
 
