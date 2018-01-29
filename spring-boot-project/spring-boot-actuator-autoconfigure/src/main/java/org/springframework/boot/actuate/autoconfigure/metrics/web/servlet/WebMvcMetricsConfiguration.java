@@ -54,7 +54,7 @@ public class WebMvcMetricsConfiguration {
 	}
 
 	@Bean
-	public FilterRegistrationBean<WebMvcMetricsFilter> webMetricsFilter(
+	public FilterRegistrationBean<WebMvcMetricsFilter> webMvcMetricsFilter(
 			MeterRegistry registry, MetricsProperties properties,
 			WebMvcTagsProvider tagsProvider, WebApplicationContext context) {
 		Server serverProperties = properties.getWeb().getServer();

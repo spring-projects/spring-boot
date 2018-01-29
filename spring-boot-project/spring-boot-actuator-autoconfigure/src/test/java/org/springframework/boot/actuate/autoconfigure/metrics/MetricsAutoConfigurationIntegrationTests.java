@@ -19,14 +19,12 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.TimeUnit;
+
+import javax.servlet.DispatcherType;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
-import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
@@ -36,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -47,6 +46,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +55,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -88,9 +89,6 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Autowired
 	private MeterRegistry registry;
 
-	@Autowired
-	private CyclicBarrier cyclicBarrier;
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void restTemplateIsInstrumented() {
@@ -120,19 +118,17 @@ public class MetricsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	public void asyncRequestMappingIsInstrumented()
-			throws InterruptedException, BrokenBarrierException {
-		Thread backgroundRequest = new Thread(
-				() -> this.loopback.getForObject("/api/async", String.class));
-		backgroundRequest.start();
-		this.cyclicBarrier.await();
-		MockClock.clock(this.registry).addSeconds(2);
-		this.cyclicBarrier.await();
-		backgroundRequest.join();
-		Timer timer = this.registry.get("http.server.requests").tags("uri", "/api/async")
-				.timer();
-		assertThat(timer.count()).isEqualTo(1);
-		assertThat(timer.totalTime(TimeUnit.SECONDS)).isEqualTo(2);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void metricsFilterRegisteredForAsyncDispatches() {
+		Map<String, FilterRegistrationBean> filterRegistrations = this.context
+				.getBeansOfType(FilterRegistrationBean.class);
+		assertThat(filterRegistrations).containsKey("webMvcMetricsFilter");
+		FilterRegistrationBean registration = filterRegistrations
+				.get("webMvcMetricsFilter");
+		assertThat(registration.getFilter()).isInstanceOf(WebMvcMetricsFilter.class);
+		assertThat((Set<DispatcherType>) ReflectionTestUtils.getField(registration,
+				"dispatcherTypes")).containsExactlyInAnyOrder(DispatcherType.REQUEST,
+						DispatcherType.ASYNC);
 	}
 
 	@Configuration
@@ -164,32 +160,9 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@RestController
 	static class PersonController {
 
-		private final CyclicBarrier cyclicBarrier;
-
-		PersonController(CyclicBarrier cyclicBarrier) {
-			this.cyclicBarrier = cyclicBarrier;
-		}
-
 		@GetMapping("/api/people")
 		Set<String> personName() {
 			return Collections.singleton("Jon");
-		}
-
-		@GetMapping("/api/async")
-		CompletableFuture<String> asyncHello()
-				throws BrokenBarrierException, InterruptedException {
-			this.cyclicBarrier.await();
-			return CompletableFuture.supplyAsync(this::awaitAndHello);
-		}
-
-		private String awaitAndHello() {
-			try {
-				this.cyclicBarrier.await();
-				return "async-hello";
-			}
-			catch (InterruptedException | BrokenBarrierException ex) {
-				throw new RuntimeException(ex);
-			}
 		}
 
 	}
