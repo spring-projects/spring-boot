@@ -68,9 +68,9 @@ import org.springframework.util.SocketUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -153,7 +153,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 	public void contextIsAddedToHostBeforeCustomizersAreCalled() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
-		doAnswer(new Answer<Void>() {
+		willAnswer(new Answer<Void>() {
 
 			@Override
 			public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -162,7 +162,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 				return null;
 			}
 
-		}).when(customizer).customize(any(Context.class));
+		}).given(customizer).customize(any(Context.class));
 		factory.addContextCustomizers(customizer);
 		this.container = factory.getEmbeddedServletContainer();
 		verify(customizer).customize(any(Context.class));
