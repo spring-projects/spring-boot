@@ -29,9 +29,12 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheManager.RedisCacheManagerBuilder;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 
 /**
  * Redis cache configuration.
@@ -63,9 +66,10 @@ class RedisCacheConfiguration {
 	}
 
 	@Bean
-	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+	public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory,
+			ResourceLoader resourceLoader) {
 		RedisCacheManagerBuilder builder = RedisCacheManager
-				.builder(redisConnectionFactory).cacheDefaults(determineConfiguration());
+				.builder(redisConnectionFactory).cacheDefaults(determineConfiguration(resourceLoader.getClassLoader()));
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
@@ -73,13 +77,16 @@ class RedisCacheConfiguration {
 		return this.customizerInvoker.customize(builder.build());
 	}
 
-	private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration() {
+	private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration(
+			ClassLoader classLoader) {
 		if (this.redisCacheConfiguration != null) {
 			return this.redisCacheConfiguration;
 		}
 		Redis redisProperties = this.cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 				.defaultCacheConfig();
+		config = config.serializeValuesWith(SerializationPair.fromSerializer(
+				new JdkSerializationRedisSerializer(classLoader)));
 		if (redisProperties.getTimeToLive() != null) {
 			config = config.entryTtl(redisProperties.getTimeToLive());
 		}
