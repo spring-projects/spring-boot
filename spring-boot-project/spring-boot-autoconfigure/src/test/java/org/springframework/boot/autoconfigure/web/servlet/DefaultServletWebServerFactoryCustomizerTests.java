@@ -46,7 +46,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
-import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -160,11 +159,9 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		assertThat(tomcat.getRedirectContextRoot()).isEqualTo(false);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
-		Context context = mock(Context.class);
-		for (TomcatContextCustomizer customizer : factory.getTomcatContextCustomizers()) {
-			customizer.customize(context);
-		}
-		verify(context).setMapperContextRootRedirectEnabled(false);
+		Context context = (Context) ((TomcatWebServer) factory.getWebServer()).getTomcat()
+				.getHost().findChildren()[0];
+		assertThat(context.getMapperContextRootRedirectEnabled()).isFalse();
 	}
 
 	@Test
@@ -176,11 +173,9 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		assertThat(tomcat.getUseRelativeRedirects()).isTrue();
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
-		Context context = mock(Context.class);
-		for (TomcatContextCustomizer customizer : factory.getTomcatContextCustomizers()) {
-			customizer.customize(context);
-		}
-		verify(context).setUseRelativeRedirects(true);
+		Context context = (Context) ((TomcatWebServer) factory.getWebServer()).getTomcat()
+				.getHost().findChildren()[0];
+		assertThat(context.getUseRelativeRedirects()).isTrue();
 	}
 
 	@Test
