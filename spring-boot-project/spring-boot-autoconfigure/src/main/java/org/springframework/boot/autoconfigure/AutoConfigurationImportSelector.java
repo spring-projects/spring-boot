@@ -84,7 +84,7 @@ public class AutoConfigurationImportSelector
 
 	@Override
 	public String[] selectImports(AnnotationMetadata annotationMetadata) {
-		if (!isEnabled()) {
+		if (!isEnabled(annotationMetadata)) {
 			return NO_IMPORTS;
 		}
 		try {
@@ -107,7 +107,7 @@ public class AutoConfigurationImportSelector
 		}
 	}
 
-	protected boolean isEnabled() {
+	protected boolean isEnabled(AnnotationMetadata metadata) {
 		if (getClass() == AutoConfigurationImportSelector.class) {
 			return getEnvironment().getProperty(
 					EnableAutoConfiguration.ENABLED_OVERRIDE_PROPERTY, Boolean.class,
