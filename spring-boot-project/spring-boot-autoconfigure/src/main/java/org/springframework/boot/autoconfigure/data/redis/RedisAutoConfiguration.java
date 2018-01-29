@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis support.
@@ -50,11 +53,20 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 public class RedisAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(name = "redisSerializer")
+	public JdkSerializationRedisSerializer redisSerializer(
+			ResourceLoader resourceLoader) {
+		return new JdkSerializationRedisSerializer(resourceLoader.getClassLoader());
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(name = "redisTemplate")
 	public RedisTemplate<Object, Object> redisTemplate(
-			RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
+			RedisConnectionFactory redisConnectionFactory,
+			RedisSerializer<?> defaultRedisSerializer) throws UnknownHostException {
 		RedisTemplate<Object, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
+		template.setDefaultSerializer(defaultRedisSerializer);
 		return template;
 	}
 

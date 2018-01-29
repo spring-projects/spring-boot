@@ -76,6 +76,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -942,6 +943,11 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public RedisConnectionFactory redisConnectionFactory() {
 			return mock(RedisConnectionFactory.class);
+		}
+
+		@Bean
+		public JdkSerializationRedisSerializer redisSerializer() {
+			return new JdkSerializationRedisSerializer();
 		}
 
 	}
