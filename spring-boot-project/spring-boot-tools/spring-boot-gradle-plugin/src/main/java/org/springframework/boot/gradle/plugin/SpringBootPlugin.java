@@ -108,10 +108,15 @@ public class SpringBootPlugin implements Plugin<Project> {
 				new JavaPluginAction(singlePublishedArtifact),
 				new WarPluginAction(singlePublishedArtifact),
 				new MavenPluginAction(bootArchives.getUploadTaskName()),
-				new DependencyManagementPluginAction(), new ApplicationPluginAction());
+				new DependencyManagementPluginAction(), new ApplicationPluginAction(),
+				new KotlinPluginAction());
 		for (PluginApplicationAction action : actions) {
-			project.getPlugins().withType(action.getPluginClass(),
-					(plugin) -> action.execute(project));
+			Class<? extends Plugin<? extends Project>> pluginClass = action
+					.getPluginClass();
+			if (pluginClass != null) {
+				project.getPlugins().withType(pluginClass,
+						(plugin) -> action.execute(project));
+			}
 		}
 	}
 
