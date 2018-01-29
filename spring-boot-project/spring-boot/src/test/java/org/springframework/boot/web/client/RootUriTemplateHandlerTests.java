@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class RootUriTemplateHandlerTests {
 		this.uri = new URI("http://example.com/hello");
 		this.handler = new RootUriTemplateHandler("http://example.com", this.delegate);
 		given(this.delegate.expand(anyString(), any(Map.class))).willReturn(this.uri);
-		given(this.delegate.expand(anyString(), (Object[]) any())).willReturn(this.uri);
+		given(this.delegate.expand(anyString(), any(Object[].class))).willReturn(this.uri);
 	}
 
 	@Test
