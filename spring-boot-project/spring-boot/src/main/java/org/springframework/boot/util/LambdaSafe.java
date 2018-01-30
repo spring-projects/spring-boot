@@ -16,6 +16,7 @@
 
 package org.springframework.boot.util;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -30,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Utility that can be used to invoke lambdas in a safe way. Primarily designed to help
@@ -40,6 +42,17 @@ import org.springframework.util.ClassUtils;
  * @since 2.0.0
  */
 public final class LambdaSafe {
+
+	private static final Method CLASS_GET_MODULE;
+
+	private static final Method MODULE_GET_NAME;
+
+	static {
+		CLASS_GET_MODULE = ReflectionUtils.findMethod(Class.class, "getModule");
+		MODULE_GET_NAME = (CLASS_GET_MODULE == null ? null
+				: ReflectionUtils.findMethod(CLASS_GET_MODULE.getReturnType(),
+						"getName"));
+	}
 
 	private LambdaSafe() {
 	}
@@ -164,10 +177,29 @@ public final class LambdaSafe {
 		}
 
 		private boolean startsWithArgumentClassName(String message) {
-			Predicate<Object> startsWith = (argument) -> argument != null
-					&& message.startsWith(argument.getClass().getName());
+			Predicate<Object> startsWith = (argument) -> startsWithArgumentClassName(
+					message, argument);
 			return startsWith.test(this.argument)
 					|| Stream.of(this.additionalArguments).anyMatch(startsWith);
+		}
+
+		private boolean startsWithArgumentClassName(String message, Object argument) {
+			if (argument == null) {
+				return false;
+			}
+			Class<? extends Object> argumentType = argument.getClass();
+			if (message.startsWith(argumentType.getName())) {
+				return true;
+			}
+			if (CLASS_GET_MODULE != null) {
+				Object module = ReflectionUtils.invokeMethod(CLASS_GET_MODULE,
+						argumentType);
+				Object moduleName = ReflectionUtils.invokeMethod(MODULE_GET_NAME, module);
+				if (message.startsWith(moduleName + "/" + argumentType.getName())) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private void logNonMachingType(C callback, ClassCastException ex) {
