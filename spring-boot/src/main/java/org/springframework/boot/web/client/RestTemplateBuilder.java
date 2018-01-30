@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -337,8 +337,9 @@ public class RestTemplateBuilder {
 	/**
 	 * Set the {@link ClientHttpRequestFactory} that should be used with the
 	 * {@link RestTemplate}.
-   * <p>Note that this request factory will be shared with all builder instances
-   * derived from that point.
+	 * <p>
+	 * Note that this request factory will be shared with all builder instances derived
+	 * from that point.
 	 * @param requestFactory the request factory to use
 	 * @return a new builder instance
 	 */
