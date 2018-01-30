@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public class OAuth2RestOperationsConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(OAuth2ClientConfiguration.class)
-	@Conditional({OAuth2ClientIdCondition.class, NoClientCredentialsCondition.class})
+	@Conditional({ OAuth2ClientIdCondition.class, NoClientCredentialsCondition.class })
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
 	protected static class SessionScopedConfiguration {
 
