@@ -227,6 +227,25 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	@Test
+	public void pidFolderOwnership() throws Exception {
+		String output = doTest("pid-folder-ownership.sh");
+		System.err.println(output);
+		assertThat(output).contains("phil root");
+	}
+
+	@Test
+	public void pidFileOwnership() throws Exception {
+		String output = doTest("pid-file-ownership.sh");
+		assertThat(output).contains("phil root");
+	}
+
+	@Test
+	public void logFileOwnership() throws Exception {
+		String output = doTest("log-file-ownership.sh");
+		assertThat(output).contains("phil root");
+	}
+
+	@Test
 	public void launchWithRelativeLogFolder() throws Exception {
 		String output = doTest("launch-with-relative-log-folder.sh");
 		assertThat(output).contains("Log written");
