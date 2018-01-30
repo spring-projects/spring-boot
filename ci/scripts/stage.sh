@@ -17,10 +17,10 @@ if [[ $RELEASE_TYPE = "M" ]]; then
 	stageVersion=$( get_next_milestone_release $snapshotVersion)
 	nextVersion=$snapshotVersion
 elif [[ $RELEASE_TYPE = "RC" ]]; then
-	stage=$( get_next_rc_release $snapshotVersion)
+	stageVersion=$( get_next_rc_release $snapshotVersion)
 	nextVersion=$snapshotVersion
 elif [[ $RELEASE_TYPE = "RELEASE" ]]; then
-	stage=$( strip_snapshot_suffix $snapshotVersion)
+	stageVersion=$( strip_snapshot_suffix $snapshotVersion)
 	nextVersion=$( bump_version_number $snapshotVersion)
 else
 	echo "Unknown release type $RELEASE_TYPE" >&2; exit 1;
