@@ -135,7 +135,6 @@ public class MetricsEndpointTests {
 		SimpleMeterRegistry reg = new SimpleMeterRegistry();
 		reg.timer("timer", "k", "v1").record(1, TimeUnit.SECONDS);
 		reg.timer("timer", "k", "v2").record(2, TimeUnit.SECONDS);
-
 		assertMetricHasStatisticEqualTo(reg, "timer", Statistic.MAX, 2.0);
 	}
 
@@ -144,21 +143,22 @@ public class MetricsEndpointTests {
 		SimpleMeterRegistry reg = new SimpleMeterRegistry();
 		reg.counter("counter", "k", "v1").increment();
 		reg.counter("counter", "k", "v2").increment();
-
 		assertMetricHasStatisticEqualTo(reg, "counter", Statistic.COUNT, 2.0);
 	}
 
-	private void assertMetricHasStatisticEqualTo(MeterRegistry registry, String metricName, Statistic stat, Double value) {
+	private void assertMetricHasStatisticEqualTo(MeterRegistry registry,
+			String metricName, Statistic stat, Double value) {
 		MetricsEndpoint endpoint = new MetricsEndpoint(registry);
 		assertThat(endpoint.metric(metricName, Collections.emptyList()).getMeasurements()
-				.stream().filter(s -> s.getStatistic().equals(stat)).findAny())
-				.hasValueSatisfying(s -> assertThat(s.getValue()).isEqualTo(value));
+				.stream().filter((sample) -> sample.getStatistic().equals(stat))
+				.findAny()).hasValueSatisfying(
+						(sample) -> assertThat(sample.getValue()).isEqualTo(value));
 	}
 
 	private Optional<Double> getCount(MetricsEndpoint.MetricResponse response) {
 		return response.getMeasurements().stream()
-				.filter((ms) -> ms.getStatistic().equals(Statistic.COUNT)).findAny()
-				.map(MetricsEndpoint.Sample::getValue);
+				.filter((sample) -> sample.getStatistic().equals(Statistic.COUNT))
+				.findAny().map(MetricsEndpoint.Sample::getValue);
 	}
 
 	private Stream<String> availableTagKeys(MetricsEndpoint.MetricResponse response) {
