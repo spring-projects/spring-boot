@@ -81,7 +81,7 @@ public final class LambdaSafe {
 			Object... additionalArguments) {
 		Assert.notNull(callbackType, "CallbackType must not be null");
 		Assert.notNull(callbackInstances, "CallbackInstances must not be null");
-		return new Callbacks<C, A>(callbackType, callbackInstances, argument,
+		return new Callbacks<>(callbackType, callbackInstances, argument,
 				additionalArguments);
 	}
 
@@ -341,8 +341,7 @@ public final class LambdaSafe {
 	 */
 	public final static class InvocationResult<R> {
 
-		private static final InvocationResult<?> NONE = new InvocationResult<Object>(
-				null);
+		private static final InvocationResult<?> NONE = new InvocationResult<>(null);
 
 		private final R value;
 

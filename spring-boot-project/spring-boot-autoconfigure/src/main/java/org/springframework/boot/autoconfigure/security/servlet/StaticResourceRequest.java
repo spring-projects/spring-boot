@@ -34,8 +34,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
 /**
- * Used to create a {@link RequestMatcher} for static resources in
- * commonly used locations. Returned by {@link PathRequest#toStaticResources()}.
+ * Used to create a {@link RequestMatcher} for static resources in commonly used
+ * locations. Returned by {@link PathRequest#toStaticResources()}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
@@ -44,7 +44,7 @@ import org.springframework.util.Assert;
  */
 public final class StaticResourceRequest {
 
-	private static final StaticResourceRequest INSTANCE = new StaticResourceRequest();
+	static final StaticResourceRequest INSTANCE = new StaticResourceRequest();
 
 	private StaticResourceRequest() {
 	}
@@ -88,14 +88,6 @@ public final class StaticResourceRequest {
 	public StaticResourceRequestMatcher at(Set<StaticResourceLocation> locations) {
 		Assert.notNull(locations, "Locations must not be null");
 		return new StaticResourceRequestMatcher(new LinkedHashSet<>(locations));
-	}
-
-	/**
-	 * Return the static resource request.
-	 * @return the static resource request
-	 */
-	static StaticResourceRequest get() {
-		return INSTANCE;
 	}
 
 	/**

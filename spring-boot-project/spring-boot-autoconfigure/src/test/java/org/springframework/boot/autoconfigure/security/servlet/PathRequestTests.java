@@ -44,7 +44,8 @@ public class PathRequestTests {
 
 	@Test
 	public void toStaticResourcesShouldReturnStaticResourceRequest() {
-		assertThat(PathRequest.toStaticResources()).isInstanceOf(StaticResourceRequest.class);
+		assertThat(PathRequest.toStaticResources())
+				.isInstanceOf(StaticResourceRequest.class);
 	}
 
 	@Test

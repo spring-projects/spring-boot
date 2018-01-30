@@ -42,11 +42,12 @@ public final class PathRequest {
 	 * @return a {@link StaticResourceRequest}
 	 */
 	public static StaticResourceRequest toStaticResources() {
-		return StaticResourceRequest.get();
+		return StaticResourceRequest.INSTANCE;
 	}
 
 	/**
-	 * Returns a matcher that includes the H2 console location. For example: <pre class="code">
+	 * Returns a matcher that includes the H2 console location. For example:
+	 * <pre class="code">
 	 * PathRequest.toH2Console()
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
@@ -73,7 +74,8 @@ public final class PathRequest {
 		}
 
 		@Override
-		protected boolean matches(HttpServletRequest request, H2ConsoleProperties context) {
+		protected boolean matches(HttpServletRequest request,
+				H2ConsoleProperties context) {
 			return this.delegate.matches(request);
 		}
 

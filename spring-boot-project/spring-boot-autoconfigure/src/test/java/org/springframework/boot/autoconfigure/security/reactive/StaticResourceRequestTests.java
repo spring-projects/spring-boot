@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  */
 public class StaticResourceRequestTests {
 
-	private StaticResourceRequest resourceRequest = StaticResourceRequest.get();
+	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

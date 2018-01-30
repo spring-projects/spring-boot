@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StaticResourceRequestTests {
 
-	private StaticResourceRequest resourceRequest = StaticResourceRequest.get();
+	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -92,8 +92,7 @@ public class StaticResourceRequestTests {
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Locations must not be null");
-		this.resourceRequest.atCommonLocations()
-				.excluding(null);
+		this.resourceRequest.atCommonLocations().excluding(null);
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {

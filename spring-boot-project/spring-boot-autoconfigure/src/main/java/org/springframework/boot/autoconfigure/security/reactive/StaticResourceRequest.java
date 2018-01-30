@@ -33,8 +33,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
- * Used to create a {@link ServerWebExchangeMatcher} for static resources in
- * commonly used locations. Returned by {@link PathRequest#toStaticResources()}.
+ * Used to create a {@link ServerWebExchangeMatcher} for static resources in commonly used
+ * locations. Returned by {@link PathRequest#toStaticResources()}.
  *
  * @author Madhura Bhave
  * @since 2.0.0
@@ -42,7 +42,7 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public final class StaticResourceRequest {
 
-	private static final StaticResourceRequest INSTANCE = new StaticResourceRequest();
+	static final StaticResourceRequest INSTANCE = new StaticResourceRequest();
 
 	private StaticResourceRequest() {
 	}
@@ -83,18 +83,9 @@ public final class StaticResourceRequest {
 	 * @param locations the locations to include
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
-	public StaticResourceServerWebExchange at(
-			Set<StaticResourceLocation> locations) {
+	public StaticResourceServerWebExchange at(Set<StaticResourceLocation> locations) {
 		Assert.notNull(locations, "Locations must not be null");
 		return new StaticResourceServerWebExchange(new LinkedHashSet<>(locations));
-	}
-
-	/**
-	 * Return the static resource request.
-	 * @return the static resource request
-	 */
-	static StaticResourceRequest get() {
-		return INSTANCE;
 	}
 
 	/**

@@ -20,7 +20,8 @@ import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 
 /**
- * Factory that can be used to create a {@link ServerWebExchangeMatcher} for commonly used paths.
+ * Factory that can be used to create a {@link ServerWebExchangeMatcher} for commonly used
+ * paths.
  *
  * @author Madhura Bhave
  * @since 2.0.0
@@ -36,8 +37,7 @@ public final class PathRequest {
 	 * @return a {@link StaticResourceRequest}
 	 */
 	public static StaticResourceRequest toStaticResources() {
-		return StaticResourceRequest.get();
+		return StaticResourceRequest.INSTANCE;
 	}
 
 }
-
