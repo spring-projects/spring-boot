@@ -192,14 +192,12 @@ class TypeUtils {
 			if (type.getTypeArguments().isEmpty()) {
 				return qualifiedName;
 			}
-			else {
-				StringBuilder name = new StringBuilder();
-				name.append(qualifiedName);
-				name.append("<").append(type.getTypeArguments().stream()
-						.map(TypeMirror::toString).collect(Collectors.joining(",")))
-						.append(">");
-				return name.toString();
-			}
+			StringBuilder name = new StringBuilder();
+			name.append(qualifiedName);
+			name.append("<").append(type.getTypeArguments().stream()
+					.map(TypeMirror::toString).collect(Collectors.joining(",")))
+					.append(">");
+			return name.toString();
 		}
 
 		@Override
