@@ -154,7 +154,8 @@
 		<spring-restdocs.version>2.0.0.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.2.RELEASE</spring-retry.version>
 		<spring-security.version>5.0.1.RELEASE</spring-security.version>
-		<spring-session-bom.version>Apple-RELEASE</spring-session-bom.version>
+		<spring-session.version>2.0.1.RELEASE</spring-session.version>
+		<spring-session-data-mongodb.version>2.0.0.RELEASE</spring-session-data-mongodb.version>
 		<spring-ws.version>3.0.0.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
@@ -2395,10 +2396,34 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.session</groupId>
-				<artifactId>spring-session-bom</artifactId>
-				<version>${spring-session-bom.version}</version>
-				<scope>import</scope>
-				<type>pom</type>
+				<artifactId>spring-session-core</artifactId>
+				<version>${spring-session.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-data-redis</artifactId>
+				<version>${spring-session.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-data-mongodb</artifactId>
+				<version>${spring-session-data-mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-hazelcast</artifactId>
+				<version>${spring-session.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-jdbc</artifactId>
+				<version>${spring-session.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.ws</groupId>
