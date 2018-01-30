@@ -41,7 +41,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
- * Report on {@link PropertyMigration legacy properties}.
+ * Report on {@link PropertyMigration properties migration}.
  *
  * @author Stephane Nicoll
  */
@@ -61,7 +61,7 @@ class PropertiesMigrationReporter {
 	/**
 	 * Analyse the {@link ConfigurableEnvironment environment} and attempt to rename
 	 * legacy properties if a replacement exists.
-	 * @return the analysis
+	 * @return a report of the migration
 	 */
 	public PropertiesMigrationReport getReport() {
 		PropertiesMigrationReport report = new PropertiesMigrationReport();

@@ -24,7 +24,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.TextResourceOrigin;
 
 /**
- * Description of a legacy property.
+ * Description of a property migration.
  *
  * @author Stephane Nicoll
  */
