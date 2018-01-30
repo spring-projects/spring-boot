@@ -187,12 +187,18 @@ class TypeUtils {
 				return getQualifiedName(enclosingElement) + "$"
 						+ type.asElement().getSimpleName().toString();
 			}
-			StringBuilder name = new StringBuilder();
-			name.append(getQualifiedName(type.asElement()));
-			if (!type.getTypeArguments().isEmpty()) {
-				appendTypeArguments(type, name);
+			String qualifiedName = getQualifiedName(type.asElement());
+			if  (type.getTypeArguments().isEmpty()) {
+				return qualifiedName;
 			}
-			return name.toString();
+			else {
+				StringBuilder name = new StringBuilder();
+				name.append(qualifiedName);
+				if (!type.getTypeArguments().isEmpty()) {
+					appendTypeArguments(type, name);
+				}
+				return name.toString();
+			}
 		}
 
 		private void appendTypeArguments(DeclaredType type, StringBuilder name) {
