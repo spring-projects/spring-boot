@@ -311,6 +311,15 @@
         "replacement": "spring.banner.location",
         "level": "error"
       }
+    },
+    {
+      "name": "spring.application.index",
+      "type": "java.lang.Integer",
+      "description": "Application index.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Application context ids are now unique by default."
+      }
     }
   ],
   "hints": [

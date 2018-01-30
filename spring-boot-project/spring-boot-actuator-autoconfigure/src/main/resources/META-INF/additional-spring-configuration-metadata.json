@@ -1475,6 +1475,13 @@
       }
     },
     {
+      "name": "management.trace.include",
+      "deprecation": {
+        "replacement": "management.httptrace.include",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.metrics.export.aggregate.key-pattern",
       "type": "java.lang.String",
       "description": "Pattern that tells the aggregator what to do with the keys from the source\n repository. The keys in the source repository are assumed to be period\n separated, and the pattern is in the same format, e.g. \"d.d.k.d\". Here \"d\"\n means \"discard\" and \"k\" means \"keep\" the key segment in the corresponding\n position in the source.",
