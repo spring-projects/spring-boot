@@ -188,13 +188,15 @@ class TypeUtils {
 				return getQualifiedName(enclosingElement) + "$"
 						+ type.asElement().getSimpleName().toString();
 			}
-			StringBuilder name = new StringBuilder();
-			name.append(getQualifiedName(type.asElement()));
-			if (!type.getTypeArguments().isEmpty()) {
-				name.append(
-						"<" + type.getTypeArguments().stream().map(TypeMirror::toString)
-								.collect(Collectors.joining(",")) + ">");
+			String qualifiedName = getQualifiedName(type.asElement());
+			if (type.getTypeArguments().isEmpty()) {
+				return qualifiedName;
 			}
+			StringBuilder name = new StringBuilder();
+			name.append(qualifiedName);
+			name.append(
+					"<" + type.getTypeArguments().stream().map(TypeMirror::toString)
+							.collect(Collectors.joining(",")) + ">");
 			return name.toString();
 		}
 
