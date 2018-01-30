@@ -121,6 +121,32 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	public void testPasswordInUrlWithColon() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.url:redis://:pass:word@example:33")
+				.run((context) -> {
+					LettuceConnectionFactory cf = context
+							.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("example");
+					assertThat(cf.getPort()).isEqualTo(33);
+					assertThat(cf.getPassword()).isEqualTo("pass:word");
+				});
+	}
+
+	@Test
+	public void testPasswordInUrlStartsWithColon() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.url:redis://user::pass:word@example:33")
+				.run((context) -> {
+					LettuceConnectionFactory cf = context
+							.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("example");
+					assertThat(cf.getPort()).isEqualTo(33);
+					assertThat(cf.getPassword()).isEqualTo(":pass:word");
+				});
+	}
+
+	@Test
 	public void testRedisConfigurationWithPool() {
 		this.contextRunner.withPropertyValues("spring.redis.host:foo",
 				"spring.redis.lettuce.pool.min-idle:1",

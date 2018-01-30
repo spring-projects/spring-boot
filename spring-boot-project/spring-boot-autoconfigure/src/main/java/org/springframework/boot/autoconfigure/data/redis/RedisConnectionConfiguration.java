@@ -132,7 +132,7 @@ abstract class RedisConnectionConfiguration {
 			String password = null;
 			if (uri.getUserInfo() != null) {
 				password = uri.getUserInfo();
-				int index = password.lastIndexOf(':');
+				int index = password.indexOf(':');
 				if (index >= 0) {
 					password = password.substring(index + 1);
 				}
