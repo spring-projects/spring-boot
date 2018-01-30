@@ -25,15 +25,15 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link TraceEndpointAutoConfiguration}.
+ * Tests for {@link HttpTraceEndpointAutoConfiguration}.
  *
  * @author Phillip Webb
  */
-public class TraceEndpointAutoConfigurationTests {
+public class HttpTraceEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(TraceAutoConfiguration.class,
-					TraceEndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class,
+					HttpTraceEndpointAutoConfiguration.class));
 
 	@Test
 	public void runShouldHaveEndpointBean() {
@@ -43,14 +43,15 @@ public class TraceEndpointAutoConfigurationTests {
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
-		this.contextRunner.withPropertyValues("management.endpoint.trace.enabled:false")
+		this.contextRunner
+				.withPropertyValues("management.endpoint.httptrace.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(HttpTraceEndpoint.class));
 	}
 
 	@Test
 	public void endpointBacksOffWhenRepositoryIsNotAvailable() {
-		this.contextRunner.withPropertyValues("management.trace.enabled:false")
+		this.contextRunner.withPropertyValues("management.httptrace.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(HttpTraceEndpoint.class));
 	}

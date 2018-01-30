@@ -222,7 +222,7 @@
       "defaultValue": true
     },
     {
-      "name": "management.trace.enabled",
+      "name": "management.httptrace.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response tracing.",
       "defaultValue": true
@@ -232,7 +232,7 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable the trace servlet filter.",
       "deprecation": {
-        "replacement": "management.trace.enabled",
+        "replacement": "management.httptrace.enabled",
         "level": "error"
       }
     },

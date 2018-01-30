@@ -26,9 +26,10 @@ import org.springframework.util.Assert;
  * {@link Endpoint} to expose {@link HttpTrace} information.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Endpoint(id = "trace")
+@Endpoint(id = "httptrace")
 public class HttpTraceEndpoint {
 
 	private final HttpTraceRepository repository;
@@ -43,19 +44,19 @@ public class HttpTraceEndpoint {
 	}
 
 	@ReadOperation
-	public TraceDescriptor traces() {
-		return new TraceDescriptor(this.repository.findAll());
+	public HttpTraceDescriptor traces() {
+		return new HttpTraceDescriptor(this.repository.findAll());
 	}
 
 	/**
 	 * A description of an application's {@link HttpTrace} entries. Primarily intended for
 	 * serialization to JSON.
 	 */
-	public static final class TraceDescriptor {
+	public static final class HttpTraceDescriptor {
 
 		private final List<HttpTrace> traces;
 
-		private TraceDescriptor(List<HttpTrace> traces) {
+		private HttpTraceDescriptor(List<HttpTrace> traces) {
 			this.traces = traces;
 		}
 

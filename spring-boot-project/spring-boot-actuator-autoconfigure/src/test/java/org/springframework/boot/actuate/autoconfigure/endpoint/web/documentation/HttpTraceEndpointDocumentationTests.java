@@ -76,8 +76,8 @@ public class HttpTraceEndpointDocumentationTests
 		tracer.sendingResponse(trace, response, () -> principal,
 				() -> UUID.randomUUID().toString());
 		given(this.repository.findAll()).willReturn(Arrays.asList(trace));
-		this.mockMvc.perform(get("/actuator/trace")).andExpect(status().isOk())
-				.andDo(document("trace",
+		this.mockMvc.perform(get("/actuator/httptrace")).andExpect(status().isOk())
+				.andDo(document("httptrace",
 						responseFields(
 								fieldWithPath("traces").description(
 										"An array of traced HTTP request-response exchanges."),

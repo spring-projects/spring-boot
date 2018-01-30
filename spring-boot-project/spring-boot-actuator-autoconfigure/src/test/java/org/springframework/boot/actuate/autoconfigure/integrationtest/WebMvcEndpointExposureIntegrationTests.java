@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.trace.TraceAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.trace.HttpTraceAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -61,7 +61,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 					ServletManagementContextAutoConfiguration.class,
 					ManagementContextAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class,
-					TraceAutoConfiguration.class))
+					HttpTraceAutoConfiguration.class))
 			.withConfiguration(
 					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 			.withUserConfiguration(CustomMvcEndpoint.class);
@@ -80,7 +80,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isFalse();
-			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "httptrace")).isFalse();
 		});
 	}
 
@@ -100,7 +100,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isTrue();
-			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "httptrace")).isTrue();
 		});
 	}
 
@@ -120,7 +120,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isFalse();
-			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isFalse();
+			assertThat(isExposed(mvc, HttpMethod.GET, "httptrace")).isFalse();
 		});
 	}
 
@@ -141,7 +141,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(mvc, HttpMethod.GET, "mappings")).isTrue();
 			assertThat(isExposed(mvc, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(mvc, HttpMethod.GET, "threaddump")).isTrue();
-			assertThat(isExposed(mvc, HttpMethod.GET, "trace")).isTrue();
+			assertThat(isExposed(mvc, HttpMethod.GET, "httptrace")).isTrue();
 		});
 	}
 

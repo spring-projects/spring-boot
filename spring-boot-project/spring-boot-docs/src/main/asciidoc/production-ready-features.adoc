@@ -96,6 +96,11 @@ classes and the reasons why they did or did not match.
 |Shows application health information.
 |Yes
 
+|`httptrace`
+|Displays HTTP trace information (by default, the last 100 HTTP request-response
+exchanges).
+|Yes
+
 |`info`
 |Displays arbitrary application info.
 |Yes
@@ -131,10 +136,6 @@ store. Not available when using Spring Session's support for reactive web applic
 
 |`threaddump`
 |Performs a thread dump.
-|Yes
-
-|`trace`
-|Displays HTTP trace information (by default, the last 100 HTTP requests).
 |Yes
 
 |===
@@ -243,6 +244,10 @@ endpoints:
 |N/A
 |No
 
+|`httptrace`
+|Yes
+|No
+
 |`info`
 |Yes
 |Yes
@@ -288,10 +293,6 @@ endpoints:
 |No
 
 |`threaddump`
-|Yes
-|No
-
-|`trace`
 |Yes
 |No
 
@@ -1309,22 +1310,22 @@ implementing `ApplicationEventPublisherAware`).
 
 
 
-[[production-ready-tracing]]
-== Tracing
-Tracing is automatically enabled for all HTTP requests. You can view the `trace` endpoint
-and obtain basic information about the last 100 requests.
+[[production-ready-http-tracing]]
+== HTTP Tracing
+Tracing is automatically enabled for all HTTP requests. You can view the `httptrace`
+endpoint and obtain basic information about the last 100 request-response exchanges.
 
 
 
-[[production-ready-custom-tracing]]
-=== Custom tracing
+[[production-ready-http-tracing-custom]]
+=== Custom HTTP tracing
 To customize the items that are included in each trace, use the
-`management.trace.include` configuration property.
+`management.httptrace.include` configuration property.
 
-By default, an `InMemoryTraceRepository` that stores the last 100 events is used. If you
-need to expand the capacity, you can define your own instance of the
-`InMemoryTraceRepository` bean. You can also create your own alternative
-`TraceRepository` implementation.
+By default, an `InMemoryHttpTraceRepository` that stores traces for the last 100
+request-response exchanges is used. If you need to expand the capacity, you can define
+your own instance of the `InMemoryHttpTraceRepository` bean. You can also create your own
+alternative `HttpTraceRepository` implementation.
 
 
 

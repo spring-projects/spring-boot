@@ -133,17 +133,18 @@ public class HttpExchangeTracer {
 		@Override
 		public Map<String, List<String>> getHeaders() {
 			return getHeadersIfIncluded(Include.REQUEST_HEADERS,
-					this.delegate::getHeaders, (name) -> {
-						if (name.equalsIgnoreCase(HttpHeaders.COOKIE)) {
-							return HttpExchangeTracer.this.includes
-									.contains(Include.COOKIE_HEADERS);
-						}
-						if (name.equalsIgnoreCase(HttpHeaders.AUTHORIZATION)) {
-							return HttpExchangeTracer.this.includes
-									.contains(Include.AUTHORIZATION_HEADER);
-						}
-						return true;
-					});
+					this.delegate::getHeaders, this::includedHeader);
+		}
+
+		private boolean includedHeader(String name) {
+			if (name.equalsIgnoreCase(HttpHeaders.COOKIE)) {
+				return HttpExchangeTracer.this.includes.contains(Include.COOKIE_HEADERS);
+			}
+			if (name.equalsIgnoreCase(HttpHeaders.AUTHORIZATION)) {
+				return HttpExchangeTracer.this.includes
+						.contains(Include.AUTHORIZATION_HEADER);
+			}
+			return true;
 		}
 
 		@Override
@@ -169,13 +170,14 @@ public class HttpExchangeTracer {
 		@Override
 		public Map<String, List<String>> getHeaders() {
 			return getHeadersIfIncluded(Include.RESPONSE_HEADERS,
-					this.delegate::getHeaders, (name) -> {
-						if (name.equalsIgnoreCase(HttpHeaders.SET_COOKIE)) {
-							return HttpExchangeTracer.this.includes
-									.contains(Include.COOKIE_HEADERS);
-						}
-						return true;
-					});
+					this.delegate::getHeaders, this::includedHeader);
+		}
+
+		private boolean includedHeader(String name) {
+			if (name.equalsIgnoreCase(HttpHeaders.SET_COOKIE)) {
+				return HttpExchangeTracer.this.includes.contains(Include.COOKIE_HEADERS);
+			}
+			return true;
 		}
 
 	}

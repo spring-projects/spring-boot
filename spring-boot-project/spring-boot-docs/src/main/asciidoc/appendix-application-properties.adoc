@@ -1206,6 +1206,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.heapdump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.heapdump.enabled= # Whether to enable the heapdump endpoint.
 
+	# HTTP TRACE ENDPOINT ({sc-spring-boot-actuator}/web/trace/HttpTraceEndpoint.{sc-ext}[HttpTraceEndpoint])
+	management.endpoint.httptrace.cache.time-to-live=0ms # Maximum time that a response can be cached.
+	management.endpoint.httptrace.enabled= # Whether to enable the HTTP trace endpoint.
+
 	# INFO ENDPOINT ({sc-spring-boot-actuator}/info/InfoEndpoint.{sc-ext}[InfoEndpoint])
 	info= # Arbitrary properties to add to the info endpoint.
 	management.endpoint.info.cache.time-to-live=0ms # Maximum time that a response can be cached.
@@ -1250,10 +1254,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.threaddump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.threaddump.enabled= # Whether to enable the threaddump endpoint.
 
-	# TRACE ENDPOINT ({sc-spring-boot-actuator}/web/trace/HttpTraceEndpoint.{sc-ext}[HttpTraceEndpoint])
-	management.endpoint.trace.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.trace.enabled= # Whether to enable the trace endpoint.
-
 	# JOLOKIA ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
 	management.endpoint.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
 	management.endpoint.jolokia.enabled=true # Whether to enable Jolokia.
@@ -1280,6 +1280,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.solr.enabled=true # Whether to enable Solr health check.
 	management.health.status.http-mapping= # Mapping of health statuses to HTTP status codes. By default, registered health statuses map to sensible defaults (for example, UP maps to 200).
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UP, UNKNOWN # Comma-separated list of health statuses in order of severity.
+
+	# HTTP TRACING ({sc-spring-boot-actuator-autoconfigure}/web/trace/HttpTraceProperties.{sc-ext}[HttpTraceProperties])
+	management.httptrace.enabled=true # Whether to enable HTTP request-response tracing.
+	management.httptrace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 	# INFO CONTRIBUTORS ({sc-spring-boot-actuator-autoconfigure}/info/InfoContributorProperties.{sc-ext}[InfoContributorProperties])
 	management.info.build.enabled=true # Whether to enable build info.
@@ -1374,10 +1378,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
 	management.metrics.web.server.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	management.metrics.web.server.requests-metric-name=http.server.requests # Name of the metric for received requests.
-
-	# TRACING ({sc-spring-boot-actuator-autoconfigure}/web/trace/TraceProperties.{sc-ext}[TraceProperties])
-	management.trace.enabled=true # Whether to enable HTTP request-response tracing.
-	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 
 	# ----------------------------------------

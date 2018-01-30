@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.web.trace.Include;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for tracing.
+ * Configuration properties for HTTP tracing.
  *
  * @author Wallace Wadge
  * @author Phillip Webb
@@ -32,8 +32,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.trace")
-public class TraceProperties {
+@ConfigurationProperties(prefix = "management.httptrace")
+public class HttpTraceProperties {
 
 	/**
 	 * Items to be included in the trace. Defaults to request headers (excluding

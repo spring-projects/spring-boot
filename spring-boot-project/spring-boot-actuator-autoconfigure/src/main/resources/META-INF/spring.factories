@@ -43,8 +43,8 @@ org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAuto
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.trace.TraceAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.trace.TraceEndpointAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.web.trace.HttpTraceAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.web.trace.HttpTraceEndpointAutoConfiguration
 
 org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration=\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration,\

@@ -33,14 +33,14 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration
-@AutoConfigureAfter(TraceAutoConfiguration.class)
-public class TraceEndpointAutoConfiguration {
+@AutoConfigureAfter(HttpTraceAutoConfiguration.class)
+public class HttpTraceEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(HttpTraceRepository.class)
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public HttpTraceEndpoint traceEndpoint(HttpTraceRepository traceRepository) {
+	public HttpTraceEndpoint httpTraceEndpoint(HttpTraceRepository traceRepository) {
 		return new HttpTraceEndpoint(traceRepository);
 	}
 
