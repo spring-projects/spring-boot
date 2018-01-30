@@ -269,6 +269,7 @@ jobs:
 - name: promote-rc
   serial: true
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
@@ -287,6 +288,7 @@ jobs:
 - name: promote-release
   serial: true
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
