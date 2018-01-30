@@ -636,7 +636,7 @@
       "name": "flyway.sql-migration-suffix",
       "type": "java.lang.String",
       "deprecation": {
-        "replacement": "spring.flyway.sql-migration-suffix",
+        "replacement": "spring.flyway.sql-migration-suffixes",
         "level": "error"
       }
     },
@@ -1161,6 +1161,13 @@
       "deprecation": {
         "replacement": "spring.datasource.initialization-mode",
         "level": "error"
+      }
+    },
+    {
+      "name": "spring.flyway.sql-migration-suffix",
+      "deprecation": {
+        "replacement": "spring.flyway.sql-migration-suffixes",
+        "level": "warning"
       }
     },
     {
