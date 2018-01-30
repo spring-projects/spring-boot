@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.5.10.BUILD-SNAPSHOT</version>
+		<version>1.5.10.RELEASE</version>
 		<relativePath>../../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
@@ -171,7 +171,7 @@
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-maven-plugin</artifactId>
-							<version>1.5.10.BUILD-SNAPSHOT</version>
+							<version>1.5.10.RELEASE</version>
 						</dependency>
 					</dependencies>
 					<configuration>
