@@ -1215,6 +1215,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.info.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.info.enabled=true # Whether to enable the info endpoint.
 
+	# JOLOKIA ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
+	management.endpoint.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
+	management.endpoint.jolokia.enabled=true # Whether to enable Jolokia.
+
 	# LIQUIBASE ENDPOINT ({sc-spring-boot-actuator}/liquibase/LiquibaseEndpoint.{sc-ext}[LiquibaseEndpoint])
 	management.endpoint.liquibase.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.liquibase.enabled= # Whether to enable the liquibase endpoint.
@@ -1253,10 +1257,6 @@ content into your application. Rather, pick only the properties that you need.
 	# THREAD DUMP ENDPOINT ({sc-spring-boot-actuator}/management/ThreadDumpEndpoint.{sc-ext}[ThreadDumpEndpoint])
 	management.endpoint.threaddump.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.threaddump.enabled= # Whether to enable the threaddump endpoint.
-
-	# JOLOKIA ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
-	management.endpoint.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
-	management.endpoint.jolokia.enabled=true # Whether to enable Jolokia.
 
 	# HEALTH INDICATORS
 	management.health.db.enabled=true # Whether to enable database health check.
