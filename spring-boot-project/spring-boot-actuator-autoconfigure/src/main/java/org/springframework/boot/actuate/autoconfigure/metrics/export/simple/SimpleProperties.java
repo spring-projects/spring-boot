@@ -46,7 +46,7 @@ public class SimpleProperties {
 	/**
 	 * Counting mode.
 	 */
-	private CountingMode mode = CountingMode.Cumulative;
+	private CountingMode mode = CountingMode.CUMULATIVE;
 
 	public boolean getEnabled() {
 		return this.enabled;

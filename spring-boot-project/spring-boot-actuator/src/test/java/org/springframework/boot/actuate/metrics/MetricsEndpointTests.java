@@ -131,7 +131,7 @@ public class MetricsEndpointTests {
 
 	private Optional<Double> getCount(MetricsEndpoint.MetricResponse response) {
 		return response.getMeasurements().stream()
-				.filter((ms) -> ms.getStatistic().equals(Statistic.Count)).findAny()
+				.filter((ms) -> ms.getStatistic().equals(Statistic.COUNT)).findAny()
 				.map(MetricsEndpoint.Sample::getValue);
 	}
 

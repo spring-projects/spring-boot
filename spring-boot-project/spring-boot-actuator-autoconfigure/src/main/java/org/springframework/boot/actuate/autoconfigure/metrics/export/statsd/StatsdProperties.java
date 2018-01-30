@@ -40,7 +40,7 @@ public class StatsdProperties {
 	/**
 	 * StatsD line protocol to use.
 	 */
-	private StatsdFlavor flavor = StatsdFlavor.Datadog;
+	private StatsdFlavor flavor = StatsdFlavor.DATADOG;
 
 	/**
 	 * Host of the StatsD server to receive exported metrics.
