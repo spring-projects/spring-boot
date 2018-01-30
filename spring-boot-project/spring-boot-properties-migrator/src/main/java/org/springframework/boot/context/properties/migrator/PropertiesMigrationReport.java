@@ -86,14 +86,14 @@ class PropertiesMigrationReport {
 	private String determineReason(ConfigurationMetadataProperty metadata) {
 		Deprecation deprecation = metadata.getDeprecation();
 		if (StringUtils.hasText(deprecation.getShortReason())) {
-			return deprecation.getShortReason();
+			return "Reason: " + deprecation.getShortReason();
 		}
 		if (StringUtils.hasText(deprecation.getReplacement())) {
 			return String.format(
 					"Reason: Replacement key '%s' uses an incompatible " + "target type",
 					deprecation.getReplacement());
 		}
-		return "none";
+		return "Reason: none";
 	}
 
 	private Map<String, List<PropertyMigration>> getContent(
