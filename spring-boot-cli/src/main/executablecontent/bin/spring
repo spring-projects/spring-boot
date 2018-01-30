@@ -8,6 +8,10 @@ case "`uname`" in
 		cygwin=true
 		;;
 
+	MINGW*)
+		cygwin=true
+		;;
+
 	Darwin*)
 		darwin=true
 		;;
