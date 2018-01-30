@@ -42,7 +42,7 @@ public class DefaultCommandFactory implements CommandFactory {
 	private static final List<Command> DEFAULT_COMMANDS;
 
 	static {
-		ArrayList<Command> defaultCommands = new ArrayList<>();
+		List<Command> defaultCommands = new ArrayList<>();
 		defaultCommands.add(new VersionCommand());
 		defaultCommands.add(new RunCommand());
 		defaultCommands.add(new GrabCommand());

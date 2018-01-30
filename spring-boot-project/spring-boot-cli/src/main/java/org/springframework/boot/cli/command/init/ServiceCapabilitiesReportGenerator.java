@@ -93,7 +93,7 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
-		ArrayList<Dependency> dependencies = new ArrayList<>(metadata.getDependencies());
+		List<Dependency> dependencies = new ArrayList<>(metadata.getDependencies());
 		dependencies.sort(Comparator.comparing(Dependency::getId));
 		return dependencies;
 	}

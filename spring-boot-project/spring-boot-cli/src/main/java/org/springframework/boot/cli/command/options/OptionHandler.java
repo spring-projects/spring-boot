@@ -150,7 +150,7 @@ public class OptionHandler {
 
 	private static class OptionHelpAdapter implements OptionHelp {
 
-		private final LinkedHashSet<String> options;
+		private final Set<String> options;
 
 		private final String description;
 

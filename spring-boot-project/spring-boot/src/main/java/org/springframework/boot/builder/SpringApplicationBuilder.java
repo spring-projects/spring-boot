@@ -424,7 +424,7 @@ public class SpringApplicationBuilder {
 	}
 
 	private Map<String, Object> getMapFromProperties(Properties properties) {
-		HashMap<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		for (Object key : Collections.list(properties.propertyNames())) {
 			map.put((String) key, properties.get(key));
 		}
