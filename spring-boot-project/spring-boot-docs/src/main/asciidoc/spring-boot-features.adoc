@@ -3035,7 +3035,7 @@ Boot provides convenience methods that can be used to override access rules for 
 endpoints and static resources. `EndpointRequest` can be used to create a `ServerWebExchangeMatcher`
 that is based on the `management.endpoints.web.base-path` property.
 
-`StaticResourceRequest` can be used to create a `ServerWebExchangeMatcher` for static resources in
+`PathRequest` can be used to create a `ServerWebExchangeMatcher` for resources in
 commonly used locations.
 
 

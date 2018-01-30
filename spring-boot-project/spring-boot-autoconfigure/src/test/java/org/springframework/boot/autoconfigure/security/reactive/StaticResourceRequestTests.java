@@ -44,12 +44,14 @@ import static org.mockito.Mockito.mock;
  */
 public class StaticResourceRequestTests {
 
+	private StaticResourceRequest resourceRequest = StaticResourceRequest.get();
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void toCommonLocationsShouldMatchCommonLocations() {
-		ServerWebExchangeMatcher matcher = StaticResourceRequest.toCommonLocations();
+	public void atCommonLocationsShouldMatchCommonLocations() {
+		ServerWebExchangeMatcher matcher = this.resourceRequest.atCommonLocations();
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 		assertMatcher(matcher).matches("/images/file.css");
@@ -59,33 +61,33 @@ public class StaticResourceRequestTests {
 	}
 
 	@Test
-	public void toCommonLocationsWithExcludeShouldNotMatchExcluded() {
-		ServerWebExchangeMatcher matcher = StaticResourceRequest.toCommonLocations()
+	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
+		ServerWebExchangeMatcher matcher = this.resourceRequest.atCommonLocations()
 				.excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 	}
 
 	@Test
-	public void toLocationShouldMatchLocation() {
-		ServerWebExchangeMatcher matcher = StaticResourceRequest
-				.to(StaticResourceLocation.CSS);
+	public void atLocationShouldMatchLocation() {
+		ServerWebExchangeMatcher matcher = this.resourceRequest
+				.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
 	@Test
-	public void toLocationsFromSetWhenSetIsNullShouldThrowException() {
+	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Locations must not be null");
-		StaticResourceRequest.to(null);
+		this.resourceRequest.at(null);
 	}
 
 	@Test
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Locations must not be null");
-		StaticResourceRequest.toCommonLocations().excluding(null);
+		this.resourceRequest.atCommonLocations().excluding(null);
 	}
 
 	private StaticResourceRequestTests.RequestMatcherAssert assertMatcher(

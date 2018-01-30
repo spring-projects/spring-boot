@@ -33,13 +33,16 @@ import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
- * Factory that can be used to create a {@link ServerWebExchangeMatcher} for static
- * resources in commonly used locations.
+ * Used to create a {@link ServerWebExchangeMatcher} for static resources in
+ * commonly used locations. Returned by {@link PathRequest#toStaticResources()}.
  *
  * @author Madhura Bhave
  * @since 2.0.0
+ * @see PathRequest
  */
 public final class StaticResourceRequest {
+
+	private static final StaticResourceRequest INSTANCE = new StaticResourceRequest();
 
 	private StaticResourceRequest() {
 	}
@@ -50,40 +53,48 @@ public final class StaticResourceRequest {
 	 * {@link StaticResourceServerWebExchange#excluding(StaticResourceLocation, StaticResourceLocation...)
 	 * excluding} method can be used to remove specific locations if required. For
 	 * example: <pre class="code">
-	 * StaticResourceRequest.toCommonLocations().excluding(StaticResourceLocation.CSS)
+	 * StaticResourceRequest.atCommonLocations().excluding(StaticResourceLocation.CSS)
 	 * </pre>
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
-	public static StaticResourceServerWebExchange toCommonLocations() {
-		return to(EnumSet.allOf(StaticResourceLocation.class));
+	public StaticResourceServerWebExchange atCommonLocations() {
+		return at(EnumSet.allOf(StaticResourceLocation.class));
 	}
 
 	/**
 	 * Returns a matcher that includes the specified {@link StaticResourceLocation
 	 * Locations}. For example: <pre class="code">
-	 * to(StaticResourceLocation.CSS, StaticResourceLocation.JAVA_SCRIPT)
+	 * at(StaticResourceLocation.CSS, StaticResourceLocation.JAVA_SCRIPT)
 	 * </pre>
 	 * @param first the first location to include
 	 * @param rest additional locations to include
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
-	public static StaticResourceServerWebExchange to(StaticResourceLocation first,
+	public StaticResourceServerWebExchange at(StaticResourceLocation first,
 			StaticResourceLocation... rest) {
-		return to(EnumSet.of(first, rest));
+		return at(EnumSet.of(first, rest));
 	}
 
 	/**
 	 * Returns a matcher that includes the specified {@link StaticResourceLocation
 	 * Locations}. For example: <pre class="code">
-	 * to(locations)
+	 * at(locations)
 	 * </pre>
 	 * @param locations the locations to include
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
-	public static StaticResourceServerWebExchange to(
+	public StaticResourceServerWebExchange at(
 			Set<StaticResourceLocation> locations) {
 		Assert.notNull(locations, "Locations must not be null");
 		return new StaticResourceServerWebExchange(new LinkedHashSet<>(locations));
+	}
+
+	/**
+	 * Return the static resource request.
+	 * @return the static resource request
+	 */
+	static StaticResourceRequest get() {
+		return INSTANCE;
 	}
 
 	/**
