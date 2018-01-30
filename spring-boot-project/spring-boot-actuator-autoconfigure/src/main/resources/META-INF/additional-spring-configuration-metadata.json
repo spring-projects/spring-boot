@@ -755,7 +755,7 @@
       "description": "Whether to enable JMX export of all endpoints.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "management.endpoints.jmx.enabled",
+        "replacement": "management.endpoints.jmx.exclude",
         "level": "error"
       }
     },
@@ -783,7 +783,7 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable the endpoint.",
       "deprecation": {
-        "replacement": "management.jolokia.enabled",
+        "replacement": "management.endpoint.jolokia.enabled",
         "level": "error"
       }
     },
@@ -1098,7 +1098,7 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Jolokia settings. These are traditionally set using servlet parameters. Refer to\n the documentation of Jolokia for more details.",
       "deprecation": {
-        "replacement": "management.jolokia.config",
+        "replacement": "management.endpoint.jolokia.config",
         "level": "error"
       }
     },
