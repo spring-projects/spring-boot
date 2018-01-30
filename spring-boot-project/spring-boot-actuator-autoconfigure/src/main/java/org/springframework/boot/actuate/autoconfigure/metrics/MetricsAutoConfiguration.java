@@ -22,6 +22,7 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
@@ -73,9 +74,11 @@ public class MetricsAutoConfiguration {
 	@Bean
 	public static MeterRegistryPostProcessor meterRegistryPostProcessor(
 			ObjectProvider<Collection<MeterBinder>> binders,
+			ObjectProvider<Collection<MeterFilter>> filters,
 			ObjectProvider<Collection<MeterRegistryCustomizer<?>>> customizers,
 			MetricsProperties properties) {
-		return new MeterRegistryPostProcessor(binders, customizers,
+		return new MeterRegistryPostProcessor(binders.getIfAvailable(),
+				filters.getIfAvailable(), customizers.getIfAvailable(),
 				properties.isUseGlobalRegistry());
 	}
 

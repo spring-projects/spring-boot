@@ -17,24 +17,22 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.MeterRegistry.Config;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.core.instrument.config.MeterFilter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.util.Assert;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -46,18 +44,17 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class MeterRegistryPostProcessorTests {
 
-	private List<MeterBinder> binderBeans = new ArrayList<>();
+	private List<MeterBinder> binders = new ArrayList<>();
 
-	private List<MeterRegistryCustomizer<?>> customizerBeans = new ArrayList<>();
+	private List<MeterFilter> filters = new ArrayList<>();
 
-	private ObjectProvider<Collection<MeterBinder>> binders = TestObjectProvider
-			.of(this.binderBeans);
-
-	private ObjectProvider<Collection<MeterRegistryCustomizer<?>>> customizers = TestObjectProvider
-			.of(this.customizerBeans);
+	private List<MeterRegistryCustomizer<?>> customizers = new ArrayList<>();
 
 	@Mock
 	private MeterBinder mockBinder;
+
+	@Mock
+	private MeterFilter mockFilter;
 
 	@Mock
 	private MeterRegistryCustomizer<MeterRegistry> mockCustomizer;
@@ -65,15 +62,19 @@ public class MeterRegistryPostProcessorTests {
 	@Mock
 	private MeterRegistry mockRegistry;
 
+	@Mock
+	private Config mockConfig;
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 	}
 
 	@Test
 	public void postProcessWhenNotRegistryShouldReturnBean() {
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.customizers, false);
+				this.binders, this.filters, this.customizers, false);
 		Object bean = new Object();
 		String beanName = "name";
 		assertThat(processor.postProcessBeforeInitialization(bean, beanName))
@@ -84,10 +85,10 @@ public class MeterRegistryPostProcessorTests {
 
 	@Test
 	public void postProcessorWhenCompositeShouldSkip() {
-		this.binderBeans.add(this.mockBinder);
-		this.customizerBeans.add(this.mockCustomizer);
+		this.binders.add(this.mockBinder);
+		this.customizers.add(this.mockCustomizer);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.customizers, false);
+				this.binders, this.filters, this.customizers, false);
 		assertThat(processor.postProcessAfterInitialization(new CompositeMeterRegistry(),
 				"name"));
 		verifyZeroInteractions(this.mockBinder, this.mockCustomizer);
@@ -95,38 +96,49 @@ public class MeterRegistryPostProcessorTests {
 
 	@Test
 	public void postProcessShouldApplyCustomizer() {
-		this.customizerBeans.add(this.mockCustomizer);
+		this.customizers.add(this.mockCustomizer);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.customizers, false);
+				this.binders, this.filters, this.customizers, false);
 		assertThat(processor.postProcessAfterInitialization(this.mockRegistry, "name"));
 		verify(this.mockCustomizer).customize(this.mockRegistry);
 	}
 
 	@Test
-	public void postProcessShouldApplyBinder() {
-		this.binderBeans.add(this.mockBinder);
+	public void postProcessShouldApplyFilter() {
+		this.filters.add(this.mockFilter);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.customizers, false);
+				this.binders, this.filters, this.customizers, false);
+		assertThat(processor.postProcessAfterInitialization(this.mockRegistry, "name"));
+		verify(this.mockConfig).meterFilter(this.mockFilter);
+	}
+
+	@Test
+	public void postProcessShouldApplyBinder() {
+		this.binders.add(this.mockBinder);
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
+				this.binders, this.filters, this.customizers, false);
 		assertThat(processor.postProcessAfterInitialization(this.mockRegistry, "name"));
 		verify(this.mockBinder).bindTo(this.mockRegistry);
 	}
 
 	@Test
-	public void postProcessShouldCustomizeBeforeApplyingBinder() {
-		this.binderBeans.add(this.mockBinder);
-		this.customizerBeans.add(this.mockCustomizer);
+	public void postProcessShouldBeCallInOrderCustomizeFilterBinder() {
+		this.customizers.add(this.mockCustomizer);
+		this.filters.add(this.mockFilter);
+		this.binders.add(this.mockBinder);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.customizers, false);
+				this.binders, this.filters, this.customizers, false);
 		processor.postProcessAfterInitialization(this.mockRegistry, "name");
-		InOrder ordered = inOrder(this.mockCustomizer, this.mockBinder);
+		InOrder ordered = inOrder(this.mockBinder, this.mockConfig, this.mockCustomizer);
 		ordered.verify(this.mockCustomizer).customize(this.mockRegistry);
+		ordered.verify(this.mockConfig).meterFilter(this.mockFilter);
 		ordered.verify(this.mockBinder).bindTo(this.mockRegistry);
 	}
 
 	@Test
 	public void postProcessWhenAddToGlobalRegistryShouldAddToGlobalRegistry() {
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.customizers, true);
+				this.binders, this.filters, this.customizers, true);
 		try {
 			processor.postProcessAfterInitialization(this.mockRegistry, "name");
 			assertThat(Metrics.globalRegistry.getRegistries())
@@ -140,45 +152,10 @@ public class MeterRegistryPostProcessorTests {
 	@Test
 	public void postProcessWhenNotAddToGlobalRegistryShouldAddToGlobalRegistry() {
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.customizers, false);
+				this.binders, this.filters, this.customizers, false);
 		processor.postProcessAfterInitialization(this.mockRegistry, "name");
 		assertThat(Metrics.globalRegistry.getRegistries())
 				.doesNotContain(this.mockRegistry);
-	}
-
-	private static class TestObjectProvider<T> implements ObjectProvider<T> {
-
-		private final T value;
-
-		TestObjectProvider(T value) {
-			this.value = value;
-		}
-
-		@Override
-		public T getObject() throws BeansException {
-			Assert.state(this.value != null, "No value");
-			return this.value;
-		}
-
-		@Override
-		public T getObject(Object... args) throws BeansException {
-			return this.value;
-		}
-
-		@Override
-		public T getIfAvailable() throws BeansException {
-			return this.value;
-		}
-
-		@Override
-		public T getIfUnique() throws BeansException {
-			throw new UnsupportedOperationException();
-		}
-
-		public static <T> TestObjectProvider<T> of(T value) {
-			return new TestObjectProvider<>(value);
-		}
-
 	}
 
 }
