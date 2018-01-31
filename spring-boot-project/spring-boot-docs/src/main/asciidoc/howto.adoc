@@ -1370,13 +1370,13 @@ include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[t
 [[howto-logging]]
 == Logging
 
-Spring Boot has no mandatory logging dependency, except for the Commons Logging API, of
-which there are many implementations to choose from. To use
-http://logback.qos.ch[Logback], you need to include it and `jcl-over-slf4j` (which
-implements the Commons Logging API) on the classpath. The simplest way to do that is
-through the starters, which all depend on `spring-boot-starter-logging`. For a web
-application, you need only `spring-boot-starter-web`, since it depends transitively on the
-logging starter. If you use Maven, the following dependency adds logging for you:
+Spring Boot has no mandatory logging dependency, except for the Commons Logging API, which
+is typically provided by Spring Framework's `spring-jcl` module. To use
+http://logback.qos.ch[Logback], you need to include it and `sprign-jcl` on the classpath.
+The simplest way to do that is through the starters, which all depend on
+`spring-boot-starter-logging`. For a web application, you need only
+`spring-boot-starter-web`, since it depends transitively on the logging starter. If you
+use Maven, the following dependency adds logging for you:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1479,8 +1479,8 @@ following example:
 Spring Boot supports http://logging.apache.org/log4j/2.x[Log4j 2] for logging
 configuration if it is on the classpath. If you use the starters for
 assembling dependencies, you have to exclude Logback and then include log4j 2
-instead. If you do not use the starters, you need to provide (at least) `jcl-over-slf4j`
-in addition to Log4j 2.
+instead. If you do not use the starters, you need to provide (at least) `spring-jcl` in
+addition to Log4j 2.
 
 The simplest path is probably through the starters, even though it requires some
 jiggling with excludes. The following example shows how to set up the starters in Maven:
