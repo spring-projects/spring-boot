@@ -14,13 +14,13 @@ endif::[]
 ifeval::["{version-type}" == "MILESTONE"]
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
-include::../gradle/getting-started/apply-plugin-milestone.gradle[]
+include::../gradle/getting-started/apply-plugin-milestone.gradle[tags=!buildclasspath]
 ----
 endif::[]
 ifeval::["{version-type}" == "SNAPSHOT"]
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
-include::../gradle/getting-started/apply-plugin-snapshot.gradle[]
+include::../gradle/getting-started/apply-plugin-snapshot.gradle[tags=!buildclasspath]
 ----
 endif::[]
 
