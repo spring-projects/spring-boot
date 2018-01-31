@@ -932,6 +932,11 @@
 				<artifactId>rest-assured</artifactId>
 				<version>${rest-assured.version}</version>
 			</dependency>
+			 <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>spring-mock-mvc</artifactId>
+                <version>${rest-assured.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>io.searchbox</groupId>
 				<artifactId>jest</artifactId>
