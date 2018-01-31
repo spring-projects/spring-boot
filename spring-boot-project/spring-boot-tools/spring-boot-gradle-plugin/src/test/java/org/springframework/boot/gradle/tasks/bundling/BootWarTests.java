@@ -94,4 +94,14 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		}
 	}
 
+	@Test
+	public void libProvidedEntriesAreWrittenAfterLibEntries() throws IOException {
+		getTask().setMainClassName("com.example.Main");
+		getTask().classpath(this.temp.newFile("library.jar"));
+		getTask().providedClasspath(this.temp.newFile("provided-library.jar"));
+		getTask().execute();
+		assertThat(getEntryNames(getTask().getArchivePath())).containsSubsequence(
+				"WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
+	}
+
 }
