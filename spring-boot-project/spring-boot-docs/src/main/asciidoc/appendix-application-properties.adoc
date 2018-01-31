@@ -1373,6 +1373,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.rabbitmq.instrument=true # Instrument all available connection factories.
 	management.metrics.rabbitmq.metric-name=rabbitmq # Name of the metric for RabbitMQ usage.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
+	management.metrics.web.client.max-uri-tags=100 # Maximum number of unique URI tag values allowed. After the max number of tag values is reached, metrics with additional tag values are denied by filter.
 	management.metrics.web.client.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	management.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
