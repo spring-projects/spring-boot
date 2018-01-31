@@ -929,7 +929,22 @@
 			</dependency>
 			<dependency>
 				<groupId>io.rest-assured</groupId>
+				<artifactId>json-path</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>json-schema-validator</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
 				<artifactId>rest-assured</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>scala-support</artifactId>
 				<version>${rest-assured.version}</version>
 			</dependency>
 			 <dependency>
@@ -937,6 +952,11 @@
                 <artifactId>spring-mock-mvc</artifactId>
                 <version>${rest-assured.version}</version>
             </dependency>
+            <dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>xml-path</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>io.searchbox</groupId>
 				<artifactId>jest</artifactId>
