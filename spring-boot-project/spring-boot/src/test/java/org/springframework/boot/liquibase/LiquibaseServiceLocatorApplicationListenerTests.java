@@ -59,7 +59,7 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 		SpringApplication application = new SpringApplication(Conf.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		Object resolver = getServiceLocator();
+		Object resolver = getClassResolver();
 		assertThat(resolver).isInstanceOf(SpringPackageScanClassResolver.class);
 	}
 
@@ -73,11 +73,11 @@ public class LiquibaseServiceLocatorApplicationListenerTests {
 				new ClassHidingClassLoader(CustomResolverServiceLocator.class));
 		application.setResourceLoader(resourceLoader);
 		this.context = application.run();
-		Object resolver = getServiceLocator();
+		Object resolver = getClassResolver();
 		assertThat(resolver).isInstanceOf(DefaultPackageScanClassResolver.class);
 	}
 
-	private Object getServiceLocator() throws IllegalAccessException {
+	private Object getClassResolver() throws IllegalAccessException {
 		ServiceLocator instance = ServiceLocator.getInstance();
 		Field field = ReflectionUtils.findField(ServiceLocator.class, "classResolver");
 		field.setAccessible(true);
