@@ -100,12 +100,6 @@ public class JacksonAutoConfigurationTests {
 				});
 	}
 
-	/*
-	 * ObjectMapper does not contain method to get the date format of the mapper. See
-	 * https://github.com/FasterXML/jackson-databind/issues/559 If such a method will be
-	 * provided below tests can be simplified.
-	 */
-
 	@Test
 	public void noCustomDateFormat() {
 		this.contextRunner.run((context) -> {
