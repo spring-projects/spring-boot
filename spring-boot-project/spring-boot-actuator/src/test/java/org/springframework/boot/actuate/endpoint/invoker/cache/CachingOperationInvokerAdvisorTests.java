@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
+import org.springframework.lang.Nullable;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link CachingOperationInvokerAdvisor}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class CachingOperationInvokerAdvisorTests {
 
@@ -66,8 +68,9 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyWhenHasParametersShouldNotAddAdvise() {
-		OperationParameters parameters = getParameters("getWithParameter", String.class);
+	public void applyWhenHasAtLeaseOneMandatoryParameterShouldNotAddAdvise() {
+		OperationParameters parameters = getParameters("getWithParameter", String.class,
+				String.class);
 		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
 				parameters, this.invoker);
 		assertThat(advised).isSameAs(this.invoker);
@@ -97,6 +100,18 @@ public class CachingOperationInvokerAdvisorTests {
 	public void applyShouldAddCacheAdvise() {
 		OperationParameters parameters = getParameters("get");
 		given(this.timeToLive.apply(any())).willReturn(100L);
+		assertAdviseIsApplied(parameters);
+	}
+
+	@Test
+	public void applyWithAllOptionalParameterShouldAddAdvise() {
+		OperationParameters parameters = getParameters("getWithAllOptionalParameters",
+				String.class, String.class);
+		given(this.timeToLive.apply(any())).willReturn(100L);
+		assertAdviseIsApplied(parameters);
+	}
+
+	private void assertAdviseIsApplied(OperationParameters parameters) {
 		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
 				parameters, this.invoker);
 		assertThat(advised).isInstanceOf(CachingOperationInvoker.class);
@@ -123,7 +138,12 @@ public class CachingOperationInvokerAdvisorTests {
 			return "";
 		}
 
-		public String getWithParameter(String foo) {
+		public String getWithParameter(@Nullable String foo, String bar) {
+			return "";
+		}
+
+		public String getWithAllOptionalParameters(@Nullable String foo,
+				@Nullable String bar) {
 			return "";
 		}
 

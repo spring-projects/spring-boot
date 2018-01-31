@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,10 +51,21 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void cacheInTtlRange() {
-		Object expected = new Object();
-		OperationInvoker target = mock(OperationInvoker.class);
+	public void cacheInTtlRangeWithNoParameter() {
+		assertCacheIsUsed(Collections.emptyMap());
+	}
+
+	@Test
+	public void cacheInTtlWithNullParameters() {
 		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("first", null);
+		parameters.put("second", null);
+		assertCacheIsUsed(parameters);
+	}
+
+	private void assertCacheIsUsed(Map<String, Object> parameters) {
+		OperationInvoker target = mock(OperationInvoker.class);
+		Object expected = new Object();
 		given(target.invoke(parameters)).willReturn(expected);
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
 		Object response = invoker.invoke(parameters);
@@ -62,6 +74,20 @@ public class CachingOperationInvokerTests {
 		Object cachedResponse = invoker.invoke(parameters);
 		assertThat(cachedResponse).isSameAs(response);
 		verifyNoMoreInteractions(target);
+	}
+
+	@Test
+	public void targetAlwaysInvokedWithArguments() {
+		OperationInvoker target = mock(OperationInvoker.class);
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("test", "value");
+		parameters.put("something", null);
+		given(target.invoke(parameters)).willReturn(new Object());
+		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
+		invoker.invoke(parameters);
+		invoker.invoke(parameters);
+		invoker.invoke(parameters);
+		verify(target, times(3)).invoke(parameters);
 	}
 
 	@Test

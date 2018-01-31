@@ -21,6 +21,7 @@ import java.util.function.Function;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 
 /**
@@ -40,13 +41,22 @@ public class CachingOperationInvokerAdvisor implements OperationInvokerAdvisor {
 	@Override
 	public OperationInvoker apply(String endpointId, OperationType operationType,
 			OperationParameters parameters, OperationInvoker invoker) {
-		if (operationType == OperationType.READ && !parameters.hasParameters()) {
+		if (operationType == OperationType.READ && !hasMandatoryParameter(parameters)) {
 			Long timeToLive = this.endpointIdTimeToLive.apply(endpointId);
 			if (timeToLive != null && timeToLive > 0) {
 				return new CachingOperationInvoker(invoker, timeToLive);
 			}
 		}
 		return invoker;
+	}
+
+	private boolean hasMandatoryParameter(OperationParameters parameters) {
+		for (OperationParameter parameter : parameters) {
+			if (!parameter.isNullable()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

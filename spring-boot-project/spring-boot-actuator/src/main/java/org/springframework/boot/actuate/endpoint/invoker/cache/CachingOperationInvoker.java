@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * An {@link OperationInvoker} that caches the response of an operation with a
@@ -58,6 +59,9 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 	@Override
 	public Object invoke(Map<String, Object> arguments) {
+		if (hasArgument(arguments)) {
+			return this.invoker.invoke(arguments);
+		}
 		long accessTime = System.currentTimeMillis();
 		CachedResponse cached = this.cachedResponse;
 		if (cached == null || cached.isStale(accessTime, this.timeToLive)) {
@@ -66,6 +70,17 @@ public class CachingOperationInvoker implements OperationInvoker {
 			return response;
 		}
 		return cached.getResponse();
+	}
+
+	private boolean hasArgument(Map<String, Object> arguments) {
+		if (!ObjectUtils.isEmpty(arguments)) {
+			for (Object value : arguments.values()) {
+				if (value != null) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
