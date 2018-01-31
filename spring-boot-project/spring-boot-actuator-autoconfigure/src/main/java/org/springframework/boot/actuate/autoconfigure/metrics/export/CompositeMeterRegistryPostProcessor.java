@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
 import java.util.Arrays;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
@@ -29,8 +28,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -105,9 +104,8 @@ class CompositeMeterRegistryPostProcessor
 		GenericBeanDefinition definition = new GenericBeanDefinition();
 		definition.setBeanClass(CompositeMeterRegistry.class);
 		definition.setPrimary(true);
+		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
 		ConstructorArgumentValues arguments = new ConstructorArgumentValues();
-		arguments.addIndexedArgumentValue(0,
-				new ValueHolder(null, Clock.class.getName()));
 		arguments.addIndexedArgumentValue(1, getBeanReferences(registryBeans));
 		definition.setConstructorArgumentValues(arguments);
 		registry.registerBeanDefinition(COMPOSITE_BEAN_NAME, definition);

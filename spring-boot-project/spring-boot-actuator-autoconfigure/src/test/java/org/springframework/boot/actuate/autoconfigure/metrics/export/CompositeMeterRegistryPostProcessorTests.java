@@ -73,6 +73,7 @@ public class CompositeMeterRegistryPostProcessorTests {
 					assertThat(primary).isInstanceOf(CompositeMeterRegistry.class);
 					assertThat(((CompositeMeterRegistry) primary).getRegistries())
 							.hasSize(2);
+					assertThat(primary.config().clock()).isNotNull();
 				});
 	}
 
