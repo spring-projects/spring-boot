@@ -113,13 +113,17 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 			List<HttpMessageConverter<?>> defaultConverters) {
 		List<HttpMessageConverter<?>> combined = new ArrayList<>();
 		List<HttpMessageConverter<?>> processing = new ArrayList<>(converters);
-		for (HttpMessageConverter<?> defaultConverter : defaultConverters) {
+		defaultConverters: for (HttpMessageConverter<?> defaultConverter : defaultConverters) {
 			Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
 			while (iterator.hasNext()) {
 				HttpMessageConverter<?> candidate = iterator.next();
 				if (isReplacement(defaultConverter, candidate)) {
 					combined.add(candidate);
 					iterator.remove();
+					// We found a replacement for this default converter
+					// hence we need to continue with the next default converter
+					// instead of adding the default converter as well
+					continue defaultConverters;
 				}
 			}
 			combined.add(defaultConverter);
