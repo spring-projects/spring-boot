@@ -273,8 +273,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 					root == null ? rootResource : new LoaderHidingResource(rootResource));
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
-				// Jetty 9.2 and earlier do not support nested jars. See
-				// https://github.com/eclipse/jetty.project/issues/518
 				if (resource.exists() && resource.isDirectory()) {
 					resources.add(resource);
 				}
