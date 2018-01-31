@@ -29,7 +29,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -106,8 +105,7 @@ class CompositeMeterRegistryPostProcessor
 		definition.setBeanClass(CompositeMeterRegistry.class);
 		definition.setPrimary(true);
 		ConstructorArgumentValues arguments = new ConstructorArgumentValues();
-		arguments.addIndexedArgumentValue(0,
-				new ValueHolder(null, Clock.class.getName()));
+		arguments.addIndexedArgumentValue(0, this.beanFactory.getBean(Clock.class));
 		arguments.addIndexedArgumentValue(1, getBeanReferences(registryBeans));
 		definition.setConstructorArgumentValues(arguments);
 		registry.registerBeanDefinition(COMPOSITE_BEAN_NAME, definition);
