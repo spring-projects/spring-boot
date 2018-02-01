@@ -27,6 +27,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -44,6 +45,11 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 	private static final boolean MOCKITO_IS_PRESENT = ClassUtils.isPresent(
 			"org.mockito.MockSettings",
 			ResetMocksTestExecutionListener.class.getClassLoader());
+
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE - 100;
+	}
 
 	@Override
 	public void beforeTestMethod(TestContext testContext) throws Exception {
