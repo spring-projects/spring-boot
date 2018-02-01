@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,49 +53,73 @@ public class BeansEndpoint {
 	}
 
 	@ReadOperation
-	public ApplicationContextDescriptor beans() {
-		return ApplicationContextDescriptor.describing(this.context);
+	public ApplicationBeans beans() {
+		Map<String, ContextBeans> contexts = new HashMap<>();
+		ConfigurableApplicationContext context = this.context;
+		while (context != null) {
+			contexts.put(context.getId(), ContextBeans.describing(context));
+			context = getConfigurableParent(context);
+		}
+		return new ApplicationBeans(contexts);
+	}
+
+	private static ConfigurableApplicationContext getConfigurableParent(
+			ConfigurableApplicationContext context) {
+		ApplicationContext parent = context.getParent();
+		if (parent instanceof ConfigurableApplicationContext) {
+			return (ConfigurableApplicationContext) parent;
+		}
+		return null;
+	}
+
+	/**
+	 * A description of an application's beans, primarily intended for serialization to
+	 * JSON.
+	 */
+	public static final class ApplicationBeans {
+
+		private final Map<String, ContextBeans> contexts;
+
+		private ApplicationBeans(Map<String, ContextBeans> contexts) {
+			this.contexts = contexts;
+		}
+
+		public Map<String, ContextBeans> getContexts() {
+			return this.contexts;
+		}
+
 	}
 
 	/**
 	 * A description of an application context, primarily intended for serialization to
 	 * JSON.
 	 */
-	public static final class ApplicationContextDescriptor {
-
-		private final String contextId;
+	public static final class ContextBeans {
 
 		private final Map<String, BeanDescriptor> beans;
 
-		private final ApplicationContextDescriptor parent;
+		private final String parentId;
 
-		private ApplicationContextDescriptor(String contextId,
-				Map<String, BeanDescriptor> beans, ApplicationContextDescriptor parent) {
-			this.contextId = contextId;
+		private ContextBeans(Map<String, BeanDescriptor> beans, String parentId) {
 			this.beans = beans;
-			this.parent = parent;
+			this.parentId = parentId;
 		}
 
-		public String getContextId() {
-			return this.contextId;
-		}
-
-		public ApplicationContextDescriptor getParent() {
-			return this.parent;
+		public String getParentId() {
+			return this.parentId;
 		}
 
 		public Map<String, BeanDescriptor> getBeans() {
 			return this.beans;
 		}
 
-		private static ApplicationContextDescriptor describing(
-				ConfigurableApplicationContext context) {
+		private static ContextBeans describing(ConfigurableApplicationContext context) {
 			if (context == null) {
 				return null;
 			}
-			return new ApplicationContextDescriptor(context.getId(),
-					describeBeans(context.getBeanFactory()),
-					describing(getConfigurableParent(context)));
+			ConfigurableApplicationContext parent = getConfigurableParent(context);
+			return new ContextBeans(describeBeans(context.getBeanFactory()),
+					parent == null ? null : parent.getId());
 		}
 
 		private static Map<String, BeanDescriptor> describeBeans(
@@ -121,15 +145,6 @@ public class BeansEndpoint {
 				ConfigurableBeanFactory bf) {
 			return (bd.getRole() != BeanDefinition.ROLE_INFRASTRUCTURE
 					&& (!bd.isLazyInit() || bf.containsSingleton(beanName)));
-		}
-
-		private static ConfigurableApplicationContext getConfigurableParent(
-				ConfigurableApplicationContext context) {
-			ApplicationContext parent = context.getParent();
-			if (parent instanceof ConfigurableApplicationContext) {
-				return (ConfigurableApplicationContext) parent;
-			}
-			return null;
 		}
 
 	}

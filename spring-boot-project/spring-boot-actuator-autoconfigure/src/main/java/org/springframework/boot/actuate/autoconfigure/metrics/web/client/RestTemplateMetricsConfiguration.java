@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,24 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
-import io.micrometer.core.instrument.MeterRegistry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.config.MeterFilter;
+import io.micrometer.core.instrument.config.MeterFilterReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -58,44 +64,44 @@ public class RestTemplateMetricsConfiguration {
 	}
 
 	@Bean
-	public static BeanPostProcessor restTemplateInterceptorPostProcessor(
-			ApplicationContext applicationContext) {
-		return new MetricsInterceptorPostProcessor(applicationContext);
+	@Order(0)
+	public MeterFilter metricsWebClientUriTagFilter(MetricsProperties properties) {
+		String metricName = properties.getWeb().getClient().getRequestsMetricName();
+		MeterFilter denyFilter = new MaximumUriTagsReachedMeterFilter(metricName);
+		return MeterFilter.maximumAllowableTags(metricName, "uri",
+				properties.getWeb().getClient().getMaxUriTags(), denyFilter);
 	}
 
 	/**
-	 * {@link BeanPostProcessor} to apply {@link MetricsRestTemplateCustomizer} to any
-	 * directly registered {@link RestTemplate} beans.
+	 * {@link MeterFilter} to deny further client requests and log a warning.
 	 */
-	private static class MetricsInterceptorPostProcessor implements BeanPostProcessor {
+	private static class MaximumUriTagsReachedMeterFilter implements MeterFilter {
 
-		private final ApplicationContext applicationContext;
+		private final Logger logger = LoggerFactory
+				.getLogger(RestTemplateMetricsConfiguration.class);
 
-		private MetricsRestTemplateCustomizer customizer;
+		private final String metricName;
 
-		MetricsInterceptorPostProcessor(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
+		private final AtomicBoolean alreadyWarned = new AtomicBoolean(false);
+
+		MaximumUriTagsReachedMeterFilter(String metricName) {
+			this.metricName = metricName;
 		}
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName) {
-			return bean;
+		public MeterFilterReply accept(Id id) {
+			if (this.alreadyWarned.compareAndSet(false, true)) {
+				logWarning();
+			}
+			return MeterFilterReply.DENY;
 		}
 
-		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) {
-			if (bean instanceof RestTemplate) {
-				getCustomizer().customize((RestTemplate) bean);
+		private void logWarning() {
+			if (this.logger.isWarnEnabled()) {
+				this.logger.warn(
+						"Reached the maximum number of URI tags for '" + this.metricName
+								+ "'. Are you using uriVariables on RestTemplate calls?");
 			}
-			return bean;
-		}
-
-		private MetricsRestTemplateCustomizer getCustomizer() {
-			if (this.customizer == null) {
-				this.customizer = this.applicationContext
-						.getBean(MetricsRestTemplateCustomizer.class);
-			}
-			return this.customizer;
 		}
 
 	}

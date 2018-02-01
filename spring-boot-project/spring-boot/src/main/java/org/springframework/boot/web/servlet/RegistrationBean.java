@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
-import javax.servlet.Registration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
-import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class for Servlet 3.0+ based registration beans.
@@ -37,41 +37,35 @@ import org.springframework.util.Assert;
  */
 public abstract class RegistrationBean implements ServletContextInitializer, Ordered {
 
-	private String name;
+	private static final Log logger = LogFactory.getLog(RegistrationBean.class);
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
-	private boolean asyncSupported = true;
-
 	private boolean enabled = true;
 
-	private Map<String, String> initParameters = new LinkedHashMap<>();
-
-	/**
-	 * Set the name of this registration. If not specified the bean name will be used.
-	 * @param name the name of the registration
-	 */
-	public void setName(String name) {
-		Assert.hasLength(name, "Name must not be empty");
-		this.name = name;
+	@Override
+	public final void onStartup(ServletContext servletContext) throws ServletException {
+		String description = getDescription();
+		if (!isEnabled()) {
+			logger.info(StringUtils.capitalize(description)
+					+ " was not registered (disabled)");
+			return;
+		}
+		register(description, servletContext);
 	}
 
 	/**
-	 * Sets if asynchronous operations are support for this registration. If not specified
-	 * defaults to {@code true}.
-	 * @param asyncSupported if async is supported
+	 * Return a description of the registration. For example "Servlet resourceServlet"
+	 * @return a description of the registration
 	 */
-	public void setAsyncSupported(boolean asyncSupported) {
-		this.asyncSupported = asyncSupported;
-	}
+	protected abstract String getDescription();
 
 	/**
-	 * Returns if asynchronous operations are support for this registration.
-	 * @return if async is supported
+	 * Register this bean with the servlet context.
+	 * @param description a description of the item being registered
+	 * @param servletContext the servlet context
 	 */
-	public boolean isAsyncSupported() {
-		return this.asyncSupported;
-	}
+	protected abstract void register(String description, ServletContext servletContext);
 
 	/**
 	 * Flag to indicate that the registration is enabled.
@@ -87,60 +81,6 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 */
 	public boolean isEnabled() {
 		return this.enabled;
-	}
-
-	/**
-	 * Set init-parameters for this registration. Calling this method will replace any
-	 * existing init-parameters.
-	 * @param initParameters the init parameters
-	 * @see #getInitParameters
-	 * @see #addInitParameter
-	 */
-	public void setInitParameters(Map<String, String> initParameters) {
-		Assert.notNull(initParameters, "InitParameters must not be null");
-		this.initParameters = new LinkedHashMap<>(initParameters);
-	}
-
-	/**
-	 * Returns a mutable Map of the registration init-parameters.
-	 * @return the init parameters
-	 */
-	public Map<String, String> getInitParameters() {
-		return this.initParameters;
-	}
-
-	/**
-	 * Add a single init-parameter, replacing any existing parameter with the same name.
-	 * @param name the init-parameter name
-	 * @param value the init-parameter value
-	 */
-	public void addInitParameter(String name, String value) {
-		Assert.notNull(name, "Name must not be null");
-		this.initParameters.put(name, value);
-	}
-
-	/**
-	 * Deduces the name for this registration. Will return user specified name or fallback
-	 * to convention based naming.
-	 * @param value the object used for convention based names
-	 * @return the deduced name
-	 */
-	protected final String getOrDeduceName(Object value) {
-		return (this.name != null ? this.name : Conventions.getVariableName(value));
-	}
-
-	/**
-	 * Configure registration base settings.
-	 * @param registration the registration
-	 */
-	protected void configure(Registration.Dynamic registration) {
-		Assert.state(registration != null,
-				() -> "Registration is null. Was something already registered for name=["
-						+ this.name + "]?");
-		registration.setAsyncSupported(this.asyncSupported);
-		if (!this.initParameters.isEmpty()) {
-			registration.setInitParameters(this.initParameters);
-		}
 	}
 
 	/**

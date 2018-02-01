@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,11 @@ import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * Meta-annotation used to indicate that an annotation provides extension support for an
- * endpoint. Extensions allow additional technology specific {@link Operation operations}
- * to be added to an existing endpoint. For example, a web extension may offer variations
- * of a read operation to support filtering based on a query parameter.
+ * Annotation primarily used as a meta-annotation to indicate that an annotation provides
+ * extension support for an endpoint. Extensions allow additional technology specific
+ * {@link Operation operations} to be added to an existing endpoint. For example, a web
+ * extension may offer variations of a read operation to support filtering based on a
+ * query parameter.
  * <p>
  * Extension annotations must provide an {@link EndpointFilter} to restrict when the
  * extension applies. The {@code endpoint} attribute is usually re-declared using

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.junit.rules.TemporaryFolder;
+import org.zeroturnaround.zip.FileSource;
+import org.zeroturnaround.zip.ZipEntrySource;
 import org.zeroturnaround.zip.ZipUtil;
 
 /**
@@ -39,6 +43,8 @@ public class TestJarFile {
 	private final TemporaryFolder temporaryFolder;
 
 	private final File jarSource;
+
+	private final List<ZipEntrySource> entries = new ArrayList<>();
 
 	public TestJarFile(TemporaryFolder temporaryFolder) throws IOException {
 		this.temporaryFolder = temporaryFolder;
@@ -59,6 +65,7 @@ public class TestJarFile {
 		if (time != null) {
 			file.setLastModified(time);
 		}
+		this.entries.add(new FileSource(filename, file));
 	}
 
 	public void addFile(String filename, File fileToCopy) throws IOException {
@@ -67,6 +74,7 @@ public class TestJarFile {
 		try (InputStream inputStream = new FileInputStream(fileToCopy)) {
 			copyToFile(inputStream, file);
 		}
+		this.entries.add(new FileSource(filename, file));
 	}
 
 	public void addManifest(Manifest manifest) throws IOException {
@@ -75,6 +83,7 @@ public class TestJarFile {
 		try (OutputStream outputStream = new FileOutputStream(manifestFile)) {
 			manifest.write(outputStream);
 		}
+		this.entries.add(new FileSource("META-INF/MANIFEST.MF", manifestFile));
 	}
 
 	private File getFilePath(String filename) {
@@ -86,8 +95,7 @@ public class TestJarFile {
 		return file;
 	}
 
-	private void copyToFile(InputStream inputStream, File file)
-			throws IOException {
+	private void copyToFile(InputStream inputStream, File file) throws IOException {
 		try (OutputStream outputStream = new FileOutputStream(file)) {
 			copy(inputStream, outputStream);
 		}
@@ -115,7 +123,7 @@ public class TestJarFile {
 	public File getFile(String extension) throws IOException {
 		File file = this.temporaryFolder.newFile();
 		file = new File(file.getParent(), file.getName() + "." + extension);
-		ZipUtil.pack(this.jarSource, file);
+		ZipUtil.pack(this.entries.toArray(new ZipEntrySource[this.entries.size()]), file);
 		return file;
 	}
 

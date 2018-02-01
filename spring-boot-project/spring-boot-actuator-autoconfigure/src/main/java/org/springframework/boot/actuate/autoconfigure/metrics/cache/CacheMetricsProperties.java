@@ -30,14 +30,14 @@ public class CacheMetricsProperties {
 	/**
 	 * Name of the metric for cache usage.
 	 */
-	private String cacheMetricName = "cache";
+	private String metricName = "cache";
 
-	public String getCacheMetricName() {
-		return this.cacheMetricName;
+	public String getMetricName() {
+		return this.metricName;
 	}
 
-	public void setCacheMetricName(String cacheMetricName) {
-		this.cacheMetricName = cacheMetricName;
+	public void setMetricName(String metricName) {
+		this.metricName = metricName;
 	}
 
 }

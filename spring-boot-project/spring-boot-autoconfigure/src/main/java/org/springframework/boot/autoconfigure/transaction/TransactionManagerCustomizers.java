@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,10 @@ package org.springframework.boot.autoconfigure.transaction;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.core.ResolvableType;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -34,44 +32,21 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 public class TransactionManagerCustomizers {
 
-	private static final Log logger = LogFactory
-			.getLog(TransactionManagerCustomizers.class);
-
 	private final List<PlatformTransactionManagerCustomizer<?>> customizers;
 
 	public TransactionManagerCustomizers(
 			Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers == null ? null : new ArrayList<>(customizers));
+		this.customizers = (customizers == null ? Collections.emptyList()
+				: new ArrayList<>(customizers));
 	}
 
+	@SuppressWarnings("unchecked")
 	public void customize(PlatformTransactionManager transactionManager) {
-		if (this.customizers != null) {
-			for (PlatformTransactionManagerCustomizer<?> customizer : this.customizers) {
-				Class<?> generic = ResolvableType
-						.forClass(PlatformTransactionManagerCustomizer.class,
-								customizer.getClass())
-						.resolveGeneric();
-				if (generic.isInstance(transactionManager)) {
-					customize(transactionManager, customizer);
-				}
-			}
-		}
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void customize(PlatformTransactionManager transactionManager,
-			PlatformTransactionManagerCustomizer customizer) {
-		try {
-			customizer.customize(transactionManager);
-		}
-		catch (ClassCastException ex) {
-			// Possibly a lambda-defined customizer which we could not resolve the generic
-			// transaction manager type for
-			if (logger.isDebugEnabled()) {
-				logger.debug("Non-matching transaction manager type for customizer: "
-						+ customizer, ex);
-			}
-		}
+		LambdaSafe
+				.callbacks(PlatformTransactionManagerCustomizer.class, this.customizers,
+						transactionManager)
+				.withLogger(TransactionManagerCustomizers.class)
+				.invoke((customizer) -> customizer.customize(transactionManager));
 	}
 
 }

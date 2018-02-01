@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.netflix.spectator.atlas.AtlasConfig;
 import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,14 +47,8 @@ public class AtlasExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.atlas.enabled", matchIfMissing = true)
-	public MetricsExporter atlasExporter(AtlasConfig atlasConfig, Clock clock) {
-		return () -> new AtlasMeterRegistry(atlasConfig, clock);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
+	public AtlasMeterRegistry atlasMeterRegistry(AtlasConfig atlasConfig, Clock clock) {
+		return new AtlasMeterRegistry(atlasConfig, clock);
 	}
 
 }

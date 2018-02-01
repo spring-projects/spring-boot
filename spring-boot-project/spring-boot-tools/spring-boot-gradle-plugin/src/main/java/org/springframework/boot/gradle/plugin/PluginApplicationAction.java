@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@ interface PluginApplicationAction extends Action<Project> {
 
 	/**
 	 * The class of the {@code Plugin} that, when applied, will trigger the execution of
-	 * this action.
+	 * this action. May return {@code null} if the plugin class is not on the classpath.
 	 *
-	 * @return the plugin class
+	 * @return the plugin class or {@code null}
 	 */
 	Class<? extends Plugin<? extends Project>> getPluginClass();
 

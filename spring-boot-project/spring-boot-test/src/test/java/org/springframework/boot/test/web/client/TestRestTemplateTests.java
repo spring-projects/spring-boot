@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,8 +131,7 @@ public class TestRestTemplateTests {
 		ReflectionUtils.doWithMethods(RestOperations.class, new MethodCallback() {
 
 			@Override
-			public void doWith(Method method)
-					throws IllegalArgumentException {
+			public void doWith(Method method) throws IllegalArgumentException {
 				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class,
 						method.getName(), method.getParameterTypes());
 				assertThat(equivalent).as("Method %s not found", method).isNotNull();
@@ -337,7 +336,7 @@ public class TestRestTemplateTests {
 		request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
 		URI absoluteUri = URI
 				.create("http://localhost:8080/a/b/c.txt?param=%7Bsomething%7D");
-		given(requestFactory.createRequest(eq(absoluteUri), (HttpMethod) any()))
+		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class)))
 				.willReturn(request);
 		RestTemplate delegate = new RestTemplate();
 		TestRestTemplate template = new TestRestTemplate(delegate);
@@ -347,7 +346,7 @@ public class TestRestTemplateTests {
 		template.setUriTemplateHandler(uriTemplateHandler);
 		callback.doWithTestRestTemplate(template,
 				URI.create("/a/b/c.txt?param=%7Bsomething%7D"));
-		verify(requestFactory).createRequest(eq(absoluteUri), (HttpMethod) any());
+		verify(requestFactory).createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}
 
 	private void assertBasicAuthorizationInterceptorCredentials(

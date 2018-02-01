@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import org.springframework.web.util.NestedServletException;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private static final Log logger = LogFactory.getLog(ErrorPageFilter.class);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.neo4j.ogm.session.SessionFactory;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
 
 /**
@@ -59,8 +60,8 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	/**
-	 * Provide health details using the specified {@link Session} and
-	 * {@link Health.Builder Builder}.
+	 * Provide health details using the specified {@link Session} and {@link Builder
+	 * Builder}.
 	 * @param session the session to use to execute a cypher statement
 	 * @param builder the builder to add details to
 	 * @throws Exception if getting health details failed

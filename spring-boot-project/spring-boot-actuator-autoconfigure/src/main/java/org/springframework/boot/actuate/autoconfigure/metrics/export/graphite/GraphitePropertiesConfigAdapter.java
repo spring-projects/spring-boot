@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,12 @@ class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphitePr
 	@Override
 	public GraphiteProtocol protocol() {
 		return get(GraphiteProperties::getProtocol, GraphiteConfig.super::protocol);
+	}
+
+	@Override
+	public String[] tagsAsPrefix() {
+		return get(GraphiteProperties::getTagsAsPrefix,
+				GraphiteConfig.super::tagsAsPrefix);
 	}
 
 }

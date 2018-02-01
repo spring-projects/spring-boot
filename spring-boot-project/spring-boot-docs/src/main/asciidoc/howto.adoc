@@ -48,6 +48,9 @@ The following example registers `ProjectConstraintViolationFailureAnalyzer`:
 	com.example.ProjectConstraintViolationFailureAnalyzer
 ----
 
+NOTE: If you need access to the `BeanFactory` or the `Environment`, your `FailureAnalyzer`
+can simply implement `BeanFactoryAware` or `EnvironmentAware` respectively.
+
 
 
 [[howto-troubleshoot-auto-configuration]]
@@ -571,7 +574,7 @@ Generally, you can follow the advice from
 "`<<howto-discover-build-in-options-for-external-properties>>`" about
 `@ConfigurationProperties` (`ServerProperties` is the main one here). However, you should
 also look at
-{dc-spring-boot}/web/servlet/server/ServletWebServerFactoryCustomizer.html[`ServletWebServerFactoryCustomizer`].
+{dc-spring-boot}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
 The Jetty APIs are quite rich, so, once you have access to the
 `JettyServletWebServerFactory`, you can modify it in a number of ways. Alternatively, if
 you need more control and customization, you can add your own
@@ -609,6 +612,12 @@ addition to the underlying component.
 If no `dispatcherType` is specified on a filter registration, `REQUEST` is used. This
 aligns with the Servlet Specification's default dispatcher type.
 ====
+
+Like any other Spring bean, you can define the order of Servlet filter beans; please
+make sure to check the
+"`<<spring-boot-features.adoc#boot-features-embedded-container-servlets-filters-listeners-beans>>`"
+section.
+
 
 
 [[howto-disable-registration-of-a-servlet-or-filter]]
@@ -667,8 +676,8 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto-discover-the-http-port-at-runtime]]
 === Discover the HTTP Port at Runtime
 You can access the port the server is running on from log output or from the
-`ServletWebServerApplicationContext` through its `EmbeddedWebServer`. The best way to get
-that and be sure that it has been initialized is to add a `@Bean` of type
+`ServletWebServerApplicationContext` through its `WebServer`. The best way to get that and
+be sure that it has been initialized is to add a `@Bean` of type
 `ApplicationListener<ServletWebServerInitializedEvent>` and pull the container
 out of the event when it is published.
 
@@ -744,13 +753,20 @@ Spring Boot does not support `h2c`, the cleartext version of the HTTP/2 protocol
 must <<howto-configure-ssl, configure SSL first>>.
 ====
 
-Currently, only Undertow and Tomcat are supported with this configuration key.
-
 
 
 [[howto-configure-http2-undertow]]
 ==== HTTP/2 with Undertow
 As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement on JDK8.
+
+
+
+[[howto-configure-http2-jetty]]
+==== HTTP/2 with Jetty
+As of Jetty 9.4.8, HTTP/2 is also supported with the
+https://www.conscrypt.org/[Conscrypt library].
+To enable that support, your application needs to have two additional dependencies:
+`org.eclipse.jetty:jetty-alpn-conscrypt-server` and `org.eclipse.jetty.http2:http2-server`.
 
 
 
@@ -885,7 +901,7 @@ adding a new valve instance in a `TomcatServletWebServerFactory` bean.
 Generally, you can follow the advice from
 "`<<howto-discover-build-in-options-for-external-properties>>`" about
 `@ConfigurationProperties` (`ServerProperties` is the main one here). However, you should
-also look at `ServletWebServerFactoryCustomizer` and various Tomcat-specific
+also look at `WebServerFactoryCustomizer` and various Tomcat-specific
 `+*Customizers+` that you can add. The Tomcat APIs are quite rich. Consequently, once you
 have access to the `TomcatServletWebServerFactory`, you can modify it in a number of ways.
 Alternatively, if you need more control and customization, you can add your own
@@ -948,7 +964,7 @@ If at all possible, you should consider updating your code to only store values
 compliant with later Cookie specifications. If, however, you cannot change the
 way that cookies are written, you can instead configure Tomcat to use a
 `LegacyCookieProcessor`. To switch to the `LegacyCookieProcessor`, use an
-`ServletWebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`, as shown
+`WebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`, as shown
 in the following example:
 
 [source,java,indent=0]
@@ -963,7 +979,7 @@ include::{code-examples}/context/embedded/TomcatLegacyCookieProcessorExample.jav
 Generally you can follow the advice from
 "`<<howto-discover-build-in-options-for-external-properties>>`" about
 `@ConfigurationProperties` (`ServerProperties` and `ServerProperties.Undertow` are the
-main ones here). However, you should also look at `ServletWebServerFactoryCustomizer`.
+main ones here). However, you should also look at `WebServerFactoryCustomizer`.
 Once you have access to the `UndertowServletWebServerFactory`, you can use an
 `UndertowBuilderCustomizer` to modify Undertow's configuration to meet your needs.
 Alternatively, if you need more control and customization, you can add your own
@@ -1354,13 +1370,13 @@ include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[t
 [[howto-logging]]
 == Logging
 
-Spring Boot has no mandatory logging dependency, except for the Commons Logging API, of
-which there are many implementations to choose from. To use
-http://logback.qos.ch[Logback], you need to include it and `jcl-over-slf4j` (which
-implements the Commons Logging API) on the classpath. The simplest way to do that is
-through the starters, which all depend on `spring-boot-starter-logging`. For a web
-application, you need only `spring-boot-starter-web`, since it depends transitively on the
-logging starter. If you use Maven, the following dependency adds logging for you:
+Spring Boot has no mandatory logging dependency, except for the Commons Logging API, which
+is typically provided by Spring Framework's `spring-jcl` module. To use
+http://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
+The simplest way to do that is through the starters, which all depend on
+`spring-boot-starter-logging`. For a web application, you need only
+`spring-boot-starter-web`, since it depends transitively on the logging starter. If you
+use Maven, the following dependency adds logging for you:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1463,8 +1479,8 @@ following example:
 Spring Boot supports http://logging.apache.org/log4j/2.x[Log4j 2] for logging
 configuration if it is on the classpath. If you use the starters for
 assembling dependencies, you have to exclude Logback and then include log4j 2
-instead. If you do not use the starters, you need to provide (at least) `jcl-over-slf4j`
-in addition to Log4j 2.
+instead. If you do not use the starters, you need to provide (at least) `spring-jcl` in
+addition to Log4j 2.
 
 The simplest path is probably through the starters, even though it requires some
 jiggling with excludes. The following example shows how to set up the starters in Maven:
@@ -1496,6 +1512,11 @@ requirements (such as having Tomcat use `java.util.logging` but configuring the
 output using Log4j 2). See the
 {github-code}/spring-boot-samples/spring-boot-sample-actuator-log4j2[Actuator Log4j 2]
 samples for more detail and to see it in action.
+
+NOTE: To ensure that debug logging performed using `java.util.logging` is routed into
+Log4j 2, configure its https://logging.apache.org/log4j/2.0/log4j-jul/index.html[JDK
+logging adapter] by setting the `java.util.logging.manager` system property to
+`org.apache.logging.log4j.jul.LogManager`.
 
 
 
@@ -1786,6 +1807,11 @@ The most common options to set are shown in the following example:
 In addition, all properties in `+spring.jpa.properties.*+` are passed through as normal
 JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
 created.
+
+TIP: If you need to apply advanced customization to Hibernate properties, consider
+registering a `HibernatePropertiesCustomizer` bean that will be invoked prior to creating
+the `EntityManagerFactory`. This takes precedence to anything that is applied by the
+auto-configuration.
 
 
 
@@ -2118,7 +2144,10 @@ uses that for migrations. If you like to use a different `DataSource`, you can c
 one and mark its `@Bean` as `@FlywayDataSource`. If you do so and want two data sources,
 remember to create another one and mark it as `@Primary`. Alternatively, you can use
 Flyway's native `DataSource` by setting `spring.flyway.[url,user,password]`
-in external properties.
+in external properties. Setting either `spring.flyway.url` or `spring.flyway.user`
+is sufficient to cause Flyway to use its own `DataSource`. If any of the three
+properties has not be set, the value of its equivalent `spring.datasource` property will
+be used.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-flyway[Flyway sample] so
 that you can see how to set things up.
@@ -2154,7 +2183,10 @@ that for migrations. If you need to use a different `DataSource`, you can create
 mark its `@Bean` as `@LiquibaseDataSource`. If you do so and you want two data sources,
 remember to create another one and mark it as `@Primary`. Alternatively, you can use
 Liquibase's native `DataSource` by setting `spring.liquibase.[url,user,password]` in
-external properties.
+external properties. Setting either `spring.liquibase.url` or `spring.liquibase.user`
+is sufficient to cause Liquibase to use its own `DataSource`. If any of the three
+properties has not be set, the value of its equivalent `spring.datasource` property will
+be used.
 
 See
 {sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[`LiquibaseProperties`]
@@ -2478,7 +2510,7 @@ shown in the following example:
 	</build>
 ----
 
-TIP: See the {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin documentation]
+TIP: See the {spring-boot-maven-plugin-site}[Spring Boot Maven Plugin documentation]
 for more details.
 
 The following example does the same with Gradle:
@@ -2734,7 +2766,7 @@ for the library, as follows:
 [[howto-remote-debug-maven-run]]
 === Remote Debug a Spring Boot Application Started with Maven
 To attach a remote debugger to a Spring Boot application that was started with Maven, you
-can use the `jvmArguments` property of the {spring-boot-maven-plugin-site}/[maven plugin].
+can use the `jvmArguments` property of the {spring-boot-maven-plugin-site}[maven plugin].
 
 See {spring-boot-maven-plugin-site}/examples/run-debug.html[this example] for more
 details.
@@ -3048,7 +3080,7 @@ A typical initializer for WebLogic should resemble the following example:
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
-	import org.springframework.boot.context.web.SpringBootServletInitializer;
+	import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 	import org.springframework.web.WebApplicationInitializer;
 
 	@SpringBootApplication

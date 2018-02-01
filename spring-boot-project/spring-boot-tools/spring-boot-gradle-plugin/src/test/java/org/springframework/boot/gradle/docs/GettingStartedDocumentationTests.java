@@ -31,12 +31,8 @@ public class GettingStartedDocumentationTests {
 	@Rule
 	public GradleBuild gradleBuild = new GradleBuild();
 
-	@Test
-	public void applyPluginSnapshotExampleEvaluatesSuccessfully() {
-		this.gradleBuild
-				.script("src/main/gradle/getting-started/apply-plugin-snapshot.gradle")
-				.build();
-	}
+	// NOTE: We can't run any `apply-plugin` tests because during a release the
+	// jar won't be there
 
 	@Test
 	public void typicalPluginsAppliesExceptedPlugins() {

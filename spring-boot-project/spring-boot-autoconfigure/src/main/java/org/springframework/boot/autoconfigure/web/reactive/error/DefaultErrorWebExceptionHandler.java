@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +28,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -78,7 +79,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 			.getLog(DefaultErrorWebExceptionHandler.class);
 
 	static {
-		Map<HttpStatus.Series, String> views = new HashMap<>();
+		Map<HttpStatus.Series, String> views = new EnumMap<>(HttpStatus.Series.class);
 		views.put(HttpStatus.Series.CLIENT_ERROR, "4xx");
 		views.put(HttpStatus.Series.SERVER_ERROR, "5xx");
 		SERIES_VIEWS = Collections.unmodifiableMap(views);

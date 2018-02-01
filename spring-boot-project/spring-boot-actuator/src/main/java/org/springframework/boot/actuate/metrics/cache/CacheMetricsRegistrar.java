@@ -16,20 +16,16 @@
 
 package org.springframework.boot.actuate.metrics.cache;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.cache.Cache;
-import org.springframework.core.ResolvableType;
 
 /**
  * Register supported {@link Cache} to a {@link MeterRegistry}.
@@ -67,8 +63,7 @@ public class CacheMetricsRegistrar {
 	 * @return {@code true} if the {@code cache} is supported and was registered
 	 */
 	public boolean bindCacheToRegistry(Cache cache, Tag... tags) {
-		List<Tag> allTags = new ArrayList<>(Arrays.asList(tags));
-		MeterBinder meterBinder = getMeterBinder(cache, allTags);
+		MeterBinder meterBinder = getMeterBinder(cache, Tags.of(tags));
 		if (meterBinder != null) {
 			meterBinder.bindTo(this.registry);
 			return true;
@@ -76,42 +71,15 @@ public class CacheMetricsRegistrar {
 		return false;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private MeterBinder getMeterBinder(Cache cache, List<Tag> tags) {
-		tags.addAll(getAdditionalTags(cache));
-		for (CacheMeterBinderProvider<?> binderProvider : this.binderProviders) {
-			Class<?> cacheType = ResolvableType
-					.forClass(CacheMeterBinderProvider.class, binderProvider.getClass())
-					.resolveGeneric();
-			if (cacheType.isInstance(cache)) {
-				try {
-					MeterBinder meterBinder = ((CacheMeterBinderProvider) binderProvider)
-							.getMeterBinder(cache, this.metricName, tags);
-					if (meterBinder != null) {
-						return meterBinder;
-					}
-				}
-				catch (ClassCastException ex) {
-					String msg = ex.getMessage();
-					if (msg == null || msg.startsWith(cache.getClass().getName())) {
-						// Possibly a lambda-defined listener which we could not resolve
-						// the generic event type for
-						Log logger = LogFactory.getLog(getClass());
-						if (logger.isDebugEnabled()) {
-							logger.debug(
-									"Non-matching event type for CacheMeterBinderProvider: "
-											+ binderProvider,
-									ex);
-						}
-					}
-					else {
-						throw ex;
-					}
-				}
-			}
-
-		}
-		return null;
+	@SuppressWarnings({ "unchecked" })
+	private MeterBinder getMeterBinder(Cache cache, Tags tags) {
+		Tags cacheTags = tags.and(getAdditionalTags(cache));
+		return LambdaSafe
+				.callbacks(CacheMeterBinderProvider.class, this.binderProviders, cache)
+				.withLogger(CacheMetricsRegistrar.class)
+				.invokeAnd((binderProvider) -> binderProvider.getMeterBinder(cache,
+						this.metricName, cacheTags))
+				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	/**
@@ -119,8 +87,8 @@ public class CacheMetricsRegistrar {
 	 * @param cache the cache
 	 * @return a list of additional tags to associate to that {@code cache}.
 	 */
-	protected List<Tag> getAdditionalTags(Cache cache) {
-		return Tags.zip("name", cache.getName());
+	protected Iterable<Tag> getAdditionalTags(Cache cache) {
+		return Tags.of("name", cache.getName());
 	}
 
 }

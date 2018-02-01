@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import java.util.TreeSet;
  */
 class ServiceCapabilitiesReportGenerator {
 
-	private static final String NEW_LINE = System.getProperty("line.separator");
+	private static final String NEW_LINE = System.lineSeparator();
 
 	private final InitializrService initializrService;
 
@@ -93,7 +93,7 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	private List<Dependency> getSortedDependencies(InitializrServiceMetadata metadata) {
-		ArrayList<Dependency> dependencies = new ArrayList<>(metadata.getDependencies());
+		List<Dependency> dependencies = new ArrayList<>(metadata.getDependencies());
 		dependencies.sort(Comparator.comparing(Dependency::getId));
 		return dependencies;
 	}

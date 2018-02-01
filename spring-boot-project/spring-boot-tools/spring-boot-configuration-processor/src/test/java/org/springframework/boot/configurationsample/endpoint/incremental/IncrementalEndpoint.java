@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.configurationsample.endpoint.incremental;
 
 import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.ReadOperation;
+import org.springframework.lang.Nullable;
 
 /**
  * An endpoint that is enabled by default.
@@ -25,5 +27,10 @@ import org.springframework.boot.configurationsample.Endpoint;
  */
 @Endpoint(id = "incremental")
 public class IncrementalEndpoint {
+
+	@ReadOperation
+	public String invoke(@Nullable String param) {
+		return "test";
+	}
 
 }

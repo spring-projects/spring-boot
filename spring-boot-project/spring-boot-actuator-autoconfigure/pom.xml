@@ -29,11 +29,6 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.micrometer</groupId>
-			<artifactId>micrometer-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
@@ -85,6 +80,11 @@
 		<dependency>
 			<groupId>io.lettuce</groupId>
 			<artifactId>lettuce-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -326,6 +326,12 @@
 			<artifactId>spring-session-core</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- Runtime -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<!-- Annotation processing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -432,6 +438,11 @@
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-webtestclient</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

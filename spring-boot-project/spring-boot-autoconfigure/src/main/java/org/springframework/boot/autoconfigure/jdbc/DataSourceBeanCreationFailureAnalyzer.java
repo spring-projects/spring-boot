@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ class DataSourceBeanCreationFailureAnalyzer
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			DataSourceBeanCreationException cause) {
 		String message = cause.getMessage();
-		String description = message.substring(0, message.indexOf(".")).trim();
-		String action = message.substring(message.indexOf(".") + 1).trim();
+		String description = message.substring(0, message.indexOf('.')).trim();
+		String action = message.substring(message.indexOf('.') + 1).trim();
 		return new FailureAnalysis(description, action, cause);
 	}
 

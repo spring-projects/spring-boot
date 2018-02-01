@@ -235,8 +235,10 @@ except for the registration of listeners and initializers.
 the context is known but before the context is created.
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean
 definitions have been loaded.
-. An `ApplicationReadyEvent` is sent after the refresh and any related callbacks have
-been processed, to indicate that the application is ready to service requests.
+. An `ApplicationStartedEvent` is sent after the context has been refreshed but before any
+application and command-line runners have been called.
+. An `ApplicationReadyEvent` is sent after any application and command-line runners have
+been called. It indicates that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
 TIP: You often need not use application events, but it can be handy to know that they
@@ -1780,7 +1782,7 @@ _<<getting-started.adoc#getting-started-first-application, Getting started>>_ se
 === The "`Spring Web MVC Framework`"
 The {spring-reference}web.html#mvc[Spring Web MVC framework] (often referred to as simply
 "`Spring MVC`") is a rich "`model view controller`" web framework. Spring MVC lets you
-create special `@Controller`or `@RestController` beans to handle incoming HTTP requests.
+create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
 
 The following code shows a typical `@RestController` that serves JSON data:
@@ -2050,6 +2052,52 @@ Spring Boot looks for a `favicon.ico` in the configured static content locations
 root of the classpath (in that order). If such a file is present, it is automatically
 used as the favicon of the application.
 
+
+[[boot-features-spring-mvc-pathmatch]]
+==== Path Matching and Content Negotiation
+Spring MVC can map incoming HTTP requests to handlers by looking at the request path and
+matching it to the mappings defined in your application (for example, `@GetMapping`
+annotations on Controller methods).
+
+Spring Boot chooses to disable suffix pattern matching by default, which means that
+requests like `"GET /projects/spring-boot.json"` won't be matched to
+`@GetMapping("/projects/spring-boot")` mappings.
+This is considered as a
+{spring-reference}web.html#mvc-ann-requestmapping-suffix-pattern-match[best practice
+for Spring MVC applications]. This feature was mainly useful in the past for HTTP
+clients which did not send proper "Accept" request headers; we needed to make sure
+to send the correct Content Type to the client. Nowadays, Content Negotiation
+is much more reliable.
+
+There are other ways to deal with HTTP clients that don't consistently send proper
+"Accept" request headers. Instead of using suffix matching, we can use a query
+parameter to ensure that requests like `"GET /projects/spring-boot?format=json"`
+will be mapped to `@GetMapping("/projects/spring-boot")`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.content-negotiation.favor-parameter=true
+
+	# We can change the parameter name, which is "format" by default:
+	# spring.mvc.content-negotiation.parameter-name=myparam
+
+	# We can also register additional file extensions/media types with:
+	spring.mvc.content-negotiation.media-types.markdown=text/markdown
+----
+
+If you understand the caveats and would still like your application to use
+suffix pattern matching, the following configuration is required:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.mvc.content-negotiation.favor-path-extension=true
+
+	# You can also restrict that feature to known extensions only
+	# spring.mvc.path-match.use-registered-suffix-pattern=true
+
+	# We can also register additional file extensions/media types with:
+	# spring.mvc.content-negotiation.media-types.adoc=text/asciidoc
+----
 
 
 [[boot-features-spring-mvc-web-binding-initializer]]
@@ -2343,7 +2391,7 @@ following example:
 		}
 
 		@GetMapping("/{user}/customers")
-		Flux<Customer> getUserCustomers(@PathVariable Long user) {
+		public Flux<Customer> getUserCustomers(@PathVariable Long user) {
 			// ...
 		}
 
@@ -2389,8 +2437,11 @@ actual handling of the requests, as shown in the following example:
 	}
 ----
 
-WebFlux is part of the Spring Framework. and detailed information is available in its
-{spring-reference}web.html#web-reactive[reference documentation].
+WebFlux is part of the Spring Framework and detailed information is available in its
+{spring-reference}web-reactive.html#webflux-fn[reference documentation].
+
+TIP: You can define as many `RouterFunction` beans as you like to modularize the
+definition of the router. Beans can be ordered if you need to apply a precedence.
 
 To get started, add the `spring-boot-starter-webflux` module to your application.
 
@@ -2590,6 +2641,32 @@ follows:
 
 
 
+[[boot-features-webflux-web-filters]]
+==== Web Filters
+Spring WebFlux provides a `WebFilter` interface that can be implemented to filter HTTP
+request-response exchanges. `WebFilter` beans found in the application context will
+be automatically used to filter each exchange.
+
+Where the order of the filters is important they can implemented `Ordered` or be annotated
+with `@Order`. Spring Boot auto-configuration may configure web filters for you. When it
+does so, the orders shown in the following table will be used:
+
+|===
+| Web Filter | Order
+
+|`MetricsWebFilter`
+|`Ordered.HIGHEST_PRECEDENCE + 1`
+
+|`WebFilterChainProxy` (Spring Security)
+|`-100`
+
+|`HttpTraceWebFilter`
+|`Ordered.LOWEST_PRECEDENCE - 10`
+
+|===
+
+
+
 [[boot-features-jersey]]
 === JAX-RS and Jersey
 If you prefer the JAX-RS programming model for REST endpoints, you can use one of the
@@ -2704,6 +2781,34 @@ If convention-based mapping is not flexible enough, you can use the
 `ServletRegistrationBean`, `FilterRegistrationBean`, and
 `ServletListenerRegistrationBean` classes for complete control.
 
+Spring Boot ships with many auto-configurations that may define Filter beans. Here are a
+few examples of Filters and their respective order (lower order value means higher
+precedence):
+
+|===
+| Servlet Filter | Order
+
+|`OrderedCharacterEncodingFilter`
+|`Ordered.HIGHEST_PRECEDENCE`
+
+|`WebMvcMetricsFilter`
+|`Ordered.HIGHEST_PRECEDENCE + 1`
+
+|`ErrorPageFilter`
+|`Ordered.HIGHEST_PRECEDENCE + 1`
+
+|`HttpTraceFilter`
+|`Ordered.LOWEST_PRECEDENCE - 10`
+|===
+
+It is usually safe to leave Filter beans unordered.
+
+If a specific order is required, you should avoid configuring a Filter that reads the
+request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character
+encoding configuration of your application. If a Servlet filter wraps the request, it
+should be configured with an order that is less than or equal to
+`FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
+
 
 
 [[boot-features-embedded-container-context-initializer]]
@@ -2758,10 +2863,10 @@ Common server settings include:
 
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface
 address to bind to `server.address`, and so on.
-* Session settings: Whether the session is persistent (`server.session.persistence`),
-session timeout (`server.session.timeout`), location of session data
-(`server.session.store-dir`), and session-cookie configuration
-(`server.session.cookie.*`).
+* Session settings: Whether the session is persistent (`server.servlet.session.persistence`),
+session timeout (`server.servlet.session.timeout`), location of session data
+(`server.servlet.session.store-dir`), and session-cookie configuration
+(`server.servlet.session.cookie.*`).
 * Error management: Location of the error page (`server.error.path`) and so on.
 * <<howto.adoc#howto-configure-ssl,SSL>>
 * <<howto.adoc#how-to-enable-http-response-compression,HTTP compression>>
@@ -2879,6 +2984,21 @@ messages. Otherwise, the default password is not printed.
 You can change the username and password by providing a `spring.security.user.name` and
 `spring.security.user.password`.
 
+The basic features you get by default in a web application are:
+
+* A `UserDetailsService` (or `ReactiveUserDetailsService` in case of a WebFlux application)
+bean with in-memory store and a single user with a generated password (see
+{dc-spring-boot}/autoconfigure/security/SecurityProperties.User.html[`SecurityProperties.User`]
+for the properties of the user).
+* Form-based login or HTTP Basic security (depending on Content-Type) for the entire
+application (including actuator endpoints if actuator is on the classpath).
+* A `DefaultAuthenticationEventPublisher` for publishing authentication events.
+
+You can provide a different `AuthenticationEventPublisher` by adding a bean for it.
+
+
+[[boot-features-security-mvc]]
+=== MVC Security
 The default security configuration is implemented in `SecurityAutoConfiguration` and in
 the classes imported from there (`SpringBootWebSecurityConfiguration` for web security
 and `AuthenticationManagerConfiguration` for authentication configuration, which is also
@@ -2891,30 +3011,43 @@ To also switch off the authentication manager configuration, you can add a bean 
 There are several secure applications in the {github-code}/spring-boot-samples/[Spring
 Boot samples] to get you started with common use cases.
 
-The basic features you get by default in a web application are:
-
-* A `UserDetailsService` bean with in-memory store and a single user with a generated
-password (see
-{dc-spring-boot}/autoconfigure/security/SecurityProperties.User.html[`SecurityProperties.User`]
-for the properties of the user).
-* Form-based login or HTTP Basic security (depending on Content-Type) for the entire
-application (including actuator endpoints if actuator is on the classpath).
-
 Access rules can be overridden by adding a custom `WebSecurityConfigurerAdapter`. Spring
 Boot provides convenience methods that can be used to override access rules for actuator
 endpoints and static resources. `EndpointRequest` can be used to create a `RequestMatcher`
 that is based on the `management.endpoints.web.base-path` property.
-`StaticResourceRequest` can be used to create a `RequestMatcher` for static resources in
+`PathRequest` can be used to create a `RequestMatcher` for resources in
 commonly used locations.
 
 
 
+[[boot-features-security-webflux]]
+=== WebFlux Security
+The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and in
+the classes imported from there (`WebFluxSecurityConfiguration` for web security
+and `ReactiveAuthenticationManagerConfiguration` for authentication configuration, which is also
+relevant in non-web applications). To switch off the default web application security
+configuration completely, you can add a bean of type `WebFilterChainProxy` (doing
+so does not disable the authentication manager configuration or Actuator's security).
+
+To also switch off the authentication manager configuration, you can add a bean of type
+`ReactiveUserDetailsService` or `ReactiveAuthenticationManager`.
+
+Access rules can be configured by adding a custom `SecurityWebFilterChain`. Spring
+Boot provides convenience methods that can be used to override access rules for actuator
+endpoints and static resources. `EndpointRequest` can be used to create a `ServerWebExchangeMatcher`
+that is based on the `management.endpoints.web.base-path` property.
+
+`PathRequest` can be used to create a `ServerWebExchangeMatcher` for resources in
+commonly used locations.
+
+
 [[boot-features-security-oauth2]]
 === OAuth2
-
 https://oauth.net/2/[OAuth2] is a widely used authorization framework that is supported by
 Spring.
 
+
+[[boot-features-security-oauth2-client]]
 ==== Client
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of
 some auto-configuration to make it easy to set up an OAuth2 Client. This configuration
@@ -3655,11 +3788,14 @@ should be used to provide all of the configuration.
 TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used. You
 could delete this line from the example shown earlier.
 
-TIP: If you do not use Spring Data Mongo, you can inject `com.mongodb.Mongo` beans
+TIP: If you do not use Spring Data Mongo, you can inject `com.mongodb.MongoClient` beans
 instead of using `MongoDbFactory`. If you want to take complete control of establishing
-the MongoDB connection, you can also declare your own `MongoDbFactory` or `Mongo` bean.
+the MongoDB connection, you can also declare your own `MongoDbFactory` or `MongoClient`
+bean.
 
-
+NOTE: If you are using the reactive driver, Netty is required for SSL. The
+auto-configuration configures this factory automatically if Netty is available and the
+factory to use hasn't been customized already.
 
 [[boot-features-mongo-template]]
 ==== MongoTemplate
@@ -4615,6 +4751,10 @@ key, Redis does not have overlapping keys and cannot return invalid values. We s
 recommend keeping this setting enabled if you create your own `RedisCacheManager`.
 ====
 
+TIP: You can take full control of the configuration by adding a `RedisCacheConfiguration`
+`@Bean` of your own. This can be useful if you're looking for customizing the
+serialization strategy.
+
 
 
 [[boot-features-caching-provider-caffeine]]
@@ -5176,13 +5316,32 @@ properties that are not directly supported, use the following properties:
 [source,properties,indent=0]
 ----
 	spring.kafka.properties.prop.one=first
-	spring.kafka.consumer.properties.prop.two=second
-	spring,kafka.producer.properties.prop.three=third
+	spring.kafka.admin.properties.prop.two=second
+	spring.kafka.consumer.properties.prop.three=third
+	spring,kafka.producer.properties.prop.four=fourth
 ----
 
-This sets the common `prop.one` Kafka property to `first` (applies to both producers and
-consumers), the consumer `prop.two` property to `second` and the `prop.three` producer
-property to `third`.
+This sets the common `prop.one` Kafka property to `first` (applies to producers,
+consumers and admins), the `prop.two` admin property to `second`, the `prop.three`
+consumer property to `third` and the `prop.four` producer property to `fourth`.
+
+You can also configure the Spring Kafka `JsonDeserializer` as follows:
+
+[source,properties,indent=0]
+----
+spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
+spring.kafka.consumer.properties.spring.json.value.default.type=org.foo.Invoice
+spring.kafka.consumer.properties.spring.json.trusted.packages=org.foo,org.bar
+----
+
+Similarly, you can disable the `JsonSerializer` default behavior of sending type
+information in headers:
+
+[source,properties,indent=0]
+----
+spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
+spring.kafka.producer.properties.spring.json.add.type.headers=false
+----
 
 IMPORTANT: Properties set in this way override any configuration item that Spring Boot
 explicitly supports.
@@ -5884,9 +6043,16 @@ running server, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/web/RandomPortExampleTests.java[tag=test-random-port]
+include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[tag=test-random-port]
 ----
 
+If you prefer to use a {spring-reference}testing.html#webtestclient[`WebTestClient`], you
+can use that as well:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/web/RandomPortWebTestClientExampleTests.java[tag=test-random-port]
+----
 
 
 [[boot-features-testing-spring-boot-applications-mocking-beans]]
@@ -6171,8 +6337,10 @@ additional configuration classes using `@Import` on your test.
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the
 `@MockBean` annotation to provide mock implementations for required collaborators.
 
-`@WebFluxTest` also auto-configures `WebTestClient`, which offers a powerful way to
-quickly test WebFlux controllers without needing to start a full HTTP server.
+`@WebFluxTest` also auto-configures
+{spring-reference}testing.html#webtestclient[`WebTestClient`], which offers
+a powerful way to quickly test WebFlux controllers without needing to start a full HTTP
+server.
 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as
 `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`. The following

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,12 +88,12 @@ class CloudFoundrySecurityInterceptor {
 		return SecurityResponse.success();
 	}
 
-	private void check(HttpServletRequest request, String path) throws Exception {
+	private void check(HttpServletRequest request, String endpointId) throws Exception {
 		Token token = getToken(request);
 		this.tokenValidator.validate(token);
 		AccessLevel accessLevel = this.cloudFoundrySecurityService
 				.getAccessLevel(token.toString(), this.applicationId);
-		if (!accessLevel.isAccessAllowed(path)) {
+		if (!accessLevel.isAccessAllowed(endpointId)) {
 			throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
 					"Access denied");
 		}

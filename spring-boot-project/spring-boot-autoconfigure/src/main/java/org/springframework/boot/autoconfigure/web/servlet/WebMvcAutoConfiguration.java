@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,6 +101,7 @@ import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -215,8 +216,24 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
+		public void configurePathMatch(PathMatchConfigurer configurer) {
+			configurer.setUseSuffixPatternMatch(
+					this.mvcProperties.getPathMatch().isUseSuffixPattern());
+			configurer.setUseRegisteredSuffixPatternMatch(
+					this.mvcProperties.getPathMatch().isUseRegisteredSuffixPattern());
+		}
+
+		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-			Map<String, MediaType> mediaTypes = this.mvcProperties.getMediaTypes();
+			WebMvcProperties.ContentNegotiation contentNegotiation = this.mvcProperties
+					.getContentNegotiation();
+			configurer.favorPathExtension(contentNegotiation.isFavorPathExtension());
+			configurer.favorParameter(contentNegotiation.isFavorParameter());
+			if (contentNegotiation.getParameterName() != null) {
+				configurer.parameterName(contentNegotiation.getParameterName());
+			}
+			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentNegotiation()
+					.getMediaTypes();
 			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
 				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
 			}
@@ -450,8 +467,8 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
 			RequestMappingHandlerAdapter adapter = super.requestMappingHandlerAdapter();
-			adapter.setIgnoreDefaultModelOnRedirect(this.mvcProperties == null ? true
-					: this.mvcProperties.isIgnoreDefaultModelOnRedirect());
+			adapter.setIgnoreDefaultModelOnRedirect(this.mvcProperties == null
+					|| this.mvcProperties.isIgnoreDefaultModelOnRedirect());
 			return adapter;
 		}
 

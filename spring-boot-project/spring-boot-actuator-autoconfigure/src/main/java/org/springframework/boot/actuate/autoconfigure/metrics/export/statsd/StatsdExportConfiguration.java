@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,15 +47,9 @@ public class StatsdExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.statsd.enabled", matchIfMissing = true)
-	public MetricsExporter statsdExporter(StatsdConfig statsdConfig,
+	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig,
 			HierarchicalNameMapper hierarchicalNameMapper, Clock clock) {
-		return () -> new StatsdMeterRegistry(statsdConfig, hierarchicalNameMapper, clock);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
+		return new StatsdMeterRegistry(statsdConfig, hierarchicalNameMapper, clock);
 	}
 
 	@Bean

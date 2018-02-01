@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,7 +176,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			Object instance = expression.getInstance();
 			if (instance != null && instance.toString().startsWith(DURATION_OF)) {
 				String type = instance.toString();
-				type = type.substring(DURATION_OF.length(), type.indexOf("("));
+				type = type.substring(DURATION_OF.length(), type.indexOf('('));
 				String suffix = DURATION_SUFFIX.get(type);
 				return (suffix == null ? null : factoryValue + suffix);
 			}

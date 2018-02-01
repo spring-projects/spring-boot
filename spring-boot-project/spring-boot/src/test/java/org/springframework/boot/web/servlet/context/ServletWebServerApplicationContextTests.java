@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -371,8 +371,8 @@ public class ServletWebServerApplicationContextTests {
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
 		verify(initializer).onStartup(servletContext);
-		verify(servletContext).addServlet(anyString(), (Servlet) any());
-		verify(servletContext).addFilter(anyString(), (Filter) any());
+		verify(servletContext).addServlet(anyString(), any(Servlet.class));
+		verify(servletContext).addFilter(anyString(), any(Filter.class));
 	}
 
 	@Test
@@ -388,8 +388,8 @@ public class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
-		verify(servletContext, atMost(1)).addServlet(anyString(), (Servlet) any());
-		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) any());
+		verify(servletContext, atMost(1)).addServlet(anyString(), any(Servlet.class));
+		verify(servletContext, atMost(1)).addFilter(anyString(), any(Filter.class));
 	}
 
 	@Test
@@ -402,7 +402,7 @@ public class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		this.context.refresh();
 		ServletContext servletContext = getWebServerFactory().getServletContext();
-		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) any());
+		verify(servletContext, atMost(1)).addFilter(anyString(), any(Filter.class));
 	}
 
 	@Test

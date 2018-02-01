@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -40,22 +39,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(RegistryConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.with(MetricsRun.simple());
 
 	@Test
 	public void autoConfiguredDataSourceIsInstrumented() {
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.use-global-registry=false")
+				.withPropertyValues("spring.datasource.generate-unique-name=true")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isPresent();
+					registry.get("data.source.max.connections").tags("name", "dataSource")
+							.meter();
 				});
 	}
 
@@ -65,13 +62,12 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.datasource-metric-name=custom.name",
-						"management.metrics.use-global-registry=false")
+						"management.metrics.jdbc.metric-name=custom.name")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("custom.name.max.connections")
-							.tags("name", "dataSource").meter()).isPresent();
+					registry.get("custom.name.max.connections").tags("name", "dataSource")
+							.meter();
 				});
 	}
 
@@ -81,13 +77,12 @@ public class MetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.instrument-datasource=false",
-						"management.metrics.use-global-registry=false")
+						"management.metrics.jdbc.instrument=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isNotPresent();
+							.tags("name", "dataSource").meter()).isNull();
 				});
 	}
 
@@ -96,28 +91,17 @@ public class MetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TwoDataSourcesConfiguration.class)
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("metrics.use-global-registry=false")
 				.run((context) -> {
 					context.getBean("firstDataSource", DataSource.class).getConnection()
 							.getMetaData();
 					context.getBean("secondOne", DataSource.class).getConnection()
 							.getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "first").meter()).isPresent();
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "secondOne").meter()).isPresent();
+					registry.get("data.source.max.connections").tags("name", "first")
+							.meter();
+					registry.get("data.source.max.connections").tags("name", "secondOne")
+							.meter();
 				});
-	}
-
-	@Configuration
-	static class RegistryConfiguration {
-
-		@Bean
-		public MeterRegistry meterRegistry() {
-			return new SimpleMeterRegistry();
-		}
-
 	}
 
 	@Configuration

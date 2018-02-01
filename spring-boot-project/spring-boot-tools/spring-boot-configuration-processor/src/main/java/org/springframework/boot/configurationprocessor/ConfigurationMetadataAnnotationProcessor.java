@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic.Kind;
 
@@ -83,6 +84,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String ENDPOINT_ANNOTATION = "org.springframework.boot.actuate."
 			+ "endpoint.annotation.Endpoint";
 
+	static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.actuate."
+			+ "endpoint.annotation.ReadOperation";
+
+	static final String NULLABLE_ANNOTATION = "org.springframework.lang.Nullable";
+
 	static final String LOMBOK_DATA_ANNOTATION = "lombok.Data";
 
 	static final String LOMBOK_GETTER_ANNOTATION = "lombok.Getter";
@@ -116,6 +122,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected String endpointAnnotation() {
 		return ENDPOINT_ANNOTATION;
+	}
+
+	protected String readOperationAnnotation() {
+		return READ_OPERATION_ANNOTATION;
 	}
 
 	@Override
@@ -425,9 +435,32 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				Boolean.class.getName(), type, null,
 				String.format("Whether to enable the %s endpoint.", endpointId),
 				(enabledByDefault == null ? true : enabledByDefault), null));
-		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,
-				"cache.time-to-live", Duration.class.getName(), type, null,
-				"Maximum time that a response can be cached.", 0, null));
+		if (hasMainReadOperation(element)) {
+			this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,
+					"cache.time-to-live", Duration.class.getName(), type, null,
+					"Maximum time that a response can be cached.", 0, null));
+		}
+	}
+
+	private boolean hasMainReadOperation(TypeElement element) {
+		for (ExecutableElement method : ElementFilter
+				.methodsIn(element.getEnclosedElements())) {
+			if (hasAnnotation(method, readOperationAnnotation())
+					&& (TypeKind.VOID != method.getReturnType().getKind())
+					&& hasNoOrOptionalParameters(method)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean hasNoOrOptionalParameters(ExecutableElement method) {
+		for (VariableElement parameter : method.getParameters()) {
+			if (!hasAnnotation(parameter, NULLABLE_ANNOTATION)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private boolean isNested(Element returnType, VariableElement field,

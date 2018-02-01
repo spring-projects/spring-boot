@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -537,7 +537,7 @@ public class RabbitProperties {
 
 	}
 
-	public static abstract class AmqpContainer {
+	public abstract static class AmqpContainer {
 
 		/**
 		 * Whether to start the container automatically on startup.
@@ -891,7 +891,7 @@ public class RabbitProperties {
 		}
 
 		private String parseVirtualHost(String input) {
-			int hostIndex = input.indexOf("/");
+			int hostIndex = input.indexOf('/');
 			if (hostIndex >= 0) {
 				this.virtualHost = input.substring(hostIndex + 1);
 				if (this.virtualHost.isEmpty()) {

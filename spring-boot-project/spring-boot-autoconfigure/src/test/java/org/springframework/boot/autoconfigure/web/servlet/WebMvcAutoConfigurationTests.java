@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -470,7 +471,10 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customMediaTypes() {
-		this.contextRunner.withPropertyValues("spring.mvc.mediaTypes.yaml:text/yaml")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.mvc.content-negotiation.media-types.yaml:text/yaml",
+						"spring.mvc.content-negotiation.favor-path-extension:true")
 				.run((context) -> {
 					RequestMappingHandlerAdapter adapter = context
 							.getBean(RequestMappingHandlerAdapter.class);
@@ -736,6 +740,73 @@ public class WebMvcAutoConfigurationTests {
 				.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
 						"spring.resources.cache.cachecontrol.proxy-revalidate:true")
 				.run((context) -> assertCacheControl(context));
+	}
+
+	@Test
+	public void defaultPathMatching() {
+		this.contextRunner.run((context) -> {
+			RequestMappingHandlerMapping handlerMapping = context
+					.getBean(RequestMappingHandlerMapping.class);
+			assertThat(handlerMapping.useSuffixPatternMatch()).isFalse();
+			assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isFalse();
+		});
+	}
+
+	@Test
+	public void useSuffixPatternMatch() {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.path-match.use-suffix-pattern:true",
+						"spring.mvc.path-match.use-registered-suffix-pattern:true")
+				.run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					assertThat(handlerMapping.useSuffixPatternMatch()).isTrue();
+					assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isTrue();
+				});
+	}
+
+	@Test
+	public void defaultContentNegotiation() {
+		this.contextRunner.run((context) -> {
+			RequestMappingHandlerMapping handlerMapping = context
+					.getBean(RequestMappingHandlerMapping.class);
+			ContentNegotiationManager contentNegotiationManager = handlerMapping
+					.getContentNegotiationManager();
+			assertThat(contentNegotiationManager.getStrategies())
+					.doesNotHaveAnyElementsOfTypes(
+							WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class);
+		});
+	}
+
+	@Test
+	public void pathExtensionContentNegotiation() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.mvc.content-negotiation.favor-path-extension:true")
+				.run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					ContentNegotiationManager contentNegotiationManager = handlerMapping
+							.getContentNegotiationManager();
+					assertThat(contentNegotiationManager.getStrategies())
+							.hasAtLeastOneElementOfType(
+									WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class);
+				});
+	}
+
+	@Test
+	public void queryParameterContentNegotiation() {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.content-negotiation.favor-parameter:true")
+				.run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					ContentNegotiationManager contentNegotiationManager = handlerMapping
+							.getContentNegotiationManager();
+					assertThat(contentNegotiationManager.getStrategies())
+							.hasAtLeastOneElementOfType(
+									ParameterContentNegotiationStrategy.class);
+				});
 	}
 
 	private void assertCacheControl(AssertableWebApplicationContext context) {

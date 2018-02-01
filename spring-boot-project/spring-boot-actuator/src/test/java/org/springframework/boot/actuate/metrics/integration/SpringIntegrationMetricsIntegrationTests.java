@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,13 +56,10 @@ public class SpringIntegrationMetricsIntegrationTests {
 	@Test
 	public void springIntegrationMetrics() {
 		this.converter.fahrenheitToCelsius(68.0);
-		assertThat(this.registry.find("spring.integration.channel.sends")
-				.tags("channel", "convert.input").value(Statistic.Count, 1).meter())
-						.isPresent();
-		assertThat(this.registry.find("spring.integration.handler.duration.min").meter())
-				.isPresent();
-		assertThat(this.registry.find("spring.integration.sourceNames").meter())
-				.isPresent();
+		assertThat(this.registry.get("spring.integration.channel.sends")
+				.tags("channel", "convert.input").functionCounter().count()).isEqualTo(1);
+		this.registry.get("spring.integration.handler.duration.min").gauge();
+		this.registry.get("spring.integration.sourceNames").meter();
 	}
 
 	@Configuration
@@ -100,7 +96,7 @@ public class SpringIntegrationMetricsIntegrationTests {
 							(e) -> e.id("toJson"))
 					.handle(String.class, this::fahrenheitToCelsius,
 							(e) -> e.id("temperatureConverter"))
-					.transform(this::extractResult, e -> e.id("toResponse"));
+					.transform(this::extractResult, (e) -> e.id("toResponse"));
 		}
 
 		private double extractResult(String json) {

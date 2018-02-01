@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,7 +243,7 @@ class BeanDefinitionLoader {
 			// a file list of the package content. We double check here that it's not
 			// actually a package.
 			String path = ((ClassPathResource) resource).getPath();
-			if (path.indexOf(".") == -1) {
+			if (path.indexOf('.') == -1) {
 				try {
 					return Package.getPackage(path) == null;
 				}

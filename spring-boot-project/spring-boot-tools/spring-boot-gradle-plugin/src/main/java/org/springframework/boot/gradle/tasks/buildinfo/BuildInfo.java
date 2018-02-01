@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.ConventionTask;
-import org.gradle.api.provider.PropertyState;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -46,7 +44,7 @@ public class BuildInfo extends ConventionTask {
 
 	private final BuildInfoProperties properties = new BuildInfoProperties(getProject());
 
-	private PropertyState<File> destinationDir = getProject().property(File.class);
+	private File destinationDir;
 
 	/**
 	 * Generates the {@code build-info.properties} file in the configured
@@ -78,7 +76,7 @@ public class BuildInfo extends ConventionTask {
 	 */
 	@OutputDirectory
 	public File getDestinationDir() {
-		return this.destinationDir.isPresent() ? this.destinationDir.get()
+		return this.destinationDir != null ? this.destinationDir
 				: getProject().getBuildDir();
 	}
 
@@ -87,16 +85,7 @@ public class BuildInfo extends ConventionTask {
 	 * @param destinationDir the destination directory
 	 */
 	public void setDestinationDir(File destinationDir) {
-		this.destinationDir.set(destinationDir);
-	}
-
-	/**
-	 * Sets the directory to which the {@code build-info.properties} file will be written
-	 * to the value from the given {@code destinationDirProvider}.
-	 * @param destinationDirProvider the provider of the destination directory
-	 */
-	public void setDestinationDir(Provider<File> destinationDirProvider) {
-		this.destinationDir.set(destinationDirProvider);
+		this.destinationDir = destinationDir;
 	}
 
 	/**

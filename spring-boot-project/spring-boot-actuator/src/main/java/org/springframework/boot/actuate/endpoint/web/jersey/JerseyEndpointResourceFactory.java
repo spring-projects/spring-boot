@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,16 +38,14 @@ import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.server.model.Resource.Builder;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -58,6 +56,7 @@ import org.springframework.util.StringUtils;
  * endpoint operations}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public class JerseyEndpointResourceFactory {
@@ -68,34 +67,34 @@ public class JerseyEndpointResourceFactory {
 	 * Creates {@link Resource Resources} for the operations of the given
 	 * {@code webEndpoints}.
 	 * @param endpointMapping the base mapping for all endpoints
-	 * @param webEndpoints the web endpoints
+	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @return the resources for the operations
 	 */
 	public Collection<Resource> createEndpointResources(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebOperation>> webEndpoints,
+			Collection<ExposableWebEndpoint> endpoints,
 			EndpointMediaTypes endpointMediaTypes) {
 		List<Resource> resources = new ArrayList<>();
-		webEndpoints.stream()
-				.flatMap((endpointInfo) -> endpointInfo.getOperations().stream())
+		endpoints.stream().flatMap((endpoint) -> endpoint.getOperations().stream())
 				.map((operation) -> createResource(endpointMapping, operation))
 				.forEach(resources::add);
 		if (StringUtils.hasText(endpointMapping.getPath())) {
-			resources.add(createEndpointLinksResource(endpointMapping.getPath(),
-					webEndpoints, endpointMediaTypes));
+			Resource resource = createEndpointLinksResource(endpointMapping.getPath(),
+					endpoints, endpointMediaTypes);
+			resources.add(resource);
 		}
 		return resources;
 	}
 
 	private Resource createResource(EndpointMapping endpointMapping,
 			WebOperation operation) {
-		OperationRequestPredicate requestPredicate = operation.getRequestPredicate();
+		WebOperationRequestPredicate requestPredicate = operation.getRequestPredicate();
 		Builder resourceBuilder = Resource.builder()
 				.path(endpointMapping.createSubPath(requestPredicate.getPath()));
 		resourceBuilder.addMethod(requestPredicate.getHttpMethod().name())
 				.consumes(toStringArray(requestPredicate.getConsumes()))
 				.produces(toStringArray(requestPredicate.getProduces()))
-				.handledBy(new EndpointInvokingInflector(operation.getInvoker(),
+				.handledBy(new OperationInflector(operation,
 						!requestPredicate.getConsumes().isEmpty()));
 		return resourceBuilder.build();
 	}
@@ -105,21 +104,21 @@ public class JerseyEndpointResourceFactory {
 	}
 
 	private Resource createEndpointLinksResource(String endpointPath,
-			Collection<EndpointInfo<WebOperation>> webEndpoints,
+			Collection<ExposableWebEndpoint> endpoints,
 			EndpointMediaTypes endpointMediaTypes) {
 		Builder resourceBuilder = Resource.builder().path(endpointPath);
 		resourceBuilder.addMethod("GET")
 				.produces(endpointMediaTypes.getProduced()
 						.toArray(new String[endpointMediaTypes.getProduced().size()]))
-				.handledBy(new EndpointLinksInflector(webEndpoints,
+				.handledBy(new EndpointLinksInflector(endpoints,
 						this.endpointLinksResolver));
 		return resourceBuilder.build();
 	}
 
 	/**
-	 * {@link Inflector} to invoke the endpoint.
+	 * {@link Inflector} to invoke the {@link WebOperation}.
 	 */
-	private static final class EndpointInvokingInflector
+	private static final class OperationInflector
 			implements Inflector<ContainerRequestContext, Object> {
 
 		private static final List<Function<Object, Object>> BODY_CONVERTERS;
@@ -128,19 +127,18 @@ public class JerseyEndpointResourceFactory {
 			List<Function<Object, Object>> converters = new ArrayList<>();
 			converters.add(new ResourceBodyConverter());
 			if (ClassUtils.isPresent("reactor.core.publisher.Mono",
-					EndpointInvokingInflector.class.getClassLoader())) {
+					OperationInflector.class.getClassLoader())) {
 				converters.add(new MonoBodyConverter());
 			}
 			BODY_CONVERTERS = Collections.unmodifiableList(converters);
 		}
 
-		private final OperationInvoker operationInvoker;
+		private final WebOperation operation;
 
 		private final boolean readBody;
 
-		private EndpointInvokingInflector(OperationInvoker operationInvoker,
-				boolean readBody) {
-			this.operationInvoker = operationInvoker;
+		private OperationInflector(WebOperation operation, boolean readBody) {
+			this.operation = operation;
 			this.readBody = readBody;
 		}
 
@@ -153,10 +151,10 @@ public class JerseyEndpointResourceFactory {
 			arguments.putAll(extractPathParameters(data));
 			arguments.putAll(extractQueryParameters(data));
 			try {
-				Object response = this.operationInvoker.invoke(arguments);
+				Object response = this.operation.invoke(arguments);
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}
-			catch (ParametersMissingException | ParameterMappingException ex) {
+			catch (InvalidEndpointRequestException ex) {
 				return Response.status(Status.BAD_REQUEST).build();
 			}
 		}
@@ -263,11 +261,11 @@ public class JerseyEndpointResourceFactory {
 	private static final class EndpointLinksInflector
 			implements Inflector<ContainerRequestContext, Response> {
 
-		private final Collection<EndpointInfo<WebOperation>> endpoints;
+		private final Collection<ExposableWebEndpoint> endpoints;
 
 		private final EndpointLinksResolver linksResolver;
 
-		private EndpointLinksInflector(Collection<EndpointInfo<WebOperation>> endpoints,
+		private EndpointLinksInflector(Collection<ExposableWebEndpoint> endpoints,
 				EndpointLinksResolver linksResolver) {
 			this.endpoints = endpoints;
 			this.linksResolver = linksResolver;

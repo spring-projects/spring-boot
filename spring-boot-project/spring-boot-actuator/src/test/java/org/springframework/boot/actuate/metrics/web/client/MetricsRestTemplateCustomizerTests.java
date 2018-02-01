@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.stream.StreamSupport;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
-import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -48,46 +47,57 @@ public class MetricsRestTemplateCustomizerTests {
 
 	private RestTemplate restTemplate;
 
+	private MockRestServiceServer mockServer;
+
+	private MetricsRestTemplateCustomizer customizer;
+
 	@Before
 	public void setup() {
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		this.restTemplate = new RestTemplate();
+		this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
+		this.customizer = new MetricsRestTemplateCustomizer(this.registry,
+				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests",
+				true);
+		this.customizer.customize(this.restTemplate);
 	}
 
 	@Test
 	public void interceptRestTemplate() {
-		MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
-				this.registry, new DefaultRestTemplateExchangeTagsProvider(),
-				"http.client.requests", true);
-		customizer.customize(this.restTemplate);
-		MockRestServiceServer mockServer = MockRestServiceServer
-				.createServer(this.restTemplate);
-		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
 						MediaType.APPLICATION_JSON));
 		String result = this.restTemplate.getForObject("/test/{id}", String.class, 123);
-		MockClock.clock(this.registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.client.requests")
 				.meters()).anySatisfy((m) -> assertThat(
 						StreamSupport.stream(m.getId().getTags().spliterator(), false)
 								.map(Tag::getKey)).doesNotContain("bucket"));
-		assertThat(this.registry.find("http.client.requests")
-				.tags("method", "GET", "uri", "/test/{id}", "status", "200")
-				.value(Statistic.Count, 1.0).timer()).isPresent();
+		assertThat(this.registry.get("http.client.requests")
+				.tags("method", "GET", "uri", "/test/{id}", "status", "200").timer()
+				.count()).isEqualTo(1);
 		assertThat(result).isEqualTo("OK");
-		mockServer.verify();
+		this.mockServer.verify();
 	}
 
 	@Test
 	public void avoidDuplicateRegistration() {
-		MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
-				this.registry, new DefaultRestTemplateExchangeTagsProvider(),
-				"http.client.requests", true);
-		customizer.customize(this.restTemplate);
+		this.customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate.getInterceptors()).hasSize(1);
-		customizer.customize(this.restTemplate);
+		this.customizer.customize(this.restTemplate);
 		assertThat(this.restTemplate.getInterceptors()).hasSize(1);
+	}
+
+	@Test
+	public void normalizeUriToContainLeadingSlash() {
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK",
+						MediaType.APPLICATION_JSON));
+		String result = this.restTemplate.getForObject("test/{id}", String.class, 123);
+		this.registry.get("http.client.requests").tags("uri", "/test/{id}").timer();
+		assertThat(result).isEqualTo("OK");
+		this.mockServer.verify();
 	}
 
 }

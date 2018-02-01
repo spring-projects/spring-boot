@@ -28,20 +28,8 @@
       "description": "Whether to enable or disable all endpoints by default."
     },
     {
-      "name": "management.endpoints.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether JMX endpoints are enabled.",
-      "defaultValue": true
-    },
-    {
       "name": "management.endpoints.jmx.expose",
       "defaultValue": "*"
-    },
-    {
-      "name": "management.endpoints.web.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether web endpoints are enabled.",
-      "defaultValue": true
     },
     {
       "name": "management.endpoints.web.expose",
@@ -192,12 +180,6 @@
       "defaultValue": "simple"
     },
     {
-      "name": "management.trace.filter.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable the trace servlet filter.",
-      "defaultValue": true
-    },
-    {
       "name": "management.metrics.binders.jvm.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JVM metrics.",
@@ -222,7 +204,7 @@
       "defaultValue": true
     },
     {
-      "name": "management.metrics.cache.instrument-cache",
+      "name": "management.metrics.cache.instrument",
       "type": "java.lang.Boolean",
       "description": "Instrument all available caches.",
       "defaultValue": true
@@ -234,10 +216,31 @@
       "defaultValue": true
     },
     {
-      "name": "management.metrics.jdbc.instrument-datasource",
+      "name": "management.metrics.jdbc.instrument",
       "type": "java.lang.Boolean",
       "description": "Instrument all available data sources.",
       "defaultValue": true
+    },
+    {
+      "name": "management.metrics.rabbitmq.instrument",
+      "type": "java.lang.Boolean",
+      "description": "Instrument all available connection factories.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.httptrace.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable HTTP request-response tracing.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.trace.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the trace servlet filter.",
+      "deprecation": {
+        "replacement": "management.httptrace.enabled",
+        "level": "error"
+      }
     },
     {
       "name": "endpoints.actuator.enabled",
@@ -758,7 +761,7 @@
       "description": "Whether to enable JMX export of all endpoints.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "management.endpoints.jmx.enabled",
+        "replacement": "management.endpoints.jmx.exclude",
         "level": "error"
       }
     },
@@ -786,7 +789,7 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable the endpoint.",
       "deprecation": {
-        "replacement": "management.jolokia.enabled",
+        "replacement": "management.endpoint.jolokia.enabled",
         "level": "error"
       }
     },
@@ -795,7 +798,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "reason": "Endpoint path is no longer customizable.",
+        "replacement": "management.endpoints.web.path-mapping.jolokia",
         "level": "error"
       }
     },
@@ -1101,7 +1104,7 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Jolokia settings. These are traditionally set using servlet parameters. Refer to\n the documentation of Jolokia for more details.",
       "deprecation": {
-        "replacement": "management.jolokia.config",
+        "replacement": "management.endpoint.jolokia.config",
         "level": "error"
       }
     },
@@ -1478,6 +1481,13 @@
       }
     },
     {
+      "name": "management.trace.include",
+      "deprecation": {
+        "replacement": "management.httptrace.include",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.metrics.export.aggregate.key-pattern",
       "type": "java.lang.String",
       "description": "Pattern that tells the aggregator what to do with the keys from the source\n repository. The keys in the source repository are assumed to be period\n separated, and the pattern is in the same format, e.g. \"d.d.k.d\". Here \"d\"\n means \"discard\" and \"k\" means \"keep\" the key segment in the corresponding\n position in the source.",
@@ -1734,4 +1744,3 @@
     }
   ]
 }
-

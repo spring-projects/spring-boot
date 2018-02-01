@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryHealthWebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.reflect.ReflectiveOperationInvoker;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -200,9 +199,8 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
-				.getEndpoints();
-		List<String> endpointIds = endpoints.stream().map(EndpointInfo::getId)
+		Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
+		List<String> endpointIds = endpoints.stream().map(ExposableEndpoint::getId)
 				.collect(Collectors.toList());
 		assertThat(endpointIds).contains("test");
 	}
@@ -213,9 +211,8 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
-				.getEndpoints();
-		EndpointInfo<WebOperation> endpoint = endpoints.stream()
+		Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
+		ExposableWebEndpoint endpoint = endpoints.stream()
 				.filter((candidate) -> "test".equals(candidate.getId())).findFirst()
 				.get();
 		assertThat(endpoint.getOperations()).hasSize(1);
@@ -226,15 +223,11 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	public void healthEndpointInvokerShouldBeCloudFoundryWebExtension() {
 		setupContextWithCloudEnabled();
-		this.context.register(HealthEndpointAutoConfiguration.class,
-				CloudFoundryHealthWebEndpointAutoConfiguration.class);
 		this.context.refresh();
-		Collection<EndpointInfo<WebOperation>> endpoints = getHandlerMapping()
-				.getEndpoints();
-		EndpointInfo<WebOperation> endpointInfo = endpoints.iterator().next();
-		WebOperation webOperation = endpointInfo.getOperations().iterator().next();
-		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation
-				.getInvoker();
+		Collection<ExposableWebEndpoint> endpoints = getHandlerMapping().getEndpoints();
+		ExposableWebEndpoint endpoint = endpoints.iterator().next();
+		WebOperation webOperation = endpoint.getOperations().iterator().next();
+		Object invoker = ReflectionTestUtils.getField(webOperation, "invoker");
 		assertThat(ReflectionTestUtils.getField(invoker, "target"))
 				.isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
 	}
@@ -254,7 +247,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				WebClientCustomizerConfig.class, WebClientAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
-				WebEndpointAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
 				ReactiveCloudFoundryActuatorAutoConfiguration.class);
 	}
 

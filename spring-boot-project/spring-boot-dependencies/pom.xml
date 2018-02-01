@@ -29,59 +29,57 @@
 		<appengine-sdk.version>1.9.60</appengine-sdk.version>
 		<artemis.version>2.4.0</artemis.version>
 		<aspectj.version>1.8.13</aspectj.version>
-		<assertj.version>3.8.0</assertj.version>
-		<atomikos.version>4.0.5</atomikos.version>
+		<assertj.version>3.9.0</assertj.version>
+		<atomikos.version>4.0.6</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<byte-buddy.version>1.7.9</byte-buddy.version>
-		<caffeine.version>2.6.0</caffeine.version>
-		<cassandra-driver.version>3.3.2</cassandra-driver.version>
+		<caffeine.version>2.6.1</caffeine.version>
+		<cassandra-driver.version>3.4.0</cassandra-driver.version>
 		<classmate.version>1.3.4</classmate.version>
 		<commons-codec.version>1.11</commons-codec.version>
-		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
+		<commons-dbcp2.version>2.2.0</commons-dbcp2.version>
 		<commons-lang3.version>3.7</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
-		<commons-pool2.version>2.4.3</commons-pool2.version>
-		<couchbase-client.version>2.5.2</couchbase-client.version>
+		<commons-pool2.version>2.5.0</commons-pool2.version>
+		<couchbase-client.version>2.5.4</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
 		<derby.version>10.14.1.0</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
-		<dropwizard-metrics.version>3.2.5</dropwizard-metrics.version>
+		<dropwizard-metrics.version>3.2.6</dropwizard-metrics.version>
 		<ehcache.version>2.10.4</ehcache.version>
 		<ehcache3.version>3.4.0</ehcache3.version>
-		<embedded-mongo.version>2.0.0</embedded-mongo.version>
-		<flyway.version>5.0.0</flyway.version>
+		<embedded-mongo.version>2.0.1</embedded-mongo.version>
+		<flyway.version>5.0.6</flyway.version>
 		<freemarker.version>2.3.27-incubating</freemarker.version>
-		<elasticsearch.version>5.5.3</elasticsearch.version>
+		<elasticsearch.version>5.6.6</elasticsearch.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
-		<groovy.version>2.5.0-beta-2</groovy.version>
+		<groovy.version>2.4.13</groovy.version>
 		<gson.version>2.8.2</gson.version>
 		<h2.version>1.4.196</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<hdrhistogram.version>2.1.10</hdrhistogram.version>
-		<hazelcast.version>3.9</hazelcast.version>
+		<hazelcast.version>3.9.2</hazelcast.version>
 		<hazelcast-hibernate5.version>1.2.2</hazelcast-hibernate5.version>
 		<hibernate.version>5.2.12.Final</hibernate.version>
-		<hibernate-validator.version>6.0.5.Final</hibernate-validator.version>
-		<hikaricp.version>2.7.4</hikaricp.version>
+		<hibernate-validator.version>6.0.7.Final</hibernate-validator.version>
+		<hikaricp.version>2.7.6</hikaricp.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
-		<htmlunit.version>2.28</htmlunit.version>
+		<htmlunit.version>2.29</htmlunit.version>
 		<httpasyncclient.version>4.1.3</httpasyncclient.version>
-		<httpclient.version>4.5.4</httpclient.version>
-		<httpcore.version>4.4.8</httpcore.version>
-		<infinispan.version>9.1.3.Final</infinispan.version>
-		<influxdb-java.version>2.7</influxdb-java.version>
-		<jackson.version>2.9.2</jackson.version>
-		<janino.version>3.0.7</janino.version>
-		<javassist.version>3.22.0-CR2</javassist.version> <!-- Same as Hibernate -->
+		<httpclient.version>4.5.5</httpclient.version>
+		<httpcore.version>4.4.9</httpcore.version>
+		<infinispan.version>9.1.4.Final</infinispan.version>
+		<influxdb-java.version>2.8</influxdb-java.version>
+		<jackson.version>2.9.4</jackson.version>
+		<janino.version>3.0.8</janino.version>
 		<javax-annotation.version>1.3.1</javax-annotation.version>
-		<javax-cache.version>1.0.0</javax-cache.version>
+		<javax-cache.version>1.1.0</javax-cache.version>
 		<javax-jms.version>2.0.1</javax-jms.version>
 		<javax-mail.version>1.6.0</javax-mail.version>
 		<javax-money.version>1.0.1</javax-money.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
-		<javax-validation.version>2.0.0.Final</javax-validation.version>
+		<javax-validation.version>2.0.1.Final</javax-validation.version>
 		<jaxen.version>1.1.6</jaxen.version>
-		<jaybird.version>3.0.2</jaybird.version>
+		<jaybird.version>3.0.3</jaybird.version>
 		<jboss-logging.version>3.3.1.Final</jboss-logging.version>
 		<jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
 		<jdom2.version>2.0.6</jdom2.version>
@@ -90,13 +88,13 @@
 		<jest.version>5.3.3</jest.version>
 		<jetty.version>9.4.8.v20171121</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
-		<jetty-el.version>8.5.23</jetty-el.version>
-		<jmustache.version>1.13</jmustache.version>
-		<jna.version>4.5.0</jna.version>
+		<jetty-el.version>8.5.24.1</jetty-el.version>
+		<jmustache.version>1.14</jmustache.version>
+		<jna.version>4.5.1</jna.version>
 		<joda-time.version>2.9.9</joda-time.version>
-		<jolokia.version>1.3.7</jolokia.version>
+		<jolokia.version>1.4.0</jolokia.version>
 		<johnzon-jsonb.version>1.1.5</johnzon-jsonb.version>
-		<jooq.version>3.10.1</jooq.version>
+		<jooq.version>3.10.4</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
 		<javax-json.version>1.1.2</javax-json.version>
 		<javax-jsonb.version>1.0</javax-jsonb.version>
@@ -104,61 +102,61 @@
 		<jstl.version>1.2</jstl.version>
 		<jtds.version>1.3.1</jtds.version>
 		<junit.version>4.12</junit.version>
-		<junit-jupiter.version>5.0.2</junit-jupiter.version>
-		<junit-platform.version>1.0.2</junit-platform.version>
-		<kotlin.version>1.2.10</kotlin.version>
+		<junit-jupiter.version>5.0.3</junit-jupiter.version>
+		<junit-platform.version>1.0.3</junit-platform.version>
+		<kotlin.version>1.2.20</kotlin.version>
 		<lettuce.version>5.0.1.RELEASE</lettuce.version>
 		<liquibase.version>3.5.3</liquibase.version>
 		<log4j2.version>2.10.0</log4j2.version>
 		<logback.version>1.2.3</logback.version>
-		<lombok.version>1.16.18</lombok.version>
-		<mariadb.version>2.2.0</mariadb.version>
-		<micrometer.version>1.0.0-rc.5</micrometer.version>
+		<lombok.version>1.16.20</lombok.version>
+		<mariadb.version>2.2.1</mariadb.version>
+		<micrometer.version>1.0.0-rc.8</micrometer.version>
 		<mssql-jdbc.version>6.2.2.jre8</mssql-jdbc.version>
 		<mockito.version>2.13.0</mockito.version>
-		<mongo-driver-reactivestreams.version>1.6.0</mongo-driver-reactivestreams.version>
-		<mongodb.version>3.5.0</mongodb.version>
+		<mongo-driver-reactivestreams.version>1.7.0</mongo-driver-reactivestreams.version>
+		<mongodb.version>3.6.1</mongodb.version>
 		<mysql.version>5.1.45</mysql.version>
-		<narayana.version>5.7.1.Final</narayana.version>
+		<narayana.version>5.7.2.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>3.0.2</neo4j-ogm.version>
-		<netty.version>4.1.17.Final</netty.version>
+		<neo4j-ogm.version>3.0.3</neo4j-ogm.version>
+		<netty.version>4.1.20.Final</netty.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
-		<postgresql.version>42.1.4</postgresql.version>
+		<postgresql.version>42.2.1</postgresql.version>
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.1.4</querydsl.version>
-		<rabbit-amqp-client.version>5.0.0</rabbit-amqp-client.version>
-		<reactor-bom.version>Bismuth-SR4</reactor-bom.version>
+		<rabbit-amqp-client.version>5.1.2</rabbit-amqp-client.version>
+		<reactor-bom.version>Bismuth-SR5</reactor-bom.version>
 		<rest-assured.version>3.0.6</rest-assured.version>
-		<reactive-streams.version>1.0.1</reactive-streams.version>
+		<reactive-streams.version>1.0.2</reactive-streams.version>
 		<rxjava.version>1.3.4</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
-		<rxjava2.version>2.1.7</rxjava2.version>
-		<selenium.version>3.7.1</selenium.version>
-		<selenium-htmlunit.version>2.28.2</selenium-htmlunit.version>
+		<rxjava2.version>2.1.8</rxjava2.version>
+		<selenium.version>3.8.1</selenium.version>
+		<selenium-htmlunit.version>2.29.0</selenium-htmlunit.version>
 		<sendgrid.version>4.1.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.19</snakeyaml.version>
 		<solr.version>6.6.2</solr.version>
-		<spring.version>5.0.3.BUILD-SNAPSHOT</spring.version>
-		<spring-amqp.version>2.0.1.RELEASE</spring-amqp.version>
+		<spring.version>5.0.3.RELEASE</spring.version>
+		<spring-amqp.version>2.0.2.RELEASE</spring-amqp.version>
 		<spring-batch.version>4.0.0.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.1.RELEASE</spring-cloud-connectors.version>
-		<spring-data-releasetrain.version>Kay-SR2</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Kay-SR3</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.24.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.0.1.BUILD-SNAPSHOT</spring-integration.version>
-		<spring-kafka.version>2.1.0.RELEASE</spring-kafka.version>
+		<spring-integration.version>5.0.1.RELEASE</spring-integration.version>
+		<spring-kafka.version>2.1.2.RELEASE</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.0.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.2.RELEASE</spring-retry.version>
-		<spring-security.version>5.0.0.RELEASE</spring-security.version>
-		<spring-session.version>2.0.0.RC2</spring-session.version>
-		<spring-session-data-mongodb.version>2.0.0.RC2</spring-session-data-mongodb.version>
+		<spring-security.version>5.0.2.BUILD-SNAPSHOT</spring-security.version>
+		<spring-session.version>2.0.1.RELEASE</spring-session.version>
+		<spring-session-data-mongodb.version>2.0.0.RELEASE</spring-session-data-mongodb.version>
 		<spring-ws.version>3.0.0.RELEASE</spring-ws.version>
-		<sqlite-jdbc.version>3.21.0</sqlite-jdbc.version>
+		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>
@@ -166,9 +164,9 @@
 		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.24</tomcat.version>
-		<undertow.version>1.4.21.Final</undertow.version>
-		<unboundid-ldapsdk.version>4.0.1</unboundid-ldapsdk.version>
+		<tomcat.version>8.5.27</tomcat.version>
+		<undertow.version>1.4.22.Final</undertow.version>
+		<unboundid-ldapsdk.version>4.0.4</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator.version>0.32-1</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
@@ -263,6 +261,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-loader-tools</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-properties-migrator</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
@@ -881,6 +884,11 @@
 			</dependency>
 			<dependency>
 				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-new-relic</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
 				<artifactId>micrometer-registry-prometheus</artifactId>
 				<version>${micrometer.version}</version>
 			</dependency>
@@ -920,7 +928,32 @@
 			</dependency>
 			<dependency>
 				<groupId>io.rest-assured</groupId>
+				<artifactId>json-path</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>json-schema-validator</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
 				<artifactId>rest-assured</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>scala-support</artifactId>
+				<version>${rest-assured.version}</version>
+			</dependency>
+			 <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>spring-mock-mvc</artifactId>
+                <version>${rest-assured.version}</version>
+            </dependency>
+            <dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>xml-path</artifactId>
 				<version>${rest-assured.version}</version>
 			</dependency>
 			<dependency>
@@ -1732,11 +1765,6 @@
 				<version>${hamcrest.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hdrhistogram</groupId>
-				<artifactId>HdrHistogram</artifactId>
-				<version>${hdrhistogram.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-c3p0</artifactId>
 				<version>${hibernate.version}</version>
@@ -1885,11 +1913,6 @@
 				<version>${influxdb-java.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.javassist</groupId>
-				<artifactId>javassist</artifactId>
-				<version>${javassist.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.jboss</groupId>
 				<artifactId>jboss-transaction-spi</artifactId>
 				<version>${jboss-transaction-spi.version}</version>
@@ -1937,6 +1960,16 @@
 			<dependency>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-stdlib</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-jdk7</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-jdk8</artifactId>
 				<version>${kotlin.version}</version>
 			</dependency>
 			<dependency>
@@ -2081,6 +2114,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-edge-driver</artifactId>
+				<version>${selenium.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
 				<artifactId>selenium-firefox-driver</artifactId>
 				<version>${selenium.version}</version>
 			</dependency>
@@ -2092,6 +2130,11 @@
 			<dependency>
 				<groupId>org.seleniumhq.selenium</groupId>
 				<artifactId>selenium-java</artifactId>
+				<version>${selenium.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.seleniumhq.selenium</groupId>
+				<artifactId>selenium-opera-driver</artifactId>
 				<version>${selenium.version}</version>
 			</dependency>
 			<dependency>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,15 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
@@ -38,6 +45,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootWar;
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
+	private static final String SPRING_BOOT_VERSION = determineSpringBootVersion();
+
 	/**
 	 * The name of the {@link Configuration} that contains Spring Boot archives.
 	 * @since 2.0.0
@@ -57,6 +66,13 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 * @since 2.0.0
 	 */
 	public static final String BOOT_WAR_TASK_NAME = "bootWar";
+
+	/**
+	 * The coordinates {@code (group:name:version)} of the
+	 * {@code spring-boot-dependencies} bom.
+	 */
+	public static final String BOM_COORDINATES = "org.springframework.boot:spring-boot-dependencies:"
+			+ SPRING_BOOT_VERSION;
 
 	@Override
 	public void apply(Project project) {
@@ -92,10 +108,15 @@ public class SpringBootPlugin implements Plugin<Project> {
 				new JavaPluginAction(singlePublishedArtifact),
 				new WarPluginAction(singlePublishedArtifact),
 				new MavenPluginAction(bootArchives.getUploadTaskName()),
-				new DependencyManagementPluginAction(), new ApplicationPluginAction());
+				new DependencyManagementPluginAction(), new ApplicationPluginAction(),
+				new KotlinPluginAction());
 		for (PluginApplicationAction action : actions) {
-			project.getPlugins().withType(action.getPluginClass(),
-					(plugin) -> action.execute(project));
+			Class<? extends Plugin<? extends Project>> pluginClass = action
+					.getPluginClass();
+			if (pluginClass != null) {
+				project.getPlugins().withType(pluginClass,
+						(plugin) -> action.execute(project));
+			}
 		}
 	}
 
@@ -108,6 +129,34 @@ public class SpringBootPlugin implements Plugin<Project> {
 								.getUnresolvedModuleDependencies())));
 		project.getGradle().buildFinished(
 				(buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
+	}
+
+	private static String determineSpringBootVersion() {
+		String implementationVersion = DependencyManagementPluginAction.class.getPackage()
+				.getImplementationVersion();
+		if (implementationVersion != null) {
+			return implementationVersion;
+		}
+		URL codeSourceLocation = DependencyManagementPluginAction.class
+				.getProtectionDomain().getCodeSource().getLocation();
+		try {
+			URLConnection connection = codeSourceLocation.openConnection();
+			if (connection instanceof JarURLConnection) {
+				return getImplementationVersion(
+						((JarURLConnection) connection).getJarFile());
+			}
+			try (JarFile jarFile = new JarFile(new File(codeSourceLocation.toURI()))) {
+				return getImplementationVersion(jarFile);
+			}
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
+	private static String getImplementationVersion(JarFile jarFile) throws IOException {
+		return jarFile.getManifest().getMainAttributes()
+				.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
 	}
 
 }

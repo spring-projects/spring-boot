@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
-import java.util.Collection;
-
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import org.springframework.boot.actuate.endpoint.EndpointFilter;
-import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInvokerAdvisor;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
-import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.boot.actuate.endpoint.web.WebOperation;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CloudFoundryEndpointFilter}.
@@ -40,38 +31,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CloudFoundryEndpointFilterTests {
 
-	private CloudFoundryEndpointFilter filter;
-
-	@Before
-	public void setUp() {
-		this.filter = new CloudFoundryEndpointFilter();
-	}
+	private CloudFoundryEndpointFilter filter = new CloudFoundryEndpointFilter();
 
 	@Test
 	public void matchIfDiscovererCloudFoundryShouldReturnFalse() {
-		CloudFoundryWebAnnotationEndpointDiscoverer discoverer = Mockito
-				.mock(CloudFoundryWebAnnotationEndpointDiscoverer.class);
-		assertThat(this.filter.match(null, discoverer)).isTrue();
+		DiscoveredEndpoint<?> endpoint = mock(DiscoveredEndpoint.class);
+		given(endpoint.wasDiscoveredBy(CloudFoundryWebEndpointDiscoverer.class))
+				.willReturn(true);
+		assertThat(this.filter.match(endpoint)).isTrue();
 	}
 
 	@Test
 	public void matchIfDiscovererNotCloudFoundryShouldReturnFalse() {
-		WebAnnotationEndpointDiscoverer discoverer = Mockito
-				.mock(WebAnnotationEndpointDiscoverer.class);
-		assertThat(this.filter.match(null, discoverer)).isFalse();
-	}
-
-	static class TestEndpointDiscoverer extends WebAnnotationEndpointDiscoverer {
-
-		TestEndpointDiscoverer(ApplicationContext applicationContext,
-				ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
-				EndpointPathResolver endpointPathResolver,
-				Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors,
-				Collection<? extends EndpointFilter<WebOperation>> filters) {
-			super(applicationContext, parameterMapper, endpointMediaTypes,
-					endpointPathResolver, invokerAdvisors, filters);
-		}
-
+		DiscoveredEndpoint<?> endpoint = mock(DiscoveredEndpoint.class);
+		given(endpoint.wasDiscoveredBy(CloudFoundryWebEndpointDiscoverer.class))
+				.willReturn(false);
+		assertThat(this.filter.match(endpoint)).isFalse();
 	}
 
 }

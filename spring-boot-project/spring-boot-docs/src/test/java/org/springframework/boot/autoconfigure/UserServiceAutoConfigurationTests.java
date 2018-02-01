@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,15 @@ public class UserServiceAutoConfigurationTests {
 	// tag::runner[]
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(UserServiceAutoConfiguration.class));
-	// end::runner[]
+			// end::runner[]
 
 	// tag::test-env[]
 	@Test
 	public void serviceNameCanBeConfigured() {
-		this.contextRunner.withPropertyValues("user.name=test123")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(UserService.class);
-					assertThat(context.getBean(UserService.class).getName())
-							.isEqualTo("test123");
-				});
+		this.contextRunner.withPropertyValues("user.name=test123").run((context) -> {
+			assertThat(context).hasSingleBean(UserService.class);
+			assertThat(context.getBean(UserService.class).getName()).isEqualTo("test123");
+		});
 	}
 	// end::test-env[]
 
@@ -53,12 +51,9 @@ public class UserServiceAutoConfigurationTests {
 	@Test
 	public void serviceIsIgnoredIfLibraryIsNotPresent() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(UserService.class))
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean("userService");
-				});
+				.run((context) -> assertThat(context).doesNotHaveBean("userService"));
 	}
 	// end::test-classloader[]
-
 
 	// tag::test-user-config[]
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class HttpTunnelPayload {
 
 	private static final int BUFFER_SIZE = 1024 * 100;
 
-	final protected static char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
+	protected final static char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
 	private static final Log logger = LogFactory.getLog(HttpTunnelPayload.class);
 

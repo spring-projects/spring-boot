@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.AbstractWebEndpointIntegrationTests;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -38,6 +37,8 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebSe
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
  * Integration tests for web endpoints exposed using Jersey.
@@ -65,6 +66,12 @@ public class JerseyWebEndpointIntegrationTests extends
 		return context.getWebServer().getPort();
 	}
 
+	@Override
+	protected void validateErrorBody(WebTestClient.BodyContentSpec body,
+			HttpStatus status, String path, String message) {
+		// Jersey doesn't support the general error page handling
+	}
+
 	@Configuration
 	static class JerseyConfiguration {
 
@@ -82,13 +89,13 @@ public class JerseyWebEndpointIntegrationTests extends
 
 		@Bean
 		public ResourceConfig resourceConfig(Environment environment,
-				EndpointDiscoverer<WebOperation> endpointDiscoverer,
+				WebEndpointDiscoverer endpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes) {
 			ResourceConfig resourceConfig = new ResourceConfig();
 			Collection<Resource> resources = new JerseyEndpointResourceFactory()
 					.createEndpointResources(
 							new EndpointMapping(environment.getProperty("endpointPath")),
-							endpointDiscoverer.discoverEndpoints(), endpointMediaTypes);
+							endpointDiscoverer.getEndpoints(), endpointMediaTypes);
 			resourceConfig.registerResources(new HashSet<>(resources));
 			resourceConfig.register(JacksonFeature.class);
 			resourceConfig.register(new ObjectMapperContextResolver(new ObjectMapper()),

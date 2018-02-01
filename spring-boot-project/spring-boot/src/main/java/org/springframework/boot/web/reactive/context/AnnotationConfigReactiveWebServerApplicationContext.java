@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
@@ -51,7 +52,7 @@ import org.springframework.util.ObjectUtils;
  * @see AnnotationConfigApplicationContext
  */
 public class AnnotationConfigReactiveWebServerApplicationContext
-		extends ReactiveWebServerApplicationContext {
+		extends ReactiveWebServerApplicationContext implements AnnotationConfigRegistry {
 
 	private final AnnotatedBeanDefinitionReader reader;
 
@@ -125,8 +126,8 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 
 	/**
 	 * Provide a custom {@link BeanNameGenerator} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner},
-	 * if any.
+	 * {@link AnnotatedBeanDefinitionReader} and/or
+	 * {@link ClassPathBeanDefinitionScanner}, if any.
 	 * <p>
 	 * Default is
 	 * {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.

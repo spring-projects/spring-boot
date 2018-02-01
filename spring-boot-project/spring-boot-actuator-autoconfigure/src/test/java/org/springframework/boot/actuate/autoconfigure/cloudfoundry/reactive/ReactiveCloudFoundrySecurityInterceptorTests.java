@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Tests for {@link ReactiveCloudFoundrySecurityInterceptor}.
+ * Tests for {@link CloudFoundrySecurityInterceptor}.
  *
  * @author Madhura Bhave
  */
@@ -49,13 +49,13 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 	@Mock
 	private ReactiveCloudFoundrySecurityService securityService;
 
-	private ReactiveCloudFoundrySecurityInterceptor interceptor;
+	private CloudFoundrySecurityInterceptor interceptor;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.interceptor = new ReactiveCloudFoundrySecurityInterceptor(
-				this.tokenValidator, this.securityService, "my-app-id");
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
+				this.securityService, "my-app-id");
 	}
 
 	@Test
@@ -90,8 +90,8 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	@Test
 	public void preHandleWhenApplicationIdIsNullShouldReturnError() {
-		this.interceptor = new ReactiveCloudFoundrySecurityInterceptor(
-				this.tokenValidator, this.securityService, null);
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
+				this.securityService, null);
 		MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/a")
 						.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
@@ -105,8 +105,8 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	@Test
 	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnError() {
-		this.interceptor = new ReactiveCloudFoundrySecurityInterceptor(
-				this.tokenValidator, null, "my-app-id");
+		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null,
+				"my-app-id");
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest
 				.get("/a").header(HttpHeaders.AUTHORIZATION, mockAccessToken()).build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))

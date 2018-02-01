@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.lang.management.ManagementFactory;
 import java.sql.SQLException;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
+import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -66,6 +68,24 @@ public class DataSourceJmxConfigurationTests {
 				.isTrue();
 		MBeanServer mBeanServer = this.context.getBean(MBeanServer.class);
 		validateHikariMBeansRegistration(mBeanServer, poolName, true);
+	}
+
+	@Test
+	public void hikariAutoConfiguredWithoutDataSourceName()
+			throws MalformedObjectNameException {
+		MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+		Set<ObjectInstance> existingInstances = mBeanServer
+				.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null);
+		load("spring.datasource.type=" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.register-mbeans=true");
+		assertThat(this.context.getBeansOfType(HikariDataSource.class)).hasSize(1);
+		assertThat(this.context.getBean(HikariDataSource.class).isRegisterMbeans())
+				.isTrue();
+		// We can't rely on the number of MBeans so we're checking that the pool and pool
+		// config mBeans were registered
+		assertThat(mBeanServer
+				.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null).size())
+						.isEqualTo(existingInstances.size() + 2);
 	}
 
 	@Test

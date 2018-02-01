@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,8 @@ class DurationConverter implements GenericConverter {
 
 	private static final Pattern ISO8601 = Pattern.compile("^[\\+\\-]?P.*$");
 
-	private static final Pattern SIMPLE = Pattern.compile("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$");
+	private static final Pattern SIMPLE = Pattern
+			.compile("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$");
 
 	private static final Map<String, ChronoUnit> UNITS;
 
@@ -90,7 +91,8 @@ class DurationConverter implements GenericConverter {
 				return Duration.parse(source);
 			}
 			Matcher matcher = SIMPLE.matcher(source);
-			Assert.state(matcher.matches(), () -> "'" + source + "' is not a valid duration");
+			Assert.state(matcher.matches(),
+					() -> "'" + source + "' is not a valid duration");
 			long amount = Long.parseLong(matcher.group(1));
 			ChronoUnit unit = getUnit(matcher.group(2), defaultUnit);
 			return Duration.of(amount, unit);

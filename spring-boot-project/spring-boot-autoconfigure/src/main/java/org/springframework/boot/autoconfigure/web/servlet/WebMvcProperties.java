@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Sébastien Deleuze
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Brian Clozel
  * @since 1.1
  */
 @ConfigurationProperties(prefix = "spring.mvc")
@@ -87,11 +88,6 @@ public class WebMvcProperties {
 	private boolean logResolvedException = false;
 
 	/**
-	 * Maps file extensions to media types for content negotiation, e.g. yml to text/yaml.
-	 */
-	private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
-
-	/**
 	 * Path pattern used for static resources.
 	 */
 	private String staticPathPattern = "/**";
@@ -101,6 +97,10 @@ public class WebMvcProperties {
 	private final Servlet servlet = new Servlet();
 
 	private final View view = new View();
+
+	private final ContentNegotiation contentNegotiation = new ContentNegotiation();
+
+	private final PathMatch pathMatch = new PathMatch();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -160,14 +160,6 @@ public class WebMvcProperties {
 		this.logResolvedException = logResolvedException;
 	}
 
-	public Map<String, MediaType> getMediaTypes() {
-		return this.mediaTypes;
-	}
-
-	public void setMediaTypes(Map<String, MediaType> mediaTypes) {
-		this.mediaTypes = mediaTypes;
-	}
-
 	public boolean isDispatchOptionsRequest() {
 		return this.dispatchOptionsRequest;
 	}
@@ -202,6 +194,14 @@ public class WebMvcProperties {
 
 	public View getView() {
 		return this.view;
+	}
+
+	public ContentNegotiation getContentNegotiation() {
+		return this.contentNegotiation;
+	}
+
+	public PathMatch getPathMatch() {
+		return this.pathMatch;
 	}
 
 	public static class Async {
@@ -266,6 +266,100 @@ public class WebMvcProperties {
 
 		public void setSuffix(String suffix) {
 			this.suffix = suffix;
+		}
+
+	}
+
+	public static class ContentNegotiation {
+
+		/**
+		 * Whether the path extension in the URL path should be used to determine the
+		 * requested media type. If enabled a request "/users.pdf" will be interpreted as
+		 * a request for "application/pdf" regardless of the 'Accept' header.
+		 */
+		private boolean favorPathExtension = false;
+
+		/**
+		 * Whether a request parameter ("format" by default) should be used to determine
+		 * the requested media type.
+		 */
+		private boolean favorParameter = false;
+
+		/**
+		 * Maps file extensions to media types for content negotiation, e.g. yml to
+		 * text/yaml.
+		 */
+		private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
+
+		/**
+		 * Query parameter name to use when "favor-parameter" is enabled.
+		 */
+		private String parameterName;
+
+		public boolean isFavorPathExtension() {
+			return this.favorPathExtension;
+		}
+
+		public void setFavorPathExtension(boolean favorPathExtension) {
+			this.favorPathExtension = favorPathExtension;
+		}
+
+		public boolean isFavorParameter() {
+			return this.favorParameter;
+		}
+
+		public void setFavorParameter(boolean favorParameter) {
+			this.favorParameter = favorParameter;
+		}
+
+		public Map<String, MediaType> getMediaTypes() {
+			return this.mediaTypes;
+		}
+
+		public void setMediaTypes(Map<String, MediaType> mediaTypes) {
+			this.mediaTypes = mediaTypes;
+		}
+
+		public String getParameterName() {
+			return this.parameterName;
+		}
+
+		public void setParameterName(String parameterName) {
+			this.parameterName = parameterName;
+		}
+
+	}
+
+	public static class PathMatch {
+
+		/**
+		 * Whether to use suffix pattern match (".*") when matching patterns to requests.
+		 * If enabled a method mapped to "/users" also matches to "/users.*".
+		 */
+		private boolean useSuffixPattern = false;
+
+		/**
+		 * Whether suffix pattern matching should work only against extensions registered
+		 * with "spring.mvc.content-negotiation.media-types.*". This is generally
+		 * recommended to reduce ambiguity and to avoid issues such as when a "." appears
+		 * in the path for other reasons.
+		 */
+		private boolean useRegisteredSuffixPattern = false;
+
+		public boolean isUseSuffixPattern() {
+			return this.useSuffixPattern;
+		}
+
+		public void setUseSuffixPattern(boolean useSuffixPattern) {
+			this.useSuffixPattern = useSuffixPattern;
+		}
+
+		public boolean isUseRegisteredSuffixPattern() {
+			return this.useRegisteredSuffixPattern;
+		}
+
+		public void setUseRegisteredSuffixPattern(boolean useRegisteredSuffixPattern) {
+			this.useRegisteredSuffixPattern = useRegisteredSuffixPattern;
 		}
 
 	}

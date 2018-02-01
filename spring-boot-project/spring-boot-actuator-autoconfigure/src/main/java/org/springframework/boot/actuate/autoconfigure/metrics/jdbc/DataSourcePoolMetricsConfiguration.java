@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnBean({ DataSource.class, DataSourcePoolMetadataProvider.class })
-@ConditionalOnProperty(value = "management.metrics.jdbc.instrument-datasource", matchIfMissing = true)
+@ConditionalOnProperty(value = "management.metrics.jdbc.instrument", matchIfMissing = true)
 @EnableConfigurationProperties(JdbcMetricsProperties.class)
 public class DataSourcePoolMetricsConfiguration {
 
@@ -60,7 +58,7 @@ public class DataSourcePoolMetricsConfiguration {
 			JdbcMetricsProperties jdbcMetricsProperties) {
 		this.registry = registry;
 		this.metadataProviders = metadataProviders;
-		this.metricName = jdbcMetricsProperties.getDatasourceMetricName();
+		this.metricName = jdbcMetricsProperties.getMetricName();
 	}
 
 	@Autowired
@@ -69,9 +67,9 @@ public class DataSourcePoolMetricsConfiguration {
 	}
 
 	private void bindDataSourceToRegistry(String beanName, DataSource dataSource) {
-		List<Tag> tags = Tags.zip("name", getDataSourceName(beanName));
+		String dataSourceName = getDataSourceName(beanName);
 		new DataSourcePoolMetrics(dataSource, this.metadataProviders, this.metricName,
-				tags).bindTo(this.registry);
+				Tags.of("name", dataSourceName)).bindTo(this.registry);
 	}
 
 	/**

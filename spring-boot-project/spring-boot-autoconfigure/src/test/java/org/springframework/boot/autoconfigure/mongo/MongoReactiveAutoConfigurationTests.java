@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,16 @@ import java.util.concurrent.TimeUnit;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.async.client.MongoClientSettings;
+import com.mongodb.connection.AsynchronousSocketChannelStreamFactoryFactory;
 import com.mongodb.connection.SocketSettings;
 import com.mongodb.connection.StreamFactory;
 import com.mongodb.connection.StreamFactoryFactory;
+import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
-import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,83 +42,77 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link MongoReactiveAutoConfiguration}.
  *
  * @author Mark Paluch
+ * @author Stephane Nicoll
  */
 public class MongoReactiveAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(MongoReactiveAutoConfiguration.class));
 
 	@Test
 	public void clientExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class,
-				MongoReactiveAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(MongoClient.class).length)
-				.isEqualTo(1);
+		this.contextRunner
+				.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
 	}
 
 	@Test
 	public void optionsAdded() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.host:localhost").applyTo(this.context);
-		this.context.register(OptionsConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				MongoReactiveAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(MongoClient.class).getSettings()
-				.getSocketSettings().getReadTimeout(TimeUnit.SECONDS)).isEqualTo(300);
+		this.contextRunner.withPropertyValues("spring.data.mongodb.host:localhost")
+				.withUserConfiguration(OptionsConfig.class)
+				.run((context) -> assertThat(
+						context.getBean(MongoClient.class).getSettings()
+								.getSocketSettings().getReadTimeout(TimeUnit.SECONDS))
+										.isEqualTo(300));
 	}
 
 	@Test
 	public void optionsAddedButNoHost() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.uri:mongodb://localhost/test")
-				.applyTo(this.context);
-		this.context.register(OptionsConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				MongoReactiveAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(
-				this.context.getBean(MongoClient.class).getSettings().getReadPreference())
-						.isEqualTo(ReadPreference.nearest());
+		this.contextRunner
+				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
+				.withUserConfiguration(OptionsConfig.class)
+				.run((context) -> assertThat(context.getBean(MongoClient.class)
+						.getSettings().getReadPreference())
+								.isEqualTo(ReadPreference.nearest()));
 	}
 
 	@Test
 	public void optionsSslConfig() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.mongodb.uri:mongodb://localhost/test")
-				.applyTo(this.context);
-		this.context.register(SslOptionsConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				MongoReactiveAutoConfiguration.class);
-		this.context.refresh();
-		MongoClient mongo = this.context.getBean(MongoClient.class);
-		MongoClientSettings settings = mongo.getSettings();
-		assertThat(settings.getApplicationName()).isEqualTo("test-config");
-		assertThat(settings.getStreamFactoryFactory())
-				.isSameAs(this.context.getBean("myStreamFactoryFactory"));
+		this.contextRunner
+				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
+				.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
+					assertThat(context).hasSingleBean(MongoClient.class);
+					MongoClient mongo = context.getBean(MongoClient.class);
+					MongoClientSettings settings = mongo.getSettings();
+					assertThat(settings.getApplicationName()).isEqualTo("test-config");
+					assertThat(settings.getStreamFactoryFactory())
+							.isSameAs(context.getBean("myStreamFactoryFactory"));
+				});
+	}
+
+	@Test
+	public void nettyStreamFactoryFactoryIsConfiguredAutomatically() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(MongoClient.class);
+			assertThat(context.getBean(MongoClient.class).getSettings()
+					.getStreamFactoryFactory())
+							.isInstanceOf(NettyStreamFactoryFactory.class);
+		});
 	}
 
 	@Test
 	public void customizerOverridesAutoConfig() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
-				.applyTo(this.context);
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				MongoReactiveAutoConfiguration.class, SimpleCustomizerConfig.class);
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(MongoClient.class).length)
-				.isEqualTo(1);
-		MongoClient client = this.context.getBean(MongoClient.class);
-		assertThat(client.getSettings().getApplicationName())
-				.isEqualTo("overridden-name");
+		this.contextRunner
+				.withPropertyValues(
+						"spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
+				.withUserConfiguration(SimpleCustomizerConfig.class).run((context) -> {
+					assertThat(context).hasSingleBean(MongoClient.class);
+					MongoClient client = context.getBean(MongoClient.class);
+					assertThat(client.getSettings().getApplicationName())
+							.isEqualTo("overridden-name");
+					assertThat(client.getSettings().getStreamFactoryFactory())
+							.isEqualTo(SimpleCustomizerConfig.streamFactoryFactory);
+				});
 	}
 
 	@Configuration
@@ -156,10 +150,14 @@ public class MongoReactiveAutoConfigurationTests {
 	@Configuration
 	static class SimpleCustomizerConfig {
 
+		private static final StreamFactoryFactory streamFactoryFactory = new AsynchronousSocketChannelStreamFactoryFactory.Builder()
+				.build();
+
 		@Bean
 		public MongoClientSettingsBuilderCustomizer customizer() {
 			return (clientSettingsBuilder) -> clientSettingsBuilder
-					.applicationName("overridden-name");
+					.applicationName("overridden-name")
+					.streamFactoryFactory(streamFactoryFactory);
 		}
 
 	}

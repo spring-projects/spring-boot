@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -336,6 +336,27 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		}
 	}
 
+	@Test
+	public void loaderIsWrittenFirstThenApplicationClassesThenLibraries()
+			throws IOException {
+		this.task.setMainClassName("com.example.Main");
+		File classpathFolder = this.temp.newFolder();
+		File applicationClass = new File(classpathFolder,
+				"com/example/Application.class");
+		applicationClass.getParentFile().mkdirs();
+		applicationClass.createNewFile();
+		this.task.classpath(classpathFolder, this.temp.newFile("first-library.jar"),
+				this.temp.newFile("second-library.jar"),
+				this.temp.newFile("third-library.jar"));
+		this.task.requiresUnpack("second-library.jar");
+		this.task.execute();
+		assertThat(getEntryNames(this.task.getArchivePath())).containsSubsequence(
+				"org/springframework/boot/loader/",
+				this.classesPath + "/com/example/Application.class",
+				this.libPath + "/first-library.jar", this.libPath + "/second-library.jar",
+				this.libPath + "/third-library.jar");
+	}
+
 	private T configure(T task) throws IOException {
 		AbstractArchiveTask archiveTask = task;
 		archiveTask.setBaseName("test");
@@ -345,6 +366,17 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
 	protected T getTask() {
 		return this.task;
+	}
+
+	protected List<String> getEntryNames(File file) throws IOException {
+		List<String> entryNames = new ArrayList<>();
+		try (JarFile jarFile = new JarFile(file)) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				entryNames.add(entries.nextElement().getName());
+			}
+		}
+		return entryNames;
 	}
 
 }

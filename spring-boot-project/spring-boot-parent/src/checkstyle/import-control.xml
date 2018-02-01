@@ -14,6 +14,15 @@
 			<subpackage name="client">
 				<allow pkg="org.springframework.boot.web.client" />
 			</subpackage>
+			<subpackage name="embedded.jetty">
+				<allow pkg="org.springframework.boot.web.embedded.jetty" />
+			</subpackage>
+			<subpackage name="embedded.tomcat">
+				<allow pkg="org.springframework.boot.web.embedded.tomcat" />
+			</subpackage>
+			<subpackage name="embedded.undertow">
+				<allow pkg="org.springframework.boot.web.embedded.undertow" />
+			</subpackage>
 			<subpackage name="servlet">
 				<allow pkg="javax.servlet" />
 				<allow pkg="org.springframework.boot.web.embedded" />
@@ -34,15 +43,13 @@
 		<disallow pkg="org.springframework.http" />
 		<disallow pkg="org.springframework.web" />
 		<subpackage name="web">
+			<allow pkg="org.springframework.http" />
+			<allow pkg="org.springframework.web" />
 			<subpackage name="servlet">
 				<disallow pkg="org.springframework.web.reactive" />
-				<allow pkg="org.springframework.http" />
-				<allow pkg="org.springframework.web" />
 			</subpackage>
 			<subpackage name="reactive">
 				<disallow pkg="org.springframework.web.servlet" />
-				<allow pkg="org.springframework.http" />
-				<allow pkg="org.springframework.web" />
 			</subpackage>
 		</subpackage>
 	</subpackage>

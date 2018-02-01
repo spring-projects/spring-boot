@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ class ServletManagementChildContextConfiguration {
 
 	}
 
-	static abstract class AccessLogCustomizer implements Ordered {
+	abstract static class AccessLogCustomizer implements Ordered {
 
 		protected String customizePrefix(String prefix) {
 			return "management_" + prefix;
@@ -126,8 +126,8 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
 		@Override
-		public void customize(TomcatServletWebServerFactory serverFactory) {
-			AccessLogValve accessLogValve = findAccessLogValve(serverFactory);
+		public void customize(TomcatServletWebServerFactory factory) {
+			AccessLogValve accessLogValve = findAccessLogValve(factory);
 			if (accessLogValve == null) {
 				return;
 			}
@@ -135,8 +135,8 @@ class ServletManagementChildContextConfiguration {
 		}
 
 		private AccessLogValve findAccessLogValve(
-				TomcatServletWebServerFactory serverFactory) {
-			for (Valve engineValve : serverFactory.getEngineValves()) {
+				TomcatServletWebServerFactory factory) {
+			for (Valve engineValve : factory.getEngineValves()) {
 				if (engineValve instanceof AccessLogValve) {
 					return (AccessLogValve) engineValve;
 				}
@@ -150,9 +150,9 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
 		@Override
-		public void customize(UndertowServletWebServerFactory serverFactory) {
-			serverFactory.setAccessLogPrefix(
-					customizePrefix(serverFactory.getAccessLogPrefix()));
+		public void customize(UndertowServletWebServerFactory factory) {
+			factory.setAccessLogPrefix(
+					customizePrefix(factory.getAccessLogPrefix()));
 		}
 
 	}

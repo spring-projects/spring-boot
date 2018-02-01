@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ import org.springframework.integration.support.management.PollableChannelManagem
  */
 public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingSingleton {
 
-	private final Iterable<Tag> tags;
+	private final Tags tags;
 
 	private Collection<MeterRegistry> registries = new ArrayList<>();
 
@@ -56,9 +56,9 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 	}
 
 	public SpringIntegrationMetrics(IntegrationManagementConfigurer configurer,
-			Iterable<Tag> tags) {
+			Iterable<? extends Tag> tags) {
 		this.configurer = configurer;
-		this.tags = tags;
+		this.tags = Tags.of(tags);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 	private void addSourceMetrics(MeterRegistry registry) {
 		for (String source : this.configurer.getSourceNames()) {
 			MessageSourceMetrics sourceMetrics = this.configurer.getSourceMetrics(source);
-			Iterable<Tag> tagsWithSource = Tags.concat(this.tags, "source", source);
+			Iterable<Tag> tagsWithSource = this.tags.and("source", source);
 			registerFunctionCounter(registry, sourceMetrics, tagsWithSource,
 					"spring.integration.source.messages",
 					"The number of successful handler calls",
@@ -93,7 +93,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 		for (String handler : this.configurer.getHandlerNames()) {
 			MessageHandlerMetrics handlerMetrics = this.configurer
 					.getHandlerMetrics(handler);
-			Iterable<Tag> tagsWithHandler = Tags.concat(this.tags, "handler", handler);
+			Iterable<Tag> tagsWithHandler = this.tags.and("handler", handler);
 			registerTimedGauge(registry, handlerMetrics, tagsWithHandler,
 					"spring.integration.handler.duration.max",
 					"The maximum handler duration",
@@ -116,7 +116,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 		for (String channel : this.configurer.getChannelNames()) {
 			MessageChannelMetrics channelMetrics = this.configurer
 					.getChannelMetrics(channel);
-			Iterable<Tag> tagsWithChannel = Tags.concat(this.tags, "channel", channel);
+			Iterable<Tag> tagsWithChannel = this.tags.and("channel", channel);
 			registerFunctionCounter(registry, channelMetrics, tagsWithChannel,
 					"spring.integration.channel.sendErrors",
 					"The number of failed sends (either throwing an exception or rejected by the channel)",

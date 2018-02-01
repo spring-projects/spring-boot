@@ -1,0 +1,14 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'org.springframework.boot'
+
+task kotlinVersion {
+	doLast {
+		def kotlinVersion = project.hasProperty('kotlin.version') ? project.getProperty('kotlin.version') : 'none'
+		println "Kotlin version: ${kotlinVersion}"
+	}
+}

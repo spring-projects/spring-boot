@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
@@ -48,7 +49,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @see AnnotationConfigWebApplicationContext
  */
 public class AnnotationConfigServletWebServerApplicationContext
-		extends ServletWebServerApplicationContext {
+		extends ServletWebServerApplicationContext implements AnnotationConfigRegistry {
 
 	private final AnnotatedBeanDefinitionReader reader;
 
@@ -122,8 +123,8 @@ public class AnnotationConfigServletWebServerApplicationContext
 
 	/**
 	 * Provide a custom {@link BeanNameGenerator} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner},
-	 * if any.
+	 * {@link AnnotatedBeanDefinitionReader} and/or
+	 * {@link ClassPathBeanDefinitionScanner}, if any.
 	 * <p>
 	 * Default is
 	 * {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
@@ -168,6 +169,7 @@ public class AnnotationConfigServletWebServerApplicationContext
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */
+	@Override
 	public final void register(Class<?>... annotatedClasses) {
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
@@ -181,6 +183,7 @@ public class AnnotationConfigServletWebServerApplicationContext
 	 * @see #register(Class...)
 	 * @see #refresh()
 	 */
+	@Override
 	public final void scan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		this.basePackages = basePackages;

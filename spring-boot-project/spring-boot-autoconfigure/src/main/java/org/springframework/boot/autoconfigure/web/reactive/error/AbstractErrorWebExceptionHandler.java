@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.http.codec.HttpMessageReader;
@@ -38,6 +40,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Abstract base class for {@link ErrorWebExceptionHandler} implementations.
@@ -186,15 +189,23 @@ public abstract class AbstractErrorWebExceptionHandler
 	protected Mono<ServerResponse> renderDefaultErrorView(
 			ServerResponse.BodyBuilder responseBody, Map<String, Object> error) {
 		StringBuilder builder = new StringBuilder();
+		Object message = error.get("message");
 		Date timestamp = (Date) error.get("timestamp");
 		builder.append("<html><body><h1>Whitelabel Error Page</h1>")
 				.append("<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
-				.append("<div id='created'>").append(timestamp.toString())
+				.append("<div id='created'>").append(timestamp)
 				.append("</div>").append("<div>There was an unexpected error (type=")
-				.append(error.get("error")).append(", status=")
-				.append(error.get("status")).append(").</div>").append("<div>")
-				.append(error.get("message")).append("</div>").append("</body></html>");
+				.append(htmlEscape(error.get("error"))).append(", status=")
+				.append(htmlEscape(error.get("status"))).append(").</div>");
+		if (message != null) {
+			builder.append("<div>").append(htmlEscape(message)).append("</div>");
+		}
+		builder.append("</body></html>");
 		return responseBody.syncBody(builder.toString());
+	}
+
+	private String htmlEscape(Object input) {
+		return (input == null ? null : HtmlUtils.htmlEscape(input.toString()));
 	}
 
 	@Override

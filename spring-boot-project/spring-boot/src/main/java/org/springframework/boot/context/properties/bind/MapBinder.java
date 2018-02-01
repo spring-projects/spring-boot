@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,13 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
+				ConfigurationProperty property = source.getConfigurationProperty(name);
+				if (property != null) {
+					Object value = getContext().getPlaceholdersResolver()
+							.resolvePlaceholders(property.getValue());
+					return ResolvableTypeDescriptor.forType(target.getType())
+							.convert(getContext().getConversionService(), value);
+				}
 				source = source.filter(name::isAncestorOf);
 			}
 			new EntryBinder(name, resolvedTarget, elementBinder).bindEntries(source, map);

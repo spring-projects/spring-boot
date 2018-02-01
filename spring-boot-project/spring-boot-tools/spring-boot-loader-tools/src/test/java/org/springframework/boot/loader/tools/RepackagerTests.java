@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -575,6 +577,58 @@ public class RepackagerTests {
 		}
 	}
 
+	@Test
+	public void loaderIsWrittenFirstThenApplicationClassesThenLibraries()
+			throws IOException {
+		this.testJarFile.addClass("com/example/Application.class",
+				ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		File libraryOne = createLibrary();
+		File libraryTwo = createLibrary();
+		File libraryThree = createLibrary();
+		Repackager repackager = new Repackager(source);
+		repackager.repackage(dest, (callback) -> {
+			callback.library(new Library(libraryOne, LibraryScope.COMPILE, false));
+			callback.library(new Library(libraryTwo, LibraryScope.COMPILE, true));
+			callback.library(new Library(libraryThree, LibraryScope.COMPILE, false));
+		});
+		assertThat(getEntryNames(dest)).containsSubsequence(
+				"org/springframework/boot/loader/",
+				"BOOT-INF/classes/com/example/Application.class",
+				"BOOT-INF/lib/" + libraryOne.getName(),
+				"BOOT-INF/lib/" + libraryTwo.getName(),
+				"BOOT-INF/lib/" + libraryThree.getName());
+	}
+
+	@Test
+	public void existingEntryThatMatchesUnpackLibraryIsMarkedForUnpack()
+			throws IOException {
+		File library = createLibrary();
+		this.testJarFile.addClass("WEB-INF/classes/com/example/Application.class",
+				ClassWithMainMethod.class);
+		this.testJarFile.addFile("WEB-INF/lib/" + library.getName(), library);
+		File source = this.testJarFile.getFile("war");
+		File dest = this.temporaryFolder.newFile("dest.war");
+		Repackager repackager = new Repackager(source);
+		repackager.setLayout(new Layouts.War());
+		repackager.repackage(dest, (callback) -> callback
+				.library(new Library(library, LibraryScope.COMPILE, true)));
+		assertThat(getEntryNames(dest)).containsSubsequence(
+				"org/springframework/boot/loader/",
+				"WEB-INF/classes/com/example/Application.class",
+				"WEB-INF/lib/" + library.getName());
+		JarEntry unpackLibrary = getEntry(dest, "WEB-INF/lib/" + library.getName());
+		assertThat(unpackLibrary.getComment()).startsWith("UNPACK:");
+	}
+
+	private File createLibrary() throws IOException {
+		TestJarFile library = new TestJarFile(this.temporaryFolder);
+		library.addClass("com/example/library/Library.class",
+				ClassWithoutMainMethod.class);
+		return library.getFile();
+	}
+
 	private boolean hasLauncherClasses(File file) throws IOException {
 		return hasEntry(file, "org/springframework/boot/")
 				&& hasEntry(file, "org/springframework/boot/loader/JarLauncher.class");
@@ -594,6 +648,17 @@ public class RepackagerTests {
 		try (JarFile jarFile = new JarFile(file)) {
 			return jarFile.getManifest();
 		}
+	}
+
+	private List<String> getEntryNames(File file) throws IOException {
+		List<String> entryNames = new ArrayList<>();
+		try (JarFile jarFile = new JarFile(file)) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				entryNames.add(entries.nextElement().getName());
+			}
+		}
+		return entryNames;
 	}
 
 	private static class MockLauncherScript implements LaunchScript {

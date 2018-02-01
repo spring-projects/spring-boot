@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,20 @@ import java.util.Collections;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebAnnotationEndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebEndpointDiscoverer;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -47,13 +54,14 @@ import org.springframework.web.server.WebFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to expose actuator endpoints for
- * cloud foundry to use in a reactive environment.
+ * Cloud Foundry to use in a reactive environment.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 @Configuration
 @ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
+@AutoConfigureAfter(HealthEndpointAutoConfiguration.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 public class ReactiveCloudFoundryActuatorAutoConfiguration {
@@ -65,28 +73,38 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
+	@ConditionalOnBean({ HealthEndpoint.class, ReactiveHealthEndpointWebExtension.class })
+	public CloudFoundryReactiveHealthEndpointWebExtension cloudFoundryReactiveHealthEndpointWebExtension(
+			ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension) {
+		return new CloudFoundryReactiveHealthEndpointWebExtension(
+				reactiveHealthEndpointWebExtension);
+	}
+
+	@Bean
 	public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebFluxEndpointHandlerMapping(
-			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
+			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			WebClient.Builder webClientBuilder) {
-		CloudFoundryWebAnnotationEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebAnnotationEndpointDiscoverer(
+		CloudFoundryWebEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebEndpointDiscoverer(
 				this.applicationContext, parameterMapper, endpointMediaTypes,
-				EndpointPathResolver.useEndpointId(), null, null,
-				CloudFoundryReactiveHealthEndpointWebExtension.class);
-		ReactiveCloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
+				PathMapper.useEndpointId(), Collections.emptyList(),
+				Collections.emptyList());
+		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(
 				webClientBuilder, this.applicationContext.getEnvironment());
 		return new CloudFoundryWebFluxEndpointHandlerMapping(
 				new EndpointMapping("/cloudfoundryapplication"),
-				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
+				endpointDiscoverer.getEndpoints(), endpointMediaTypes,
 				getCorsConfiguration(), securityInterceptor);
 	}
 
-	private ReactiveCloudFoundrySecurityInterceptor getSecurityInterceptor(
+	private CloudFoundrySecurityInterceptor getSecurityInterceptor(
 			WebClient.Builder restTemplateBuilder, Environment environment) {
 		ReactiveCloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
 				restTemplateBuilder, environment);
 		ReactiveTokenValidator tokenValidator = new ReactiveTokenValidator(
 				cloudfoundrySecurityService);
-		return new ReactiveCloudFoundrySecurityInterceptor(tokenValidator,
+		return new CloudFoundrySecurityInterceptor(tokenValidator,
 				cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
 	}

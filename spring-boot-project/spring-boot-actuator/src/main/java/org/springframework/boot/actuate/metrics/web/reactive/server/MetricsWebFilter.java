@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import io.micrometer.core.instrument.Tag;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -34,6 +36,7 @@ import org.springframework.web.server.WebFilterChain;
  * @author Jon Schneider
  * @since 2.0.0
  */
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class MetricsWebFilter implements WebFilter {
 
 	private final MeterRegistry registry;

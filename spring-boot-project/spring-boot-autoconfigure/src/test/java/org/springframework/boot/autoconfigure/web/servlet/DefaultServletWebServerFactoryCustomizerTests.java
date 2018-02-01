@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,16 @@ package org.springframework.boot.autoconfigure.web.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
+import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.eclipse.jetty.server.NCSARequestLog;
@@ -51,18 +46,20 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
-import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.Jsp;
+import org.springframework.boot.web.servlet.server.Session;
+import org.springframework.boot.web.servlet.server.Session.Cookie;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -72,6 +69,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link DefaultServletWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
+ * @author Yunkun Huang
  */
 public class DefaultServletWebServerFactoryCustomizerTests {
 
@@ -161,11 +159,9 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		assertThat(tomcat.getRedirectContextRoot()).isEqualTo(false);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
-		Context context = mock(Context.class);
-		for (TomcatContextCustomizer customizer : factory.getTomcatContextCustomizers()) {
-			customizer.customize(context);
-		}
-		verify(context).setMapperContextRootRedirectEnabled(false);
+		Context context = (Context) ((TomcatWebServer) factory.getWebServer()).getTomcat()
+				.getHost().findChildren()[0];
+		assertThat(context.getMapperContextRootRedirectEnabled()).isFalse();
 	}
 
 	@Test
@@ -177,11 +173,27 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		assertThat(tomcat.getUseRelativeRedirects()).isTrue();
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);
-		Context context = mock(Context.class);
-		for (TomcatContextCustomizer customizer : factory.getTomcatContextCustomizers()) {
-			customizer.customize(context);
+		Context context = (Context) ((TomcatWebServer) factory.getWebServer()).getTomcat()
+				.getHost().findChildren()[0];
+		assertThat(context.getUseRelativeRedirects()).isTrue();
+	}
+
+	@Test
+	public void errorReportValveIsConfiguredToNotReportStackTraces() {
+		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+		Map<String, String> map = new HashMap<String, String>();
+		bindProperties(map);
+		this.customizer.customize(factory);
+		Valve[] valves = ((TomcatWebServer) factory.getWebServer()).getTomcat().getHost()
+				.getPipeline().getValves();
+		assertThat(valves).hasAtLeastOneElementOfType(ErrorReportValve.class);
+		for (Valve valve : valves) {
+			if (valve instanceof ErrorReportValve) {
+				ErrorReportValve errorReportValve = (ErrorReportValve) valve;
+				assertThat(errorReportValve.isShowReport()).isFalse();
+				assertThat(errorReportValve.isShowServerInfo()).isFalse();
+			}
 		}
-		verify(context).setUseRelativeRedirects(true);
 	}
 
 	@Test
@@ -210,35 +222,51 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	public void testCustomizeSsl() {
+		ConfigurableServletWebServerFactory factory = mock(
+				ConfigurableServletWebServerFactory.class);
+		Ssl ssl = mock(Ssl.class);
+		this.properties.setSsl(ssl);
+		this.customizer.customize(factory);
+		verify(factory).setSsl(ssl);
+	}
+
+	@Test
+	public void testCustomizeJsp() {
+		ConfigurableServletWebServerFactory factory = mock(
+				ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setJsp(any(Jsp.class));
+	}
+
+	@Test
 	public void customizeSessionProperties() throws Exception {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.session.timeout", "123");
-		map.put("server.session.tracking-modes", "cookie,url");
-		map.put("server.session.cookie.name", "testname");
-		map.put("server.session.cookie.domain", "testdomain");
-		map.put("server.session.cookie.path", "/testpath");
-		map.put("server.session.cookie.comment", "testcomment");
-		map.put("server.session.cookie.http-only", "true");
-		map.put("server.session.cookie.secure", "true");
-		map.put("server.session.cookie.max-age", "60");
+		map.put("server.servlet.session.timeout", "123");
+		map.put("server.servlet.session.tracking-modes", "cookie,url");
+		map.put("server.servlet.session.cookie.name", "testname");
+		map.put("server.servlet.session.cookie.domain", "testdomain");
+		map.put("server.servlet.session.cookie.path", "/testpath");
+		map.put("server.servlet.session.cookie.comment", "testcomment");
+		map.put("server.servlet.session.cookie.http-only", "true");
+		map.put("server.servlet.session.cookie.secure", "true");
+		map.put("server.servlet.session.cookie.max-age", "60");
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(
 				ConfigurableServletWebServerFactory.class);
-		ServletContext servletContext = mock(ServletContext.class);
-		SessionCookieConfig sessionCookieConfig = mock(SessionCookieConfig.class);
-		given(servletContext.getSessionCookieConfig()).willReturn(sessionCookieConfig);
 		this.customizer.customize(factory);
-		triggerInitializers(factory, servletContext);
-		verify(factory).setSessionTimeout(Duration.ofSeconds(123));
-		verify(servletContext).setSessionTrackingModes(
-				EnumSet.of(SessionTrackingMode.COOKIE, SessionTrackingMode.URL));
-		verify(sessionCookieConfig).setName("testname");
-		verify(sessionCookieConfig).setDomain("testdomain");
-		verify(sessionCookieConfig).setPath("/testpath");
-		verify(sessionCookieConfig).setComment("testcomment");
-		verify(sessionCookieConfig).setHttpOnly(true);
-		verify(sessionCookieConfig).setSecure(true);
-		verify(sessionCookieConfig).setMaxAge(60);
+		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
+		verify(factory).setSession(sessionCaptor.capture());
+		assertThat(sessionCaptor.getValue().getTimeout())
+				.isEqualTo(Duration.ofSeconds(123));
+		Cookie cookie = sessionCaptor.getValue().getCookie();
+		assertThat(cookie.getName()).isEqualTo("testname");
+		assertThat(cookie.getDomain()).isEqualTo("testdomain");
+		assertThat(cookie.getPath()).isEqualTo("/testpath");
+		assertThat(cookie.getComment()).isEqualTo("testcomment");
+		assertThat(cookie.getHttpOnly()).isTrue();
+		assertThat(cookie.getMaxAge()).isEqualTo(Duration.ofSeconds(60));
+
 	}
 
 	@Test
@@ -536,11 +564,14 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	@Test
 	public void sessionStoreDir() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.session.store-dir", "myfolder");
+		map.put("server.servlet.session.store-dir", "myfolder");
 		bindProperties(map);
 		JettyServletWebServerFactory factory = spy(new JettyServletWebServerFactory());
 		this.customizer.customize(factory);
-		verify(factory).setSessionStoreDir(new File("myfolder"));
+		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
+		verify(factory).setSession(sessionCaptor.capture());
+		assertThat(sessionCaptor.getValue().getStoreDir())
+				.isEqualTo(new File("myfolder"));
 	}
 
 	@Test
@@ -635,21 +666,6 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 		}
 		finally {
 			server.stop();
-		}
-	}
-
-	private void triggerInitializers(ConfigurableServletWebServerFactory factory,
-			ServletContext servletContext) throws ServletException {
-		verify(factory, atLeastOnce()).addInitializers(this.initializersCaptor.capture());
-		for (Object initializers : this.initializersCaptor.getAllValues()) {
-			if (initializers instanceof ServletContextInitializer) {
-				((ServletContextInitializer) initializers).onStartup(servletContext);
-			}
-			else {
-				for (ServletContextInitializer initializer : (ServletContextInitializer[]) initializers) {
-					initializer.onStartup(servletContext);
-				}
-			}
 		}
 	}
 

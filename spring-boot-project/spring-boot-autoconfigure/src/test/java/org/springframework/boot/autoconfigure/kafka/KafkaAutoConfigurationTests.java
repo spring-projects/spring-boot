@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -254,11 +254,16 @@ public class KafkaAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.kafka.template.default-topic=testTopic",
 						"spring.kafka.listener.ack-mode=MANUAL",
+						"spring.kafka.listener.client-id=client",
 						"spring.kafka.listener.ack-count=123",
 						"spring.kafka.listener.ack-time=456",
 						"spring.kafka.listener.concurrency=3",
 						"spring.kafka.listener.poll-timeout=2000",
+						"spring.kafka.listener.no-poll-threshold=2.5",
 						"spring.kafka.listener.type=batch",
+						"spring.kafka.listener.idle-event-interval=1s",
+						"spring.kafka.listener.monitor-interval=45",
+						"spring.kafka.listener.log-container-config=true",
 						"spring.kafka.jaas.enabled=true",
 						"spring.kafka.producer.transaction-id-prefix=foo",
 						"spring.kafka.jaas.login-module=foo",
@@ -285,6 +290,8 @@ public class KafkaAutoConfigurationTests {
 							.isEqualTo(consumerFactory);
 					assertThat(dfa.getPropertyValue("containerProperties.ackMode"))
 							.isEqualTo(AckMode.MANUAL);
+					assertThat(dfa.getPropertyValue("containerProperties.clientId"))
+							.isEqualTo("client");
 					assertThat(dfa.getPropertyValue("containerProperties.ackCount"))
 							.isEqualTo(123);
 					assertThat(dfa.getPropertyValue("containerProperties.ackTime"))
@@ -292,6 +299,18 @@ public class KafkaAutoConfigurationTests {
 					assertThat(dfa.getPropertyValue("concurrency")).isEqualTo(3);
 					assertThat(dfa.getPropertyValue("containerProperties.pollTimeout"))
 							.isEqualTo(2000L);
+					assertThat(
+							dfa.getPropertyValue("containerProperties.noPollThreshold"))
+									.isEqualTo(2.5f);
+					assertThat(
+							dfa.getPropertyValue("containerProperties.idleEventInterval"))
+									.isEqualTo(1000L);
+					assertThat(
+							dfa.getPropertyValue("containerProperties.monitorInterval"))
+									.isEqualTo(45);
+					assertThat(dfa
+							.getPropertyValue("containerProperties.logContainerConfig"))
+									.isEqualTo(Boolean.TRUE);
 					assertThat(dfa.getPropertyValue("batchListener")).isEqualTo(true);
 					assertThat(
 							context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))

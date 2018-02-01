@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,22 +34,25 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation;
 import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation;
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring REST Docs.
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Roman Zaynetdinov
  * @since 1.4.0
  */
 @Configuration
-@EnableConfigurationProperties
 @ConditionalOnWebApplication
 public class RestDocsAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(MockMvcRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsMockMvcAutoConfiguration {
 
 		@Bean
@@ -69,11 +71,11 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.test.restdocs")
 		public RestDocsMockMvcBuilderCustomizer restDocumentationConfigurer(
+				RestDocsProperties properties,
 				MockMvcRestDocumentationConfigurer configurer,
 				ObjectProvider<RestDocumentationResultHandler> resultHandler) {
-			return new RestDocsMockMvcBuilderCustomizer(configurer,
+			return new RestDocsMockMvcBuilderCustomizer(properties, configurer,
 					resultHandler.getIfAvailable());
 		}
 
@@ -82,6 +84,7 @@ public class RestDocsAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ RequestSpecification.class,
 			RestAssuredRestDocumentation.class })
+	@EnableConfigurationProperties(RestDocsProperties.class)
 	static class RestDocsRestAssuredAutoConfiguration {
 
 		@Bean
@@ -100,10 +103,39 @@ public class RestDocsAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.test.restdocs")
 		public RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(
-				RequestSpecification configurer) {
-			return new RestDocsRestAssuredBuilderCustomizer(configurer);
+				RestDocsProperties properties, RequestSpecification configurer) {
+			return new RestDocsRestAssuredBuilderCustomizer(properties, configurer);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(WebTestClientRestDocumentation.class)
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	@EnableConfigurationProperties(RestDocsProperties.class)
+	static class RestDocsWebTestClientAutoConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(WebTestClientRestDocumentationConfigurer.class)
+		public WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
+				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizerProvider,
+				RestDocumentationContextProvider contextProvider) {
+			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
+					.documentationConfiguration(contextProvider);
+			RestDocsWebTestClientConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
+					.getIfAvailable();
+			if (configurationCustomizer != null) {
+				configurationCustomizer.customize(configurer);
+			}
+			return configurer;
+		}
+
+		@Bean
+		public RestDocsWebTestClientBuilderCustomizer restDocumentationConfigurer(
+				RestDocsProperties properties,
+				WebTestClientRestDocumentationConfigurer configurer) {
+			return new RestDocsWebTestClientBuilderCustomizer(properties, configurer);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ import org.springframework.util.StringUtils;
  * @see TomcatWebServer
  */
 public class TomcatServletWebServerFactory extends AbstractServletWebServerFactory
-		implements ResourceLoaderAware {
+		implements ConfigurableTomcatWebServerFactory, ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
@@ -216,8 +216,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 		context.addLifecycleListener(new StaticResourceConfigurer(context));
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		configureContext(context, initializersToUse);
 		host.addChild(context);
+		configureContext(context, initializersToUse);
 		postProcessContext(context);
 	}
 
@@ -362,7 +362,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
-		if (isPersistSession()) {
+		if (getSession().isPersistent()) {
 			Manager manager = context.getManager();
 			if (manager == null) {
 				manager = new StandardManager();
@@ -385,12 +385,16 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private long getSessionTimeoutInMinutes() {
-		Duration sessionTimeout = getSessionTimeout();
-		if (sessionTimeout == null || sessionTimeout.isNegative()
-				|| sessionTimeout.isZero()) {
+		Duration sessionTimeout = getSession().getTimeout();
+		if (isZeroOrLess(sessionTimeout)) {
 			return 0;
 		}
 		return Math.max(sessionTimeout.toMinutes(), 1);
+	}
+
+	private boolean isZeroOrLess(Duration sessionTimeout) {
+		return sessionTimeout == null || sessionTimeout.isNegative()
+				|| sessionTimeout.isZero();
 	}
 
 	/**
@@ -418,10 +422,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		this.resourceLoader = resourceLoader;
 	}
 
-	/**
-	 * Set the Tomcat base directory. If not specified a temporary directory will be used.
-	 * @param baseDirectory the tomcat base directory
-	 */
+	@Override
 	public void setBaseDirectory(File baseDirectory) {
 		this.baseDirectory = baseDirectory;
 	}
@@ -483,10 +484,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return this.engineValves;
 	}
 
-	/**
-	 * Add {@link Valve}s that should be applied to the Tomcat {@link Engine}.
-	 * @param engineValves the valves to add
-	 */
+	@Override
 	public void addEngineValves(Valve... engineValves) {
 		Assert.notNull(engineValves, "Valves must not be null");
 		this.engineValves.addAll(Arrays.asList(engineValves));
@@ -522,8 +520,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	/**
-	 * Set {@link LifecycleListener}s that should be applied to the Tomcat {@link Context}.
-	 * Calling this method will replace any existing listeners.
+	 * Set {@link LifecycleListener}s that should be applied to the Tomcat
+	 * {@link Context}. Calling this method will replace any existing listeners.
 	 * @param contextLifecycleListeners the listeners to set
 	 */
 	public void setContextLifecycleListeners(
@@ -574,11 +572,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return this.tomcatContextCustomizers;
 	}
 
-	/**
-	 * Add {@link TomcatContextCustomizer}s that should be added to the Tomcat
-	 * {@link Context}.
-	 * @param tomcatContextCustomizers the customizers to add
-	 */
+	@Override
 	public void addContextCustomizers(
 			TomcatContextCustomizer... tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers,
@@ -598,11 +592,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		this.tomcatConnectorCustomizers = new ArrayList<>(tomcatConnectorCustomizers);
 	}
 
-	/**
-	 * Add {@link TomcatConnectorCustomizer}s that should be added to the Tomcat
-	 * {@link Connector}.
-	 * @param tomcatConnectorCustomizers the customizers to add
-	 */
+	@Override
 	public void addConnectorCustomizers(
 			TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
 		Assert.notNull(tomcatConnectorCustomizers,
@@ -637,11 +627,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return this.additionalTomcatConnectors;
 	}
 
-	/**
-	 * Set the character encoding to use for URL decoding. If not specified 'UTF-8' will
-	 * be used.
-	 * @param uriEncoding the uri encoding to set
-	 */
+	@Override
 	public void setUriEncoding(Charset uriEncoding) {
 		this.uriEncoding = uriEncoding;
 	}
@@ -654,11 +640,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		return this.uriEncoding;
 	}
 
-	/**
-	 * Sets the background processor delay in seconds.
-	 * @param delay the delay in seconds
-	 * @since 1.4.1
-	 */
+	@Override
 	public void setBackgroundProcessorDelay(int delay) {
 		this.backgroundProcessorDelay = delay;
 	}

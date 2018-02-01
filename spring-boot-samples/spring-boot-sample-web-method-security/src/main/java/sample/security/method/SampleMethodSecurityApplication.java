@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package sample.security.method;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.boot.actuate.autoconfigure.security.EndpointRequest;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
@@ -62,7 +62,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		registry.addViewController("/access").setViewName("access");
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
 	}
 

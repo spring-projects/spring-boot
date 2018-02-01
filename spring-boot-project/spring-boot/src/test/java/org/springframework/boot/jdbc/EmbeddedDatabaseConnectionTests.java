@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,17 @@ public class EmbeddedDatabaseConnectionTests {
 	}
 
 	@Test
-	public void getUrlWithNoDatabaseName() {
+	public void getUrlWithNullDatabaseName() {
 		this.thrown.expect(IllegalArgumentException.class);
-		EmbeddedDatabaseConnection.H2.getUrl("  ");
+		this.thrown.expectMessage("DatabaseName must not be empty");
+		EmbeddedDatabaseConnection.HSQL.getUrl(null);
+	}
+
+	@Test
+	public void getUrlWithEmptyDatabaseName() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("DatabaseName must not be empty");
+		EmbeddedDatabaseConnection.HSQL.getUrl("  ");
 	}
 
 }

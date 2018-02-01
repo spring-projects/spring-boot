@@ -322,8 +322,7 @@ and the following command:
 This is one of the easiest ways to get to AWS, but there are more things to cover, such as
 how to integrate Elastic Beanstalk into any CI / CD tool, use the Elastic Beanstalk Maven
 plugin instead of the CLI, and others. There is a
-https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/
-[blog post] covering these topics more in detail.
+https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog post] covering these topics more in detail.
 
 
 
@@ -348,13 +347,11 @@ the following:
 ----
 
 See the https://boxfuse.com/docs/commandline/run.html[`boxfuse run` documentation] for
-more options. If there is a https://boxfuse.com/docs/commandline/#configuration
-[`boxfuse.conf`] file present in the current directory, it is considered.
+more options. If there is a https://boxfuse.com/docs/commandline/#configuration[`boxfuse.conf`] file present in the current directory, it is considered.
 
 TIP: By default, Boxfuse activates a Spring profile named `boxfuse` on startup. If your
 executable jar or war contains an
-https://boxfuse.com/docs/payloads/springboot.html#configuration
-[`application-boxfuse.properties`] file, Boxfuse bases its configuration on the
+https://boxfuse.com/docs/payloads/springboot.html#configuration[`application-boxfuse.properties`] file, Boxfuse bases its configuration on the
 properties it contains.
 
 At this point, `boxfuse` creates an image for your application, uploads it, and configures

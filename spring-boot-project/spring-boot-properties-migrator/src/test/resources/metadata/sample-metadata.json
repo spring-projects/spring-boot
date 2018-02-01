@@ -1,0 +1,41 @@
+{
+  "properties": [
+    {
+      "name": "test.two",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "test.four",
+      "type": "java.util.Map<java.lang.String,java.lang.String>"
+    },
+    {
+      "name": "wrong.one",
+      "deprecation": {
+        "reason": "This is no longer supported.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "wrong.two",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "test.two",
+        "level": "error"
+      }
+    },
+    {
+      "name": "wrong.three",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "wrong.four.test",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "test.four.test",
+        "level": "error"
+      }
+    }
+  ]
+}

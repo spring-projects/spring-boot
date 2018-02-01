@@ -154,12 +154,12 @@ start() {
 do_start() {
   working_dir=$(dirname "$jarfile")
   pushd "$working_dir" > /dev/null
-  mkdir -p "$PID_FOLDER" &> /dev/null
+  if [[ ! -e "$PID_FOLDER" ]]; then
+    mkdir -p "$PID_FOLDER" &> /dev/null
+    chown "$run_user" "$PID_FOLDER"
+  fi
   if [[ -n "$run_user" ]]; then
     checkPermissions || return $?
-    chown "$run_user" "$PID_FOLDER"
-    chown "$run_user" "$pid_file"
-    chown "$run_user" "$log_file"
     if [ $USE_START_STOP_DAEMON = true ] && type start-stop-daemon > /dev/null 2>&1; then
       start-stop-daemon --start --quiet \
         --chuid "$run_user" \

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class ReactiveAuthenticationManagerConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(TestSecurityConfiguration.class,
 						ReactiveAuthenticationManagerConfiguration.class)
-				.run((context -> {
+				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
 					String password = userDetailsService.findByUsername("user").block()
@@ -76,7 +76,7 @@ public class ReactiveAuthenticationManagerConfigurationTests {
 				.withUserConfiguration(configClass,
 						ReactiveAuthenticationManagerConfiguration.class)
 				.withPropertyValues("spring.security.user.password=" + providedPassword)
-				.run((context -> {
+				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
 					String password = userDetailsService.findByUsername("user").block()

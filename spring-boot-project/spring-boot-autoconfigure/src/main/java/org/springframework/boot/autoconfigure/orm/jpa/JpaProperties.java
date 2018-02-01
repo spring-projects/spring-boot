@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -222,6 +224,11 @@ public class JpaProperties {
 			else {
 				result.remove("hibernate.hbm2ddl.auto");
 			}
+			Collection<HibernatePropertiesCustomizer> customizers = settings
+					.getHibernatePropertiesCustomizers();
+			if (!ObjectUtils.isEmpty(customizers)) {
+				customizers.forEach((customizer) -> customizer.customize(result));
+			}
 			return result;
 		}
 
@@ -238,11 +245,11 @@ public class JpaProperties {
 		private String determineDdlAuto(Map<String, String> existing,
 				String defaultDdlAuto) {
 			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto);
-			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
+			if (!existing.containsKey("hibernate.hbm2ddl.auto")
 					&& !"none".equals(ddlAuto)) {
 				return ddlAuto;
 			}
-			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
+			if (existing.containsKey("hibernate.hbm2ddl.auto")) {
 				return existing.get("hibernate.hbm2ddl.auto");
 			}
 			return "none";

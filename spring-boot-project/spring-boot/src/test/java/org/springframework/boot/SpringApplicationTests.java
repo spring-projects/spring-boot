@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,6 +44,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -53,7 +52,9 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -97,12 +98,15 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -365,27 +369,22 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void eventsOrder() {
+	@SuppressWarnings("unchecked")
+	public void eventsArePublishedInExpectedOrder() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		final List<ApplicationEvent> events = new ArrayList<>();
-		class ApplicationRunningEventListener
-				implements ApplicationListener<ApplicationEvent> {
-
-			@Override
-			public void onApplicationEvent(ApplicationEvent event) {
-				events.add((event));
-			}
-
-		}
-		application.addListeners(new ApplicationRunningEventListener());
+		ApplicationListener<ApplicationEvent> listener = mock(ApplicationListener.class);
+		application.addListeners(listener);
 		this.context = application.run();
-		assertThat(events).hasSize(5);
-		assertThat(events.get(0)).isInstanceOf(ApplicationStartingEvent.class);
-		assertThat(events.get(1)).isInstanceOf(ApplicationEnvironmentPreparedEvent.class);
-		assertThat(events.get(2)).isInstanceOf(ApplicationPreparedEvent.class);
-		assertThat(events.get(3)).isInstanceOf(ContextRefreshedEvent.class);
-		assertThat(events.get(4)).isInstanceOf(ApplicationReadyEvent.class);
+		InOrder inOrder = Mockito.inOrder(listener);
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartingEvent.class));
+		inOrder.verify(listener)
+				.onApplicationEvent(isA(ApplicationEnvironmentPreparedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationPreparedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ContextRefreshedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
+		inOrder.verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
+		inOrder.verifyNoMoreInteractions();
 	}
 
 	@Test
@@ -589,29 +588,124 @@ public class SpringApplicationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void runnersAreCalledAfterApplicationReadyEventIsPublished() throws Exception {
-		SpringApplication application = new SpringApplication(
-				MockRunnerConfiguration.class);
+	public void runnersAreCalledAfterStartedIsLoggedAndBeforeApplicationReadyEventIsPublished()
+			throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		ApplicationRunner applicationRunner = mock(ApplicationRunner.class);
+		CommandLineRunner commandLineRunner = mock(CommandLineRunner.class);
+		application.addInitializers((context) -> {
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			beanFactory.registerSingleton("commandLineRunner", new CommandLineRunner() {
+
+				@Override
+				public void run(String... args) throws Exception {
+					assertThat(SpringApplicationTests.this.output.toString())
+							.contains("Started");
+					commandLineRunner.run(args);
+				}
+
+			});
+			beanFactory.registerSingleton("applicationRunner", new ApplicationRunner() {
+
+				@Override
+				public void run(ApplicationArguments args) throws Exception {
+					assertThat(SpringApplicationTests.this.output.toString())
+							.contains("Started");
+					applicationRunner.run(args);
+				}
+
+			});
+		});
 		application.setWebApplicationType(WebApplicationType.NONE);
 		ApplicationListener<ApplicationReadyEvent> eventListener = mock(
 				ApplicationListener.class);
 		application.addListeners(eventListener);
 		this.context = application.run();
-		ApplicationRunner applicationRunner = this.context
-				.getBean(ApplicationRunner.class);
-		CommandLineRunner commandLineRunner = this.context
-				.getBean(CommandLineRunner.class);
 		InOrder applicationRunnerOrder = Mockito.inOrder(eventListener,
 				applicationRunner);
-		applicationRunnerOrder.verify(eventListener)
-				.onApplicationEvent(ArgumentMatchers.any(ApplicationReadyEvent.class));
 		applicationRunnerOrder.verify(applicationRunner)
 				.run(ArgumentMatchers.any(ApplicationArguments.class));
+		applicationRunnerOrder.verify(eventListener)
+				.onApplicationEvent(ArgumentMatchers.any(ApplicationReadyEvent.class));
 		InOrder commandLineRunnerOrder = Mockito.inOrder(eventListener,
 				commandLineRunner);
+		commandLineRunnerOrder.verify(commandLineRunner).run();
 		commandLineRunnerOrder.verify(eventListener)
 				.onApplicationEvent(ArgumentMatchers.any(ApplicationReadyEvent.class));
-		commandLineRunnerOrder.verify(commandLineRunner).run();
+	}
+
+	@Test
+	public void applicationRunnerFailureCausesApplicationFailedEventToBePublished()
+			throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		@SuppressWarnings("unchecked")
+		ApplicationListener<SpringApplicationEvent> listener = mock(
+				ApplicationListener.class);
+		application.addListeners(listener);
+		ApplicationRunner runner = mock(ApplicationRunner.class);
+		Exception failure = new Exception();
+		willThrow(failure).given(runner).run(isA(ApplicationArguments.class));
+		application.addInitializers((context) -> context.getBeanFactory()
+				.registerSingleton("runner", runner));
+		this.thrown.expectCause(equalTo(failure));
+		try {
+			application.run();
+		}
+		finally {
+			verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
+			verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
+			verify(listener, times(0))
+					.onApplicationEvent(isA(ApplicationReadyEvent.class));
+		}
+	}
+
+	@Test
+	public void commandLineRunnerFailureCausesApplicationFailedEventToBePublished()
+			throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		@SuppressWarnings("unchecked")
+		ApplicationListener<SpringApplicationEvent> listener = mock(
+				ApplicationListener.class);
+		application.addListeners(listener);
+		CommandLineRunner runner = mock(CommandLineRunner.class);
+		Exception failure = new Exception();
+		willThrow(failure).given(runner).run();
+		application.addInitializers((context) -> context.getBeanFactory()
+				.registerSingleton("runner", runner));
+		this.thrown.expectCause(equalTo(failure));
+		try {
+			application.run();
+		}
+		finally {
+			verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
+			verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
+			verify(listener, times(0))
+					.onApplicationEvent(isA(ApplicationReadyEvent.class));
+		}
+	}
+
+	@Test
+	public void failureInReadyEventListenerDoesNotCausePublicationOfFailedEvent() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		@SuppressWarnings("unchecked")
+		ApplicationListener<SpringApplicationEvent> listener = mock(
+				ApplicationListener.class);
+		application.addListeners(listener);
+		RuntimeException failure = new RuntimeException();
+		willThrow(failure).given(listener)
+				.onApplicationEvent(isA(ApplicationReadyEvent.class));
+		this.thrown.expect(equalTo(failure));
+		try {
+			application.run();
+		}
+		finally {
+			verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
+			verify(listener, times(0))
+					.onApplicationEvent(isA(ApplicationFailedEvent.class));
+		}
 	}
 
 	@Test
@@ -811,7 +905,7 @@ public class SpringApplicationTests {
 		ApplicationListener<ApplicationEvent> listener = this.context
 				.getBean("testApplicationListener", ApplicationListener.class);
 		verifyListenerEvents(listener, ContextRefreshedEvent.class,
-				ApplicationReadyEvent.class);
+				ApplicationStartedEvent.class, ApplicationReadyEvent.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1245,21 +1339,6 @@ public class SpringApplicationTests {
 		@PostConstruct
 		public void fail() {
 			throw new RefreshFailureException();
-		}
-
-	}
-
-	@Configuration
-	static class MockRunnerConfiguration {
-
-		@Bean
-		public CommandLineRunner commandLineRunner() {
-			return mock(CommandLineRunner.class);
-		}
-
-		@Bean
-		public ApplicationRunner applicationRunner() {
-			return mock(ApplicationRunner.class);
 		}
 
 	}

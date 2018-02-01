@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 package org.springframework.boot.actuate.endpoint.jmx;
 
 /**
- * A {@code JmxOperationResponseMapper} maps an operation's response to a JMX-friendly
- * form.
+ * Maps an operation's response to a JMX-friendly form.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
@@ -26,17 +25,17 @@ package org.springframework.boot.actuate.endpoint.jmx;
 public interface JmxOperationResponseMapper {
 
 	/**
-	 * Map the operation's response so that it can be consumed by a JMX compliant client.
-	 * @param response the operation's response
-	 * @return the {@code response}, in a JMX compliant format
-	 */
-	Object mapResponse(Object response);
-
-	/**
 	 * Map the response type to its JMX compliant counterpart.
 	 * @param responseType the operation's response type
 	 * @return the JMX compliant type
 	 */
 	Class<?> mapResponseType(Class<?> responseType);
+
+	/**
+	 * Map the operation's response so that it can be consumed by a JMX compliant client.
+	 * @param response the operation's response
+	 * @return the {@code response}, in a JMX compliant format
+	 */
+	Object mapResponse(Object response);
 
 }

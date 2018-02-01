@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import java.util.Set;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
+import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +41,8 @@ import org.springframework.util.Assert;
  * @param <T> the type of {@link Filter} to register
  * @author Phillip Webb
  */
-abstract class AbstractFilterRegistrationBean<T extends Filter> extends RegistrationBean {
+abstract class AbstractFilterRegistrationBean<T extends Filter>
+		extends DynamicRegistrationBean<Dynamic> {
 
 	/**
 	 * Filters that wrap the servlet request should be ordered less than or equal to this.
@@ -208,34 +209,24 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 	}
 
 	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
+	protected String getDescription() {
 		Filter filter = getFilter();
 		Assert.notNull(filter, "Filter must not be null");
-		String name = getOrDeduceName(filter);
-		if (!isEnabled()) {
-			this.logger.info("Filter " + name + " was not registered (disabled)");
-			return;
-		}
-		FilterRegistration.Dynamic added = servletContext.addFilter(name, filter);
-		if (added == null) {
-			this.logger.info("Filter " + name + " was not registered "
-					+ "(possibly already registered?)");
-			return;
-		}
-		configure(added);
+		return "filter " + getOrDeduceName(filter);
 	}
 
-	/**
-	 * Return the {@link Filter} to be registered.
-	 * @return the filter
-	 */
-	public abstract T getFilter();
+	@Override
+	protected Dynamic addRegistration(String description, ServletContext servletContext) {
+		Filter filter = getFilter();
+		return servletContext.addFilter(getOrDeduceName(filter), filter);
+	}
 
 	/**
 	 * Configure registration settings. Subclasses can override this method to perform
 	 * additional configuration if required.
 	 * @param registration the registration
 	 */
+	@Override
 	protected void configure(FilterRegistration.Dynamic registration) {
 		super.configure(registration);
 		EnumSet<DispatcherType> dispatcherTypes = this.dispatcherTypes;
@@ -268,5 +259,11 @@ abstract class AbstractFilterRegistrationBean<T extends Filter> extends Registra
 			}
 		}
 	}
+
+	/**
+	 * Return the {@link Filter} to be registered.
+	 * @return the filter
+	 */
+	public abstract T getFilter();
 
 }

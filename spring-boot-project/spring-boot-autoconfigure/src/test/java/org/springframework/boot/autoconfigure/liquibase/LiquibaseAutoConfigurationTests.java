@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener;
@@ -56,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Dominic Gunn
  */
 public class LiquibaseAutoConfigurationTests {
 
@@ -67,7 +70,9 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		new LiquibaseServiceLocatorApplicationListener().onApplicationEvent(null);
+		new LiquibaseServiceLocatorApplicationListener().onApplicationEvent(
+				new ApplicationStartingEvent(new SpringApplication(Object.class),
+						new String[0]));
 	}
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -149,13 +154,27 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	public void overrideDataSource() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase",
-						"spring.liquibase.user:sa")
+				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
 				.run(assertLiquibase((liquibase) -> {
 					DataSource dataSource = liquibase.getDataSource();
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
 					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
 							.isEqualTo("jdbc:hsqldb:mem:liquibase");
+				}));
+	}
+
+	@Test
+	public void overrideUser() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:normal",
+						"spring.datasource.username:not-sa", "spring.liquibase.user:sa")
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl())
+							.isEqualTo("jdbc:hsqldb:mem:normal");
+					assertThat(((HikariDataSource) dataSource).getUsername())
+							.isEqualTo("sa");
 				}));
 	}
 

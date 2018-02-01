@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @ConditionalOnBean(CacheManager.class)
-@ConditionalOnProperty(value = "management.metrics.cache.instrument-cache", matchIfMissing = true)
+@ConditionalOnProperty(value = "management.metrics.cache.instrument", matchIfMissing = true)
 @EnableConfigurationProperties(CacheMetricsProperties.class)
 @Import({ CacheMeterBinderProvidersConfiguration.class,
 		CacheMetricsRegistrarConfiguration.class })

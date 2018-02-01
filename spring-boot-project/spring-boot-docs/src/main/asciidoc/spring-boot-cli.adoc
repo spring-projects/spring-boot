@@ -163,7 +163,7 @@ The following items are used as "`grab hints`":
 |`@EnableBatchProcessing`
 |Spring Batch.
 
-|`@MessageEndpoint` `@EnableIntegrationPatterns`
+|`@MessageEndpoint` `@EnableIntegration`
 |Spring Integration.
 
 |`@Controller` `@RestController` `@EnableWebMvc`

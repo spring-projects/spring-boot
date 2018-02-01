@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,32 +18,30 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryHealthWebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.reflect.ReflectiveOperationInvoker;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -86,6 +84,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class,
 				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				HealthEndpointAutoConfiguration.class,
 				CloudFoundryActuatorAutoConfiguration.class);
 	}
 
@@ -99,8 +98,9 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	public void cloudFoundryPlatformActive() {
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		assertThat(handlerMapping.getEndpointMapping().getPath())
-				.isEqualTo("/cloudfoundryapplication");
+		EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils
+				.getField(handlerMapping, "endpointMapping");
+		assertThat(endpointMapping.getPath()).isEqualTo("/cloudfoundryapplication");
 		CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils
 				.getField(handlerMapping, "corsConfiguration");
 		assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
@@ -217,8 +217,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
-				.getEndpoints();
+		Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
 		assertThat(endpoints.stream()
 				.filter((candidate) -> "test".equals(candidate.getId())).findFirst())
 						.isNotEmpty();
@@ -231,9 +230,8 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
-				.getEndpoints();
-		EndpointInfo<WebOperation> endpoint = endpoints.stream()
+		Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
+		ExposableWebEndpoint endpoint = endpoints.stream()
 				.filter((candidate) -> "test".equals(candidate.getId())).findFirst()
 				.get();
 		Collection<WebOperation> operations = endpoint.getOperations();
@@ -248,17 +246,14 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				.of("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:http://my-cloud-controller.com")
 				.applyTo(this.context);
-		this.context.register(HealthEndpointAutoConfiguration.class,
-				CloudFoundryHealthWebEndpointAutoConfiguration.class);
 		this.context.refresh();
-		Collection<EndpointInfo<WebOperation>> endpoints = this.context
+		Collection<ExposableWebEndpoint> endpoints = this.context
 				.getBean("cloudFoundryWebEndpointServletHandlerMapping",
 						CloudFoundryWebEndpointServletHandlerMapping.class)
 				.getEndpoints();
-		EndpointInfo<WebOperation> endpointInfo = endpoints.iterator().next();
-		WebOperation webOperation = endpointInfo.getOperations().iterator().next();
-		ReflectiveOperationInvoker invoker = (ReflectiveOperationInvoker) webOperation
-				.getInvoker();
+		ExposableWebEndpoint endpoint = endpoints.iterator().next();
+		WebOperation webOperation = endpoint.getOperations().iterator().next();
+		Object invoker = ReflectionTestUtils.getField(webOperation, "invoker");
 		assertThat(ReflectionTestUtils.getField(invoker, "target"))
 				.isInstanceOf(CloudFoundryHealthEndpointWebExtension.class);
 	}

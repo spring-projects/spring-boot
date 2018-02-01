@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -30,17 +31,19 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.DockerClientException;
 import com.github.dockerjava.api.command.DockerCmd;
+import com.github.dockerjava.api.exception.DockerClientException;
 import com.github.dockerjava.api.model.BuildResponseItem;
 import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.core.CompressArchiveUtil;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.AttachContainerResultCallback;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
+import com.github.dockerjava.core.command.WaitContainerResultCallback;
+import com.github.dockerjava.core.util.CompressArchiveUtil;
 import com.github.dockerjava.jaxrs.AbstrSyncDockerCmdExec;
-import com.github.dockerjava.jaxrs.DockerCmdExecFactoryImpl;
+import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 import org.assertj.core.api.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -224,6 +227,25 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	@Test
+	public void pidFolderOwnership() throws Exception {
+		String output = doTest("pid-folder-ownership.sh");
+		System.err.println(output);
+		assertThat(output).contains("phil root");
+	}
+
+	@Test
+	public void pidFileOwnership() throws Exception {
+		String output = doTest("pid-file-ownership.sh");
+		assertThat(output).contains("phil root");
+	}
+
+	@Test
+	public void logFileOwnership() throws Exception {
+		String output = doTest("log-file-ownership.sh");
+		assertThat(output).contains("phil root");
+	}
+
+	@Test
 	public void launchWithRelativeLogFolder() throws Exception {
 		String output = doTest("launch-with-relative-log-folder.sh");
 		assertThat(output).contains("Log written");
@@ -253,8 +275,10 @@ public class SysVinitLaunchScriptIT {
 						}
 
 					});
-			resultCallback.awaitCompletion(60, TimeUnit.SECONDS).close();
-			docker.waitContainerCmd(container).exec();
+			resultCallback.awaitCompletion(60, TimeUnit.SECONDS);
+			WaitContainerResultCallback waitContainerCallback = new WaitContainerResultCallback();
+			docker.waitContainerCmd(container).exec(waitContainerCallback);
+			waitContainerCallback.awaitCompletion(60, TimeUnit.SECONDS);
 			return output.toString();
 		}
 		finally {
@@ -268,11 +292,10 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	private DockerClient createClient() {
-		DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
-				.withVersion("1.19").build();
-		DockerClient docker = DockerClientBuilder.getInstance(config)
+		DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+				.withApiVersion("1.19").build();
+		return DockerClientBuilder.getInstance(config)
 				.withDockerCmdExecFactory(this.commandExecFactory).build();
-		return docker;
 	}
 
 	private String buildImage(DockerClient docker) {
@@ -328,7 +351,8 @@ public class SysVinitLaunchScriptIT {
 			}
 
 		};
-		docker.buildImageCmd(new File(dockerfile)).withTag(tag).exec(resultCallback);
+		docker.buildImageCmd(new File(dockerfile))
+				.withTags(new HashSet<>(Arrays.asList(tag))).exec(resultCallback);
 		String imageId = resultCallback.awaitImageId();
 		return imageId;
 	}
@@ -403,11 +427,10 @@ public class SysVinitLaunchScriptIT {
 
 		@Override
 		protected Void execute(CopyToContainerCmd command) {
-			try {
-				InputStream streamToUpload = new FileInputStream(CompressArchiveUtil
-						.archiveTARFiles(command.getFile().getParentFile(),
-								Arrays.asList(command.getFile()),
-								command.getFile().getName()));
+			try (InputStream streamToUpload = new FileInputStream(
+					CompressArchiveUtil.archiveTARFiles(command.getFile().getParentFile(),
+							Arrays.asList(command.getFile()),
+							command.getFile().getName()))) {
 				WebTarget webResource = getBaseResource().path("/containers/{id}/archive")
 						.resolveTemplate("id", command.getContainer());
 				webResource.queryParam("path", ".")
@@ -449,13 +472,7 @@ public class SysVinitLaunchScriptIT {
 	}
 
 	private static final class SpringBootDockerCmdExecFactory
-			extends DockerCmdExecFactoryImpl {
-
-		private SpringBootDockerCmdExecFactory() {
-			withClientRequestFilters((requestContext) ->
-			// Workaround for https://go-review.googlesource.com/#/c/3821/
-			requestContext.getHeaders().add("Connection", "close"));
-		}
+			extends JerseyDockerCmdExecFactory {
 
 		private CopyToContainerCmdExec createCopyToContainerCmdExec() {
 			return new CopyToContainerCmdExec(getBaseResource(), getDockerClientConfig());

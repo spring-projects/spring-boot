@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * Apache Http Client 4.3.2 or better is available (recommended) it will be used as the
  * client, and by default configured to ignore cookies and redirects.
  * <p>
- * Note: To prevent injection problems this class internally does not extend
+ * Note: To prevent injection problems this class intentionally does not extend
  * {@link RestTemplate}. If you need access to the underlying {@link RestTemplate} use
  * {@link #getRestTemplate()}.
  * <p>

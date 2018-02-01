@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.ganglia.GangliaConfig;
 import io.micrometer.ganglia.GangliaMeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,15 +47,9 @@ public class GangliaExportConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "management.metrics.export.ganglia.enabled", matchIfMissing = true)
-	public MetricsExporter gangliaExporter(GangliaConfig gangliaConfig,
+	public GangliaMeterRegistry gangliaMeterRegistry(GangliaConfig gangliaConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {
-		return () -> new GangliaMeterRegistry(gangliaConfig, nameMapper, clock);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
+		return new GangliaMeterRegistry(gangliaConfig, clock, nameMapper);
 	}
 
 	@Bean

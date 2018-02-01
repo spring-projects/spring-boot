@@ -37,7 +37,6 @@ import org.springframework.context.annotation.Configuration;
  * {@link Configuration Auto-configuration} for {@link CacheMeterBinderProvider} beans.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass(MeterBinder.class)

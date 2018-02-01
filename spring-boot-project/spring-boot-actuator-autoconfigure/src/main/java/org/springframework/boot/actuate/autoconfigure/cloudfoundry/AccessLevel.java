@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,19 +40,19 @@ public enum AccessLevel {
 
 	public static final String REQUEST_ATTRIBUTE = "cloudFoundryAccessLevel";
 
-	private final List<String> endpointPaths;
+	private final List<String> endpointIds;
 
-	AccessLevel(String... endpointPaths) {
-		this.endpointPaths = Arrays.asList(endpointPaths);
+	AccessLevel(String... endpointIds) {
+		this.endpointIds = Arrays.asList(endpointIds);
 	}
 
 	/**
 	 * Returns if the access level should allow access to the specified endpoint path.
-	 * @param endpointPath the endpoint path
+	 * @param endpointId the endpoint ID to check
 	 * @return {@code true} if access is allowed
 	 */
-	public boolean isAccessAllowed(String endpointPath) {
-		return this.endpointPaths.isEmpty() || this.endpointPaths.contains(endpointPath);
+	public boolean isAccessAllowed(String endpointId) {
+		return this.endpointIds.isEmpty() || this.endpointIds.contains(endpointId);
 	}
 
 }

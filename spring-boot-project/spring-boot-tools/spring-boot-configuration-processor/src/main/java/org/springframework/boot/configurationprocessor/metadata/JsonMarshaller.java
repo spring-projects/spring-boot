@@ -167,7 +167,8 @@ public class JsonMarshaller {
 
 	private String toString(InputStream inputStream) throws IOException {
 		StringBuilder out = new StringBuilder();
-		InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+		InputStreamReader reader = new InputStreamReader(inputStream,
+				StandardCharsets.UTF_8);
 		char[] buffer = new char[BUFFER_SIZE];
 		int bytesRead;
 		while ((bytesRead = reader.read(buffer)) != -1) {

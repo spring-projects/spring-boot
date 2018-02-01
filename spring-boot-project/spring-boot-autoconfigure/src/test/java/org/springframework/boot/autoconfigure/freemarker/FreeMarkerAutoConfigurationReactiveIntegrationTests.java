@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 
 	@Test
 	public void defaultConfiguration() {
-		this.contextRunner.run(context -> {
+		this.contextRunner.run((context) -> {
 			assertThat(context.getBean(FreeMarkerViewResolver.class)).isNotNull();
 			assertThat(context.getBean(FreeMarkerConfigurer.class)).isNotNull();
 			assertThat(context.getBean(FreeMarkerConfig.class)).isNotNull();
@@ -58,7 +58,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 
 	@Test
 	public void defaultViewResolution() {
-		this.contextRunner.run(context -> {
+		this.contextRunner.run((context) -> {
 			MockServerWebExchange exchange = render(context, "home");
 			String result = exchange.getResponse().getBodyAsString().block();
 			assertThat(result).contains("home");
@@ -70,7 +70,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	@Test
 	public void customPrefix() {
 		this.contextRunner.withPropertyValues("spring.freemarker.prefix:prefix/")
-				.run(context -> {
+				.run((context) -> {
 					MockServerWebExchange exchange = render(context, "prefixed");
 					String result = exchange.getResponse().getBodyAsString().block();
 					assertThat(result).contains("prefixed");
@@ -80,7 +80,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	@Test
 	public void customSuffix() {
 		this.contextRunner.withPropertyValues("spring.freemarker.suffix:.freemarker")
-				.run(context -> {
+				.run((context) -> {
 					MockServerWebExchange exchange = render(context, "suffixed");
 					String result = exchange.getResponse().getBodyAsString().block();
 					assertThat(result).contains("suffixed");
@@ -92,7 +92,7 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.freemarker.templateLoaderPath:classpath:/custom-templates/")
-				.run(context -> {
+				.run((context) -> {
 					MockServerWebExchange exchange = render(context, "custom");
 					String result = exchange.getResponse().getBodyAsString().block();
 					assertThat(result).contains("custom");
@@ -104,14 +104,14 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 	public void customFreeMarkerSettings() {
 		this.contextRunner
 				.withPropertyValues("spring.freemarker.settings.boolean_format:yup,nope")
-				.run(context -> assertThat(context.getBean(FreeMarkerConfigurer.class)
+				.run((context) -> assertThat(context.getBean(FreeMarkerConfigurer.class)
 						.getConfiguration().getSetting("boolean_format"))
 								.isEqualTo("yup,nope"));
 	}
 
 	@Test
 	public void renderTemplate() {
-		this.contextRunner.withPropertyValues().run(context -> {
+		this.contextRunner.withPropertyValues().run((context) -> {
 			FreeMarkerConfigurer freemarker = context.getBean(FreeMarkerConfigurer.class);
 			StringWriter writer = new StringWriter();
 			freemarker.getConfiguration().getTemplate("message.ftl").process(this,

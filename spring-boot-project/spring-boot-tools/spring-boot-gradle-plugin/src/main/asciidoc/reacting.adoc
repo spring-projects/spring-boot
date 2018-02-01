@@ -4,6 +4,8 @@
 When another plugin is applied the Spring Boot plugin reacts by making various changes
 to the project's configuration. This section describes those changes.
 
+
+
 [[reacting-to-other-plugins-java]]
 === Reacting to the Java plugin
 
@@ -22,6 +24,18 @@ plugin:
    the `bootJar` task.
 6. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
 7. Configures any `JavaCompile` tasks to use the `-parameters` compiler argument.
+
+
+
+[[reacting-to-other-plugins-kotlin]]
+=== Reacting to the Kotlin plugin
+
+When {kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring Boot
+plugin:
+
+1. Aligns the Kotlin version used in Spring Boot's dependency management with the version
+   of the plugin. This is achieved by setting the `kotlin.version` property with a value
+   that matches the version of the Kotlin plugin.
 
 
 

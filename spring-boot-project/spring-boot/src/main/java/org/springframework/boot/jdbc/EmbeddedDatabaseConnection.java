@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,6 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:%s");
 
-	private static final String DEFAULT_DATABASE_NAME = "testdb";
-
 	private final EmbeddedDatabaseType type;
 
 	private final String driverClass;
@@ -92,20 +90,12 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-	 * Returns the URL for the connection using the default database name.
-	 * @return the connection URL
-	 */
-	public String getUrl() {
-		return getUrl(DEFAULT_DATABASE_NAME);
-	}
-
-	/**
 	 * Returns the URL for the connection using the specified {@code databaseName}.
 	 * @param databaseName the name of the database
 	 * @return the connection URL
 	 */
 	public String getUrl(String databaseName) {
-		Assert.hasText(databaseName, "DatabaseName must not be null.");
+		Assert.hasText(databaseName, "DatabaseName must not be empty");
 		return (this.url != null ? String.format(this.url, databaseName) : null);
 	}
 

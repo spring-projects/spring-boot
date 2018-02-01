@@ -138,7 +138,7 @@ jobs:
     - task: build-project
       timeout: 1h30m
       image: spring-boot-ci-image
-      file: git-repo/ci/tasks/build-project.yml
+      file: git-repo/ci/tasks/build-pr-project.yml
     - aggregate:
       - task: build-samples
         timeout: 1h30m
@@ -269,6 +269,7 @@ jobs:
 - name: promote-rc
   serial: true
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
@@ -287,6 +288,7 @@ jobs:
 - name: promote-release
   serial: true
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,8 @@ public final class WebMvcTags {
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
 	public static Tag method(HttpServletRequest request) {
-		return Tag.of("method", request.getMethod());
+		return (request == null ? Tag.of("method", "UNKNOWN")
+				: Tag.of("method", request.getMethod()));
 	}
 
 	/**
@@ -54,7 +55,8 @@ public final class WebMvcTags {
 	 * @return the status tag derived from the status of the response
 	 */
 	public static Tag status(HttpServletResponse response) {
-		return Tag.of("status", ((Integer) response.getStatus()).toString());
+		return (response == null ? Tag.of("status", "UNKNOWN")
+				: Tag.of("status", ((Integer) response.getStatus()).toString()));
 	}
 
 	/**
@@ -72,18 +74,15 @@ public final class WebMvcTags {
 			if (status != null && status.is3xxRedirection()) {
 				return Tag.of("uri", "REDIRECTION");
 			}
-			if (HttpStatus.NOT_FOUND.equals(status)) {
+			if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
 				return Tag.of("uri", "NOT_FOUND");
 			}
 		}
-		String uri = (String) request
-				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-		if (uri == null) {
-			uri = request.getPathInfo();
+		if (request == null) {
+			return Tag.of("uri", "UNKNOWN");
 		}
-		if (!StringUtils.hasText(uri)) {
-			uri = "/";
-		}
+		String uri = getUri(request);
+		uri = uri.replaceAll("//+", "/").replaceAll("/$", "");
 		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
 	}
 
@@ -96,6 +95,13 @@ public final class WebMvcTags {
 		}
 	}
 
+	private static String getUri(HttpServletRequest request) {
+		String uri = (String) request
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		uri = (uri != null ? uri : request.getPathInfo());
+		return (StringUtils.hasText(uri) ? uri : "/");
+	}
+
 	/**
 	 * Creates a {@code exception} tag based on the {@link Class#getSimpleName() simple
 	 * name} of the class of the given {@code exception}.
@@ -103,10 +109,8 @@ public final class WebMvcTags {
 	 * @return the exception tag derived from the exception
 	 */
 	public static Tag exception(Throwable exception) {
-		if (exception != null) {
-			return Tag.of("exception", exception.getClass().getSimpleName());
-		}
-		return Tag.of("exception", "None");
+		return Tag.of("exception",
+				(exception == null ? "None" : exception.getClass().getSimpleName()));
 	}
 
 }

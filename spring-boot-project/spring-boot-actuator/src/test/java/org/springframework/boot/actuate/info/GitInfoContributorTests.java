@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Properties;
 
@@ -45,8 +45,8 @@ public class GitInfoContributorTests {
 		assertThat(content.get("commit")).isInstanceOf(Map.class);
 		Map<String, Object> commit = (Map<String, Object>) content.get("commit");
 		Object commitTime = commit.get("time");
-		assertThat(commitTime).isInstanceOf(Date.class);
-		assertThat(((Date) commitTime).getTime()).isEqualTo(1457098593000L);
+		assertThat(commitTime).isInstanceOf(Instant.class);
+		assertThat(((Instant) commitTime).toEpochMilli()).isEqualTo(1457098593000L);
 	}
 
 	@SuppressWarnings("unchecked")

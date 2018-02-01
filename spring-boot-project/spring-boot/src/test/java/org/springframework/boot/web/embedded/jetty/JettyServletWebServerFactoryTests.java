@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,14 +99,14 @@ public class JettyServletWebServerFactoryTests
 	@Test
 	public void sessionTimeout() {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(Duration.ofSeconds(10));
+		factory.getSession().setTimeout(Duration.ofSeconds(10));
 		assertTimeout(factory, 10);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() {
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(Duration.ofMinutes(1));
+		factory.getSession().setTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 60);
 	}
 

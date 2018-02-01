@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,14 @@ public class JdbcMetricsProperties {
 	/**
 	 * Name of the metric for data source usage.
 	 */
-	private String datasourceMetricName = "data.source";
+	private String metricName = "data.source";
 
-	public String getDatasourceMetricName() {
-		return this.datasourceMetricName;
+	public String getMetricName() {
+		return this.metricName;
 	}
 
-	public void setDatasourceMetricName(String datasourceMetricName) {
-		this.datasourceMetricName = datasourceMetricName;
+	public void setMetricName(String metricName) {
+		this.metricName = metricName;
 	}
 
 }

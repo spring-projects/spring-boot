@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,8 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.WebServerException;
@@ -61,6 +63,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -144,6 +147,25 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
+	public void contextIsAddedToHostBeforeCustomizersAreCalled() throws Exception {
+		TomcatServletWebServerFactory factory = getFactory();
+		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
+		willAnswer(new Answer<Void>() {
+
+			@Override
+			public Void answer(InvocationOnMock invocation) throws Throwable {
+				assertThat(((Context) invocation.getArguments()[0]).getParent())
+						.isNotNull();
+				return null;
+			}
+
+		}).given(customizer).customize(any(Context.class));
+		factory.addContextCustomizers(customizer);
+		this.webServer = factory.getWebServer();
+		verify(customizer).customize(any(Context.class));
+	}
+
+	@Test
 	public void tomcatConnectorCustomizers() {
 		TomcatServletWebServerFactory factory = getFactory();
 		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
@@ -187,21 +209,21 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void sessionTimeout() {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(Duration.ofSeconds(10));
+		factory.getSession().setTimeout(Duration.ofSeconds(10));
 		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(Duration.ofMinutes(1));
+		factory.getSession().setTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void noSessionTimeout() {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(null);
+		factory.getSession().setTimeout(null);
 		assertTimeout(factory, -1);
 	}
 
