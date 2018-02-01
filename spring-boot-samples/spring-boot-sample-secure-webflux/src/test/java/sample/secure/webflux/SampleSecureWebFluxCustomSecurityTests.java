@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
-import org.springframework.boot.autoconfigure.security.reactive.StaticResourceRequest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -102,9 +101,9 @@ public class SampleSecureWebFluxCustomSecurityTests {
 			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
 					.permitAll().matchers(EndpointRequest.toAnyEndpoint())
 					.hasRole("ACTUATOR")
-					.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-					.pathMatchers("/login").permitAll().anyExchange().authenticated()
-					.and().httpBasic();
+					.matchers(PathRequest.toStaticResources().atCommonLocations())
+					.permitAll().pathMatchers("/login").permitAll().anyExchange()
+					.authenticated().and().httpBasic();
 			return http.build();
 		}
 

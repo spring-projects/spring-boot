@@ -104,9 +104,8 @@ public class LambdaSafeTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void callbackInvokeWhenLambdaMismatchShouldSwallowException() {
-		GenericCallback<StringBuilder> callbackInstance = (s) -> {
-			fail("Should not get here");
-		};
+		GenericCallback<StringBuilder> callbackInstance = (s) -> fail(
+				"Should not get here");
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument)
 				.invoke((c) -> c.handle(argument));
@@ -115,9 +114,8 @@ public class LambdaSafeTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void callbackInvokeWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
-		GenericMultiArgCallback<StringBuilder> callbackInstance = (n, s, b) -> {
-			fail("Should not get here");
-		};
+		GenericMultiArgCallback<StringBuilder> callbackInstance = (n, s,
+				b) -> fail("Should not get here");
 		String argument = "foo";
 		LambdaSafe.callback(GenericMultiArgCallback.class, callbackInstance, argument)
 				.invoke((c) -> c.handle(1, argument, false));
@@ -262,9 +260,8 @@ public class LambdaSafeTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void callbacksInvokeWhenLambdaMismatchShouldSwallowException() {
-		GenericCallback<StringBuilder> callbackInstance = (s) -> {
-			fail("Should not get here");
-		};
+		GenericCallback<StringBuilder> callbackInstance = (s) -> fail(
+				"Should not get here");
 		String argument = "foo";
 		LambdaSafe.callbacks(GenericCallback.class,
 				Collections.singleton(callbackInstance), argument)
@@ -274,9 +271,8 @@ public class LambdaSafeTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void callbacksInvokeWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
-		GenericMultiArgCallback<StringBuilder> callbackInstance = (n, s, b) -> {
-			fail("Should not get here");
-		};
+		GenericMultiArgCallback<StringBuilder> callbackInstance = (n, s,
+				b) -> fail("Should not get here");
 		String argument = "foo";
 		LambdaSafe
 				.callbacks(GenericMultiArgCallback.class,
@@ -410,9 +406,8 @@ public class LambdaSafeTests {
 	public void callbackWithLoggerShouldUseLogger() {
 		Log logger = mock(Log.class);
 		given(logger.isDebugEnabled()).willReturn(true);
-		GenericCallback<StringBuilder> callbackInstance = (s) -> {
-			fail("Should not get here");
-		};
+		GenericCallback<StringBuilder> callbackInstance = (s) -> fail(
+				"Should not get here");
 		String argument = "foo";
 		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument)
 				.withLogger(logger).invoke((c) -> c.handle(argument));
