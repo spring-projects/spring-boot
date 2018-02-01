@@ -54,8 +54,8 @@ class OperationMethodParameter implements OperationParameter {
 	}
 
 	@Override
-	public boolean isNullable() {
-		return !ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class));
+	public boolean isMandatory() {
+		return ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class));
 	}
 
 	@Override

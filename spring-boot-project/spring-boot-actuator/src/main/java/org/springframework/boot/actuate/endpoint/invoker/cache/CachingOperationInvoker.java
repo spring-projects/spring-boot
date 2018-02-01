@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
@@ -74,11 +75,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 	private boolean hasArgument(Map<String, Object> arguments) {
 		if (!ObjectUtils.isEmpty(arguments)) {
-			for (Object value : arguments.values()) {
-				if (value != null) {
-					return true;
-				}
-			}
+			return arguments.values().stream().anyMatch(Objects::nonNull);
 		}
 		return false;
 	}

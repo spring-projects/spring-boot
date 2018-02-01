@@ -87,10 +87,14 @@ public class SecurityAutoConfigurationTests {
 
 	@Test
 	public void testDefaultFilterOrderWithSecurityAdapter() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(WebSecurity.class, SecurityFilterAutoConfiguration.class))
-				.run(context -> assertThat(context.getBean("securityFilterChainRegistration",
-						DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
-						FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100));
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebSecurity.class,
+				SecurityFilterAutoConfiguration.class)).run(
+						context -> assertThat(context
+								.getBean("securityFilterChainRegistration",
+										DelegatingFilterProxyRegistrationBean.class)
+								.getOrder()).isEqualTo(
+										FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+												- 100));
 	}
 
 	@Test
@@ -115,30 +119,41 @@ public class SecurityAutoConfigurationTests {
 
 	@Test
 	public void defaultAuthenticationEventPublisherIsConditionalOnMissingBean() {
-		this.contextRunner.withUserConfiguration(AuthenticationEventPublisherConfiguration.class).run(context -> {
-			assertThat(context.getBean(AuthenticationEventPublisher.class))
-					.isInstanceOf(AuthenticationEventPublisherConfiguration.TestAuthenticationEventPublisher.class);
-		});
+		this.contextRunner
+				.withUserConfiguration(AuthenticationEventPublisherConfiguration.class)
+				.run(context -> {
+					assertThat(context.getBean(AuthenticationEventPublisher.class))
+							.isInstanceOf(
+									AuthenticationEventPublisherConfiguration.TestAuthenticationEventPublisher.class);
+				});
 	}
 
 	@Test
 	public void testDefaultFilterOrder() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run(context -> {
-			assertThat(context.getBean("securityFilterChainRegistration",
-					DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
-					FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
-		});
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+				.run(context -> {
+					assertThat(context
+							.getBean("securityFilterChainRegistration",
+									DelegatingFilterProxyRegistrationBean.class)
+							.getOrder()).isEqualTo(
+									FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+											- 100);
+				});
 	}
 
 	@Test
 	public void testCustomFilterOrder() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
-				.withPropertyValues("spring.security.filter.order:12345")
-				.run(context -> {
-			assertThat(context.getBean("securityFilterChainRegistration",
-					DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
-					12345);
-		});
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+				.withPropertyValues("spring.security.filter.order:12345").run(context -> {
+					assertThat(context
+							.getBean("securityFilterChainRegistration",
+									DelegatingFilterProxyRegistrationBean.class)
+							.getOrder()).isEqualTo(12345);
+				});
 	}
 
 	@Test
@@ -153,60 +168,75 @@ public class SecurityAutoConfigurationTests {
 
 	@Test
 	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent() {
-		this.contextRunner.withUserConfiguration(TestAuthenticationManagerConfiguration.class).run(context -> {
-			AuthenticationManager manager = context.getBean(AuthenticationManager.class);
-			assertThat(manager).isEqualTo(context.getBean(
-					TestAuthenticationManagerConfiguration.class).authenticationManager);
-			assertThat(this.outputCapture.toString())
-					.doesNotContain("Using generated security password: ");
-			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
-			assertThat(manager.authenticate(token)).isNotNull();
-		});
+		this.contextRunner
+				.withUserConfiguration(TestAuthenticationManagerConfiguration.class)
+				.run(context -> {
+					AuthenticationManager manager = context
+							.getBean(AuthenticationManager.class);
+					assertThat(manager).isEqualTo(context.getBean(
+							TestAuthenticationManagerConfiguration.class).authenticationManager);
+					assertThat(this.outputCapture.toString())
+							.doesNotContain("Using generated security password: ");
+					TestingAuthenticationToken token = new TestingAuthenticationToken(
+							"foo", "bar");
+					assertThat(manager.authenticate(token)).isNotNull();
+				});
 	}
 
 	@Test
 	public void defaultUserNotCreatedIfUserDetailsServiceBeanPresent() {
-		this.contextRunner.withUserConfiguration(TestUserDetailsServiceConfiguration.class).run(context -> {
-			UserDetailsService userDetailsService = context
-					.getBean(UserDetailsService.class);
-			assertThat(this.outputCapture.toString())
-					.doesNotContain("Using default security password: ");
-			assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
-		});
+		this.contextRunner
+				.withUserConfiguration(TestUserDetailsServiceConfiguration.class)
+				.run(context -> {
+					UserDetailsService userDetailsService = context
+							.getBean(UserDetailsService.class);
+					assertThat(this.outputCapture.toString())
+							.doesNotContain("Using default security password: ");
+					assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
+				});
 	}
 
 	@Test
 	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent() {
-		this.contextRunner.withUserConfiguration(TestAuthenticationProviderConfiguration.class).run(context -> {
-			AuthenticationProvider provider = context
-					.getBean(AuthenticationProvider.class);
-			assertThat(this.outputCapture.toString())
-					.doesNotContain("Using default security password: ");
-			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
-			assertThat(provider.authenticate(token)).isNotNull();
-		});
+		this.contextRunner
+				.withUserConfiguration(TestAuthenticationProviderConfiguration.class)
+				.run(context -> {
+					AuthenticationProvider provider = context
+							.getBean(AuthenticationProvider.class);
+					assertThat(this.outputCapture.toString())
+							.doesNotContain("Using default security password: ");
+					TestingAuthenticationToken token = new TestingAuthenticationToken(
+							"foo", "bar");
+					assertThat(provider.authenticate(token)).isNotNull();
+				});
 	}
 
 	@Test
 	public void testJpaCoexistsHappily() {
-		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
+		this.contextRunner
+				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
 						"spring.datasource.initialization-mode:never")
 				.withUserConfiguration(EntityConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class))
-				.run(context -> assertThat(context.getBean(JpaTransactionManager.class)).isNotNull());
+				.withConfiguration(
+						AutoConfigurations.of(HibernateJpaAutoConfiguration.class,
+								DataSourceAutoConfiguration.class))
+				.run(context -> assertThat(context.getBean(JpaTransactionManager.class))
+						.isNotNull());
 		// This can fail if security @Conditionals force early instantiation of the
 		// HibernateJpaAutoConfiguration (e.g. the EntityManagerFactory is not found)
 	}
 
 	@Test
 	public void testSecurityEvaluationContextExtensionSupport() {
-		this.contextRunner.run(context ->
-				assertThat(context).getBean(SecurityEvaluationContextExtension.class).isNotNull());
+		this.contextRunner.run(context -> assertThat(context)
+				.getBean(SecurityEvaluationContextExtension.class).isNotNull());
 	}
 
 	@Test
 	public void defaultFilterDispatcherTypes() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
 				.run(context -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean(
 							"securityFilterChainRegistration",
@@ -216,13 +246,16 @@ public class SecurityAutoConfigurationTests {
 							.getField(bean, "dispatcherTypes");
 					assertThat(dispatcherTypes).containsOnly(DispatcherType.ASYNC,
 							DispatcherType.ERROR, DispatcherType.REQUEST);
-		});
+				});
 	}
 
 	@Test
 	public void customFilterDispatcherTypes() {
-		this.contextRunner.withPropertyValues("spring.security.filter.dispatcher-types:INCLUDE,ERROR")
-				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.filter.dispatcher-types:INCLUDE,ERROR")
+				.withConfiguration(
+						AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
 				.run(context -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean(
 							"securityFilterChainRegistration",
@@ -257,10 +290,13 @@ public class SecurityAutoConfigurationTests {
 			}
 
 			@Override
-			public void publishAuthenticationFailure(AuthenticationException exception, Authentication authentication) {
+			public void publishAuthenticationFailure(AuthenticationException exception,
+					Authentication authentication) {
 
 			}
+
 		}
+
 	}
 
 	@Configuration

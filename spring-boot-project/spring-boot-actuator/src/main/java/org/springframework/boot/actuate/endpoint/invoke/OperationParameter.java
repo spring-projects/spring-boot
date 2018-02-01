@@ -37,9 +37,9 @@ public interface OperationParameter {
 	Class<?> getType();
 
 	/**
-	 * Return if the parameter accepts null values.
-	 * @return if the parameter is nullable
+	 * Return if the parameter is mandatory (does not accept null values).
+	 * @return if the parameter is mandatory
 	 */
-	boolean isNullable();
+	boolean isMandatory();
 
 }

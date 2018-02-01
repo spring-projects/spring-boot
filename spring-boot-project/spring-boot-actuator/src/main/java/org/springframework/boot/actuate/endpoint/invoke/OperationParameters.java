@@ -41,6 +41,15 @@ public interface OperationParameters extends Iterable<OperationParameter> {
 	int getParameterCount();
 
 	/**
+	 * Return if any of the contained parameters are
+	 * {@link OperationParameter#isMandatory() mandatory}.
+	 * @return if any parameters are mandatory
+	 */
+	default boolean hasMandatoryParameter() {
+		return stream().anyMatch(OperationParameter::isMandatory);
+	}
+
+	/**
 	 * Return the parameter at the specified index.
 	 * @param index the parameter index
 	 * @return the parameter
