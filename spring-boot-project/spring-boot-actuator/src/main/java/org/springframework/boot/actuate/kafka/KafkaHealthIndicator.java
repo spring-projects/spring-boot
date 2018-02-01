@@ -16,9 +16,16 @@
 
 package org.springframework.boot.actuate.kafka;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.DescribeClusterOptions;
 import org.apache.kafka.clients.admin.DescribeClusterResult;
+import org.apache.kafka.common.config.ConfigResource;
+import org.apache.kafka.common.config.ConfigResource.Type;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
@@ -32,6 +39,8 @@ import org.springframework.util.Assert;
  * @author Juan Rada
  */
 public class KafkaHealthIndicator extends AbstractHealthIndicator {
+
+	static final String REPLICATION_PROPERTY = "transaction.state.log.replication.factor";
 
 	private final KafkaAdmin kafkaAdmin;
 	private final DescribeClusterOptions describeOptions;
@@ -53,10 +62,29 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
 		try (AdminClient adminClient = AdminClient.create(this.kafkaAdmin.getConfig())) {
-			DescribeClusterResult result = adminClient
-					.describeCluster(this.describeOptions);
-			builder.up().withDetail("clusterId", result.clusterId().get());
+			DescribeClusterResult result = adminClient.describeCluster(this.describeOptions);
+			String brokerId = result.controller().get().idString();
+			int replicationFactor = getReplicationFactor(brokerId, adminClient);
+			int nodes = result.nodes().get().size();
+			if (nodes >= replicationFactor){
+				builder.up();
+			}
+			else {
+				builder.down();
+			}
+			builder.withDetail("clusterId", result.clusterId().get());
+			builder.withDetail("brokerId", brokerId);
+			builder.withDetail("nodes", nodes);
 		}
+	}
+
+	private int getReplicationFactor(String brokerId,
+			AdminClient adminClient) throws ExecutionException, InterruptedException {
+		ConfigResource configResource = new ConfigResource(Type.BROKER, brokerId);
+		Map<ConfigResource, Config> kafkaConfig = adminClient
+				.describeConfigs(Collections.singletonList(configResource)).all().get();
+		Config brokerConfig = kafkaConfig.get(configResource);
+		return Integer.parseInt(brokerConfig.get(REPLICATION_PROPERTY).value());
 	}
 }
 
