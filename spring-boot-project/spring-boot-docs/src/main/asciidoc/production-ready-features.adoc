@@ -176,7 +176,7 @@ please refer to the separate API documentation ({spring-boot-actuator-api}/html[
 [[production-ready-endpoints-enabling-endpoints]]
 === Enabling Endpoints
 By default, all endpoints except for `shutdown` are enabled. To configure the enablement
-of an endpoint, use its `management.endpoints.<id>.enabled` property. The following
+of an endpoint, use its `management.endpoint.<id>.enabled` property. The following
 example enables the `shutdown` endpoint:
 
 [source,properties,indent=0]
