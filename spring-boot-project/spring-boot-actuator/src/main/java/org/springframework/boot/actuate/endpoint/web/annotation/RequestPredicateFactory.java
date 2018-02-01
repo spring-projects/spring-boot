@@ -53,7 +53,7 @@ class RequestPredicateFactory {
 	public WebOperationRequestPredicate getRequestPredicate(String endpointId,
 			String rootPath, DiscoveredOperationMethod operationMethod) {
 		Method method = operationMethod.getMethod();
-		String path = getPath(endpointId, rootPath, method);
+		String path = getPath(rootPath, method);
 		WebEndpointHttpMethod httpMethod = determineHttpMethod(
 				operationMethod.getOperationType());
 		Collection<String> consumes = getConsumes(httpMethod, method);
@@ -61,7 +61,7 @@ class RequestPredicateFactory {
 		return new WebOperationRequestPredicate(path, httpMethod, consumes, produces);
 	}
 
-	private String getPath(String endpointId, String rootPath, Method method) {
+	private String getPath(String rootPath, Method method) {
 		return rootPath + Stream.of(method.getParameters()).filter(this::hasSelector)
 				.map(this::slashName).collect(Collectors.joining());
 	}

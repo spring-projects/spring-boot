@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class DataSourcePoolMetrics implements MeterBinder {
 		Assert.notNull(dataSource, "DataSource must not be null");
 		Assert.notNull(metadataProvider, "MetadataProvider must not be null");
 		this.dataSource = dataSource;
-		this.metadataProvider = new CachingDataSourcePoolMetadataProvider(dataSource,
+		this.metadataProvider = new CachingDataSourcePoolMetadataProvider(
 				metadataProvider);
 		this.name = name;
 		this.tags = tags;
@@ -97,7 +97,7 @@ public class DataSourcePoolMetrics implements MeterBinder {
 
 		private final DataSourcePoolMetadataProvider metadataProvider;
 
-		CachingDataSourcePoolMetadataProvider(DataSource dataSource,
+		CachingDataSourcePoolMetadataProvider(
 				DataSourcePoolMetadataProvider metadataProvider) {
 			this.metadataProvider = metadataProvider;
 		}

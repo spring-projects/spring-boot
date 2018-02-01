@@ -295,7 +295,8 @@ public class Binder {
 				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
-	private <T> Object bindProperty(Bindable<T> target, Context context, ConfigurationProperty property) {
+	private <T> Object bindProperty(Bindable<T> target, Context context,
+			ConfigurationProperty property) {
 		context.setConfigurationProperty(property);
 		Object result = property.getValue();
 		result = this.placeholdersResolver.resolvePlaceholders(result);

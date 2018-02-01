@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private Map<Definition, String> beanNameRegistry = new HashMap<>();
 
-	private Map<Field, RegisteredField> fieldRegistry = new HashMap<>();
+	private Map<Field, String> fieldRegistry = new HashMap<>();
 
 	private Map<String, SpyDefinition> spies = new HashMap<>();
 
@@ -194,7 +194,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		this.mockitoBeans.add(mock);
 		this.beanNameRegistry.put(definition, beanName);
 		if (field != null) {
-			this.fieldRegistry.put(field, new RegisteredField(definition, beanName));
+			this.fieldRegistry.put(field, beanName);
 		}
 	}
 
@@ -347,7 +347,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		this.spies.put(beanName, definition);
 		this.beanNameRegistry.put(definition, beanName);
 		if (field != null) {
-			this.fieldRegistry.put(field, new RegisteredField(definition, beanName));
+			this.fieldRegistry.put(field, beanName);
 		}
 	}
 
@@ -370,9 +370,9 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	}
 
 	private void postProcessField(Object bean, Field field) {
-		RegisteredField registered = this.fieldRegistry.get(field);
-		if (registered != null && StringUtils.hasLength(registered.getBeanName())) {
-			inject(field, bean, registered.getBeanName());
+		String beanName = this.fieldRegistry.get(field);
+		if (StringUtils.hasText(beanName)) {
+			inject(field, bean, beanName);
 		}
 	}
 
@@ -507,30 +507,6 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 						new RuntimeBeanReference(MockitoPostProcessor.BEAN_NAME));
 				registry.registerBeanDefinition(BEAN_NAME, definition);
 			}
-		}
-
-	}
-
-	/**
-	 * A registered field item.
-	 */
-	private static class RegisteredField {
-
-		private final Definition definition;
-
-		private final String beanName;
-
-		RegisteredField(Definition definition, String beanName) {
-			this.definition = definition;
-			this.beanName = beanName;
-		}
-
-		public Definition getDefinition() {
-			return this.definition;
-		}
-
-		public String getBeanName() {
-			return this.beanName;
 		}
 
 	}

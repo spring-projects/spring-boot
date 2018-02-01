@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ abstract class AbstractSessionCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("Session Condition");
 		Environment environment = context.getEnvironment();
-		StoreType required = SessionStoreMappings.getType(((AnnotationMetadata) metadata).getClassName());
+		StoreType required = SessionStoreMappings.getType(this.webApplicationType,
+				((AnnotationMetadata) metadata).getClassName());
 		if (!environment.containsProperty("spring.session.store-type")) {
 			return ConditionOutcome.match(message.didNotFind("property", "properties")
 					.items(ConditionMessage.Style.QUOTE, "spring.session.store-type"));

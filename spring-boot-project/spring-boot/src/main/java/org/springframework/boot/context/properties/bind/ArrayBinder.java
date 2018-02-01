@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,7 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 		IndexedCollectionSupplier collection = new IndexedCollectionSupplier(
 				ArrayList::new);
 		ResolvableType elementType = target.getType().getComponentType();
-		bindIndexed(name, target, elementBinder, collection, target.getType(),
-				elementType);
+		bindIndexed(name, elementBinder, collection, target.getType(), elementType);
 		if (collection.wasSupplied()) {
 			List<Object> list = (List<Object>) collection.get();
 			Object array = Array.newInstance(elementType.resolve(), list.size());
