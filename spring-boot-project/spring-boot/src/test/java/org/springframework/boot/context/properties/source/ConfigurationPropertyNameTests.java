@@ -50,13 +50,6 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	public void ofNameShouldNotStartWithNumber() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
-		this.thrown.expectMessage("is not valid");
-		ConfigurationPropertyName.of("1foo");
-	}
-
-	@Test
 	public void ofNameShouldNotStartWithDash() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
 		this.thrown.expectMessage("is not valid");
@@ -104,6 +97,15 @@ public class ConfigurationPropertyNameTests {
 		assertThat(name.toString()).isEqualTo("name");
 		assertThat(name.getNumberOfElements()).isEqualTo(1);
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("name");
+		assertThat(name.isIndexed(0)).isFalse();
+	}
+
+	@Test
+	public void ofNameWhenStartsWithNumber() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("1foo");
+		assertThat(name.toString()).isEqualTo("1foo");
+		assertThat(name.getNumberOfElements()).isEqualTo(1);
+		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("1foo");
 		assertThat(name.isIndexed(0)).isFalse();
 	}
 
@@ -420,8 +422,8 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void appendWhenElementNameIsNotValidShouldThrowException() {
 		this.thrown.expect(InvalidConfigurationPropertyNameException.class);
-		this.thrown.expectMessage("Configuration property name '1bar' is not valid");
-		ConfigurationPropertyName.of("foo").append("1bar");
+		this.thrown.expectMessage("Configuration property name '-bar' is not valid");
+		ConfigurationPropertyName.of("foo").append("-bar");
 	}
 
 	@Test
@@ -589,7 +591,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void isValidWhenNotValidShouldReturnFalse() {
 		assertThat(ConfigurationPropertyName.isValid(null)).isFalse();
-		assertThat(ConfigurationPropertyName.isValid("1foo")).isFalse();
+		assertThat(ConfigurationPropertyName.isValid("-foo")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
 	}

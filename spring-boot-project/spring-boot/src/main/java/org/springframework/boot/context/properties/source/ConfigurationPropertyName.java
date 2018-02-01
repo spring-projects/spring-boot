@@ -29,7 +29,7 @@ import org.springframework.util.ObjectUtils;
 /**
  * A configuration property name composed of elements separated by dots. User created
  * names may contain the characters "{@code a-z}" "{@code 0-9}") and "{@code -}", they
- * must be lower-case and must start with a letter. The "{@code -}" is used purely for
+ * must be lower-case and must start with an alpha-numeric character. The "{@code -}" is used purely for
  * formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered equivalent.
  * <p>
  * The "{@code [}" and "{@code ]}" characters may be used to indicate an associative
@@ -675,7 +675,7 @@ public final class ConfigurationPropertyName
 		}
 
 		public static boolean isValidChar(char ch, int index) {
-			return isAlpha(ch) || (index != 0 && (isNumeric(ch) || ch == '-'));
+			return isAlpha(ch) || isNumeric(ch) || (index != 0 && ch == '-');
 		}
 
 		private static boolean isAlpha(char ch) {

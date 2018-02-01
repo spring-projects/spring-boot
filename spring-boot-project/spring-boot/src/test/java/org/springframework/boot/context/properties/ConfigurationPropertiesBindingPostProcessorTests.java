@@ -273,6 +273,20 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 	}
 
+	@Test
+	public void bindToMapWithNumericKey() {
+		this.context = new AnnotationConfigApplicationContext();
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("sample.foos.1.name", "One");
+		sources.addFirst(new MapPropertySource("test-source", source));
+		this.context.register(NumericKeyConfiguration.class);
+		this.context.refresh();
+		NumericKeyConfiguration foo = this.context.getBean(NumericKeyConfiguration.class);
+		assertThat(foo.getFoos().get("1")).isNotNull();
+	}
+
 	private void prepareConverterContext(Class<?>... config) {
 		this.context = new AnnotationConfigApplicationContext();
 		MutablePropertySources sources = this.context.getEnvironment()
@@ -602,6 +616,31 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			this.lastName = lastName;
 		}
 
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "sample")
+	static class NumericKeyConfiguration {
+
+		private Map<String, Foo> foos = new LinkedHashMap<>();
+
+		public Map<String, Foo> getFoos() {
+			return this.foos;
+		}
+
+		static class Foo {
+
+			private String name;
+
+			public String getName() {
+				return this.name;
+			}
+
+			public void setName(String name) {
+				this.name = name;
+			}
+		}
 	}
 
 }
