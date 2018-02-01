@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.reactive.context;
+package org.springframework.boot.web.context;
 
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * Interface to provide configuration for a reactive web application.
+ * SPI interface to be implemented by most if not all {@link WebServerApplicationContext
+ * web server application contexts}. Provides facilities to configure the context, in
+ * addition to the methods in the {WebServerApplicationContext} interface.
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.0.0
  */
-public interface ConfigurableReactiveWebApplicationContext
-		extends ConfigurableApplicationContext, ReactiveWebApplicationContext {
+public interface ConfigurableWebServerApplicationContext
+		extends ConfigurableApplicationContext, WebServerApplicationContext {
+
+	/**
+	 * Set the server namespace of the context.
+	 * @param serverNamespace the server namespance
+	 * @see #getServerNamespace()
+	 */
+	void setServerNamespace(String serverNamespace);
 
 }

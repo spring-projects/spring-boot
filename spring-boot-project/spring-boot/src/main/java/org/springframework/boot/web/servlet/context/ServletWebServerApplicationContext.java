@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -87,7 +88,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @see XmlServletWebServerApplicationContext
  * @see ServletWebServerFactory
  */
-public class ServletWebServerApplicationContext extends GenericWebApplicationContext {
+public class ServletWebServerApplicationContext extends GenericWebApplicationContext
+		implements ConfigurableWebServerApplicationContext {
 
 	private static final Log logger = LogFactory
 			.getLog(ServletWebServerApplicationContext.class);
@@ -104,7 +106,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	private ServletConfig servletConfig;
 
-	private String namespace;
+	private String serverNamespace;
 
 	/**
 	 * Create a new {@link ServletWebServerApplicationContext}.
@@ -322,13 +324,13 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	@Override
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
+	public String getServerNamespace() {
+		return this.serverNamespace;
 	}
 
 	@Override
-	public String getNamespace() {
-		return this.namespace;
+	public void setServerNamespace(String serverNamespace) {
+		this.serverNamespace = serverNamespace;
 	}
 
 	@Override
@@ -346,6 +348,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 * the server has not yet been created.
 	 * @return the embedded web server
 	 */
+	@Override
 	public WebServer getWebServer() {
 		return this.webServer;
 	}

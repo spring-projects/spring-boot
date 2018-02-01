@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
-import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
  * An {@link ApplicationListener} that saves embedded server port and management port into
@@ -107,18 +106,18 @@ public class EmbeddedServerPortFileWriter
 	 * @return the file that should be written
 	 */
 	protected File getPortFile(ApplicationContext applicationContext) {
-		String contextName = getContextName(applicationContext);
-		if (StringUtils.isEmpty(contextName)) {
+		String namespace = getServerNamespace(applicationContext);
+		if (StringUtils.isEmpty(namespace)) {
 			return this.file;
 		}
 		String name = this.file.getName();
 		String extension = StringUtils.getFilenameExtension(this.file.getName());
 		name = name.substring(0, name.length() - extension.length() - 1);
 		if (isUpperCase(name)) {
-			name = name + "-" + contextName.toUpperCase();
+			name = name + "-" + namespace.toUpperCase();
 		}
 		else {
-			name = name + "-" + contextName.toLowerCase();
+			name = name + "-" + namespace.toLowerCase();
 		}
 		if (StringUtils.hasLength(extension)) {
 			name = name + "." + extension;
@@ -126,13 +125,10 @@ public class EmbeddedServerPortFileWriter
 		return new File(this.file.getParentFile(), name);
 	}
 
-	private String getContextName(ApplicationContext applicationContext) {
-		if (applicationContext instanceof ConfigurableWebApplicationContext) {
-			return ((ConfigurableWebApplicationContext) applicationContext)
-					.getNamespace();
-		}
-		if (applicationContext instanceof ReactiveWebApplicationContext) {
-			return ((ReactiveWebApplicationContext) applicationContext).getNamespace();
+	private String getServerNamespace(ApplicationContext applicationContext) {
+		if (applicationContext instanceof WebServerApplicationContext) {
+			return ((WebServerApplicationContext) applicationContext)
+					.getServerNamespace();
 		}
 		return null;
 	}

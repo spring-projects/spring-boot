@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration;
+import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -39,7 +39,7 @@ import org.springframework.util.ObjectUtils;
 class ReactiveManagementContextFactory implements ManagementContextFactory {
 
 	@Override
-	public ConfigurableApplicationContext createManagementContext(
+	public ConfigurableWebServerApplicationContext createManagementContext(
 			ApplicationContext parent, Class<?>... configClasses) {
 		AnnotationConfigReactiveWebServerApplicationContext child = new AnnotationConfigReactiveWebServerApplicationContext();
 		child.setParent(parent);
