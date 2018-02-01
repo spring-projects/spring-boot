@@ -192,7 +192,19 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 				TestPropertySourceUtils.convertInlinedPropertiesToMap(array));
 	}
 
-	private List<ApplicationContextInitializer<?>> getInitializers(
+	/**
+	 * Return the {@link ApplicationContextInitializer initializers} that will be applied
+	 * to the context. By default this method will adapt {@link ContextCustomizer context
+	 * customizers}, add {@link SpringApplication#getInitializers() application
+	 * initializers} and add
+	 * {@link MergedContextConfiguration#getContextInitializerClasses() initializers
+	 * specified on the test}.
+	 * @param config the source context configuration
+	 * @param application the application instance
+	 * @return the initializers to apply
+	 * @since 2.0.0
+	 */
+	protected List<ApplicationContextInitializer<?>> getInitializers(
 			MergedContextConfiguration config, SpringApplication application) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<>();
 		for (ContextCustomizer contextCustomizer : config.getContextCustomizers()) {
