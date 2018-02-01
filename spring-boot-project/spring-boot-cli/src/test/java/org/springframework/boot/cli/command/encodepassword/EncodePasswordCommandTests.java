@@ -25,8 +25,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.MockLog;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -59,8 +58,9 @@ public class EncodePasswordCommandTests {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("boot");
 		verify(this.log).info(this.message.capture());
-		assertThat(new BCryptPasswordEncoder().matches("boot", this.message.getValue()))
-				.isTrue();
+		assertThat(this.message.getValue()).startsWith("{bcrypt}");
+		assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder()
+				.matches("boot", this.message.getValue())).isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 
@@ -69,8 +69,9 @@ public class EncodePasswordCommandTests {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("-a", "pbkdf2", "boot");
 		verify(this.log).info(this.message.capture());
-		assertThat(new Pbkdf2PasswordEncoder().matches("boot", this.message.getValue()))
-				.isTrue();
+		assertThat(this.message.getValue()).startsWith("{pbkdf2}");
+		assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder()
+				.matches("boot", this.message.getValue())).isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 

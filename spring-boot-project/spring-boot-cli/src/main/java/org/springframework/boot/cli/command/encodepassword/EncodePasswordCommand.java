@@ -100,7 +100,7 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 						.collectionToCommaDelimitedString(ENCODERS.keySet()));
 				return ExitStatus.ERROR;
 			}
-			Log.info(encoder.get().encode(password));
+			Log.info("{" + algorithm + "}" + encoder.get().encode(password));
 			return ExitStatus.OK;
 		}
 
