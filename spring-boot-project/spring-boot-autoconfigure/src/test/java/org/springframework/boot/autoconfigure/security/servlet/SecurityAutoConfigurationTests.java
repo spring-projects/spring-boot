@@ -39,14 +39,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
@@ -114,6 +118,25 @@ public class SecurityAutoConfigurationTests {
 			assertThat(customContext.containsBean("securityFilterChainRegistration"))
 					.isFalse();
 		}
+	}
+
+	@Test
+	public void defaultAuthenticationEventPublisherRegistered() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(SecurityAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(AuthenticationEventPublisher.class))
+				.isInstanceOf(DefaultAuthenticationEventPublisher.class);
+	}
+
+	@Test
+	public void defaultAuthenticationEventPublisherIsConditionalOnMissingBean() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(AuthenticationEventPublisherConfiguration.class,
+				SecurityAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(AuthenticationEventPublisher.class))
+				.isInstanceOf(AuthenticationEventPublisherConfiguration.TestAuthenticationEventPublisher.class);
 	}
 
 	@Test
@@ -272,6 +295,28 @@ public class SecurityAutoConfigurationTests {
 	@TestAutoConfigurationPackage(City.class)
 	protected static class EntityConfiguration {
 
+	}
+
+	@Configuration
+	static class AuthenticationEventPublisherConfiguration {
+
+		@Bean
+		public AuthenticationEventPublisher authenticationEventPublisher() {
+			return new TestAuthenticationEventPublisher();
+		}
+
+		class TestAuthenticationEventPublisher implements AuthenticationEventPublisher {
+
+			@Override
+			public void publishAuthenticationSuccess(Authentication authentication) {
+
+			}
+
+			@Override
+			public void publishAuthenticationFailure(AuthenticationException exception, Authentication authentication) {
+
+			}
+		}
 	}
 
 	@Configuration
