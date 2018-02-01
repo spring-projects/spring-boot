@@ -26,6 +26,7 @@ import org.springframework.boot.cli.command.CommandFactory;
 import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.command.archive.WarCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
+import org.springframework.boot.cli.command.encodepassword.EncodePasswordCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.init.InitCommand;
 import org.springframework.boot.cli.command.install.InstallCommand;
@@ -51,6 +52,7 @@ public class DefaultCommandFactory implements CommandFactory {
 		defaultCommands.add(new InstallCommand());
 		defaultCommands.add(new UninstallCommand());
 		defaultCommands.add(new InitCommand());
+		defaultCommands.add(new EncodePasswordCommand());
 		DEFAULT_COMMANDS = Collections.unmodifiableList(defaultCommands);
 	}
 
