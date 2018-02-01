@@ -321,23 +321,24 @@ To change which endpoints are exposed, use the following technology-specific `ex
 
 The `expose` property lists the IDs of the endpoints that are exposed. The `exclude`
 property lists the IDs of the endpoints that should not be exposed.  The `exclude`
-property takes precedence over the `expose` property.
+property takes precedence over the `expose` property. Both `expose` and `exclude` properties
+can be configured with a list of endpoint IDs.
 
-For example, to stop exposing all endpoints over JMX and only expose the `health`
-endpoint, use the following property:
+For example, to stop exposing all endpoints over JMX and only expose the `health` and `info`
+endpoints, use the following property:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.jmx.expose=health
+	management.endpoints.jmx.expose=health,info
 ----
 
 `*` can be used to select all endpoints. For example, to expose everything over HTTP
-except the `env` endpoint, use the following properties:
+except the `env` and `beans` endpoints, use the following properties:
 
 [source,properties,indent=0]
 ----
 	management.endpoints.web.expose=*
-	management.endpoints.web.exclude=env
+	management.endpoints.web.exclude=env,beans
 ----
 
 NOTE: If your application is exposed publicly, we strongly recommend that you also
