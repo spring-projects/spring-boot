@@ -170,7 +170,7 @@ class TypeUtils {
 	}
 
 	/**
-	 * A visitor that extracts the full qualified name of a type, including generic
+	 * A visitor that extracts the fully qualified name of a type, including generic
 	 * information.
 	 */
 	private static class TypeExtractor extends SimpleTypeVisitor8<String, Void> {
@@ -186,7 +186,7 @@ class TypeUtils {
 			TypeElement enclosingElement = getEnclosingTypeElement(type);
 			if (enclosingElement != null) {
 				return getQualifiedName(enclosingElement) + "$"
-						+ type.asElement().getSimpleName().toString();
+						+ type.asElement().getSimpleName();
 			}
 			String qualifiedName = getQualifiedName(type.asElement());
 			if (type.getTypeArguments().isEmpty()) {
@@ -217,8 +217,7 @@ class TypeUtils {
 			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
 			if (enclosingElement != null) {
 				return getQualifiedName(enclosingElement) + "$"
-						+ ((DeclaredType) element.asType()).asElement().getSimpleName()
-								.toString();
+						+ ((DeclaredType) element.asType()).asElement().getSimpleName();
 			}
 			if (element instanceof TypeElement) {
 				return ((TypeElement) element).getQualifiedName().toString();

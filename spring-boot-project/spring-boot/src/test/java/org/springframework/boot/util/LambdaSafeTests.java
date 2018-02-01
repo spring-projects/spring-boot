@@ -442,7 +442,7 @@ public class LambdaSafeTests {
 
 	interface GenericMultiArgCallback<T extends CharSequence> {
 
-		void handle(Integer numner, T argument, Boolean bool);
+		void handle(Integer number, T argument, Boolean bool);
 
 	}
 
@@ -468,7 +468,7 @@ public class LambdaSafeTests {
 
 	interface GenericMultiArgFactory<T extends CharSequence> {
 
-		Integer handle(Integer numner, T argument, Boolean bool);
+		Integer handle(Integer number, T argument, Boolean bool);
 
 	}
 
