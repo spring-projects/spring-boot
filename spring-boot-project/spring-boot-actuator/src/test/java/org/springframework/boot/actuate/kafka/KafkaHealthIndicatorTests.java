@@ -67,7 +67,7 @@ public class KafkaHealthIndicatorTests {
 		shutdownKafka();
 	}
 
-	private void assertDetails(Map<String, Object> details){
+	private void assertDetails(Map<String, Object> details) {
 		assertThat(details).containsEntry("brokerId", "0");
 		assertThat(details).containsKey("clusterId");
 		assertThat(details).containsEntry("nodes", 1);

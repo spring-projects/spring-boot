@@ -53,7 +53,6 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public KafkaHealthIndicator(KafkaAdmin kafkaAdmin, long responseTimeout) {
 		Assert.notNull(kafkaAdmin, "KafkaAdmin must not be null");
-
 		this.kafkaAdmin = kafkaAdmin;
 		this.describeOptions = new DescribeClusterOptions()
 				.timeoutMs((int) responseTimeout);
@@ -66,7 +65,7 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator {
 			String brokerId = result.controller().get().idString();
 			int replicationFactor = getReplicationFactor(brokerId, adminClient);
 			int nodes = result.nodes().get().size();
-			if (nodes >= replicationFactor){
+			if (nodes >= replicationFactor) {
 				builder.up();
 			}
 			else {
