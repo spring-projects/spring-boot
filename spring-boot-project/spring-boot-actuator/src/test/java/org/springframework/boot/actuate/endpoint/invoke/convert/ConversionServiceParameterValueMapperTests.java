@@ -114,8 +114,8 @@ public class ConversionServiceParameterValueMapperTests {
 		}
 
 		@Override
-		public boolean isNullable() {
-			return true;
+		public boolean isMandatory() {
+			return false;
 		}
 
 	}
