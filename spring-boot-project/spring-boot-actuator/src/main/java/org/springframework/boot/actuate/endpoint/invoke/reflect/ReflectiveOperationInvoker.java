@@ -86,7 +86,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	private boolean isMissing(Map<String, Object> arguments,
 			OperationParameter parameter) {
 		if (!parameter.isMandatory()) {
-			return true;
+			return false;
 		}
 		return arguments.get(parameter.getName()) == null;
 	}
