@@ -21,23 +21,22 @@ import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -57,7 +56,6 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,41 +69,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SecurityAutoConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class));
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
-
 	@Test
 	public void testWebConfiguration() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
-		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
-				.hasSize(1);
+		this.contextRunner.run(context -> {
+			assertThat(context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
+			assertThat(context.getBean(FilterChainProxy.class).getFilterChains())
+					.hasSize(1);
+		});
 	}
 
 	@Test
 	public void testDefaultFilterOrderWithSecurityAdapter() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(WebSecurity.class, SecurityAutoConfiguration.class,
-				SecurityFilterAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean("securityFilterChainRegistration",
-				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
-						FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
+		this.contextRunner.withConfiguration(AutoConfigurations.of(WebSecurity.class, SecurityFilterAutoConfiguration.class))
+				.run(context -> assertThat(context.getBean("securityFilterChainRegistration",
+						DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
+						FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100));
 	}
 
 	@Test
@@ -122,173 +107,132 @@ public class SecurityAutoConfigurationTests {
 
 	@Test
 	public void defaultAuthenticationEventPublisherRegistered() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SecurityAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(AuthenticationEventPublisher.class))
-				.isInstanceOf(DefaultAuthenticationEventPublisher.class);
+		this.contextRunner.run(context -> {
+			assertThat(context.getBean(AuthenticationEventPublisher.class))
+					.isInstanceOf(DefaultAuthenticationEventPublisher.class);
+		});
 	}
 
 	@Test
 	public void defaultAuthenticationEventPublisherIsConditionalOnMissingBean() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(AuthenticationEventPublisherConfiguration.class,
-				SecurityAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(AuthenticationEventPublisher.class))
-				.isInstanceOf(AuthenticationEventPublisherConfiguration.TestAuthenticationEventPublisher.class);
+		this.contextRunner.withUserConfiguration(AuthenticationEventPublisherConfiguration.class).run(context -> {
+			assertThat(context.getBean(AuthenticationEventPublisher.class))
+					.isInstanceOf(AuthenticationEventPublisherConfiguration.TestAuthenticationEventPublisher.class);
+		});
 	}
 
 	@Test
 	public void testDefaultFilterOrder() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				SecurityFilterAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean("securityFilterChainRegistration",
-				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
-						FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run(context -> {
+			assertThat(context.getBean("securityFilterChainRegistration",
+					DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
+					FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
+		});
 	}
 
 	@Test
 	public void testCustomFilterOrder() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		TestPropertyValues.of("spring.security.filter.order:12345").applyTo(this.context);
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				SecurityFilterAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean("securityFilterChainRegistration",
-				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(12345);
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+				.withPropertyValues("spring.security.filter.order:12345")
+				.run(context -> {
+			assertThat(context.getBean("securityFilterChainRegistration",
+					DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
+					12345);
+		});
 	}
 
 	@Test
 	public void testDefaultUsernamePassword() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class);
-		this.context.refresh();
-		UserDetailsService manager = this.context.getBean(UserDetailsService.class);
-		assertThat(this.outputCapture.toString())
-				.contains("Using generated security password:");
-		assertThat(manager.loadUserByUsername("user")).isNotNull();
+		this.contextRunner.run(context -> {
+			UserDetailsService manager = context.getBean(UserDetailsService.class);
+			assertThat(this.outputCapture.toString())
+					.contains("Using generated security password:");
+			assertThat(manager.loadUserByUsername("user")).isNotNull();
+		});
 	}
 
 	@Test
 	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestAuthenticationManagerConfiguration.class,
-				SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
-		assertThat(manager).isEqualTo(this.context.getBean(
-				TestAuthenticationManagerConfiguration.class).authenticationManager);
-		assertThat(this.outputCapture.toString())
-				.doesNotContain("Using generated security password: ");
-		TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
-		assertThat(manager.authenticate(token)).isNotNull();
+		this.contextRunner.withUserConfiguration(TestAuthenticationManagerConfiguration.class).run(context -> {
+			AuthenticationManager manager = context.getBean(AuthenticationManager.class);
+			assertThat(manager).isEqualTo(context.getBean(
+					TestAuthenticationManagerConfiguration.class).authenticationManager);
+			assertThat(this.outputCapture.toString())
+					.doesNotContain("Using generated security password: ");
+			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
+			assertThat(manager.authenticate(token)).isNotNull();
+		});
 	}
 
 	@Test
 	public void defaultUserNotCreatedIfUserDetailsServiceBeanPresent() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestUserDetailsServiceConfiguration.class,
-				SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		UserDetailsService userDetailsService = this.context
-				.getBean(UserDetailsService.class);
-		assertThat(this.outputCapture.toString())
-				.doesNotContain("Using default security password: ");
-		assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
+		this.contextRunner.withUserConfiguration(TestUserDetailsServiceConfiguration.class).run(context -> {
+			UserDetailsService userDetailsService = context
+					.getBean(UserDetailsService.class);
+			assertThat(this.outputCapture.toString())
+					.doesNotContain("Using default security password: ");
+			assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
+		});
 	}
 
 	@Test
 	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestAuthenticationProviderConfiguration.class,
-				SecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		AuthenticationProvider provider = this.context
-				.getBean(AuthenticationProvider.class);
-		assertThat(this.outputCapture.toString())
-				.doesNotContain("Using default security password: ");
-		TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
-		assertThat(provider.authenticate(token)).isNotNull();
+		this.contextRunner.withUserConfiguration(TestAuthenticationProviderConfiguration.class).run(context -> {
+			AuthenticationProvider provider = context
+					.getBean(AuthenticationProvider.class);
+			assertThat(this.outputCapture.toString())
+					.doesNotContain("Using default security password: ");
+			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
+			assertThat(provider.authenticate(token)).isNotNull();
+		});
 	}
 
 	@Test
 	public void testJpaCoexistsHappily() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		TestPropertyValues
-				.of("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
+		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
 						"spring.datasource.initialization-mode:never")
-				.applyTo(this.context);
-		this.context.register(EntityConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-				SecurityAutoConfiguration.class);
+				.withUserConfiguration(EntityConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class))
+				.run(context -> assertThat(context.getBean(JpaTransactionManager.class)).isNotNull());
 		// This can fail if security @Conditionals force early instantiation of the
 		// HibernateJpaAutoConfiguration (e.g. the EntityManagerFactory is not found)
-		this.context.refresh();
-		assertThat(this.context.getBean(JpaTransactionManager.class)).isNotNull();
 	}
 
 	@Test
 	public void testSecurityEvaluationContextExtensionSupport() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(SecurityEvaluationContextExtension.class))
-				.isNotNull();
+		this.contextRunner.run(context ->
+				assertThat(context).getBean(SecurityEvaluationContextExtension.class).isNotNull());
 	}
 
 	@Test
 	public void defaultFilterDispatcherTypes() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				SecurityFilterAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
-				"securityFilterChainRegistration",
-				DelegatingFilterProxyRegistrationBean.class);
-		@SuppressWarnings("unchecked")
-		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
-				.getField(bean, "dispatcherTypes");
-		assertThat(dispatcherTypes).containsOnly(DispatcherType.ASYNC,
-				DispatcherType.ERROR, DispatcherType.REQUEST);
+		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+				.run(context -> {
+					DelegatingFilterProxyRegistrationBean bean = context.getBean(
+							"securityFilterChainRegistration",
+							DelegatingFilterProxyRegistrationBean.class);
+					@SuppressWarnings("unchecked")
+					EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
+							.getField(bean, "dispatcherTypes");
+					assertThat(dispatcherTypes).containsOnly(DispatcherType.ASYNC,
+							DispatcherType.ERROR, DispatcherType.REQUEST);
+		});
 	}
 
 	@Test
 	public void customFilterDispatcherTypes() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				SecurityFilterAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		TestPropertyValues.of("spring.security.filter.dispatcher-types:INCLUDE,ERROR")
-				.applyTo(this.context);
-		this.context.refresh();
-		DelegatingFilterProxyRegistrationBean bean = this.context.getBean(
-				"securityFilterChainRegistration",
-				DelegatingFilterProxyRegistrationBean.class);
-		@SuppressWarnings("unchecked")
-		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
-				.getField(bean, "dispatcherTypes");
-		assertThat(dispatcherTypes).containsOnly(DispatcherType.INCLUDE,
-				DispatcherType.ERROR);
+		this.contextRunner.withPropertyValues("spring.security.filter.dispatcher-types:INCLUDE,ERROR")
+				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+				.run(context -> {
+					DelegatingFilterProxyRegistrationBean bean = context.getBean(
+							"securityFilterChainRegistration",
+							DelegatingFilterProxyRegistrationBean.class);
+					@SuppressWarnings("unchecked")
+					EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
+							.getField(bean, "dispatcherTypes");
+					assertThat(dispatcherTypes).containsOnly(DispatcherType.INCLUDE,
+							DispatcherType.ERROR);
+				});
 	}
 
 	@Configuration
