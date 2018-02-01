@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
 import org.springframework.util.Assert;
 
 /**
- * A discovered {@link ExposableServletEndpoint controller endpoint}.
+ * A discovered {@link ExposableServletEndpoint servlet endpoint}.
  *
  * @author Phillip Webb
  */

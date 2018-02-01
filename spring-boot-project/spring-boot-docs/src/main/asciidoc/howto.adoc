@@ -1372,7 +1372,7 @@ include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[t
 
 Spring Boot has no mandatory logging dependency, except for the Commons Logging API, which
 is typically provided by Spring Framework's `spring-jcl` module. To use
-http://logback.qos.ch[Logback], you need to include it and `sprign-jcl` on the classpath.
+http://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
 The simplest way to do that is through the starters, which all depend on
 `spring-boot-starter-logging`. For a web application, you need only
 `spring-boot-starter-web`, since it depends transitively on the logging starter. If you

@@ -165,7 +165,7 @@ public final class LambdaSafe {
 					if (!isLambdaGenericProblem(ex)) {
 						throw ex;
 					}
-					logNonMachingType(callbackInstance, ex);
+					logNonMatchingType(callbackInstance, ex);
 				}
 			}
 			return InvocationResult.noResult();
@@ -202,7 +202,7 @@ public final class LambdaSafe {
 			return false;
 		}
 
-		private void logNonMachingType(C callback, ClassCastException ex) {
+		private void logNonMatchingType(C callback, ClassCastException ex) {
 			if (this.logger.isDebugEnabled()) {
 				Class<?> expectedType = ResolvableType.forClass(this.callbackType)
 						.resolveGeneric();
