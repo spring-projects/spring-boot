@@ -18,14 +18,14 @@ package com.example;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.context.EmbeddedServerPortFileWriter;
+import org.springframework.boot.web.context.WebServerPortFileWriter;
 
 @SpringBootApplication
 public class DevToolsTestApplication {
 
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(DevToolsTestApplication.class)
-				.listeners(new EmbeddedServerPortFileWriter("target/server.port"))
+				.listeners(new WebServerPortFileWriter("target/server.port"))
 				.run(args);
 	}
 

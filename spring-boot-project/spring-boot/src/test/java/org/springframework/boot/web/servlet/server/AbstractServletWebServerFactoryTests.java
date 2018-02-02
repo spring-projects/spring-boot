@@ -86,8 +86,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
 
-import org.springframework.boot.ApplicationHome;
-import org.springframework.boot.ApplicationTemp;
+import org.springframework.boot.system.ApplicationHome;
+import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;

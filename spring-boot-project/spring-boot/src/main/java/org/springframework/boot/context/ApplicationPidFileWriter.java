@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.system;
+package org.springframework.boot.context;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,11 +26,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
+import org.springframework.boot.system.ApplicationPid;
 import org.springframework.boot.system.SystemProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -58,7 +58,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Tomasz Przybyla
  * @author Madhura Bhave
- * @since 1.4.0
+ * @since 2.0.0
  */
 public class ApplicationPidFileWriter
 		implements ApplicationListener<SpringApplicationEvent>, Ordered {

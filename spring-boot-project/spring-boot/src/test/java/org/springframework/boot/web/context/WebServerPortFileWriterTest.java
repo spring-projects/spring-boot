@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.system;
+package org.springframework.boot.web.context;
 
 import java.io.File;
 import java.io.FileReader;
@@ -27,8 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -38,13 +36,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests {@link EmbeddedServerPortFileWriter}.
+ * Tests {@link WebServerPortFileWriter}.
  *
  * @author David Liu
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class EmbeddedServerPortFileWriterTests {
+public class WebServerPortFileWriterTest {
 
 	@Rule
 	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -58,7 +56,7 @@ public class EmbeddedServerPortFileWriterTests {
 	@Test
 	public void createPortFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
+		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
 	}
@@ -66,7 +64,7 @@ public class EmbeddedServerPortFileWriterTests {
 	@Test
 	public void overridePortFileWithDefault() throws Exception {
 		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
-		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter();
+		WebServerPortFileWriter listener = new WebServerPortFileWriter();
 		listener.onApplicationEvent(mockEvent("", 8080));
 		FileReader reader = new FileReader(System.getProperty("PORTFILE"));
 		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("8080");
@@ -76,7 +74,7 @@ public class EmbeddedServerPortFileWriterTests {
 	public void overridePortFileWithExplicitFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		System.setProperty("PORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
-		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
+		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		FileReader reader = new FileReader(System.getProperty("PORTFILE"));
 		assertThat(FileCopyUtils.copyToString(reader)).isEqualTo("8080");
@@ -85,7 +83,7 @@ public class EmbeddedServerPortFileWriterTests {
 	@Test
 	public void createManagementPortFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
+		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		listener.onApplicationEvent(mockEvent("management", 9090));
 		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
@@ -104,7 +102,7 @@ public class EmbeddedServerPortFileWriterTests {
 	public void createUpperCaseManagementPortFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		file = new File(file.getParentFile(), file.getName().toUpperCase());
-		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
+		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("management", 9090));
 		String managementFile = file.getName();
 		managementFile = managementFile.substring(0, managementFile.length()

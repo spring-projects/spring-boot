@@ -1337,8 +1337,8 @@ useful for process monitoring:
 
 * `ApplicationPidFileWriter` creates a file containing the application PID (by default,
 in the application directory with a file name of `application.pid`).
-* `EmbeddedServerPortFileWriter` creates a file (or files) containing the ports of the
-embedded server (by default, in the application directory with a file name of
+* `WebServerPortFileWriter` creates a file (or files) containing the ports of the
+running web server (by default, in the application directory with a file name of
 `application.port`).
 
 By default, these writers are not activated, but you can enable:

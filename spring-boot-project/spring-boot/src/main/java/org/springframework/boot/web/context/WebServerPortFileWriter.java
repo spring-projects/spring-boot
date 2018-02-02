@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.system;
+package org.springframework.boot.web.context;
 
 import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.boot.system.SystemProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.Assert;
@@ -38,42 +37,40 @@ import org.springframework.util.StringUtils;
  * @author David Liu
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.4.0
+ * @since 2.0.0
  */
-public class EmbeddedServerPortFileWriter
+public class WebServerPortFileWriter
 		implements ApplicationListener<WebServerInitializedEvent> {
 
 	private static final String DEFAULT_FILE_NAME = "application.port";
 
 	private static final String[] PROPERTY_VARIABLES = { "PORTFILE", "portfile" };
 
-	private static final Log logger = LogFactory
-			.getLog(EmbeddedServerPortFileWriter.class);
+	private static final Log logger = LogFactory.getLog(WebServerPortFileWriter.class);
 
 	private final File file;
 
 	/**
-	 * Create a new {@link EmbeddedServerPortFileWriter} instance using the filename
+	 * Create a new {@link WebServerPortFileWriter} instance using the filename
 	 * 'application.port'.
 	 */
-	public EmbeddedServerPortFileWriter() {
+	public WebServerPortFileWriter() {
 		this(new File(DEFAULT_FILE_NAME));
 	}
 
 	/**
-	 * Create a new {@link EmbeddedServerPortFileWriter} instance with a specified
-	 * filename.
+	 * Create a new {@link WebServerPortFileWriter} instance with a specified filename.
 	 * @param filename the name of file containing port
 	 */
-	public EmbeddedServerPortFileWriter(String filename) {
+	public WebServerPortFileWriter(String filename) {
 		this(new File(filename));
 	}
 
 	/**
-	 * Create a new {@link EmbeddedServerPortFileWriter} instance with a specified file.
+	 * Create a new {@link WebServerPortFileWriter} instance with a specified file.
 	 * @param file the file containing port
 	 */
-	public EmbeddedServerPortFileWriter(File file) {
+	public WebServerPortFileWriter(File file) {
 		Assert.notNull(file, "File must not be null");
 		String override = SystemProperties.get(PROPERTY_VARIABLES);
 		if (override != null) {

@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.context.EmbeddedServerPortFileWriter;
+import org.springframework.boot.web.context.WebServerPortFileWriter;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 
@@ -41,7 +41,7 @@ public class ResourceHandlingApplication {
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(ResourceHandlingApplication.class)
 				.properties("server.port:0")
-				.listeners(new EmbeddedServerPortFileWriter("target/server.port"))
+				.listeners(new WebServerPortFileWriter("target/server.port"))
 				.run(args);
 	}
 

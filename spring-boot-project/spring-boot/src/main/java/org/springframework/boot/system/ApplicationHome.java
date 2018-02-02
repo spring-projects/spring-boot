@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.system;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Raja Kolli
- * @since 1.2.0
+ * @since 2.0.0
  */
 public class ApplicationHome {
 
