@@ -165,7 +165,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
 		ServerConnector connector = new ServerConnector(server, this.acceptors,
 				this.selectors);
-		connector.setHost(address.getHostName());
+		connector.setHost(address.getHostString());
 		connector.setPort(address.getPort());
 		for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
 			if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {

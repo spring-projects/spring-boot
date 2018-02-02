@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
+import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.jasper.servlet.JspServlet;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -271,6 +273,19 @@ public class JettyServletWebServerFactoryTests
 		});
 		this.thrown.expectCause(isA(IllegalStateException.class));
 		factory.getWebServer().start();
+	}
+
+	@Test
+	public void specificIPAddressNotReverseResolved() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		InetAddress localhost = InetAddress.getLocalHost();
+		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		Connector connector = ((JettyWebServer) this.webServer).getServer()
+				.getConnectors()[0];
+		assertThat(((ServerConnector) connector).getHost())
+				.isEqualTo(localhost.getHostAddress());
 	}
 
 	@Override
