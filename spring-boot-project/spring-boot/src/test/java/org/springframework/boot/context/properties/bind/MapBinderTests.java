@@ -546,6 +546,22 @@ public class MapBinderTests {
 	}
 
 	@Test
+	public void bindToMapWithCustomConverterAndChildElements() {
+		// gh-11892
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new MapConverter());
+		Binder binder = new Binder(this.sources, null, conversionService);
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "boom");
+		source.put("foo.a", "a");
+		source.put("foo.b", "b");
+		this.sources.add(source);
+		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
+		assertThat(map.get("a")).isEqualTo("a");
+		assertThat(map.get("b")).isEqualTo("b");
+	}
+
+	@Test
 	public void bindToMapWithNoConverterForValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "a,b");
