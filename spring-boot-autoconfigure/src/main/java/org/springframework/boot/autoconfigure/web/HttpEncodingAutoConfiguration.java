@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingServletFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.HttpEncodingProperties.Type;
@@ -53,7 +53,7 @@ public class HttpEncodingAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(CharacterEncodingFilter.class)
+	@ConditionalOnMissingServletFilter(CharacterEncodingFilter.class)
 	public CharacterEncodingFilter characterEncodingFilter() {
 		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
 		filter.setEncoding(this.properties.getCharset().name());

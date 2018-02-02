@@ -17,8 +17,12 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Locale;
+
+import javax.servlet.DispatcherType;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
@@ -36,6 +40,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +48,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
@@ -233,7 +239,15 @@ public class ThymeleafAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.resources.chain.enabled:true");
 		this.context.refresh();
-		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
+		FilterRegistrationBean registration = this.context.getBean("resourceUrlEncodingFilter",
+				FilterRegistrationBean.class);
+		assertThat(registration).isNotNull();
+		assertThat(registration.getFilter()).isInstanceOf(ResourceUrlEncodingFilter.class);
+		Field dispatcherTypesField = ReflectionUtils.findField(FilterRegistrationBean.class, "dispatcherTypes");
+		ReflectionUtils.makeAccessible(dispatcherTypesField);
+		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionUtils
+				.getField(dispatcherTypesField, registration);
+		assertThat(dispatcherTypes).containsAll(EnumSet.allOf(DispatcherType.class));
 	}
 
 	@Test

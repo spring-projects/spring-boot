@@ -49,6 +49,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingServletFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -132,7 +133,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingServletFilter(RequestContextFilter.class)
 	public FilterRegistrationBean requestContextFilter() {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 		registration.setFilter(new RequestContextFilter());
@@ -142,7 +143,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
+	@ConditionalOnMissingServletFilter(ServletContainer.class)
 	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
 	public FilterRegistrationBean jerseyFilterRegistration() {
 		FilterRegistrationBean registration = new FilterRegistrationBean();

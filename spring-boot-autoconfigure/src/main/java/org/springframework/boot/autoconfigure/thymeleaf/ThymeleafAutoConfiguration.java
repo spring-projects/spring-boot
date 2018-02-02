@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.EnumSet;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
@@ -40,10 +42,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingServletFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -263,10 +267,13 @@ public class ThymeleafAutoConfiguration {
 	protected static class ThymeleafResourceHandlingConfig {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingServletFilter(ResourceUrlEncodingFilter.class)
 		@ConditionalOnEnabledResourceChain
-		public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
-			return new ResourceUrlEncodingFilter();
+		public FilterRegistrationBean resourceUrlEncodingFilter() {
+			FilterRegistrationBean registration = new FilterRegistrationBean();
+			registration.setFilter(new ResourceUrlEncodingFilter());
+			registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+			return registration;
 		}
 
 	}
