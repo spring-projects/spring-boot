@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jasper.servlet.JspServlet;
-import org.eclipse.jetty.server.AbstractNetworkConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -120,27 +119,14 @@ public class JettyEmbeddedServletContainerFactoryTests
 	@Test
 	public void specificIPAddressNotReverseResolved() throws Exception {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
-		final String[] refAncHost = new String[1];
-		refAncHost[0] = "HostNotSetInAbstractNetworkConnector";
-		InetAddress lhAddress = InetAddress.getLocalHost();
-		InetAddress address = InetAddress.getByAddress(lhAddress.getAddress());
-		// the address should have no host name associated with ith
-		String expectedHost = address.getHostAddress();
-		factory.setAddress(address);
-		factory.addServerCustomizers(server -> {
-			for (Connector connector : server.getConnectors()) {
-				if (connector instanceof AbstractNetworkConnector) {
-					@SuppressWarnings("resource")
-					AbstractNetworkConnector anc = (AbstractNetworkConnector) connector;
-					String ancHost = anc.getHost();
-					refAncHost[0] = ancHost;
-					break;
-				}
-			}
-		});
-		this.container = factory
-				.getEmbeddedServletContainer(exampleServletRegistration());
-		assertThat(refAncHost[0]).isEqualTo(expectedHost);
+		InetAddress localhost = InetAddress.getLocalHost();
+		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		Connector connector = ((JettyEmbeddedServletContainer) this.container).getServer()
+				.getConnectors()[0];
+		assertThat(((ServerConnector) connector).getHost())
+				.isEqualTo(localhost.getHostAddress());
 	}
 
 	@Test
