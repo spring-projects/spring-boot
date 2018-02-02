@@ -47,7 +47,7 @@ public class SpyDefinitionTests {
 	@Test
 	public void classToSpyMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TypeToSpy must not be null");
+		this.thrown.expectMessage("type must not be null");
 		new SpyDefinition(null, null, null, true, null);
 	}
 

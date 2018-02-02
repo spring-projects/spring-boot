@@ -25,7 +25,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,24 +36,18 @@ class SpyDefinition extends Definition {
 
 	private static final int MULTIPLIER = 31;
 
-	private final ResolvableType typeToSpy;
-
 	SpyDefinition(String name, ResolvableType typeToSpy, MockReset reset,
 			boolean proxyTargetAware, QualifierDefinition qualifier) {
-		super(name, reset, proxyTargetAware, qualifier);
-		Assert.notNull(typeToSpy, "TypeToSpy must not be null");
-		this.typeToSpy = typeToSpy;
-
+		super(name, reset, proxyTargetAware, qualifier, typeToSpy);
 	}
 
 	public ResolvableType getTypeToSpy() {
-		return this.typeToSpy;
+		return super.getType();
 	}
 
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.typeToSpy);
 		return result;
 	}
 
@@ -68,14 +61,13 @@ class SpyDefinition extends Definition {
 		}
 		SpyDefinition other = (SpyDefinition) obj;
 		boolean result = super.equals(obj);
-		result = result && ObjectUtils.nullSafeEquals(this.typeToSpy, other.typeToSpy);
 		return result;
 	}
 
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("name", getName())
-				.append("typeToSpy", this.typeToSpy).append("reset", getReset())
+				.append("typeToSpy", super.getType()).append("reset", getReset())
 				.toString();
 	}
 
@@ -86,7 +78,9 @@ class SpyDefinition extends Definition {
 	@SuppressWarnings("unchecked")
 	public <T> T createSpy(String name, Object instance) {
 		Assert.notNull(instance, "Instance must not be null");
-		Assert.isInstanceOf(this.typeToSpy.resolve(), instance);
+		Class<?> resolvedTypeToSpy = this.getTypeToSpy().resolve();
+		Assert.notNull(resolvedTypeToSpy, "Type to spy resolved to null");
+		Assert.isInstanceOf(resolvedTypeToSpy, instance);
 		if (Mockito.mockingDetails(instance).isSpy()) {
 			return (T) instance;
 		}
