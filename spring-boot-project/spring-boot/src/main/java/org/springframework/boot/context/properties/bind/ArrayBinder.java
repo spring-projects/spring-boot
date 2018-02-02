@@ -41,7 +41,7 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 		IndexedCollectionSupplier result = new IndexedCollectionSupplier(ArrayList::new);
 		ResolvableType aggregateType = target.getType();
 		ResolvableType elementType = target.getType().getComponentType();
-		bindIndexed(name, elementBinder, aggregateType, elementType, result);
+		bindIndexed(name, target, elementBinder, aggregateType, elementType, result);
 		if (result.wasSupplied()) {
 			List<Object> list = (List<Object>) result.get();
 			Object array = Array.newInstance(elementType.resolve(), list.size());

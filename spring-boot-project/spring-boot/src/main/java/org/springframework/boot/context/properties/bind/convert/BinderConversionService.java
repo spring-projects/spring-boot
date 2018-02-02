@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,17 @@
 
 package org.springframework.boot.context.properties.bind.convert;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
@@ -38,69 +41,30 @@ import org.springframework.format.support.DefaultFormattingConversionService;
  */
 public class BinderConversionService implements ConversionService {
 
-	private static final ConversionService additionalConversionService = createAdditionalConversionService();
-
 	private static final ConversionService defaultConversionService = new DefaultFormattingConversionService();
 
-	private final ConversionService conversionService;
+	private final List<ConversionService> conversionServices;
 
 	/**
 	 * Create a new {@link BinderConversionService} instance.
 	 * @param conversionService and option root conversion service
 	 */
 	public BinderConversionService(ConversionService conversionService) {
-		this.conversionService = (conversionService != null ? conversionService
-				: defaultConversionService);
+		List<ConversionService> conversionServices = new ArrayList<>();
+		conversionServices.add(createOverrideConversionService());
+		conversionServices.add(
+				conversionService != null ? conversionService : defaultConversionService);
+		conversionServices.add(createAdditionalConversionService());
+		this.conversionServices = Collections.unmodifiableList(conversionServices);
 	}
 
-	@Override
-	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
-		return (this.conversionService != null
-				&& this.conversionService.canConvert(sourceType, targetType))
-				|| additionalConversionService.canConvert(sourceType, targetType);
+	private ConversionService createOverrideConversionService() {
+		GenericConversionService service = new GenericConversionService();
+		service.addConverter(new DelimitedStringToCollectionConverter(this));
+		return service;
 	}
 
-	@Override
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return (this.conversionService != null
-				&& this.conversionService.canConvert(sourceType, targetType))
-				|| additionalConversionService.canConvert(sourceType, targetType);
-	}
-
-	@Override
-	public <T> T convert(Object source, Class<T> targetType) {
-		return callConversionService((c) -> c.convert(source, targetType));
-	}
-
-	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		return callConversionService((c) -> c.convert(source, sourceType, targetType));
-	}
-
-	private <T> T callConversionService(Function<ConversionService, T> call) {
-		if (this.conversionService == null) {
-			return callAdditionalConversionService(call, null);
-		}
-		try {
-			return call.apply(this.conversionService);
-		}
-		catch (ConversionException ex) {
-			return callAdditionalConversionService(call, ex);
-		}
-	}
-
-	private <T> T callAdditionalConversionService(Function<ConversionService, T> call,
-			RuntimeException cause) {
-		try {
-			return call.apply(additionalConversionService);
-		}
-		catch (ConverterNotFoundException ex) {
-			throw (cause != null ? cause : ex);
-		}
-	}
-
-	private static ConversionService createAdditionalConversionService() {
+	private ConversionService createAdditionalConversionService() {
 		DefaultFormattingConversionService service = new DefaultFormattingConversionService();
 		DefaultConversionService.addCollectionConverters(service);
 		service.addConverterFactory(new StringToEnumConverterFactory());
@@ -115,6 +79,50 @@ public class BinderConversionService implements ConversionService {
 		registrar.setFormatter(formatter);
 		registrar.registerFormatters(service);
 		return service;
+	}
+
+	@Override
+	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
+		for (ConversionService service : this.conversionServices) {
+			if (service.canConvert(sourceType, targetType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		for (ConversionService service : this.conversionServices) {
+			if (service.canConvert(sourceType, targetType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public <T> T convert(Object source, Class<T> targetType) {
+		return callConversionServices((c) -> c.convert(source, targetType));
+	}
+
+	@Override
+	public Object convert(Object source, TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
+		return callConversionServices((c) -> c.convert(source, sourceType, targetType));
+	}
+
+	private <T> T callConversionServices(Function<ConversionService, T> call) {
+		ConversionException exception = null;
+		for (ConversionService service : this.conversionServices) {
+			try {
+				return call.apply(service);
+			}
+			catch (ConversionException ex) {
+				exception = ex;
+			}
+		}
+		throw exception;
 	}
 
 }

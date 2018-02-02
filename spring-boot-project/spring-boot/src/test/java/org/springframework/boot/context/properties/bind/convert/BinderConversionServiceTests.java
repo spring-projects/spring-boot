@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind.convert;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.time.Duration;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.io.Resource;
+import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -164,6 +166,36 @@ public class BinderConversionServiceTests {
 		this.service = new BinderConversionService(null);
 		Duration converted = this.service.convert(10, Duration.class);
 		assertThat(converted).isEqualTo(Duration.ofMillis(10));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void conversionServiceShouldSupportBarDelimitedStrings() {
+		this.service = new BinderConversionService(null);
+		List<TestEnum> converted = (List<TestEnum>) this.service.convert("ONE|ONE|TWO",
+				TypeDescriptor.valueOf(String.class), TypeDescriptor.nested(
+						ReflectionUtils.findField(DelimitedValues.class, "bar"), 0));
+		assertThat(converted).containsExactly(TestEnum.ONE, TestEnum.ONE, TestEnum.TWO);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void conversionServiceShouldSupportNoneDelimitedStrings() {
+		this.service = new BinderConversionService(null);
+		List<String> converted = (List<String>) this.service.convert("a,b,c",
+				TypeDescriptor.valueOf(String.class), TypeDescriptor.nested(
+						ReflectionUtils.findField(DelimitedValues.class, "none"), 0));
+		assertThat(converted).containsExactly("a,b,c");
+	}
+
+	static class DelimitedValues {
+
+		@Delimiter("|")
+		List<TestEnum> bar;
+
+		@Delimiter(Delimiter.NONE)
+		List<String> none;
+
 	}
 
 	enum TestEnum {

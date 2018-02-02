@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.context.properties.bind.convert.Delimiter;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -206,6 +207,17 @@ public class JavaBeanBinderTests {
 		this.sources.add(source);
 		ExampleCollectionBean bean = this.binder
 				.bind("foo", Bindable.of(ExampleCollectionBean.class)).get();
+		assertThat(bean.getCollection()).containsExactly(ExampleEnum.FOO_BAR,
+				ExampleEnum.BAR_BAZ);
+	}
+
+	@Test
+	public void bindToClassShouldBindToCollectionWithDelimeter() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.collection", "foo-bar|bar-baz");
+		this.sources.add(source);
+		ExampleCollectionBeanWithDelimeter bean = this.binder
+				.bind("foo", Bindable.of(ExampleCollectionBeanWithDelimeter.class)).get();
 		assertThat(bean.getCollection()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -613,6 +625,21 @@ public class JavaBeanBinderTests {
 
 		public Collection<ExampleEnum> getCollection() {
 			return this.collection;
+		}
+
+	}
+
+	public static class ExampleCollectionBeanWithDelimeter {
+
+		@Delimiter("|")
+		private Collection<ExampleEnum> collection;
+
+		public Collection<ExampleEnum> getCollection() {
+			return this.collection;
+		}
+
+		public void setCollection(Collection<ExampleEnum> collection) {
+			this.collection = collection;
 		}
 
 	}
