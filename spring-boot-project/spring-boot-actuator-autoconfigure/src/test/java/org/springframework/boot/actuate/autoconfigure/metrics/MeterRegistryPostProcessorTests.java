@@ -89,8 +89,7 @@ public class MeterRegistryPostProcessorTests {
 		this.customizers.add(this.mockCustomizer);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
 				this.binders, this.filters, this.customizers, false);
-		assertThat(processor.postProcessAfterInitialization(new CompositeMeterRegistry(),
-				"name"));
+		processor.postProcessAfterInitialization(new CompositeMeterRegistry(), "name");
 		verifyZeroInteractions(this.mockBinder, this.mockCustomizer);
 	}
 
@@ -99,7 +98,7 @@ public class MeterRegistryPostProcessorTests {
 		this.customizers.add(this.mockCustomizer);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
 				this.binders, this.filters, this.customizers, false);
-		assertThat(processor.postProcessAfterInitialization(this.mockRegistry, "name"));
+		processor.postProcessAfterInitialization(this.mockRegistry, "name");
 		verify(this.mockCustomizer).customize(this.mockRegistry);
 	}
 
@@ -108,7 +107,7 @@ public class MeterRegistryPostProcessorTests {
 		this.filters.add(this.mockFilter);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
 				this.binders, this.filters, this.customizers, false);
-		assertThat(processor.postProcessAfterInitialization(this.mockRegistry, "name"));
+		processor.postProcessAfterInitialization(this.mockRegistry, "name");
 		verify(this.mockConfig).meterFilter(this.mockFilter);
 	}
 
@@ -117,7 +116,7 @@ public class MeterRegistryPostProcessorTests {
 		this.binders.add(this.mockBinder);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
 				this.binders, this.filters, this.customizers, false);
-		assertThat(processor.postProcessAfterInitialization(this.mockRegistry, "name"));
+		processor.postProcessAfterInitialization(this.mockRegistry, "name");
 		verify(this.mockBinder).bindTo(this.mockRegistry);
 	}
 
