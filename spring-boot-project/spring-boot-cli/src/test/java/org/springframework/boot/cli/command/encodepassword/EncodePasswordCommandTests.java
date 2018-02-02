@@ -25,7 +25,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.MockLog;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -65,13 +67,24 @@ public class EncodePasswordCommandTests {
 	}
 
 	@Test
+	public void encodeWithBCryptShouldUseBCrypt() throws Exception {
+		EncodePasswordCommand command = new EncodePasswordCommand();
+		ExitStatus status = command.run("-a", "bcrypt", "boot");
+		verify(this.log).info(this.message.capture());
+		assertThat(this.message.getValue()).doesNotStartWith("{");
+		assertThat(new BCryptPasswordEncoder().matches("boot", this.message.getValue()))
+				.isTrue();
+		assertThat(status).isEqualTo(ExitStatus.OK);
+	}
+
+	@Test
 	public void encodeWithPbkdf2ShouldUsePbkdf2() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("-a", "pbkdf2", "boot");
 		verify(this.log).info(this.message.capture());
-		assertThat(this.message.getValue()).startsWith("{pbkdf2}");
-		assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder()
-				.matches("boot", this.message.getValue())).isTrue();
+		assertThat(this.message.getValue()).doesNotStartWith("{");
+		assertThat(new Pbkdf2PasswordEncoder().matches("boot", this.message.getValue()))
+				.isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 
@@ -79,7 +92,8 @@ public class EncodePasswordCommandTests {
 	public void encodeWithUnkownAlgorithShouldExitWithError() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("--algorithm", "bad", "boot");
-		verify(this.log).error("Unknown algorithm, valid options are: bcrypt,pbkdf2");
+		verify(this.log)
+				.error("Unknown algorithm, valid options are: default,bcrypt,pbkdf2");
 		assertThat(status).isEqualTo(ExitStatus.ERROR);
 	}
 

@@ -35,6 +35,7 @@ import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -51,6 +52,8 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 
 	static {
 		Map<String, Supplier<PasswordEncoder>> encoders = new LinkedHashMap<>();
+		encoders.put("default",
+				PasswordEncoderFactories::createDelegatingPasswordEncoder);
 		encoders.put("bcrypt", BCryptPasswordEncoder::new);
 		encoders.put("pbkdf2", Pbkdf2PasswordEncoder::new);
 		ENCODERS = Collections.unmodifiableMap(encoders);
@@ -69,7 +72,7 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 	@Override
 	public Collection<HelpExample> getExamples() {
 		List<HelpExample> examples = new ArrayList<>();
-		examples.add(new HelpExample("To encode a password with bcrypt",
+		examples.add(new HelpExample("To encode a password with the default encoder",
 				"spring encodepassword mypassword"));
 		examples.add(new HelpExample("To encode a password with pbkdf2",
 				"spring encodepassword -a pbkdf2 mypassword"));
@@ -83,7 +86,7 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 		@Override
 		protected void options() {
 			this.algorithm = option(Arrays.asList("algorithm", "a"),
-					"The algorithm to use").withRequiredArg().defaultsTo("bcrypt");
+					"The algorithm to use").withRequiredArg().defaultsTo("default");
 		}
 
 		@Override
@@ -100,7 +103,7 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 						.collectionToCommaDelimitedString(ENCODERS.keySet()));
 				return ExitStatus.ERROR;
 			}
-			Log.info("{" + algorithm + "}" + encoder.get().encode(password));
+			Log.info(encoder.get().encode(password));
 			return ExitStatus.OK;
 		}
 
