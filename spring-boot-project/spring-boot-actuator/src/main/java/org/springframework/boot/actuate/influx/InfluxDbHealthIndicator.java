@@ -35,6 +35,7 @@ public class InfluxDbHealthIndicator extends AbstractHealthIndicator {
 	private final InfluxDB influxDb;
 
 	public InfluxDbHealthIndicator(InfluxDB influxDb) {
+		super("InfluxDB health check failed");
 		Assert.notNull(influxDb, "InfluxDB must not be null");
 		this.influxDb = influxDb;
 	}

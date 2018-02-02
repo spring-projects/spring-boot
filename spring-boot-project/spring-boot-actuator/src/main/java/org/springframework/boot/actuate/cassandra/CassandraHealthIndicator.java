@@ -37,6 +37,10 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	private CassandraOperations cassandraOperations;
 
+	public CassandraHealthIndicator() {
+		super("Cassandra health check failed");
+	}
+
 	/**
 	 * Create a new {@link CassandraHealthIndicator} instance.
 	 * @param cassandraOperations the Cassandra operations

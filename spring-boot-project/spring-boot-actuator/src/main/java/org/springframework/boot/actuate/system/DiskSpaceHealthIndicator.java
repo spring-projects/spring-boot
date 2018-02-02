@@ -48,6 +48,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	 * @param threshold the minimum disk space that should be available (in bytes)
 	 */
 	public DiskSpaceHealthIndicator(File path, long threshold) {
+		super("DiskSpace health check failed");
 		this.path = path;
 		this.threshold = threshold;
 	}

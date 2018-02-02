@@ -65,6 +65,7 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
 			String... indices) {
+		super("Elasticsearch health check failed");
 		this.client = client;
 		this.responseTimeout = responseTimeout;
 		this.indices = indices;

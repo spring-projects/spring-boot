@@ -40,6 +40,7 @@ public class ElasticsearchJestHealthIndicator extends AbstractHealthIndicator {
 	private final JsonParser jsonParser = new JsonParser();
 
 	public ElasticsearchJestHealthIndicator(JestClient jestClient) {
+		super("Elasticsearch health check failed");
 		this.jestClient = jestClient;
 	}
 

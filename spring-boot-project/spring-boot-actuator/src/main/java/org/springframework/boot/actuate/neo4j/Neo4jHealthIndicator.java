@@ -50,6 +50,7 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	 * @param sessionFactory the SessionFactory
 	 */
 	public Neo4jHealthIndicator(SessionFactory sessionFactory) {
+		super("Neo4J health check failed");
 		this.sessionFactory = sessionFactory;
 	}
 

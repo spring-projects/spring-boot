@@ -34,6 +34,7 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 	private final ConnectionFactory connectionFactory;
 
 	public JmsHealthIndicator(ConnectionFactory connectionFactory) {
+		super("JMS health check failed");
 		this.connectionFactory = connectionFactory;
 	}
 

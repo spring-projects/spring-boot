@@ -32,6 +32,7 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 	private final JavaMailSenderImpl mailSender;
 
 	public MailHealthIndicator(JavaMailSenderImpl mailSender) {
+		super("Mail health check failed");
 		this.mailSender = mailSender;
 	}
 

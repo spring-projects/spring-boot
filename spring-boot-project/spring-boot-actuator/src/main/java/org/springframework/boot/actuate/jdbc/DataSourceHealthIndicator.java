@@ -64,6 +64,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	 * Create a new {@link DataSourceHealthIndicator} instance.
 	 */
 	public DataSourceHealthIndicator() {
+		this(null, null);
 	}
 
 	/**
@@ -82,6 +83,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	 * @param query the validation query to use (can be {@code null})
 	 */
 	public DataSourceHealthIndicator(DataSource dataSource, String query) {
+		super("DataSource health check failed");
 		this.dataSource = dataSource;
 		this.query = query;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);

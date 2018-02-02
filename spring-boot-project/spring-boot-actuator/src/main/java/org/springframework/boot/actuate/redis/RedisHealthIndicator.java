@@ -45,6 +45,7 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 	private final RedisConnectionFactory redisConnectionFactory;
 
 	public RedisHealthIndicator(RedisConnectionFactory connectionFactory) {
+		super("Reddis health check failed");
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		this.redisConnectionFactory = connectionFactory;
 	}

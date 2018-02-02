@@ -38,6 +38,7 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 	private final SolrClient solrClient;
 
 	public SolrHealthIndicator(SolrClient solrClient) {
+		super("Solr health check failed");
 		this.solrClient = solrClient;
 	}
 

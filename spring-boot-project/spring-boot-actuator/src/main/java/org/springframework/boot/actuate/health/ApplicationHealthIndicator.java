@@ -25,6 +25,10 @@ package org.springframework.boot.actuate.health;
  */
 public class ApplicationHealthIndicator extends AbstractHealthIndicator {
 
+	public ApplicationHealthIndicator() {
+		super("Application health check failed");
+	}
+
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		builder.up();
