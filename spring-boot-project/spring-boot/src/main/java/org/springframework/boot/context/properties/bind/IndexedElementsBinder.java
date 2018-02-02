@@ -53,13 +53,20 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		return source == null || source instanceof IterableConfigurationPropertySource;
 	}
 
+	/**
+	 * Bind indexed elements to the supplied collection.
+	 * @param name The name of the property to bind
+	 * @param elementBinder the binder to use for elements
+	 * @param aggregateType the aggregate type, may be a collection or an array
+	 * @param elementType the element type
+	 * @param result the destination for results
+	 */
 	protected final void bindIndexed(ConfigurationPropertyName name,
-			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
-			ResolvableType aggregateType, ResolvableType elementType) {
+			AggregateElementBinder elementBinder, ResolvableType aggregateType,
+			ResolvableType elementType, IndexedCollectionSupplier result) {
 		for (ConfigurationPropertySource source : getContext().getSources()) {
-			bindIndexed(source, name, elementBinder, collection, aggregateType,
-					elementType);
-			if (collection.wasSupplied() && collection.get() != null) {
+			bindIndexed(source, name, elementBinder, result, aggregateType, elementType);
+			if (result.wasSupplied() && result.get() != null) {
 				return;
 			}
 		}
@@ -134,7 +141,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	}
 
 	/**
-	 * {@link AggregateBinder.AggregateSupplier AggregateSupplier} for an index
+	 * {@link AggregateBinder.AggregateSupplier AggregateSupplier} for an indexed
 	 * collection.
 	 */
 	protected static class IndexedCollectionSupplier

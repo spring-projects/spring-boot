@@ -38,12 +38,12 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
-		IndexedCollectionSupplier collection = new IndexedCollectionSupplier(
-				ArrayList::new);
+		IndexedCollectionSupplier result = new IndexedCollectionSupplier(ArrayList::new);
+		ResolvableType aggregateType = target.getType();
 		ResolvableType elementType = target.getType().getComponentType();
-		bindIndexed(name, elementBinder, collection, target.getType(), elementType);
-		if (collection.wasSupplied()) {
-			List<Object> list = (List<Object>) collection.get();
+		bindIndexed(name, elementBinder, aggregateType, elementType, result);
+		if (result.wasSupplied()) {
+			List<Object> list = (List<Object>) result.get();
 			Object array = Array.newInstance(elementType.resolve(), list.size());
 			for (int i = 0; i < list.size(); i++) {
 				Array.set(array, i, list.get(i));
