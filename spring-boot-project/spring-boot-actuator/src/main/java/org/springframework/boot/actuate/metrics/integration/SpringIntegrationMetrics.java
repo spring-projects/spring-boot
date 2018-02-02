@@ -136,7 +136,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 	private <T> void registerGauge(MeterRegistry registry, T object, Iterable<Tag> tags,
 			String name, String description, ToDoubleFunction<T> value) {
 		Gauge.Builder<?> builder = Gauge.builder(name, object, value);
-		builder.tags(this.tags).description(description).register(registry);
+		builder.tags(tags).description(description).register(registry);
 	}
 
 	private <T> void registerTimedGauge(MeterRegistry registry, T object,

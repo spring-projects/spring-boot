@@ -451,7 +451,7 @@ public class ConfigFileApplicationListener
 				String loadProfile) {
 			try {
 				Resource resource = this.resourceLoader.getResource(location);
-				String description = getDescription(profile, location, resource);
+				String description = getDescription(location, resource);
 				if (profile != null) {
 					description = description + " for profile " + profile;
 				}
@@ -482,8 +482,7 @@ public class ConfigFileApplicationListener
 			}
 		}
 
-		private String getDescription(Profile profile, String location,
-				Resource resource) {
+		private String getDescription(String location, Resource resource) {
 			try {
 				if (resource != null) {
 					String uri = resource.getURI().toASCIIString();

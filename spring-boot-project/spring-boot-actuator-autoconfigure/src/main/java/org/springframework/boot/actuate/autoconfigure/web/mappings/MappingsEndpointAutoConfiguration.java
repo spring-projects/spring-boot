@@ -77,8 +77,7 @@ public class MappingsEndpointAutoConfiguration {
 		static class SpringMvcConfiguration {
 
 			@Bean
-			DispatcherServletsMappingDescriptionProvider dispatcherServletMappingDescriptionProvider(
-					ApplicationContext applicationContext) {
+			DispatcherServletsMappingDescriptionProvider dispatcherServletMappingDescriptionProvider() {
 				return new DispatcherServletsMappingDescriptionProvider();
 			}
 

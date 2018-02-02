@@ -62,12 +62,11 @@ class TestRestTemplateTestContextCustomizer implements ContextCustomizer {
 	private void registerTestRestTemplate(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry) {
-			registerTestRestTemplate(context, (BeanDefinitionRegistry) context);
+			registerTestRestTemplate((BeanDefinitionRegistry) context);
 		}
 	}
 
-	private void registerTestRestTemplate(ConfigurableApplicationContext context,
-			BeanDefinitionRegistry registry) {
+	private void registerTestRestTemplate(BeanDefinitionRegistry registry) {
 		RootBeanDefinition definition = new RootBeanDefinition(
 				TestRestTemplateRegistrar.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);

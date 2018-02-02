@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,12 +99,11 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
 		AsciiBytes name = applyFilter(fileHeader.getName());
 		if (name != null) {
-			add(name, fileHeader, dataOffset);
+			add(name, dataOffset);
 		}
 	}
 
-	private void add(AsciiBytes name, CentralDirectoryFileHeader fileHeader,
-			int dataOffset) {
+	private void add(AsciiBytes name, int dataOffset) {
 		this.hashCodes[this.size] = name.hashCode();
 		this.centralDirectoryOffsets[this.size] = dataOffset;
 		this.positions[this.size] = this.size;

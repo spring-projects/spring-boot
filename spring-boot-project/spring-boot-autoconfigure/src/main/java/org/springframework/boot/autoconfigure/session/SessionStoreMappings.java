@@ -86,7 +86,8 @@ final class SessionStoreMappings {
 				.entrySet()) {
 			for (Map.Entry<WebApplicationType, Class<?>> entry : storeEntry.getValue()
 					.entrySet()) {
-				if (entry.getValue().getName().equals(configurationClassName)) {
+				if (entry.getKey() == webApplicationType
+						&& entry.getValue().getName().equals(configurationClassName)) {
 					return storeEntry.getKey();
 				}
 			}

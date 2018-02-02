@@ -106,8 +106,7 @@ public class SessionAutoConfiguration {
 	 */
 	abstract static class SessionConfigurationImportSelector implements ImportSelector {
 
-		protected final String[] selectImports(AnnotationMetadata importingClassMetadata,
-				WebApplicationType webApplicationType) {
+		protected final String[] selectImports(WebApplicationType webApplicationType) {
 			List<String> imports = new ArrayList<>();
 			StoreType[] types = StoreType.values();
 			for (int i = 0; i < types.length; i++) {
@@ -128,8 +127,7 @@ public class SessionAutoConfiguration {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return super.selectImports(importingClassMetadata,
-					WebApplicationType.REACTIVE);
+			return super.selectImports(WebApplicationType.REACTIVE);
 		}
 
 	}
@@ -143,8 +141,7 @@ public class SessionAutoConfiguration {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return super.selectImports(importingClassMetadata,
-					WebApplicationType.SERVLET);
+			return super.selectImports(WebApplicationType.SERVLET);
 		}
 
 	}

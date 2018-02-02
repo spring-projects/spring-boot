@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		return source == null || source instanceof IterableConfigurationPropertySource;
 	}
 
-	protected final void bindIndexed(ConfigurationPropertyName name, Bindable<?> target,
+	protected final void bindIndexed(ConfigurationPropertyName name,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
 			ResolvableType aggregateType, ResolvableType elementType) {
 		for (ConfigurationPropertySource source : getContext().getSources()) {
