@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,6 +101,8 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Venil Noronha
  * @author Henri Kerola
+ * @author Henrich Krämer
+ *
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -895,7 +897,7 @@ public class JettyEmbeddedServletContainerFactory
 				ReflectionUtils.findMethod(connectorClass, "setPort", int.class)
 						.invoke(connector, address.getPort());
 				ReflectionUtils.findMethod(connectorClass, "setHost", String.class)
-						.invoke(connector, address.getHostName());
+						.invoke(connector, address.getHostString());
 				if (acceptors > 0) {
 					ReflectionUtils.findMethod(connectorClass, "setAcceptors", int.class)
 							.invoke(connector, acceptors);
@@ -924,7 +926,7 @@ public class JettyEmbeddedServletContainerFactory
 		public AbstractConnector createConnector(Server server, InetSocketAddress address,
 				int acceptors, int selectors) {
 			ServerConnector connector = new ServerConnector(server, acceptors, selectors);
-			connector.setHost(address.getHostName());
+			connector.setHost(address.getHostString());
 			connector.setPort(address.getPort());
 			for (ConnectionFactory connectionFactory : connector
 					.getConnectionFactories()) {

@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Locale;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jasper.servlet.JspServlet;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -112,6 +114,19 @@ public class JettyEmbeddedServletContainerFactoryTests
 		for (JettyServerCustomizer configuration : configurations) {
 			ordered.verify(configuration).customize((Server) anyObject());
 		}
+	}
+
+	@Test
+	public void specificIPAddressNotReverseResolved() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		InetAddress localhost = InetAddress.getLocalHost();
+		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		Connector connector = ((JettyEmbeddedServletContainer) this.container).getServer()
+				.getConnectors()[0];
+		assertThat(((ServerConnector) connector).getHost())
+				.isEqualTo(localhost.getHostAddress());
 	}
 
 	@Test
