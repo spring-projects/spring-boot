@@ -49,8 +49,7 @@ abstract class AbstractSessionCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("Session Condition");
 		Environment environment = context.getEnvironment();
-		StoreType required = SessionStoreMappings.getType(this.webApplicationType,
-				((AnnotationMetadata) metadata).getClassName());
+		StoreType required = SessionStoreMappings.getType(((AnnotationMetadata) metadata).getClassName());
 		if (!environment.containsProperty("spring.session.store-type")) {
 			return ConditionOutcome.match(message.didNotFind("property", "properties")
 					.items(ConditionMessage.Style.QUOTE, "spring.session.store-type"));

@@ -372,7 +372,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	private void postProcessField(Object bean, Field field) {
 		RegisteredField registered = this.fieldRegistry.get(field);
 		if (registered != null && StringUtils.hasLength(registered.getBeanName())) {
-			inject(field, bean, registered.getBeanName(), registered.getDefinition());
+			inject(field, bean, registered.getBeanName());
 		}
 	}
 
@@ -380,11 +380,10 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		String beanName = this.beanNameRegistry.get(definition);
 		Assert.state(StringUtils.hasLength(beanName),
 				() -> "No bean found for definition " + definition);
-		inject(field, target, beanName, definition);
+		inject(field, target, beanName);
 	}
 
-	private void inject(Field field, Object target, String beanName,
-			Definition definition) {
+	private void inject(Field field, Object target, String beanName) {
 		try {
 			field.setAccessible(true);
 			Assert.state(ReflectionUtils.getField(field, target) == null,

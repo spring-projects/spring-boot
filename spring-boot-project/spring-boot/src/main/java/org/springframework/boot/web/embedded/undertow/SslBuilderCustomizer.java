@@ -72,7 +72,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 			SSLContext sslContext = SSLContext.getInstance(this.ssl.getProtocol());
 			sslContext.init(getKeyManagers(this.ssl, this.sslStoreProvider),
 					getTrustManagers(this.ssl, this.sslStoreProvider), null);
-			builder.addHttpsListener(this.port, getListenAddress(this.address),
+			builder.addHttpsListener(this.port, getListenAddress(),
 					sslContext);
 			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
 					getSslClientAuthMode(this.ssl));
@@ -93,7 +93,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		}
 	}
 
-	private String getListenAddress(InetAddress address) {
+	private String getListenAddress() {
 		if (this.address == null) {
 			return "0.0.0.0";
 		}
