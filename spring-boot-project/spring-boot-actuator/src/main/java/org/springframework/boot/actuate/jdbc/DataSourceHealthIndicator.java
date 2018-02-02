@@ -86,7 +86,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 		super("DataSource health check failed");
 		this.dataSource = dataSource;
 		this.query = query;
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.jdbcTemplate = (dataSource == null ? null : new JdbcTemplate(dataSource));
 	}
 
 	@Override
