@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
+import io.micrometer.core.instrument.AbstractTimer;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
@@ -77,6 +78,30 @@ public class WebMvcMetricsFilterAutoTimedTests {
 				.count()).isEqualTo(1L);
 	}
 
+	@Test
+	public void requestPercentilesRecordedWhenEnabled() throws Exception {
+		this.mvc.perform(get("/api/10")).andExpect(status().isOk());
+		AbstractTimer timer = (AbstractTimer) this.registry.get("http.server.requests")
+				.tags("uri", "/api/{id}").timer();
+		assertThat(timer.statsConfig().isPercentileHistogram()).isTrue();
+		assertThat(timer.statsConfig().isPublishingHistogram()).isTrue();
+	}
+
+	@Test
+	public void requestPercentilesNotRecordedWhenDisabled() throws Exception {
+		WebMvcMetricsFilter percentilesDisabledFilter = new WebMvcMetricsFilter(
+				this.context, this.registry, new DefaultWebMvcTagsProvider(),
+				"http.server.requests", true, false);
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.addFilters(percentilesDisabledFilter).build();
+
+		this.mvc.perform(get("/api/other")).andExpect(status().isOk());
+		AbstractTimer timer = (AbstractTimer) this.registry.get("http.server.requests")
+				.tags("uri", "/api/other").timer();
+		assertThat(timer.statsConfig().isPercentileHistogram()).isFalse();
+		assertThat(timer.statsConfig().isPublishingHistogram()).isFalse();
+	}
+
 	@Configuration
 	@EnableWebMvc
 	@Import({ Controller.class })
@@ -96,7 +121,7 @@ public class WebMvcMetricsFilterAutoTimedTests {
 		public WebMvcMetricsFilter webMetricsFilter(WebApplicationContext context,
 				MeterRegistry registry) {
 			return new WebMvcMetricsFilter(context, registry,
-					new DefaultWebMvcTagsProvider(), "http.server.requests", true);
+					new DefaultWebMvcTagsProvider(), "http.server.requests", true, true);
 		}
 
 	}
@@ -108,6 +133,11 @@ public class WebMvcMetricsFilterAutoTimedTests {
 		@GetMapping("/{id}")
 		public String successful(@PathVariable Long id) {
 			return id.toString();
+		}
+
+		@GetMapping("/other")
+		public String other() {
+			return "";
 		}
 
 	}

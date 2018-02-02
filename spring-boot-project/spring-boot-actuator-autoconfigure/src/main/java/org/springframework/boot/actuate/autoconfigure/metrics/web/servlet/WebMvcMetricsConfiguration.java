@@ -60,7 +60,8 @@ public class WebMvcMetricsConfiguration {
 		Server serverProperties = properties.getWeb().getServer();
 		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(context, registry,
 				tagsProvider, serverProperties.getRequestsMetricName(),
-				serverProperties.isAutoTimeRequests());
+				serverProperties.isAutoTimeRequests(),
+				serverProperties.isRecordRequestPercentiles());
 		FilterRegistrationBean<WebMvcMetricsFilter> registration = new FilterRegistrationBean<>(
 				filter);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);

@@ -77,6 +77,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private final boolean autoTimeRequests;
 
+	private final boolean recordRequestPercentiles;
+
 	private volatile HandlerMappingIntrospector introspector;
 
 	/**
@@ -86,15 +88,17 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	 * @param tagsProvider the tags provider
 	 * @param metricName the metric name
 	 * @param autoTimeRequests if requests should be automatically timed
+	 * @param recordRequestPercentiles if request percentile histograms should be recorded
 	 */
 	public WebMvcMetricsFilter(ApplicationContext context, MeterRegistry registry,
-			WebMvcTagsProvider tagsProvider, String metricName,
-			boolean autoTimeRequests) {
+			WebMvcTagsProvider tagsProvider, String metricName, boolean autoTimeRequests,
+			boolean recordRequestPercentiles) {
 		this.context = context;
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
 		this.autoTimeRequests = autoTimeRequests;
+		this.recordRequestPercentiles = recordRequestPercentiles;
 	}
 
 	@Override
@@ -217,7 +221,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 			stop(timerSample, tags, Timer.builder(annotation, this.metricName));
 		}
 		if (timingContext.getAnnotations().isEmpty() && this.autoTimeRequests) {
-			stop(timerSample, tags, Timer.builder(this.metricName));
+			stop(timerSample, tags, Timer.builder(this.metricName)
+					.publishPercentileHistogram(this.recordRequestPercentiles));
 		}
 		for (LongTaskTimer.Sample sample : timingContext.getLongTaskTimerSamples()) {
 			sample.stop();
