@@ -38,11 +38,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Tests for {@link MeterRegistryPostProcessor}.
+ * Tests for {@link MeterRegistryConfigurer}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-public class MeterRegistryPostProcessorTests {
+public class MeterRegistryConfigurerTests {
 
 	private List<MeterBinder> binders = new ArrayList<>();
 
@@ -72,62 +73,50 @@ public class MeterRegistryPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessWhenNotRegistryShouldReturnBean() {
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.filters, this.customizers, false);
-		Object bean = new Object();
-		String beanName = "name";
-		assertThat(processor.postProcessBeforeInitialization(bean, beanName))
-				.isEqualTo(bean);
-		assertThat(processor.postProcessAfterInitialization(bean, beanName))
-				.isEqualTo(bean);
-	}
-
-	@Test
-	public void postProcessorWhenCompositeShouldSkip() {
+	public void configureWhenCompositeShouldSkip() {
 		this.binders.add(this.mockBinder);
 		this.customizers.add(this.mockCustomizer);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.filters, this.customizers, false);
-		processor.postProcessAfterInitialization(new CompositeMeterRegistry(), "name");
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(new CompositeMeterRegistry());
 		verifyZeroInteractions(this.mockBinder, this.mockCustomizer);
 	}
 
 	@Test
-	public void postProcessShouldApplyCustomizer() {
+	public void configureShouldApplyCustomizer() {
 		this.customizers.add(this.mockCustomizer);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.filters, this.customizers, false);
-		processor.postProcessAfterInitialization(this.mockRegistry, "name");
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
 		verify(this.mockCustomizer).customize(this.mockRegistry);
 	}
 
 	@Test
-	public void postProcessShouldApplyFilter() {
+	public void configureShouldApplyFilter() {
 		this.filters.add(this.mockFilter);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.filters, this.customizers, false);
-		processor.postProcessAfterInitialization(this.mockRegistry, "name");
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
 		verify(this.mockConfig).meterFilter(this.mockFilter);
 	}
 
 	@Test
-	public void postProcessShouldApplyBinder() {
+	public void configureShouldApplyBinder() {
 		this.binders.add(this.mockBinder);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.filters, this.customizers, false);
-		processor.postProcessAfterInitialization(this.mockRegistry, "name");
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
 		verify(this.mockBinder).bindTo(this.mockRegistry);
 	}
 
 	@Test
-	public void postProcessShouldBeCallInOrderCustomizeFilterBinder() {
+	public void configureShouldBeCalledInOrderCustomizerFilterBinder() {
 		this.customizers.add(this.mockCustomizer);
 		this.filters.add(this.mockFilter);
 		this.binders.add(this.mockBinder);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.filters, this.customizers, false);
-		processor.postProcessAfterInitialization(this.mockRegistry, "name");
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
 		InOrder ordered = inOrder(this.mockBinder, this.mockConfig, this.mockCustomizer);
 		ordered.verify(this.mockCustomizer).customize(this.mockRegistry);
 		ordered.verify(this.mockConfig).meterFilter(this.mockFilter);
@@ -135,11 +124,11 @@ public class MeterRegistryPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessWhenAddToGlobalRegistryShouldAddToGlobalRegistry() {
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.filters, this.customizers, true);
+	public void configureWhenAddToGlobalRegistryShouldAddToGlobalRegistry() {
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, true);
 		try {
-			processor.postProcessAfterInitialization(this.mockRegistry, "name");
+			configurer.configure(this.mockRegistry);
 			assertThat(Metrics.globalRegistry.getRegistries())
 					.contains(this.mockRegistry);
 		}
@@ -149,10 +138,10 @@ public class MeterRegistryPostProcessorTests {
 	}
 
 	@Test
-	public void postProcessWhenNotAddToGlobalRegistryShouldAddToGlobalRegistry() {
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
-				this.binders, this.filters, this.customizers, false);
-		processor.postProcessAfterInitialization(this.mockRegistry, "name");
+	public void configureWhenNotAddToGlobalRegistryShouldAddToGlobalRegistry() {
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
 		assertThat(Metrics.globalRegistry.getRegistries())
 				.doesNotContain(this.mockRegistry);
 	}

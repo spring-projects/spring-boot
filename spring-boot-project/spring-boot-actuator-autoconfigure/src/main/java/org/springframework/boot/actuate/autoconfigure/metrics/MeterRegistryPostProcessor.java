@@ -17,87 +17,56 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.util.LambdaSafe;
+import org.springframework.context.ApplicationContext;
 
 /**
- * {@link BeanPostProcessor} to apply {@link MeterRegistryCustomizer customizers},
- * {@link MeterFilter filters}, {@link MeterBinder binders} and {@link Metrics#addRegistry
- * global registration} to {@link MeterRegistry meter registries}. This post processor
- * intentionally skips {@link CompositeMeterRegistry} with the assumptions that the
- * registries it contains are beans and will be customized directly.
+ * {@link BeanPostProcessor} that delegates to a lazily created
+ * {@link MeterRegistryConfigurer} to post-process {@link MeterRegistry} beans.
  *
  * @author Jon Schneider
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class MeterRegistryPostProcessor implements BeanPostProcessor {
 
-	private final Collection<MeterRegistryCustomizer<?>> customizers;
+	private final ApplicationContext context;
 
-	private final Collection<MeterFilter> filters;
+	private volatile MeterRegistryConfigurer configurer;
 
-	private final Collection<MeterBinder> binders;
-
-	private final boolean addToGlobalRegistry;
-
-	MeterRegistryPostProcessor(Collection<MeterBinder> binders,
-			Collection<MeterFilter> filters,
-			Collection<MeterRegistryCustomizer<?>> customizers,
-			boolean addToGlobalRegistry) {
-		this.binders = (binders != null ? binders : Collections.emptyList());
-		this.filters = (filters != null ? filters : Collections.emptyList());
-		this.customizers = (customizers != null ? customizers : Collections.emptyList());
-		this.addToGlobalRegistry = addToGlobalRegistry;
+	MeterRegistryPostProcessor(ApplicationContext context) {
+		this.context = context;
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) {
-		return bean;
-	}
-
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) {
+	public Object postProcessAfterInitialization(Object bean, String beanName)
+			throws BeansException {
 		if (bean instanceof MeterRegistry) {
-			postProcess((MeterRegistry) bean);
+			getConfigurer().configure((MeterRegistry) bean);
 		}
 		return bean;
-	}
-
-	private void postProcess(MeterRegistry registry) {
-		if (registry instanceof CompositeMeterRegistry) {
-			return;
-		}
-		// Customizers must be applied before binders, as they may add custom tags or
-		// alter timer or summary configuration.
-		customize(registry);
-		addFilters(registry);
-		addBinders(registry);
-		if (this.addToGlobalRegistry && registry != Metrics.globalRegistry) {
-			Metrics.addRegistry(registry);
-		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void customize(MeterRegistry registry) {
-		LambdaSafe.callbacks(MeterRegistryCustomizer.class, this.customizers, registry)
-				.withLogger(MeterRegistryPostProcessor.class)
-				.invoke((customizer) -> customizer.customize(registry));
+	private MeterRegistryConfigurer getConfigurer() {
+		if (this.configurer == null) {
+			this.configurer = new MeterRegistryConfigurer(beansOfType(MeterBinder.class),
+					beansOfType(MeterFilter.class),
+					(Collection<MeterRegistryCustomizer<?>>) (Object) beansOfType(
+							MeterRegistryCustomizer.class),
+					this.context.getBean(MetricsProperties.class).isUseGlobalRegistry());
+		}
+		return this.configurer;
 	}
 
-	private void addFilters(MeterRegistry registry) {
-		this.filters.forEach(registry.config()::meterFilter);
-	}
-
-	private void addBinders(MeterRegistry registry) {
-		this.binders.forEach((binder) -> binder.bindTo(registry));
+	private <T> Collection<T> beansOfType(Class<T> type) {
+		return this.context.getBeansOfType(type).values();
 	}
 
 }

@@ -16,13 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.Collection;
-
 import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.binder.MeterBinder;
-import io.micrometer.core.instrument.config.MeterFilter;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsConfiguration;
@@ -40,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -72,13 +68,8 @@ public class MetricsAutoConfiguration {
 
 	@Bean
 	public static MeterRegistryPostProcessor meterRegistryPostProcessor(
-			ObjectProvider<Collection<MeterBinder>> binders,
-			ObjectProvider<Collection<MeterFilter>> filters,
-			ObjectProvider<Collection<MeterRegistryCustomizer<?>>> customizers,
-			MetricsProperties properties) {
-		return new MeterRegistryPostProcessor(binders.getIfAvailable(),
-				filters.getIfAvailable(), customizers.getIfAvailable(),
-				properties.isUseGlobalRegistry());
+			ApplicationContext context) {
+		return new MeterRegistryPostProcessor(context);
 	}
 
 	@Bean
