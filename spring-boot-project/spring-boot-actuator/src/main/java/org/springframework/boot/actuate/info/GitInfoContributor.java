@@ -32,12 +32,12 @@ import org.springframework.core.env.PropertySource;
  */
 public class GitInfoContributor extends InfoPropertiesInfoContributor<GitProperties> {
 
-	public GitInfoContributor(GitProperties properties, Mode mode) {
-		super(properties, mode);
-	}
-
 	public GitInfoContributor(GitProperties properties) {
 		this(properties, Mode.SIMPLE);
+	}
+
+	public GitInfoContributor(GitProperties properties, Mode mode) {
+		super(properties, mode);
 	}
 
 	@Override

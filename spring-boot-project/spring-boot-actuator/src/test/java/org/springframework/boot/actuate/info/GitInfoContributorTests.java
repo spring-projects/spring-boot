@@ -33,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class GitInfoContributorTests {
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings("unchecked")
 	public void coerceDate() {
 		Properties properties = new Properties();
 		properties.put("branch", "master");
@@ -49,8 +49,8 @@ public class GitInfoContributorTests {
 		assertThat(((Instant) commitTime).toEpochMilli()).isEqualTo(1457098593000L);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings("unchecked")
 	public void shortenCommitId() {
 		Properties properties = new Properties();
 		properties.put("branch", "master");
