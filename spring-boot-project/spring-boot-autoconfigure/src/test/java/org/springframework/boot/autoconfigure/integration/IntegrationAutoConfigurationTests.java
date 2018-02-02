@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,15 @@ import java.util.List;
 
 import javax.management.MBeanServer;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -43,10 +47,15 @@ import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.gateway.RequestReplyExchanger;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
+import org.springframework.integration.support.management.AbstractMessageChannelMetrics;
+import org.springframework.integration.support.management.DefaultMetricsFactory;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.integration.support.management.MetricsFactory;
+import org.springframework.integration.support.management.micrometer.MicrometerMetricsFactory;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,6 +103,24 @@ public class IntegrationAutoConfigurationTests {
 		assertThat(this.context
 				.getBeansOfType(IntegrationComponentScanAutoConfiguration.class))
 						.isEmpty();
+		assertThat(this.context.getBean(MicrometerMetricsFactory.class)).isNotNull();
+		MessageChannel channel = this.context.getBean("errorChannel", MessageChannel.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(channel);
+		AbstractMessageChannelMetrics metrics = (AbstractMessageChannelMetrics) dfa.getPropertyValue("channelMetrics");
+		assertThat(metrics.getTimer()).isNotNull();
+	}
+
+	@Test
+	public void legacyStats() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(LegacyStatsConfiguration.class,
+				JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(TestGateway.class)).isNotNull();
+		MessageChannel channel = this.context.getBean("errorChannel", MessageChannel.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(channel);
+		AbstractMessageChannelMetrics metrics = (AbstractMessageChannelMetrics) dfa.getPropertyValue("channelMetrics");
+		assertThat(metrics.getTimer()).isNull();
 	}
 
 	@Test
@@ -232,6 +259,27 @@ public class IntegrationAutoConfigurationTests {
 	@Configuration
 	@IntegrationComponentScan
 	static class IntegrationComponentScanConfiguration {
+
+		@Bean
+		public MeterRegistry meterRegistry() {
+			return new SimpleMeterRegistry();
+		}
+
+	}
+
+	@Configuration
+	@IntegrationComponentScan
+	static class LegacyStatsConfiguration {
+
+		@Bean
+		public MeterRegistry evenThoughTheresAMeterRegistry() {
+			return new SimpleMeterRegistry();
+		}
+
+		@Bean
+		public MetricsFactory legacyMetricsFactory() {
+			return new DefaultMetricsFactory();
+		}
 
 	}
 
