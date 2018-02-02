@@ -16,22 +16,17 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,142 +40,148 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathExclusions("lettuce-core-*.jar")
 public class RedisAutoConfigurationJedisTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
 
 	@Test
 	public void testOverrideRedisConfiguration() {
-		load("spring.redis.host:foo", "spring.redis.database:1");
-		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
-		assertThat(cf.getHostName()).isEqualTo("foo");
-		assertThat(cf.getDatabase()).isEqualTo(1);
-		assertThat(cf.getPassword()).isNull();
-		assertThat(cf.isUseSsl()).isFalse();
+		this.runner.withPropertyValues("spring.redis.host:foo", "spring.redis.database:1")
+				.run((context) -> {
+					JedisConnectionFactory cf = context
+							.getBean(JedisConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getDatabase()).isEqualTo(1);
+					assertThat(cf.getPassword()).isNull();
+					assertThat(cf.isUseSsl()).isFalse();
+				});
 	}
 
 	@Test
 	public void testCustomizeRedisConfiguration() {
-		load(CustomConfiguration.class);
-		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
-		assertThat(cf.isUseSsl()).isTrue();
+		this.runner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
+			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isTrue();
+		});
 	}
 
 	@Test
 	public void testRedisUrlConfiguration() {
-		load("spring.redis.host:foo",
-				"spring.redis.url:redis://user:password@example:33");
-		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
-		assertThat(cf.getHostName()).isEqualTo("example");
-		assertThat(cf.getPort()).isEqualTo(33);
-		assertThat(cf.getPassword()).isEqualTo("password");
-		assertThat(cf.isUseSsl()).isFalse();
+		this.runner
+				.withPropertyValues("spring.redis.host:foo",
+						"spring.redis.url:redis://user:password@example:33")
+				.run((context) -> {
+					JedisConnectionFactory cf = context
+							.getBean(JedisConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("example");
+					assertThat(cf.getPort()).isEqualTo(33);
+					assertThat(cf.getPassword()).isEqualTo("password");
+					assertThat(cf.isUseSsl()).isFalse();
+				});
 	}
 
 	@Test
 	public void testOverrideUrlRedisConfiguration() {
-		load("spring.redis.host:foo", "spring.redis.password:xyz",
-				"spring.redis.port:1000", "spring.redis.ssl:false",
-				"spring.redis.url:rediss://user:password@example:33");
-		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
-		assertThat(cf.getHostName()).isEqualTo("example");
-		assertThat(cf.getPort()).isEqualTo(33);
-		assertThat(cf.getPassword()).isEqualTo("password");
-		assertThat(cf.isUseSsl()).isTrue();
+		this.runner
+				.withPropertyValues("spring.redis.host:foo", "spring.redis.password:xyz",
+						"spring.redis.port:1000", "spring.redis.ssl:false",
+						"spring.redis.url:rediss://user:password@example:33")
+				.run((context) -> {
+					JedisConnectionFactory cf = context
+							.getBean(JedisConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("example");
+					assertThat(cf.getPort()).isEqualTo(33);
+					assertThat(cf.getPassword()).isEqualTo("password");
+					assertThat(cf.isUseSsl()).isTrue();
+				});
 	}
 
 	@Test
 	public void testPasswordInUrlWithColon() {
-		load("spring.redis.url:redis://:pass:word@example:33");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
-				.isEqualTo("example");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getPort())
-				.isEqualTo(33);
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getPassword())
-				.isEqualTo("pass:word");
+		this.runner.withPropertyValues("spring.redis.url:redis://:pass:word@example:33")
+				.run((context) -> {
+					assertThat(
+							context.getBean(JedisConnectionFactory.class).getHostName())
+									.isEqualTo("example");
+					assertThat(context.getBean(JedisConnectionFactory.class).getPort())
+							.isEqualTo(33);
+					assertThat(
+							context.getBean(JedisConnectionFactory.class).getPassword())
+									.isEqualTo("pass:word");
+				});
 	}
 
 	@Test
 	public void testPasswordInUrlStartsWithColon() {
-		load("spring.redis.url:redis://user::pass:word@example:33");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getHostName())
-				.isEqualTo("example");
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getPort())
-				.isEqualTo(33);
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getPassword())
-				.isEqualTo(":pass:word");
+		this.runner
+				.withPropertyValues("spring.redis.url:redis://user::pass:word@example:33")
+				.run((context) -> {
+					assertThat(
+							context.getBean(JedisConnectionFactory.class).getHostName())
+									.isEqualTo("example");
+					assertThat(context.getBean(JedisConnectionFactory.class).getPort())
+							.isEqualTo(33);
+					assertThat(
+							context.getBean(JedisConnectionFactory.class).getPassword())
+									.isEqualTo(":pass:word");
+				});
 	}
 
 	@Test
 	public void testRedisConfigurationWithPool() {
-		load("spring.redis.host:foo", "spring.redis.jedis.pool.min-idle:1",
+		this.runner.withPropertyValues("spring.redis.host:foo",
+				"spring.redis.jedis.pool.min-idle:1",
 				"spring.redis.jedis.pool.max-idle:4",
 				"spring.redis.jedis.pool.max-active:16",
-				"spring.redis.jedis.pool.max-wait:2000");
-		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
-		assertThat(cf.getHostName()).isEqualTo("foo");
-		assertThat(cf.getPoolConfig().getMinIdle()).isEqualTo(1);
-		assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
-		assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
-		assertThat(cf.getPoolConfig().getMaxWaitMillis()).isEqualTo(2000);
+				"spring.redis.jedis.pool.max-wait:2000").run((context) -> {
+					JedisConnectionFactory cf = context
+							.getBean(JedisConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getPoolConfig().getMinIdle()).isEqualTo(1);
+					assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
+					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
+					assertThat(cf.getPoolConfig().getMaxWaitMillis()).isEqualTo(2000);
+				});
 	}
 
 	@Test
 	public void testRedisConfigurationWithTimeout() {
-		load("spring.redis.host:foo", "spring.redis.timeout:100");
-		JedisConnectionFactory cf = this.context.getBean(JedisConnectionFactory.class);
-		assertThat(cf.getHostName()).isEqualTo("foo");
-		assertThat(cf.getTimeout()).isEqualTo(100);
+		this.runner
+				.withPropertyValues("spring.redis.host:foo", "spring.redis.timeout:100")
+				.run((context) -> {
+					JedisConnectionFactory cf = context
+							.getBean(JedisConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getTimeout()).isEqualTo(100);
+				});
 	}
 
 	@Test
 	public void testRedisConfigurationWithSentinel() {
-		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-		load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
-				+ StringUtils.collectionToCommaDelimitedString(sentinels));
-		assertThat(
-				this.context.getBean(JedisConnectionFactory.class).isRedisSentinelAware())
-						.isTrue();
+		this.runner
+				.withPropertyValues("spring.redis.sentinel.master:mymaster",
+						"spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
+				.run((context) -> assertThat(context.getBean(JedisConnectionFactory.class)
+						.isRedisSentinelAware()).isTrue());
 	}
 
 	@Test
 	public void testRedisConfigurationWithSentinelAndPassword() {
-		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-		load("spring.redis.password=password", "spring.redis.sentinel.master:mymaster",
-				"spring.redis.sentinel.nodes:"
-						+ StringUtils.collectionToCommaDelimitedString(sentinels));
-		assertThat(this.context.getBean(JedisConnectionFactory.class).getPassword())
-				.isEqualTo("password");
+		this.runner
+				.withPropertyValues("spring.redis.password=password",
+						"spring.redis.sentinel.master:mymaster",
+						"spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
+				.run((context) -> assertThat(
+						context.getBean(JedisConnectionFactory.class).getPassword())
+								.isEqualTo("password"));
 	}
 
 	@Test
 	public void testRedisConfigurationWithCluster() {
-		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
-		load("spring.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-				"spring.redis.cluster.nodes[1]:" + clusterNodes.get(1));
-		assertThat(
-				this.context.getBean(JedisConnectionFactory.class).getClusterConnection())
-						.isNotNull();
-	}
-
-	private void load(String... environment) {
-		load(null, environment);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).applyTo(context);
-		if (config != null) {
-			context.register(config);
-		}
-		context.register(RedisAutoConfiguration.class);
-		context.refresh();
-		this.context = context;
+		this.runner
+				.withPropertyValues(
+						"spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
+				.run((context) -> assertThat(context.getBean(JedisConnectionFactory.class)
+						.getClusterConnection()).isNotNull());
 	}
 
 	@Configuration
