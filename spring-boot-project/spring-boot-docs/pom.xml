@@ -911,11 +911,11 @@
 									<quiet>true</quiet>
 									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>
 									<links>
-										<link>http://docs.oracle.com/javase/8/docs/api/</link>
-										<link>http://docs.oracle.com/javaee/7/api/</link>
-										<link>http://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
-										<link>http://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
-										<link>http://tomcat.apache.org/tomcat-8.5-doc/api/</link>
+										<link>https://docs.oracle.com/javase/8/docs/api/</link>
+										<link>https://docs.oracle.com/javaee/7/api/</link>
+										<link>https://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
+										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
+										<link>https://tomcat.apache.org/tomcat-8.5-doc/api/</link>
 										<link>http://download.eclipse.org/jetty/stable-9/apidocs/</link>
 										<link>http://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
 									</links>

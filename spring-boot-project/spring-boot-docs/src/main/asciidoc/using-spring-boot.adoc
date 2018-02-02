@@ -63,7 +63,7 @@ https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[res
 filtering].
 * Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
 https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and
-http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
+https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml`
 including profile-specific files (for example, `application-dev.properties` and
 `application-dev.yml`)
@@ -600,8 +600,8 @@ users can select `Import...` -> `Existing Maven Projects` from the `File` menu.
 
 If you cannot directly import your project into your IDE, you may be able to generate IDE
 metadata by using a build plugin. Maven includes plugins for
-http://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and
-http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]. Gradle offers plugins for
+https://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and
+https://maven.apache.org/plugins/maven-idea-plugin/[IDEA]. Gradle offers plugins for
 {gradle-user-guide}/userguide.html[various IDEs].
 
 TIP: If you accidentally run a web application twice, you see a "`Port already in use`"
@@ -679,7 +679,7 @@ shown in the following example:
 Since Spring Boot applications are just plain Java applications, JVM hot-swapping should
 work out of the box. JVM hot swapping is somewhat limited with the bytecode that it can
 replace. For a more complete solution,
-http://zeroturnaround.com/software/jrebel/[JRebel] can be used.
+https://zeroturnaround.com/software/jrebel/[JRebel] can be used.
 
 The
 `spring-boot-devtools` module also includes support for quick application restarts.
@@ -810,7 +810,7 @@ populated.
 
 If you find that restarts are not quick enough for your applications or you encounter
 classloading issues, you could consider reloading technologies such as
-http://zeroturnaround.com/software/jrebel/[JRebel] from ZeroTurnaround. These work by
+https://zeroturnaround.com/software/jrebel/[JRebel] from ZeroTurnaround. These work by
 rewriting classes as they are loaded to make them more amenable to reloading.
 ****
 
@@ -948,7 +948,7 @@ authors.
 The `spring-boot-devtools` module includes an embedded LiveReload server that can be used
 to trigger a browser refresh when a resource is changed. LiveReload browser extensions
 are freely available for Chrome, Firefox and Safari from
-http://livereload.com/extensions/[livereload.com].
+https://livereload.com/extensions/[livereload.com].
 
 If you do not want to start the LiveReload server when your application runs, you can set
 the `spring.devtools.livereload.enabled` property to `false`.

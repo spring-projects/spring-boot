@@ -38,7 +38,7 @@ configuration).
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires http://www.java.com[Java 8] and
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and
 {spring-reference}[Spring Framework {spring-version}] or above. Explicit build support is
 provided for Maven 3.2+ and Gradle 4.
 
@@ -68,7 +68,7 @@ You can also deploy Spring Boot applications to any Servlet 3.0+ compatible cont
 [[getting-started-installing-spring-boot]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command
-line tool. Either way, you need http://www.java.com[Java SDK v1.8] or higher. Before you
+line tool. Either way, you need https://www.java.com[Java SDK v1.8] or higher. Before you
 begin, you should check your current Java installation by using the following command:
 
 [indent=0]
@@ -98,7 +98,7 @@ tool that supports dependency management (such as Maven or Gradle).
 [[getting-started-maven-installation]]
 ==== Maven Installation
 Spring Boot is compatible with Apache Maven 3.2 or above. If you do not already have
-Maven installed, you can follow the instructions at http://maven.apache.org.
+Maven installed, you can follow the instructions at https://maven.apache.org.
 
 TIP: On many operating systems, Maven can be installed with a package manager. If you use
 OSX Homebrew, try `brew install maven`. Ubuntu users can run
@@ -156,22 +156,22 @@ ifeval::["{spring-boot-repo}" != "release"]
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 				<snapshots><enabled>true</enabled></snapshots>
 			</repository>
 			<repository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</repository>
 		</repositories>
 		<pluginRepositories>
 			<pluginRepository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 			</pluginRepository>
 			<pluginRepository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</pluginRepository>
 		</pluginRepositories>
 endif::[]
@@ -189,7 +189,7 @@ scope.
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
 Spring Boot is compatible with Gradle 4. If you do not already have Gradle installed, you
-can follow the instructions at http://www.gradle.org/.
+can follow the instructions at https://gradle.org/.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more
@@ -219,8 +219,8 @@ ifeval::["{spring-boot-repo}" != "release"]
 	buildscript {
 		repositories {
 			jcenter()
-			maven { url 'http://repo.spring.io/snapshot' }
-			maven { url 'http://repo.spring.io/milestone' }
+			maven { url 'https://repo.spring.io/snapshot' }
+			maven { url 'https://repo.spring.io/milestone' }
 		}
 		dependencies {
 			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
@@ -240,8 +240,8 @@ endif::[]
 	repositories {
 		jcenter()
 ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
 endif::[]
 	}
 
@@ -268,11 +268,11 @@ quickest way to get a Spring application off the ground.
 ==== Manual Installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
-* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
 
 Cutting edge
-http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot
+https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot
 distributions] are also available.
 
 Once downloaded, follow the
@@ -367,8 +367,8 @@ Spring Boot CLI by using the following command:
 [[getting-started-cli-command-line-completion]]
 ==== Command-line Completion
 The Spring Boot CLI includes scripts that provide command completion for the
-http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
-http://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also named
+https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
+https://en.wikipedia.org/wiki/Z_shell[zsh] shells. You can `source` the script (also named
 `spring`) in any shell or put it in your personal or system-wide bash completion
 initialization. On a Debian system, the system-wide scripts are in
 `/shell-completion/bash` and all scripts in that directory are executed when a new shell
@@ -448,8 +448,8 @@ most IDEs support it.
 
 [TIP]
 ====
-The http://spring.io[spring.io] web site contains many "`Getting Started`"
-http://spring.io/guides[guides] that use Spring Boot. If you need to solve a specific
+The https://spring.io[spring.io] web site contains many "`Getting Started`"
+https://spring.io/guides[guides] that use Spring Boot. If you need to solve a specific
 problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the
@@ -512,22 +512,22 @@ ifeval::["{spring-boot-repo}" != "release"]
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 				<snapshots><enabled>true</enabled></snapshots>
 			</repository>
 			<repository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</repository>
 		</repositories>
 		<pluginRepositories>
 			<pluginRepository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 			</pluginRepository>
 			<pluginRepository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</pluginRepository>
 		</pluginRepositories>
 endif::[]
@@ -804,12 +804,12 @@ As before, to exit the application, press `ctrl-c`.
 == What to Read Next
 Hopefully, this section provided some of the Spring Boot basics and got you on your way
 to writing your own applications. If you are a task-oriented type of developer, you might
-want to jump over to http://spring.io and check out some of the
-http://spring.io/guides/[getting started] guides that solve specific "`How do I do that
+want to jump over to https://spring.io and check out some of the
+https://spring.io/guides/[getting started] guides that solve specific "`How do I do that
 with Spring?`" problems. We also have Spring Boot-specific
 "`<<howto.adoc#howto, How-to>>`" reference documentation.
 
-The http://github.com/{github-repo}[Spring Boot repository] also has a
+The https://github.com/{github-repo}[Spring Boot repository] also has a
 {github-code}/spring-boot-samples[bunch of samples] you can run. The samples are
 independent of the rest of the code (that is, you do not need to build the rest to run or
 use the samples).

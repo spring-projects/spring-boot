@@ -464,8 +464,8 @@ The following example remaps `/actuator/health` to `/healthcheck`:
 
 [[production-ready-endpoint-cors]]
 === CORS Support
-http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
-(CORS) is a http://www.w3.org/TR/cors/[W3C specification] that lets you specify in a
+https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+(CORS) is a https://www.w3.org/TR/cors/[W3C specification] that lets you specify in a
 flexible way what kind of cross-domain requests are authorized. If you use Spring MVC or
 Spring WebFlux, Actuator's web endpoints can be configured to support such scenarios.
 
