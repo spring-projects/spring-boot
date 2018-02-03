@@ -80,6 +80,11 @@ public class GitProperties extends InfoProperties {
 	private static Properties processEntries(Properties properties) {
 		coercePropertyToEpoch(properties, "commit.time");
 		coercePropertyToEpoch(properties, "build.time");
+		Object commitId = properties.get("commit.id");
+		if (commitId != null) {
+			// Can get converted into a map, so we copy the entry as a nested key
+			properties.put("commit.id.full", commitId);
+		}
 		return properties;
 	}
 
