@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
@@ -86,10 +85,6 @@ public class EmbeddedLdapAutoConfiguration {
 		this.properties = properties;
 		this.applicationContext = applicationContext;
 		this.environment = environment;
-	}
-
-	@PostConstruct
-	public void validateBaseDns() {
 		Assert.notEmpty(this.embeddedProperties.getBaseDn(), "No baseDn found.");
 	}
 
@@ -108,8 +103,8 @@ public class EmbeddedLdapAutoConfiguration {
 
 	@Bean
 	public InMemoryDirectoryServer directoryServer() throws LDAPException {
-		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(
-				this.embeddedProperties.getBaseDn());
+		String[] baseDn = this.embeddedProperties.getBaseDn().toArray(new String[0]);
+		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
 		if (hasCredentials(this.embeddedProperties.getCredential())) {
 			config.addAdditionalBindCredentials(
 					this.embeddedProperties.getCredential().getUsername(),
