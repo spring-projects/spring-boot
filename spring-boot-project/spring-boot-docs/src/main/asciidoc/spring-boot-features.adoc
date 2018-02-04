@@ -4417,6 +4417,32 @@ follows:
 	spring.ldap.embedded.base-dn=dc=spring,dc=io
 ----
 
+[NOTE]
+====
+It is possible to define multiple base-dn values, however, since distinguished names
+usually contain commas, they must be defined using the correct notation.
+
+In yaml files, you can use the yaml list notation:
+
+[source,yaml,indent=0]
+----
+	spring.ldap.embedded.base-dn:
+	  - dc=spring,dc=io
+	  - dc=pivotal,dc=io
+----
+
+in properties files, you must include the index as part of the property name:
+
+[source,properties,indent=0]
+----
+	spring.ldap.embedded.base-dn[0]=dc=spring,dc=io
+	spring.ldap.embedded.base-dn[1]=dc=pivotal,dc=io
+----
+
+====
+
+WARNING: `spring.ldap.embedded.base-dn` supports multi base DN, so it must define as follows `spring.ldap.embedded.base-dn[0]=dc=spring,dc=io`
+
 By default, the server starts on a random port and triggers the regular LDAP support.
 There is no need to specify a `spring.ldap.urls` property.
 
