@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -211,6 +211,15 @@ public class PropertiesLauncherTests {
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
 		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
+	}
+
+	@Test
+	public void testUserSpecifiedNestedJarPath() throws Exception {
+		System.setProperty("loader.path", "nested-jars/app.jar!/foo.jar");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		List<Archive> archives = launcher.getClassPathArchives();
+		assertThat(archives).hasSize(1).areExactly(1, endingWith("foo.jar!/"));
 	}
 
 	@Test
