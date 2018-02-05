@@ -26,14 +26,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.mockito.Mockito.verify;
 
 /**
  * Integration tests for using {@link SpyBean} with {@link DirtiesContext} and
- * {@link MethodMode#BEFORE_METHOD}.
+ * {@link ClassMode#BEFORE_EACH_TEST_METHOD}.
  *
  * @author Andy Wilkinson
  */
