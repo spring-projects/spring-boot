@@ -121,6 +121,8 @@ public class PropertiesLauncher extends Launcher {
 
 	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
 
+	private static final String NESTED_ARCHIVE_SEPARATOR = "!" + File.separator;
+
 	private final File home;
 
 	private List<String> paths = new ArrayList<>();
@@ -452,6 +454,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
 		String root = cleanupPath(stripFileUrlPrefix(path));
+		System.out.println(root);
 		List<Archive> lib = new ArrayList<>();
 		File file = new File(root);
 		if (!"/".equals(root)) {
@@ -483,8 +486,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private Archive getArchive(File file) throws IOException {
-		// Nested path never exists as plain jar file, which should be ignored here.
-		if (file.getPath().contains("!")) {
+		if (isNestedArchivePath(file)) {
 			return null;
 		}
 		String name = file.getName().toLowerCase();
@@ -492,6 +494,10 @@ public class PropertiesLauncher extends Launcher {
 			return new JarFileArchive(file);
 		}
 		return null;
+	}
+
+	private boolean isNestedArchivePath(File file) {
+		return file.getPath().contains(NESTED_ARCHIVE_SEPARATOR);
 	}
 
 	private List<Archive> getNestedArchives(String path) throws Exception {
