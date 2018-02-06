@@ -24,10 +24,11 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HazelcastCacheMeterBinderProvider}.
@@ -40,16 +41,11 @@ public class HazelcastCacheMeterBinderProviderTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void hazelcastCacheProvider() {
-		IMap<Object, Object> nativeCache = Mockito.mock(IMap.class);
-
-		// It is not possible to create a real Hazelcast cache with a null name,
-		// so Micrometer's Hazelcast binder uses the name from the cache for its tag value.
-		Mockito.when(nativeCache.getName()).thenReturn("test");
-
+		IMap<Object, Object> nativeCache = mock(IMap.class);
+		given(nativeCache.getName()).willReturn("test");
 		HazelcastCache cache = new HazelcastCache(nativeCache);
-
 		MeterBinder meterBinder = new HazelcastCacheMeterBinderProvider()
-				.getMeterBinder(cache, "test", Collections.emptyList());
+				.getMeterBinder(cache, Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(HazelcastCacheMetrics.class);
 	}
 
