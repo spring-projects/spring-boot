@@ -95,7 +95,7 @@ import org.springframework.util.Assert;
  * @see ReactiveWebApplicationContextRunner
  * @see ApplicationContextAssert
  */
-abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
+public abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	private final Supplier<C> contextFactory;
 
