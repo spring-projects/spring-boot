@@ -34,7 +34,7 @@ public class JCacheCacheMeterBinderProvider
 	@Override
 	public MeterBinder getMeterBinder(JCacheCache cache, String name,
 			Iterable<Tag> tags) {
-		return new JCacheMetrics(cache.getNativeCache(), name, tags);
+		return new JCacheMetrics(cache.getNativeCache(), tags);
 	}
 
 }
