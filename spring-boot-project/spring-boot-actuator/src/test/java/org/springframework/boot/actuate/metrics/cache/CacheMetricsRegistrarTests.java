@@ -42,7 +42,7 @@ public class CacheMetricsRegistrarTests {
 				"root", Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(
 				new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
-		assertThat(this.meterRegistry.get("root.requests").tags("name", "test").meter())
+		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter())
 				.isNotNull();
 	}
 
@@ -52,7 +52,7 @@ public class CacheMetricsRegistrarTests {
 				"root", Collections.emptyList());
 		assertThat(registrar.bindCacheToRegistry(
 				new CaffeineCache("test", Caffeine.newBuilder().build()))).isFalse();
-		assertThat(this.meterRegistry.find("root.requests").tags("name", "test").meter())
+		assertThat(this.meterRegistry.find("cache.gets").tags("name", "test").meter())
 				.isNull();
 	}
 
