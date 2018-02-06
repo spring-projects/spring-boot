@@ -38,7 +38,7 @@ public class CaffeineCacheMeterBinderProviderTests {
 	public void caffeineCacheProvider() {
 		CaffeineCache cache = new CaffeineCache("test", Caffeine.newBuilder().build());
 		MeterBinder meterBinder = new CaffeineCacheMeterBinderProvider()
-				.getMeterBinder(cache, "test", Collections.emptyList());
+				.getMeterBinder(cache, Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(CaffeineCacheMetrics.class);
 	}
 

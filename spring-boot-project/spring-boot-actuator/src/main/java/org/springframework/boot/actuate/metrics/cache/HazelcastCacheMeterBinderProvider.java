@@ -33,10 +33,9 @@ public class HazelcastCacheMeterBinderProvider
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public MeterBinder getMeterBinder(HazelcastCache cache, String name,
-			Iterable<Tag> tags) {
+	public MeterBinder getMeterBinder(HazelcastCache cache, Iterable<Tag> tags) {
 		return new HazelcastCacheMetrics((IMap<Object, Object>) cache.getNativeCache(),
-				name, tags);
+				tags);
 	}
 
 }

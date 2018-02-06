@@ -52,7 +52,7 @@ public class JCacheCacheMeterBinderProviderTests {
 		given(this.nativeCache.getName()).willReturn("test");
 		JCacheCache cache = new JCacheCache(this.nativeCache);
 		MeterBinder meterBinder = new JCacheCacheMeterBinderProvider()
-				.getMeterBinder(cache, "test", Collections.emptyList());
+				.getMeterBinder(cache, Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(JCacheMetrics.class);
 	}
 

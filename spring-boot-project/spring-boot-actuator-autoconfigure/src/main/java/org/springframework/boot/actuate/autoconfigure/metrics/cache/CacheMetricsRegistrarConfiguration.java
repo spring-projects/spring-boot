@@ -49,24 +49,19 @@ class CacheMetricsRegistrarConfiguration {
 
 	private final Collection<CacheMeterBinderProvider<?>> binderProviders;
 
-	private final CacheMetricsProperties properties;
-
 	private final Map<String, CacheManager> cacheManagers;
 
 	CacheMetricsRegistrarConfiguration(MeterRegistry registry,
-			CacheMetricsProperties properties,
 			Collection<CacheMeterBinderProvider<?>> binderProviders,
 			Map<String, CacheManager> cacheManagers) {
 		this.registry = registry;
-		this.properties = properties;
 		this.binderProviders = binderProviders;
 		this.cacheManagers = cacheManagers;
 	}
 
 	@Bean
 	public CacheMetricsRegistrar cacheMetricsRegistrar() {
-		return new CacheMetricsRegistrar(this.registry, this.properties.getMetricName(),
-				this.binderProviders);
+		return new CacheMetricsRegistrar(this.registry, this.binderProviders);
 	}
 
 	@PostConstruct

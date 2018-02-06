@@ -37,21 +37,17 @@ public class CacheMetricsRegistrar {
 
 	private final MeterRegistry registry;
 
-	private final String metricName;
-
 	private final Collection<CacheMeterBinderProvider<?>> binderProviders;
 
 	/**
 	 * Creates a new registrar.
 	 * @param registry the {@link MeterRegistry} to use
-	 * @param metricName the name of the metric
 	 * @param binderProviders the {@link CacheMeterBinderProvider} instances that should
 	 * be used to detect compatible caches
 	 */
-	public CacheMetricsRegistrar(MeterRegistry registry, String metricName,
+	public CacheMetricsRegistrar(MeterRegistry registry,
 			Collection<CacheMeterBinderProvider<?>> binderProviders) {
 		this.registry = registry;
-		this.metricName = metricName;
 		this.binderProviders = binderProviders;
 	}
 
@@ -78,7 +74,7 @@ public class CacheMetricsRegistrar {
 				.callbacks(CacheMeterBinderProvider.class, this.binderProviders, cache)
 				.withLogger(CacheMetricsRegistrar.class)
 				.invokeAnd((binderProvider) -> binderProvider.getMeterBinder(cache,
-						this.metricName, cacheTags))
+						cacheTags))
 				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
