@@ -100,7 +100,11 @@ converted into an ASCII art representation and printed above any text banner.
 
 Inside your `banner.txt` file you can use any of the following placeholders:
 
-.Banner variables
+WARNING: Banner variables are read from property files generated during build time. When the
+application is run from IDE these files are not available, therefore these properties won't
+be displayed.
+
+.Generic Banner variables
 |===
 | Variable | Description
 
@@ -128,6 +132,76 @@ brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
 `Implementation-Title: MyApp` is printed as `MyApp`.
 |===
 
+WARNING: These variables are available when build info generation is enabled as described link:howto.adoc[here]
+
+.Git info variables
+|===
+| Variable | Description
+
+|`${git.commit.id.abbrev}`
+|as defined in `git.properties`.
+
+|`${git.commit.user.email}`
+|as defined in `git.properties`.
+
+|`${git.commit.message.full}`
+|as defined in `git.properties`.
+
+|`${git.commit.id}`
+|as defined in `git.properties`.
+
+|`${git.commit.message.short}`
+|as defined in `git.properties`.
+
+|`${git.commit.user.name}`
+|as defined in `git.properties`.
+
+|`${git.build.user.email}`
+|as defined in `git.properties`.
+
+|`${git.branch}`
+|as defined in `git.properties`.
+
+|`${git.commit.time}`
+|as defined in `git.properties`.
+
+|`${git.build.time}`
+|as defined in `git.properties`.
+
+|===
+
+WARNING: These variables are available when build info generation is enabled as described link:howto.adoc[here]
+
+.Build info Banner variables
+|===
+| Variable | Description
+
+|`${application.version}`
+|As defined in  `META_INF/build-info.properties`.
+
+|`${build.artifact}`
+|As defined in  `META_INF/build-info.properties`.
+
+|`${build.name}`
+|As defined in  `META_INF/build-info.properties`.
+
+|`${build.version}`
+|As defined in  `META_INF/build-info.properties`.
+
+|`${build.time}`
+|As defined in  `META_INF/build-info.properties`.
+
+|===
+
+.Property Banner variables
+|===
+| Variable | Description
+
+|`${any.property}`
+|Any property defined in properties, yml files or specified as an argument e.g..: `--any.perpertzy=test` .
+
+|===
+
 TIP: The `SpringApplication.setBanner(...)` method can be used if you want to generate
 a banner programmatically. Use the `org.springframework.boot.Banner` interface and
 implement your own `printBanner()` method.
@@ -143,6 +217,7 @@ The printed banner will be registered as a singleton bean under the name
 ====
 YAML maps `off` to `false` so make sure to add quotes if you want to disable the
 banner in your application.
+
 
 [source,yaml,indent=0]
 ----
