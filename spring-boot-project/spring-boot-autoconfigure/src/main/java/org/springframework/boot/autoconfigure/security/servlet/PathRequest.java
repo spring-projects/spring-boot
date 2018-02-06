@@ -70,7 +70,8 @@ public final class PathRequest {
 
 		@Override
 		protected void initialized(H2ConsoleProperties h2ConsoleProperties) {
-			this.delegate = new AntPathRequestMatcher(h2ConsoleProperties.getPath());
+			this.delegate = new AntPathRequestMatcher(
+					h2ConsoleProperties.getPath() + "/**");
 		}
 
 		@Override

@@ -47,6 +47,7 @@ public class PathRequestTests {
 	public void toH2ConsoleShouldMatchH2ConsolePath() {
 		RequestMatcher matcher = PathRequest.toH2Console();
 		assertMatcher(matcher).matches("/h2-console");
+		assertMatcher(matcher).matches("/h2-console/subpath");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
