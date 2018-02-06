@@ -49,6 +49,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 
@@ -94,6 +95,12 @@ public class MetricsAutoConfiguration {
 	@ConditionalOnMissingBean
 	public Clock micrometerClock() {
 		return Clock.SYSTEM;
+	}
+
+	@Bean
+	@Order(0)
+	public PropertiesMeterFilter propertiesMeterFilter(MetricsProperties properties) {
+		return new PropertiesMeterFilter(properties);
 	}
 
 	/**

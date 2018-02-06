@@ -1378,6 +1378,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
 	management.metrics.web.server.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	management.metrics.web.server.requests-metric-name=http.server.requests # Name of the metric for received requests.
+	management.metrics.enabled.<name>= # Whether meter IDs starting-with the specified name should be enabled. The longest match wins, the key `all` can also be used to configure all meters.
+	management.metrics.distribution.percentiles-histogram.<name>= # Whether meter IDs starting-with the specified name should be publish percentile histograms.
+	management.metrics.distribution.percentiles.<name>= # Specific computed non-aggregable percentiles to ship to the backend for meter IDs starting-with the specified name.
+	management.metrics.distribution.sla.<name>= Specific SLA boundaries for meter IDs starting-with the specified name. The longest match wins, the key `all` can also be used to configure all meters.
 
 
 	# ----------------------------------------

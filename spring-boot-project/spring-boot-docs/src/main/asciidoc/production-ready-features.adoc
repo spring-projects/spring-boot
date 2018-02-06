@@ -1294,6 +1294,59 @@ Auto-configuration enables binding of a number of Spring Integration-related met
 
 
 
+[[production-ready-metrics-per-meter-properties]]
+=== Customizing individual meters
+If you need to apply customizations to specific `Meter` instances you can use the
+`io.micrometer.core.instrument.config.MeterFilter` interface. By default, all
+`MeterFilter` beans will be automatically applied to the micrometer
+`MeterRegistry.Config`.
+
+For example, if you want to rename the `mytag.region` tag to `mytag.area` for
+all meter IDs beginning with `com.example`, you can do the following:
+
+[source,java,indent=0]
+----
+include::{code-examples}/actuate/metrics/MetricsFilterBeanExample.java[tag=configuration]
+----
+
+==== Per-meter properties
+In addition to `MeterFilter` beans, it's also possible to apply a limited set of
+customization on a per-meter basis using properties. Per-meter customizations apply to
+any all meter IDs that start with the given name. For example, the following will disable
+any meters that have an ID starting with `example.remote`
+
+[source,properties,indent=0]
+----
+	management.metrics.enable.example.remote=false
+----
+
+The following properties allow per-meter customization:
+
+.Per-meter customizations
+|===
+| Property | Description
+
+| `management.metrics.enable`
+| Whether to deny meters from emitting any metrics.
+
+| `management.metrics.distribution.percentiles-histogram`
+| Whether to publish a histogram suitable for computing aggregable (across dimension)
+percentile approximations.
+
+| `management.metrics.distribution.percentiles`
+| Publish percentile values computed in your application
+
+| `management.metrics.distribution.sla`
+| Publish a cumulative histogram with buckets defined by your SLAs.
+
+|===
+
+For more details on concepts behind `percentiles-histogram`, `percentiles` and `sla`
+refer to the {micrometer-concepts-documentation}#_histograms_and_percentiles["Histograms
+and percentiles" section] of the micrometer documentation.
+
+
+
 [[production-ready-auditing]]
 == Auditing
 Once Spring Security is in play, Spring Boot Actuator has a flexible audit framework that

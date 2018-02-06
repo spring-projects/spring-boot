@@ -37,8 +37,9 @@ import org.springframework.util.StringUtils;
  * {@link Duration#parse(CharSequence)} as well a more readable {@code 10s} form.
  *
  * @author Phillip Webb
+ * @since 2.0.0
  */
-class DurationConverter implements GenericConverter {
+public class DurationConverter implements GenericConverter {
 
 	private static final Set<ConvertiblePair> TYPES;
 
@@ -78,11 +79,20 @@ class DurationConverter implements GenericConverter {
 		if (source == null) {
 			return null;
 		}
+		DefaultDurationUnit defaultUnit = targetType
+				.getAnnotation(DefaultDurationUnit.class);
 		return toDuration(source.toString(),
-				targetType.getAnnotation(DefaultDurationUnit.class));
+				(defaultUnit == null ? null : defaultUnit.value()));
 	}
 
-	private Duration toDuration(String source, DefaultDurationUnit defaultUnit) {
+	/**
+	 * Convert the specified source to a {@link Duration}.
+	 * @param source the source to convert
+	 * @param defaultUnit the default unit to use ({@code null} is treated as
+	 * milliseconds)
+	 * @return the duration
+	 */
+	public static Duration toDuration(String source, ChronoUnit defaultUnit) {
 		try {
 			if (!StringUtils.hasLength(source)) {
 				return null;
@@ -103,9 +113,9 @@ class DurationConverter implements GenericConverter {
 		}
 	}
 
-	private ChronoUnit getUnit(String value, DefaultDurationUnit defaultUnit) {
+	private static ChronoUnit getUnit(String value, ChronoUnit defaultUnit) {
 		if (StringUtils.isEmpty(value)) {
-			return (defaultUnit != null ? defaultUnit.value() : ChronoUnit.MILLIS);
+			return (defaultUnit != null ? defaultUnit : ChronoUnit.MILLIS);
 		}
 		ChronoUnit unit = UNITS.get(value.toLowerCase());
 		Assert.state(unit != null, () -> "Unknown unit '" + value + "'");

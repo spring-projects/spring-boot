@@ -104,6 +104,16 @@ public class MetricsAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void propertyBasedMeterFilter() {
+		this.contextRunner.withPropertyValues("management.metrics.enable.my.org=false")
+				.run(context -> {
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					registry.timer("my.org.timer");
+					assertThat(registry.find("my.org.timer").timer()).isNull();
+				});
+	}
+
 	@Configuration
 	static class TwoDataSourcesConfiguration {
 
