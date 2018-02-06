@@ -67,6 +67,11 @@ public class InfluxProperties extends StepRegistryProperties {
 	 */
 	private Boolean compressed;
 
+	/**
+	 * Check if Influx database exists before attempting to publish metrics to it, creating it if it does not exist.
+	 */
+	private Boolean autoCreateDb;
+
 	public String getDb() {
 		return this.db;
 	}
@@ -123,4 +128,11 @@ public class InfluxProperties extends StepRegistryProperties {
 		this.compressed = compressed;
 	}
 
+	public Boolean getAutoCreateDb() {
+		return this.autoCreateDb;
+	}
+
+	public void setAutoCreateDb(Boolean autoCreateDb) {
+		this.autoCreateDb = autoCreateDb;
+	}
 }
