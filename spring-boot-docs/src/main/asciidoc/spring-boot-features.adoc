@@ -132,11 +132,9 @@ brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
 `Implementation-Title: MyApp` is printed as `MyApp`.
 |===
 
-
-.Git info variables
-
 WARNING: These variables are available when build info generation is enabled as described link:howto.adoc[here]
 
+.Git info variables
 |===
 | Variable | Description
 
@@ -172,10 +170,9 @@ WARNING: These variables are available when build info generation is enabled as 
 
 |===
 
-.Build info Banner variables
-
 WARNING: These variables are available when build info generation is enabled as described link:howto.adoc[here]
 
+.Build info Banner variables
 |===
 | Variable | Description
 
@@ -201,7 +198,7 @@ WARNING: These variables are available when build info generation is enabled as 
 | Variable | Description
 
 |`${any.property}`
-|Any property defined in properties, yml files or specified as an argument e.g..: ` --any.perpertzy=test`.
+|Any property defined in properties, yml files or specified as an argument e.g..: `--any.perpertzy=test` .
 
 |===
 
@@ -220,6 +217,7 @@ The printed banner will be registered as a singleton bean under the name
 ====
 YAML maps `off` to `false` so make sure to add quotes if you want to disable the
 banner in your application.
+
 
 [source,yaml,indent=0]
 ----

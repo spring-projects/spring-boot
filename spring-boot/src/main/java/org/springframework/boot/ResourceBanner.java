@@ -57,12 +57,15 @@ public class ResourceBanner implements Banner {
 	private Resource buildInfoPropertiesResource;
 
 	public ResourceBanner(Resource bannerResource, Resource gitPropertiesResource, Resource buildInfoPropertiesResource) {
-		Assert.notNull(bannerResource, "Resource must not be null");
-		Assert.isTrue(bannerResource.exists(), "Resource must exist");
-		this.bannerResource = bannerResource;
+		this(bannerResource);
 		this.gitPropertiesResource = gitPropertiesResource;
 		this.buildInfoPropertiesResource = buildInfoPropertiesResource;
+	}
 
+	public ResourceBanner(Resource bannerResource) {
+		Assert.notNull(bannerResource, "Banner resource must not be null");
+		Assert.isTrue(bannerResource.exists(), "Banner resource must exist");
+		this.bannerResource = bannerResource;
 	}
 
 	@Override
