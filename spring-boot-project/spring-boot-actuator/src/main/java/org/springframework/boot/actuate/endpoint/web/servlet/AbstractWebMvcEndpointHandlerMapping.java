@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -257,6 +258,10 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 			}
 			request.getParameterMap().forEach((name, values) -> arguments.put(name,
 					values.length == 1 ? values[0] : Arrays.asList(values)));
+			Principal principal = request.getUserPrincipal();
+			if (principal != null) {
+				arguments.put("principal", principal);
+			}
 			return arguments;
 		}
 

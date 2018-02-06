@@ -16,9 +16,17 @@
 
 package org.springframework.boot.actuate.endpoint.web.jersey;
 
+import java.io.IOException;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ext.ContextResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,9 +44,11 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Integration tests for web endpoints exposed using Jersey.
@@ -72,6 +82,11 @@ public class JerseyWebEndpointIntegrationTests extends
 		// Jersey doesn't support the general error page handling
 	}
 
+	@Override
+	protected Class<?> getSecuredPrincipalEndpointConfiguration() {
+		return SecuredPrincipalEndpointConfiguration.class;
+	}
+
 	@Configuration
 	static class JerseyConfiguration {
 
@@ -101,6 +116,43 @@ public class JerseyWebEndpointIntegrationTests extends
 			resourceConfig.register(new ObjectMapperContextResolver(new ObjectMapper()),
 					ContextResolver.class);
 			return resourceConfig;
+		}
+
+	}
+
+	@Configuration
+	@Import(PrincipalEndpointConfiguration.class)
+	static class SecuredPrincipalEndpointConfiguration {
+
+		@Bean
+		public Filter securityFilter() {
+			return new OncePerRequestFilter() {
+
+				@Override
+				protected void doFilterInternal(HttpServletRequest request,
+						HttpServletResponse response, FilterChain filterChain)
+								throws ServletException, IOException {
+					filterChain.doFilter(new HttpServletRequestWrapper(request) {
+
+						@Override
+						public Principal getUserPrincipal() {
+
+							return new Principal() {
+
+								@Override
+								public String getName() {
+									return "Alice";
+								}
+
+							};
+
+						}
+
+					}, response);
+				}
+
+			};
+
 		}
 
 	}

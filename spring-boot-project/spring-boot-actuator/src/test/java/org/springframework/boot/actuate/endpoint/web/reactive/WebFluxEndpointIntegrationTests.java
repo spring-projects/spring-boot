@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
+import java.security.Principal;
 import java.util.Arrays;
 
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.AbstractWebEndpointIntegrationTests;
@@ -34,12 +36,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.ServerWebExchangeDecorator;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,6 +102,11 @@ public class WebFluxEndpointIntegrationTests
 		return context.getBean(ReactiveConfiguration.class).port;
 	}
 
+	@Override
+	protected Class<?> getSecuredPrincipalEndpointConfiguration() {
+		return SecuredPrincipalEndpointConfiguration.class;
+	}
+
 	@Configuration
 	@EnableWebFlux
 	@ImportAutoConfiguration(ErrorWebFluxAutoConfiguration.class)
@@ -128,6 +140,38 @@ public class WebFluxEndpointIntegrationTests
 		@Bean
 		public ApplicationListener<ReactiveWebServerInitializedEvent> serverInitializedListener() {
 			return (event) -> this.port = event.getWebServer().getPort();
+		}
+
+	}
+
+	@Import(PrincipalEndpointConfiguration.class)
+	static class SecuredPrincipalEndpointConfiguration {
+
+		@Bean
+		public WebFilter webFilter() {
+			return new WebFilter() {
+
+				@Override
+				public Mono<Void> filter(ServerWebExchange exchange,
+						WebFilterChain chain) {
+					return chain.filter(new ServerWebExchangeDecorator(exchange) {
+
+						@Override
+						public Mono<Principal> getPrincipal() {
+							return Mono.just(new Principal() {
+
+								@Override
+								public String getName() {
+									return "Alice";
+								}
+
+							});
+						}
+
+					});
+				}
+
+			};
 		}
 
 	}

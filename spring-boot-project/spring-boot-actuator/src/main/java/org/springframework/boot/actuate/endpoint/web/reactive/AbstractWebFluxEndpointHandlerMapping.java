@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -251,24 +252,38 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	 * Adapter class to convert an {@link OperationInvoker} into a
 	 * {@link ReactiveWebOperation}.
 	 */
-	private class ReactiveWebOperationAdapter implements ReactiveWebOperation {
+	private static final class ReactiveWebOperationAdapter
+			implements ReactiveWebOperation {
+
+		private static final Principal NO_PRINCIPAL = new Principal() {
+
+			@Override
+			public String getName() {
+				throw new UnsupportedOperationException();
+			}
+
+		};
 
 		private final OperationInvoker invoker;
 
-		ReactiveWebOperationAdapter(OperationInvoker invoker) {
+		private ReactiveWebOperationAdapter(OperationInvoker invoker) {
 			this.invoker = invoker;
 		}
 
 		@Override
 		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				Map<String, String> body) {
-			Map<String, Object> arguments = getArguments(exchange, body);
-			return handleResult((Publisher<?>) this.invoker.invoke(arguments),
-					exchange.getRequest().getMethod());
+			return exchange.getPrincipal().defaultIfEmpty(NO_PRINCIPAL)
+					.flatMap((principal) -> {
+						Map<String, Object> arguments = getArguments(exchange, principal,
+								body);
+						return handleResult((Publisher<?>) this.invoker.invoke(arguments),
+								exchange.getRequest().getMethod());
+					});
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange,
-				Map<String, String> body) {
+				Principal principal, Map<String, String> body) {
 			Map<String, Object> arguments = new LinkedHashMap<>();
 			arguments.putAll(getTemplateVariables(exchange));
 			if (body != null) {
@@ -276,6 +291,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 			}
 			exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
 					.put(name, values.size() == 1 ? values.get(0) : values));
+			if (principal != null && principal != NO_PRINCIPAL) {
+				arguments.put("principal", principal);
+			}
 			return arguments;
 		}
 

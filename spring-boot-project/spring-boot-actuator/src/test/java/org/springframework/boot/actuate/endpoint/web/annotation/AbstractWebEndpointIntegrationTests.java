@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.net.InetSocketAddress;
+import java.security.Principal;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -326,6 +327,22 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 						.valueMatches("Content-Type", JSON_MEDIA_TYPE_PATTERN));
 	}
 
+	@Test
+	public void principalIsNullWhenRequestHasNoPrincipal() {
+		load(PrincipalEndpointConfiguration.class,
+				(client) -> client.get().uri("/principal")
+						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+						.isOk().expectBody(String.class).isEqualTo("None"));
+	}
+
+	@Test
+	public void principalIsAvailableWhenRequestHasAPrincipal() {
+		load(getSecuredPrincipalEndpointConfiguration(),
+				(client) -> client.get().uri("/principal")
+						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+						.isOk().expectBody(String.class).isEqualTo("Alice"));
+	}
+
 	protected abstract T createApplicationContext(Class<?>... config);
 
 	protected abstract int getPort(T context);
@@ -359,6 +376,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			context.close();
 		}
 	}
+
+	protected abstract Class<?> getSecuredPrincipalEndpointConfiguration();
 
 	protected void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
 		load(configuration, "/endpoints",
@@ -513,6 +532,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@Bean
 		public RequiredParametersEndpoint requiredParametersEndpoint() {
 			return new RequiredParametersEndpoint();
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	protected static class PrincipalEndpointConfiguration {
+
+		@Bean
+		public PrincipalEndpoint principalEndpoint() {
+			return new PrincipalEndpoint();
 		}
 
 	}
@@ -691,6 +721,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		public String read(String foo, @Nullable String bar) {
 			return foo;
+		}
+
+	}
+
+	@Endpoint(id = "principal")
+	static class PrincipalEndpoint {
+
+		@ReadOperation
+		public String read(@Nullable Principal principal) {
+			return principal == null ? "None" : principal.getName();
 		}
 
 	}

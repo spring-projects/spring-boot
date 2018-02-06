@@ -16,7 +16,16 @@
 
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
+import java.io.IOException;
+import java.security.Principal;
 import java.util.Arrays;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 
@@ -35,10 +44,12 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -93,6 +104,11 @@ public class MvcWebEndpointIntegrationTests extends
 		return context.getWebServer().getPort();
 	}
 
+	@Override
+	protected Class<?> getSecuredPrincipalEndpointConfiguration() {
+		return SecuredPrincipalEndpointConfiguration.class;
+	}
+
 	@Configuration
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
@@ -116,6 +132,43 @@ public class MvcWebEndpointIntegrationTests extends
 					new EndpointMapping(environment.getProperty("endpointPath")),
 					endpointDiscoverer.getEndpoints(), endpointMediaTypes,
 					corsConfiguration);
+		}
+
+	}
+
+	@Configuration
+	@Import(PrincipalEndpointConfiguration.class)
+	static class SecuredPrincipalEndpointConfiguration {
+
+		@Bean
+		public Filter securityFilter() {
+			return new OncePerRequestFilter() {
+
+				@Override
+				protected void doFilterInternal(HttpServletRequest request,
+						HttpServletResponse response, FilterChain filterChain)
+								throws ServletException, IOException {
+					filterChain.doFilter(new HttpServletRequestWrapper(request) {
+
+						@Override
+						public Principal getUserPrincipal() {
+
+							return new Principal() {
+
+								@Override
+								public String getName() {
+									return "Alice";
+								}
+
+							};
+
+						}
+
+					}, response);
+				}
+
+			};
+
 		}
 
 	}

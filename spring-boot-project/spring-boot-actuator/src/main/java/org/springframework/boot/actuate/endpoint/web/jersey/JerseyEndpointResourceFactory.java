@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.web.jersey;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -150,6 +151,10 @@ public class JerseyEndpointResourceFactory {
 			}
 			arguments.putAll(extractPathParameters(data));
 			arguments.putAll(extractQueryParameters(data));
+			Principal principal = data.getSecurityContext().getUserPrincipal();
+			if (principal != null) {
+				arguments.put("principal", principal);
+			}
 			try {
 				Object response = this.operation.invoke(arguments);
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
