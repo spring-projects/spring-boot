@@ -1298,6 +1298,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
 	management.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.
 	management.metrics.cache.instrument=true # Instrument all available caches.
+	management.metrics.distribution.percentiles-histogram.<name>= # Whether meter IDs starting-with the specified name should be publish percentile histograms.
+	management.metrics.distribution.percentiles.<name>= # Specific computed non-aggregable percentiles to ship to the backend for meter IDs starting-with the specified name.
+	management.metrics.distribution.sla.<name>= Specific SLA boundaries for meter IDs starting-with the specified name. The longest match wins, the key `all` can also be used to configure all meters.
+	management.metrics.enabled.<name>= # Whether meter IDs starting-with the specified name should be enabled. The longest match wins, the key `all` can also be used to configure all meters.
 	management.metrics.export.atlas.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.atlas.config-refresh-frequency= # Frequency for refreshing config settings from the LWC service.
 	management.metrics.export.atlas.config-time-to-live= # Time to live for subscriptions from the LWC service.
@@ -1378,10 +1382,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
 	management.metrics.web.server.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	management.metrics.web.server.requests-metric-name=http.server.requests # Name of the metric for received requests.
-	management.metrics.enabled.<name>= # Whether meter IDs starting-with the specified name should be enabled. The longest match wins, the key `all` can also be used to configure all meters.
-	management.metrics.distribution.percentiles-histogram.<name>= # Whether meter IDs starting-with the specified name should be publish percentile histograms.
-	management.metrics.distribution.percentiles.<name>= # Specific computed non-aggregable percentiles to ship to the backend for meter IDs starting-with the specified name.
-	management.metrics.distribution.sla.<name>= Specific SLA boundaries for meter IDs starting-with the specified name. The longest match wins, the key `all` can also be used to configure all meters.
 
 
 	# ----------------------------------------
