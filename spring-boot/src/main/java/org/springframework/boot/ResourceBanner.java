@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,9 +33,11 @@ import org.springframework.boot.ansi.AnsiPropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -48,21 +52,25 @@ public class ResourceBanner implements Banner {
 
 	private static final Log logger = LogFactory.getLog(ResourceBanner.class);
 
-	private Resource resource;
+	private Resource bannerResource;
+	private Resource gitPropertiesResource;
+	private Resource buildInfoPropertiesResource;
 
-	public ResourceBanner(Resource resource) {
-		Assert.notNull(resource, "Resource must not be null");
-		Assert.isTrue(resource.exists(), "Resource must exist");
-		this.resource = resource;
+	public ResourceBanner(Resource bannerResource, Resource gitPropertiesResource, Resource buildInfoPropertiesResource) {
+		Assert.notNull(bannerResource, "Resource must not be null");
+		Assert.isTrue(bannerResource.exists(), "Resource must exist");
+		this.bannerResource = bannerResource;
+		this.gitPropertiesResource = gitPropertiesResource;
+		this.buildInfoPropertiesResource = buildInfoPropertiesResource;
+
 	}
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass,
 			PrintStream out) {
 		try {
-			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
-					environment.getProperty("banner.charset", Charset.class,
-							Charset.forName("UTF-8")));
+			String banner = resourceToString(environment.getProperty("banner.charset", Charset.class,
+				Charset.forName("UTF-8")), this.bannerResource);
 
 			for (PropertyResolver resolver : getPropertyResolvers(environment,
 					sourceClass)) {
@@ -71,9 +79,14 @@ public class ResourceBanner implements Banner {
 			out.println(banner);
 		}
 		catch (Exception ex) {
-			logger.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
+			logger.warn("Banner not printable: " + this.bannerResource + " (" + ex.getClass()
 					+ ": '" + ex.getMessage() + "')", ex);
 		}
+	}
+
+	private String resourceToString(Charset charset, Resource resource) throws IOException {
+		return StreamUtils.copyToString(resource.getInputStream(),
+				charset);
 	}
 
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment,
@@ -83,7 +96,33 @@ public class ResourceBanner implements Banner {
 		resolvers.add(getVersionResolver(sourceClass));
 		resolvers.add(getAnsiResolver());
 		resolvers.add(getTitleResolver(sourceClass));
+
+		registerPropertyResolver(resolvers, "git", this.gitPropertiesResource, "git.properties");
+		registerPropertyResolver(resolvers, "build", this.buildInfoPropertiesResource, "build-info.properties");
+
 		return resolvers;
+
+	}
+
+	private void registerPropertyResolver(List<PropertyResolver> resolvers, String name, Resource resource, String fileName) {
+		if (resource != null) {
+			try {
+				Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+				resolvers.add(getPropertyResolver(properties, name));
+			}
+			catch (Exception e) {
+				logger.debug(fileName + " not found in classpath");
+			}
+		}
+	}
+
+	private PropertyResolver getPropertyResolver(Properties properties, String name) {
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources
+				.addLast(new PropertiesPropertySource(name, properties));
+
+		return new PropertySourcesPropertyResolver(propertySources);
+
 	}
 
 	private PropertyResolver getVersionResolver(Class<?> sourceClass) {

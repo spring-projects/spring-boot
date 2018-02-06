@@ -51,7 +51,7 @@ public class ResourceBannerTests {
 	public void renderVersions() throws Exception {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
-		String banner = printBanner(resource, "10.2", "2.0", null);
+		String banner = printBanner(resource, null, null, "10.2", "2.0", null);
 		assertThat(banner).startsWith("banner 1 10.2 2.0");
 	}
 
@@ -59,7 +59,7 @@ public class ResourceBannerTests {
 	public void renderWithoutVersions() throws Exception {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
-		String banner = printBanner(resource, null, null, null);
+		String banner = printBanner(resource, null, null, null, null, null);
 		assertThat(banner).startsWith("banner 1  ");
 	}
 
@@ -68,7 +68,7 @@ public class ResourceBannerTests {
 		Resource resource = new ByteArrayResource(
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
 						.getBytes());
-		String banner = printBanner(resource, "10.2", "2.0", null);
+		String banner = printBanner(resource, null, null, "10.2", "2.0", null);
 		assertThat(banner).startsWith("banner 1 (v10.2) (v2.0)");
 	}
 
@@ -77,7 +77,7 @@ public class ResourceBannerTests {
 		Resource resource = new ByteArrayResource(
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
 						.getBytes());
-		String banner = printBanner(resource, null, null, null);
+		String banner = printBanner(resource, null, null, null, null, null);
 		assertThat(banner).startsWith("banner 1");
 	}
 
@@ -86,7 +86,7 @@ public class ResourceBannerTests {
 		Resource resource = new ByteArrayResource(
 				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-		String banner = printBanner(resource, null, null, null);
+		String banner = printBanner(resource, null, null, null, null, null);
 		assertThat(banner).startsWith("\u001B[31mThis is red.\u001B[0m");
 	}
 
@@ -95,7 +95,7 @@ public class ResourceBannerTests {
 		Resource resource = new ByteArrayResource(
 				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner(resource, null, null, null);
+		String banner = printBanner(resource, null, null, null, null, null);
 		assertThat(banner).startsWith("This is red.");
 	}
 
@@ -103,7 +103,7 @@ public class ResourceBannerTests {
 	public void renderWithTitle() throws Exception {
 		Resource resource = new ByteArrayResource(
 				"banner ${application.title} ${a}".getBytes());
-		String banner = printBanner(resource, null, null, "title");
+		String banner = printBanner(resource, null, null, null, null, "title");
 		assertThat(banner).startsWith("banner title 1");
 	}
 
@@ -111,13 +111,73 @@ public class ResourceBannerTests {
 	public void renderWithoutTitle() throws Exception {
 		Resource resource = new ByteArrayResource(
 				"banner ${application.title} ${a}".getBytes());
-		String banner = printBanner(resource, null, null, null);
+		String banner = printBanner(resource, null, null, null, null, null);
 		assertThat(banner).startsWith("banner  1");
 	}
 
-	private String printBanner(Resource resource, String bootVersion,
+	@Test
+	public void renderGitInfo() throws Exception {
+		Resource resource = new ByteArrayResource(
+				("banner" +
+				" ${a}" +
+				" ${git.commit.id.abbrev}" +
+				" ${git.commit.user.email}" +
+				" ${git.commit.message.full}" +
+				" ${git.commit.id}" +
+				" ${git.commit.message.short}" +
+				" ${git.commit.user.name}" +
+				" ${git.build.user.name}" +
+				" ${git.build.user.email}" +
+				" ${git.branch}" +
+				" ${git.commit.time}" +
+				" ${git.build.time}").getBytes());
+
+		String s =
+				"git.commit.id.abbrev=abc\n" +
+				"git.commit.user.email=abc@bce.com\n" +
+				"git.commit.message.full=Test\n" +
+				"git.commit.id=abcdef\n" +
+				"git.commit.message.short=Test short\n" +
+				"git.commit.user.name=test_user\n" +
+				"git.build.user.name=Test User\n" +
+				"git.build.user.email=abc@bce.com\n" +
+				"git.branch=develop\n" +
+				"git.commit.time=commit_time\n" +
+				"git.build.time=build_time\n";
+
+		Resource gitPropertiesResource = new ByteArrayResource(s.getBytes());
+
+		String banner = printBanner(resource, gitPropertiesResource, null, null, null, null);
+		assertThat(banner).startsWith("banner 1 abc abc@bce.com Test abcdef Test short test_user Test User abc@bce.com " +
+				"develop commit_time build_time");
+	}
+	@Test
+	public void renderBuildInfo() throws Exception {
+		Resource resource = new ByteArrayResource(
+				("banner" +
+				" ${a}" +
+				" ${build.time}" +
+				" ${build.artifact}" +
+				" ${build.group}" +
+				" ${build.name}" +
+				" ${build.version}").getBytes());
+
+		String s =
+				"build.time=time\n" +
+				"build.artifact=artifact\n" +
+				"build.group=group\n" +
+				"build.name=name\n" +
+				"build.version=0.0.1-SNAPSHOT";
+
+		Resource buildInfo = new ByteArrayResource(s.getBytes());
+
+		String banner = printBanner(resource, null, buildInfo, null, null, null);
+		assertThat(banner).startsWith("banner 1 time artifact group name 0.0.1-SNAPSHOT");
+	}
+
+	private String printBanner(Resource resource, Resource gitPropertyResource, Resource buildInfoPropertiesResource, String bootVersion,
 			String applicationVersion, String applicationTitle) {
-		ResourceBanner banner = new MockResourceBanner(resource, bootVersion,
+		ResourceBanner banner = new MockResourceBanner(resource, gitPropertyResource, buildInfoPropertiesResource, bootVersion,
 				applicationVersion, applicationTitle);
 		ConfigurableEnvironment environment = new MockEnvironment();
 		Map<String, Object> source = Collections.<String, Object>singletonMap("a", "1");
@@ -135,9 +195,9 @@ public class ResourceBannerTests {
 
 		private final String applicationTitle;
 
-		MockResourceBanner(Resource resource, String bootVersion,
+		MockResourceBanner(Resource resource, Resource gitPropertiesResource, Resource buildInfoPropertiesResource, String bootVersion,
 				String applicationVersion, String applicationTitle) {
-			super(resource);
+			super(resource, gitPropertiesResource, buildInfoPropertiesResource);
 			this.bootVersion = bootVersion;
 			this.applicationVersion = applicationVersion;
 			this.applicationTitle = applicationTitle;

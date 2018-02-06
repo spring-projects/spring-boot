@@ -88,9 +88,11 @@ class SpringApplicationBannerPrinter {
 	private Banner getTextBanner(Environment environment) {
 		String location = environment.getProperty(BANNER_LOCATION_PROPERTY,
 				DEFAULT_BANNER_LOCATION);
-		Resource resource = this.resourceLoader.getResource(location);
-		if (resource.exists()) {
-			return new ResourceBanner(resource);
+		Resource banner = this.resourceLoader.getResource(location);
+		Resource gitProperties = this.resourceLoader.getResource("git.properties");
+		Resource buildInfoProperties = this.resourceLoader.getResource("META-INF/build-info.properties");
+		if (banner.exists()) {
+			return new ResourceBanner(banner, gitProperties, buildInfoProperties);
 		}
 		return null;
 	}

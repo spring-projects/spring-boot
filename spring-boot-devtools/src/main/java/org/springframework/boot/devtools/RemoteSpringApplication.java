@@ -82,7 +82,7 @@ public final class RemoteSpringApplication {
 	private Banner getBanner() {
 		ClassPathResource banner = new ClassPathResource("remote-banner.txt",
 				RemoteSpringApplication.class);
-		return new ResourceBanner(banner);
+		return new ResourceBanner(banner, null, null);
 	}
 
 	private void waitIndefinitely() {
