@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.bind.validation.ValidationBin
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
@@ -69,12 +70,13 @@ class ConfigurationPropertiesBinder {
 	 * specified {@code annotation}.
 	 * @param target the target to bind the configuration property sources to
 	 * @param annotation the binding configuration
+	 * @param targetType the resolvable type for the target
 	 * @throws ConfigurationPropertiesBindingException if the binding failed
 	 */
-	void bind(Object target, ConfigurationProperties annotation) {
+	void bind(Object target, ConfigurationProperties annotation, ResolvableType targetType) {
 		Validator validator = determineValidator(target);
 		BindHandler handler = getBindHandler(annotation, validator);
-		Bindable<?> bindable = Bindable.ofInstance(target);
+		Bindable<?> bindable = Bindable.of(targetType).withExistingValue(target);
 		try {
 			this.binder.bind(annotation.prefix(), bindable, handler);
 		}

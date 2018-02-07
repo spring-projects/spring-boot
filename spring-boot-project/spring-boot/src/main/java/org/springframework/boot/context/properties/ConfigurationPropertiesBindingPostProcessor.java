@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -34,6 +35,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -164,7 +166,12 @@ public class ConfigurationPropertiesBindingPostProcessor
 		ConfigurationProperties annotation = getAnnotation(bean, beanName);
 		if (annotation != null) {
 			try {
-				getBinder().bind(bean, annotation);
+				ResolvableType type = ResolvableType.forClass(bean.getClass());
+				Method factoryMethod = this.beans.findFactoryMethod(beanName);
+				if (factoryMethod != null) {
+					type = ResolvableType.forMethodReturnType(factoryMethod);
+				}
+				getBinder().bind(bean, annotation, type);
 			}
 			catch (ConfigurationPropertiesBindingException ex) {
 				throw new BeanCreationException(beanName, ex.getMessage(), ex.getCause());

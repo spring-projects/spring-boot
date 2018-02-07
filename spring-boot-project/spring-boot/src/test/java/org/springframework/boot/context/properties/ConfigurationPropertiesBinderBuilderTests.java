@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.mock.env.MockEnvironment;
@@ -128,7 +129,7 @@ public class ConfigurationPropertiesBinderBuilderTests {
 
 	private void bind(ConfigurationPropertiesBinder binder, Object target) {
 		binder.bind(target, AnnotationUtils.findAnnotation(target.getClass(),
-				ConfigurationProperties.class));
+				ConfigurationProperties.class), ResolvableType.forType(target.getClass()));
 	}
 
 	@ConfigurationProperties(prefix = "test")

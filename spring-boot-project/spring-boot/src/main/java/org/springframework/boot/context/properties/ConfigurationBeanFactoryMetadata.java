@@ -82,6 +82,9 @@ public class ConfigurationBeanFactoryMetadata implements BeanFactoryPostProcesso
 		FactoryMetadata metadata = this.beansFactoryMetadata.get(beanName);
 		Class<?> factoryType = this.beanFactory.getType(metadata.getBean());
 		String factoryMethod = metadata.getMethod();
+		if (ClassUtils.isCglibProxyClass(factoryType)) {
+			factoryType = factoryType.getSuperclass();
+		}
 		ReflectionUtils.doWithMethods(factoryType, (method) -> {
 			if (method.getName().equals(factoryMethod)) {
 				found.compareAndSet(null, method);

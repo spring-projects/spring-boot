@@ -287,6 +287,20 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		assertThat(foo.getFoos().get("1")).isNotNull();
 	}
 
+	@Test
+	public void bindToBeanWithGenerics() {
+		this.context = new AnnotationConfigApplicationContext();
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("foo.bar", "hello");
+		sources.addFirst(new MapPropertySource("test-source", source));
+		this.context.register(GenericConfiguration.class);
+		this.context.refresh();
+		AGenericClass foo = this.context.getBean(AGenericClass.class);
+		assertThat(foo.getBar()).isNotNull();
+	}
+
 	private void prepareConverterContext(Class<?>... config) {
 		this.context = new AnnotationConfigApplicationContext();
 		MutablePropertySources sources = this.context.getEnvironment()
@@ -641,6 +655,32 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				this.name = name;
 			}
 
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	static class GenericConfiguration {
+
+		@Bean
+		@ConfigurationProperties("foo")
+		public AGenericClass<String> aBeanToBind() {
+			return new AGenericClass<>();
+		}
+
+	}
+
+	static class AGenericClass<T> {
+
+		private T bar;
+
+		public T getBar() {
+			return this.bar;
+		}
+
+		public void setBar(T bar) {
+			this.bar = bar;
 		}
 
 	}

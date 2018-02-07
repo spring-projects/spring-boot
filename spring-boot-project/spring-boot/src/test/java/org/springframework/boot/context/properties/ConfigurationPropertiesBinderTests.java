@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -269,7 +270,7 @@ public class ConfigurationPropertiesBinderTests {
 
 	private void bind(ConfigurationPropertiesBinder binder, Object target) {
 		binder.bind(target, AnnotationUtils.findAnnotation(target.getClass(),
-				ConfigurationProperties.class));
+				ConfigurationProperties.class), ResolvableType.forType(target.getClass()));
 	}
 
 	@ConfigurationProperties(value = "person", ignoreUnknownFields = false)
