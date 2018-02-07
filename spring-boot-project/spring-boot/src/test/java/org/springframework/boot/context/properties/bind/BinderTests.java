@@ -280,6 +280,15 @@ public class BinderTests {
 		this.binder.bind("foo", target);
 	}
 
+	@Test
+	public void bindToBeanWithUnresolvableGenerics() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "hello");
+		this.sources.add(source);
+		Bindable<GenericBean> target = Bindable.of(GenericBean.class);
+		this.binder.bind("foo", target);
+	}
+
 	public static class JavaBean {
 
 		private String value;
@@ -347,6 +356,20 @@ public class BinderTests {
 			this.one = one;
 		}
 
+	}
+
+	public static class GenericBean<T> {
+
+		private T bar;
+
+
+		public T getBar() {
+			return this.bar;
+		}
+
+		public void setBar(T bar) {
+			this.bar = bar;
+		}
 	}
 
 }

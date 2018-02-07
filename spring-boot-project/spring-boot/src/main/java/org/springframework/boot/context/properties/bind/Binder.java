@@ -262,7 +262,7 @@ public class Binder {
 	}
 
 	private AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
-		Class<?> resolvedType = target.getType().resolve();
+		Class<?> resolvedType = target.getType().resolve(Object.class);
 		if (Map.class.isAssignableFrom(resolvedType)) {
 			return new MapBinder(context);
 		}
@@ -312,7 +312,7 @@ public class Binder {
 		}
 		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
 				name.append(propertyName), propertyTarget, handler, context, false);
-		Class<?> type = target.getType().resolve();
+		Class<?> type = target.getType().resolve(Object.class);
 		if (!allowRecursiveBinding && context.hasBoundBean(type)) {
 			return null;
 		}
@@ -330,7 +330,7 @@ public class Binder {
 			// We know there are properties to bind so we can't bypass anything
 			return false;
 		}
-		Class<?> resolved = target.getType().resolve();
+		Class<?> resolved = target.getType().resolve(Object.class);
 		if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
 			return true;
 		}

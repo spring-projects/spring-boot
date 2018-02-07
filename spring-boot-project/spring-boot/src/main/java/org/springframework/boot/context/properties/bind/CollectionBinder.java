@@ -38,7 +38,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
-		Class<?> collectionType = (target.getValue() == null ? target.getType().resolve()
+		Class<?> collectionType = (target.getValue() == null ? target.getType().resolve(Object.class)
 				: List.class);
 		ResolvableType aggregateType = forClassWithGenerics(List.class,
 				target.getType().asCollection().getGenerics());

@@ -150,7 +150,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			ResolvableType... generics) {
 		ResolvableType[] resolvedGenerics = new ResolvableType[generics.length];
 		for (int i = 0; i < generics.length; i++) {
-			resolvedGenerics[i] = forClassWithGenerics(generics[i].resolve(),
+			resolvedGenerics[i] = forClassWithGenerics(generics[i].resolve(Object.class),
 					generics[i].getGenerics());
 		}
 		return ResolvableType.forClassWithGenerics(type, resolvedGenerics);

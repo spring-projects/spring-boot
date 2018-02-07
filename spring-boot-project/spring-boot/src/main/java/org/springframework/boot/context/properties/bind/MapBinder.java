@@ -54,7 +54,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
 		Map<Object, Object> map = CollectionFactory.createMap(
-				(target.getValue() == null ? target.getType().resolve() : Map.class), 0);
+				(target.getValue() == null ? target.getType().resolve(Object.class) : Map.class), 0);
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		boolean hasDescendants = getContext().streamSources().anyMatch((source) -> source
 				.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT);
@@ -75,7 +75,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	private Bindable<?> resolveTarget(Bindable<?> target) {
-		Class<?> type = target.getType().resolve();
+		Class<?> type = target.getType().resolve(Object.class);
 		if (Properties.class.isAssignableFrom(type)) {
 			return STRING_STRING_MAP;
 		}
@@ -132,7 +132,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
-			Class<?> resolved = this.valueType.resolve();
+			Class<?> resolved = this.valueType.resolve(Object.class);
 			if (Collection.class.isAssignableFrom(resolved) || this.valueType.isArray()) {
 				return chopNameAtNumericIndex(name);
 			}
@@ -161,7 +161,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private boolean isScalarValue(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
-			Class<?> resolved = this.valueType.resolve();
+			Class<?> resolved = this.valueType.resolve(Object.class);
 			String packageName = ClassUtils.getPackageName(resolved);
 			if (!packageName.startsWith("java.lang") && !resolved.isEnum()) {
 				return false;
