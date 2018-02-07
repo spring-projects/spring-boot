@@ -204,12 +204,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.metrics.export.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether exporting of metrics to JMX is enabled.",
-      "defaultValue": true
-    },
-    {
       "name": "management.metrics.jdbc.instrument",
       "type": "java.lang.Boolean",
       "description": "Instrument all available data sources.",

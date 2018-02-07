@@ -21,23 +21,32 @@ import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.ganglia.GangliaConfig;
 import io.micrometer.ganglia.GangliaMeterRegistry;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for exporting metrics to Ganglia.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Ganglia.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
 @Configuration
+@AutoConfigureBefore(MetricsAutoConfiguration.class)
 @ConditionalOnClass(GangliaMeterRegistry.class)
 @EnableConfigurationProperties(GangliaProperties.class)
-public class GangliaExportConfiguration {
+public class GangliaMetricsExportAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Clock micrometerClock() {
+		return Clock.SYSTEM;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -46,7 +55,7 @@ public class GangliaExportConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.export.ganglia.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean
 	public GangliaMeterRegistry gangliaMeterRegistry(GangliaConfig gangliaConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {
 		return new GangliaMeterRegistry(gangliaConfig, clock, nameMapper);

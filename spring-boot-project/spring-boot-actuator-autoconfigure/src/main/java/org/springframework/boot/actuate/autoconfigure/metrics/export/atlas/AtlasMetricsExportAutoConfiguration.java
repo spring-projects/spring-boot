@@ -20,24 +20,33 @@ import com.netflix.spectator.atlas.AtlasConfig;
 import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for exporting metrics to Atlas.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Atlas.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @since 2.0.0
  */
 @Configuration
+@AutoConfigureBefore(MetricsAutoConfiguration.class)
 @ConditionalOnClass(AtlasMeterRegistry.class)
 @EnableConfigurationProperties(AtlasProperties.class)
-public class AtlasExportConfiguration {
+public class AtlasMetricsExportAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Clock micrometerClock() {
+		return Clock.SYSTEM;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(AtlasConfig.class)
@@ -46,7 +55,7 @@ public class AtlasExportConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.export.atlas.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean
 	public AtlasMeterRegistry atlasMeterRegistry(AtlasConfig atlasConfig, Clock clock) {
 		return new AtlasMeterRegistry(atlasConfig, clock);
 	}

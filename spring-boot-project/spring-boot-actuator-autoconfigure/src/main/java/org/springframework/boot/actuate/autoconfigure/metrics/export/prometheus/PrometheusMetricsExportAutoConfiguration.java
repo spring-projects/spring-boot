@@ -21,25 +21,34 @@ import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for exporting metrics to Prometheus.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Prometheus.
  *
  * @since 2.0.0
  * @author Jon Schneider
  */
 @Configuration
+@AutoConfigureBefore(MetricsAutoConfiguration.class)
 @ConditionalOnClass(PrometheusMeterRegistry.class)
 @EnableConfigurationProperties(PrometheusProperties.class)
-public class PrometheusExportConfiguration {
+public class PrometheusMetricsExportAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Clock micrometerClock() {
+		return Clock.SYSTEM;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -48,7 +57,7 @@ public class PrometheusExportConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.export.prometheus.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean
 	public PrometheusMeterRegistry prometheusMeterRegistry(
 			PrometheusConfig prometheusConfig, CollectorRegistry collectorRegistry,
 			Clock clock) {

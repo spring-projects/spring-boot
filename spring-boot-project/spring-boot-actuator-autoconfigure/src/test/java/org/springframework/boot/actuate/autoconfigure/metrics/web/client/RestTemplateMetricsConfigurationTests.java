@@ -21,7 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsRun;
+import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;

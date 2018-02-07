@@ -20,7 +20,7 @@ import java.time.Duration;
 
 import io.micrometer.prometheus.PrometheusConfig;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link PrometheusProperties} to a {@link PrometheusConfig}.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.properties;
 
 import java.time.Duration;
 

@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MeterRegistry.Config;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

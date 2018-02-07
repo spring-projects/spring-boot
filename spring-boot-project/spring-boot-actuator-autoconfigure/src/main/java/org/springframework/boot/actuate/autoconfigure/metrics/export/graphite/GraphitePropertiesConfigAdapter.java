@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteProtocol;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link GraphiteProperties} to a {@link GraphiteConfig}.

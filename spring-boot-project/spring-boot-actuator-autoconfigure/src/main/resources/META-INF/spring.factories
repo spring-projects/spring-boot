@@ -32,6 +32,16 @@ org.springframework.boot.actuate.autoconfigure.mail.MailHealthIndicatorAutoConfi
 org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia.GangliaMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.graphite.GraphiteMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.influx.InfluxMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.mongo.MongoHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisHealthIndicatorAutoConfiguration,\

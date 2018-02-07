@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.graphite;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.util.HierarchicalNameMapper;
-import io.micrometer.graphite.GraphiteConfig;
-import io.micrometer.graphite.GraphiteMeterRegistry;
+import io.micrometer.datadog.DatadogConfig;
+import io.micrometer.datadog.DatadogMeterRegistry;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,33 +31,35 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for exporting metrics to Graphite.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Datadog.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(GraphiteMeterRegistry.class)
-@EnableConfigurationProperties(GraphiteProperties.class)
-public class GraphiteExportConfiguration {
+@AutoConfigureBefore(MetricsAutoConfiguration.class)
+@ConditionalOnClass(DatadogMeterRegistry.class)
+@ConditionalOnProperty("management.metrics.export.datadog.api-key")
+@EnableConfigurationProperties(DatadogProperties.class)
+public class DatadogMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphiteConfig graphiteConfig(GraphiteProperties graphiteProperties) {
-		return new GraphitePropertiesConfigAdapter(graphiteProperties);
-	}
-
-	@Bean
-	@ConditionalOnProperty(value = "management.metrics.export.graphite.enabled", matchIfMissing = true)
-	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig graphiteConfig,
-			HierarchicalNameMapper nameMapper, Clock clock) {
-		return new GraphiteMeterRegistry(graphiteConfig, clock, nameMapper);
+	public Clock micrometerClock() {
+		return Clock.SYSTEM;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HierarchicalNameMapper hierarchicalNameMapper() {
-		return HierarchicalNameMapper.DEFAULT;
+	public DatadogConfig datadogConfig(DatadogProperties datadogProperties) {
+		return new DatadogPropertiesConfigAdapter(datadogProperties);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig,
+			Clock clock) {
+		return new DatadogMeterRegistry(datadogConfig, clock);
 	}
 
 }

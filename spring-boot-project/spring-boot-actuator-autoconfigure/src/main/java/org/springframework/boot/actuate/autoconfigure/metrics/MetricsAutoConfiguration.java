@@ -19,27 +19,21 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.util.Collection;
 
 import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.CompositeMeterRegistryConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.WebFluxMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
-import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
@@ -66,11 +60,15 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @Import({ MeterBindersConfiguration.class, WebMvcMetricsConfiguration.class,
 		WebFluxMetricsConfiguration.class, RestTemplateMetricsConfiguration.class,
 		CacheMetricsConfiguration.class, DataSourcePoolMetricsConfiguration.class,
-		RabbitMetricsConfiguration.class, MeterRegistriesConfiguration.class,
-		CompositeMeterRegistryConfiguration.class })
+		RabbitMetricsConfiguration.class })
 @AutoConfigureAfter({ CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
 		RabbitAutoConfiguration.class, RestTemplateAutoConfiguration.class })
 public class MetricsAutoConfiguration {
+
+	@Bean
+	public static CompositeMeterRegistryPostProcessor compositeMeterRegistryPostProcessor() {
+		return new CompositeMeterRegistryPostProcessor();
+	}
 
 	@Bean
 	public static MeterRegistryPostProcessor meterRegistryPostProcessor(
@@ -81,20 +79,6 @@ public class MetricsAutoConfiguration {
 		return new MeterRegistryPostProcessor(binders.getIfAvailable(),
 				filters.getIfAvailable(), customizers.getIfAvailable(),
 				properties.isUseGlobalRegistry());
-	}
-
-	@Bean
-	@ConditionalOnBean(MeterRegistry.class)
-	@ConditionalOnMissingBean
-	@ConditionalOnEnabledEndpoint
-	public MetricsEndpoint metricsEndpoint(MeterRegistry registry) {
-		return new MetricsEndpoint(registry);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
 	}
 
 	@Bean

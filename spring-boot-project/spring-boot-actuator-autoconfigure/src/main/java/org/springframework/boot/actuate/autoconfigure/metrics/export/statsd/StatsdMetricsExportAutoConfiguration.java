@@ -14,42 +14,50 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
-import io.micrometer.jmx.JmxConfig;
-import io.micrometer.jmx.JmxMeterRegistry;
+import io.micrometer.statsd.StatsdConfig;
+import io.micrometer.statsd.StatsdMeterRegistry;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for exporting metrics to JMX.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to StatsD.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(JmxMeterRegistry.class)
-@EnableConfigurationProperties(JmxProperties.class)
-public class JmxExportConfiguration {
+@AutoConfigureBefore(MetricsAutoConfiguration.class)
+@ConditionalOnClass(StatsdMeterRegistry.class)
+@EnableConfigurationProperties(StatsdProperties.class)
+public class StatsdMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JmxConfig jmxConfig(JmxProperties jmxProperties) {
-		return new JmxPropertiesConfigAdapter(jmxProperties);
+	public Clock micrometerClock() {
+		return Clock.SYSTEM;
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.export.jmx.enabled", matchIfMissing = true)
-	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config,
-			HierarchicalNameMapper nameMapper, Clock clock) {
-		return new JmxMeterRegistry(config, clock, nameMapper);
+	@ConditionalOnMissingBean(StatsdConfig.class)
+	public StatsdConfig statsdConfig(StatsdProperties statsdProperties) {
+		return new StatsdPropertiesConfigAdapter(statsdProperties);
+	}
+
+	@Bean
+	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig,
+			HierarchicalNameMapper hierarchicalNameMapper, Clock clock) {
+		return new StatsdMeterRegistry(statsdConfig, hierarchicalNameMapper, clock);
 	}
 
 	@Bean

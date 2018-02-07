@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.atlas;
 
 import java.time.Duration;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**

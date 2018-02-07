@@ -21,25 +21,37 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for exporting metrics to a {@link SimpleMeterRegistry}.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to a
+ * {@link SimpleMeterRegistry}.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
 @Configuration
+@AutoConfigureAfter(MetricsAutoConfiguration.class)
+@AutoConfigureBefore(MetricsEndpointAutoConfiguration.class)
 @EnableConfigurationProperties(SimpleProperties.class)
-public class SimpleExportConfiguration {
+@ConditionalOnMissingBean(MeterRegistry.class)
+public class SimpleMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.export.simple.enabled", matchIfMissing = true)
-	@ConditionalOnMissingBean(MeterRegistry.class)
+	@ConditionalOnMissingBean
+	public Clock micrometerClock() {
+		return Clock.SYSTEM;
+	}
+
+	@Bean
 	public SimpleMeterRegistry simpleMeterRegistry(SimpleConfig config, Clock clock) {
 		return new SimpleMeterRegistry(config, clock);
 	}

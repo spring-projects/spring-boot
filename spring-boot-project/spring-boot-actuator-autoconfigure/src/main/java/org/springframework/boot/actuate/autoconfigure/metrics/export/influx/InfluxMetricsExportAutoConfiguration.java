@@ -20,23 +20,32 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for exporting metrics to Influx.
+ * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Influx.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
 @Configuration
+@AutoConfigureBefore(MetricsAutoConfiguration.class)
 @ConditionalOnClass(InfluxMeterRegistry.class)
 @EnableConfigurationProperties(InfluxProperties.class)
-public class InfluxExportConfiguration {
+public class InfluxMetricsExportAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Clock micrometerClock() {
+		return Clock.SYSTEM;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(InfluxConfig.class)
@@ -45,7 +54,7 @@ public class InfluxExportConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(value = "management.metrics.export.influx.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean
 	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig,
 			Clock clock) {
 		return new InfluxMeterRegistry(influxConfig, clock);

@@ -21,7 +21,7 @@ import java.time.Duration;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdFlavor;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link StatsdProperties} to a {@link StatsdConfig}.
