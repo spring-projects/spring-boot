@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping;
@@ -140,7 +141,8 @@ public class DispatcherServletsMappingDescriptionProvider
 		private DispatcherServletMappingDescription describe(
 				Entry<RequestMappingInfo, HandlerMethod> mapping) {
 			return new DispatcherServletMappingDescription(mapping.getKey().toString(),
-					mapping.getValue().toString());
+					mapping.getValue().toString(), new DispatcherServletMappingDetails(
+							new HandlerMethodDescription(mapping.getValue())));
 		}
 
 	}
@@ -163,7 +165,7 @@ public class DispatcherServletsMappingDescriptionProvider
 		private DispatcherServletMappingDescription describe(
 				Entry<String, Object> mapping) {
 			return new DispatcherServletMappingDescription(mapping.getKey().toString(),
-					mapping.getValue().toString());
+					mapping.getValue().toString(), null);
 		}
 
 	}

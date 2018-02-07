@@ -16,39 +16,24 @@
 
 package org.springframework.boot.actuate.web.mappings.reactive;
 
-import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.reactive.function.server.HandlerFunction;
 
 /**
- * A description of a mapping known to a {@link DispatcherServlet}.
+ * Description of a {@link HandlerFunction}.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class DispatcherHandlerMappingDescription {
+public class HandlerFunctionDescription {
 
-	private final String predicate;
+	private final String className;
 
-	private final String handler;
-
-	private final DispatcherHandlerMappingDetails details;
-
-	DispatcherHandlerMappingDescription(String predicate, String handler,
-			DispatcherHandlerMappingDetails details) {
-		this.predicate = predicate;
-		this.handler = handler;
-		this.details = details;
+	HandlerFunctionDescription(HandlerFunction<?> handlerFunction) {
+		this.className = handlerFunction.getClass().getCanonicalName();
 	}
 
-	public String getHandler() {
-		return this.handler;
-	}
-
-	public String getPredicate() {
-		return this.predicate;
-	}
-
-	public DispatcherHandlerMappingDetails getDetails() {
-		return this.details;
+	public String getClassName() {
+		return this.className;
 	}
 
 }

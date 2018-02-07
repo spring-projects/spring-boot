@@ -35,8 +35,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.RequestPredicates;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -84,7 +89,37 @@ public class MappingsEndpointReactiveDocumentationTests
 								fieldWithPath("*.[].handler")
 										.description("Handler for the mapping."),
 								fieldWithPath("*.[].predicate")
-										.description("Predicate for the mapping."))));
+										.description("Predicate for the mapping."),
+								fieldWithPath("*.[].details").optional()
+										.type(JsonFieldType.OBJECT)
+										.description("Additional implementation-specific "
+												+ "details about the mapping. Optional."),
+								fieldWithPath("*.[].details.handlerMethod").optional()
+										.type(JsonFieldType.OBJECT)
+										.description("Details of the method, if any, "
+												+ "that will handle requests to "
+												+ "this mapping."),
+								fieldWithPath("*.[].details.handlerMethod.className")
+										.type(JsonFieldType.STRING)
+										.description("Fully qualified name of the class"
+												+ " of the method."),
+								fieldWithPath("*.[].details.handlerMethod.name")
+										.type(JsonFieldType.STRING)
+										.description("Name of the method."),
+								fieldWithPath("*.[].details.handlerMethod.descriptor")
+										.type(JsonFieldType.STRING)
+										.description("Descriptor of the method as "
+												+ "specified in the Java Language "
+												+ "Specification."),
+								fieldWithPath("*.[].details.handlerFunction")
+										.optional().type(JsonFieldType.OBJECT)
+										.description("Details of the function, if any, "
+												+ "that will handle requests to this "
+												+ "mapping."),
+								fieldWithPath("*.[].details.handlerFunction.className")
+										.type(JsonFieldType.STRING).description(
+												"Fully qualified name of the class of "
+														+ "the function."))));
 	}
 
 	@Configuration
@@ -106,6 +141,12 @@ public class MappingsEndpointReactiveDocumentationTests
 				Collection<MappingDescriptionProvider> descriptionProviders,
 				ConfigurableApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
+		}
+
+		@Bean
+		public RouterFunction<ServerResponse> exampleRouter() {
+			return RouterFunctions.route(RequestPredicates.GET("/foo"),
+					(request) -> ServerResponse.ok().build());
 		}
 
 	}
