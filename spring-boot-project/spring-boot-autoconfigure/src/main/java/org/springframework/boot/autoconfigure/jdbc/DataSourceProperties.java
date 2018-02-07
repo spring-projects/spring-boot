@@ -522,37 +522,35 @@ public class DataSourceProperties
 
 	static class DataSourceBeanCreationException extends BeanCreationException {
 
+		private static EmbeddedDatabaseConnection connection;
+
+		private static Environment environment;
+
+		private static String property;
+
 		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
 				Environment environment, String property) {
-			super(getMessage(connection, environment, property));
+
+			super(buildMessage());
+			DataSourceBeanCreationException.connection = connection;
+			DataSourceBeanCreationException.environment = environment;
+			DataSourceBeanCreationException.property = property;
 		}
 
-		private static String getMessage(EmbeddedDatabaseConnection connection,
-				Environment environment, String property) {
-			StringBuilder message = new StringBuilder();
-			message.append("Cannot determine embedded database " + property
-					+ " for database type " + connection + ". ");
-			message.append("If you want an embedded database please put a supported "
-					+ "one on the classpath. ");
-			message.append("If you have database settings to be loaded from a "
-					+ "particular profile you may need to active it");
-			if (environment != null) {
-				String[] profiles = environment.getActiveProfiles();
-				if (ObjectUtils.isEmpty(profiles)) {
-					message.append(" (no profiles are currently active)");
-				}
-				else {
-					message.append(" (the profiles \""
-							+ StringUtils.arrayToCommaDelimitedString(
-									environment.getActiveProfiles())
-							+ "\" are currently active)");
-
-				}
-			}
-			message.append(".");
-			return message.toString();
+		private static String buildMessage() {
+			return "Cannot auto-configure DataSource.";
 		}
 
+		public EmbeddedDatabaseConnection getConnection() {
+			return connection;
+		}
+
+		public Environment getEnvironment() {
+			return environment;
+		}
+
+		public String getProperty() {
+			return property;
+		}
 	}
-
 }
