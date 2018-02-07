@@ -68,7 +68,8 @@ public class InfluxProperties extends StepRegistryProperties {
 	private Boolean compressed;
 
 	/**
-	 * Check if Influx database exists before attempting to publish metrics to it, creating it if it does not exist.
+	 * Whether to create the Influx database if it does not exist before attempting to
+	 * publish metrics to it.
 	 */
 	private Boolean autoCreateDb;
 
