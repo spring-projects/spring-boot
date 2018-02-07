@@ -9,12 +9,5 @@
 			<module name="org.jboss.resteasy.resteasy-jackson2-provider" />
 			<module name="org.slf4j" />
 		</exclusions>
-		<dependencies>
-			<system>
-				<paths>
-					<path name="com/sun/management" />
-				</paths>
-			</system>
-		</dependencies>
 	</deployment>
 </jboss-deployment-structure>
