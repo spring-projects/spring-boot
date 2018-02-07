@@ -2522,18 +2522,9 @@ The following example does the same with Gradle:
 	}
 ----
 
-Additional properties can be added by using the DSL, as shown in the following example:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	springBoot  {
-		buildInfo {
-			additionalProperties = [
-				'acme': 'test'
-			]
-		}
-	}
-----
+TIP: See the
+{spring-boot-gradle-plugin-reference}/#integrating-with-actuator-build-info[Spring Boot
+Gradle Plugin documentation] for more details.
 
 
 
