@@ -36,7 +36,6 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -47,6 +46,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Benedikt Ritter
  * @author Eddú Meléndez
+ * @author Patryk Kostrzewa
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
@@ -520,37 +520,39 @@ public class DataSourceProperties
 
 	}
 
-	static class DataSourceBeanCreationException extends BeanCreationException {
+	class DataSourceBeanCreationException extends BeanCreationException {
 
-		private static EmbeddedDatabaseConnection connection;
+		private static final String EMPTY = "";
 
-		private static Environment environment;
+		private final EmbeddedDatabaseConnection connection;
 
-		private static String property;
+		private final Environment environment;
+
+		private final String property;
 
 		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
 				Environment environment, String property) {
 
-			super(buildMessage());
-			DataSourceBeanCreationException.connection = connection;
-			DataSourceBeanCreationException.environment = environment;
-			DataSourceBeanCreationException.property = property;
+			super(EMPTY);
+			this.connection = connection;
+			this.environment = environment;
+			this.property = property;
 		}
 
-		private static String buildMessage() {
+		private String buildMessage() {
 			return "Cannot auto-configure DataSource.";
 		}
 
 		public EmbeddedDatabaseConnection getConnection() {
-			return connection;
+			return this.connection;
 		}
 
 		public Environment getEnvironment() {
-			return environment;
+			return this.environment;
 		}
 
 		public String getProperty() {
-			return property;
+			return this.property;
 		}
 	}
 }

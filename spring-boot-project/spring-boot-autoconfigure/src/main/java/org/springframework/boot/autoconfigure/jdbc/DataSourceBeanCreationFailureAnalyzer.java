@@ -16,14 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.util.Objects;
+
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.DataSourceBeanCreationException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-
-import java.util.Objects;
 
 /**
  * An {@link AbstractFailureAnalyzer} for failures caused by a
@@ -71,10 +71,11 @@ class DataSourceBeanCreationFailureAnalyzer
 			String[] profiles = environment.getActiveProfiles();
 			if (ObjectUtils.isEmpty(profiles)) {
 				message.append(" (no profiles are currently active).");
-			} else {
-				message.append(" (the profiles \"")
-						.append(StringUtils.arrayToCommaDelimitedString(profiles))
-						.append("\" are currently active).");
+			}
+			else {
+				message.append(" (the profiles ");
+				message.append(StringUtils.arrayToCommaDelimitedString(profiles));
+				message.append(" are currently active).");
 			}
 		}
 		return message.toString();
