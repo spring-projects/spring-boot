@@ -520,9 +520,7 @@ public class DataSourceProperties
 
 	}
 
-	class DataSourceBeanCreationException extends BeanCreationException {
-
-		private static final String EMPTY = "";
+	static class DataSourceBeanCreationException extends BeanCreationException {
 
 		private final EmbeddedDatabaseConnection connection;
 
@@ -533,14 +531,10 @@ public class DataSourceProperties
 		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
 				Environment environment, String property) {
 
-			super(EMPTY);
+			super("Cannot auto-configure DataSource. ");
 			this.connection = connection;
 			this.environment = environment;
 			this.property = property;
-		}
-
-		private String buildMessage() {
-			return "Cannot auto-configure DataSource.";
 		}
 
 		public EmbeddedDatabaseConnection getConnection() {
