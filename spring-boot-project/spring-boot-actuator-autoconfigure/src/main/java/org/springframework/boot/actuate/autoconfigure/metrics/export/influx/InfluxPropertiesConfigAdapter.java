@@ -70,4 +70,9 @@ class InfluxPropertiesConfigAdapter extends
 		return get(InfluxProperties::getCompressed, InfluxConfig.super::compressed);
 	}
 
+	@Override
+	public boolean autoCreateDb() {
+		return get(InfluxProperties::getAutoCreateDb, InfluxConfig.super::autoCreateDb);
+	}
+	
 }
