@@ -27,6 +27,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -36,11 +37,11 @@ import org.springframework.util.ReflectionUtils;
  * @author Dave Syer
  * @since 1.1.0
  */
-public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcessor {
+public class ConfigurationBeanFactoryMetadata implements BeanFactoryPostProcessor {
 
 	private ConfigurableListableBeanFactory beanFactory;
 
-	private final Map<String, MetaData> beans = new HashMap<>();
+	private final Map<String, FactoryMetadata> beansFactoryMetadata = new HashMap<>();
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
@@ -51,7 +52,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 			String method = definition.getFactoryMethodName();
 			String bean = definition.getFactoryBeanName();
 			if (method != null && bean != null) {
-				this.beans.put(name, new MetaData(bean, method));
+				this.beansFactoryMetadata.put(name, new FactoryMetadata(bean, method));
 			}
 		}
 	}
@@ -59,7 +60,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 	public <A extends Annotation> Map<String, Object> getBeansWithFactoryAnnotation(
 			Class<A> type) {
 		Map<String, Object> result = new HashMap<>();
-		for (String name : this.beans.keySet()) {
+		for (String name : this.beansFactoryMetadata.keySet()) {
 			if (findFactoryAnnotation(name, type) != null) {
 				result.put(name, this.beanFactory.getBean(name));
 			}
@@ -73,29 +74,29 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		return (method == null ? null : AnnotationUtils.findAnnotation(method, type));
 	}
 
-	private Method findFactoryMethod(String beanName) {
-		if (!this.beans.containsKey(beanName)) {
+	public Method findFactoryMethod(String beanName) {
+		if (!this.beansFactoryMetadata.containsKey(beanName)) {
 			return null;
 		}
-		final AtomicReference<Method> found = new AtomicReference<>(null);
-		MetaData meta = this.beans.get(beanName);
-		final String factory = meta.getMethod();
-		Class<?> type = this.beanFactory.getType(meta.getBean());
-		ReflectionUtils.doWithMethods(type, (method) -> {
-			if (method.getName().equals(factory)) {
+		AtomicReference<Method> found = new AtomicReference<>(null);
+		FactoryMetadata metadata = this.beansFactoryMetadata.get(beanName);
+		Class<?> factoryType = this.beanFactory.getType(metadata.getBean());
+		String factoryMethod = metadata.getMethod();
+		ReflectionUtils.doWithMethods(factoryType, (method) -> {
+			if (method.getName().equals(factoryMethod)) {
 				found.compareAndSet(null, method);
 			}
 		});
 		return found.get();
 	}
 
-	private static class MetaData {
+	private static class FactoryMetadata {
 
 		private final String bean;
 
 		private final String method;
 
-		MetaData(String bean, String method) {
+		FactoryMetadata(String bean, String method) {
 			this.bean = bean;
 			this.method = method;
 		}

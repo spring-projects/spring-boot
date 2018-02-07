@@ -63,7 +63,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 	private static final Log logger = LogFactory
 			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
 
-	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
+	private ConfigurationBeanFactoryMetadata beans = new ConfigurationBeanFactoryMetadata();
 
 	private BeanFactory beanFactory;
 
@@ -88,7 +88,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 	 * Set the bean meta-data store.
 	 * @param beans the bean meta data store
 	 */
-	public void setBeanMetaDataStore(ConfigurationBeanFactoryMetaData beans) {
+	public void setBeanMetadataStore(ConfigurationBeanFactoryMetadata beans) {
 		this.beans = beans;
 	}
 

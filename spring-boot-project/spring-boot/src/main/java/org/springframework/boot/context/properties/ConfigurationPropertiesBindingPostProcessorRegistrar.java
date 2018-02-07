@@ -44,10 +44,10 @@ public class ConfigurationPropertiesBindingPostProcessorRegistrar
 			BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(BINDER_BEAN_NAME)) {
 			BeanDefinitionBuilder meta = BeanDefinitionBuilder
-					.genericBeanDefinition(ConfigurationBeanFactoryMetaData.class);
+					.genericBeanDefinition(ConfigurationBeanFactoryMetadata.class);
 			BeanDefinitionBuilder bean = BeanDefinitionBuilder.genericBeanDefinition(
 					ConfigurationPropertiesBindingPostProcessor.class);
-			bean.addPropertyReference("beanMetaDataStore", METADATA_BEAN_NAME);
+			bean.addPropertyReference("beanMetadataStore", METADATA_BEAN_NAME);
 			registry.registerBeanDefinition(BINDER_BEAN_NAME, bean.getBeanDefinition());
 			registry.registerBeanDefinition(METADATA_BEAN_NAME, meta.getBeanDefinition());
 		}
