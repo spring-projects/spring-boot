@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class HealthEndpointAutoConfigurationTests {
 	@Test
 	public void healthEndpointAdaptReactiveHealthIndicator() {
 		this.contextRunner
-				.withPropertyValues("management.endpoint.health.show-details=true")
+				.withPropertyValues("management.endpoint.health.show-details=always")
 				.withUserConfiguration(ReactiveHealthIndicatorConfiguration.class)
 				.run((context) -> {
 					ReactiveHealthIndicator indicator = context.getBean(
@@ -81,7 +81,7 @@ public class HealthEndpointAutoConfigurationTests {
 	@Test
 	public void healthEndpointMergeRegularAndReactive() {
 		this.contextRunner
-				.withPropertyValues("management.endpoint.health.show-details=true")
+				.withPropertyValues("management.endpoint.health.show-details=always")
 				.withUserConfiguration(HealthIndicatorConfiguration.class,
 						ReactiveHealthIndicatorConfiguration.class)
 				.run((context) -> {

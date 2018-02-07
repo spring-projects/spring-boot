@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ class HealthEndpointWebExtensionConfiguration {
 				HealthStatusHttpMapper healthStatusHttpMapper,
 				HealthEndpointProperties properties) {
 			return new ReactiveHealthEndpointWebExtension(this.reactiveHealthIndicator,
-					healthStatusHttpMapper, properties.isShowDetails());
+					healthStatusHttpMapper, properties.getShowDetails());
 		}
 
 	}
@@ -103,7 +103,7 @@ class HealthEndpointWebExtensionConfiguration {
 				HealthEndpointProperties properties) {
 			return new HealthEndpointWebExtension(
 					HealthIndicatorBeansComposite.get(applicationContext),
-					healthStatusHttpMapper, properties.isShowDetails());
+					healthStatusHttpMapper, properties.getShowDetails());
 		}
 
 	}

@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ShowDetails;
 
 /**
  * {@link EndpointExtension} for the {@link HealthEndpoint} that always exposes full
@@ -42,7 +43,7 @@ public class CloudFoundryHealthEndpointWebExtension {
 
 	@ReadOperation
 	public WebEndpointResponse<Health> getHealth() {
-		return this.delegate.getHealth(true);
+		return this.delegate.getHealth(null, ShowDetails.ALWAYS);
 	}
 
 }

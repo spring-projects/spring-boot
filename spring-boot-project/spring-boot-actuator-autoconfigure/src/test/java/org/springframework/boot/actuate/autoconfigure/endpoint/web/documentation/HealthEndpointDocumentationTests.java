@@ -56,9 +56,9 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 						responseFields(
 								fieldWithPath("status").description(
 										"Overall status of the application."),
-						fieldWithPath("details")
-								.description("Details of the health of the application "
-										+ "(only included when `management.endpoint.health.show-details` is `true`)."),
+						fieldWithPath("details").description(
+								"Details of the health of the application. Presence is controlled by "
+										+ "`management.endpoint.health.show-details`)."),
 						fieldWithPath("details.*.status").description(
 								"Status of a specific part of the application."),
 						subsectionWithPath("details.*.details").description(

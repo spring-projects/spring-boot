@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ShowDetails;
 
 /**
  * Reactive {@link EndpointExtension} for the {@link HealthEndpoint} that always exposes
@@ -45,7 +46,7 @@ public class CloudFoundryReactiveHealthEndpointWebExtension {
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<Health>> health() {
-		return this.delegate.health(true);
+		return this.delegate.health(null, ShowDetails.ALWAYS);
 	}
 
 }

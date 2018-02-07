@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.security.Principal;
 import java.util.Map;
 
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HealthEndpointAutoConfiguration} in a servlet environment.
@@ -67,6 +69,49 @@ public class HealthEndpointWebExtensionTests {
 					assertThat(statusMappings).containsEntry("DOWN", 503);
 					assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
 					assertThat(statusMappings).containsEntry("CUSTOM", 500);
+				});
+	}
+
+	@Test
+	public void unauthenticatedUsersAreNotShownDetailsByDefault() {
+		this.contextRunner.run((context) -> {
+			HealthEndpointWebExtension extension = context
+					.getBean(HealthEndpointWebExtension.class);
+			assertThat(extension.getHealth(null).getBody().getDetails()).isEmpty();
+		});
+	}
+
+	@Test
+	public void authenticatedUsersAreShownDetailsByDefault() {
+		this.contextRunner.run((context) -> {
+			HealthEndpointWebExtension extension = context
+					.getBean(HealthEndpointWebExtension.class);
+			assertThat(extension.getHealth(mock(Principal.class)).getBody().getDetails())
+					.isNotEmpty();
+		});
+	}
+
+	@Test
+	public void unauthenticatedUsersCanBeShownDetails() {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.show-details=always")
+				.run((context) -> {
+					HealthEndpointWebExtension extension = context
+							.getBean(HealthEndpointWebExtension.class);
+					assertThat(extension.getHealth(null).getBody().getDetails())
+							.isNotEmpty();
+				});
+	}
+
+	@Test
+	public void detailsCanBeHiddenFromAuthenticatedUsers() {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.show-details=never")
+				.run((context) -> {
+					HealthEndpointWebExtension extension = context
+							.getBean(HealthEndpointWebExtension.class);
+					assertThat(extension.getHealth(mock(Principal.class)).getBody()
+							.getDetails()).isEmpty();
 				});
 	}
 

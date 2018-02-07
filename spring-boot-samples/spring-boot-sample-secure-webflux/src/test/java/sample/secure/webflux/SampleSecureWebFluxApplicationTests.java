@@ -34,7 +34,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Madhura Bhave
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "management.endpoint.health.show-details=never")
 public class SampleSecureWebFluxApplicationTests {
 
 	@Autowired

@@ -513,9 +513,28 @@ moves to a child context with all the other web endpoints.
 You can use health information to check the status of your running application. It is
 often used by monitoring software to alert someone when a production system goes down.
 The information exposed by the `health` endpoint depends on the
-`management.endpoint.health.show-details` property. By default, the property's value is
-`false` and a simple "`status`" message is returned. When the property's value is set to
-`true`, additional details from the individual health indicators are also displayed.
+`management.endpoint.health.show-details` property which can be configured with one of the
+following values:
+
+[cols="1, 3"]
+|===
+|Name |Description
+
+|`never`
+|Details are never shown.
+
+|`when-authenticated`
+|Details are only shown to authenticated users.
+
+|`always`
+|Details are shown to all users.
+|===
+
+The default value is `when-authenticated`.
+
+NOTE: If you have secured your application and wish to use `always`, your security
+configuration must permit access to the health endpoint for both authenticated and
+unauthenticated users.
 
 Health information is collected from all
 {sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] beans
