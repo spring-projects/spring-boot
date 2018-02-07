@@ -1147,6 +1147,7 @@ default) has the following customized properties:
 
 * `MapperFeature.DEFAULT_VIEW_INCLUSION` is disabled
 * `DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES` is disabled
+* `SerializationFeature.WRITE_DATES_AS_TIMESTAMPS` is disabled
 
 Spring Boot also has some features to make it easier to customize this behavior.
 
