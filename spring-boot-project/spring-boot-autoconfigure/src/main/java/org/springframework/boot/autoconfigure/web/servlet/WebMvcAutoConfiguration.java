@@ -218,21 +218,21 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configurePathMatch(PathMatchConfigurer configurer) {
 			configurer.setUseSuffixPatternMatch(
-					this.mvcProperties.getPathMatch().isUseSuffixPattern());
+					this.mvcProperties.getPathmatch().isUseSuffixPattern());
 			configurer.setUseRegisteredSuffixPatternMatch(
-					this.mvcProperties.getPathMatch().isUseRegisteredSuffixPattern());
+					this.mvcProperties.getPathmatch().isUseRegisteredSuffixPattern());
 		}
 
 		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-			WebMvcProperties.ContentNegotiation contentNegotiation = this.mvcProperties
-					.getContentNegotiation();
-			configurer.favorPathExtension(contentNegotiation.isFavorPathExtension());
-			configurer.favorParameter(contentNegotiation.isFavorParameter());
-			if (contentNegotiation.getParameterName() != null) {
-				configurer.parameterName(contentNegotiation.getParameterName());
+			WebMvcProperties.Contentnegotiation contentnegotiation = this.mvcProperties
+					.getContentnegotiation();
+			configurer.favorPathExtension(contentnegotiation.isFavorPathExtension());
+			configurer.favorParameter(contentnegotiation.isFavorParameter());
+			if (contentnegotiation.getParameterName() != null) {
+				configurer.parameterName(contentnegotiation.getParameterName());
 			}
-			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentNegotiation()
+			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentnegotiation()
 					.getMediaTypes();
 			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
 				configurer.mediaType(mediaType.getKey(), mediaType.getValue());

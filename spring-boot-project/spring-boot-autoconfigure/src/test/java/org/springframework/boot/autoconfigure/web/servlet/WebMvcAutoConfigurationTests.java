@@ -473,8 +473,8 @@ public class WebMvcAutoConfigurationTests {
 	public void customMediaTypes() {
 		this.contextRunner
 				.withPropertyValues(
-						"spring.mvc.content-negotiation.media-types.yaml:text/yaml",
-						"spring.mvc.content-negotiation.favor-path-extension:true")
+						"spring.mvc.contentnegotiation.media-types.yaml:text/yaml",
+						"spring.mvc.contentnegotiation.favor-path-extension:true")
 				.run((context) -> {
 					RequestMappingHandlerAdapter adapter = context
 							.getBean(RequestMappingHandlerAdapter.class);
@@ -755,8 +755,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void useSuffixPatternMatch() {
 		this.contextRunner
-				.withPropertyValues("spring.mvc.path-match.use-suffix-pattern:true",
-						"spring.mvc.path-match.use-registered-suffix-pattern:true")
+				.withPropertyValues("spring.mvc.pathmatch.use-suffix-pattern:true",
+						"spring.mvc.pathmatch.use-registered-suffix-pattern:true")
 				.run((context) -> {
 					RequestMappingHandlerMapping handlerMapping = context
 							.getBean(RequestMappingHandlerMapping.class);
@@ -782,7 +782,7 @@ public class WebMvcAutoConfigurationTests {
 	public void pathExtensionContentNegotiation() {
 		this.contextRunner
 				.withPropertyValues(
-						"spring.mvc.content-negotiation.favor-path-extension:true")
+						"spring.mvc.contentnegotiation.favor-path-extension:true")
 				.run((context) -> {
 					RequestMappingHandlerMapping handlerMapping = context
 							.getBean(RequestMappingHandlerMapping.class);
@@ -797,7 +797,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void queryParameterContentNegotiation() {
 		this.contextRunner
-				.withPropertyValues("spring.mvc.content-negotiation.favor-parameter:true")
+				.withPropertyValues("spring.mvc.contentnegotiation.favor-parameter:true")
 				.run((context) -> {
 					RequestMappingHandlerMapping handlerMapping = context
 							.getBean(RequestMappingHandlerMapping.class);

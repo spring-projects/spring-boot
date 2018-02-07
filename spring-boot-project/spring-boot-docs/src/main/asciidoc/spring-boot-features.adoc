@@ -2076,13 +2076,13 @@ will be mapped to `@GetMapping("/projects/spring-boot")`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.mvc.content-negotiation.favor-parameter=true
+	spring.mvc.contentnegotiation.favor-parameter=true
 
 	# We can change the parameter name, which is "format" by default:
-	# spring.mvc.content-negotiation.parameter-name=myparam
+	# spring.mvc.contentnegotiation.parameter-name=myparam
 
 	# We can also register additional file extensions/media types with:
-	spring.mvc.content-negotiation.media-types.markdown=text/markdown
+	spring.mvc.contentnegotiation.media-types.markdown=text/markdown
 ----
 
 If you understand the caveats and would still like your application to use
@@ -2090,13 +2090,13 @@ suffix pattern matching, the following configuration is required:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.mvc.content-negotiation.favor-path-extension=true
+	spring.mvc.contentnegotiation.favor-path-extension=true
 
 	# You can also restrict that feature to known extensions only
-	# spring.mvc.path-match.use-registered-suffix-pattern=true
+	# spring.mvc.pathmatch.use-registered-suffix-pattern=true
 
 	# We can also register additional file extensions/media types with:
-	# spring.mvc.content-negotiation.media-types.adoc=text/asciidoc
+	# spring.mvc.contentnegotiation.media-types.adoc=text/asciidoc
 ----
 
 

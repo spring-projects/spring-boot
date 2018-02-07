@@ -98,9 +98,9 @@ public class WebMvcProperties {
 
 	private final View view = new View();
 
-	private final ContentNegotiation contentNegotiation = new ContentNegotiation();
+	private final Contentnegotiation contentnegotiation = new Contentnegotiation();
 
-	private final PathMatch pathMatch = new PathMatch();
+	private final Pathmatch pathmatch = new Pathmatch();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -196,12 +196,12 @@ public class WebMvcProperties {
 		return this.view;
 	}
 
-	public ContentNegotiation getContentNegotiation() {
-		return this.contentNegotiation;
+	public Contentnegotiation getContentnegotiation() {
+		return this.contentnegotiation;
 	}
 
-	public PathMatch getPathMatch() {
-		return this.pathMatch;
+	public Pathmatch getPathmatch() {
+		return this.pathmatch;
 	}
 
 	public static class Async {
@@ -270,7 +270,7 @@ public class WebMvcProperties {
 
 	}
 
-	public static class ContentNegotiation {
+	public static class Contentnegotiation {
 
 		/**
 		 * Whether the path extension in the URL path should be used to determine the
@@ -330,7 +330,7 @@ public class WebMvcProperties {
 
 	}
 
-	public static class PathMatch {
+	public static class Pathmatch {
 
 		/**
 		 * Whether to use suffix pattern match (".*") when matching patterns to requests.
