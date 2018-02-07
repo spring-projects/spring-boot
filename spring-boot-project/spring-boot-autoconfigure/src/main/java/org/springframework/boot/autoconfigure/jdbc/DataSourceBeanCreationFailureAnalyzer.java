@@ -44,8 +44,8 @@ class DataSourceBeanCreationFailureAnalyzer
 	private String createDescription(DataSourceBeanCreationException cause) {
 
 		StringBuilder message = new StringBuilder();
-		message.append(cause.getMessage());
-		message.append(" Property spring.datasource.url was not specified. ");
+		message.append("Cannot auto-configure DataSource. ");
+		message.append("Property spring.datasource.url was not specified. ");
 		message.append("Cannot auto-configure embedded database as well. ");
 		message.append("Cannot determine embedded database ");
 		message.append(cause.getProperty());
