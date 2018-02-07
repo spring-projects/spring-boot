@@ -74,5 +74,5 @@ class InfluxPropertiesConfigAdapter extends
 	public boolean autoCreateDb() {
 		return get(InfluxProperties::getAutoCreateDb, InfluxConfig.super::autoCreateDb);
 	}
-	
+
 }
