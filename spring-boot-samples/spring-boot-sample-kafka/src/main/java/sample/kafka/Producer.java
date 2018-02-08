@@ -15,18 +15,21 @@
  */
 package sample.kafka;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Producer {
 
-	@Autowired
-	private KafkaTemplate kafkaTemplate;
+	private final KafkaTemplate<Object, SampleMessage> kafkaTemplate;
+
+	Producer(KafkaTemplate<Object, SampleMessage> kafkaTemplate) {
+		this.kafkaTemplate = kafkaTemplate;
+	}
 
 	public void send(SampleMessage message) {
-		kafkaTemplate.send("myTopic", message);
-		System.out.println("producer has sent message.");
+		this.kafkaTemplate.send("testTopic", message);
+		System.out.println("Sent sample message [" + message + "]");
 	}
+
 }

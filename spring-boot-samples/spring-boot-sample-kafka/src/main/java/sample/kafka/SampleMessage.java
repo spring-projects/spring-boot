@@ -15,39 +15,37 @@
  */
 package sample.kafka;
 
-public class SampleMessage {
-	private Integer id;
-	private String message;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-	public Integer getId() {
-		return id;
+public class SampleMessage {
+
+	private final Integer id;
+
+	private final String message;
+
+	@JsonCreator
+	public SampleMessage(@JsonProperty("id") Integer id,
+			@JsonProperty("message") String message) {
+		this.id = id;
+		this.message = message;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public Integer getId() {
+		return this.id;
 	}
 
 	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public SampleMessage() {
-	}
-
-	public SampleMessage(Integer id, String message) {
-		this.id = id;
-		this.message = message;
+		return this.message;
 	}
 
 	@Override
 	public String toString() {
-		return "SampleMessage{" +
-				"id=" + id +
-				", message='" + message + '\'' +
-				'}';
+		final StringBuilder sb = new StringBuilder("SampleMessage{");
+		sb.append("id=").append(this.id);
+		sb.append(", message='").append(this.message).append('\'');
+		sb.append('}');
+		return sb.toString();
 	}
+
 }

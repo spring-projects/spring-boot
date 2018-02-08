@@ -19,10 +19,11 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Consumer {
+class Consumer {
 
-	@KafkaListener(topics = "myTopic")
+	@KafkaListener(topics = "testTopic")
 	public void processMessage(SampleMessage message) {
-		System.out.println("consumer has received message : [" + message + "]");
+		System.out.println("Received sample message [" + message + "]");
 	}
+
 }

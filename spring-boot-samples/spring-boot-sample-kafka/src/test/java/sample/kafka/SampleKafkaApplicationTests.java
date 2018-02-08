@@ -15,13 +15,20 @@
  */
 package sample.kafka;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
+import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,32 +37,41 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for demo application.
  *
  * @author hcxin
+ * @author Gary Russell
+ * @author Stephane Nicoll
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
+@EmbeddedKafka
 public class SampleKafkaApplicationTests {
+
+	private static final CountDownLatch latch = new CountDownLatch(1);
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	@Autowired
-	private Producer producer;
-
 	@Test
-	public void sendSimpleMessage() throws Exception {
-		initKafkaEmbedded();
-		SampleMessage message = new SampleMessage(1, "Test message");
-		producer.send(message);
-		Thread.sleep(1000L);
-		assertThat(this.outputCapture.toString().contains("Test message")).isTrue();
+	public void testVanillaExchange() throws Exception {
+		assertThat(latch.await(10, TimeUnit.SECONDS)).isTrue();
+		assertThat(this.outputCapture.toString().contains("A simple test message"))
+				.isTrue();
 	}
 
-	public void initKafkaEmbedded() throws Exception {
-		KafkaEmbedded embeddedKafka = new KafkaEmbedded(1, true);
-		embeddedKafka.setKafkaPorts(9092);
-		embeddedKafka.afterPropertiesSet();
-		//Need 10s, waiting for the Kafka server start.
-		Thread.sleep(10000L);
+	@TestConfiguration
+	public static class Config {
+
+		@Bean
+		public Consumer consumer() {
+			return new Consumer() {
+				@Override
+				public void processMessage(SampleMessage message) {
+					super.processMessage(message);
+					latch.countDown();
+				}
+			};
+		}
 
 	}
+
 }
