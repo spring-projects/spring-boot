@@ -32,7 +32,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -103,7 +102,7 @@ public class UserVehicleControllerTests {
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void welcomeCommandLineRunnerShouldBeAvailable() {
 		// Since we're a @WebMvcTest WelcomeCommandLineRunner should not be available.
-		assertThat(this.applicationContext.getBean(WelcomeCommandLineRunner.class));
+		this.applicationContext.getBean(WelcomeCommandLineRunner.class);
 	}
 
 }

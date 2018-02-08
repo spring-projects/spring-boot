@@ -91,7 +91,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	public void basicArchiveCreation() throws IOException {
 		this.task.setMainClassName("com.example.Main");
 		this.task.execute();
-		assertThat(this.task.getArchivePath().exists());
+		assertThat(this.task.getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Main-Class"))
 					.isEqualTo(this.launcherClass);
@@ -226,7 +226,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.getManifest().getAttributes().put("Main-Class",
 				"com.example.CustomLauncher");
 		this.task.execute();
-		assertThat(this.task.getArchivePath().exists());
+		assertThat(this.task.getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Main-Class"))
 					.isEqualTo("com.example.CustomLauncher");
@@ -244,7 +244,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.getManifest().getAttributes().put("Start-Class",
 				"com.example.CustomMain");
 		this.task.execute();
-		assertThat(this.task.getArchivePath().exists());
+		assertThat(this.task.getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Main-Class"))
 					.isEqualTo(this.launcherClass);
@@ -258,7 +258,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.setMainClassName("com.example.Main");
 		this.task.setPreserveFileTimestamps(false);
 		this.task.execute();
-		assertThat(this.task.getArchivePath().exists());
+		assertThat(this.task.getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
@@ -276,7 +276,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				this.temp.newFile("charlie.txt"));
 		this.task.setReproducibleFileOrder(true);
 		this.task.execute();
-		assertThat(this.task.getArchivePath().exists());
+		assertThat(this.task.getArchivePath()).exists();
 		List<String> textFiles = new ArrayList<>();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
@@ -295,7 +295,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.setMainClassName("com.example.Main");
 		this.task.classpath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
 		this.task.execute();
-		assertThat(this.task.getArchivePath().exists());
+		assertThat(this.task.getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getEntry(this.libPath + "/spring-boot-devtools-0.1.2.jar"))
 					.isNull();
@@ -308,7 +308,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.classpath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
 		this.task.setExcludeDevtools(false);
 		this.task.execute();
-		assertThat(this.task.getArchivePath().exists());
+		assertThat(this.task.getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(this.task.getArchivePath())) {
 			assertThat(jarFile.getEntry(this.libPath + "/spring-boot-devtools-0.1.2.jar"))
 					.isNotNull();
