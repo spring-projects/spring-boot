@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.endpoint.web;
+package org.springframework.boot.actuate.endpoint.web;
 
 import org.springframework.util.StringUtils;
 
