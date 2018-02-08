@@ -78,6 +78,7 @@ public class SecurityFilterAutoConfigurationEarlyInitializationTests {
 	@ImportAutoConfiguration({ WebMvcAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, SecurityAutoConfiguration.class,
+			UserDetailsServiceAutoConfiguration.class,
 			SecurityFilterAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {

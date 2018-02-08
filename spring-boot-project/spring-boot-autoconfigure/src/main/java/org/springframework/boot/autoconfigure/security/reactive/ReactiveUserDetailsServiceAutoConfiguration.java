@@ -49,7 +49,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ConditionalOnMissingBean({ ReactiveAuthenticationManager.class,
 		ReactiveUserDetailsService.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-class ReactiveAuthenticationManagerConfiguration {
+public class ReactiveUserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
 
@@ -57,7 +57,7 @@ class ReactiveAuthenticationManagerConfiguration {
 			.compile("^\\{.+}.*$");
 
 	private static final Log logger = LogFactory
-			.getLog(ReactiveAuthenticationManagerConfiguration.class);
+			.getLog(ReactiveUserDetailsServiceAutoConfiguration.class);
 
 	@Bean
 	public MapReactiveUserDetailsService reactiveUserDetailsService(

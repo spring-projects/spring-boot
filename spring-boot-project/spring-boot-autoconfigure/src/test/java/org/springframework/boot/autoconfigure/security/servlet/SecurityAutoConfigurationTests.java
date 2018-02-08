@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.Collections;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -39,21 +38,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.TestingAuthenticationProvider;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -150,61 +141,6 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultUsernamePassword() {
-		this.contextRunner.run((context) -> {
-			UserDetailsService manager = context.getBean(UserDetailsService.class);
-			assertThat(this.outputCapture.toString())
-					.contains("Using generated security password:");
-			assertThat(manager.loadUserByUsername("user")).isNotNull();
-		});
-	}
-
-	@Test
-	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent() {
-		this.contextRunner
-				.withUserConfiguration(TestAuthenticationManagerConfiguration.class)
-				.run((context) -> {
-					AuthenticationManager manager = context
-							.getBean(AuthenticationManager.class);
-					assertThat(manager).isEqualTo(context.getBean(
-							TestAuthenticationManagerConfiguration.class).authenticationManager);
-					assertThat(this.outputCapture.toString())
-							.doesNotContain("Using generated security password: ");
-					TestingAuthenticationToken token = new TestingAuthenticationToken(
-							"foo", "bar");
-					assertThat(manager.authenticate(token)).isNotNull();
-				});
-	}
-
-	@Test
-	public void defaultUserNotCreatedIfUserDetailsServiceBeanPresent() {
-		this.contextRunner
-				.withUserConfiguration(TestUserDetailsServiceConfiguration.class)
-				.run((context) -> {
-					UserDetailsService userDetailsService = context
-							.getBean(UserDetailsService.class);
-					assertThat(this.outputCapture.toString())
-							.doesNotContain("Using default security password: ");
-					assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
-				});
-	}
-
-	@Test
-	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent() {
-		this.contextRunner
-				.withUserConfiguration(TestAuthenticationProviderConfiguration.class)
-				.run((context) -> {
-					AuthenticationProvider provider = context
-							.getBean(AuthenticationProvider.class);
-					assertThat(this.outputCapture.toString())
-							.doesNotContain("Using default security password: ");
-					TestingAuthenticationToken token = new TestingAuthenticationToken(
-							"foo", "bar");
-					assertThat(provider.authenticate(token)).isNotNull();
-				});
-	}
-
-	@Test
 	public void testJpaCoexistsHappily() {
 		this.contextRunner
 				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testsecdb",
@@ -288,42 +224,6 @@ public class SecurityAutoConfigurationTests {
 
 			}
 
-		}
-
-	}
-
-	@Configuration
-	protected static class TestAuthenticationManagerConfiguration {
-
-		private AuthenticationManager authenticationManager;
-
-		@Bean
-		public AuthenticationManager myAuthenticationManager() {
-			AuthenticationProvider authenticationProvider = new TestingAuthenticationProvider();
-			this.authenticationManager = new ProviderManager(
-					Collections.singletonList(authenticationProvider));
-			return this.authenticationManager;
-		}
-
-	}
-
-	@Configuration
-	protected static class TestUserDetailsServiceConfiguration {
-
-		@Bean
-		public InMemoryUserDetailsManager myUserDetailsManager() {
-			return new InMemoryUserDetailsManager(
-					User.withUsername("foo").password("bar").roles("USER").build());
-		}
-
-	}
-
-	@Configuration
-	protected static class TestAuthenticationProviderConfiguration {
-
-		@Bean
-		public AuthenticationProvider myAuthenticationProvider() {
-			return new TestingAuthenticationProvider();
 		}
 
 	}

@@ -27,26 +27,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Security. Provides an
- * {@link InMemoryUserDetailsManager} with one user (named "user") whose password is
- * random and printed on the console at INFO level during startup. In a webapp, this
- * configuration also secures all web endpoints (including static resources).
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Security.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
 @Configuration
-@ConditionalOnClass({ AuthenticationManager.class, EnableWebSecurity.class })
+@ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
 @EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class, WebSecurityEnablerConfiguration.class,
-		AuthenticationManagerConfiguration.class, SecurityDataConfiguration.class })
+		SecurityDataConfiguration.class })
 public class SecurityAutoConfiguration {
 
 	@Bean

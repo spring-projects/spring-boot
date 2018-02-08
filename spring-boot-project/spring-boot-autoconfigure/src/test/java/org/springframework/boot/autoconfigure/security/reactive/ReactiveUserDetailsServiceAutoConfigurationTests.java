@@ -17,34 +17,79 @@
 package org.springframework.boot.autoconfigure.security.reactive;
 
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ReactiveAuthenticationManagerConfiguration}.
+ * Tests for {@link ReactiveUserDetailsServiceAutoConfiguration}.
  *
  * @author Madhura Bhave
  */
-public class ReactiveAuthenticationManagerConfigurationTests {
+public class ReactiveUserDetailsServiceAutoConfigurationTests {
 
-	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner();
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+			.withConfiguration(
+					AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class));
+
+	@Test
+	public void configuresADefaultUser() {
+		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class)
+				.run((context) -> {
+					ReactiveUserDetailsService userDetailsService = context
+							.getBean(ReactiveUserDetailsService.class);
+					assertThat(userDetailsService.findByUsername("user").block())
+							.isNotNull();
+				});
+	}
+
+	@Test
+	public void doesNotConfigureDefaultUserIfUserDetailsServiceAvailable() {
+		this.contextRunner.withUserConfiguration(UserConfig.class, TestSecurityConfiguration.class)
+				.run((context) -> {
+					ReactiveUserDetailsService userDetailsService = context
+							.getBean(ReactiveUserDetailsService.class);
+					assertThat(userDetailsService.findByUsername("user").block())
+							.isNull();
+					assertThat(userDetailsService.findByUsername("foo").block())
+							.isNotNull();
+					assertThat(userDetailsService.findByUsername("admin").block())
+							.isNotNull();
+				});
+	}
+
+	@Test
+	public void doesNotConfigureDefaultUserIfAuthenticationManagerAvailable() {
+		this.contextRunner
+				.withUserConfiguration(AuthenticationManagerConfig.class,
+						TestSecurityConfiguration.class)
+				.withConfiguration(
+						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.getBean(ReactiveUserDetailsService.class).isNull());
+	}
 
 	@Test
 	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
 		this.contextRunner
-				.withUserConfiguration(TestSecurityConfiguration.class,
-						ReactiveAuthenticationManagerConfiguration.class)
+				.withUserConfiguration(TestSecurityConfiguration.class)
 				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
@@ -73,8 +118,7 @@ public class ReactiveAuthenticationManagerConfigurationTests {
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword,
 			String expectedPassword) {
 		this.contextRunner
-				.withUserConfiguration(configClass,
-						ReactiveAuthenticationManagerConfiguration.class)
+				.withUserConfiguration(configClass)
 				.withPropertyValues("spring.security.user.password=" + providedPassword)
 				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
@@ -89,6 +133,35 @@ public class ReactiveAuthenticationManagerConfigurationTests {
 	@EnableWebFluxSecurity
 	@EnableConfigurationProperties(SecurityProperties.class)
 	protected static class TestSecurityConfiguration {
+
+	}
+
+	@Configuration
+	static class UserConfig {
+
+		@Bean
+		public MapReactiveUserDetailsService userDetailsService() {
+			UserDetails foo = User.withUsername("foo").password("foo").roles("USER")
+					.build();
+			UserDetails admin = User.withUsername("admin").password("admin")
+					.roles("USER", "ADMIN").build();
+			return new MapReactiveUserDetailsService(foo, admin);
+		}
+
+	}
+
+	@Configuration
+	static class AuthenticationManagerConfig {
+
+		@Bean
+		public ReactiveAuthenticationManager reactiveAuthenticationManager() {
+			return new ReactiveAuthenticationManager() {
+				@Override
+				public Mono<Authentication> authenticate(Authentication authentication) {
+					return null;
+				}
+			};
+		}
 
 	}
 
