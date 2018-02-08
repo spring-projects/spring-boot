@@ -62,26 +62,25 @@ import org.springframework.util.StringUtils;
  */
 public class JerseyEndpointResourceFactory {
 
-	private final EndpointLinksResolver endpointLinksResolver = new EndpointLinksResolver();
-
 	/**
 	 * Creates {@link Resource Resources} for the operations of the given
 	 * {@code webEndpoints}.
 	 * @param endpointMapping the base mapping for all endpoints
 	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
+	 * @param linksResolver resolver for determining links to available endpoints
 	 * @return the resources for the operations
 	 */
 	public Collection<Resource> createEndpointResources(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes) {
+			EndpointMediaTypes endpointMediaTypes, EndpointLinksResolver linksResolver) {
 		List<Resource> resources = new ArrayList<>();
 		endpoints.stream().flatMap((endpoint) -> endpoint.getOperations().stream())
 				.map((operation) -> createResource(endpointMapping, operation))
 				.forEach(resources::add);
 		if (StringUtils.hasText(endpointMapping.getPath())) {
 			Resource resource = createEndpointLinksResource(endpointMapping.getPath(),
-					endpoints, endpointMediaTypes);
+					endpointMediaTypes, linksResolver);
 			resources.add(resource);
 		}
 		return resources;
@@ -105,14 +104,12 @@ public class JerseyEndpointResourceFactory {
 	}
 
 	private Resource createEndpointLinksResource(String endpointPath,
-			Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes) {
+			EndpointMediaTypes endpointMediaTypes, EndpointLinksResolver linksResolver) {
 		Builder resourceBuilder = Resource.builder().path(endpointPath);
 		resourceBuilder.addMethod("GET")
 				.produces(endpointMediaTypes.getProduced()
 						.toArray(new String[endpointMediaTypes.getProduced().size()]))
-				.handledBy(new EndpointLinksInflector(endpoints,
-						this.endpointLinksResolver));
+				.handledBy(new EndpointLinksInflector(linksResolver));
 		return resourceBuilder.build();
 	}
 
@@ -266,20 +263,16 @@ public class JerseyEndpointResourceFactory {
 	private static final class EndpointLinksInflector
 			implements Inflector<ContainerRequestContext, Response> {
 
-		private final Collection<ExposableWebEndpoint> endpoints;
-
 		private final EndpointLinksResolver linksResolver;
 
-		private EndpointLinksInflector(Collection<ExposableWebEndpoint> endpoints,
-				EndpointLinksResolver linksResolver) {
-			this.endpoints = endpoints;
+		private EndpointLinksInflector(EndpointLinksResolver linksResolver) {
 			this.linksResolver = linksResolver;
 		}
 
 		@Override
 		public Response apply(ContainerRequestContext request) {
-			Map<String, Link> links = this.linksResolver.resolveLinks(this.endpoints,
-					request.getUriInfo().getAbsolutePath().toString());
+			Map<String, Link> links = this.linksResolver
+					.resolveLinks(request.getUriInfo().getAbsolutePath().toString());
 			return Response.ok(Collections.singletonMap("_links", links)).build();
 		}
 

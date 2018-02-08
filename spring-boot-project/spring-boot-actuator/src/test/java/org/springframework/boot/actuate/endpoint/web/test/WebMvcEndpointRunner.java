@@ -25,6 +25,7 @@ import org.junit.runners.model.InitializationError;
 
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
@@ -93,7 +94,8 @@ class WebMvcEndpointRunner extends AbstractWebEndpointRunner {
 					Collections.emptyList(), Collections.emptyList());
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"),
 					discoverer.getEndpoints(), endpointMediaTypes,
-					new CorsConfiguration());
+					new CorsConfiguration(),
+					new EndpointLinksResolver(discoverer.getEndpoints()));
 		}
 
 	}

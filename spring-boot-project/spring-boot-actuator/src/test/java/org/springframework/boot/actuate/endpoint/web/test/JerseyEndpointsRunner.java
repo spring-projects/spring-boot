@@ -31,6 +31,7 @@ import org.junit.runners.model.InitializationError;
 
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
@@ -104,7 +105,8 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 					Collections.emptyList(), Collections.emptyList());
 			Collection<Resource> resources = new JerseyEndpointResourceFactory()
 					.createEndpointResources(new EndpointMapping("/actuator"),
-							discoverer.getEndpoints(), endpointMediaTypes);
+							discoverer.getEndpoints(), endpointMediaTypes,
+							new EndpointLinksResolver(discoverer.getEndpoints()));
 			config.registerResources(new HashSet<>(resources));
 		}
 

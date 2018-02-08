@@ -54,13 +54,15 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 
 	private final CloudFoundrySecurityInterceptor securityInterceptor;
 
-	private final EndpointLinksResolver linksResolver = new EndpointLinksResolver();
+	private final EndpointLinksResolver linksResolver;
 
 	CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
-			CloudFoundrySecurityInterceptor securityInterceptor) {
+			CloudFoundrySecurityInterceptor securityInterceptor,
+			EndpointLinksResolver linksResolver) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
+		this.linksResolver = linksResolver;
 		this.securityInterceptor = securityInterceptor;
 	}
 
@@ -83,7 +85,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 					AccessLevel accessLevel = exchange
 							.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
 					Map<String, Link> links = this.linksResolver
-							.resolveLinks(getEndpoints(), request.getURI().toString());
+							.resolveLinks(request.getURI().toString());
 					return new ResponseEntity<>(
 							Collections.singletonMap("_links",
 									getAccessibleLinks(accessLevel, links)),

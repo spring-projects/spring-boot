@@ -43,7 +43,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping
 		implements InitializingBean {
 
-	private final EndpointLinksResolver linksResolver = new EndpointLinksResolver();
+	private final EndpointLinksResolver linksResolver;
 
 	/**
 	 * Creates a new {@code WebFluxEndpointHandlerMapping} instance that provides mappings
@@ -52,11 +52,14 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 	 * @param endpoints the web endpoints
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
+	 * @param linksResolver resolver for determining links to available endpoints
 	 */
 	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints,
-			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration) {
+			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
+			EndpointLinksResolver linksResolver) {
 		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
+		this.linksResolver = linksResolver;
 		setOrder(-100);
 	}
 
@@ -66,7 +69,7 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI())
 				.replaceQuery(null).toUriString();
 		return Collections.singletonMap("_links",
-				this.linksResolver.resolveLinks(getEndpoints(), requestUri));
+				this.linksResolver.resolveLinks(requestUri));
 	}
 
 }

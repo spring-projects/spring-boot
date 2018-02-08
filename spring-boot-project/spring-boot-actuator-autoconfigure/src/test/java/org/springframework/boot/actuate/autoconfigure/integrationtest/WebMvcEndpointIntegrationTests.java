@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import java.util.function.Supplier;
+
+import javax.servlet.http.HttpServlet;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -25,6 +29,10 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
+import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
+import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
+import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
@@ -35,6 +43,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
@@ -46,8 +56,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.hasKey;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -97,6 +110,17 @@ public class WebMvcEndpointIntegrationTests {
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
 	}
 
+	@Test
+	public void linksAreProvidedToAllEndpointTypes() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
+		TestPropertyValues.of("management.endpoints.web.expose=*").applyTo(this.context);
+		MockMvc mockMvc = doCreateMockMvc();
+		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isOk())
+				.andExpect(jsonPath("_links", both(hasKey("beans")).and(hasKey("servlet"))
+						.and(hasKey("restcontroller")).and(hasKey("controller"))));
+	}
+
 	private MockMvc createSecureMockMvc() {
 		return doCreateMockMvc(springSecurity());
 	}
@@ -139,6 +163,47 @@ public class WebMvcEndpointIntegrationTests {
 	@Import(DefaultConfiguration.class)
 	@ImportAutoConfiguration({ SecurityAutoConfiguration.class })
 	static class SecureConfiguration {
+
+	}
+
+	@ServletEndpoint(id = "servlet")
+	static class TestServletEndpoint implements Supplier<EndpointServlet> {
+
+		@Override
+		public EndpointServlet get() {
+			return new EndpointServlet(new HttpServlet() {
+			});
+		}
+
+	}
+
+	@ControllerEndpoint(id = "controller")
+	static class TestControllerEndpoint {
+
+	}
+
+	@RestControllerEndpoint(id = "restcontroller")
+	static class TestRestControllerEndpoint {
+
+	}
+
+	@Configuration
+	static class EndpointsConfiguration {
+
+		@Bean
+		TestServletEndpoint testServletEndpoint() {
+			return new TestServletEndpoint();
+		}
+
+		@Bean
+		TestControllerEndpoint testControllerEndpoint() {
+			return new TestControllerEndpoint();
+		}
+
+		@Bean
+		TestRestControllerEndpoint testRestControllerEndpoint() {
+			return new TestRestControllerEndpoint();
+		}
 
 	}
 

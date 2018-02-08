@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.AbstractWebEndpointIntegrationTests;
@@ -129,7 +130,8 @@ public class MvcWebEndpointIntegrationTests extends
 			return new WebMvcEndpointHandlerMapping(
 					new EndpointMapping(environment.getProperty("endpointPath")),
 					endpointDiscoverer.getEndpoints(), endpointMediaTypes,
-					corsConfiguration);
+					corsConfiguration,
+					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()));
 		}
 
 	}

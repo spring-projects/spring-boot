@@ -22,6 +22,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.AbstractWebEndpointIntegrationTests;
@@ -132,7 +133,8 @@ public class WebFluxEndpointIntegrationTests
 			return new WebFluxEndpointHandlerMapping(
 					new EndpointMapping(environment.getProperty("endpointPath")),
 					endpointDiscoverer.getEndpoints(), endpointMediaTypes,
-					corsConfiguration);
+					corsConfiguration,
+					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()));
 		}
 
 		@Bean

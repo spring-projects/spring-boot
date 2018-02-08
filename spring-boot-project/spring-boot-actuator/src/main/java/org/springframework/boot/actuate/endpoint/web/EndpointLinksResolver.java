@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
+
 /**
  * A resolver for {@link Link links} to web endpoints.
  *
@@ -28,22 +30,29 @@ import java.util.Map;
  */
 public class EndpointLinksResolver {
 
+	private final Collection<? extends ExposableEndpoint<?>> endpoints;
+
+	public EndpointLinksResolver(Collection<? extends ExposableEndpoint<?>> endpoints) {
+		this.endpoints = endpoints;
+	}
+
 	/**
-	 * Resolves links to the operations of the given {code webEndpoints} based on a
-	 * request with the given {@code requestUrl}.
-	 * @param endpoints the source endpoints
+	 * Resolves links to the known endpoints based on a request with the given
+	 * {@code requestUrl}.
 	 * @param requestUrl the url of the request for the endpoint links
 	 * @return the links
 	 */
-	public Map<String, Link> resolveLinks(Collection<ExposableWebEndpoint> endpoints,
-			String requestUrl) {
+	public Map<String, Link> resolveLinks(String requestUrl) {
 		String normalizedUrl = normalizeRequestUrl(requestUrl);
 		Map<String, Link> links = new LinkedHashMap<>();
 		links.put("self", new Link(normalizedUrl));
-		for (ExposableWebEndpoint endpoint : endpoints) {
-			for (WebOperation operation : endpoint.getOperations()) {
-				endpoints.stream().map(ExposableWebEndpoint::getId).forEach((id) -> links
-						.put(operation.getId(), createLink(normalizedUrl, operation)));
+		for (ExposableEndpoint<?> endpoint : this.endpoints) {
+			if (endpoint instanceof ExposableWebEndpoint) {
+				collectLinks(links, (ExposableWebEndpoint) endpoint, normalizedUrl);
+			}
+			else if (endpoint instanceof PathMappedEndpoint) {
+				links.put(endpoint.getId(), createLink(normalizedUrl,
+						((PathMappedEndpoint) endpoint).getRootPath()));
 			}
 		}
 		return links;
@@ -56,8 +65,18 @@ public class EndpointLinksResolver {
 		return requestUrl;
 	}
 
+	private void collectLinks(Map<String, Link> links, ExposableWebEndpoint endpoint,
+			String normalizedUrl) {
+		for (WebOperation operation : endpoint.getOperations()) {
+			links.put(operation.getId(), createLink(normalizedUrl, operation));
+		}
+	}
+
 	private Link createLink(String requestUrl, WebOperation operation) {
-		String path = operation.getRequestPredicate().getPath();
+		return createLink(requestUrl, operation.getRequestPredicate().getPath());
+	}
+
+	private Link createLink(String requestUrl, String path) {
 		return new Link(requestUrl + (path.startsWith("/") ? path : "/" + path));
 	}
 
