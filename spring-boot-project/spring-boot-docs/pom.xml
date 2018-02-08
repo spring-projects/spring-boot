@@ -907,6 +907,7 @@
 									<dependencySourceIncludes>
 										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
 									</dependencySourceIncludes>
+									<sourceFileExcludes>org/springframework/boot/docs/**/*.java</sourceFileExcludes>
 									<attach>false</attach>
 									<quiet>true</quiet>
 									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>

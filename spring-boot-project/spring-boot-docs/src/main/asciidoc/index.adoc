@@ -61,8 +61,8 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :gradle-userguide: https://www.gradle.org/docs/current/userguide
 :propdeps-plugin: https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
 :ant-manual: http://ant.apache.org/manual
-:code-examples: ../java/org/springframework/boot
-:test-examples: ../../test/java/org/springframework/boot
+:code-examples: ../java/org/springframework/boot/docs
+:test-examples: ../../test/java/org/springframework/boot/docs
 :gradle-user-guide: https://docs.gradle.org/4.2.1/userguide
 :hibernate-documentation: https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html
 :jetty-documentation: https://www.eclipse.org/jetty/documentation/9.4.x
