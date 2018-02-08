@@ -11,7 +11,6 @@ org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationP
 org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.couchbase.CouchbaseHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticsearchHealthIndicatorAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.kafka.KafkaHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration,\
@@ -25,6 +24,7 @@ org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguratio
 org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jms.JmsHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.kafka.KafkaHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ldap.LdapHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.liquibase.LiquibaseEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointAutoConfiguration,\

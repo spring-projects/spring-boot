@@ -30,6 +30,7 @@ import org.apache.kafka.common.config.ConfigResource.Type;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.util.Assert;
 
@@ -43,37 +44,35 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator {
 	static final String REPLICATION_PROPERTY = "transaction.state.log.replication.factor";
 
 	private final KafkaAdmin kafkaAdmin;
+
 	private final DescribeClusterOptions describeOptions;
 
 	/**
 	 * Create a new {@link KafkaHealthIndicator} instance.
 	 *
 	 * @param kafkaAdmin the kafka admin
-	 * @param responseTimeout the describe cluster request timeout in milliseconds
+	 * @param requestTimeout the request timeout in milliseconds
 	 */
-	public KafkaHealthIndicator(KafkaAdmin kafkaAdmin, long responseTimeout) {
+	public KafkaHealthIndicator(KafkaAdmin kafkaAdmin, long requestTimeout) {
 		Assert.notNull(kafkaAdmin, "KafkaAdmin must not be null");
 		this.kafkaAdmin = kafkaAdmin;
 		this.describeOptions = new DescribeClusterOptions()
-				.timeoutMs((int) responseTimeout);
+				.timeoutMs((int) requestTimeout);
 	}
 
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
 		try (AdminClient adminClient = AdminClient.create(this.kafkaAdmin.getConfig())) {
-			DescribeClusterResult result = adminClient.describeCluster(this.describeOptions);
+			DescribeClusterResult result = adminClient.describeCluster(
+					this.describeOptions);
 			String brokerId = result.controller().get().idString();
 			int replicationFactor = getReplicationFactor(brokerId, adminClient);
 			int nodes = result.nodes().get().size();
-			if (nodes >= replicationFactor) {
-				builder.up();
-			}
-			else {
-				builder.down();
-			}
-			builder.withDetail("clusterId", result.clusterId().get());
-			builder.withDetail("brokerId", brokerId);
-			builder.withDetail("nodes", nodes);
+			Status status = nodes >= replicationFactor ? Status.UP : Status.DOWN;
+			builder.status(status)
+					.withDetail("clusterId", result.clusterId().get())
+					.withDetail("brokerId", brokerId)
+					.withDetail("nodes", nodes);
 		}
 	}
 
@@ -85,5 +84,6 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator {
 		Config brokerConfig = kafkaConfig.get(configResource);
 		return Integer.parseInt(brokerConfig.get(REPLICATION_PROPERTY).value());
 	}
+
 }
 

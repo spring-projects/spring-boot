@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator support for Kafka.
+ * Actuator support for Apache Kafka.
  */
 package org.springframework.boot.actuate.kafka;

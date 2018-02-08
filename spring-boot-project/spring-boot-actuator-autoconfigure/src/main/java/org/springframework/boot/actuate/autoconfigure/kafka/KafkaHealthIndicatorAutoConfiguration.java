@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -41,40 +42,35 @@ import org.springframework.kafka.core.KafkaAdmin;
  * @author Juan Rada
  */
 @Configuration
+@ConditionalOnClass(KafkaAdmin.class)
+@ConditionalOnBean(KafkaAdmin.class)
 @ConditionalOnEnabledHealthIndicator("kafka")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(KafkaAutoConfiguration.class)
-public class KafkaHealthIndicatorAutoConfiguration {
+@EnableConfigurationProperties(KafkaHealthIndicatorProperties.class)
+public class KafkaHealthIndicatorAutoConfiguration extends
+		CompositeHealthIndicatorConfiguration<KafkaHealthIndicator, KafkaAdmin> {
 
-	@Configuration
-	@ConditionalOnBean(KafkaAdmin.class)
-	@EnableConfigurationProperties(KafkaHealthIndicatorProperties.class)
-	static class KafkaClientHealthIndicatorConfiguration extends
-			CompositeHealthIndicatorConfiguration<KafkaHealthIndicator, KafkaAdmin> {
+	private final Map<String, KafkaAdmin> admins;
 
-		private final Map<String, KafkaAdmin> admins;
+	private final KafkaHealthIndicatorProperties properties;
 
-		private final KafkaHealthIndicatorProperties properties;
+	KafkaHealthIndicatorAutoConfiguration(Map<String, KafkaAdmin> admins,
+			KafkaHealthIndicatorProperties properties) {
+		this.admins = admins;
+		this.properties = properties;
+	}
 
-		KafkaClientHealthIndicatorConfiguration(Map<String, KafkaAdmin> admins,
-				KafkaHealthIndicatorProperties properties) {
-			this.admins = admins;
-			this.properties = properties;
-		}
+	@Bean
+	@ConditionalOnMissingBean(name = "kafkaHealthIndicator")
+	public HealthIndicator kafkaHealthIndicator() {
+		return createHealthIndicator(this.admins);
+	}
 
-		@Bean
-		@ConditionalOnMissingBean(name = "kafkaHealthIndicator")
-		public HealthIndicator kafkaHealthIndicator() {
-			return createHealthIndicator(this.admins);
-		}
-
-		@Override
-		protected KafkaHealthIndicator createHealthIndicator(KafkaAdmin source) {
-			Duration responseTimeout = this.properties.getResponseTimeout();
-
-			return new KafkaHealthIndicator(source,
-					responseTimeout == null ? 100L : responseTimeout.toMillis());
-		}
+	@Override
+	protected KafkaHealthIndicator createHealthIndicator(KafkaAdmin source) {
+		Duration responseTimeout = this.properties.getResponseTimeout();
+		return new KafkaHealthIndicator(source, responseTimeout.toMillis());
 	}
 
 }

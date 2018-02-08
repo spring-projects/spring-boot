@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for {@link KafkaHealthIndicator}.
  *
  * @author Juan Rada
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.health.kafka", ignoreUnknownFields = false)
 public class KafkaHealthIndicatorProperties {
@@ -32,7 +33,7 @@ public class KafkaHealthIndicatorProperties {
 	/**
 	 * Time to wait for a response from the cluster description operation.
 	 */
-	private Duration responseTimeout = Duration.ofMillis(100);
+	private Duration responseTimeout = Duration.ofMillis(1000);
 
 	public Duration getResponseTimeout() {
 		return this.responseTimeout;

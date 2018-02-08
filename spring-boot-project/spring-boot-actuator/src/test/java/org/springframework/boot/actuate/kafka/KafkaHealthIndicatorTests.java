@@ -20,26 +20,72 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.test.rule.KafkaEmbedded;
+import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link KafkaHealthIndicator}
+ * Tests for {@link KafkaHealthIndicator}.
  *
  * @author Juan Rada
+ * @author Stephane Nicoll
  */
 public class KafkaHealthIndicatorTests {
 
-	private static final Long RESPONSE_TIME = 1000L;
-
 	private KafkaEmbedded kafkaEmbedded;
+
 	private KafkaAdmin kafkaAdmin;
+
+	@After
+	public void shutdownKafka() throws Exception {
+		if (this.kafkaEmbedded != null) {
+			this.kafkaEmbedded.destroy();
+		}
+	}
+	@Test
+	public void kafkaIsUp() throws Exception {
+		startKafka(1);
+		KafkaHealthIndicator healthIndicator =
+				new KafkaHealthIndicator(this.kafkaAdmin, 1000L);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertDetails(health.getDetails());
+	}
+
+	@Test
+	public void kafkaIsDown() {
+		int freePort = SocketUtils.findAvailableTcpPort();
+		this.kafkaAdmin = new KafkaAdmin(Collections.singletonMap(
+				ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:" + freePort));
+		KafkaHealthIndicator healthIndicator =
+				new KafkaHealthIndicator(this.kafkaAdmin, 1L);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat((String) health.getDetails().get("error")).isNotEmpty();
+	}
+
+	@Test
+	public void notEnoughNodesForReplicationFactor() throws Exception {
+		startKafka(2);
+		KafkaHealthIndicator healthIndicator =
+				new KafkaHealthIndicator(this.kafkaAdmin, 1000L);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertDetails(health.getDetails());
+	}
+
+	private void assertDetails(Map<String, Object> details) {
+		assertThat(details).containsEntry("brokerId", "0");
+		assertThat(details).containsKey("clusterId");
+		assertThat(details).containsEntry("nodes", 1);
+	}
 
 	private void startKafka(int replicationFactor) throws Exception {
 		this.kafkaEmbedded = new KafkaEmbedded(1, true);
@@ -52,46 +98,4 @@ public class KafkaHealthIndicatorTests {
 				this.kafkaEmbedded.getBrokersAsString()));
 	}
 
-	private void shutdownKafka() throws Exception {
-		this.kafkaEmbedded.destroy();
-	}
-
-	@Test
-	public void kafkaIsUp() throws Exception {
-		startKafka(1);
-		KafkaHealthIndicator healthIndicator =
-				new KafkaHealthIndicator(this.kafkaAdmin, RESPONSE_TIME);
-		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertDetails(health.getDetails());
-		shutdownKafka();
-	}
-
-	private void assertDetails(Map<String, Object> details) {
-		assertThat(details).containsEntry("brokerId", "0");
-		assertThat(details).containsKey("clusterId");
-		assertThat(details).containsEntry("nodes", 1);
-	}
-
-	@Test
-	public void notEnoughNodesForReplicationFactor() throws Exception {
-		startKafka(2);
-		KafkaHealthIndicator healthIndicator =
-				new KafkaHealthIndicator(this.kafkaAdmin, RESPONSE_TIME);
-		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertDetails(health.getDetails());
-		shutdownKafka();
-	}
-
-	@Test
-	public void kafkaIsDown() throws Exception {
-		this.kafkaAdmin = new KafkaAdmin(Collections.singletonMap(
-				ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:34987"));
-		KafkaHealthIndicator healthIndicator =
-				new KafkaHealthIndicator(this.kafkaAdmin, RESPONSE_TIME);
-		Health health = healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error")).isNotEmpty();
-	}
 }

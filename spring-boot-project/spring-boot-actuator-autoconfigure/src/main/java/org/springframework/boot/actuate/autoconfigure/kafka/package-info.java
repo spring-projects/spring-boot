@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator kafka support.
+ * Auto-configuration for actuator Apache Kafka support.
  */
 package org.springframework.boot.actuate.autoconfigure.kafka;
