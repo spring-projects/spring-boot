@@ -146,6 +146,12 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.kafka.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable kafka health check.",
+      "defaultValue": true
+    },
+    {
       "name": "management.info.build.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable build info.",
