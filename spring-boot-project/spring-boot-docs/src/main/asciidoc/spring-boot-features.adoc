@@ -1555,9 +1555,10 @@ not managed by spring Boot.
 === Log Levels
 All the supported logging systems can have the logger levels set in the Spring
 `Environment` (for example, in `application.properties`) by using
-`+logging.level.*=LEVEL+` where `LEVEL` is one of TRACE, DEBUG, INFO, WARN, ERROR,
-FATAL, or OFF. The `root` logger can be configured by using `logging.level.root`. The
-following example shows potential logging settings in `application.properties`:
+`+logging.level.<logger-name>=<level>+` where `level` is one of TRACE, DEBUG, INFO, WARN,
+ERROR, FATAL, or OFF. The `root` logger can be configured by using `logging.level.root`.
+
+The following example shows potential logging settings in `application.properties`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
