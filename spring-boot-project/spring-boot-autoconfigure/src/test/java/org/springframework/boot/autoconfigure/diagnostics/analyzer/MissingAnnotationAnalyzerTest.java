@@ -16,14 +16,15 @@
 
 package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.elasticsearch.common.util.set.Sets;
 import org.junit.Test;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.context.event.FailedStartupInfoHolder;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.context.ApplicationContextException;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MissingAnnotationAnalyzerTest {
 
