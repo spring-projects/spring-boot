@@ -41,9 +41,9 @@ public class KafkaHealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(KafkaHealthIndicator.class)
-				.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.run(
+				(context) -> assertThat(context).hasSingleBean(KafkaHealthIndicator.class)
+						.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test

@@ -63,21 +63,19 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
 		try (AdminClient adminClient = AdminClient.create(this.kafkaAdmin.getConfig())) {
-			DescribeClusterResult result = adminClient.describeCluster(
-					this.describeOptions);
+			DescribeClusterResult result = adminClient
+					.describeCluster(this.describeOptions);
 			String brokerId = result.controller().get().idString();
 			int replicationFactor = getReplicationFactor(brokerId, adminClient);
 			int nodes = result.nodes().get().size();
 			Status status = nodes >= replicationFactor ? Status.UP : Status.DOWN;
-			builder.status(status)
-					.withDetail("clusterId", result.clusterId().get())
-					.withDetail("brokerId", brokerId)
-					.withDetail("nodes", nodes);
+			builder.status(status).withDetail("clusterId", result.clusterId().get())
+					.withDetail("brokerId", brokerId).withDetail("nodes", nodes);
 		}
 	}
 
-	private int getReplicationFactor(String brokerId,
-			AdminClient adminClient) throws ExecutionException, InterruptedException {
+	private int getReplicationFactor(String brokerId, AdminClient adminClient)
+			throws ExecutionException, InterruptedException {
 		ConfigResource configResource = new ConfigResource(Type.BROKER, brokerId);
 		Map<ConfigResource, Config> kafkaConfig = adminClient
 				.describeConfigs(Collections.singletonList(configResource)).all().get();
@@ -86,4 +84,3 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator {
 	}
 
 }
-

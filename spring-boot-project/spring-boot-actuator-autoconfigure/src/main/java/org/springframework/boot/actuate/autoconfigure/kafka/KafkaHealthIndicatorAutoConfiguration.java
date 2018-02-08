@@ -48,8 +48,8 @@ import org.springframework.kafka.core.KafkaAdmin;
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(KafkaAutoConfiguration.class)
 @EnableConfigurationProperties(KafkaHealthIndicatorProperties.class)
-public class KafkaHealthIndicatorAutoConfiguration extends
-		CompositeHealthIndicatorConfiguration<KafkaHealthIndicator, KafkaAdmin> {
+public class KafkaHealthIndicatorAutoConfiguration
+		extends CompositeHealthIndicatorConfiguration<KafkaHealthIndicator, KafkaAdmin> {
 
 	private final Map<String, KafkaAdmin> admins;
 

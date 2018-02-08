@@ -49,11 +49,12 @@ public class KafkaHealthIndicatorTests {
 			this.kafkaEmbedded.destroy();
 		}
 	}
+
 	@Test
 	public void kafkaIsUp() throws Exception {
 		startKafka(1);
-		KafkaHealthIndicator healthIndicator =
-				new KafkaHealthIndicator(this.kafkaAdmin, 1000L);
+		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin,
+				1000L);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertDetails(health.getDetails());
@@ -64,8 +65,8 @@ public class KafkaHealthIndicatorTests {
 		int freePort = SocketUtils.findAvailableTcpPort();
 		this.kafkaAdmin = new KafkaAdmin(Collections.singletonMap(
 				ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:" + freePort));
-		KafkaHealthIndicator healthIndicator =
-				new KafkaHealthIndicator(this.kafkaAdmin, 1L);
+		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin,
+				1L);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).isNotEmpty();
@@ -74,8 +75,8 @@ public class KafkaHealthIndicatorTests {
 	@Test
 	public void notEnoughNodesForReplicationFactor() throws Exception {
 		startKafka(2);
-		KafkaHealthIndicator healthIndicator =
-				new KafkaHealthIndicator(this.kafkaAdmin, 1000L);
+		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin,
+				1000L);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertDetails(health.getDetails());
@@ -89,13 +90,13 @@ public class KafkaHealthIndicatorTests {
 
 	private void startKafka(int replicationFactor) throws Exception {
 		this.kafkaEmbedded = new KafkaEmbedded(1, true);
-		this.kafkaEmbedded.brokerProperties(Collections.singletonMap(
-				KafkaHealthIndicator.REPLICATION_PROPERTY,
-				String.valueOf(replicationFactor)));
+		this.kafkaEmbedded.brokerProperties(
+				Collections.singletonMap(KafkaHealthIndicator.REPLICATION_PROPERTY,
+						String.valueOf(replicationFactor)));
 		this.kafkaEmbedded.before();
-		this.kafkaAdmin = new KafkaAdmin(Collections.singletonMap(
-				ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				this.kafkaEmbedded.getBrokersAsString()));
+		this.kafkaAdmin = new KafkaAdmin(
+				Collections.singletonMap(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+						this.kafkaEmbedded.getBrokersAsString()));
 	}
 
 }
