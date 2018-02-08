@@ -119,6 +119,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-junit-jupiter[spring-boot-sample-junit-jupiter]
 | Demonstrates JUnit Jupiter-based testing
 
+| link:spring-boot-sample-kafka[spring-boot-sample-kafka]
+| consumer and producer using Apache Kafka
+
 | link:spring-boot-sample-liquibase[spring-boot-sample-liquibase]
 | Database migrations with Liquibase
 

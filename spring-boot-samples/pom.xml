@@ -57,6 +57,7 @@
 		<module>spring-boot-sample-jta-narayana</module>
 		<module>spring-boot-sample-jta-jndi</module>
 		<module>spring-boot-sample-junit-jupiter</module>
+		<module>spring-boot-sample-kafka</module>
 		<module>spring-boot-sample-liquibase</module>
 		<module>spring-boot-sample-logback</module>
 		<module>spring-boot-sample-oauth2-client</module>
