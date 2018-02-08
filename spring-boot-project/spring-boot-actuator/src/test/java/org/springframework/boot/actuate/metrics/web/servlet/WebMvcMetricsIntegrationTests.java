@@ -111,7 +111,7 @@ public class WebMvcMetricsIntegrationTests {
 		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
 				WebApplicationContext ctx) {
 			return new WebMvcMetricsFilter(ctx, registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true);
+					"http.server.requests", true, false);
 		}
 
 		@RestController
