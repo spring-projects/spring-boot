@@ -49,7 +49,7 @@ public class NameAndAgeJsonComponent {
 		@Override
 		protected NameAndAge deserializeObject(JsonParser jsonParser,
 				DeserializationContext context, ObjectCodec codec, JsonNode tree)
-						throws IOException {
+				throws IOException {
 			String name = nullSafeValue(tree.get("name"), String.class);
 			Integer age = nullSafeValue(tree.get("age"), Integer.class);
 			return new NameAndAge(name, age);

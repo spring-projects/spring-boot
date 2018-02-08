@@ -52,8 +52,8 @@ import java.util.List;
  * Each stringer may be used to encode a single top level value. Instances of this class
  * are not thread safe. Although this class is nonfinal, it was not designed for
  * inheritance and should not be subclassed. In particular, self-use by overrideable
- * methods is not specified. See <i>Effective Java</i> Item 17,
- * "Design and Document or inheritance or else prohibit it" for further information.
+ * methods is not specified. See <i>Effective Java</i> Item 17, "Design and Document or
+ * inheritance or else prohibit it" for further information.
  */
 public class JSONStringer {
 

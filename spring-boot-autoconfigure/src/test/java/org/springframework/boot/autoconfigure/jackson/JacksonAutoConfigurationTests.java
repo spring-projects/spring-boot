@@ -492,7 +492,7 @@ public class JacksonAutoConfigurationTests {
 				@Override
 				public void serialize(Foo value, JsonGenerator jgen,
 						SerializerProvider provider)
-								throws IOException, JsonProcessingException {
+						throws IOException, JsonProcessingException {
 					jgen.writeStartObject();
 					jgen.writeStringField("foo", "bar");
 					jgen.writeEndObject();

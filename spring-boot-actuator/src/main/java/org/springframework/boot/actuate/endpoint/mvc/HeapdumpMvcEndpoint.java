@@ -76,7 +76,7 @@ public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public void invoke(@RequestParam(defaultValue = "true") boolean live,
 			HttpServletRequest request, HttpServletResponse response)
-					throws IOException, ServletException {
+			throws IOException, ServletException {
 		if (!isEnabled()) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return;
@@ -100,7 +100,7 @@ public class HeapdumpMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private void dumpHeap(boolean live, HttpServletRequest request,
 			HttpServletResponse response)
-					throws IOException, ServletException, InterruptedException {
+			throws IOException, ServletException, InterruptedException {
 		if (this.heapDumper == null) {
 			this.heapDumper = createHeapDumper();
 		}

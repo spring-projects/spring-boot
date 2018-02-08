@@ -61,7 +61,7 @@ public class JsonMarshallerTests {
 						new ItemHint.ValueProvider("first",
 								Collections.<String, Object>singletonMap("target",
 										"foo")),
-				new ItemHint.ValueProvider("second", null))));
+						new ItemHint.ValueProvider("second", null))));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);

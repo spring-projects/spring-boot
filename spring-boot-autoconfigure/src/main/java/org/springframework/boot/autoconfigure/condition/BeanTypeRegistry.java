@@ -231,7 +231,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	private Class<?> doGetFactoryBeanGeneric(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinition definition, String name)
-					throws Exception, ClassNotFoundException, LinkageError {
+			throws Exception, ClassNotFoundException, LinkageError {
 		if (StringUtils.hasLength(definition.getFactoryBeanName())
 				&& StringUtils.hasLength(definition.getFactoryMethodName())) {
 			return getConfigurationClassFactoryBeanGeneric(beanFactory, definition, name);

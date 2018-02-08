@@ -185,7 +185,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private void writeJar(File file, Class<?>[] compiledClasses,
 				List<MatchedResource> classpathEntries, List<URL> dependencies)
-						throws FileNotFoundException, IOException, URISyntaxException {
+				throws FileNotFoundException, IOException, URISyntaxException {
 			final List<Library> libraries;
 			JarWriter writer = new JarWriter(file);
 			try {

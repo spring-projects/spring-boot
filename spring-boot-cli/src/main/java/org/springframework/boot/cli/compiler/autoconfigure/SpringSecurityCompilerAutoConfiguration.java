@@ -38,9 +38,8 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses(
-						"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity")
+		dependencies.ifAnyMissingClasses(
+				"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity")
 				.add("spring-boot-starter-security");
 	}
 

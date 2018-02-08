@@ -548,7 +548,7 @@ public class MetricFilterAutoConfigurationTests {
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain chain)
-						throws ServletException, IOException {
+				throws ServletException, IOException {
 			// send redirect before filter chain is executed, like Spring Security sending
 			// us back to a login page
 			response.sendRedirect("http://example.com");
@@ -563,7 +563,7 @@ public class MetricFilterAutoConfigurationTests {
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain chain)
-						throws ServletException, IOException {
+				throws ServletException, IOException {
 
 			response.sendError(HttpStatus.SERVICE_UNAVAILABLE.value());
 		}

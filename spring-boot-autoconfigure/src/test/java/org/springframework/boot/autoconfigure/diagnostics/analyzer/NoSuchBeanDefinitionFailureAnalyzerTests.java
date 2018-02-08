@@ -194,15 +194,17 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private void assertActionMissingType(FailureAnalysis analysis, Class<?> type) {
-		assertThat(analysis.getAction()).startsWith(String
-				.format("Consider revisiting the conditions above or defining a bean of type '%s' "
-						+ "in your configuration.", type.getName()));
+		assertThat(analysis.getAction()).startsWith(String.format(
+				"Consider revisiting the conditions above or defining a bean of type '%s' "
+						+ "in your configuration.",
+				type.getName()));
 	}
 
 	private void assertActionMissingName(FailureAnalysis analysis, String name) {
-		assertThat(analysis.getAction()).startsWith(String
-				.format("Consider revisiting the conditions above or defining a bean named '%s' "
-						+ "in your configuration.", name));
+		assertThat(analysis.getAction()).startsWith(String.format(
+				"Consider revisiting the conditions above or defining a bean named '%s' "
+						+ "in your configuration.",
+				name));
 	}
 
 	private void assertBeanMethodDisabled(FailureAnalysis analysis, String description,

@@ -94,9 +94,8 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private ProgressReporter getProgressReporter(DefaultRepositorySystemSession session,
 			boolean quiet) {
-		String progressReporter = (quiet ? "none"
-				: System.getProperty(
-						"org.springframework.boot.cli.compiler.grape.ProgressReporter"));
+		String progressReporter = (quiet ? "none" : System.getProperty(
+				"org.springframework.boot.cli.compiler.grape.ProgressReporter"));
 		if ("detail".equals(progressReporter)
 				|| Boolean.getBoolean("groovy.grape.report.downloads")) {
 			return new DetailedProgressReporter(session, System.out);

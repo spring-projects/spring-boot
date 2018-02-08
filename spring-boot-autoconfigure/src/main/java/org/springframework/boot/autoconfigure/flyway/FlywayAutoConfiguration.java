@@ -109,9 +109,8 @@ public class FlywayAutoConfiguration {
 				Assert.state(!this.properties.getLocations().isEmpty(),
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation();
-				Assert.state(exists,
-						"Cannot find migrations location in: " + this.properties
-								.getLocations()
+				Assert.state(exists, "Cannot find migrations location in: "
+						+ this.properties.getLocations()
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}

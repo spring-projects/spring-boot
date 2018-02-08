@@ -38,9 +38,8 @@ public class SpringWebsocketCompilerAutoConfiguration extends CompilerAutoConfig
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses(
-						"org.springframework.web.socket.config.annotation.EnableWebSocket")
+		dependencies.ifAnyMissingClasses(
+				"org.springframework.web.socket.config.annotation.EnableWebSocket")
 				.add("spring-boot-starter-websocket").add("spring-messaging");
 	}
 

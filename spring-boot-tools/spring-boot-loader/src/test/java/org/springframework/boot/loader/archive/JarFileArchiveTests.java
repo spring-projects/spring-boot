@@ -125,11 +125,9 @@ public class JarFileArchiveTests {
 		File nested = new File(this.archive
 				.getNestedArchive(getEntriesMap(this.archive).get("nested.jar")).getUrl()
 				.toURI());
-		File anotherNested = new File(
-				this.archive
-						.getNestedArchive(
-								getEntriesMap(this.archive).get("another-nested.jar"))
-						.getUrl().toURI());
+		File anotherNested = new File(this.archive
+				.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))
+				.getUrl().toURI());
 		assertThat(nested.getParent()).isEqualTo(anotherNested.getParent());
 	}
 

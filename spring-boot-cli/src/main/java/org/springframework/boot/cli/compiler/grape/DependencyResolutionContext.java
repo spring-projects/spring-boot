@@ -105,9 +105,8 @@ public class DependencyResolutionContext {
 					aetherDependency);
 		}
 		this.dependencyManagement = this.dependencyManagement == null
-				? dependencyManagement
-				: new CompositeDependencyManagement(dependencyManagement,
-						this.dependencyManagement);
+				? dependencyManagement : new CompositeDependencyManagement(
+						dependencyManagement, this.dependencyManagement);
 		this.artifactCoordinatesResolver = new DependencyManagementArtifactCoordinatesResolver(
 				this.dependencyManagement);
 	}

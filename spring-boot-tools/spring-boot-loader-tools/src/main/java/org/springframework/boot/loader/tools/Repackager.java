@@ -273,7 +273,7 @@ public class Repackager {
 
 	private void repackage(JarFile sourceJar, JarWriter writer,
 			final List<Library> unpackLibraries, final List<Library> standardLibraries)
-					throws IOException {
+			throws IOException {
 		writer.writeManifest(buildManifest(sourceJar));
 		Set<String> seen = new HashSet<String>();
 		writeNestedLibraries(unpackLibraries, seen, writer);

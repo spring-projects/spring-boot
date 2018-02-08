@@ -101,7 +101,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
-					throws ServletException, IOException {
+			throws ServletException, IOException {
 		long startTime = System.nanoTime();
 		Map<String, Object> trace = getTrace(request);
 		logTrace(request, trace);

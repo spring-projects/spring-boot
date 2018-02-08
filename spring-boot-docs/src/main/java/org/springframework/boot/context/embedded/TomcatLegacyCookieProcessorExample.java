@@ -49,12 +49,13 @@ public class TomcatLegacyCookieProcessorExample {
 						((TomcatEmbeddedServletContainerFactory) container)
 								.addContextCustomizers(new TomcatContextCustomizer() {
 
-							@Override
-							public void customize(Context context) {
-								context.setCookieProcessor(new LegacyCookieProcessor());
-							}
+									@Override
+									public void customize(Context context) {
+										context.setCookieProcessor(
+												new LegacyCookieProcessor());
+									}
 
-						});
+								});
 					}
 				}
 

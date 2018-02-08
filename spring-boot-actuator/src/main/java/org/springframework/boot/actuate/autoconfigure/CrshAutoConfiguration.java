@@ -377,7 +377,7 @@ public class CrshAutoConfiguration {
 
 		BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader,
 				ListableBeanFactory beanFactory, String[] disabledPlugins)
-						throws NullPointerException {
+				throws NullPointerException {
 			super(classLoader);
 			this.beanFactory = beanFactory;
 			this.disabledPlugins = disabledPlugins;

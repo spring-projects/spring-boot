@@ -53,7 +53,7 @@ public class ExampleJsonComponent {
 		@Override
 		protected ExampleCustomObject deserializeObject(JsonParser jsonParser,
 				DeserializationContext context, ObjectCodec codec, JsonNode tree)
-						throws IOException {
+				throws IOException {
 			return new ExampleCustomObject(
 					nullSafeValue(tree.get("value"), String.class));
 		}

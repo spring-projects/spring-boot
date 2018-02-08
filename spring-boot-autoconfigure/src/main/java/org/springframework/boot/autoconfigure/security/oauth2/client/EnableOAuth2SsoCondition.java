@@ -41,8 +41,8 @@ class EnableOAuth2SsoCondition extends SpringBootCondition {
 		for (String name : enablers) {
 			if (context.getBeanFactory().isTypeMatch(name,
 					WebSecurityConfigurerAdapter.class)) {
-				return ConditionOutcome.match(message
-						.found("@EnableOAuth2Sso annotation on WebSecurityConfigurerAdapter")
+				return ConditionOutcome.match(message.found(
+						"@EnableOAuth2Sso annotation on WebSecurityConfigurerAdapter")
 						.items(name));
 			}
 		}

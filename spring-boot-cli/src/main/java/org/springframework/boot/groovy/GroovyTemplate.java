@@ -47,8 +47,8 @@ public abstract class GroovyTemplate {
 	}
 
 	public static String template(TemplateEngine engine, String name,
-			Map<String, ?> model) throws IOException, CompilationFailedException,
-					ClassNotFoundException {
+			Map<String, ?> model)
+			throws IOException, CompilationFailedException, ClassNotFoundException {
 		Writable writable = getTemplate(engine, name).make(model);
 		StringWriter result = new StringWriter();
 		writable.writeTo(result);

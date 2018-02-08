@@ -89,10 +89,9 @@ public class PublicMetricsAutoConfiguration {
 
 	@Bean
 	public MetricReaderPublicMetrics metricReaderPublicMetrics() {
-		return new MetricReaderPublicMetrics(
-				new CompositeMetricReader(this.metricReaders == null ? new MetricReader[0]
-						: this.metricReaders
-								.toArray(new MetricReader[this.metricReaders.size()])));
+		return new MetricReaderPublicMetrics(new CompositeMetricReader(
+				this.metricReaders == null ? new MetricReader[0] : this.metricReaders
+						.toArray(new MetricReader[this.metricReaders.size()])));
 	}
 
 	@Bean

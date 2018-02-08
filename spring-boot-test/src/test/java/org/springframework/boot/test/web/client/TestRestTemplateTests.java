@@ -255,7 +255,7 @@ public class TestRestTemplateTests {
 				testRestTemplate.exchange(
 						new RequestEntity<String>(HttpMethod.GET, relativeUri),
 						new ParameterizedTypeReference<String>() {
-				});
+						});
 			}
 
 		});
@@ -286,7 +286,7 @@ public class TestRestTemplateTests {
 				testRestTemplate.exchange(relativeUri, HttpMethod.GET,
 						new HttpEntity<byte[]>(new byte[0]),
 						new ParameterizedTypeReference<String>() {
-				});
+						});
 			}
 
 		});

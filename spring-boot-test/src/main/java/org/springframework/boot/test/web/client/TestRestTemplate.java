@@ -492,7 +492,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> postForEntity(String url, Object request,
 			Class<T> responseType, Map<String, ?> urlVariables)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.postForEntity(url, request, responseType, urlVariables);
 	}
 
@@ -735,7 +735,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> exchange(String url, HttpMethod method,
 			HttpEntity<?> requestEntity, Class<T> responseType, Object... urlVariables)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.exchange(url, method, requestEntity, responseType,
 				urlVariables);
 	}
@@ -780,7 +780,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method,
 			HttpEntity<?> requestEntity, Class<T> responseType)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method,
 				requestEntity, responseType);
 	}
@@ -863,7 +863,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method,
 			HttpEntity<?> requestEntity, ParameterizedTypeReference<T> responseType)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method,
 				requestEntity, responseType);
 	}
@@ -931,7 +931,7 @@ public class TestRestTemplate {
 	 */
 	public <T> T execute(String url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor, Object... urlVariables)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.execute(url, method, requestCallback, responseExtractor,
 				urlVariables);
 	}
@@ -955,7 +955,7 @@ public class TestRestTemplate {
 	 */
 	public <T> T execute(String url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor, Map<String, ?> urlVariables)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.execute(url, method, requestCallback, responseExtractor,
 				urlVariables);
 	}

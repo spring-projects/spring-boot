@@ -104,8 +104,10 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean("securityFilterChainRegistration",
-				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
+		assertThat(this.context
+				.getBean("securityFilterChainRegistration",
+						DelegatingFilterProxyRegistrationBean.class)
+				.getOrder()).isEqualTo(
 						FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
 	}
 
@@ -134,8 +136,10 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean("securityFilterChainRegistration",
-				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
+		assertThat(this.context
+				.getBean("securityFilterChainRegistration",
+						DelegatingFilterProxyRegistrationBean.class)
+				.getOrder()).isEqualTo(
 						FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
 	}
 

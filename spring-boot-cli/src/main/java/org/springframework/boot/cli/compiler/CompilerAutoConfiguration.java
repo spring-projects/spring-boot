@@ -89,7 +89,7 @@ public abstract class CompilerAutoConfiguration {
 	 */
 	public void apply(GroovyClassLoader loader, GroovyCompilerConfiguration configuration,
 			GeneratorContext generatorContext, SourceUnit source, ClassNode classNode)
-					throws CompilationFailedException {
+			throws CompilationFailedException {
 	}
 
 }

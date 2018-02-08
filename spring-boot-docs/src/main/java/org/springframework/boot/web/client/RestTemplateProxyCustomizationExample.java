@@ -50,7 +50,7 @@ public class RestTemplateProxyCustomizationExample {
 						@Override
 						public HttpHost determineProxy(HttpHost target,
 								HttpRequest request, HttpContext context)
-										throws HttpException {
+								throws HttpException {
 							if (target.getHostName().equals("192.168.0.5")) {
 								return null;
 							}

@@ -370,7 +370,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 	@Override
 	public PropertyValues postProcessPropertyValues(PropertyValues pvs,
 			PropertyDescriptor[] pds, final Object bean, String beanName)
-					throws BeansException {
+			throws BeansException {
 		ReflectionUtils.doWithFields(bean.getClass(), new FieldCallback() {
 
 			@Override

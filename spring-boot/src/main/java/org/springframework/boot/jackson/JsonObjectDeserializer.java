@@ -73,7 +73,7 @@ public abstract class JsonObjectDeserializer<T>
 	 */
 	protected abstract T deserializeObject(JsonParser jsonParser,
 			DeserializationContext context, ObjectCodec codec, JsonNode tree)
-					throws IOException;
+			throws IOException;
 
 	/**
 	 * Helper method to extract a value from the given {@code jsonNode} or return

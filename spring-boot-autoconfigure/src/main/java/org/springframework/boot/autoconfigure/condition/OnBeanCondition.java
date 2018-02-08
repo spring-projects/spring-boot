@@ -165,7 +165,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private Collection<String> getBeanNamesForType(ListableBeanFactory beanFactory,
 			String type, ClassLoader classLoader, boolean considerHierarchy)
-					throws LinkageError {
+			throws LinkageError {
 		try {
 			Set<String> result = new LinkedHashSet<String>();
 			collectBeanNamesForType(result, beanFactory,

@@ -306,7 +306,7 @@ public class EndpointMBeanExporterTests {
 
 	private ObjectName getObjectName(String domain, String beanKey,
 			boolean includeIdentity, ApplicationContext applicationContext)
-					throws MalformedObjectNameException {
+			throws MalformedObjectNameException {
 		if (includeIdentity) {
 			return ObjectNameManager.getInstance(String.format(
 					"%s:type=Endpoint,name=%s,identity=%s", domain, beanKey, ObjectUtils

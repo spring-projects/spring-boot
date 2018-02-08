@@ -104,8 +104,8 @@ public class AuditEventsMvcEndpointTests {
 
 	@Test
 	public void invokeFilterByPrincipalAndDateAfter() throws Exception {
-		this.mvc.perform(get("/auditevents").param("principal", "user").param("after",
-				"2016-11-01T10:00:00+0000"))
+		this.mvc.perform(get("/auditevents")
+				.param("principal", "user").param("after", "2016-11-01T10:00:00+0000"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(
 						containsString("\"principal\":\"user\",\"type\":\"login\"")))

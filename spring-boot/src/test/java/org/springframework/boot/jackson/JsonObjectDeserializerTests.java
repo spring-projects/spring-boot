@@ -199,7 +199,7 @@ public class JsonObjectDeserializerTests {
 		@Override
 		protected T deserializeObject(JsonParser jsonParser,
 				DeserializationContext context, ObjectCodec codec, JsonNode tree)
-						throws IOException {
+				throws IOException {
 			return null;
 		}
 
