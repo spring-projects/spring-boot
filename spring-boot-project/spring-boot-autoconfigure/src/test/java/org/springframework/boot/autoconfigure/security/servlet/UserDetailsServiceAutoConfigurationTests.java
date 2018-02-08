@@ -52,8 +52,8 @@ import static org.mockito.Mockito.mock;
 public class UserDetailsServiceAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(TestSecurityConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
+			.withUserConfiguration(TestSecurityConfiguration.class).withConfiguration(
+					AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
@@ -115,7 +115,8 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class).run(((context) -> {
+		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class)
+				.run(((context) -> {
 					InMemoryUserDetailsManager userDetailsService = context
 							.getBean(InMemoryUserDetailsManager.class);
 					String password = userDetailsService.loadUserByUsername("user")
@@ -150,8 +151,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword,
 			String expectedPassword) {
-		this.contextRunner
-				.withUserConfiguration(configClass)
+		this.contextRunner.withUserConfiguration(configClass)
 				.withPropertyValues("spring.security.user.password=" + providedPassword)
 				.run(((context) -> {
 					InMemoryUserDetailsManager userDetailsService = context

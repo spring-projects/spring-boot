@@ -100,8 +100,8 @@ public class ConditionsReportEndpointDocumentationTests
 		this.mockMvc.perform(get("/actuator/conditions")).andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("conditions",
 						preprocessResponse(
-								limit("contexts", getApplicationContext().getId(),
-										"positiveMatches"),
+								limit("contexts", getApplicationContext()
+										.getId(), "positiveMatches"),
 								limit("contexts", getApplicationContext().getId(),
 										"negativeMatches")),
 						responseFields(fieldWithPath("contexts")

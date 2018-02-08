@@ -115,9 +115,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty(
 				"management.cloudfoundry.skip-ssl-validation", Boolean.class, false);
-		return (cloudControllerUrl == null ? null
-				: new CloudFoundrySecurityService(restTemplateBuilder, cloudControllerUrl,
-						skipSslValidation));
+		return (cloudControllerUrl == null ? null : new CloudFoundrySecurityService(
+				restTemplateBuilder, cloudControllerUrl, skipSslValidation));
 	}
 
 	private CorsConfiguration getCorsConfiguration() {

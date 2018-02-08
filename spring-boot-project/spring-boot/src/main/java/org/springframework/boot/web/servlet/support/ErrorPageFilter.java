@@ -86,7 +86,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain chain)
-						throws ServletException, IOException {
+				throws ServletException, IOException {
 			ErrorPageFilter.this.doFilter(request, response, chain);
 		}
 
@@ -134,7 +134,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private void handleErrorStatus(HttpServletRequest request,
 			HttpServletResponse response, int status, String message)
-					throws ServletException, IOException {
+			throws ServletException, IOException {
 		if (response.isCommitted()) {
 			handleCommittedResponse(request, null);
 			return;
@@ -151,7 +151,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private void handleException(HttpServletRequest request, HttpServletResponse response,
 			ErrorWrapperResponse wrapped, Throwable ex)
-					throws IOException, ServletException {
+			throws IOException, ServletException {
 		Class<?> type = ex.getClass();
 		String errorPath = getErrorPath(type);
 		if (errorPath == null) {
@@ -168,7 +168,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private void forwardToErrorPage(String path, HttpServletRequest request,
 			HttpServletResponse response, Throwable ex)
-					throws ServletException, IOException {
+			throws ServletException, IOException {
 		if (logger.isErrorEnabled()) {
 			String message = "Forwarding to error page from request "
 					+ getDescription(request) + " due to exception [" + ex.getMessage()

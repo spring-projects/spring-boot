@@ -100,12 +100,13 @@ public class BeansEndpointTests {
 			new ApplicationContextRunner()
 					.withUserConfiguration(EndpointConfiguration.class).withParent(parent)
 					.run((child) -> {
-				ApplicationBeans result = child.getBean(BeansEndpoint.class).beans();
-				assertThat(result.getContexts().get(parent.getId()).getBeans())
-						.containsKey("bean");
-				assertThat(result.getContexts().get(child.getId()).getBeans())
-						.containsKey("endpoint");
-			});
+						ApplicationBeans result = child.getBean(BeansEndpoint.class)
+								.beans();
+						assertThat(result.getContexts().get(parent.getId()).getBeans())
+								.containsKey("bean");
+						assertThat(result.getContexts().get(child.getId()).getBeans())
+								.containsKey("endpoint");
+					});
 		});
 	}
 

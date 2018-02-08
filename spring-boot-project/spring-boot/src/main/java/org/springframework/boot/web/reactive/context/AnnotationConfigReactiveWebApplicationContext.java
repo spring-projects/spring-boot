@@ -248,7 +248,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 
 	private void registerConfigLocations(AnnotatedBeanDefinitionReader reader,
 			ClassPathBeanDefinitionScanner scanner, String[] configLocations)
-					throws LinkageError {
+			throws LinkageError {
 		for (String configLocation : configLocations) {
 			try {
 				register(reader, configLocation);

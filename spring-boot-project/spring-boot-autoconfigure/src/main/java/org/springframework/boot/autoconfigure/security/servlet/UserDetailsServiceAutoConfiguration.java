@@ -69,10 +69,8 @@ public class UserDetailsServiceAutoConfiguration {
 			ObjectProvider<PasswordEncoder> passwordEncoder) throws Exception {
 		SecurityProperties.User user = properties.getUser();
 		List<String> roles = user.getRoles();
-		return new InMemoryUserDetailsManager(
-				User.withUsername(user.getName())
-						.password(getOrDeducePassword(user,
-								passwordEncoder.getIfAvailable()))
+		return new InMemoryUserDetailsManager(User.withUsername(user.getName())
+				.password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
 				.roles(roles.toArray(new String[roles.size()])).build());
 	}
 

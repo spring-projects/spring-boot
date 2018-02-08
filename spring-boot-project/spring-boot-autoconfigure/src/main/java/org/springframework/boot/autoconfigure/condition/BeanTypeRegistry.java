@@ -230,7 +230,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	private Class<?> doGetFactoryBeanGeneric(ConfigurableListableBeanFactory beanFactory,
 			BeanDefinition definition)
-					throws Exception, ClassNotFoundException, LinkageError {
+			throws Exception, ClassNotFoundException, LinkageError {
 		if (StringUtils.hasLength(definition.getFactoryBeanName())
 				&& StringUtils.hasLength(definition.getFactoryMethodName())) {
 			return getConfigurationClassFactoryBeanGeneric(beanFactory, definition);
@@ -243,7 +243,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	private Class<?> getConfigurationClassFactoryBeanGeneric(
 			ConfigurableListableBeanFactory beanFactory, BeanDefinition definition)
-					throws Exception {
+			throws Exception {
 		Method method = getFactoryMethod(beanFactory, definition);
 		Class<?> generic = ResolvableType.forMethodReturnType(method)
 				.as(FactoryBean.class).resolveGeneric();
@@ -305,7 +305,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	private Class<?> getDirectFactoryBeanGeneric(
 			ConfigurableListableBeanFactory beanFactory, BeanDefinition definition)
-					throws ClassNotFoundException, LinkageError {
+			throws ClassNotFoundException, LinkageError {
 		Class<?> factoryBeanClass = ClassUtils.forName(definition.getBeanClassName(),
 				beanFactory.getBeanClassLoader());
 		Class<?> generic = ResolvableType.forClass(factoryBeanClass).as(FactoryBean.class)

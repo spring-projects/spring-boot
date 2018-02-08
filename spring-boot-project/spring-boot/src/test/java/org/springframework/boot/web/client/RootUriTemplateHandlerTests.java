@@ -61,7 +61,8 @@ public class RootUriTemplateHandlerTests {
 		this.uri = new URI("http://example.com/hello");
 		this.handler = new RootUriTemplateHandler("http://example.com", this.delegate);
 		given(this.delegate.expand(anyString(), any(Map.class))).willReturn(this.uri);
-		given(this.delegate.expand(anyString(), any(Object[].class))).willReturn(this.uri);
+		given(this.delegate.expand(anyString(), any(Object[].class)))
+				.willReturn(this.uri);
 	}
 
 	@Test

@@ -177,8 +177,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 			SourceSet sourceSet) {
 		String locations = StringUtils
 				.collectionToCommaDelimitedString(sourceSet.getResources().getSrcDirs());
-		compile.getOptions().getCompilerArgs()
-				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
+		compile.getOptions().getCompilerArgs().add(
+				"-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
 						+ locations);
 	}
 

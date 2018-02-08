@@ -57,9 +57,10 @@ public class LiquibaseEndpointDocumentationTests
 						responseFields(
 								fieldWithPath("contexts")
 										.description("Application contexts keyed by id"),
-						changeSetsField).andWithPrefix(
-								"contexts.*.liquibaseBeans.*.changeSets[].",
-								getChangeSetFieldDescriptors()).and(parentIdField())));
+								changeSetsField).andWithPrefix(
+										"contexts.*.liquibaseBeans.*.changeSets[].",
+										getChangeSetFieldDescriptors())
+										.and(parentIdField())));
 	}
 
 	private List<FieldDescriptor> getChangeSetFieldDescriptors() {
@@ -81,8 +82,8 @@ public class LiquibaseEndpointDocumentationTests
 				fieldWithPath("labels")
 						.description("Labels associated with the change set."),
 				fieldWithPath("checksum").description("Checksum of the change set."),
-				fieldWithPath("orderExecuted").description(
-						"Order of the execution of the change set."),
+				fieldWithPath("orderExecuted")
+						.description("Order of the execution of the change set."),
 				fieldWithPath("tag")
 						.description("Tag associated with the change set, if any.")
 						.optional().type(JsonFieldType.STRING));

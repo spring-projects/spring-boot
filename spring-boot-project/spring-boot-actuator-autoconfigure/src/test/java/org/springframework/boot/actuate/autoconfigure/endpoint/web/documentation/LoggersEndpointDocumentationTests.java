@@ -67,10 +67,9 @@ public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentat
 				new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO),
 				new LoggerConfiguration("com.example", LogLevel.DEBUG, LogLevel.DEBUG)));
 		this.mockMvc.perform(get("/actuator/loggers")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("loggers/all",
-						responseFields(
-								fieldWithPath("levels").description(
-										"Levels support by the logging system."),
+				.andDo(MockMvcRestDocumentation.document("loggers/all", responseFields(
+						fieldWithPath("levels")
+								.description("Levels support by the logging system."),
 						fieldWithPath("loggers").description("Loggers keyed by name."))
 								.andWithPrefix("loggers.*.", levelFields)));
 	}
@@ -90,13 +89,12 @@ public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentat
 				.perform(post("/actuator/loggers/com.example")
 						.content("{\"configuredLevel\":\"debug\"}")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation
-						.document("loggers/set",
+				.andExpect(status().isNoContent()).andDo(
+						MockMvcRestDocumentation.document("loggers/set",
 								requestFields(fieldWithPath("configuredLevel")
 										.description("Level for the logger. May be"
 												+ " omitted to clear the level.")
-								.optional())));
+										.optional())));
 		verify(this.loggingSystem).setLogLevel("com.example", LogLevel.DEBUG);
 	}
 

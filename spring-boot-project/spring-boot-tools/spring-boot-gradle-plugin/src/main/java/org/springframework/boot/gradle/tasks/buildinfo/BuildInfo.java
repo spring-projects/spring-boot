@@ -57,7 +57,8 @@ public class BuildInfo extends ConventionTask {
 					new File(getDestinationDir(), "build-info.properties"))
 							.writeBuildProperties(new ProjectDetails(
 									this.properties.getGroup(),
-									this.properties.getArtifact() == null ? "unspecified"
+									this.properties.getArtifact() == null
+											? "unspecified"
 											: this.properties.getArtifact(),
 									this.properties.getVersion(),
 									this.properties.getName(), coerceToStringValues(

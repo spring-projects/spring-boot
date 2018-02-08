@@ -77,10 +77,9 @@ public class HttpTraceEndpointDocumentationTests
 				() -> UUID.randomUUID().toString());
 		given(this.repository.findAll()).willReturn(Arrays.asList(trace));
 		this.mockMvc.perform(get("/actuator/httptrace")).andExpect(status().isOk())
-				.andDo(document("httptrace",
-						responseFields(
-								fieldWithPath("traces").description(
-										"An array of traced HTTP request-response exchanges."),
+				.andDo(document("httptrace", responseFields(
+						fieldWithPath("traces").description(
+								"An array of traced HTTP request-response exchanges."),
 						fieldWithPath("traces.[].timestamp").description(
 								"Timestamp of when the traced exchange occurred."),
 						fieldWithPath("traces.[].principal")
@@ -90,9 +89,8 @@ public class HttpTraceEndpointDocumentationTests
 								.description("Name of the principal.").optional(),
 						fieldWithPath("traces.[].request.method")
 								.description("HTTP method of the request."),
-						fieldWithPath("traces.[].request.remoteAddress")
-								.description(
-										"Remote address from which the request was received, if known.")
+						fieldWithPath("traces.[].request.remoteAddress").description(
+								"Remote address from which the request was received, if known.")
 								.optional().type(JsonFieldType.STRING),
 						fieldWithPath("traces.[].request.uri")
 								.description("URI of the request."),

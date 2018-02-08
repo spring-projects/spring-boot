@@ -50,10 +50,9 @@ public class ScheduledTasksEndpointDocumentationTests
 	public void scheduledTasks() throws Exception {
 		this.mockMvc.perform(get("/actuator/scheduledtasks")).andExpect(status().isOk())
 				.andDo(document("scheduled-tasks",
-						preprocessResponse(replacePattern(
-								Pattern.compile(
-										"org.*\\.ScheduledTasksEndpointDocumentationTests\\$"
-												+ "TestConfiguration"),
+						preprocessResponse(replacePattern(Pattern.compile(
+								"org.*\\.ScheduledTasksEndpointDocumentationTests\\$"
+										+ "TestConfiguration"),
 								"com.example.Processor")),
 						responseFields(
 								fieldWithPath("cron").description("Cron tasks, if any."),

@@ -69,8 +69,8 @@ public class MetricsRestTemplateCustomizerTests {
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
 						MediaType.APPLICATION_JSON));
 		String result = this.restTemplate.getForObject("/test/{id}", String.class, 123);
-		assertThat(this.registry.find("http.client.requests")
-				.meters()).anySatisfy((m) -> assertThat(
+		assertThat(this.registry.find("http.client.requests").meters())
+				.anySatisfy((m) -> assertThat(
 						StreamSupport.stream(m.getId().getTags().spliterator(), false)
 								.map(Tag::getKey)).doesNotContain("bucket"));
 		assertThat(this.registry.get("http.client.requests")

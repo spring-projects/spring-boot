@@ -41,8 +41,7 @@ public class ResourceHandlingApplication {
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(ResourceHandlingApplication.class)
 				.properties("server.port:0")
-				.listeners(new WebServerPortFileWriter("target/server.port"))
-				.run(args);
+				.listeners(new WebServerPortFileWriter("target/server.port")).run(args);
 	}
 
 	@Bean

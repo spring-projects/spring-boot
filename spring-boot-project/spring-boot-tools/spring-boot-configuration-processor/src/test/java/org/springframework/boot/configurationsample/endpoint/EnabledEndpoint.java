@@ -32,7 +32,7 @@ public class EnabledEndpoint {
 	}
 
 	@ReadOperation
-	public String retrieve(String parameter, Integer anotherParameter)  {
+	public String retrieve(String parameter, Integer anotherParameter) {
 		return "not a main read operation";
 	}
 

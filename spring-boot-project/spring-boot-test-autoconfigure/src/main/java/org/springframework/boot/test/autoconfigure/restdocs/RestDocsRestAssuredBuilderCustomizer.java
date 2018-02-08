@@ -43,9 +43,8 @@ class RestDocsRestAssuredBuilderCustomizer implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		PropertyMapper map = PropertyMapper.get();
 		String host = this.properties.getUriHost();
-		map.from(this.properties::getUriScheme)
-				.when((scheme) -> StringUtils.hasText(scheme)
-						&& StringUtils.hasText(host))
+		map.from(this.properties::getUriScheme).when(
+				(scheme) -> StringUtils.hasText(scheme) && StringUtils.hasText(host))
 				.to((scheme) -> this.delegate.baseUri(scheme + "://" + host));
 		map.from(this.properties::getUriPort).whenNonNull().to(this.delegate::port);
 	}

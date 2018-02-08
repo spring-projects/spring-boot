@@ -68,15 +68,13 @@ public class MvcWebEndpointIntegrationTests extends
 
 	@Test
 	public void responseToOptionsRequestIncludesCorsHeaders() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.options().uri("/test")
-						.accept(MediaType.APPLICATION_JSON)
-						.header("Access-Control-Request-Method", "POST")
-						.header("Origin", "http://example.com").exchange().expectStatus()
-						.isOk().expectHeader()
-						.valueEquals("Access-Control-Allow-Origin", "http://example.com")
-						.expectHeader()
-						.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
+		load(TestEndpointConfiguration.class, (client) -> client.options().uri("/test")
+				.accept(MediaType.APPLICATION_JSON)
+				.header("Access-Control-Request-Method", "POST")
+				.header("Origin", "http://example.com").exchange().expectStatus().isOk()
+				.expectHeader()
+				.valueEquals("Access-Control-Allow-Origin", "http://example.com")
+				.expectHeader().valueEquals("Access-Control-Allow-Methods", "GET,POST"));
 	}
 
 	@Test
@@ -147,7 +145,7 @@ public class MvcWebEndpointIntegrationTests extends
 				@Override
 				protected void doFilterInternal(HttpServletRequest request,
 						HttpServletResponse response, FilterChain filterChain)
-								throws ServletException, IOException {
+						throws ServletException, IOException {
 					filterChain.doFilter(new HttpServletRequestWrapper(request) {
 
 						@Override

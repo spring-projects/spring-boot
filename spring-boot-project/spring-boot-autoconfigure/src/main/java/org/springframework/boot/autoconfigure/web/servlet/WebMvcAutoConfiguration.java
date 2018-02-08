@@ -321,10 +321,9 @@ public class WebMvcAutoConfiguration {
 			CacheControl cacheControl = this.resourceProperties.getCache()
 					.getCachecontrol().toHttpCacheControl();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				customizeResourceHandlerRegistration(
-						registry.addResourceHandler("/webjars/**")
-								.addResourceLocations(
-										"classpath:/META-INF/resources/webjars/")
+				customizeResourceHandlerRegistration(registry
+						.addResourceHandler("/webjars/**")
+						.addResourceLocations("classpath:/META-INF/resources/webjars/")
 						.setCachePeriod(getSeconds(cachePeriod))
 						.setCacheControl(cacheControl));
 			}
@@ -334,8 +333,8 @@ public class WebMvcAutoConfiguration {
 						registry.addResourceHandler(staticPathPattern)
 								.addResourceLocations(getResourceLocations(
 										this.resourceProperties.getStaticLocations()))
-						.setCachePeriod(getSeconds(cachePeriod))
-						.setCacheControl(cacheControl));
+								.setCachePeriod(getSeconds(cachePeriod))
+								.setCacheControl(cacheControl));
 			}
 		}
 

@@ -78,9 +78,8 @@ public class FreeMarkerAutoConfigurationTests {
 	@Test
 	public void nonExistentLocationAndEmptyLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		this.contextRunner
-				.withPropertyValues("spring.freemarker.templateLoaderPath:"
-						+ "classpath:/does-not-exist/,classpath:/templates/empty-directory/")
+		this.contextRunner.withPropertyValues("spring.freemarker.templateLoaderPath:"
+				+ "classpath:/does-not-exist/,classpath:/templates/empty-directory/")
 				.run((context) -> {
 				});
 	}

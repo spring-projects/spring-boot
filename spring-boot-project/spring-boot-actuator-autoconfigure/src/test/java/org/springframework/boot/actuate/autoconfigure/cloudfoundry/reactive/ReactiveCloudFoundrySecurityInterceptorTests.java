@@ -96,10 +96,9 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 				.from(MockServerHttpRequest.get("/a")
 						.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
 						.build());
-		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
-				.consumeErrorWith((ex) -> assertThat(
-						((CloudFoundryAuthorizationException) ex).getReason())
-								.isEqualTo(Reason.SERVICE_UNAVAILABLE))
+		StepVerifier.create(this.interceptor.preHandle(request, "/a")).consumeErrorWith(
+				(ex) -> assertThat(((CloudFoundryAuthorizationException) ex).getReason())
+						.isEqualTo(Reason.SERVICE_UNAVAILABLE))
 				.verify();
 	}
 
@@ -109,10 +108,9 @@ public class ReactiveCloudFoundrySecurityInterceptorTests {
 				"my-app-id");
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest
 				.get("/a").header(HttpHeaders.AUTHORIZATION, mockAccessToken()).build());
-		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
-				.consumeErrorWith((ex) -> assertThat(
-						((CloudFoundryAuthorizationException) ex).getReason())
-								.isEqualTo(Reason.SERVICE_UNAVAILABLE))
+		StepVerifier.create(this.interceptor.preHandle(request, "/a")).consumeErrorWith(
+				(ex) -> assertThat(((CloudFoundryAuthorizationException) ex).getReason())
+						.isEqualTo(Reason.SERVICE_UNAVAILABLE))
 				.verify();
 	}
 

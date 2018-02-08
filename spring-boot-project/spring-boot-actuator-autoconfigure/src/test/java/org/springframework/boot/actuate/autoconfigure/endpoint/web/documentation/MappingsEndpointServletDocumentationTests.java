@@ -96,13 +96,13 @@ public class MappingsEndpointServletDocumentationTests
 						responseFields(
 								beneathPath("contexts.*.mappings.dispatcherServlets")
 										.withSubsectionId("dispatcher-servlets"),
-						fieldWithPath("*").description(
-								"Dispatcher servlet mappings, if any, keyed by "
-										+ "dispatcher servlet bean name."),
-						fieldWithPath("*.[].handler")
-								.description("Handler for the mapping."),
-						fieldWithPath("*.[].predicate")
-								.description("Predicate for the mapping.")),
+								fieldWithPath("*").description(
+										"Dispatcher servlet mappings, if any, keyed by "
+												+ "dispatcher servlet bean name."),
+								fieldWithPath("*.[].handler")
+										.description("Handler for the mapping."),
+								fieldWithPath("*.[].predicate")
+										.description("Predicate for the mapping.")),
 						responseFields(
 								beneathPath("contexts.*.mappings.servletFilters")
 										.withSubsectionId("servlet-filters"),

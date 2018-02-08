@@ -191,10 +191,10 @@ public abstract class AbstractErrorWebExceptionHandler
 		StringBuilder builder = new StringBuilder();
 		Object message = error.get("message");
 		Date timestamp = (Date) error.get("timestamp");
-		builder.append("<html><body><h1>Whitelabel Error Page</h1>")
-				.append("<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
-				.append("<div id='created'>").append(timestamp)
-				.append("</div>").append("<div>There was an unexpected error (type=")
+		builder.append("<html><body><h1>Whitelabel Error Page</h1>").append(
+				"<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
+				.append("<div id='created'>").append(timestamp).append("</div>")
+				.append("<div>There was an unexpected error (type=")
 				.append(htmlEscape(error.get("error"))).append(", status=")
 				.append(htmlEscape(error.get("status"))).append(").</div>");
 		if (message != null) {

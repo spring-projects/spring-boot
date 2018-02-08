@@ -139,9 +139,8 @@ public class JacksonAutoConfigurationTests {
 
 	@Test
 	public void customDateFormatClass() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat")
+		this.contextRunner.withPropertyValues(
+				"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat")
 				.run((context) -> {
 					ObjectMapper mapper = context.getBean(ObjectMapper.class);
 					assertThat(mapper.getDateFormat()).isInstanceOf(MyDateFormat.class);
@@ -169,9 +168,8 @@ public class JacksonAutoConfigurationTests {
 
 	@Test
 	public void customPropertyNamingStrategyClass() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy")
+		this.contextRunner.withPropertyValues(
+				"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy")
 				.run((context) -> {
 					ObjectMapper mapper = context.getBean(ObjectMapper.class);
 					assertThat(mapper.getPropertyNamingStrategy())

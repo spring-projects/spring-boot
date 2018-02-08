@@ -53,8 +53,8 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
-		Map<Object, Object> map = CollectionFactory.createMap(
-				(target.getValue() == null ? target.getType().resolve(Object.class) : Map.class), 0);
+		Map<Object, Object> map = CollectionFactory.createMap((target.getValue() == null
+				? target.getType().resolve(Object.class) : Map.class), 0);
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		boolean hasDescendants = getContext().streamSources().anyMatch((source) -> source
 				.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT);

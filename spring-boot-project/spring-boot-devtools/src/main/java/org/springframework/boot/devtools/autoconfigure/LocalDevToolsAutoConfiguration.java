@@ -165,8 +165,7 @@ public class LocalDevToolsAutoConfiguration {
 
 		private final OptionalLiveReloadServer liveReloadServer;
 
-		LiveReloadServerEventListener(
-				OptionalLiveReloadServer liveReloadServer) {
+		LiveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
 			this.liveReloadServer = liveReloadServer;
 		}
 

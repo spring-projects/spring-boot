@@ -134,8 +134,7 @@ class ServletManagementChildContextConfiguration {
 			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
 		}
 
-		private AccessLogValve findAccessLogValve(
-				TomcatServletWebServerFactory factory) {
+		private AccessLogValve findAccessLogValve(TomcatServletWebServerFactory factory) {
 			for (Valve engineValve : factory.getEngineValves()) {
 				if (engineValve instanceof AccessLogValve) {
 					return (AccessLogValve) engineValve;
@@ -151,8 +150,7 @@ class ServletManagementChildContextConfiguration {
 
 		@Override
 		public void customize(UndertowServletWebServerFactory factory) {
-			factory.setAccessLogPrefix(
-					customizePrefix(factory.getAccessLogPrefix()));
+			factory.setAccessLogPrefix(customizePrefix(factory.getAccessLogPrefix()));
 		}
 
 	}

@@ -67,10 +67,10 @@ public class SessionsEndpointDocumentationTests
 	private static final Session sessionThree = createSession(
 			Instant.now().minusSeconds(60 * 60 * 2), Instant.now().minusSeconds(12));
 
-	private static final List<FieldDescriptor> sessionFields = Arrays
-			.asList(fieldWithPath("id").description("ID of the session."),
-					fieldWithPath("attributeNames").description(
-							"Names of the attributes stored in the session."),
+	private static final List<FieldDescriptor> sessionFields = Arrays.asList(
+			fieldWithPath("id").description("ID of the session."),
+			fieldWithPath("attributeNames")
+					.description("Names of the attributes stored in the session."),
 			fieldWithPath("creationTime")
 					.description("Timestamp of when the session was created."),
 			fieldWithPath("lastAccessedTime")

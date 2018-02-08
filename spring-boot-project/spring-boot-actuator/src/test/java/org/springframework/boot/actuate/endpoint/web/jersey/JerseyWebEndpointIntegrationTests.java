@@ -131,7 +131,7 @@ public class JerseyWebEndpointIntegrationTests extends
 				@Override
 				protected void doFilterInternal(HttpServletRequest request,
 						HttpServletResponse response, FilterChain filterChain)
-								throws ServletException, IOException {
+						throws ServletException, IOException {
 					filterChain.doFilter(new HttpServletRequestWrapper(request) {
 
 						@Override

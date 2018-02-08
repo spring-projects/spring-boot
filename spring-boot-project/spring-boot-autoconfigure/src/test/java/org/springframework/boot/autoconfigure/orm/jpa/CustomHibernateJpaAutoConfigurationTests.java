@@ -63,10 +63,9 @@ public class CustomHibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void namingStrategyDelegatorTakesPrecedence() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
-								+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
+		this.contextRunner.withPropertyValues(
+				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
+						+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
 				.run((context) -> {
 					JpaProperties bean = context.getBean(JpaProperties.class);
 					Map<String, Object> hibernateProperties = bean.getHibernateProperties(

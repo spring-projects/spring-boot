@@ -49,9 +49,8 @@ public final class LambdaSafe {
 
 	static {
 		CLASS_GET_MODULE = ReflectionUtils.findMethod(Class.class, "getModule");
-		MODULE_GET_NAME = (CLASS_GET_MODULE == null ? null
-				: ReflectionUtils.findMethod(CLASS_GET_MODULE.getReturnType(),
-						"getName"));
+		MODULE_GET_NAME = (CLASS_GET_MODULE == null ? null : ReflectionUtils
+				.findMethod(CLASS_GET_MODULE.getReturnType(), "getName"));
 	}
 
 	private LambdaSafe() {

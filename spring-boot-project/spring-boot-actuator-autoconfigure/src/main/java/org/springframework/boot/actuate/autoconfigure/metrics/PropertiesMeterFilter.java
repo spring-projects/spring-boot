@@ -58,7 +58,8 @@ public class PropertiesMeterFilter implements MeterFilter {
 	public HistogramConfig configure(Meter.Id id, HistogramConfig config) {
 		HistogramConfig.Builder builder = HistogramConfig.builder();
 		Distribution distribution = this.properties.getDistribution();
-		builder.percentilesHistogram(lookup(distribution.getPercentilesHistogram(), id, null));
+		builder.percentilesHistogram(
+				lookup(distribution.getPercentilesHistogram(), id, null));
 		builder.percentiles(lookup(distribution.getPercentiles(), id, null));
 		builder.sla(convertSla(id.getType(), lookup(distribution.getSla(), id, null)));
 		return builder.build().merge(config);

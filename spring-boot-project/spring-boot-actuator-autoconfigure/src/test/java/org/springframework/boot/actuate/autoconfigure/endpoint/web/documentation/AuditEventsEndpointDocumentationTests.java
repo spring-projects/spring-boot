@@ -88,9 +88,9 @@ public class AuditEventsEndpointDocumentationTests
 								parameterWithName("principal").description(
 										"Restricts the events to those with the given "
 												+ "principal. Optional."),
-						parameterWithName("type").description(
-								"Restricts the events to those with the given "
-										+ "type. Optional."))));
+								parameterWithName("type").description(
+										"Restricts the events to those with the given "
+												+ "type. Optional."))));
 		verify(this.repository).find("alice", now.toInstant(), "logout");
 	}
 

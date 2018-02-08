@@ -102,9 +102,8 @@ public class MongoReactiveAutoConfigurationTests {
 
 	@Test
 	public void customizerOverridesAutoConfig() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
+		this.contextRunner.withPropertyValues(
+				"spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
 				.withUserConfiguration(SimpleCustomizerConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
 					MongoClient client = context.getBean(MongoClient.class);

@@ -292,13 +292,13 @@ public class JpaProperties {
 		private void applyNamingStrategies(Map<String, Object> properties,
 				ImplicitNamingStrategy implicitStrategyBean,
 				PhysicalNamingStrategy physicalStrategyBean) {
-			applyNamingStrategy(properties,
-					"hibernate.implicit_naming_strategy", implicitStrategyBean != null
-							? implicitStrategyBean : this.implicitStrategy,
+			applyNamingStrategy(properties, "hibernate.implicit_naming_strategy",
+					implicitStrategyBean != null ? implicitStrategyBean
+							: this.implicitStrategy,
 					DEFAULT_IMPLICIT_STRATEGY);
-			applyNamingStrategy(properties,
-					"hibernate.physical_naming_strategy", physicalStrategyBean != null
-							? physicalStrategyBean : this.physicalStrategy,
+			applyNamingStrategy(properties, "hibernate.physical_naming_strategy",
+					physicalStrategyBean != null ? physicalStrategyBean
+							: this.physicalStrategy,
 					DEFAULT_PHYSICAL_STRATEGY);
 		}
 

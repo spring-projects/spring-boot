@@ -46,8 +46,8 @@ import static org.mockito.Mockito.mock;
 public class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations
+					.of(ReactiveUserDetailsServiceAutoConfiguration.class));
 
 	@Test
 	public void configuresADefaultUser() {
@@ -62,7 +62,8 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	public void doesNotConfigureDefaultUserIfUserDetailsServiceAvailable() {
-		this.contextRunner.withUserConfiguration(UserConfig.class, TestSecurityConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(UserConfig.class, TestSecurityConfiguration.class)
 				.run((context) -> {
 					ReactiveUserDetailsService userDetailsService = context
 							.getBean(ReactiveUserDetailsService.class);
@@ -88,8 +89,7 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
-		this.contextRunner
-				.withUserConfiguration(TestSecurityConfiguration.class)
+		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class)
 				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context
 							.getBean(MapReactiveUserDetailsService.class);
@@ -117,8 +117,7 @@ public class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword,
 			String expectedPassword) {
-		this.contextRunner
-				.withUserConfiguration(configClass)
+		this.contextRunner.withUserConfiguration(configClass)
 				.withPropertyValues("spring.security.user.password=" + providedPassword)
 				.run(((context) -> {
 					MapReactiveUserDetailsService userDetailsService = context

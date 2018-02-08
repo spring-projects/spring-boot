@@ -78,13 +78,13 @@ public class MappingsEndpointReactiveDocumentationTests
 						responseFields(
 								beneathPath("contexts.*.mappings.dispatcherHandlers")
 										.withSubsectionId("dispatcher-handlers"),
-						fieldWithPath("*").description(
-								"Dispatcher handler mappings, if any, keyed by "
-										+ "dispatcher handler bean name."),
-						fieldWithPath("*.[].handler")
-								.description("Handler for the mapping."),
-						fieldWithPath("*.[].predicate")
-								.description("Predicate for the mapping."))));
+								fieldWithPath("*").description(
+										"Dispatcher handler mappings, if any, keyed by "
+												+ "dispatcher handler bean name."),
+								fieldWithPath("*.[].handler")
+										.description("Handler for the mapping."),
+								fieldWithPath("*.[].predicate")
+										.description("Predicate for the mapping."))));
 	}
 
 	@Configuration

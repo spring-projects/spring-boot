@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,17 +127,23 @@ class JavaBeanBinder implements BeanBinder {
 			int parameterCount = method.getParameterCount();
 			if (name.startsWith("get") && parameterCount == 0) {
 				name = Introspector.decapitalize(name.substring(3));
-				this.properties.computeIfAbsent(name, n -> new BeanProperty(n, this.resolvableType))
+				this.properties
+						.computeIfAbsent(name,
+								n -> new BeanProperty(n, this.resolvableType))
 						.addGetter(method);
 			}
 			else if (name.startsWith("is") && parameterCount == 0) {
 				name = Introspector.decapitalize(name.substring(2));
-				this.properties.computeIfAbsent(name, n -> new BeanProperty(n, this.resolvableType))
+				this.properties
+						.computeIfAbsent(name,
+								n -> new BeanProperty(n, this.resolvableType))
 						.addGetter(method);
 			}
 			else if (name.startsWith("set") && parameterCount == 1) {
 				name = Introspector.decapitalize(name.substring(3));
-				this.properties.computeIfAbsent(name, n -> new BeanProperty(n, this.resolvableType))
+				this.properties
+						.computeIfAbsent(name,
+								n -> new BeanProperty(n, this.resolvableType))
 						.addSetter(method);
 			}
 		}
@@ -271,10 +277,12 @@ class JavaBeanBinder implements BeanBinder {
 		public ResolvableType getType() {
 			if (this.setter != null) {
 				MethodParameter methodParameter = new MethodParameter(this.setter, 0);
-				return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
+				return ResolvableType.forMethodParameter(methodParameter,
+						this.declaringClassType);
 			}
 			MethodParameter methodParameter = new MethodParameter(this.getter, -1);
-			return ResolvableType.forMethodParameter(methodParameter, this.declaringClassType);
+			return ResolvableType.forMethodParameter(methodParameter,
+					this.declaringClassType);
 		}
 
 		public Annotation[] getAnnotations() {

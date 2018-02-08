@@ -74,10 +74,9 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void hibernate5CustomNamingStrategies() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+		this.contextRunner.withPropertyValues(
+				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
+				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
 				.run(assertJpaProperties((properties) -> {
 					Map<String, Object> hibernateProperties = properties
 							.getHibernateProperties(
@@ -111,10 +110,9 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void namingStrategyInstancesTakePrecedenceOverNamingStrategyProperties() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+		this.contextRunner.withPropertyValues(
+				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
+				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
 				.run(assertJpaProperties((properties) -> {
 					ImplicitNamingStrategy implicitStrategy = mock(
 							ImplicitNamingStrategy.class);
@@ -136,10 +134,9 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void hibernatePropertiesCustomizerTakePrecedenceOverStrategyInstancesAndNamingStrategyProperties() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+		this.contextRunner.withPropertyValues(
+				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
+				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
 				.run(assertJpaProperties((properties) -> {
 					ImplicitNamingStrategy implicitStrategy = mock(
 							ImplicitNamingStrategy.class);
@@ -174,10 +171,9 @@ public class JpaPropertiesTests {
 
 	@Test
 	public void hibernate5CustomNamingStrategiesViaJpaProperties() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
-						"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
+		this.contextRunner.withPropertyValues(
+				"spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
+				"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
 				.run(assertJpaProperties((properties) -> {
 					Map<String, Object> hibernateProperties = properties
 							.getHibernateProperties(

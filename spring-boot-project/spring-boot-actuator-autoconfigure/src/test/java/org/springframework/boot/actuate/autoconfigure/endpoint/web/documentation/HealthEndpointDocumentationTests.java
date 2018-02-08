@@ -52,10 +52,9 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 	@Test
 	public void health() throws Exception {
 		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk())
-				.andDo(document("health",
-						responseFields(
-								fieldWithPath("status").description(
-										"Overall status of the application."),
+				.andDo(document("health", responseFields(
+						fieldWithPath("status")
+								.description("Overall status of the application."),
 						fieldWithPath("details").description(
 								"Details of the health of the application. Presence is controlled by "
 										+ "`management.endpoint.health.show-details`)."),

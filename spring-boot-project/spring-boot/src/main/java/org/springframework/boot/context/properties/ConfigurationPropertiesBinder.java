@@ -73,7 +73,8 @@ class ConfigurationPropertiesBinder {
 	 * @param targetType the resolvable type for the target
 	 * @throws ConfigurationPropertiesBindingException if the binding failed
 	 */
-	void bind(Object target, ConfigurationProperties annotation, ResolvableType targetType) {
+	void bind(Object target, ConfigurationProperties annotation,
+			ResolvableType targetType) {
 		Validator validator = determineValidator(target);
 		BindHandler handler = getBindHandler(annotation, validator);
 		Bindable<?> bindable = Bindable.of(targetType).withExistingValue(target);

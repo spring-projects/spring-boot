@@ -76,7 +76,7 @@ public class HttpTraceFilterTests {
 					@Override
 					protected void service(HttpServletRequest req,
 							HttpServletResponse resp)
-									throws ServletException, IOException {
+							throws ServletException, IOException {
 						req.getSession(true);
 					}
 
@@ -112,7 +112,7 @@ public class HttpTraceFilterTests {
 						@Override
 						protected void service(HttpServletRequest req,
 								HttpServletResponse resp)
-										throws ServletException, IOException {
+								throws ServletException, IOException {
 							throw new IOException();
 						}
 

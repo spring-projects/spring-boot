@@ -51,9 +51,8 @@ public class ProjectInfoAutoConfigurationTests {
 
 	@Test
 	public void gitPropertiesWithNoData() {
-		this.contextRunner
-				.withPropertyValues("spring.info.git.location="
-						+ "classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties")
+		this.contextRunner.withPropertyValues("spring.info.git.location="
+				+ "classpath:/org/springframework/boot/autoconfigure/info/git-no-data.properties")
 				.run((context) -> {
 					GitProperties gitProperties = context.getBean(GitProperties.class);
 					assertThat(gitProperties.getBranch()).isNull();
@@ -87,9 +86,8 @@ public class ProjectInfoAutoConfigurationTests {
 
 	@Test
 	public void buildPropertiesCustomLocation() {
-		this.contextRunner
-				.withPropertyValues("spring.info.build.location="
-						+ "classpath:/org/springframework/boot/autoconfigure/info/build-info.properties")
+		this.contextRunner.withPropertyValues("spring.info.build.location="
+				+ "classpath:/org/springframework/boot/autoconfigure/info/build-info.properties")
 				.run((context) -> {
 					BuildProperties buildProperties = context
 							.getBean(BuildProperties.class);

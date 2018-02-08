@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,15 +194,17 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private void assertActionMissingType(FailureAnalysis analysis, Class<?> type) {
-		assertThat(analysis.getAction()).startsWith(String
-				.format("Consider revisiting the conditions above or defining a bean of type '%s' "
-						+ "in your configuration.", type.getName()));
+		assertThat(analysis.getAction()).startsWith(String.format(
+				"Consider revisiting the conditions above or defining a bean of type '%s' "
+						+ "in your configuration.",
+				type.getName()));
 	}
 
 	private void assertActionMissingName(FailureAnalysis analysis, String name) {
-		assertThat(analysis.getAction()).startsWith(String
-				.format("Consider revisiting the conditions above or defining a bean named '%s' "
-						+ "in your configuration.", name));
+		assertThat(analysis.getAction()).startsWith(String.format(
+				"Consider revisiting the conditions above or defining a bean named '%s' "
+						+ "in your configuration.",
+				name));
 	}
 
 	private void assertBeanMethodDisabled(FailureAnalysis analysis, String description,

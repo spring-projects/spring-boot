@@ -60,8 +60,8 @@ public class RepositoryConfigurationFactoryTests {
 
 	@Test
 	public void activeByDefaultProfileRepositories() {
-		TestPropertyValues
-				.of("user.home:src/test/resources/maven-settings/active-profile-repositories")
+		TestPropertyValues.of(
+				"user.home:src/test/resources/maven-settings/active-profile-repositories")
 				.applyToSystemProperties(() -> {
 					List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 							.createDefaultRepositoryConfiguration();
@@ -74,10 +74,9 @@ public class RepositoryConfigurationFactoryTests {
 
 	@Test
 	public void activeByPropertyProfileRepositories() {
-		TestPropertyValues
-				.of("user.home:src/test/resources/maven-settings/active-profile-repositories",
-						"foo:bar")
-				.applyToSystemProperties(() -> {
+		TestPropertyValues.of(
+				"user.home:src/test/resources/maven-settings/active-profile-repositories",
+				"foo:bar").applyToSystemProperties(() -> {
 					List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 							.createDefaultRepositoryConfiguration();
 					assertRepositoryConfiguration(repositoryConfiguration, "central",
@@ -89,10 +88,9 @@ public class RepositoryConfigurationFactoryTests {
 
 	@Test
 	public void interpolationProfileRepositories() {
-		TestPropertyValues
-				.of("user.home:src/test/resources/maven-settings/active-profile-repositories",
-						"interpolate:true")
-				.applyToSystemProperties(() -> {
+		TestPropertyValues.of(
+				"user.home:src/test/resources/maven-settings/active-profile-repositories",
+				"interpolate:true").applyToSystemProperties(() -> {
 					List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 							.createDefaultRepositoryConfiguration();
 					assertRepositoryConfiguration(repositoryConfiguration, "central",

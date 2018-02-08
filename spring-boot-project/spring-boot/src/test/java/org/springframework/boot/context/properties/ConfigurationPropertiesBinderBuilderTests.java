@@ -128,8 +128,10 @@ public class ConfigurationPropertiesBinderBuilderTests {
 	}
 
 	private void bind(ConfigurationPropertiesBinder binder, Object target) {
-		binder.bind(target, AnnotationUtils.findAnnotation(target.getClass(),
-				ConfigurationProperties.class), ResolvableType.forType(target.getClass()));
+		binder.bind(target,
+				AnnotationUtils.findAnnotation(target.getClass(),
+						ConfigurationProperties.class),
+				ResolvableType.forType(target.getClass()));
 	}
 
 	@ConfigurationProperties(prefix = "test")

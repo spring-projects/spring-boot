@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,8 +148,8 @@ public class PackagingDocumentationTests {
 
 	@Test
 	public void bootJarLaunchScriptProperties() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-jar-launch-script-properties.gradle")
+		this.gradleBuild.script(
+				"src/main/gradle/packaging/boot-jar-launch-script-properties.gradle")
 				.build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");

@@ -78,14 +78,15 @@ public class SecurityAutoConfigurationTests {
 
 	@Test
 	public void testDefaultFilterOrderWithSecurityAdapter() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(WebSecurity.class,
-				SecurityFilterAutoConfiguration.class)).run(
-						(context) -> assertThat(context
-								.getBean("securityFilterChainRegistration",
-										DelegatingFilterProxyRegistrationBean.class)
-								.getOrder()).isEqualTo(
-										FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
-												- 100));
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(WebSecurity.class,
+						SecurityFilterAutoConfiguration.class))
+				.run((context) -> assertThat(context
+						.getBean("securityFilterChainRegistration",
+								DelegatingFilterProxyRegistrationBean.class)
+						.getOrder()).isEqualTo(
+								FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+										- 100));
 	}
 
 	@Test
@@ -118,14 +119,15 @@ public class SecurityAutoConfigurationTests {
 
 	@Test
 	public void testDefaultFilterOrder() {
-		this.contextRunner.withConfiguration(
-				AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run(
-						(context) -> assertThat(context
-								.getBean("securityFilterChainRegistration",
-										DelegatingFilterProxyRegistrationBean.class)
-								.getOrder()).isEqualTo(
-										FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
-												- 100));
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+				.run((context) -> assertThat(context
+						.getBean("securityFilterChainRegistration",
+								DelegatingFilterProxyRegistrationBean.class)
+						.getOrder()).isEqualTo(
+								FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+										- 100));
 	}
 
 	@Test
@@ -137,7 +139,7 @@ public class SecurityAutoConfigurationTests {
 						(context) -> assertThat(context
 								.getBean("securityFilterChainRegistration",
 										DelegatingFilterProxyRegistrationBean.class)
-										.getOrder()).isEqualTo(12345));
+								.getOrder()).isEqualTo(12345));
 	}
 
 	@Test

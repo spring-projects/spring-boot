@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,8 @@ public class ElasticsearchAutoConfigurationTests {
 	public void createTransportClient() {
 		this.context = new AnnotationConfigApplicationContext();
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
-			TestPropertyValues
-					.of("spring.data.elasticsearch.cluster-nodes:localhost:"
+			TestPropertyValues.of(
+					"spring.data.elasticsearch.cluster-nodes:localhost:"
 							+ node.getTcpPort(),
 					"spring.data.elasticsearch.properties.path.home:target/es/client")
 					.applyTo(this.context);

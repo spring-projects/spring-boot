@@ -89,9 +89,8 @@ public class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 
 	@Test
 	public void customTemplateLoaderPath() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.freemarker.templateLoaderPath:classpath:/custom-templates/")
+		this.contextRunner.withPropertyValues(
+				"spring.freemarker.templateLoaderPath:classpath:/custom-templates/")
 				.run((context) -> {
 					MockServerWebExchange exchange = render(context, "custom");
 					String result = exchange.getResponse().getBodyAsString().block();

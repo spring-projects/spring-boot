@@ -60,9 +60,8 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 
 	@Test
 	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
-		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues(
-						"management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues(
+				"management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
 				.run(validateTestProperties("******", "******"));
 	}
 

@@ -50,16 +50,14 @@ public class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentati
 	@Test
 	public void flyway() throws Exception {
 		this.mockMvc.perform(get("/actuator/flyway")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("flyway",
-						responseFields(
-								fieldWithPath("contexts")
-										.description("Application contexts keyed by id"),
+				.andDo(MockMvcRestDocumentation.document("flyway", responseFields(
+						fieldWithPath("contexts")
+								.description("Application contexts keyed by id"),
 						fieldWithPath("contexts.*.flywayBeans.*.migrations").description(
 								"Migrations performed by the Flyway instance, keyed by"
-										+ " Flyway bean name."))
-												.andWithPrefix(
-														"contexts.*.flywayBeans.*.migrations.[].",
-														migrationFieldDescriptors())
+										+ " Flyway bean name.")).andWithPrefix(
+												"contexts.*.flywayBeans.*.migrations.[].",
+												migrationFieldDescriptors())
 												.and(parentIdField())));
 	}
 
@@ -84,9 +82,8 @@ public class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentati
 						"Rank of the applied migration, if any. Later migrations have "
 								+ "higher ranks.")
 						.optional(),
-				fieldWithPath("script")
-						.description(
-								"Name of the script used to execute the migration, if any.")
+				fieldWithPath("script").description(
+						"Name of the script used to execute the migration, if any.")
 						.optional(),
 				fieldWithPath("state").description("State of the migration. ("
 						+ describeEnumValues(MigrationState.class) + ")"),

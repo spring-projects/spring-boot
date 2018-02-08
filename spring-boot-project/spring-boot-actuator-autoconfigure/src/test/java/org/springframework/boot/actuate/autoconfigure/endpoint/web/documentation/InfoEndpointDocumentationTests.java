@@ -53,13 +53,13 @@ public class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentation
 						responseFields(beneathPath("git"),
 								fieldWithPath("branch")
 										.description("Name of the Git branch, if any."),
-						fieldWithPath("commit")
-								.description("Details of the Git commit, if any."),
-						fieldWithPath("commit.time")
-								.description("Timestamp of the commit, if any.")
-								.type(JsonFieldType.VARIES),
-						fieldWithPath("commit.id")
-								.description("ID of the commit, if any.")),
+								fieldWithPath("commit").description(
+										"Details of the Git commit, if any."),
+								fieldWithPath("commit.time")
+										.description("Timestamp of the commit, if any.")
+										.type(JsonFieldType.VARIES),
+								fieldWithPath("commit.id")
+										.description("ID of the commit, if any.")),
 						responseFields(beneathPath("build"),
 								fieldWithPath("artifact")
 										.description(
@@ -76,9 +76,8 @@ public class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentation
 										.description(
 												"Version of the application, if any.")
 										.optional(),
-								fieldWithPath("time")
-										.description(
-												"Timestamp of when the application was built, if any.")
+								fieldWithPath("time").description(
+										"Timestamp of when the application was built, if any.")
 										.type(JsonFieldType.VARIES).optional())));
 	}
 

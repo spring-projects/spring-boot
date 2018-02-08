@@ -75,7 +75,7 @@ public class HttpTraceFilter extends OncePerRequestFilter implements Ordered {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
-					throws ServletException, IOException {
+			throws ServletException, IOException {
 		TraceableHttpServletRequest traceableRequest = new TraceableHttpServletRequest(
 				request);
 		HttpTrace trace = this.tracer.receivedRequest(traceableRequest);

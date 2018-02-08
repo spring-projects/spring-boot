@@ -131,10 +131,9 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testLiquibasePlusValidation() {
-		contextRunner()
-				.withPropertyValues("spring.datasource.initialization-mode:never",
-						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
-						"spring.jpa.hibernate.ddl-auto:validate")
+		contextRunner().withPropertyValues("spring.datasource.initialization-mode:never",
+				"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+				"spring.jpa.hibernate.ddl-auto:validate")
 				.withConfiguration(
 						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasNotFailed());
@@ -224,11 +223,10 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void providerDisablesAutoCommitIsNotConfiguredIfPropertyIsSet() {
-		contextRunner()
-				.withPropertyValues(
-						"spring.datasource.type:" + HikariDataSource.class.getName(),
-						"spring.datasource.hikari.auto-commit:false",
-						"spring.jpa.properties.hibernate.connection.provider_disables_autocommit=false")
+		contextRunner().withPropertyValues(
+				"spring.datasource.type:" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.auto-commit:false",
+				"spring.jpa.properties.hibernate.connection.provider_disables_autocommit=false")
 				.run((context) -> {
 					Map<String, Object> jpaProperties = context
 							.getBean(LocalContainerEntityManagerFactoryBean.class)

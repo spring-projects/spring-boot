@@ -77,12 +77,11 @@ public class LdapAutoConfigurationTests {
 
 	@Test
 	public void contextSourceWithExtraCustomization() {
-		this.contextRunner
-				.withPropertyValues("spring.ldap.urls:ldap://localhost:123",
-						"spring.ldap.username:root", "spring.ldap.password:secret",
-						"spring.ldap.anonymous-read-only:true",
-						"spring.ldap.base:cn=SpringDevelopers",
-						"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5")
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123",
+				"spring.ldap.username:root", "spring.ldap.password:secret",
+				"spring.ldap.anonymous-read-only:true",
+				"spring.ldap.base:cn=SpringDevelopers",
+				"spring.ldap.baseEnvironment.java.naming.security.authentication:DIGEST-MD5")
 				.run((context) -> {
 					LdapContextSource contextSource = context
 							.getBean(LdapContextSource.class);
