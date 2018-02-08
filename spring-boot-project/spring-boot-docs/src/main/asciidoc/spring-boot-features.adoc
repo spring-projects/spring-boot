@@ -6148,6 +6148,9 @@ implementation:
 Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`. See
 the {dc-spring-boot-test}/mock/mockito/SpyBean.{dc-ext}[Javadoc] for full details.
 
+NOTE: While Spring's test framework caches application contexts between tests and reuses
+a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean`
+influences the cache key, which will most likely increase the number of contexts.
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-tests]]
 ==== Auto-configured Tests
