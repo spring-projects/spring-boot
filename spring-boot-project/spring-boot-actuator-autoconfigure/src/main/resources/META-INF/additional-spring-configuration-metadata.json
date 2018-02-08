@@ -222,7 +222,7 @@
       "defaultValue": true
     },
     {
-      "name": "management.httptrace.enabled",
+      "name": "management.trace.http.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response tracing.",
       "defaultValue": true
@@ -232,7 +232,7 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable the trace servlet filter.",
       "deprecation": {
-        "replacement": "management.httptrace.enabled",
+        "replacement": "management.trace.http.enabled",
         "level": "error"
       }
     },
@@ -1053,7 +1053,7 @@
       "description": "Enable the trace servlet filter.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "management.trace.filter.enabled",
+        "replacement": "management.trace.http.enabled",
         "level": "error"
       }
     },
@@ -1062,7 +1062,7 @@
       "type": "java.lang.Boolean",
       "description": "Enable the endpoint.",
       "deprecation": {
-        "replacement": "management.endpoint.trace.enabled",
+        "replacement": "management.endpoint.httptrace.enabled",
         "level": "error"
       }
     },
@@ -1080,7 +1080,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web.path-mapping.trace",
+        "replacement": "management.endpoints.web.path-mapping.httptrace",
         "level": "error"
       }
     },
@@ -1477,7 +1477,7 @@
     {
       "name": "management.trace.include",
       "deprecation": {
-        "replacement": "management.httptrace.include",
+        "replacement": "management.trace.http.include",
         "level": "error"
       }
     },
@@ -1633,6 +1633,9 @@
           "value": "heapdump"
         },
         {
+          "value": "httptrace"
+        },
+        {
           "value": "info"
         },
         {
@@ -1664,9 +1667,6 @@
         },
         {
           "value": "threaddump"
-        },
-        {
-          "value": "trace"
         }
       ],
       "providers": [

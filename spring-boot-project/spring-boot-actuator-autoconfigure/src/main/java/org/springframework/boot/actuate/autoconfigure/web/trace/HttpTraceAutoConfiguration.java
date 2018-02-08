@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.trace;
 
-import org.springframework.boot.actuate.web.trace.HttpExchangeTracer;
-import org.springframework.boot.actuate.web.trace.HttpTraceRepository;
-import org.springframework.boot.actuate.web.trace.InMemoryHttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.actuate.web.trace.reactive.HttpTraceWebFilter;
 import org.springframework.boot.actuate.web.trace.servlet.HttpTraceFilter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

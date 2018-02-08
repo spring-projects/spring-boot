@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.trace;
+package org.springframework.boot.actuate.trace.http;
 
 import java.net.URI;
 import java.util.List;

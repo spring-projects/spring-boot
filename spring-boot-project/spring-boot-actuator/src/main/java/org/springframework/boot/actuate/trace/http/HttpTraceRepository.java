@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.trace;
+package org.springframework.boot.actuate.trace.http;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * A representation of an HTTP response that is suitable for tracing.
+ * A repository for {@link HttpTrace}s.
  *
+ * @author Dave Syer
  * @author Andy Wilkinson
  * @since 2.0.0
- * @see HttpExchangeTracer
  */
-public interface TraceableResponse {
+public interface HttpTraceRepository {
 
 	/**
-	 * The status of the response.
-	 * @return the status
+	 * Find all {@link HttpTrace} objects contained in the repository.
+	 * @return the results
 	 */
-	int getStatus();
+	List<HttpTrace> findAll();
 
 	/**
-	 * Returns a modifiable copy of the headers of the response.
-	 * @return the headers
+	 * Adds a trace to the repository.
+	 * @param trace the trace to add
 	 */
-	Map<String, List<String>> getHeaders();
+	void add(HttpTrace trace);
 
 }

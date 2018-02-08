@@ -1283,9 +1283,9 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.status.http-mapping= # Mapping of health statuses to HTTP status codes. By default, registered health statuses map to sensible defaults (for example, UP maps to 200).
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UP, UNKNOWN # Comma-separated list of health statuses in order of severity.
 
-	# HTTP TRACING ({sc-spring-boot-actuator-autoconfigure}/web/trace/HttpTraceProperties.{sc-ext}[HttpTraceProperties])
-	management.httptrace.enabled=true # Whether to enable HTTP request-response tracing.
-	management.httptrace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
+	# HTTP TRACING ({sc-spring-boot-actuator-autoconfigure}/trace/http/HttpTraceProperties.{sc-ext}[HttpTraceProperties])
+	management.trace.http.enabled=true # Whether to enable HTTP request-response tracing.
+	management.trace.http.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 	# INFO CONTRIBUTORS ({sc-spring-boot-actuator-autoconfigure}/info/InfoContributorProperties.{sc-ext}[InfoContributorProperties])
 	management.info.build.enabled=true # Whether to enable build info.

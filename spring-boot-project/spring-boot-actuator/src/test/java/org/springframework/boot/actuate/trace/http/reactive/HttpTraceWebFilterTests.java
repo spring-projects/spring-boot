@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.trace.reactive;
+package org.springframework.boot.actuate.trace.http.reactive;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -25,10 +25,11 @@ import javax.servlet.ServletException;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.web.trace.HttpExchangeTracer;
-import org.springframework.boot.actuate.web.trace.HttpTrace.Session;
-import org.springframework.boot.actuate.web.trace.InMemoryHttpTraceRepository;
-import org.springframework.boot.actuate.web.trace.Include;
+import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
+import org.springframework.boot.actuate.trace.http.HttpTrace.Session;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.Include;
+import org.springframework.boot.actuate.web.trace.reactive.HttpTraceWebFilter;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
@@ -134,7 +135,7 @@ public class HttpTraceWebFilterTests {
 
 		}).block();
 		assertThat(this.repository.findAll()).hasSize(1);
-		org.springframework.boot.actuate.web.trace.HttpTrace.Principal tracedPrincipal = this.repository
+		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository
 				.findAll().get(0).getPrincipal();
 		assertThat(tracedPrincipal).isNotNull();
 		assertThat(tracedPrincipal.getName()).isEqualTo("alice");

@@ -21,10 +21,10 @@ import java.util.Set;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.web.trace.HttpExchangeTracer;
-import org.springframework.boot.actuate.web.trace.HttpTrace;
-import org.springframework.boot.actuate.web.trace.HttpTraceRepository;
-import org.springframework.boot.actuate.web.trace.Include;
+import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
+import org.springframework.boot.actuate.trace.http.HttpTrace;
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.Include;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;

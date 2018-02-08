@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.trace;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.boot.actuate.web.trace.Include;
+import org.springframework.boot.actuate.trace.http.Include;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.httptrace")
+@ConfigurationProperties(prefix = "management.trace.http")
 public class HttpTraceProperties {
 
 	/**

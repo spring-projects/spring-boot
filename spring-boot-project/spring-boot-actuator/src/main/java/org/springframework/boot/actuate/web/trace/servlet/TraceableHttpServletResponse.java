@@ -23,7 +23,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.boot.actuate.web.trace.TraceableResponse;
+import org.springframework.boot.actuate.trace.http.TraceableResponse;
 
 /**
  * An adapter that exposes an {@link HttpServletResponse} as a {@link TraceableResponse}.

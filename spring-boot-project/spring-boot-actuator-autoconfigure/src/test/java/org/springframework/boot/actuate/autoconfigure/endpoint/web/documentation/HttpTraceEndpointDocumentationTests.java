@@ -25,13 +25,13 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.web.trace.HttpExchangeTracer;
-import org.springframework.boot.actuate.web.trace.HttpTrace;
-import org.springframework.boot.actuate.web.trace.HttpTraceEndpoint;
-import org.springframework.boot.actuate.web.trace.HttpTraceRepository;
-import org.springframework.boot.actuate.web.trace.Include;
-import org.springframework.boot.actuate.web.trace.TraceableRequest;
-import org.springframework.boot.actuate.web.trace.TraceableResponse;
+import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
+import org.springframework.boot.actuate.trace.http.HttpTrace;
+import org.springframework.boot.actuate.trace.http.HttpTraceEndpoint;
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.Include;
+import org.springframework.boot.actuate.trace.http.TraceableRequest;
+import org.springframework.boot.actuate.trace.http.TraceableResponse;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
