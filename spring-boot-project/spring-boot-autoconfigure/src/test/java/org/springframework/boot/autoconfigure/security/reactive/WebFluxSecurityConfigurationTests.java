@@ -41,7 +41,7 @@ public class WebFluxSecurityConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(WebFilterChainProxyConfiguration.class,
 						WebFluxSecurityConfiguration.class)
-				.run(context -> assertThat(context)
+				.run((context) -> assertThat(context)
 						.doesNotHaveBean(WebFluxSecurityConfiguration.class));
 	}
 

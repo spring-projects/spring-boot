@@ -129,21 +129,21 @@ class JavaBeanBinder implements BeanBinder {
 				name = Introspector.decapitalize(name.substring(3));
 				this.properties
 						.computeIfAbsent(name,
-								n -> new BeanProperty(n, this.resolvableType))
+								(n) -> new BeanProperty(n, this.resolvableType))
 						.addGetter(method);
 			}
 			else if (name.startsWith("is") && parameterCount == 0) {
 				name = Introspector.decapitalize(name.substring(2));
 				this.properties
 						.computeIfAbsent(name,
-								n -> new BeanProperty(n, this.resolvableType))
+								(n) -> new BeanProperty(n, this.resolvableType))
 						.addGetter(method);
 			}
 			else if (name.startsWith("set") && parameterCount == 1) {
 				name = Introspector.decapitalize(name.substring(3));
 				this.properties
 						.computeIfAbsent(name,
-								n -> new BeanProperty(n, this.resolvableType))
+								(n) -> new BeanProperty(n, this.resolvableType))
 						.addSetter(method);
 			}
 		}

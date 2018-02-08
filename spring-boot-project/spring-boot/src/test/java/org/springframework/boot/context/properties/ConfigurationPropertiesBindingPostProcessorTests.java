@@ -287,6 +287,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		assertThat(foo.getFoos().get("1")).isNotNull();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void bindToBeanWithGenerics() {
 		this.context = new AnnotationConfigApplicationContext();

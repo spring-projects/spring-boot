@@ -87,6 +87,7 @@ public class SampleSecureWebFluxCustomSecurityTests {
 	@Configuration
 	static class SecurityConfiguration {
 
+		@SuppressWarnings("deprecation")
 		@Bean
 		public MapReactiveUserDetailsService userDetailsService() {
 			return new MapReactiveUserDetailsService(

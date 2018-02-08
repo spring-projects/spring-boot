@@ -28,6 +28,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+	@SuppressWarnings("deprecation")
 	@Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 		return new InMemoryUserDetailsManager(

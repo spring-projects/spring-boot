@@ -280,6 +280,7 @@ public class BinderTests {
 		this.binder.bind("foo", target);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void bindToBeanWithUnresolvableGenerics() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();

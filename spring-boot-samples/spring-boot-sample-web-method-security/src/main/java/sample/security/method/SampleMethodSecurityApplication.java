@@ -70,6 +70,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 	@Configuration
 	protected static class AuthenticationSecurity {
 
+		@SuppressWarnings("deprecation")
 		@Bean
 		public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
 			return new InMemoryUserDetailsManager(

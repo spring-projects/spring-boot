@@ -64,7 +64,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		disableJarTask(project);
 		configureBuildTask(project);
 		BootJar bootJar = configureBootJarTask(project);
-		configureArtifactPublication(project, bootJar);
+		configureArtifactPublication(bootJar);
 		configureBootRunTask(project);
 		configureUtf8Encoding(project);
 		configureParametersCompilerArg(project);
@@ -98,7 +98,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		return bootJar;
 	}
 
-	private void configureArtifactPublication(Project project, BootJar bootJar) {
+	private void configureArtifactPublication(BootJar bootJar) {
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootJar);
 		this.singlePublishedArtifact.addCandidate(artifact);
 	}
@@ -140,14 +140,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(Project project) {
-		project.afterEvaluate((evaluated) -> {
+		project.afterEvaluate((evaluated) ->
 			evaluated.getTasks().withType(JavaCompile.class,
-					(compile) -> configureAdditionalMetadataLocations(project, compile));
-		});
+					this::configureAdditionalMetadataLocations));
 	}
 
-	private void configureAdditionalMetadataLocations(Project project,
-			JavaCompile compile) {
+	private void configureAdditionalMetadataLocations(JavaCompile compile) {
 		compile.doFirst((task) -> {
 			if (hasConfigurationProcessorOnClasspath(compile)) {
 				findMatchingSourceSet(compile).ifPresent((sourceSet) -> {
