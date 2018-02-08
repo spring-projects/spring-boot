@@ -5,7 +5,8 @@ org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingL
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
-org.springframework.boot.autoconfigure.BackgroundPreinitializer
+org.springframework.boot.autoconfigure.BackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.context.event.FailedStartEventListener
 
 # Auto Configuration Import Listeners
 org.springframework.boot.autoconfigure.AutoConfigurationImportListener=\
@@ -131,7 +132,8 @@ org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer,\
-org.springframework.boot.autoconfigure.session.NonUniqueSessionRepositoryFailureAnalyzer
+org.springframework.boot.autoconfigure.session.NonUniqueSessionRepositoryFailureAnalyzer,\
+org.springframework.boot.autoconfigure.diagnostics.analyzer.MissingAnnotationAnalyzer
 
 # Template availability providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
