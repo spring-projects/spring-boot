@@ -104,6 +104,12 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.kafka.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Kafka health check.",
+      "defaultValue": true
+    },
+    {
       "name": "management.health.ldap.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable LDAP health check.",
