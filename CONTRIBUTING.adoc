@@ -136,7 +136,7 @@ Spring Boot includes a `.setup` files which can be used with the Eclipse Install
 provision a new environment. To use the installer:
 
 * Download and run the latest Eclipse Installer from
-  http://www.eclipse.org/downloads/[eclipse.org/downloads/].
+  http://www.eclipse.org/downloads/[eclipse.org/downloads/] (under "Get Eclipse").
 * Switch to "Advanced Mode" using the drop down menu on the right.
 * Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
   install and click "`next`".
@@ -208,4 +208,3 @@ The sample applications are used as integration tests during the build (when you
 they cannot be called directly, and so instead are launched via the
 `maven-invoker-plugin`. If you encounter build failures running the integration tests,
 check the `build.log` file in the appropriate sample directory.
-
