@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 import org.junit.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -67,17 +68,13 @@ public class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {
-		return new WebApplicationContextRunner()
-				.withConfiguration(
-						UserConfigurations.of(WebEndpointTestApplication.class))
-				.withPropertyValues("management.metrics.export.statsd.enabled:false");
+		return new WebApplicationContextRunner().withConfiguration(
+				UserConfigurations.of(WebEndpointTestApplication.class));
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
-		return new ReactiveWebApplicationContextRunner()
-				.withConfiguration(
-						UserConfigurations.of(WebEndpointTestApplication.class))
-				.withPropertyValues("management.metrics.export.statsd.enabled:false");
+		return new ReactiveWebApplicationContextRunner().withConfiguration(
+				UserConfigurations.of(WebEndpointTestApplication.class));
 	}
 
 	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class,
@@ -88,7 +85,8 @@ public class WebEndpointsAutoConfigurationIntegrationTests {
 			MongoDataAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class, JestAutoConfiguration.class,
 			SolrRepositoriesAutoConfiguration.class, SolrAutoConfiguration.class,
-			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class })
+			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,
+			MetricsAutoConfiguration.class })
 	@SpringBootConfiguration
 	public static class WebEndpointTestApplication {
 

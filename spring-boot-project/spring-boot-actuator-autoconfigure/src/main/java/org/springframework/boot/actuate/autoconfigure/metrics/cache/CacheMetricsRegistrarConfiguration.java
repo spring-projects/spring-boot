@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  */
 @Configuration
-@ConditionalOnBean(CacheMeterBinderProvider.class)
+@ConditionalOnBean({ CacheMeterBinderProvider.class, MeterRegistry.class })
 class CacheMetricsRegistrarConfiguration {
 
 	private static final String CACHE_MANAGER_SUFFIX = "cacheManager";

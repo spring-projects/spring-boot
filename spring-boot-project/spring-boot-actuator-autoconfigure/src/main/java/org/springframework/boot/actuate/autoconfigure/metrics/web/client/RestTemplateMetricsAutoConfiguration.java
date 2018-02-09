@@ -27,11 +27,13 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
@@ -49,9 +51,10 @@ import org.springframework.web.client.RestTemplate;
  * @since 2.0.0
  */
 @Configuration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		RestTemplateAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, RestTemplateAutoConfiguration.class,
+		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass(RestTemplate.class)
+@ConditionalOnBean(MeterRegistry.class)
 public class RestTemplateMetricsAutoConfiguration {
 
 	@Bean

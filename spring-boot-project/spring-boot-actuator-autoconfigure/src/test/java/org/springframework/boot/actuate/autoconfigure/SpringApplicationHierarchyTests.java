@@ -19,8 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.After;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
@@ -73,8 +72,7 @@ public class SpringApplicationHierarchyTests {
 			MongoDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class, FlywayAutoConfiguration.class,
-			JestAutoConfiguration.class, JmxMetricsExportAutoConfiguration.class,
-			DatadogMetricsExportAutoConfiguration.class }, excludeName = {
+			JestAutoConfiguration.class, MetricsAutoConfiguration.class }, excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 
@@ -86,8 +84,7 @@ public class SpringApplicationHierarchyTests {
 			MongoDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class, FlywayAutoConfiguration.class,
-			JestAutoConfiguration.class,
-			JmxMetricsExportAutoConfiguration.class }, excludeName = {
+			JestAutoConfiguration.class, MetricsAutoConfiguration.class }, excludeName = {
 					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {
 

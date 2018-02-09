@@ -26,6 +26,7 @@ import io.micrometer.core.instrument.Tags;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.jdbc.DataSourcePoolMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -45,8 +46,10 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 @Configuration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class })
-@ConditionalOnBean({ DataSource.class, DataSourcePoolMetadataProvider.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class,
+		SimpleMetricsExportAutoConfiguration.class })
+@ConditionalOnBean({ DataSource.class, DataSourcePoolMetadataProvider.class,
+		MeterRegistry.class })
 @ConditionalOnProperty(value = "management.metrics.jdbc.instrument", matchIfMissing = true)
 @EnableConfigurationProperties(JdbcMetricsProperties.class)
 public class DataSourcePoolMetricsAutoConfiguration {
