@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
+import java.util.Set;
+
+import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -28,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
  * {@link ManagementContextConfiguration} for servlet endpoints.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  *
  * @since 2.0.0
  */
@@ -41,6 +46,15 @@ public class ServletEndpointManagementContextConfiguration {
 			ServletEndpointsSupplier servletEndpointsSupplier) {
 		return new ServletEndpointRegistrar(properties.getBasePath(),
 				servletEndpointsSupplier.getEndpoints());
+	}
+
+	@Bean
+	public ExposeExcludePropertyEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
+			WebEndpointProperties properties) {
+		Set<String> expose = properties.getExpose();
+		Set<String> exclude = properties.getExclude();
+		return new ExposeExcludePropertyEndpointFilter<>(ExposableServletEndpoint.class,
+				expose, exclude);
 	}
 
 }
