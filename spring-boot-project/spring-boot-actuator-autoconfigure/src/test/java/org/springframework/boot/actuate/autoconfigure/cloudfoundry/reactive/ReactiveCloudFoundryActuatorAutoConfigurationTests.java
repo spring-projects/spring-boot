@@ -247,8 +247,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	public void skipSslValidation() {
 		setupContextWithCloudEnabled();
-		TestPropertyValues
-				.of("management.cloudfoundry.skip-ssl-validation:true")
+		TestPropertyValues.of("management.cloudfoundry.skip-ssl-validation:true")
 				.applyTo(this.context);
 		this.context.refresh();
 		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();

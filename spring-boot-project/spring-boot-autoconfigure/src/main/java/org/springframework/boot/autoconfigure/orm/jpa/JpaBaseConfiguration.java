@@ -166,8 +166,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	private String[] getMappingResources() {
 		List<String> mappingResources = this.properties.getMappingResources();
 		return (!ObjectUtils.isEmpty(mappingResources)
-				? mappingResources.toArray(new String[mappingResources.size()])
-				: null);
+				? mappingResources.toArray(new String[mappingResources.size()]) : null);
 	}
 
 	/**
