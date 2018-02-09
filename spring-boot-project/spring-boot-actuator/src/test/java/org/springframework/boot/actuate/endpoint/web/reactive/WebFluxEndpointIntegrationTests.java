@@ -164,7 +164,7 @@ public class WebFluxEndpointIntegrationTests
 	private static class MockPrincipalServerWebExchangeDecorator
 			extends ServerWebExchangeDecorator {
 
-		protected MockPrincipalServerWebExchangeDecorator(ServerWebExchange delegate) {
+		MockPrincipalServerWebExchangeDecorator(ServerWebExchange delegate) {
 			super(delegate);
 		}
 

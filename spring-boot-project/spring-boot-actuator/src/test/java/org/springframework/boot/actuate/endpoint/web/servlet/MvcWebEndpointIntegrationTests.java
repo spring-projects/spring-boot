@@ -156,7 +156,7 @@ public class MvcWebEndpointIntegrationTests extends
 
 	private static class MockPrincipalWrapper extends HttpServletRequestWrapper {
 
-		public MockPrincipalWrapper(HttpServletRequest request) {
+		MockPrincipalWrapper(HttpServletRequest request) {
 			super(request);
 		}
 
