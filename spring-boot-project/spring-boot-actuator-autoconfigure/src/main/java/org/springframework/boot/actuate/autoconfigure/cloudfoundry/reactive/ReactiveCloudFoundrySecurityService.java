@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.netty.handler.ssl.SslProvider;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
@@ -27,6 +29,7 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryA
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
@@ -50,11 +53,22 @@ class ReactiveCloudFoundrySecurityService {
 	private Mono<String> uaaUrl;
 
 	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder,
-			String cloudControllerUrl) {
+			String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(webClientBuilder, "Webclient must not be null");
 		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
+		if (skipSslValidation) {
+			webClientBuilder.clientConnector(buildTrustAllSslConnector());
+		}
 		this.webClient = webClientBuilder.build();
 		this.cloudControllerUrl = cloudControllerUrl;
+	}
+
+	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
+		return new ReactorClientHttpConnector(
+				(options) -> options.sslSupport((sslContextBuilder) -> {
+					sslContextBuilder.sslProvider(SslProvider.JDK)
+							.trustManager(InsecureTrustManagerFactory.INSTANCE);
+				}));
 	}
 
 	/**

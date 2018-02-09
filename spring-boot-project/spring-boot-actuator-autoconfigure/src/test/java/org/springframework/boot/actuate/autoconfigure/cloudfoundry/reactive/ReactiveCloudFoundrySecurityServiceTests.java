@@ -59,7 +59,7 @@ public class ReactiveCloudFoundrySecurityServiceTests {
 		this.server = new MockWebServer();
 		this.builder = WebClient.builder().baseUrl(this.server.url("/").toString());
 		this.securityService = new ReactiveCloudFoundrySecurityService(this.builder,
-				CLOUD_CONTROLLER);
+				CLOUD_CONTROLLER, false);
 	}
 
 	@After

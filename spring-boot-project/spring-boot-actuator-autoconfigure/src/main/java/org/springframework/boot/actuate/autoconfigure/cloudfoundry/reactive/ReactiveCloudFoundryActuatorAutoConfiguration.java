@@ -111,9 +111,9 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	}
 
 	private CloudFoundrySecurityInterceptor getSecurityInterceptor(
-			WebClient.Builder restTemplateBuilder, Environment environment) {
+			WebClient.Builder webClientBuilder, Environment environment) {
 		ReactiveCloudFoundrySecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(
-				restTemplateBuilder, environment);
+				webClientBuilder, environment);
 		ReactiveTokenValidator tokenValidator = new ReactiveTokenValidator(
 				cloudfoundrySecurityService);
 		return new CloudFoundrySecurityInterceptor(tokenValidator,
@@ -124,9 +124,11 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	private ReactiveCloudFoundrySecurityService getCloudFoundrySecurityService(
 			WebClient.Builder webClientBuilder, Environment environment) {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
+		boolean skipSslValidation = environment.getProperty(
+				"management.cloudfoundry.skip-ssl-validation", Boolean.class, false);
 		return (cloudControllerUrl == null ? null
 				: new ReactiveCloudFoundrySecurityService(webClientBuilder,
-						cloudControllerUrl));
+						cloudControllerUrl, skipSslValidation));
 	}
 
 	private CorsConfiguration getCorsConfiguration() {

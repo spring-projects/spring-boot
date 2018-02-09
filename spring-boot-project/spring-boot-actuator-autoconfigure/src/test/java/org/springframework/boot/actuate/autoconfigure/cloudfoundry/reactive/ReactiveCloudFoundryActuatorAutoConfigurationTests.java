@@ -21,9 +21,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.net.ssl.SSLException;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import reactor.ipc.netty.http.HttpResources;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -56,8 +61,10 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -69,6 +76,9 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Before
 	public void setup() {
 		this.context = new AnnotationConfigReactiveWebApplicationContext();
@@ -76,6 +86,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@After
 	public void close() {
+		HttpResources.reset();
 		if (this.context != null) {
 			this.context.close();
 		}
@@ -231,6 +242,38 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		Object invoker = ReflectionTestUtils.getField(webOperation, "invoker");
 		assertThat(ReflectionTestUtils.getField(invoker, "target"))
 				.isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
+	}
+
+	@Test
+	public void skipSslValidation() {
+		setupContextWithCloudEnabled();
+		TestPropertyValues
+				.of("management.cloudfoundry.skip-ssl-validation:true")
+				.applyTo(this.context);
+		this.context.refresh();
+		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
+		Object interceptor = ReflectionTestUtils.getField(handlerMapping,
+				"securityInterceptor");
+		Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+				"cloudFoundrySecurityService");
+		WebClient webClient = (WebClient) ReflectionTestUtils
+				.getField(interceptorSecurityService, "webClient");
+		webClient.get().uri("https://self-signed.badssl.com/").exchange().block();
+	}
+
+	@Test
+	public void sslValidationNotSkippedByDefault() {
+		setupContextWithCloudEnabled();
+		this.context.refresh();
+		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
+		Object interceptor = ReflectionTestUtils.getField(handlerMapping,
+				"securityInterceptor");
+		Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
+				"cloudFoundrySecurityService");
+		WebClient webClient = (WebClient) ReflectionTestUtils
+				.getField(interceptorSecurityService, "webClient");
+		this.thrown.expectCause(instanceOf(SSLException.class));
+		webClient.get().uri("https://self-signed.badssl.com/").exchange().block();
 	}
 
 	private void setupContextWithCloudEnabled() {
