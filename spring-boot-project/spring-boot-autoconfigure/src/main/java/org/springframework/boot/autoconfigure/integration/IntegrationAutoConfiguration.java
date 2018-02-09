@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,13 @@ package org.springframework.boot.autoconfigure.integration;
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
+import io.micrometer.core.instrument.MeterRegistry;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,6 +46,8 @@ import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.integration.support.management.MetricsFactory;
+import org.springframework.integration.support.management.micrometer.MicrometerMetricsFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -54,6 +59,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Madhura Bhave
+ * @author Gary Russell
  * @since 1.1.0
  */
 @Configuration
@@ -124,6 +130,18 @@ public class IntegrationAutoConfiguration {
 		@Configuration
 		@EnableIntegrationManagement(defaultCountsEnabled = "true", defaultStatsEnabled = "true")
 		protected static class EnableIntegrationManagementConfiguration {
+		}
+
+	}
+
+	@ConditionalOnBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
+	protected static class IntegrationMetricsConfiguration {
+
+		@ConditionalOnMissingBean(MetricsFactory.class)
+		@ConditionalOnBean(MeterRegistry.class)
+		@Bean
+		public MetricsFactory integrationMetricsFactory(MeterRegistry meterRegistry) {
+			return new MicrometerMetricsFactory(meterRegistry);
 		}
 
 	}
