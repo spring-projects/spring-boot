@@ -25,7 +25,7 @@ import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.util.Assert;
 
 /**
- * {@link XADataSourceWrapper} that uses {@link NarayanaDataSourceBean} to wrap an
+ * {@link XADataSourceWrapper} that uses {@link ManagedDataSource} to wrap an
  * {@link XADataSource}.
  *
  * @author Gytis Trikleris
@@ -33,19 +33,24 @@ import org.springframework.util.Assert;
  */
 public class NarayanaXADataSourceWrapper implements XADataSourceWrapper {
 
+	private final DbcpXaDataSourceWrapper delegateWrapper;
+
 	private final NarayanaRecoveryManagerBean recoveryManager;
 
 	private final NarayanaProperties properties;
 
 	/**
 	 * Create a new {@link NarayanaXADataSourceWrapper} instance.
+	 * @param delegateWrapper the DBCP wrapper
 	 * @param recoveryManager the underlying recovery manager
 	 * @param properties the Narayana properties
 	 */
-	public NarayanaXADataSourceWrapper(NarayanaRecoveryManagerBean recoveryManager,
-			NarayanaProperties properties) {
+	public NarayanaXADataSourceWrapper(DbcpXaDataSourceWrapper delegateWrapper,
+			NarayanaRecoveryManagerBean recoveryManager, NarayanaProperties properties) {
+		Assert.notNull(delegateWrapper, "DBCP wrapper must not be null");
 		Assert.notNull(recoveryManager, "RecoveryManager must not be null");
 		Assert.notNull(properties, "Properties must not be null");
+		this.delegateWrapper = delegateWrapper;
 		this.recoveryManager = recoveryManager;
 		this.properties = properties;
 	}
@@ -54,7 +59,7 @@ public class NarayanaXADataSourceWrapper implements XADataSourceWrapper {
 	public DataSource wrapDataSource(XADataSource dataSource) {
 		XAResourceRecoveryHelper recoveryHelper = getRecoveryHelper(dataSource);
 		this.recoveryManager.registerXAResourceRecoveryHelper(recoveryHelper);
-		return new NarayanaDataSourceBean(dataSource);
+		return this.delegateWrapper.wrapDataSource(dataSource);
 	}
 
 	private XAResourceRecoveryHelper getRecoveryHelper(XADataSource dataSource) {

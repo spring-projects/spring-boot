@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.transaction.TransactionManagerCust
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
+import org.springframework.boot.jta.narayana.DbcpXaDataSourceWrapper;
 import org.springframework.boot.jta.narayana.NarayanaBeanFactoryPostProcessor;
 import org.springframework.boot.jta.narayana.NarayanaConfigurationBean;
 import org.springframework.boot.jta.narayana.NarayanaProperties;
@@ -77,6 +78,12 @@ public class NarayanaJtaConfiguration {
 	@ConditionalOnMissingBean
 	public NarayanaProperties narayanaProperties() {
 		return new NarayanaProperties();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public NarayanaProperties.PoolProperties narayanaPoolProperties() {
+		return new NarayanaProperties.PoolProperties();
 	}
 
 	@Bean
@@ -139,11 +146,16 @@ public class NarayanaJtaConfiguration {
 	}
 
 	@Bean
+	public DbcpXaDataSourceWrapper dbcpXaDataSourceWrapper(TransactionManager transactionManager,
+			NarayanaProperties.PoolProperties narayanaPoolProperties) {
+		return new DbcpXaDataSourceWrapper(transactionManager, narayanaPoolProperties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(XADataSourceWrapper.class)
-	public XADataSourceWrapper xaDataSourceWrapper(
-			NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
-			NarayanaProperties narayanaProperties) {
-		return new NarayanaXADataSourceWrapper(narayanaRecoveryManagerBean,
+	public XADataSourceWrapper xaDataSourceWrapper(DbcpXaDataSourceWrapper dbcpXaDataSourceWrapper,
+			NarayanaRecoveryManagerBean narayanaRecoveryManagerBean, NarayanaProperties narayanaProperties) {
+		return new NarayanaXADataSourceWrapper(dbcpXaDataSourceWrapper, narayanaRecoveryManagerBean,
 				narayanaProperties);
 	}
 

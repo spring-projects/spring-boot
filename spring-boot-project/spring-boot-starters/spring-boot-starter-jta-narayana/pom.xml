@@ -34,10 +34,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
 			<artifactId>jms</artifactId>
 		</dependency>
 		<dependency>
@@ -51,6 +47,20 @@
 		<dependency>
 			<groupId>javax.transaction</groupId>
 			<artifactId>javax.transaction-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
 		</dependency>
 	</dependencies>
 </project>
