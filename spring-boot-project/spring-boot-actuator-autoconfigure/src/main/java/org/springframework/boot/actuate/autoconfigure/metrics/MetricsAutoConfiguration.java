@@ -91,6 +91,7 @@ public class MetricsAutoConfiguration {
 
 	}
 
+	@Configuration
 	static class MeterBindersConfiguration {
 
 		@Bean
