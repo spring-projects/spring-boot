@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
@@ -180,6 +181,20 @@ public class MetricsAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void autoConfiguresAClock() {
+		this.contextRunner.with(MetricsRun.limitedTo())
+				.run((context) -> assertThat(context).hasSingleBean(Clock.class));
+	}
+
+	@Test
+	public void allowsCustomClockToBeConfigured() {
+		this.contextRunner.with(MetricsRun.limitedTo())
+				.withUserConfiguration(CustomClockConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+						.hasBean("customClock"));
+	}
+
 	@Configuration
 	static class PrimarySimpleMeterRegistryConfiguration {
 
@@ -207,6 +222,16 @@ public class MetricsAutoConfigurationTests {
 		private DataSource createDataSource() {
 			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
 			return DataSourceBuilder.create().url(url).build();
+		}
+
+	}
+
+	@Configuration
+	static class CustomClockConfiguration {
+
+		@Bean
+		public Clock customClock() {
+			return Clock.SYSTEM;
 		}
 
 	}

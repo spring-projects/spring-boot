@@ -46,12 +46,6 @@ public class GangliaMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public GangliaConfig gangliaConfig(GangliaProperties gangliaProperties) {
 		return new GangliaPropertiesConfigAdapter(gangliaProperties);
 	}

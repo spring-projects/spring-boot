@@ -46,12 +46,6 @@ public class JmxMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public JmxConfig jmxConfig(JmxProperties jmxProperties) {
 		return new JmxPropertiesConfigAdapter(jmxProperties);
 	}

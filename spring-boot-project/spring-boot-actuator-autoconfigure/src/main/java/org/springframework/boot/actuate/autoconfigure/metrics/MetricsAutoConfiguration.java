@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
@@ -49,6 +50,12 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
 public class MetricsAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Clock micrometerClock() {
+		return Clock.SYSTEM;
+	}
 
 	@Bean
 	public static CompositeMeterRegistryPostProcessor compositeMeterRegistryPostProcessor() {

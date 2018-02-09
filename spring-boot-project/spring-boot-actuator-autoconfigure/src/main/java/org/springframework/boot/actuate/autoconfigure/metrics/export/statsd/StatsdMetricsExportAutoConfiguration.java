@@ -45,12 +45,6 @@ import org.springframework.context.annotation.Configuration;
 public class StatsdMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(StatsdConfig.class)
 	public StatsdConfig statsdConfig(StatsdProperties statsdProperties) {
 		return new StatsdPropertiesConfigAdapter(statsdProperties);

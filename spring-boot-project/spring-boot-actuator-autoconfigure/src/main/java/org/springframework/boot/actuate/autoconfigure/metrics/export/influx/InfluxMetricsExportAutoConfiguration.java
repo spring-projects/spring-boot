@@ -44,12 +44,6 @@ import org.springframework.context.annotation.Configuration;
 public class InfluxMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(InfluxConfig.class)
 	public InfluxConfig influxConfig(InfluxProperties influxProperties) {
 		return new InfluxPropertiesConfigAdapter(influxProperties);

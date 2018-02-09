@@ -48,12 +48,6 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public PrometheusConfig prometheusConfig(PrometheusProperties prometheusProperties) {
 		return new PrometheusPropertiesConfigAdapter(prometheusProperties);
 	}

@@ -45,12 +45,6 @@ import org.springframework.context.annotation.Configuration;
 public class AtlasMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(AtlasConfig.class)
 	public AtlasConfig atlasConfig(AtlasProperties atlasProperties) {
 		return new AtlasPropertiesConfigAdapter(atlasProperties);

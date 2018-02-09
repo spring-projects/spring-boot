@@ -46,12 +46,6 @@ public class GraphiteMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public GraphiteConfig graphiteConfig(GraphiteProperties graphiteProperties) {
 		return new GraphitePropertiesConfigAdapter(graphiteProperties);
 	}

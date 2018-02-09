@@ -47,12 +47,6 @@ public class DatadogMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public DatadogConfig datadogConfig(DatadogProperties datadogProperties) {
 		return new DatadogPropertiesConfigAdapter(datadogProperties);
 	}
