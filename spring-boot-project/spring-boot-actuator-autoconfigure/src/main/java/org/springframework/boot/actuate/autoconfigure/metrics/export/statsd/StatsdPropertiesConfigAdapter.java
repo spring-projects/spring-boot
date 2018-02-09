@@ -80,6 +80,8 @@ public class StatsdPropertiesConfigAdapter
 
 	@Override
 	public boolean publishUnchangedMeters() {
-		return get(StatsdProperties::getPublishUnchangedMeters, StatsdConfig.super::publishUnchangedMeters);
+		return get(StatsdProperties::getPublishUnchangedMeters,
+				StatsdConfig.super::publishUnchangedMeters);
 	}
+
 }
