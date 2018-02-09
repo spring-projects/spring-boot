@@ -33,7 +33,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to a
- * {@link SimpleMeterRegistry}.
+ * {@link SimpleMeterRegistry}. Auto-configured after all other {@link MeterRegistry}
+ * beans and only used as a fallback.
  *
  * @author Jon Schneider
  * @since 2.0.0
@@ -52,6 +53,7 @@ public class SimpleMetricsExportAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(MeterRegistry.class)
 	public SimpleMeterRegistry simpleMeterRegistry(SimpleConfig config, Clock clock) {
 		return new SimpleMeterRegistry(config, clock);
 	}
