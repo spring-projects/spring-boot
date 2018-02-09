@@ -21,6 +21,8 @@ import java.util.Objects;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.DataSourceBeanCreationException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -33,42 +35,44 @@ import org.springframework.util.StringUtils;
  * @author Patryk Kostrzewa
  */
 class DataSourceBeanCreationFailureAnalyzer
-		extends AbstractFailureAnalyzer<DataSourceBeanCreationException> {
+		extends AbstractFailureAnalyzer<DataSourceBeanCreationException>
+		implements EnvironmentAware {
+
+	private Environment environment;
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			DataSourceBeanCreationException cause) {
-		return getFailureAnalysis(createDescription(cause), cause);
+		return getFailureAnalysis(cause);
 	}
 
-	private String createDescription(DataSourceBeanCreationException cause) {
-
-		StringBuilder message = new StringBuilder();
-		message.append(cause.getMessage());
-		message.append("Property spring.datasource.url was not specified. ");
-		message.append("Cannot auto-configure embedded database as well. ");
-		message.append("Cannot determine embedded database ");
-		message.append(cause.getProperty());
-		message.append(" for database type ");
-		message.append(cause.getConnection());
-		message.append(".");
-		return message.toString();
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
-	private FailureAnalysis getFailureAnalysis(String description, DataSourceBeanCreationException cause) {
+	private FailureAnalysis getFailureAnalysis(DataSourceBeanCreationException cause) {
 
-		StringBuilder message = new StringBuilder();
-		message.append("If you want an embedded database please put a supported one on the classpath. ");
-		message.append("If you have database settings to be loaded from a particular profile you may need to activate it");
-		message.append(getActiveProfiles(cause.getEnvironment()));
-		return new FailureAnalysis(description, message.toString(), cause);
+		final EmbeddedDatabaseConnection connection = cause.getConnection();
+		final String action;
+
+		if (EmbeddedDatabaseConnection.NONE == connection) {
+			action = "If you want an embedded database "
+					+ "please put a supported one on the classpath.";
+		}
+		else {
+			action = "If you have database settings to be loaded "
+					+ "from a particular profile you may need to activate it"
+					+ getActiveProfiles();
+		}
+		return new FailureAnalysis(cause.getMessage(), action, cause);
 	}
 
-	private String getActiveProfiles(Environment environment) {
+	private String getActiveProfiles() {
 
-		StringBuilder message = new StringBuilder();
-		if (Objects.nonNull(environment)) {
-			String[] profiles = environment.getActiveProfiles();
+		final StringBuilder message = new StringBuilder();
+		if (Objects.nonNull(this.environment)) {
+			String[] profiles = this.environment.getActiveProfiles();
 			if (ObjectUtils.isEmpty(profiles)) {
 				message.append(" (no profiles are currently active).");
 			}

@@ -32,8 +32,6 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -51,11 +49,9 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = "spring.datasource")
 public class DataSourceProperties
-		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
+		implements BeanClassLoaderAware, InitializingBean {
 
 	private ClassLoader classLoader;
-
-	private Environment environment;
 
 	/**
 	 * Name of the datasource. Default to "testdb" when using an embedded database.
@@ -167,11 +163,6 @@ public class DataSourceProperties
 	}
 
 	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
-	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection
 				.get(this.classLoader);
@@ -244,8 +235,9 @@ public class DataSourceProperties
 			driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
 		}
 		if (!StringUtils.hasText(driverClassName)) {
-			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
-					this.environment, "driver class");
+			throw new DataSourceBeanCreationException(
+					"Failed to determine a suitable driver class",
+					this.embeddedDatabaseConnection);
 		}
 		return driverClassName;
 	}
@@ -290,8 +282,9 @@ public class DataSourceProperties
 		String url = (databaseName == null ? null
 				: this.embeddedDatabaseConnection.getUrl(databaseName));
 		if (!StringUtils.hasText(url)) {
-			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
-					this.environment, "url");
+			throw new DataSourceBeanCreationException(
+					"Failed to determine suitable jdbc url",
+					this.embeddedDatabaseConnection);
 		}
 		return url;
 	}
@@ -524,29 +517,15 @@ public class DataSourceProperties
 
 		private final EmbeddedDatabaseConnection connection;
 
-		private final Environment environment;
+		DataSourceBeanCreationException(String message,
+				EmbeddedDatabaseConnection connection) {
 
-		private final String property;
-
-		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
-				Environment environment, String property) {
-
-			super("Cannot auto-configure DataSource. ");
+			super(message);
 			this.connection = connection;
-			this.environment = environment;
-			this.property = property;
 		}
 
 		public EmbeddedDatabaseConnection getConnection() {
 			return this.connection;
-		}
-
-		public Environment getEnvironment() {
-			return this.environment;
-		}
-
-		public String getProperty() {
-			return this.property;
 		}
 	}
 }
