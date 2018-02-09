@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.trace;
+package org.springframework.boot.actuate.autoconfigure.trace.http;
 
 import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnWebApplication
-@ConditionalOnProperty(prefix = "management.httptrace", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.trace.http", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(HttpTraceProperties.class)
 public class HttpTraceAutoConfiguration {
 

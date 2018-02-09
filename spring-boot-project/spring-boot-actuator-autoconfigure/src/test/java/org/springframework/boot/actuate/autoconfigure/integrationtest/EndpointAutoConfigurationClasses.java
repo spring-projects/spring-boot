@@ -28,8 +28,8 @@ import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAut
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.trace.HttpTraceEndpointAutoConfiguration;
 
 /**
  * A list of all endpoint auto-configuration classes for use in tests.

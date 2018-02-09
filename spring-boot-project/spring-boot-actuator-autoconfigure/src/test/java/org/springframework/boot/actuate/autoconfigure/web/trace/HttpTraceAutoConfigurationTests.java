@@ -21,6 +21,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceProperties;
 import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
 import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
@@ -134,7 +136,7 @@ public class HttpTraceAutoConfigurationTests {
 		new WebApplicationContextRunner()
 				.withConfiguration(
 						AutoConfigurations.of(HttpTraceAutoConfiguration.class))
-				.withPropertyValues("management.httptrace.enabled=false")
+				.withPropertyValues("management.trace.http.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(InMemoryHttpTraceRepository.class)
 						.doesNotHaveBean(HttpExchangeTracer.class)

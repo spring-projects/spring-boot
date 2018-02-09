@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for actuator tracing concerns.
+ * Auto-configuration for actuator HTTP tracing concerns.
  */
-package org.springframework.boot.actuate.autoconfigure.web.trace;
+package org.springframework.boot.actuate.autoconfigure.trace.http;

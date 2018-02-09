@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.web.trace;
+package org.springframework.boot.actuate.autoconfigure.trace.http;
 
 import java.util.HashSet;
 import java.util.Set;
