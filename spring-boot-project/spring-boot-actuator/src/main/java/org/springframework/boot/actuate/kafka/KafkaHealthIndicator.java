@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
  * {@link HealthIndicator} for Kafka cluster.
  *
  * @author Juan Rada
+ * @since 2.0.0
  */
 public class KafkaHealthIndicator extends AbstractHealthIndicator {
 

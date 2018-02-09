@@ -152,24 +152,34 @@ public class WebFluxEndpointIntegrationTests
 				@Override
 				public Mono<Void> filter(ServerWebExchange exchange,
 						WebFilterChain chain) {
-					return chain.filter(new ServerWebExchangeDecorator(exchange) {
-
-						@Override
-						public Mono<Principal> getPrincipal() {
-							return Mono.just(new Principal() {
-
-								@Override
-								public String getName() {
-									return "Alice";
-								}
-
-							});
-						}
-
-					});
+					return chain.filter(
+							new MockPrincipalServerWebExchangeDecorator(exchange));
 				}
 
 			};
+		}
+
+	}
+
+	private static class MockPrincipalServerWebExchangeDecorator
+			extends ServerWebExchangeDecorator {
+
+		protected MockPrincipalServerWebExchangeDecorator(ServerWebExchange delegate) {
+			super(delegate);
+		}
+
+		@Override
+		public Mono<Principal> getPrincipal() {
+			return Mono.just(new MockPrincipal());
+		}
+
+	}
+
+	private static class MockPrincipal implements Principal {
+
+		@Override
+		public String getName() {
+			return "Alice";
 		}
 
 	}

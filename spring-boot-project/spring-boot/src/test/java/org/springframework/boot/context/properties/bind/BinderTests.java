@@ -370,6 +370,7 @@ public class BinderTests {
 		public void setBar(T bar) {
 			this.bar = bar;
 		}
+
 	}
 
 }

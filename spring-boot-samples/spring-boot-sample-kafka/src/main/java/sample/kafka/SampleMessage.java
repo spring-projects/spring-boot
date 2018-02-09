@@ -41,11 +41,7 @@ public class SampleMessage {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("SampleMessage{");
-		sb.append("id=").append(this.id);
-		sb.append(", message='").append(this.message).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return "SampleMessage{id=" + this.id + ", message='" + this.message + "'}";
 	}
 
 }

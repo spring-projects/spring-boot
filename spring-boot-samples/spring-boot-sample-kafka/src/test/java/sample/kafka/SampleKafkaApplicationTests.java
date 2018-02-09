@@ -22,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.rule.OutputCapture;
@@ -64,11 +63,13 @@ public class SampleKafkaApplicationTests {
 		@Bean
 		public Consumer consumer() {
 			return new Consumer() {
+
 				@Override
 				public void processMessage(SampleMessage message) {
 					super.processMessage(message);
 					latch.countDown();
 				}
+
 			};
 		}
 

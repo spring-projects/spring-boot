@@ -6152,6 +6152,8 @@ NOTE: While Spring's test framework caches application contexts between tests an
 a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean`
 influences the cache key, which will most likely increase the number of contexts.
 
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-tests]]
 ==== Auto-configured Tests
 Spring Boot's auto-configuration system works well for applications but can sometimes be

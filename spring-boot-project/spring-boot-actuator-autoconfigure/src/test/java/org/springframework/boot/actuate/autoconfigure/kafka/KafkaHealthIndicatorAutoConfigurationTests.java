@@ -53,4 +53,5 @@ public class KafkaHealthIndicatorAutoConfigurationTests {
 						.doesNotHaveBean(KafkaHealthIndicator.class)
 						.hasSingleBean(ApplicationHealthIndicator.class));
 	}
+
 }

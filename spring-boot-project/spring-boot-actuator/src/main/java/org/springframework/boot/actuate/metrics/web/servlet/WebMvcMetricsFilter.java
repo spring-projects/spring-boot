@@ -128,11 +128,10 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private Object getHandler(HttpServletRequest request) throws Exception {
 		HttpServletRequest wrapper = new UnmodifiableAttributesRequestWrapper(request);
-		for (HandlerMapping handlerMapping : getMappingIntrospector()
-				.getHandlerMappings()) {
-			HandlerExecutionChain chain = handlerMapping.getHandler(wrapper);
+		for (HandlerMapping mapping : getMappingIntrospector().getHandlerMappings()) {
+			HandlerExecutionChain chain = mapping.getHandler(wrapper);
 			if (chain != null) {
-				if (handlerMapping instanceof MatchableHandlerMapping) {
+				if (mapping instanceof MatchableHandlerMapping) {
 					return chain.getHandler();
 				}
 				return null;
@@ -294,8 +293,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 		@Override
 		public void setAttribute(String name, Object value) {
-
 		}
+
 	}
 
 }

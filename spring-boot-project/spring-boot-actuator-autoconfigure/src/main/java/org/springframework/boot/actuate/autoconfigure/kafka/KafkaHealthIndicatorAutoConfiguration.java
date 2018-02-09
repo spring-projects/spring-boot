@@ -40,6 +40,7 @@ import org.springframework.kafka.core.KafkaAdmin;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link KafkaHealthIndicator}.
  *
  * @author Juan Rada
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass(KafkaAdmin.class)
@@ -55,7 +56,7 @@ public class KafkaHealthIndicatorAutoConfiguration
 
 	private final KafkaHealthIndicatorProperties properties;
 
-	KafkaHealthIndicatorAutoConfiguration(Map<String, KafkaAdmin> admins,
+	public KafkaHealthIndicatorAutoConfiguration(Map<String, KafkaAdmin> admins,
 			KafkaHealthIndicatorProperties properties) {
 		this.admins = admins;
 		this.properties = properties;

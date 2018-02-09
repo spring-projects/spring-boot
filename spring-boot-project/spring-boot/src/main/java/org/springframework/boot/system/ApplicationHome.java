@@ -107,8 +107,7 @@ public class ApplicationHome {
 		try {
 			StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 			for (int i = stackTrace.length - 1; i >= 0; i--) {
-				StackTraceElement element = stackTrace[i];
-				if (element.getClassName().startsWith("org.junit.")) {
+				if (stackTrace[i].getClassName().startsWith("org.junit.")) {
 					return true;
 				}
 			}

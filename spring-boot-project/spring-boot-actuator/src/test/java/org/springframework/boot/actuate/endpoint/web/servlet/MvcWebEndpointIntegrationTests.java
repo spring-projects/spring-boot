@@ -146,27 +146,32 @@ public class MvcWebEndpointIntegrationTests extends
 				protected void doFilterInternal(HttpServletRequest request,
 						HttpServletResponse response, FilterChain filterChain)
 						throws ServletException, IOException {
-					filterChain.doFilter(new HttpServletRequestWrapper(request) {
-
-						@Override
-						public Principal getUserPrincipal() {
-
-							return new Principal() {
-
-								@Override
-								public String getName() {
-									return "Alice";
-								}
-
-							};
-
-						}
-
-					}, response);
+					filterChain.doFilter(new MockPrincipalWrapper(request), response);
 				}
 
 			};
+		}
 
+	}
+
+	private static class MockPrincipalWrapper extends HttpServletRequestWrapper {
+
+		public MockPrincipalWrapper(HttpServletRequest request) {
+			super(request);
+		}
+
+		@Override
+		public Principal getUserPrincipal() {
+			return new MockPrincipal();
+		}
+
+	}
+
+	private static class MockPrincipal implements Principal {
+
+		@Override
+		public String getName() {
+			return "Alice";
 		}
 
 	}
