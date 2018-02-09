@@ -59,7 +59,8 @@ public class StatsdProperties {
 
 	/**
 	 * How often gauges will be polled. When a gauge is polled, its value is recalculated
-	 * and if the value has changed, it is sent to the StatsD server.
+	 * and if the value has changed (or publishUnchangedMeters is true),
+	 * it is sent to the StatsD server.
 	 */
 	private Duration pollingFrequency = Duration.ofSeconds(10);
 
@@ -67,6 +68,11 @@ public class StatsdProperties {
 	 * Maximum size of the queue of items waiting to be sent to the StatsD server.
 	 */
 	private Integer queueSize = Integer.MAX_VALUE;
+
+	/**
+	 * Send unchanged meters to the StatsD server.
+	 */
+	private Boolean publishUnchangedMeters = true;
 
 	public Boolean getEnabled() {
 		return this.enabled;
@@ -124,4 +130,11 @@ public class StatsdProperties {
 		this.queueSize = queueSize;
 	}
 
+	public Boolean getPublishUnchangedMeters() {
+		return this.publishUnchangedMeters;
+	}
+
+	public void setPublishUnchangedMeters(Boolean publishUnchangedMeters) {
+		this.publishUnchangedMeters = publishUnchangedMeters;
+	}
 }
