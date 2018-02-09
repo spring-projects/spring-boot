@@ -25,25 +25,31 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.metrics.jdbc.DataSourcePoolMetrics;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * Configure metrics for all available {@link DataSource datasources}.
+ * {@link EnableAutoConfiguration Auto-configuration} for metrics on all available
+ * {@link DataSource datasources}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Configuration
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class })
 @ConditionalOnBean({ DataSource.class, DataSourcePoolMetadataProvider.class })
 @ConditionalOnProperty(value = "management.metrics.jdbc.instrument", matchIfMissing = true)
 @EnableConfigurationProperties(JdbcMetricsProperties.class)
-public class DataSourcePoolMetricsConfiguration {
+public class DataSourcePoolMetricsAutoConfiguration {
 
 	private static final String DATASOURCE_SUFFIX = "dataSource";
 
@@ -53,7 +59,7 @@ public class DataSourcePoolMetricsConfiguration {
 
 	private final String metricName;
 
-	public DataSourcePoolMetricsConfiguration(MeterRegistry registry,
+	public DataSourcePoolMetricsAutoConfiguration(MeterRegistry registry,
 			Collection<DataSourcePoolMetadataProvider> metadataProviders,
 			JdbcMetricsProperties jdbcMetricsProperties) {
 		this.registry = registry;

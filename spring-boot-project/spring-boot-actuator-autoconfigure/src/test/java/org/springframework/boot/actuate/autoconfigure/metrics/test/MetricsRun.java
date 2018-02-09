@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia.GangliaMetricsExportAutoConfiguration;
@@ -31,6 +33,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxMetr
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.util.Assert;
@@ -44,7 +50,7 @@ import org.springframework.util.Assert;
  */
 public final class MetricsRun {
 
-	private static final Set<Class<?>> IMPLEMENTATIONS;
+	private static final Set<Class<?>> EXPORT_AUTO_CONFIGURATIONS;
 
 	static {
 		Set<Class<?>> implementations = new LinkedHashSet<>();
@@ -57,8 +63,15 @@ public final class MetricsRun {
 		implementations.add(PrometheusMetricsExportAutoConfiguration.class);
 		implementations.add(SimpleMetricsExportAutoConfiguration.class);
 		implementations.add(StatsdMetricsExportAutoConfiguration.class);
-		IMPLEMENTATIONS = Collections.unmodifiableSet(implementations);
+		EXPORT_AUTO_CONFIGURATIONS = Collections.unmodifiableSet(implementations);
 	}
+
+	private static final AutoConfigurations AUTO_CONFIGURATIONS = AutoConfigurations.of(
+			MetricsAutoConfiguration.class, RabbitMetricsAutoConfiguration.class,
+			CacheMetricsAutoConfiguration.class,
+			DataSourcePoolMetricsAutoConfiguration.class,
+			RestTemplateMetricsAutoConfiguration.class,
+			WebFluxMetricsAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class);
 
 	private MetricsRun() {
 	}
@@ -75,24 +88,24 @@ public final class MetricsRun {
 	/**
 	 * Return a function that configures the run to be limited to the specified
 	 * implementations.
-	 * @param implementations the implementations to include
+	 * @param exportAutoConfigurations the export auto-configurations to include
 	 * @return the function to apply
 	 */
 	public static Function<ApplicationContextRunner, ApplicationContextRunner> limitedTo(
-			Class<?>... implementations) {
-		return (contextRunner) -> apply(contextRunner, implementations);
+			Class<?>... exportAutoConfigurations) {
+		return (contextRunner) -> apply(contextRunner, exportAutoConfigurations);
 	}
 
 	private static ApplicationContextRunner apply(ApplicationContextRunner contextRunner,
-			Class<?>[] implementations) {
-		for (Class<?> implementation : implementations) {
-			Assert.state(IMPLEMENTATIONS.contains(implementation),
-					"Unknown implementation " + implementation.getName());
+			Class<?>[] exportAutoConfigurations) {
+		for (Class<?> configuration : exportAutoConfigurations) {
+			Assert.state(EXPORT_AUTO_CONFIGURATIONS.contains(configuration),
+					"Unknown export auto-configuration " + configuration.getName());
 		}
 		return contextRunner
 				.withPropertyValues("management.metrics.use-global-registry=false")
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withConfiguration(AutoConfigurations.of(implementations));
+				.withConfiguration(AUTO_CONFIGURATIONS)
+				.withConfiguration(AutoConfigurations.of(exportAutoConfigurations));
 	}
 
 }

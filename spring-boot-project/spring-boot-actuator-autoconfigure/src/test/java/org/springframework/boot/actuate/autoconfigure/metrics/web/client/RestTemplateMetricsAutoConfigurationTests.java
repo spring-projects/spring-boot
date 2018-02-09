@@ -37,12 +37,12 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 /**
- * Tests for {@link RestTemplateMetricsConfiguration}.
+ * Tests for {@link RestTemplateMetricsAutoConfiguration}.
  *
  * @author Stephane Nicoll
  * @author Jon Schneider
  */
-public class RestTemplateMetricsConfigurationTests {
+public class RestTemplateMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.simple()).withConfiguration(

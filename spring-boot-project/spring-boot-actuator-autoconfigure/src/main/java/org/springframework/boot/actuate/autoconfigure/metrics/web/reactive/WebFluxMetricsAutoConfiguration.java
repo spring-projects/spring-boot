@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.reactive.server;
+package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
 import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configures instrumentation of Spring Webflux MVC annotation-based programming model
- * request mappings.
+ * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring
+ * Webflux MVC annotation-based programming model request mappings.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @Configuration
-public class WebFluxMetricsConfiguration {
+@AutoConfigureAfter(MetricsAutoConfiguration.class)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+public class WebFluxMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(WebFluxTagsProvider.class)

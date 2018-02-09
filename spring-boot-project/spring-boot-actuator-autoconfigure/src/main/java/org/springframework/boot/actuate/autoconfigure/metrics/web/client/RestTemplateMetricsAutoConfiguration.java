@@ -25,27 +25,34 @@ import io.micrometer.core.instrument.config.MeterFilterReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Configuration for {@link RestTemplate}-related metrics.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link RestTemplate}-related
+ * metrics.
  *
  * @author Jon Schneider
  * @author Phillip Webb
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-public class RestTemplateMetricsConfiguration {
+@AutoConfigureAfter({ MetricsAutoConfiguration.class,
+		RestTemplateAutoConfiguration.class })
+@ConditionalOnClass(RestTemplate.class)
+public class RestTemplateMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RestTemplateExchangeTagsProvider.class)
@@ -78,7 +85,7 @@ public class RestTemplateMetricsConfiguration {
 	private static class MaximumUriTagsReachedMeterFilter implements MeterFilter {
 
 		private final Logger logger = LoggerFactory
-				.getLogger(RestTemplateMetricsConfiguration.class);
+				.getLogger(RestTemplateMetricsAutoConfiguration.class);
 
 		private final String metricName;
 

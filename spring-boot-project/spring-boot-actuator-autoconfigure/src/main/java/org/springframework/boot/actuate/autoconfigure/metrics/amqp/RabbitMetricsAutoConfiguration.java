@@ -24,7 +24,11 @@ import io.micrometer.core.instrument.Tags;
 
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.metrics.amqp.RabbitMetrics;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,17 +37,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * Configure metrics for all available {@link ConnectionFactory connection factories}.
+ * {@link EnableAutoConfiguration Auto-configuration} for metrics on all available
+ * {@link ConnectionFactory connection factories}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Configuration
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, RabbitAutoConfiguration.class })
 @ConditionalOnClass({ ConnectionFactory.class, AbstractConnectionFactory.class })
 @ConditionalOnBean(AbstractConnectionFactory.class)
 @ConditionalOnProperty(value = "management.metrics.rabbitmq.instrument", matchIfMissing = true)
 @EnableConfigurationProperties(RabbitMetricsProperties.class)
-public class RabbitMetricsConfiguration {
+public class RabbitMetricsAutoConfiguration {
 
 	private static final String CONNECTION_FACTORY_SUFFIX = "connectionFactory";
 
@@ -51,7 +57,7 @@ public class RabbitMetricsConfiguration {
 
 	private final String metricName;
 
-	public RabbitMetricsConfiguration(MeterRegistry registry,
+	public RabbitMetricsAutoConfiguration(MeterRegistry registry,
 			RabbitMetricsProperties rabbitMetricsProperties) {
 		this.registry = registry;
 		this.metricName = rabbitMetricsProperties.getMetricName();

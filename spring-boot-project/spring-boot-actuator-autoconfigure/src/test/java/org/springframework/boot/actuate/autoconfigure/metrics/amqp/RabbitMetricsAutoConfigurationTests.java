@@ -27,13 +27,13 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RabbitMetricsConfiguration}.
+ * Tests for {@link RabbitMetricsAutoConfiguration}.
  *
  * @author Stephane Nicoll
  */
-public class RabbitMetricsConfigurationTests {
+public class RabbitMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.simple())
 			.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
 

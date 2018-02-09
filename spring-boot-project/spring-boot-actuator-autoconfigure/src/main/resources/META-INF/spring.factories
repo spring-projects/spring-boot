@@ -34,6 +34,8 @@ org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAut
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia.GangliaMetricsExportAutoConfiguration,\
@@ -43,6 +45,10 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxMetricsExpo
 org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.mongo.MongoHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisHealthIndicatorAutoConfiguration,\
@@ -56,7 +62,6 @@ org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoC
 org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.trace.HttpTraceAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.trace.HttpTraceEndpointAutoConfiguration
-
 org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration=\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration,\

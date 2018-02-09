@@ -17,28 +17,23 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.WebFluxMetricsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
@@ -53,12 +48,6 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @Configuration
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
-@Import({ MeterBindersConfiguration.class, WebMvcMetricsConfiguration.class,
-		WebFluxMetricsConfiguration.class, RestTemplateMetricsConfiguration.class,
-		CacheMetricsConfiguration.class, DataSourcePoolMetricsConfiguration.class,
-		RabbitMetricsConfiguration.class })
-@AutoConfigureAfter({ CacheAutoConfiguration.class, DataSourceAutoConfiguration.class,
-		RabbitAutoConfiguration.class, RestTemplateAutoConfiguration.class })
 public class MetricsAutoConfiguration {
 
 	@Bean
@@ -76,6 +65,56 @@ public class MetricsAutoConfiguration {
 	@Order(0)
 	public PropertiesMeterFilter propertiesMeterFilter(MetricsProperties properties) {
 		return new PropertiesMeterFilter(properties);
+	}
+
+	@Configuration
+	@ConditionalOnProperty(value = "management.metrics.binders.jvm.enabled", matchIfMissing = true)
+	static class JvmMeterBindersConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public JvmGcMetrics jvmGcMetrics() {
+			return new JvmGcMetrics();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public JvmMemoryMetrics jvmMemoryMetrics() {
+			return new JvmMemoryMetrics();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public JvmThreadMetrics jvmThreadMetrics() {
+			return new JvmThreadMetrics();
+		}
+
+	}
+
+	static class MeterBindersConfiguration {
+
+		@Bean
+		@ConditionalOnClass(name = "ch.qos.logback.classic.Logger")
+		@ConditionalOnMissingBean(LogbackMetrics.class)
+		@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
+		public LogbackMetrics logbackMetrics() {
+			return new LogbackMetrics();
+		}
+
+		@Bean
+		@ConditionalOnProperty(value = "management.metrics.binders.uptime.enabled", matchIfMissing = true)
+		@ConditionalOnMissingBean
+		public UptimeMetrics uptimeMetrics() {
+			return new UptimeMetrics();
+		}
+
+		@Bean
+		@ConditionalOnProperty(value = "management.metrics.binders.processor.enabled", matchIfMissing = true)
+		@ConditionalOnMissingBean
+		public ProcessorMetrics processorMetrics() {
+			return new ProcessorMetrics();
+		}
+
 	}
 
 	/**

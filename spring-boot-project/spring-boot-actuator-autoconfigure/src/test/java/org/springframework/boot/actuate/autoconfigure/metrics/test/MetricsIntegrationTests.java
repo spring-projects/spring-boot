@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics;
+package org.springframework.boot.actuate.autoconfigure.metrics.test;
 
 import java.util.Collections;
 import java.util.Map;
@@ -34,6 +34,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -69,14 +76,14 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
- * Integration tests for {@link MetricsAutoConfiguration}.
+ * Integration tests for Metrics.
  *
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsAutoConfigurationIntegrationTests.MetricsApp.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsIntegrationTests.MetricsApp.class)
 @TestPropertySource(properties = "management.metrics.use-global-registry=false")
-public class MetricsAutoConfigurationIntegrationTests {
+public class MetricsIntegrationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -134,6 +141,10 @@ public class MetricsAutoConfigurationIntegrationTests {
 
 	@Configuration
 	@ImportAutoConfiguration({ MetricsAutoConfiguration.class,
+			RabbitMetricsAutoConfiguration.class, CacheMetricsAutoConfiguration.class,
+			DataSourcePoolMetricsAutoConfiguration.class,
+			RestTemplateMetricsAutoConfiguration.class,
+			WebFluxMetricsAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class,
 			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			RestTemplateAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
