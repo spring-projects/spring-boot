@@ -57,8 +57,7 @@ public class MetricsRestTemplateCustomizerTests {
 		this.restTemplate = new RestTemplate();
 		this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
 		this.customizer = new MetricsRestTemplateCustomizer(this.registry,
-				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests",
-				true);
+				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests");
 		this.customizer.customize(this.restTemplate);
 	}
 

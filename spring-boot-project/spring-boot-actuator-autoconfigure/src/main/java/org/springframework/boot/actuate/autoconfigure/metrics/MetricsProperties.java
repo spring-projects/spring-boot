@@ -90,12 +90,6 @@ public class MetricsProperties {
 		public static class Client {
 
 			/**
-			 * Whether instrumented requests record percentiles histogram buckets by
-			 * default.
-			 */
-			private boolean recordRequestPercentiles;
-
-			/**
 			 * Name of the metric for sent requests.
 			 */
 			private String requestsMetricName = "http.client.requests";
@@ -106,14 +100,6 @@ public class MetricsProperties {
 			 * filter.
 			 */
 			private int maxUriTags = 100;
-
-			public boolean isRecordRequestPercentiles() {
-				return this.recordRequestPercentiles;
-			}
-
-			public void setRecordRequestPercentiles(boolean recordRequestPercentiles) {
-				this.recordRequestPercentiles = recordRequestPercentiles;
-			}
 
 			public String getRequestsMetricName() {
 				return this.requestsMetricName;
