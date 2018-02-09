@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -164,7 +165,9 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	private String[] getMappingResources() {
 		List<String> mappingResources = this.properties.getMappingResources();
-		return mappingResources.toArray(new String[mappingResources.size()]);
+		return (!ObjectUtils.isEmpty(mappingResources)
+				? mappingResources.toArray(new String[mappingResources.size()])
+				: null);
 	}
 
 	/**
