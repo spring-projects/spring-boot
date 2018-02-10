@@ -22,6 +22,7 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,32 +97,39 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		List<URL> staticResourceUrls = new ArrayList<URL>();
 		if (classLoader instanceof URLClassLoader) {
 			for (URL url : ((URLClassLoader) classLoader).getURLs()) {
-				try {
-					if ("file".equals(url.getProtocol())) {
-						File file = new File(url.getFile());
-						if (file.isDirectory()
-								&& new File(file, "META-INF/resources").isDirectory()) {
-							staticResourceUrls.add(url);
-						}
-						else if (isResourcesJar(file)) {
-							staticResourceUrls.add(url);
-						}
-					}
-					else {
-						URLConnection connection = url.openConnection();
-						if (connection instanceof JarURLConnection) {
-							if (isResourcesJar((JarURLConnection) connection)) {
-								staticResourceUrls.add(url);
-							}
-						}
-					}
-				}
-				catch (IOException ex) {
-					throw new IllegalStateException(ex);
+				if (isStaticResource(url)) {
+					staticResourceUrls.add(url);
 				}
 			}
 		}
 		return staticResourceUrls;
+	}
+
+	protected boolean isStaticResource(URL url) {
+		try {
+			if ("file".equals(url.getProtocol())) {
+				File file = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
+				if (file.isDirectory()
+						&& new File(file, "META-INF/resources").isDirectory()) {
+					return true;
+				}
+				else if (isResourcesJar(file)) {
+					return true;
+				}
+			}
+			else {
+				URLConnection connection = url.openConnection();
+				if (connection instanceof JarURLConnection) {
+					if (isResourcesJar((JarURLConnection) connection)) {
+						return true;
+					}
+				}
+			}
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+		return false;
 	}
 
 	private boolean isResourcesJar(JarURLConnection connection) {
@@ -129,23 +137,24 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return isResourcesJar(connection.getJarFile());
 		}
 		catch (IOException ex) {
+			logger.warn("Unable to open jar to determine if it contains static resources", ex);
 			return false;
 		}
 	}
 
 	private boolean isResourcesJar(File file) {
 		try {
-			return isResourcesJar(new JarFile(file));
+			return file.getName().endsWith(".jar") && isResourcesJar(new JarFile(file));
 		}
 		catch (IOException ex) {
+			logger.warn("Unable to open jar to determine if it contains static resources", ex);
 			return false;
 		}
 	}
 
 	private boolean isResourcesJar(JarFile jar) throws IOException {
 		try {
-			return jar.getName().endsWith(".jar")
-					&& (jar.getJarEntry("META-INF/resources") != null);
+			return jar.getJarEntry("META-INF/resources") != null;
 		}
 		finally {
 			jar.close();
