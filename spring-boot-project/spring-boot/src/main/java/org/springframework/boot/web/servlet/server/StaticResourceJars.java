@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -67,7 +68,7 @@ class StaticResourceJars {
 	private void addUrl(List<URL> urls, URL url) {
 		try {
 			if ("file".equals(url.getProtocol())) {
-				addUrlFile(urls, url, new File(url.getFile()));
+				addUrlFile(urls, url, new File(URLDecoder.decode(url.getFile(), "UTF-8")));
 			}
 			else {
 				addUrlConnection(urls, url, url.openConnection());
