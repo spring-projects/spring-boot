@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Logic to extract URLs of static resource jars (those containing
  * {@code "META-INF/resources"} directories).
@@ -37,6 +40,7 @@ import java.util.jar.JarFile;
  * @author Phillip Webb
  */
 class StaticResourceJars {
+	private static final Log logger = LogFactory.getLog(StaticResourceJars.class);
 
 	public final List<URL> getUrls() {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -98,6 +102,7 @@ class StaticResourceJars {
 			return isResourcesJar(connection.getJarFile());
 		}
 		catch (IOException ex) {
+			logger.warn("Unable to open jar to determine if it contains static resources", ex);
 			return false;
 		}
 	}
@@ -107,6 +112,7 @@ class StaticResourceJars {
 			return isResourcesJar(new JarFile(file));
 		}
 		catch (IOException ex) {
+			logger.warn("Unable to open jar to determine if it contains static resources", ex);
 			return false;
 		}
 	}
