@@ -24,9 +24,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Logic to extract URLs of static resource jars (those containing
@@ -36,6 +40,7 @@ import java.util.jar.JarFile;
  * @author Phillip Webb
  */
 class StaticResourceJars {
+	private static final Log logger = LogFactory.getLog(StaticResourceJars.class);
 
 	public final List<URL> getUrls() {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -67,7 +72,7 @@ class StaticResourceJars {
 	private void addUrl(List<URL> urls, URL url) {
 		try {
 			if ("file".equals(url.getProtocol())) {
-				addUrlFile(urls, url, new File(url.getFile()));
+				addUrlFile(urls, url, new File(URLDecoder.decode(url.getFile(), "UTF-8")));
 			}
 			else {
 				addUrlConnection(urls, url, url.openConnection());
@@ -97,23 +102,24 @@ class StaticResourceJars {
 			return isResourcesJar(connection.getJarFile());
 		}
 		catch (IOException ex) {
+			logger.warn("Unable to open jar to determine if it contains static resources", ex);
 			return false;
 		}
 	}
 
 	private boolean isResourcesJar(File file) {
 		try {
-			return isResourcesJar(new JarFile(file));
+			return file.getName().endsWith(".jar") && isResourcesJar(new JarFile(file));
 		}
 		catch (IOException ex) {
+			logger.warn("Unable to open jar to determine if it contains static resources", ex);
 			return false;
 		}
 	}
 
 	private boolean isResourcesJar(JarFile jar) throws IOException {
 		try {
-			return jar.getName().endsWith(".jar")
-					&& (jar.getJarEntry("META-INF/resources") != null);
+			return jar.getJarEntry("META-INF/resources") != null;
 		}
 		finally {
 			jar.close();
