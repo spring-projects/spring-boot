@@ -22,6 +22,7 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,7 +98,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			for (URL url : ((URLClassLoader) classLoader).getURLs()) {
 				try {
 					if ("file".equals(url.getProtocol())) {
-						File file = new File(url.getFile());
+						File file = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
 						if (file.isDirectory()
 								&& new File(file, "META-INF/resources").isDirectory()) {
 							staticResourceUrls.add(url);
