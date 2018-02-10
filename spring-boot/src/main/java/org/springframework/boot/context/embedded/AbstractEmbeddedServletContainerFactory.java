@@ -129,6 +129,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return isResourcesJar(connection.getJarFile());
 		}
 		catch (IOException ex) {
+			logger.warn("Unable to open jar to determine if it contains static resources", ex);
 			return false;
 		}
 	}
@@ -138,6 +139,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return isResourcesJar(new JarFile(file));
 		}
 		catch (IOException ex) {
+			logger.warn("Unable to open jar to determine if it contains static resources", ex);
 			return false;
 		}
 	}
