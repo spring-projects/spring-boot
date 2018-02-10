@@ -109,7 +109,7 @@ class StaticResourceJars {
 
 	private boolean isResourcesJar(File file) {
 		try {
-			return isResourcesJar(new JarFile(file));
+			return file.getName().endsWith(".jar") && isResourcesJar(new JarFile(file));
 		}
 		catch (IOException ex) {
 			logger.warn("Unable to open jar to determine if it contains static resources", ex);
@@ -119,8 +119,7 @@ class StaticResourceJars {
 
 	private boolean isResourcesJar(JarFile jar) throws IOException {
 		try {
-			return jar.getName().endsWith(".jar")
-					&& (jar.getJarEntry("META-INF/resources") != null);
+			return jar.getJarEntry("META-INF/resources") != null;
 		}
 		finally {
 			jar.close();
