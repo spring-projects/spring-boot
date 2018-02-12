@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.datadog.DatadogConfig;
-import io.micrometer.datadog.DatadogMeterRegistry;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.config.NamingConvention;
+import io.micrometer.core.instrument.util.HierarchicalNameMapper;
+import io.micrometer.jmx.JmxConfig;
+import io.micrometer.jmx.JmxMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -30,52 +33,56 @@ import org.springframework.context.annotation.Import;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DatadogMetricsExportAutoConfiguration}.
+ * Tests for {@link JmxMetricsExportAutoConfiguration}.
  *
  * @author Andy Wilkinson
  */
-public class DatadogMetricsExportAutoConfigurationTests {
+public class JmxMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
 			.withConfiguration(
-					AutoConfigurations.of(DatadogMetricsExportAutoConfiguration.class));
+					AutoConfigurations.of(JmxMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void backsOffWithoutAClock() {
-		this.runner.run((context) -> assertThat(context)
-				.doesNotHaveBean(DatadogMeterRegistry.class));
+		this.runner.run(
+				(context) -> assertThat(context).doesNotHaveBean(JmxMeterRegistry.class));
 	}
 
 	@Test
-	public void failsWithoutAnApiKey() {
+	public void autoConfiguresItsConfigMeterRegistryAndNameMapper() {
 		this.runner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context).hasFailed());
-	}
-
-	@Test
-	public void autoConfiguresConfigAndMeterRegistry() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
 				.run((context) -> assertThat(context)
-						.hasSingleBean(DatadogMeterRegistry.class)
-						.hasSingleBean(DatadogConfig.class));
+						.hasSingleBean(JmxMeterRegistry.class)
+						.hasSingleBean(JmxConfig.class)
+						.hasSingleBean(HierarchicalNameMapper.class));
 	}
 
 	@Test
 	public void allowsCustomConfigToBeUsed() {
 		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)
-						.hasSingleBean(DatadogMeterRegistry.class)
-						.hasSingleBean(DatadogConfig.class).hasBean("customConfig"));
+						.hasSingleBean(JmxMeterRegistry.class)
+						.hasSingleBean(JmxConfig.class).hasBean("customConfig")
+						.hasSingleBean(HierarchicalNameMapper.class));
 	}
 
 	@Test
 	public void allowsCustomRegistryToBeUsed() {
 		this.runner.withUserConfiguration(CustomRegistryConfiguration.class)
-				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
 				.run((context) -> assertThat(context)
-						.hasSingleBean(DatadogMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(DatadogConfig.class));
+						.hasSingleBean(JmxMeterRegistry.class).hasBean("customRegistry")
+						.hasSingleBean(JmxConfig.class)
+						.hasSingleBean(HierarchicalNameMapper.class));
+	}
+
+	@Test
+	public void allowsCustomHierarchicalNameMapperToBeUsed() {
+		this.runner.withUserConfiguration(CustomNameMapperConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(JmxMeterRegistry.class)
+						.hasSingleBean(JmxConfig.class).hasBean("customNameMapper")
+						.hasSingleBean(HierarchicalNameMapper.class));
 	}
 
 	@Configuration
@@ -93,14 +100,11 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public DatadogConfig customConfig() {
-			return new DatadogConfig() {
+		public JmxConfig customConfig() {
+			return new JmxConfig() {
 
 				@Override
 				public String get(String k) {
-					if ("datadog.apiKey".equals(k)) {
-						return "12345";
-					}
 					return null;
 				}
 
@@ -114,8 +118,26 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public DatadogMeterRegistry customRegistry(DatadogConfig config, Clock clock) {
-			return new DatadogMeterRegistry(config, clock);
+		public JmxMeterRegistry customRegistry(JmxConfig config, Clock clock) {
+			return new JmxMeterRegistry(config, clock);
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	static class CustomNameMapperConfiguration {
+
+		@Bean
+		public HierarchicalNameMapper customNameMapper() {
+			return new HierarchicalNameMapper() {
+
+				@Override
+				public String toHierarchicalName(Id id, NamingConvention convention) {
+					return "test";
+				}
+
+			};
 		}
 
 	}

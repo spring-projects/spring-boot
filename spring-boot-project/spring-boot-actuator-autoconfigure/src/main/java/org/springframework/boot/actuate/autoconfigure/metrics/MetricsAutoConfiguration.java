@@ -130,6 +130,7 @@ public class MetricsAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationManagement.class)
+	@ConditionalOnProperty(value = "management.metrics.binders.integration.enabled", matchIfMissing = true)
 	static class MetricsIntegrationConfiguration {
 
 		@Bean(name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
@@ -142,6 +143,7 @@ public class MetricsAutoConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean
 		public SpringIntegrationMetrics springIntegrationMetrics(
 				IntegrationManagementConfigurer configurer) {
 			return new SpringIntegrationMetrics(configurer);

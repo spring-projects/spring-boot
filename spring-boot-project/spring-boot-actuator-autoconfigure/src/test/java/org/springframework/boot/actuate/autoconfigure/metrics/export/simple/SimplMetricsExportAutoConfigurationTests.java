@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.datadog.DatadogConfig;
-import io.micrometer.datadog.DatadogMeterRegistry;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleConfig;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -28,54 +29,40 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link DatadogMetricsExportAutoConfiguration}.
+ *
+ * Tests for {@link SimpleMetricsExportAutoConfiguration}.
  *
  * @author Andy Wilkinson
  */
-public class DatadogMetricsExportAutoConfigurationTests {
+public class SimplMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
 			.withConfiguration(
-					AutoConfigurations.of(DatadogMetricsExportAutoConfiguration.class));
-
-	@Test
-	public void backsOffWithoutAClock() {
-		this.runner.run((context) -> assertThat(context)
-				.doesNotHaveBean(DatadogMeterRegistry.class));
-	}
-
-	@Test
-	public void failsWithoutAnApiKey() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context).hasFailed());
-	}
+					AutoConfigurations.of(SimpleMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguresConfigAndMeterRegistry() {
 		this.runner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
 				.run((context) -> assertThat(context)
-						.hasSingleBean(DatadogMeterRegistry.class)
-						.hasSingleBean(DatadogConfig.class));
+						.hasSingleBean(SimpleMeterRegistry.class)
+						.hasSingleBean(Clock.class).hasSingleBean(SimpleConfig.class));
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	public void allowsConfigToBeCustomized() {
 		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(DatadogMeterRegistry.class)
-						.hasSingleBean(DatadogConfig.class).hasBean("customConfig"));
+				.run((context) -> assertThat(context).hasSingleBean(SimpleConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
+	public void backsOffEntirelyWithCustomMeterRegistry() {
 		this.runner.withUserConfiguration(CustomRegistryConfiguration.class)
-				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
-				.run((context) -> assertThat(context)
-						.hasSingleBean(DatadogMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(DatadogConfig.class));
+				.run((context) -> assertThat(context).hasSingleBean(MeterRegistry.class)
+						.hasBean("customRegistry").doesNotHaveBean(SimpleConfig.class));
 	}
 
 	@Configuration
@@ -93,14 +80,11 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public DatadogConfig customConfig() {
-			return new DatadogConfig() {
+		public SimpleConfig customConfig() {
+			return new SimpleConfig() {
 
 				@Override
 				public String get(String k) {
-					if ("datadog.apiKey".equals(k)) {
-						return "12345";
-					}
 					return null;
 				}
 
@@ -114,8 +98,8 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public DatadogMeterRegistry customRegistry(DatadogConfig config, Clock clock) {
-			return new DatadogMeterRegistry(config, clock);
+		public MeterRegistry customRegistry() {
+			return mock(MeterRegistry.class);
 		}
 
 	}

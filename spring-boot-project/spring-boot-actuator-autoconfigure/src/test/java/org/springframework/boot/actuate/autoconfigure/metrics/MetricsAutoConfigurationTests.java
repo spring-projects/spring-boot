@@ -16,222 +16,309 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.UUID;
-
-import javax.sql.DataSource;
+import java.util.List;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleConfig;
+import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import io.micrometer.graphite.GraphiteMeterRegistry;
-import io.micrometer.jmx.JmxMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.graphite.GraphiteMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricsAutoConfiguration}.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class MetricsAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple());
-
-	@Test
-	public void autoConfiguredDataSourceIsInstrumented() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true")
-				.run((context) -> {
-					context.getBean(DataSource.class).getConnection().getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("data.source.max.connections").tags("name", "dataSource")
-							.meter();
-				});
-	}
-
-	@Test
-	public void autoConfiguredDataSourceWithCustomMetricName() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.metric-name=custom.name")
-				.run((context) -> {
-					context.getBean(DataSource.class).getConnection().getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("custom.name.max.connections").tags("name", "dataSource")
-							.meter();
-				});
-	}
-
-	@Test
-	public void dataSourceInstrumentationCanBeDisabled() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.instrument=false")
-				.run((context) -> {
-					context.getBean(DataSource.class).getConnection().getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
-							.tags("name", "dataSource").meter()).isNull();
-				});
-	}
-
-	@Test
-	public void allDataSourcesCanBeInstrumented() {
-		this.contextRunner.withUserConfiguration(TwoDataSourcesConfiguration.class)
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.run((context) -> {
-					context.getBean("firstDataSource", DataSource.class).getConnection()
-							.getMetaData();
-					context.getBean("secondOne", DataSource.class).getConnection()
-							.getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("data.source.max.connections").tags("name", "first")
-							.meter();
-					registry.get("data.source.max.connections").tags("name", "secondOne")
-							.meter();
-				});
-	}
-
-	@Test
-	public void propertyBasedMeterFilter() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.my.org=false")
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.timer("my.org.timer");
-					assertThat(registry.find("my.org.timer").timer()).isNull();
-				});
-	}
-
-	/**
-	 * The simple registry is off by default UNLESS there is no other registry
-	 * implementation on the classpath, in which case it is on.
-	 */
-	@Test
-	public void simpleWithNoCompositeCreated() {
-		this.contextRunner
-				.run((context) -> assertThat(context.getBean(MeterRegistry.class))
-						.isInstanceOf(SimpleMeterRegistry.class));
-	}
-
-	/**
-	 * An empty composite is created in the absence of any other registry implementation.
-	 * This effectively no-ops instrumentation code throughout the application.
-	 */
-	@Test
-	public void emptyCompositeCreated() {
-		new ApplicationContextRunner().with(MetricsRun.limitedTo()).run((context) -> {
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			assertThat(registry).isInstanceOf(CompositeMeterRegistry.class);
-			assertThat(((CompositeMeterRegistry) registry).getRegistries()).isEmpty();
-		});
-	}
-
-	@Test
-	public void noCompositeCreatedWhenSingleImplementationIsEnabled() {
-		new ApplicationContextRunner()
-				.with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class))
-				.run((context) -> assertThat(context.getBean(MeterRegistry.class))
-						.isInstanceOf(GraphiteMeterRegistry.class));
-	}
-
-	@Test
-	public void noCompositeCreatedWhenMultipleRegistriesButOneMarkedAsPrimary() {
-		new ApplicationContextRunner()
-				.with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class,
-						JmxMetricsExportAutoConfiguration.class))
-				.withUserConfiguration(PrimarySimpleMeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context.getBean(MeterRegistry.class))
-						.isInstanceOf(SimpleMeterRegistry.class));
-	}
-
-	@Test
-	public void compositeCreatedWhenMultipleImplementationsAreEnabled() {
-		new ApplicationContextRunner()
-				.with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class,
-						JmxMetricsExportAutoConfiguration.class))
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry).isInstanceOf(CompositeMeterRegistry.class);
-					assertThat(((CompositeMeterRegistry) registry).getRegistries())
-							.hasAtLeastOneElementOfType(GraphiteMeterRegistry.class)
-							.hasAtLeastOneElementOfType(JmxMeterRegistry.class);
-				});
-	}
+	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguresAClock() {
-		this.contextRunner.with(MetricsRun.limitedTo())
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class));
+		this.runner.run((context) -> assertThat(context).hasSingleBean(Clock.class));
 	}
 
 	@Test
-	public void allowsCustomClockToBeConfigured() {
-		this.contextRunner.with(MetricsRun.limitedTo())
-				.withUserConfiguration(CustomClockConfiguration.class)
+	public void allowsACustomClockToBeUsed() {
+		this.runner.withUserConfiguration(CustomClockConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
 						.hasBean("customClock"));
 	}
 
-	@Configuration
-	static class PrimarySimpleMeterRegistryConfiguration {
-
-		@Primary
-		@Bean
-		public MeterRegistry simpleMeterRegistry() {
-			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
-		}
-
+	@Test
+	public void autoConfiguresACompositeMeterRegistry() {
+		this.runner.run((context) -> {
+			assertThat(context).hasSingleBean(CompositeMeterRegistry.class);
+			assertThat(context.getBean(CompositeMeterRegistry.class).getRegistries())
+					.isEmpty();
+		});
 	}
 
-	@Configuration
-	static class TwoDataSourcesConfiguration {
+	@SuppressWarnings("unchecked")
+	@Test
+	public void configuresMeterRegistries() {
+		this.runner.withUserConfiguration(MeterRegistryConfiguration.class)
+				.run((context) -> {
+					MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+					List<MeterFilter> filters = (List<MeterFilter>) ReflectionTestUtils
+							.getField(meterRegistry, "filters");
+					assertThat(filters).isNotEmpty();
+					verify((MeterBinder) context.getBean("meterBinder"))
+							.bindTo(meterRegistry);
+					verify(context.getBean(MeterRegistryCustomizer.class))
+							.customize(meterRegistry);
+				});
+	}
 
-		@Bean
-		public DataSource firstDataSource() {
-			return createDataSource();
-		}
+	@Test
+	public void autoConfiguresJvmMetrics() {
+		this.runner.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+				.hasSingleBean(JvmMemoryMetrics.class)
+				.hasSingleBean(JvmThreadMetrics.class));
+	}
 
-		@Bean
-		public DataSource secondOne() {
-			return createDataSource();
-		}
+	@Test
+	public void allowsJvmMetricsToBeDisabled() {
+		this.runner.withPropertyValues("management.metrics.binders.jvm.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(JvmGcMetrics.class)
+						.doesNotHaveBean(JvmMemoryMetrics.class)
+						.doesNotHaveBean(JvmThreadMetrics.class));
+	}
 
-		private DataSource createDataSource() {
-			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
-			return DataSourceBuilder.create().url(url).build();
-		}
+	@Test
+	public void allowsCustomJvmGcMetricsToBeUsed() {
+		this.runner.withUserConfiguration(CustomJvmGcMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+						.hasBean("customJvmGcMetrics")
+						.hasSingleBean(JvmMemoryMetrics.class)
+						.hasSingleBean(JvmThreadMetrics.class));
+	}
 
+	@Test
+	public void allowsCustomJvmMemoryMetricsToBeUsed() {
+		this.runner.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+						.hasSingleBean(JvmMemoryMetrics.class)
+						.hasBean("customJvmMemoryMetrics")
+						.hasSingleBean(JvmThreadMetrics.class));
+	}
+
+	@Test
+	public void allowsCustomJvmThreadMetricsToBeUsed() {
+		this.runner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+						.hasSingleBean(JvmMemoryMetrics.class)
+						.hasSingleBean(JvmThreadMetrics.class)
+						.hasBean("customJvmThreadMetrics"));
+	}
+
+	@Test
+	public void autoConfiguresLogbackMetrics() {
+		this.runner.run(
+				(context) -> assertThat(context).hasSingleBean(LogbackMetrics.class));
+	}
+
+	@Test
+	public void allowsLogbackMetricsToBeDisabled() {
+		this.runner.withPropertyValues("management.metrics.binders.logback.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(LogbackMetrics.class));
+	}
+
+	@Test
+	public void allowsCustomLogbackMetricsToBeUsed() {
+		this.runner.withUserConfiguration(CustomLogbackMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(LogbackMetrics.class)
+						.hasBean("customLogbackMetrics"));
+	}
+
+	@Test
+	public void autoConfiguresUptimeMetrics() {
+		this.runner
+				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class));
+	}
+
+	@Test
+	public void allowsUptimeMetricsToBeDisabled() {
+		this.runner.withPropertyValues("management.metrics.binders.uptime.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(UptimeMetrics.class));
+	}
+
+	@Test
+	public void allowsCustomUptimeMetricsToBeUsed() {
+		this.runner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class)
+						.hasBean("customUptimeMetrics"));
+	}
+
+	@Test
+	public void autoConfiguresProcessorMetrics() {
+		this.runner.run(
+				(context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
+	}
+
+	@Test
+	public void allowsProcessorMetricsToBeDisabled() {
+		this.runner
+				.withPropertyValues("management.metrics.binders.processor.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ProcessorMetrics.class));
+	}
+
+	@Test
+	public void allowsCustomProcessorMetricsToBeUsed() {
+		this.runner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ProcessorMetrics.class)
+						.hasBean("customProcessorMetrics"));
+	}
+
+	@Test
+	public void autoConfiguresSpringIntegrationMetrics() {
+		this.runner.run((context) -> assertThat(context)
+				.hasSingleBean(SpringIntegrationMetrics.class));
+	}
+
+	@Test
+	public void allowsSpringIntegrationMetricsToBeDisabled() {
+		this.runner
+				.withPropertyValues(
+						"management.metrics.binders.integration.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(SpringIntegrationMetrics.class));
+	}
+
+	@Test
+	public void allowsCustomSpringIntegrationMetricsToBeUsed() {
+		this.runner
+				.withUserConfiguration(CustomSpringIntegrationMetricsConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(SpringIntegrationMetrics.class)
+						.hasBean("customSpringIntegrationMetrics"));
 	}
 
 	@Configuration
 	static class CustomClockConfiguration {
 
 		@Bean
-		public Clock customClock() {
+		Clock customClock() {
 			return Clock.SYSTEM;
+		}
+
+	}
+
+	@Configuration
+	static class MeterRegistryConfiguration {
+
+		@Bean
+		MeterRegistry meterRegistry() {
+			SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+			return spy(meterRegistry);
+		}
+
+		@Bean
+		@SuppressWarnings("rawtypes")
+		MeterRegistryCustomizer meterRegistryCustomizer() {
+			return mock(MeterRegistryCustomizer.class);
+		}
+
+		@Bean
+		MeterBinder meterBinder() {
+			return mock(MeterBinder.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomJvmGcMetricsConfiguration {
+
+		@Bean
+		JvmGcMetrics customJvmGcMetrics() {
+			return new JvmGcMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomJvmMemoryMetricsConfiguration {
+
+		@Bean
+		JvmMemoryMetrics customJvmMemoryMetrics() {
+			return new JvmMemoryMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomJvmThreadMetricsConfiguration {
+
+		@Bean
+		JvmThreadMetrics customJvmThreadMetrics() {
+			return new JvmThreadMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomLogbackMetricsConfiguration {
+
+		@Bean
+		LogbackMetrics customLogbackMetrics() {
+			return new LogbackMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomUptimeMetricsConfiguration {
+
+		@Bean
+		UptimeMetrics customUptimeMetrics() {
+			return new UptimeMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomProcessorMetricsConfiguration {
+
+		@Bean
+		ProcessorMetrics customProcessorMetrics() {
+			return new ProcessorMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomSpringIntegrationMetricsConfiguration {
+
+		@Bean
+		SpringIntegrationMetrics customSpringIntegrationMetrics(
+				IntegrationManagementConfigurer configurer) {
+			return new SpringIntegrationMetrics(configurer);
 		}
 
 	}

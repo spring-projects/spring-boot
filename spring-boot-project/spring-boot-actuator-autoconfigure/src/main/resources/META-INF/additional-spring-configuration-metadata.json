@@ -179,6 +179,12 @@
       "name": "management.info.git.mode",
       "defaultValue": "simple"
     },
+        {
+      "name": "management.metrics.binders.integration.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring Integration metrics.",
+      "defaultValue": true
+    },
     {
       "name": "management.metrics.binders.jvm.enabled",
       "type": "java.lang.Boolean",

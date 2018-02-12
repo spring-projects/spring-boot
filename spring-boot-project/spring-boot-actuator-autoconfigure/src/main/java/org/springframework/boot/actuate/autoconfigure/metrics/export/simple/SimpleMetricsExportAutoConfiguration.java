@@ -49,7 +49,6 @@ import org.springframework.context.annotation.Configuration;
 public class SimpleMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(MeterRegistry.class)
 	public SimpleMeterRegistry simpleMeterRegistry(SimpleConfig config, Clock clock) {
 		return new SimpleMeterRegistry(config, clock);
 	}

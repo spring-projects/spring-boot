@@ -21,6 +21,7 @@ import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
@@ -73,6 +74,8 @@ public class PrometheusMetricsExportAutoConfiguration {
 	public static class PrometheusScrapeEndpointConfiguration {
 
 		@Bean
+		@ConditionalOnEnabledEndpoint
+		@ConditionalOnMissingBean
 		public PrometheusScrapeEndpoint prometheusEndpoint(
 				CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);

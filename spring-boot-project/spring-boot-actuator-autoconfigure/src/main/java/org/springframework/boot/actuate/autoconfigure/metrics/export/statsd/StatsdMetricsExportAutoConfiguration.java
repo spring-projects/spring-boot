@@ -54,6 +54,7 @@ public class StatsdMetricsExportAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig,
 			HierarchicalNameMapper hierarchicalNameMapper, Clock clock) {
 		return new StatsdMeterRegistry(statsdConfig, hierarchicalNameMapper, clock);
