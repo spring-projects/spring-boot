@@ -28,11 +28,11 @@
       "description": "Whether to enable or disable all endpoints by default."
     },
     {
-      "name": "management.endpoints.jmx.expose",
+      "name": "management.endpoints.jmx.exposure.include",
       "defaultValue": "*"
     },
     {
-      "name": "management.endpoints.web.expose",
+      "name": "management.endpoints.web.exposure.include",
       "defaultValue": [
         "health",
         "info"
@@ -755,7 +755,7 @@
       "description": "Whether to enable JMX export of all endpoints.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "management.endpoints.jmx.exclude",
+        "replacement": "management.endpoints.jmx.exposure.exclude",
         "level": "error"
       }
     },

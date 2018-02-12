@@ -105,7 +105,7 @@ public class WebMvcEndpointIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.base-path:/management",
-				"management.endpoints.web.expose=*").applyTo(this.context);
+				"management.endpoints.web.exposure.include=*").applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
 	}
@@ -114,7 +114,8 @@ public class WebMvcEndpointIntegrationTests {
 	public void linksAreProvidedToAllEndpointTypes() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
-		TestPropertyValues.of("management.endpoints.web.expose=*").applyTo(this.context);
+		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(
+				this.context);
 		MockMvc mockMvc = doCreateMockMvc();
 		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isOk())
 				.andExpect(jsonPath("_links", both(hasKey("beans")).and(hasKey("servlet"))

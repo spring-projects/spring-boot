@@ -55,7 +55,7 @@ public class JerseyEndpointIntegrationTests {
 										ManagementContextAutoConfiguration.class,
 										BeansEndpointAutoConfiguration.class))
 						.withUserConfiguration(EndpointsConfiguration.class)
-						.withPropertyValues("management.endpoints.web.expose:*",
+						.withPropertyValues("management.endpoints.web.exposure.include:*",
 								"server.port:0")
 						.run((context) -> {
 							int port = context.getSourceApplicationContext(

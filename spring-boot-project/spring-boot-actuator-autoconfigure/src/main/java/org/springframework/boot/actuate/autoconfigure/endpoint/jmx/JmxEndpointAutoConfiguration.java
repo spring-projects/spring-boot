@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 import javax.management.MBeanServer;
 
@@ -97,10 +96,9 @@ public class JmxEndpointAutoConfiguration {
 
 	@Bean
 	public ExposeExcludePropertyEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {
-		Set<String> expose = this.properties.getExpose();
-		Set<String> exclude = this.properties.getExclude();
+		JmxEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new ExposeExcludePropertyEndpointFilter<>(ExposableJmxEndpoint.class,
-				expose, exclude, "*");
+				exposure.getInclude(), exposure.getExclude(), "*");
 	}
 
 }

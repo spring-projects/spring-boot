@@ -197,7 +197,7 @@ disables all other endpoints:
 
 NOTE: Disabled endpoints are removed entirely from the application context. If you want
 to change only the technologies over which an endpoint is exposed, use the
-<<production-ready-endpoints-exposing-endpoints, `expose` and `exclude` properties>>
+<<production-ready-endpoints-exposing-endpoints, `include` and `exclude` properties>>
 instead.
 
 
@@ -298,38 +298,38 @@ endpoints:
 
 |===
 
-To change which endpoints are exposed, use the following technology-specific `expose` and
+To change which endpoints are exposed, use the following technology-specific `include` and
 `exclude` properties:
 
 [cols="3,1"]
 |===
 |Property | Default
 
-|`management.endpoints.jmx.exclude`
+|`management.endpoints.jmx.exposure.exclude`
 |
 
-|`management.endpoints.jmx.expose`
+|`management.endpoints.jmx.exposure.include`
 | `*`
 
-|`management.endpoints.web.exclude`
+|`management.endpoints.web.exposure.exclude`
 |
 
-|`management.endpoints.web.expose`
+|`management.endpoints.web.exposure.include`
 | `info, health`
 
 |===
 
-The `expose` property lists the IDs of the endpoints that are exposed. The `exclude`
+The `include` property lists the IDs of the endpoints that are exposed. The `exclude`
 property lists the IDs of the endpoints that should not be exposed.  The `exclude`
-property takes precedence over the `expose` property. Both `expose` and `exclude` properties
-can be configured with a list of endpoint IDs.
+property takes precedence over the `include` property. Both `include` and `exclude`
+properties can be configured with a list of endpoint IDs.
 
-For example, to stop exposing all endpoints over JMX and only expose the `health` and `info`
-endpoints, use the following property:
+For example, to stop exposing all endpoints over JMX and only expose the `health` and
+`info` endpoints, use the following property:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.jmx.expose=health,info
+	management.endpoints.jmx.exposure.include=health,info
 ----
 
 `*` can be used to select all endpoints. For example, to expose everything over HTTP
@@ -337,8 +337,8 @@ except the `env` and `beans` endpoints, use the following properties:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.web.expose=*
-	management.endpoints.web.exclude=env,beans
+	management.endpoints.web.exposure.include=*
+	management.endpoints.web.exposure.exclude=env,beans
 ----
 
 NOTE: If your application is exposed publicly, we strongly recommend that you also
@@ -384,12 +384,12 @@ methods are also available on `EndpointRequest`. See the API documentation
 
 If you deploy applications behind a firewall, you may prefer that all your actuator
 endpoints can be accessed without requiring authentication. You can do so by changing the
-`management.endpoints.web.expose` property, as follows:
+`management.endpoints.web.exposure.include` property, as follows:
 
 .application.properties
 [source,properties,indent=0]
 ----
-	management.endpoints.web.expose=*
+	management.endpoints.web.exposure.include=*
 ----
 
 Additionally, if Spring Security is present, you would need to add custom security
@@ -1014,11 +1014,12 @@ settings show an example of doing so in `application.properties`:
 [[production-ready-disable-jmx-endpoints]]
 === Disabling JMX Endpoints
 If you do not want to expose endpoints over JMX, you can set the
-`management.endpoints.jmx.exclude` property to `*`, as shown in the following example:
+`management.endpoints.jmx.exposure.exclude` property to `*`, as shown in the following
+example:
 
 [source,properties,indent=0]
 ----
-	management.endpoints.jmx.exclude=*
+	management.endpoints.jmx.exposure.exclude=*
 ----
 
 
@@ -1038,7 +1039,7 @@ Maven, you would add the following dependency:
 ----
 
 The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the
-`management.endpoints.web.expose` property. You can then access it by using
+`management.endpoints.web.exposure.include` property. You can then access it by using
 `/actuator/jolokia` on your management HTTP server.
 
 

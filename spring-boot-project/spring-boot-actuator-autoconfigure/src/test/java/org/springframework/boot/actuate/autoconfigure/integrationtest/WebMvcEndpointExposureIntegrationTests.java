@@ -102,7 +102,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 	@Test
 	public void webEndpointsCanBeExposed() {
 		WebApplicationContextRunner contextRunner = this.contextRunner
-				.withPropertyValues("management.endpoints.web.expose=*");
+				.withPropertyValues("management.endpoints.web.exposure.include=*");
 		contextRunner.run((context) -> {
 			WebTestClient client = createClient(context);
 			assertThat(isExposed(client, HttpMethod.GET, "beans")).isTrue();
@@ -123,7 +123,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 	@Test
 	public void singleWebEndpointCanBeExposed() {
 		WebApplicationContextRunner contextRunner = this.contextRunner
-				.withPropertyValues("management.endpoints.web.expose=beans");
+				.withPropertyValues("management.endpoints.web.exposure.include=beans");
 		contextRunner.run((context) -> {
 			WebTestClient client = createClient(context);
 			assertThat(isExposed(client, HttpMethod.GET, "beans")).isTrue();
@@ -144,8 +144,8 @@ public class WebMvcEndpointExposureIntegrationTests {
 	@Test
 	public void singleWebEndpointCanBeExcluded() {
 		WebApplicationContextRunner contextRunner = this.contextRunner.withPropertyValues(
-				"management.endpoints.web.expose=*",
-				"management.endpoints.web.exclude=shutdown");
+				"management.endpoints.web.exposure.include=*",
+				"management.endpoints.web.exposure.exclude=shutdown");
 		contextRunner.run((context) -> {
 			WebTestClient client = createClient(context);
 			assertThat(isExposed(client, HttpMethod.GET, "beans")).isTrue();

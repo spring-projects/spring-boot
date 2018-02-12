@@ -61,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-@TestPropertySource(properties = "management.endpoints.web.expose=jolokia")
+@TestPropertySource(properties = "management.endpoints.web.exposure.include=jolokia")
 public class JolokiaEndpointAutoConfigurationIntegrationTests {
 
 	@Autowired
