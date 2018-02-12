@@ -19,23 +19,75 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.DataSourceBeanCreationException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * An {@link AbstractFailureAnalyzer} for failures caused by a
  * {@link DataSourceBeanCreationException}.
  *
  * @author Andy Wilkinson
+ * @author Patryk Kostrzewa
+ * @author Stephane Nicoll
  */
 class DataSourceBeanCreationFailureAnalyzer
-		extends AbstractFailureAnalyzer<DataSourceBeanCreationException> {
+		extends AbstractFailureAnalyzer<DataSourceBeanCreationException>
+		implements EnvironmentAware {
+
+	private Environment environment;
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			DataSourceBeanCreationException cause) {
-		String message = cause.getMessage();
-		String description = message.substring(0, message.indexOf('.')).trim();
-		String action = message.substring(message.indexOf('.') + 1).trim();
-		return new FailureAnalysis(description, action, cause);
+		return getFailureAnalysis(cause);
+	}
+
+	private FailureAnalysis getFailureAnalysis(DataSourceBeanCreationException cause) {
+		StringBuilder description = new StringBuilder();
+		boolean datasourceUrlSpecified = this.environment.containsProperty(
+				"spring.datasource.url");
+		description.append("Failed to auto-configure a DataSource: ");
+		if (!datasourceUrlSpecified) {
+			description.append("'spring.datasource.url' is not specified and ");
+		}
+		description.append(String.format(
+				"no embedded datasource could be auto-configured.%n"));
+		description.append(String.format("%nReason: %s%n", cause.getMessage()));
+
+		StringBuilder action = new StringBuilder();
+		action.append(String.format("Consider the following:%n"));
+		if (EmbeddedDatabaseConnection.NONE == cause.getConnection()) {
+			action.append(String.format("\tIf you want an embedded database (H2, HSQL or "
+					+ "Derby), please put it on the classpath.%n"));
+		}
+		else {
+			action.append(String.format("\tReview the configuration of %s%n.", cause.getConnection()));
+		}
+		action.append("\tIf you have database settings to be loaded from a particular "
+				+ "profile you may need to activate it").append(getActiveProfiles());
+		return new FailureAnalysis(description.toString(), action.toString(), cause);
+	}
+
+	private String getActiveProfiles() {
+		StringBuilder message = new StringBuilder();
+		String[] profiles = this.environment.getActiveProfiles();
+		if (ObjectUtils.isEmpty(profiles)) {
+			message.append(" (no profiles are currently active).");
+		}
+		else {
+			message.append(" (the profiles ");
+			message.append(StringUtils.arrayToCommaDelimitedString(profiles));
+			message.append(" are currently active).");
+		}
+		return message.toString();
 	}
 
 }
