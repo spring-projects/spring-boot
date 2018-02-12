@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,12 @@ public final class ConfigurationPropertySources {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
 		MutablePropertySources sources = ((ConfigurableEnvironment) environment)
 				.getPropertySources();
-		if (!sources.contains(ATTACHED_PROPERTY_SOURCE_NAME)) {
+		PropertySource<?> attached = sources.get(ATTACHED_PROPERTY_SOURCE_NAME);
+		if (attached != null && attached.getSource() != sources) {
+			sources.remove(ATTACHED_PROPERTY_SOURCE_NAME);
+			attached = null;
+		}
+		if (attached == null) {
 			sources.addFirst(new ConfigurationPropertySourcesPropertySource(
 					ATTACHED_PROPERTY_SOURCE_NAME,
 					new SpringConfigurationPropertySources(sources)));
