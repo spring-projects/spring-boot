@@ -146,6 +146,7 @@ public class NarayanaJtaConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public DbcpXaDataSourceWrapper dbcpXaDataSourceWrapper(TransactionManager transactionManager,
 			NarayanaProperties.PoolProperties narayanaPoolProperties) {
 		return new DbcpXaDataSourceWrapper(transactionManager, narayanaPoolProperties);
