@@ -60,7 +60,7 @@ public class MongoReactiveDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
 	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(
-			MongoClient mongo) throws Exception {
+			MongoClient mongo) {
 		String database = this.properties.getMongoClientDatabase();
 		return new SimpleReactiveMongoDatabaseFactory(mongo, database);
 	}
