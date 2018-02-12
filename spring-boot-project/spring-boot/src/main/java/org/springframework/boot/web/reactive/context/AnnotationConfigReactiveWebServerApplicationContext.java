@@ -16,6 +16,10 @@
 
 package org.springframework.boot.web.reactive.context;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -58,7 +62,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
-	private Class<?>[] annotatedClasses;
+	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<>();
 
 	private String[] basePackages;
 
@@ -172,10 +176,11 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */
+	@Override
 	public final void register(Class<?>... annotatedClasses) {
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
-		this.annotatedClasses = annotatedClasses;
+		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
 	}
 
 	/**
@@ -185,6 +190,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 * @see #register(Class...)
 	 * @see #refresh()
 	 */
+	@Override
 	public final void scan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		this.basePackages = basePackages;
@@ -202,8 +208,9 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 		if (!ObjectUtils.isEmpty(this.basePackages)) {
 			this.scanner.scan(this.basePackages);
 		}
-		if (!ObjectUtils.isEmpty(this.annotatedClasses)) {
-			this.reader.register(this.annotatedClasses);
+		if (!this.annotatedClasses.isEmpty()) {
+			this.reader.register(this.annotatedClasses
+					.toArray(new Class<?>[this.annotatedClasses.size()]));
 		}
 	}
 
