@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Interface to be implemented by {@link ApplicationContext application contexts} that
- * create and manage the lifecyle of an embedded {@link WebServer}.
+ * create and manage the lifecycle of an embedded {@link WebServer}.
  *
  * @author Phillip Webb
  * @since 2.0.0
@@ -37,7 +37,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 
 	/**
 	 * Returns the namespace of the web server application context or {@code null} if no
-	 * namepace has been set. Used for disambiguation when multiple web servers are
+	 * namespace has been set. Used for disambiguation when multiple web servers are
 	 * running in the same application (for example a management context running on a
 	 * different port).
 	 * @return the server namespace
