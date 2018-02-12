@@ -85,7 +85,7 @@ public class TestRestTemplateTests {
 	@Test
 	public void getRootUriRootUriSetViaRestTemplateBuilder() {
 		String rootUri = "http://example.com";
-		RestTemplate delegate = new RestTemplateBuilder().rootUri(rootUri).build();
+		RestTemplateBuilder delegate = new RestTemplateBuilder().rootUri(rootUri);
 		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo(rootUri);
 	}
 
@@ -127,7 +127,9 @@ public class TestRestTemplateTests {
 		RestTemplate delegate = mock(RestTemplate.class);
 		given(delegate.getUriTemplateHandler())
 				.willReturn(new DefaultUriBuilderFactory());
-		final TestRestTemplate restTemplate = new TestRestTemplate(delegate);
+		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
+		given(builder.build()).willReturn(delegate);
+		final TestRestTemplate restTemplate = new TestRestTemplate(builder);
 		ReflectionUtils.doWithMethods(RestOperations.class, new MethodCallback() {
 
 			@Override
@@ -338,9 +340,8 @@ public class TestRestTemplateTests {
 				.create("http://localhost:8080/a/b/c.txt?param=%7Bsomething%7D");
 		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class)))
 				.willReturn(request);
-		RestTemplate delegate = new RestTemplate();
-		TestRestTemplate template = new TestRestTemplate(delegate);
-		delegate.setRequestFactory(requestFactory);
+		TestRestTemplate template = new TestRestTemplate();
+		template.getRestTemplate().setRequestFactory(requestFactory);
 		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(
 				new MockEnvironment());
 		template.setUriTemplateHandler(uriTemplateHandler);

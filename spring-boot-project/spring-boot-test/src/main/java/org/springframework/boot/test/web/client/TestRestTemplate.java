@@ -94,7 +94,7 @@ public class TestRestTemplate {
 	 * @since 1.4.1
 	 */
 	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-		this(buildRestTemplate(restTemplateBuilder));
+		this(restTemplateBuilder, null, null);
 	}
 
 	/**
@@ -113,14 +113,24 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(String username, String password,
 			HttpClientOption... httpClientOptions) {
-		this(new RestTemplate(), username, password, httpClientOptions);
+		this(new RestTemplateBuilder(), username, password, httpClientOptions);
 	}
 
-	public TestRestTemplate(RestTemplate restTemplate) {
-		this(restTemplate, null, null);
+	/**
+	 * Create a new {@link TestRestTemplate} instance with the specified credentials.
+	 * @param restTemplateBuilder builder used to configure underlying
+	 * {@link RestTemplate}
+	 * @param username the username to use (or {@code null})
+	 * @param password the password (or {@code null})
+	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
+	 * @since 2.0.0
+	 */
+	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username, String password,
+			HttpClientOption... httpClientOptions) {
+		this(buildRestTemplate(restTemplateBuilder), username, password, httpClientOptions);
 	}
 
-	public TestRestTemplate(RestTemplate restTemplate, String username, String password,
+	private TestRestTemplate(RestTemplate restTemplate, String username, String password,
 			HttpClientOption... httpClientOptions) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.httpClientOptions = httpClientOptions;

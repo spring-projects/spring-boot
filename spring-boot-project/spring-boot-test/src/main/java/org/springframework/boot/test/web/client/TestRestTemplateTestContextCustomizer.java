@@ -143,7 +143,7 @@ class TestRestTemplateTestContextCustomizer implements ContextCustomizer {
 				throws BeansException {
 			RestTemplateBuilder builder = getRestTemplateBuilder(applicationContext);
 			boolean sslEnabled = isSslEnabled(applicationContext);
-			TestRestTemplate template = new TestRestTemplate(builder.build(), null, null,
+			TestRestTemplate template = new TestRestTemplate(builder, null, null,
 					sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
 			LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 					applicationContext.getEnvironment(), sslEnabled ? "https" : "http");

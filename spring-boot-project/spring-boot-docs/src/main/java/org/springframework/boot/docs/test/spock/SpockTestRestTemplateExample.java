@@ -46,7 +46,7 @@ public class SpockTestRestTemplateExample {
 				Environment environment) {
 			RestTemplateBuilder builder = builderProvider.getIfAvailable();
 			TestRestTemplate template = builder == null ? new TestRestTemplate()
-					: new TestRestTemplate(builder.build());
+					: new TestRestTemplate(builder);
 			template.setUriTemplateHandler(new LocalHostUriTemplateHandler(environment));
 			return template;
 		}
