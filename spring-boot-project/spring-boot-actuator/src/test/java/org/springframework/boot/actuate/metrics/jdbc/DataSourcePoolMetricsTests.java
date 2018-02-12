@@ -51,7 +51,7 @@ public class DataSourcePoolMetricsTests {
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					context.getBean(MeterRegistry.class)
-							.get("data.source.max.connections").meter();
+							.get("jdbc.max.connections").meter();
 				});
 	}
 
