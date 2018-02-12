@@ -60,7 +60,7 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 		this.environment.setActiveProfiles("first", "second");
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis.getAction())
-				.contains("(the profiles first,¬second are currently active)");
+				.contains("(the profiles first,second are currently active)");
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
