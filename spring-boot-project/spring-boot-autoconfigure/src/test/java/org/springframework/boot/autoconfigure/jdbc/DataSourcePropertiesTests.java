@@ -72,7 +72,7 @@ public class DataSourcePropertiesTests {
 				new FilteredClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
 		properties.afterPropertiesSet();
 		this.thrown.expect(DataSourceProperties.DataSourceBeanCreationException.class);
-		this.thrown.expectMessage("Cannot determine embedded database url");
+		this.thrown.expectMessage("Failed to determine suitable jdbc url");
 		properties.determineUrl();
 	}
 

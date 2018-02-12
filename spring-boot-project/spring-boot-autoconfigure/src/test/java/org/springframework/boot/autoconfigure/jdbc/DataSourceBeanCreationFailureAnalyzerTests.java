@@ -41,12 +41,8 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 	@Test
 	public void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
-		assertThat(failureAnalysis.getDescription()).isEqualTo(
-				"Cannot determine embedded database driver class for database type NONE");
-		assertThat(failureAnalysis.getAction()).isEqualTo("If you want an embedded "
-				+ "database please put a supported one on the classpath. If you have "
-				+ "database settings to be loaded from a particular profile you may "
-				+ "need to active it (no profiles are currently active).");
+		assertThat(failureAnalysis.getDescription()).isEqualTo("Failed to determine a suitable driver class");
+		assertThat(failureAnalysis.getAction()).isEqualTo("If you want an embedded database please put a supported one on the classpath.");
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
