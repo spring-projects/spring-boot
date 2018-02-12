@@ -69,14 +69,14 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testMetricsIsSecure() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics",
+		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/actuator/metrics",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = this.restTemplate.getForEntity("/metrics/", Map.class);
+		entity = this.restTemplate.getForEntity("/actuator/metrics/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = this.restTemplate.getForEntity("/metrics/foo", Map.class);
+		entity = this.restTemplate.getForEntity("/actuator/metrics/foo", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = this.restTemplate.getForEntity("/metrics.json", Map.class);
+		entity = this.restTemplate.getForEntity("/actuator/metrics.json", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
