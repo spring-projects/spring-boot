@@ -56,7 +56,7 @@ public class EncodePasswordCommandTests {
 	}
 
 	@Test
-	public void encodeWithNoAlgorithShouldUseBcrypt() throws Exception {
+	public void encodeWithNoAlgorithmShouldUseBcrypt() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("boot");
 		verify(this.log).info(this.message.capture());
@@ -89,7 +89,7 @@ public class EncodePasswordCommandTests {
 	}
 
 	@Test
-	public void encodeWithUnkownAlgorithShouldExitWithError() throws Exception {
+	public void encodeWithUnknownAlgorithmShouldExitWithError() throws Exception {
 		EncodePasswordCommand command = new EncodePasswordCommand();
 		ExitStatus status = command.run("--algorithm", "bad", "boot");
 		verify(this.log)
