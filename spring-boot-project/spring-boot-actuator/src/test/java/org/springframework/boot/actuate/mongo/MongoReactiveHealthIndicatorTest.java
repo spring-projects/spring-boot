@@ -18,10 +18,7 @@ package org.springframework.boot.actuate.mongo;
 
 import com.mongodb.MongoException;
 import org.bson.Document;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -40,24 +37,16 @@ import static org.mockito.Mockito.mock;
  */
 
 public class MongoReactiveHealthIndicatorTest {
-	@Mock
-	private ReactiveMongoTemplate reactiveMongoTemplate;
-
 	private MongoReactiveHealthIndicator mongoReactiveHealthIndicator;
-
-	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-
-	}
 
 	@Test
 	public void testMongoIsUp() throws Exception {
 		Document document = mock(Document.class);
-		given(this.reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(Mono.just(document));
+		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
+		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(Mono.just(document));
 		given(document.getString("version")).willReturn("2.6.4");
 
-		this.mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(this.reactiveMongoTemplate);
+		this.mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
 		Mono<Health> health = this.mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
@@ -68,9 +57,10 @@ public class MongoReactiveHealthIndicatorTest {
 
 	@Test
 	public void testMongoIsDown() throws Exception {
-		given(this.reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(new MongoException("Connection failed"));
+		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
+		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(new MongoException("Connection failed"));
 
-		this.mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(this.reactiveMongoTemplate);
+		this.mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
 		Mono<Health> health = this.mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
