@@ -265,8 +265,7 @@ public class FlywayAutoConfiguration {
 
 		private DatabaseDriver getDatabaseDriver() {
 			try {
-				String url = (String) JdbcUtils.extractDatabaseMetaData(this.dataSource,
-						"getURL");
+				String url = JdbcUtils.extractDatabaseMetaData(this.dataSource, "getURL");
 				return DatabaseDriver.fromJdbcUrl(url);
 			}
 			catch (MetaDataAccessException ex) {

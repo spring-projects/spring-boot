@@ -359,7 +359,7 @@ public final class ConditionMessage {
 		 */
 		public ConditionMessage items(Style style, Object... items) {
 			return items(style,
-					items == null ? (Collection<?>) null : Arrays.asList(items));
+					items == null ? null : Arrays.asList(items));
 		}
 
 		/**

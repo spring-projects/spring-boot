@@ -22,7 +22,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
@@ -111,7 +110,7 @@ public class PoolingDataSourceBean extends PoolingDataSource
 	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		try {
-			return ((DataSource) this).getParentLogger();
+			return this.getParentLogger();
 		}
 		catch (Exception ex) {
 			// Work around https://jira.codehaus.org/browse/BTM-134
