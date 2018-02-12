@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.junit.Test;
 import reactor.core.publisher.Mono;
@@ -37,6 +38,7 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -57,7 +59,7 @@ import static org.mockito.Mockito.verify;
  * @param <T> the type of application context used by the tests
  * @author Andy Wilkinson
  */
-public abstract class AbstractWebEndpointIntegrationTests<T extends ConfigurableApplicationContext> {
+public abstract class AbstractWebEndpointIntegrationTests<T extends ConfigurableApplicationContext & AnnotationConfigRegistry> {
 
 	private static final Duration TIMEOUT = Duration.ofMinutes(6);
 
@@ -65,10 +67,14 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	private static final String JSON_MEDIA_TYPE_PATTERN = "application/json(;charset=UTF-8)?";
 
-	private final Class<?> exporterConfiguration;
+	private final Supplier<T> applicationContextSupplier;
 
-	protected AbstractWebEndpointIntegrationTests(Class<?> exporterConfiguration) {
-		this.exporterConfiguration = exporterConfiguration;
+	private final Consumer<T> authenticatedContextCustomizer;
+
+	protected AbstractWebEndpointIntegrationTests(Supplier<T> applicationContextSupplier,
+			Consumer<T> authenticatedContextCustomizer) {
+		this.applicationContextSupplier = applicationContextSupplier;
+		this.authenticatedContextCustomizer = authenticatedContextCustomizer;
 	}
 
 	@Test
@@ -337,13 +343,23 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	@Test
 	public void principalIsAvailableWhenRequestHasAPrincipal() {
-		load(getSecuredPrincipalEndpointConfiguration(),
-				(client) -> client.get().uri("/principal")
-						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-						.isOk().expectBody(String.class).isEqualTo("Alice"));
+		load((context) -> {
+			this.authenticatedContextCustomizer.accept(context);
+			context.register(PrincipalEndpointConfiguration.class);
+		}, (client) -> client.get().uri("/principal").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isOk().expectBody(String.class)
+				.isEqualTo("Alice"));
 	}
 
-	protected abstract T createApplicationContext(Class<?>... config);
+	@Test
+	public void operationWithAQueryNamedPrincipalCanBeAccessedWhenAuthenticated() {
+		load((context) -> {
+			this.authenticatedContextCustomizer.accept(context);
+			context.register(PrincipalQueryEndpointConfiguration.class);
+		}, (client) -> client.get().uri("/principalquery?principal=Zoe")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("Zoe"));
+	}
 
 	protected abstract int getPort(T context);
 
@@ -356,38 +372,45 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	private void load(Class<?> configuration,
 			BiConsumer<ApplicationContext, WebTestClient> consumer) {
-		load(configuration, "/endpoints", consumer);
+		load((context) -> context.register(configuration), "/endpoints", consumer);
 	}
-
-	private void load(Class<?> configuration, String endpointPath,
-			BiConsumer<ApplicationContext, WebTestClient> consumer) {
-		T context = createApplicationContext(configuration, this.exporterConfiguration);
-		context.getEnvironment().getPropertySources().addLast(new MapPropertySource(
-				"test", Collections.singletonMap("endpointPath", endpointPath)));
-		context.refresh();
-		try {
-			InetSocketAddress address = new InetSocketAddress(getPort(context));
-			String url = "http://" + address.getHostString() + ":" + address.getPort()
-					+ endpointPath;
-			consumer.accept(context, WebTestClient.bindToServer().baseUrl(url)
-					.responseTimeout(TIMEOUT).build());
-		}
-		finally {
-			context.close();
-		}
-	}
-
-	protected abstract Class<?> getSecuredPrincipalEndpointConfiguration();
 
 	protected void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
-		load(configuration, "/endpoints",
+		load((context) -> context.register(configuration), "/endpoints",
+				(context, client) -> clientConsumer.accept(client));
+	}
+
+	protected void load(Consumer<T> contextCustomizer,
+			Consumer<WebTestClient> clientConsumer) {
+		load(contextCustomizer, "/endpoints",
 				(context, client) -> clientConsumer.accept(client));
 	}
 
 	protected void load(Class<?> configuration, String endpointPath,
 			Consumer<WebTestClient> clientConsumer) {
-		load(configuration, endpointPath,
+		load((context) -> context.register(configuration), endpointPath,
 				(context, client) -> clientConsumer.accept(client));
+	}
+
+	private void load(Consumer<T> contextCustomizer, String endpointPath,
+			BiConsumer<ApplicationContext, WebTestClient> consumer) {
+		T applicationContext = this.applicationContextSupplier.get();
+		contextCustomizer.accept(applicationContext);
+		applicationContext.getEnvironment().getPropertySources()
+				.addLast(new MapPropertySource("test",
+						Collections.singletonMap("endpointPath", endpointPath)));
+		applicationContext.refresh();
+		try {
+			InetSocketAddress address = new InetSocketAddress(
+					getPort(applicationContext));
+			String url = "http://" + address.getHostString() + ":" + address.getPort()
+					+ endpointPath;
+			consumer.accept(applicationContext, WebTestClient.bindToServer().baseUrl(url)
+					.responseTimeout(TIMEOUT).build());
+		}
+		finally {
+			applicationContext.close();
+		}
 	}
 
 	@Configuration
@@ -543,6 +566,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@Bean
 		public PrincipalEndpoint principalEndpoint() {
 			return new PrincipalEndpoint();
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	protected static class PrincipalQueryEndpointConfiguration {
+
+		@Bean
+		public PrincipalQueryEndpoint principalQueryEndpoint() {
+			return new PrincipalQueryEndpoint();
 		}
 
 	}
@@ -731,6 +765,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		public String read(@Nullable Principal principal) {
 			return principal == null ? "None" : principal.getName();
+		}
+
+	}
+
+	@Endpoint(id = "principalquery")
+	static class PrincipalQueryEndpoint {
+
+		@ReadOperation
+		public String read(String principal) {
+			return principal;
 		}
 
 	}

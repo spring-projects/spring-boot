@@ -16,6 +16,10 @@
 
 package org.springframework.boot.web.servlet.context;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -55,7 +59,7 @@ public class AnnotationConfigServletWebServerApplicationContext
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
-	private Class<?>[] annotatedClasses;
+	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<>();
 
 	private String[] basePackages;
 
@@ -173,7 +177,7 @@ public class AnnotationConfigServletWebServerApplicationContext
 	public final void register(Class<?>... annotatedClasses) {
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
-		this.annotatedClasses = annotatedClasses;
+		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
 	}
 
 	/**
@@ -201,8 +205,9 @@ public class AnnotationConfigServletWebServerApplicationContext
 		if (this.basePackages != null && this.basePackages.length > 0) {
 			this.scanner.scan(this.basePackages);
 		}
-		if (this.annotatedClasses != null && this.annotatedClasses.length > 0) {
-			this.reader.register(this.annotatedClasses);
+		if (!this.annotatedClasses.isEmpty()) {
+			this.reader.register(this.annotatedClasses
+					.toArray(new Class<?>[this.annotatedClasses.size()]));
 		}
 	}
 

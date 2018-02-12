@@ -30,7 +30,7 @@ public class SampleKafkaApplication {
 
 	@Bean
 	public ApplicationRunner runner(Producer producer) {
-		return args -> producer.send(new SampleMessage(1, "A simple test message"));
+		return (args) -> producer.send(new SampleMessage(1, "A simple test message"));
 	}
 
 }

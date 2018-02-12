@@ -84,7 +84,7 @@ public class ControllerEndpointWebMvcIntegrationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class, ExampleController.class);
 		TestPropertyValues.of("management.endpoints.web.base-path:/management",
-				"management.endpoints.web.expose=*").applyTo(this.context);
+				"management.endpoints.web.exposure.include=*").applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/example")).andExpect(status().isOk());
 	}

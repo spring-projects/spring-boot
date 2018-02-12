@@ -45,7 +45,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -61,15 +60,19 @@ public class JerseyWebEndpointIntegrationTests extends
 		AbstractWebEndpointIntegrationTests<AnnotationConfigServletWebServerApplicationContext> {
 
 	public JerseyWebEndpointIntegrationTests() {
-		super(JerseyConfiguration.class);
+		super(JerseyWebEndpointIntegrationTests::createApplicationContext,
+				JerseyWebEndpointIntegrationTests::applyAuthenticatedConfiguration);
 	}
 
-	@Override
-	protected AnnotationConfigServletWebServerApplicationContext createApplicationContext(
-			Class<?>... config) {
+	private static AnnotationConfigServletWebServerApplicationContext createApplicationContext() {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
-		context.register(config);
+		context.register(JerseyConfiguration.class);
 		return context;
+	}
+
+	private static void applyAuthenticatedConfiguration(
+			AnnotationConfigServletWebServerApplicationContext context) {
+		context.register(AuthenticatedConfiguration.class);
 	}
 
 	@Override
@@ -81,11 +84,6 @@ public class JerseyWebEndpointIntegrationTests extends
 	protected void validateErrorBody(WebTestClient.BodyContentSpec body,
 			HttpStatus status, String path, String message) {
 		// Jersey doesn't support the general error page handling
-	}
-
-	@Override
-	protected Class<?> getSecuredPrincipalEndpointConfiguration() {
-		return SecuredPrincipalEndpointConfiguration.class;
 	}
 
 	@Configuration
@@ -123,8 +121,7 @@ public class JerseyWebEndpointIntegrationTests extends
 	}
 
 	@Configuration
-	@Import(PrincipalEndpointConfiguration.class)
-	static class SecuredPrincipalEndpointConfiguration {
+	static class AuthenticatedConfiguration {
 
 		@Bean
 		public Filter securityFilter() {

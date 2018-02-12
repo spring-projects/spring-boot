@@ -61,7 +61,8 @@ public class ControllerEndpointWebFluxIntegrationTests {
 				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigReactiveWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, ExampleController.class);
-		TestPropertyValues.of("management.endpoints.web.expose=*").applyTo(this.context);
+		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(
+				this.context);
 		this.context.refresh();
 		WebTestClient webClient = WebTestClient.bindToApplicationContext(this.context)
 				.build();

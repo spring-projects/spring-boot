@@ -87,6 +87,9 @@
 							</goals>
 						</execution>
 					</executions>
+					<configuration>
+						<classesDirectory>${project.build.outputDirectory}</classesDirectory>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

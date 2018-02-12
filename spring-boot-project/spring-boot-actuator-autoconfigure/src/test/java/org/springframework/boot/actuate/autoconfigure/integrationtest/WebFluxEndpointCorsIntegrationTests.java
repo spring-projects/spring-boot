@@ -54,7 +54,8 @@ public class WebFluxEndpointCorsIntegrationTests {
 				ManagementContextAutoConfiguration.class,
 				ReactiveManagementContextAutoConfiguration.class,
 				BeansEndpointAutoConfiguration.class);
-		TestPropertyValues.of("management.endpoints.web.expose:*").applyTo(this.context);
+		TestPropertyValues.of("management.endpoints.web.exposure.include:*").applyTo(
+				this.context);
 	}
 
 	@Test

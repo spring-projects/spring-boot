@@ -1151,15 +1151,15 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoints.enabled-by-default= # Enable or disable all endpoints by default.
 
 	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointProperties.{sc-ext}[JmxEndpointProperties])
-	management.endpoints.jmx.expose=* # Endpoint IDs that should be exposed or '*' for all.
-	management.endpoints.jmx.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
+	management.endpoints.jmx.exposure.include=* # Endpoint IDs that should be included or '*' for all.
+	management.endpoints.jmx.exposure.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.jmx.static-names=false # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
 	management.endpoints.jmx.unique-names=false # Whether to ensure that ObjectNames are modified in case of conflict.
 
 	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
-	management.endpoints.web.expose=info,health # Endpoint IDs that should be exposed or '*' for all.
-	management.endpoints.web.exclude= # Endpoint IDs that should be excluded.
+	management.endpoints.web.exposure.include=info,health # Endpoint IDs that should be included or '*' for all.
+	management.endpoints.web.exposure.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.web.base-path=/actuator # Base path for Web endpoints. Relative to server.servlet.context-path or management.server.servlet.context-path if management.server.port is configured.
 	management.endpoints.web.path-mapping= # Mapping between endpoint IDs and the path that should expose them.
 
@@ -1356,9 +1356,26 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.influx.uri= # URI of the Influx server.
 	management.metrics.export.influx.user-name= # Login user of the Influx server.
 	management.metrics.export.jmx.step= # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.newrelic.account-id= # New Relic account ID.
+	management.metrics.export.newrelic.api-key= # New Relic API key.
+	management.metrics.export.newrelic.batch-size= # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.newrelic.connect-timeout= # Connection timeout for requests to this backend.
+	management.metrics.export.newrelic.enabled= # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.newrelic.num-threads= # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.newrelic.read-timeout= # Read timeout for requests to this backend.
+	management.metrics.export.newrelic.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.newrelic.uri= # Optional custom URI for the New Relic Insights API.
 	management.metrics.export.prometheus.descriptions= # Enable publishing descriptions as part of the scrape payload to Prometheus. Turn this off to minimize the amount of data sent on each scrape.
 	management.metrics.export.prometheus.enabled=true # Whether exporting of metrics to Prometheus is enabled.
 	management.metrics.export.prometheus.step= # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.signalfx.access-token= # SignalFX access token.
+	management.metrics.export.signalfx.batch-size= # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.signalfx.connect-timeout= # Connection timeout for requests to this backend.
+	management.metrics.export.signalfx.enabled= # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.signalfx.num-threads= # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.signalfx.read-timeout= # Read timeout for requests to this backend.
+	management.metrics.export.signalfx.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.signalfx.uri= # Optional custom URI for the SignalFX API.
 	management.metrics.export.simple.mode=cumulative # Counting mode.
 	management.metrics.export.simple.step=10s # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.statsd.flavor=datadog # StatsD line protocol to use.

@@ -64,7 +64,8 @@ public class JmxEndpointIntegrationTests {
 
 	@Test
 	public void jmxEndpointsCanBeExcluded() {
-		this.contextRunner.withPropertyValues("management.endpoints.jmx.exclude:*")
+		this.contextRunner
+				.withPropertyValues("management.endpoints.jmx.exposure.exclude:*")
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[0],
@@ -77,7 +78,8 @@ public class JmxEndpointIntegrationTests {
 
 	@Test
 	public void singleJmxEndpointCanBeExposed() {
-		this.contextRunner.withPropertyValues("management.endpoints.jmx.expose=beans")
+		this.contextRunner
+				.withPropertyValues("management.endpoints.jmx.exposure.include=beans")
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					checkEndpointMBeans(mBeanServer, new String[] { "beans" },

@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.invoker.cache;
 import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -59,21 +60,25 @@ public class CachingOperationInvoker implements OperationInvoker {
 	}
 
 	@Override
-	public Object invoke(Map<String, Object> arguments) {
-		if (hasArgument(arguments)) {
-			return this.invoker.invoke(arguments);
+	public Object invoke(InvocationContext context) {
+		if (hasInput(context)) {
+			return this.invoker.invoke(context);
 		}
 		long accessTime = System.currentTimeMillis();
 		CachedResponse cached = this.cachedResponse;
 		if (cached == null || cached.isStale(accessTime, this.timeToLive)) {
-			Object response = this.invoker.invoke(arguments);
+			Object response = this.invoker.invoke(context);
 			this.cachedResponse = new CachedResponse(response, accessTime);
 			return response;
 		}
 		return cached.getResponse();
 	}
 
-	private boolean hasArgument(Map<String, Object> arguments) {
+	private boolean hasInput(InvocationContext context) {
+		if (context.getPrincipal() != null) {
+			return true;
+		}
+		Map<String, Object> arguments = context.getArguments();
 		if (!ObjectUtils.isEmpty(arguments)) {
 			return arguments.values().stream().anyMatch(Objects::nonNull);
 		}

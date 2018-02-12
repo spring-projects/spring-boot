@@ -55,7 +55,7 @@ public class WebFluxEndpointIntegrationTests {
 						ReactiveManagementContextAutoConfiguration.class,
 						BeansEndpointAutoConfiguration.class))
 				.withUserConfiguration(EndpointsConfiguration.class)
-				.withPropertyValues("management.endpoints.web.expose:*")
+				.withPropertyValues("management.endpoints.web.exposure.include:*")
 				.run((context) -> {
 					WebTestClient client = createWebTestClient(context);
 					client.get().uri("/actuator").exchange().expectStatus().isOk()

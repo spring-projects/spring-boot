@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
 
 /**
  * Test {@link JmxOperation} implementation.
@@ -66,8 +67,9 @@ public class TestJmxOperation implements JmxOperation {
 	}
 
 	@Override
-	public Object invoke(Map<String, Object> arguments) {
-		return (this.invoke == null ? "result" : this.invoke.apply(arguments));
+	public Object invoke(InvocationContext context) {
+		return (this.invoke == null ? "result"
+				: this.invoke.apply(context.getArguments()));
 	}
 
 	@Override
