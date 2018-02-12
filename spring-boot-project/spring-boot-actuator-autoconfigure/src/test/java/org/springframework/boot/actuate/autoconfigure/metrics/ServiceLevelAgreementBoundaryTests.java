@@ -65,7 +65,7 @@ public class ServiceLevelAgreementBoundaryTests {
 	}
 
 	@Test
-	public void getValueForTimerWhenFromDurationStringShouldReturnDrationNanos() {
+	public void getValueForTimerWhenFromDurationStringShouldReturnDurationNanos() {
 		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary
 				.valueOf("123ms");
 		assertThat(sla.getValue(Type.TIMER)).isEqualTo(123000000);
