@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 @Configuration
 @ConditionalOnClass({ MongoClient.class, ReactiveMongoTemplate.class })
 @EnableConfigurationProperties(MongoProperties.class)
-@AutoConfigureAfter(MongoReactiveAutoConfiguration.class)
+@AutoConfigureAfter({ MongoReactiveAutoConfiguration.class, MongoDataAutoConfiguration.class })
 public class MongoReactiveDataAutoConfiguration {
 
 	private final MongoProperties properties;
