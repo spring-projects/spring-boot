@@ -59,6 +59,15 @@ public class StatsdMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationCanBeDisabled() {
+		this.runner.withPropertyValues("management.metrics.export.statsd.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(StatsdMeterRegistry.class)
+						.doesNotHaveBean(StatsdConfig.class)
+						.doesNotHaveBean(HierarchicalNameMapper.class));
+	}
+
+	@Test
 	public void allowsCustomConfigToBeUsed() {
 		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)

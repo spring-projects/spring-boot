@@ -59,6 +59,16 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationCanBeDisabled() {
+		this.runner
+				.withPropertyValues("management.metrics.export.prometheus.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(PrometheusMeterRegistry.class)
+						.doesNotHaveBean(CollectorRegistry.class)
+						.doesNotHaveBean(PrometheusConfig.class));
+	}
+
+	@Test
 	public void allowsCustomConfigToBeUsed() {
 		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)

@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GraphiteProperties {
 
 	/**
-	 * Enable publishing to Graphite.
+	 * Whether exporting of metrics to this backend is enabled.
 	 */
 	private Boolean enabled;
 

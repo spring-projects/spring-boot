@@ -55,6 +55,15 @@ public class InfluxMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationCanBeDisabled() {
+		this.runner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.influx.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(InfluxMeterRegistry.class)
+						.doesNotHaveBean(InfluxConfig.class));
+	}
+
+	@Test
 	public void allowsCustomConfigToBeUsed() {
 		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)

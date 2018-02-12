@@ -30,9 +30,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JmxProperties {
 
 	/**
+	 * Whether exporting of metrics to this backend is enabled.
+	 */
+	private Boolean enabled;
+
+	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step;
+
+	public Boolean getEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public Duration getStep() {
 		return this.step;

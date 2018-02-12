@@ -57,6 +57,17 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationCanBeDisabled() {
+		this.runner
+				.withPropertyValues(
+						"management.metrics.export.signalfx.access-token=abcde",
+						"management.metrics.export.signalfx.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(SignalFxMeterRegistry.class)
+						.doesNotHaveBean(SignalFxConfig.class));
+	}
+
+	@Test
 	public void allowsClockToBeCustomized() {
 		this.runner
 				.withPropertyValues(

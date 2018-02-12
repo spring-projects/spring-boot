@@ -70,6 +70,17 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationCanBeDisabled() {
+		this.runner
+				.withPropertyValues("management.metrics.export.newrelic.enabled=false",
+						"management.metrics.export.newrelic.api-key=abcde",
+						"management.metrics.export.newrelic.account-id=12345")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(NewRelicMeterRegistry.class)
+						.doesNotHaveBean(NewRelicConfig.class));
+	}
+
+	@Test
 	public void allowsClockToBeCustomized() {
 		this.runner.withUserConfiguration(CustomClockConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",

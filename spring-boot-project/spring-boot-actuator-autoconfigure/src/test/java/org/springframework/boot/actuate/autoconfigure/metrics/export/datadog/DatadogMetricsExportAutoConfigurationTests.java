@@ -62,6 +62,15 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationCanBeDisabled() {
+		this.runner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.datadog.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(DatadogMeterRegistry.class)
+						.doesNotHaveBean(DatadogConfig.class));
+	}
+
+	@Test
 	public void allowsCustomConfigToBeUsed() {
 		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)

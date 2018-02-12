@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class StatsdProperties {
 
 	/**
-	 * Export metrics to StatsD.
+	 * Whether exporting of metrics to this backend is enabled.
 	 */
 	private Boolean enabled;
 
