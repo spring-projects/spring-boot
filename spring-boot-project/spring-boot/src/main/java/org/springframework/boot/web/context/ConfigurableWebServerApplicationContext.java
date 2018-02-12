@@ -31,7 +31,7 @@ public interface ConfigurableWebServerApplicationContext
 
 	/**
 	 * Set the server namespace of the context.
-	 * @param serverNamespace the server namespance
+	 * @param serverNamespace the server namespace
 	 * @see #getServerNamespace()
 	 */
 	void setServerNamespace(String serverNamespace);

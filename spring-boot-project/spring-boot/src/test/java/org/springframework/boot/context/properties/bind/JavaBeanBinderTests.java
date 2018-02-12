@@ -212,12 +212,12 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToClassShouldBindToCollectionWithDelimeter() {
+	public void bindToClassShouldBindToCollectionWithDelimiter() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.collection", "foo-bar|bar-baz");
 		this.sources.add(source);
-		ExampleCollectionBeanWithDelimeter bean = this.binder
-				.bind("foo", Bindable.of(ExampleCollectionBeanWithDelimeter.class)).get();
+		ExampleCollectionBeanWithDelimiter bean = this.binder
+				.bind("foo", Bindable.of(ExampleCollectionBeanWithDelimiter.class)).get();
 		assertThat(bean.getCollection()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -629,7 +629,7 @@ public class JavaBeanBinderTests {
 
 	}
 
-	public static class ExampleCollectionBeanWithDelimeter {
+	public static class ExampleCollectionBeanWithDelimiter {
 
 		@Delimiter("|")
 		private Collection<ExampleEnum> collection;

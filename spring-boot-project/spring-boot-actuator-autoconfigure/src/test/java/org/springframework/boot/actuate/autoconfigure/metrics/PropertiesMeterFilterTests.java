@@ -39,7 +39,7 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests fir {@link PropertiesMeterFilter}.
+ * Tests for {@link PropertiesMeterFilter}.
  *
  * @author Phillip Webb
  * @author Jon Schneider
