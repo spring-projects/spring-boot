@@ -66,7 +66,7 @@ public class CacheMetricsAutoConfigurationTests {
 	@Test
 	public void cacheInstrumentationCanBeDisabled() {
 		this.contextRunner
-				.withPropertyValues("management.metrics.cache.instrument=false",
+				.withPropertyValues("management.metrics.enable.cache=false",
 						"spring.cache.type=caffeine", "spring.cache.cache-names=cache1")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
