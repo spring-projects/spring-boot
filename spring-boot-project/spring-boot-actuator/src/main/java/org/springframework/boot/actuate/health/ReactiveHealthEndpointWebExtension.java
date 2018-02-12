@@ -56,8 +56,8 @@ public class ReactiveHealthEndpointWebExtension {
 			ShowDetails showDetails) {
 		return this.delegate.health().map((health) -> {
 			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-			if (this.showDetails == ShowDetails.NEVER
-					|| (this.showDetails == ShowDetails.WHEN_AUTHENTICATED
+			if (showDetails == ShowDetails.NEVER
+					|| (showDetails == ShowDetails.WHEN_AUTHENTICATED
 							&& principal == null)) {
 				health = Health.status(health.getStatus()).build();
 			}
