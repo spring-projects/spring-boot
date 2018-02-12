@@ -25,19 +25,15 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
-import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.integration.config.EnableIntegrationManagement;
-import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics.
@@ -121,32 +117,6 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public ProcessorMetrics processorMetrics() {
 			return new ProcessorMetrics();
-		}
-
-	}
-
-	/**
-	 * Binds metrics from Spring Integration.
-	 */
-	@Configuration
-	@ConditionalOnClass(EnableIntegrationManagement.class)
-	@ConditionalOnProperty(value = "management.metrics.binders.integration.enabled", matchIfMissing = true)
-	static class MetricsIntegrationConfiguration {
-
-		@Bean(name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
-		@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
-		public IntegrationManagementConfigurer integrationManagementConfigurer() {
-			IntegrationManagementConfigurer configurer = new IntegrationManagementConfigurer();
-			configurer.setDefaultCountsEnabled(true);
-			configurer.setDefaultStatsEnabled(true);
-			return configurer;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public SpringIntegrationMetrics springIntegrationMetrics(
-				IntegrationManagementConfigurer configurer) {
-			return new SpringIntegrationMetrics(configurer);
 		}
 
 	}

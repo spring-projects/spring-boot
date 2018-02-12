@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,14 +115,12 @@ public class IntegrationAutoConfiguration {
 	 * Integration management configuration.
 	 */
 	@Configuration
-	@ConditionalOnClass({ EnableIntegrationManagement.class,
-			EnableIntegrationMBeanExport.class })
+	@ConditionalOnClass(EnableIntegrationManagement.class)
 	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
-	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration
-		@EnableIntegrationManagement(defaultCountsEnabled = "true", defaultStatsEnabled = "true")
+		@EnableIntegrationManagement(countsEnabled = "true")
 		protected static class EnableIntegrationManagementConfiguration {
 		}
 

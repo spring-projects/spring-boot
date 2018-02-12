@@ -1258,65 +1258,6 @@ factories with a metric named `rabbitmq`. The prefix can be customized by using 
 
 
 
-[[production-ready-metrics-integration]]
-=== Spring Integration Metrics
-Auto-configuration enables binding of a number of Spring Integration-related metrics:
-
-.General metrics
-|===
-| Metric | Description
-
-| `spring.integration.channelNames`
-| Number of Spring Integration channels
-
-| `spring.integration.handlerNames`
-| Number of Spring Integration handlers
-
-| `spring.integration.sourceNames`
-| Number of Spring Integration sources
-|===
-
-.Channel metrics
-|===
-| Metric | Description
-
-| `spring.integration.channel.receives`
-| Number of receives
-
-| `spring.integration.channel.sendErrors`
-| Number of failed sends
-
-| `spring.integration.channel.sends`
-| Number of successful sends
-|===
-
-.Handler metrics
-|===
-| Metric | Description
-
-| `spring.integration.handler.duration.max`
-| Maximum handler duration in milliseconds
-
-| `spring.integration.handler.duration.min`
-| Minimum handler duration in milliseconds
-
-| `spring.integration.handler.duration.mean`
-| Mean handler duration in milliseconds
-
-| `spring.integration.handler.activeCount`
-| Number of active handlers
-|===
-
-.Source metrics
-|===
-| Metric | Description
-
-| `spring.integration.source.messages`
-| Number of successful source calls
-|===
-
-
-
 [[production-ready-metrics-per-meter-properties]]
 === Customizing individual meters
 If you need to apply customizations to specific `Meter` instances you can use the

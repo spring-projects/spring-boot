@@ -32,12 +32,10 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -196,30 +194,6 @@ public class MetricsAutoConfigurationTests {
 						.hasBean("customProcessorMetrics"));
 	}
 
-	@Test
-	public void autoConfiguresSpringIntegrationMetrics() {
-		this.runner.run((context) -> assertThat(context)
-				.hasSingleBean(SpringIntegrationMetrics.class));
-	}
-
-	@Test
-	public void allowsSpringIntegrationMetricsToBeDisabled() {
-		this.runner
-				.withPropertyValues(
-						"management.metrics.binders.integration.enabled=false")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(SpringIntegrationMetrics.class));
-	}
-
-	@Test
-	public void allowsCustomSpringIntegrationMetricsToBeUsed() {
-		this.runner
-				.withUserConfiguration(CustomSpringIntegrationMetricsConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(SpringIntegrationMetrics.class)
-						.hasBean("customSpringIntegrationMetrics"));
-	}
-
 	@Configuration
 	static class CustomClockConfiguration {
 
@@ -308,17 +282,6 @@ public class MetricsAutoConfigurationTests {
 		@Bean
 		ProcessorMetrics customProcessorMetrics() {
 			return new ProcessorMetrics();
-		}
-
-	}
-
-	@Configuration
-	static class CustomSpringIntegrationMetricsConfiguration {
-
-		@Bean
-		SpringIntegrationMetrics customSpringIntegrationMetrics(
-				IntegrationManagementConfigurer configurer) {
-			return new SpringIntegrationMetrics(configurer);
 		}
 
 	}
