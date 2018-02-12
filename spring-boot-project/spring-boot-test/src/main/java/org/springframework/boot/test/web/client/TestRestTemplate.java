@@ -125,9 +125,10 @@ public class TestRestTemplate {
 	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 * @since 2.0.0
 	 */
-	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username, String password,
-			HttpClientOption... httpClientOptions) {
-		this(buildRestTemplate(restTemplateBuilder), username, password, httpClientOptions);
+	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username,
+			String password, HttpClientOption... httpClientOptions) {
+		this(buildRestTemplate(restTemplateBuilder), username, password,
+				httpClientOptions);
 	}
 
 	private TestRestTemplate(RestTemplate restTemplate, String username, String password,

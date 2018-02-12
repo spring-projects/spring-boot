@@ -48,7 +48,8 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 @Configuration
 @ConditionalOnClass({ MongoClient.class, ReactiveMongoTemplate.class })
 @EnableConfigurationProperties(MongoProperties.class)
-@AutoConfigureAfter({ MongoReactiveAutoConfiguration.class, MongoDataAutoConfiguration.class })
+@AutoConfigureAfter({ MongoReactiveAutoConfiguration.class,
+		MongoDataAutoConfiguration.class })
 public class MongoReactiveDataAutoConfiguration {
 
 	private final MongoProperties properties;

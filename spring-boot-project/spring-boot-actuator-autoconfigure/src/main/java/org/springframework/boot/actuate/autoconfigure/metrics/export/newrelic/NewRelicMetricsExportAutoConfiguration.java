@@ -49,12 +49,6 @@ public class NewRelicMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public NewRelicConfig newRelicConfig(NewRelicProperties props) {
 		return new NewRelicPropertiesConfigAdapter(props);
 	}

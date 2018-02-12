@@ -51,17 +51,24 @@ class DataSourceBeanCreationFailureAnalyzer
 	}
 
 	private FailureAnalysis getFailureAnalysis(DataSourceBeanCreationException cause) {
+		String description = getDescription(cause);
+		String action = getAction(cause);
+		return new FailureAnalysis(description, action, cause);
+	}
+
+	private String getDescription(DataSourceBeanCreationException cause) {
 		StringBuilder description = new StringBuilder();
-		boolean datasourceUrlSpecified = this.environment.containsProperty(
-				"spring.datasource.url");
 		description.append("Failed to auto-configure a DataSource: ");
-		if (!datasourceUrlSpecified) {
+		if (!this.environment.containsProperty("spring.datasource.url")) {
 			description.append("'spring.datasource.url' is not specified and ");
 		}
-		description.append(String.format(
-				"no embedded datasource could be auto-configured.%n"));
+		description.append(
+				String.format("no embedded datasource could be auto-configured.%n"));
 		description.append(String.format("%nReason: %s%n", cause.getMessage()));
+		return description.toString();
+	}
 
+	private String getAction(DataSourceBeanCreationException cause) {
 		StringBuilder action = new StringBuilder();
 		action.append(String.format("Consider the following:%n"));
 		if (EmbeddedDatabaseConnection.NONE == cause.getConnection()) {
@@ -69,11 +76,12 @@ class DataSourceBeanCreationFailureAnalyzer
 					+ "Derby), please put it on the classpath.%n"));
 		}
 		else {
-			action.append(String.format("\tReview the configuration of %s%n.", cause.getConnection()));
+			action.append(String.format("\tReview the configuration of %s%n.",
+					cause.getConnection()));
 		}
 		action.append("\tIf you have database settings to be loaded from a particular "
 				+ "profile you may need to activate it").append(getActiveProfiles());
-		return new FailureAnalysis(description.toString(), action.toString(), cause);
+		return action.toString();
 	}
 
 	private String getActiveProfiles() {

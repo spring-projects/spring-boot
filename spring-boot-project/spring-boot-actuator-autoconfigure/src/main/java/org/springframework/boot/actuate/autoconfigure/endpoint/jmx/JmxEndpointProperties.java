@@ -82,7 +82,6 @@ public class JmxEndpointProperties {
 		return this.staticNames;
 	}
 
-
 	public static class Exposure {
 
 		/**

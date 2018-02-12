@@ -5990,6 +5990,8 @@ TIP: Do not forget to add `@RunWith(SpringRunner.class)` to your test. Otherwise
 annotations are ignored.
 
 
+
+[[boot-features-testing-spring-boot-applications-detecting-web-app-type]]
 ==== Detecting Web Application Type
 If Spring MVC is available, a regular MVC-based application context is configured. If you
 have only Spring WebFlux, we'll detect that and configure a WebFlux-based application

@@ -36,7 +36,6 @@ public class InvocationContext {
 	/**
 	 * Creates a new context for an operation being invoked by the given {@code principal}
 	 * with the given available {@code arguments}.
-	 *
 	 * @param principal the principal invoking the operation. May be {@code null}
 	 * @param arguments the arguments available to the operation. Never {@code null}
 	 */

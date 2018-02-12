@@ -47,8 +47,7 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
-public class DataSourceProperties
-		implements BeanClassLoaderAware, InitializingBean {
+public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {
 
 	private ClassLoader classLoader;
 
