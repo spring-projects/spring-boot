@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.context.runner;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.gson.Gson;
 import org.junit.Rule;
@@ -49,6 +50,14 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Test
+	public void runWithInitializerShouldInitialize() {
+		AtomicBoolean called = new AtomicBoolean();
+		get().withInitializer((context) -> called.set(true)).run((context) -> {
+		});
+		assertThat(called).isTrue();
+	}
 
 	@Test
 	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {
