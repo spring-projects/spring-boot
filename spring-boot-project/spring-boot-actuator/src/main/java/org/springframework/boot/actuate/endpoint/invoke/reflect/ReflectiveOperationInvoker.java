@@ -17,10 +17,11 @@
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
@@ -66,39 +67,44 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	}
 
 	@Override
-	public Object invoke(Map<String, Object> arguments) {
-		validateRequiredParameters(arguments);
+	public Object invoke(InvocationContext context) {
+		validateRequiredParameters(context);
 		Method method = this.operationMethod.getMethod();
-		Object[] resolvedArguments = resolveArguments(arguments);
+		Object[] resolvedArguments = resolveArguments(context);
 		ReflectionUtils.makeAccessible(method);
 		return ReflectionUtils.invokeMethod(method, this.target, resolvedArguments);
 	}
 
-	private void validateRequiredParameters(Map<String, Object> arguments) {
+	private void validateRequiredParameters(InvocationContext context) {
 		Set<OperationParameter> missing = this.operationMethod.getParameters().stream()
-				.filter((parameter) -> isMissing(arguments, parameter))
+				.filter((parameter) -> isMissing(context, parameter))
 				.collect(Collectors.toSet());
 		if (!missing.isEmpty()) {
 			throw new MissingParametersException(missing);
 		}
 	}
 
-	private boolean isMissing(Map<String, Object> arguments,
-			OperationParameter parameter) {
+	private boolean isMissing(InvocationContext context, OperationParameter parameter) {
 		if (!parameter.isMandatory()) {
 			return false;
 		}
-		return arguments.get(parameter.getName()) == null;
+		if (Principal.class.equals(parameter.getType())) {
+			return context.getPrincipal() == null;
+		}
+		return context.getArguments().get(parameter.getName()) == null;
 	}
 
-	private Object[] resolveArguments(Map<String, Object> arguments) {
+	private Object[] resolveArguments(InvocationContext context) {
 		return this.operationMethod.getParameters().stream()
-				.map((parameter) -> resolveArgument(parameter, arguments)).toArray();
+				.map((parameter) -> resolveArgument(parameter, context)).toArray();
 	}
 
 	private Object resolveArgument(OperationParameter parameter,
-			Map<String, Object> arguments) {
-		Object value = arguments.get(parameter.getName());
+			InvocationContext context) {
+		if (Principal.class.equals(parameter.getType())) {
+			return context.getPrincipal();
+		}
+		Object value = context.getArguments().get(parameter.getName());
 		return this.parameterValueMapper.mapParameterValue(parameter, value);
 	}
 

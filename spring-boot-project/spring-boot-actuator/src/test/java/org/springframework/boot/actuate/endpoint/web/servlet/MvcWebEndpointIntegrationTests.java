@@ -45,7 +45,6 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,7 +63,19 @@ public class MvcWebEndpointIntegrationTests extends
 		AbstractWebEndpointIntegrationTests<AnnotationConfigServletWebServerApplicationContext> {
 
 	public MvcWebEndpointIntegrationTests() {
-		super(WebMvcConfiguration.class);
+		super(MvcWebEndpointIntegrationTests::createApplicationContext,
+				MvcWebEndpointIntegrationTests::applyAuthenticatedConfiguration);
+	}
+
+	private static AnnotationConfigServletWebServerApplicationContext createApplicationContext() {
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
+		context.register(WebMvcConfiguration.class);
+		return context;
+	}
+
+	private static void applyAuthenticatedConfiguration(
+			AnnotationConfigServletWebServerApplicationContext context) {
+		context.register(AuthenticatedConfiguration.class);
 	}
 
 	@Test
@@ -91,21 +102,8 @@ public class MvcWebEndpointIntegrationTests extends
 	}
 
 	@Override
-	protected AnnotationConfigServletWebServerApplicationContext createApplicationContext(
-			Class<?>... config) {
-		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
-		context.register(config);
-		return context;
-	}
-
-	@Override
 	protected int getPort(AnnotationConfigServletWebServerApplicationContext context) {
 		return context.getWebServer().getPort();
-	}
-
-	@Override
-	protected Class<?> getSecuredPrincipalEndpointConfiguration() {
-		return SecuredPrincipalEndpointConfiguration.class;
 	}
 
 	@Configuration
@@ -137,8 +135,7 @@ public class MvcWebEndpointIntegrationTests extends
 	}
 
 	@Configuration
-	@Import(PrincipalEndpointConfiguration.class)
-	static class SecuredPrincipalEndpointConfiguration {
+	static class AuthenticatedConfiguration {
 
 		@Bean
 		public Filter securityFilter() {

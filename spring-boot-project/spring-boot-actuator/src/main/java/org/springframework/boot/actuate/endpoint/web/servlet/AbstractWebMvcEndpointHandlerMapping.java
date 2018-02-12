@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -29,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
+import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -241,7 +241,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 				@RequestBody(required = false) Map<String, String> body) {
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
-				return handleResult(this.invoker.invoke(arguments),
+				return handleResult(
+						this.invoker.invoke(new InvocationContext(
+								request.getUserPrincipal(), arguments)),
 						HttpMethod.valueOf(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
@@ -258,10 +260,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 			}
 			request.getParameterMap().forEach((name, values) -> arguments.put(name,
 					values.length == 1 ? values[0] : Arrays.asList(values)));
-			Principal principal = request.getUserPrincipal();
-			if (principal != null) {
-				arguments.put("principal", principal);
-			}
 			return arguments;
 		}
 

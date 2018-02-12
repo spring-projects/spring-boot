@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,12 +67,13 @@ public class CachingOperationInvokerTests {
 	private void assertCacheIsUsed(Map<String, Object> parameters) {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Object expected = new Object();
-		given(target.invoke(parameters)).willReturn(expected);
+		InvocationContext context = new InvocationContext(null, parameters);
+		given(target.invoke(context)).willReturn(expected);
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
-		Object response = invoker.invoke(parameters);
+		Object response = invoker.invoke(context);
 		assertThat(response).isSameAs(expected);
-		verify(target, times(1)).invoke(parameters);
-		Object cachedResponse = invoker.invoke(parameters);
+		verify(target, times(1)).invoke(context);
+		Object cachedResponse = invoker.invoke(context);
 		assertThat(cachedResponse).isSameAs(response);
 		verifyNoMoreInteractions(target);
 	}
@@ -82,24 +84,26 @@ public class CachingOperationInvokerTests {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("test", "value");
 		parameters.put("something", null);
-		given(target.invoke(parameters)).willReturn(new Object());
+		InvocationContext context = new InvocationContext(null, parameters);
+		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
-		invoker.invoke(parameters);
-		invoker.invoke(parameters);
-		invoker.invoke(parameters);
-		verify(target, times(3)).invoke(parameters);
+		invoker.invoke(context);
+		invoker.invoke(context);
+		invoker.invoke(context);
+		verify(target, times(3)).invoke(context);
 	}
 
 	@Test
 	public void targetInvokedWhenCacheExpires() throws InterruptedException {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
-		given(target.invoke(parameters)).willReturn(new Object());
+		InvocationContext context = new InvocationContext(null, parameters);
+		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 50L);
-		invoker.invoke(parameters);
+		invoker.invoke(context);
 		Thread.sleep(55);
-		invoker.invoke(parameters);
-		verify(target, times(2)).invoke(parameters);
+		invoker.invoke(context);
+		verify(target, times(2)).invoke(context);
 	}
 
 }

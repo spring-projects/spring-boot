@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -57,7 +58,9 @@ public class CloudFoundryWebEndpointDiscovererTests {
 			for (ExposableWebEndpoint endpoint : endpoints) {
 				if (endpoint.getId().equals("health")) {
 					WebOperation operation = endpoint.getOperations().iterator().next();
-					assertThat(operation.invoke(Collections.emptyMap())).isEqualTo("cf");
+					assertThat(operation
+							.invoke(new InvocationContext(null, Collections.emptyMap())))
+									.isEqualTo("cf");
 				}
 			}
 		});

@@ -31,13 +31,11 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,11 +56,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @see WebFluxEndpointHandlerMapping
  */
-public class WebFluxEndpointIntegrationTests
-		extends AbstractWebEndpointIntegrationTests<ReactiveWebServerApplicationContext> {
+public class WebFluxEndpointIntegrationTests extends
+		AbstractWebEndpointIntegrationTests<AnnotationConfigReactiveWebServerApplicationContext> {
 
 	public WebFluxEndpointIntegrationTests() {
-		super(ReactiveConfiguration.class);
+		super(WebFluxEndpointIntegrationTests::createApplicationContext,
+				WebFluxEndpointIntegrationTests::applyAuthenticatedConfiguration);
+
+	}
+
+	private static AnnotationConfigReactiveWebServerApplicationContext createApplicationContext() {
+		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
+		context.register(ReactiveConfiguration.class);
+		return context;
+	}
+
+	private static void applyAuthenticatedConfiguration(
+			AnnotationConfigReactiveWebServerApplicationContext context) {
+		context.register(AuthenticatedConfiguration.class);
 	}
 
 	@Test
@@ -89,21 +100,8 @@ public class WebFluxEndpointIntegrationTests
 	}
 
 	@Override
-	protected AnnotationConfigReactiveWebServerApplicationContext createApplicationContext(
-			Class<?>... config) {
-		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
-		context.register(config);
-		return context;
-	}
-
-	@Override
-	protected int getPort(ReactiveWebServerApplicationContext context) {
+	protected int getPort(AnnotationConfigReactiveWebServerApplicationContext context) {
 		return context.getBean(ReactiveConfiguration.class).port;
-	}
-
-	@Override
-	protected Class<?> getSecuredPrincipalEndpointConfiguration() {
-		return SecuredPrincipalEndpointConfiguration.class;
 	}
 
 	@Configuration
@@ -144,8 +142,8 @@ public class WebFluxEndpointIntegrationTests
 
 	}
 
-	@Import(PrincipalEndpointConfiguration.class)
-	static class SecuredPrincipalEndpointConfiguration {
+	@Configuration
+	static class AuthenticatedConfiguration {
 
 		@Bean
 		public WebFilter webFilter() {

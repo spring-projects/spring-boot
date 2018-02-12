@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
@@ -105,7 +106,7 @@ public class DiscoveredOperationsFactoryTests {
 		TestOperation operation = getFirst(
 				this.factory.createOperations("test", new ExampleWithParams()));
 		Map<String, Object> params = Collections.singletonMap("name", 123);
-		Object result = operation.invoke(params);
+		Object result = operation.invoke(new InvocationContext(null, params));
 		assertThat(result).isEqualTo("123");
 	}
 
@@ -115,7 +116,7 @@ public class DiscoveredOperationsFactoryTests {
 		this.invokerAdvisors.add(advisor);
 		TestOperation operation = getFirst(
 				this.factory.createOperations("test", new ExampleRead()));
-		operation.invoke(Collections.emptyMap());
+		operation.invoke(new InvocationContext(null, Collections.emptyMap()));
 		assertThat(advisor.getEndpointId()).isEqualTo("test");
 		assertThat(advisor.getOperationType()).isEqualTo(OperationType.READ);
 		assertThat(advisor.getParameters()).isEmpty();

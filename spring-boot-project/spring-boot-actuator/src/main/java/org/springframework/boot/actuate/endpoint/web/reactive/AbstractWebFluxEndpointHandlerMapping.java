@@ -29,6 +29,7 @@ import reactor.core.scheduler.Schedulers;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -221,14 +222,14 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		}
 
 		@Override
-		public Object invoke(Map<String, Object> arguments) {
-			return Mono.create((sink) -> Schedulers.elastic()
-					.schedule(() -> invoke(arguments, sink)));
+		public Object invoke(InvocationContext context) {
+			return Mono.create(
+					(sink) -> Schedulers.elastic().schedule(() -> invoke(context, sink)));
 		}
 
-		private void invoke(Map<String, Object> arguments, MonoSink<Object> sink) {
+		private void invoke(InvocationContext context, MonoSink<Object> sink) {
 			try {
-				Object result = this.invoker.invoke(arguments);
+				Object result = this.invoker.invoke(context);
 				sink.success(result);
 			}
 			catch (Exception ex) {
@@ -275,15 +276,17 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 				Map<String, String> body) {
 			return exchange.getPrincipal().defaultIfEmpty(NO_PRINCIPAL)
 					.flatMap((principal) -> {
-						Map<String, Object> arguments = getArguments(exchange, principal,
-								body);
-						return handleResult((Publisher<?>) this.invoker.invoke(arguments),
+						Map<String, Object> arguments = getArguments(exchange, body);
+						return handleResult(
+								(Publisher<?>) this.invoker.invoke(new InvocationContext(
+										principal == NO_PRINCIPAL ? null : principal,
+										arguments)),
 								exchange.getRequest().getMethod());
 					});
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange,
-				Principal principal, Map<String, String> body) {
+				Map<String, String> body) {
 			Map<String, Object> arguments = new LinkedHashMap<>();
 			arguments.putAll(getTemplateVariables(exchange));
 			if (body != null) {
@@ -291,9 +294,6 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 			}
 			exchange.getRequest().getQueryParams().forEach((name, values) -> arguments
 					.put(name, values.size() == 1 ? values.get(0) : values));
-			if (principal != null && principal != NO_PRINCIPAL) {
-				arguments.put("principal", principal);
-			}
 			return arguments;
 		}
 
