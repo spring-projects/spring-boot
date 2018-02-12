@@ -17,15 +17,16 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.influx.InfluxMeterRegistry;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,29 +40,31 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
 			.withConfiguration(
-					AutoConfigurations.of(NewRelicMetricsExportAutoConfiguration.class,
-							MetricsAutoConfiguration.class));
+					AutoConfigurations.of(NewRelicMetricsExportAutoConfiguration.class));
+
+	@Test
+	public void backsOffWithoutAClock() {
+		this.runner.run((context) -> assertThat(context)
+				.doesNotHaveBean(InfluxMeterRegistry.class));
+	}
 
 	@Test
 	public void failsWithoutAnApiKey() {
-		this.runner
+		this.runner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.account-id=12345")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
 	public void failsWithoutAnAccountId() {
-		this.runner
-				.withConfiguration(AutoConfigurations.of(
-						NewRelicMetricsExportAutoConfiguration.class,
-						MetricsAutoConfiguration.class))
+		this.runner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
 	public void autoConfiguresWithAccountIdAndApiKey() {
-		this.runner
+		this.runner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345")
 				.run((context) -> assertThat(context)
@@ -71,22 +74,13 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationCanBeDisabled() {
-		this.runner
+		this.runner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.enabled=false",
 						"management.metrics.export.newrelic.api-key=abcde",
 						"management.metrics.export.newrelic.account-id=12345")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(NewRelicMeterRegistry.class)
 						.doesNotHaveBean(NewRelicConfig.class));
-	}
-
-	@Test
-	public void allowsClockToBeCustomized() {
-		this.runner.withUserConfiguration(CustomClockConfiguration.class)
-				.withPropertyValues("management.metrics.export.newrelic.api-key=abcde",
-						"management.metrics.export.newrelic.account-id=12345")
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
-						.hasBean("customClock"));
 	}
 
 	@Test
@@ -109,7 +103,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomClockConfiguration {
+	static class BaseConfiguration {
 
 		@Bean
 		public Clock customClock() {
@@ -119,6 +113,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
@@ -142,6 +137,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
