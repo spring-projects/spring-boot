@@ -44,7 +44,6 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Benedikt Ritter
  * @author Eddú Meléndez
- * @author Patryk Kostrzewa
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
@@ -519,7 +518,6 @@ public class DataSourceProperties
 
 		DataSourceBeanCreationException(String message,
 				EmbeddedDatabaseConnection connection) {
-
 			super(message);
 			this.connection = connection;
 		}
@@ -527,5 +525,7 @@ public class DataSourceProperties
 		public EmbeddedDatabaseConnection getConnection() {
 			return this.connection;
 		}
+
 	}
+
 }
