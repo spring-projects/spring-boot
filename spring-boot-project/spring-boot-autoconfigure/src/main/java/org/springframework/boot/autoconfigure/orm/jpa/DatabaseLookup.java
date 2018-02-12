@@ -69,7 +69,7 @@ final class DatabaseLookup {
 			return Database.DEFAULT;
 		}
 		try {
-			String url = (String) JdbcUtils.extractDatabaseMetaData(dataSource, "getURL");
+			String url = JdbcUtils.extractDatabaseMetaData(dataSource, "getURL");
 			DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(url);
 			Database database = LOOKUP.get(driver);
 			if (database != null) {
