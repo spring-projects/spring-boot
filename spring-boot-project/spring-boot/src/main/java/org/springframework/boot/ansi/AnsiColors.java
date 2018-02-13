@@ -94,7 +94,7 @@ public final class AnsiColors {
 		private final double b;
 
 		LabColor(Integer rgb) {
-			this(rgb == null ? (Color) null : new Color(rgb));
+			this(rgb == null ? null : new Color(rgb));
 		}
 
 		LabColor(Color color) {

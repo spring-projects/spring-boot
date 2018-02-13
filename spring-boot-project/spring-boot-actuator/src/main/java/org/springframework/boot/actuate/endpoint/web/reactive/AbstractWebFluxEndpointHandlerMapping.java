@@ -299,8 +299,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 		@SuppressWarnings("unchecked")
 		private Map<String, String> getTemplateVariables(ServerWebExchange exchange) {
-			return (Map<String, String>) exchange
-					.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+			return exchange.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 		}
 
 		private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result,
