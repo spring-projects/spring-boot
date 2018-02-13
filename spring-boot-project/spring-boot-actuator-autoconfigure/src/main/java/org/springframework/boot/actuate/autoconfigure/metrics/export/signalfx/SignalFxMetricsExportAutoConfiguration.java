@@ -55,7 +55,7 @@ public class SignalFxMetricsExportAutoConfiguration {
 		return new SignalFxPropertiesConfigAdapter(props);
 	}
 
-	@Bean
+	@Bean(destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public SignalFxMeterRegistry signalFxMeterRegistry(SignalFxConfig config,
 			Clock clock) {

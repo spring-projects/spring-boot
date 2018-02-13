@@ -54,7 +54,7 @@ public class DatadogMetricsExportAutoConfiguration {
 		return new DatadogPropertiesConfigAdapter(datadogProperties);
 	}
 
-	@Bean
+	@Bean(destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig,
 			Clock clock) {

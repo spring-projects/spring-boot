@@ -55,7 +55,7 @@ public class JmxMetricsExportAutoConfiguration {
 		return new JmxPropertiesConfigAdapter(jmxProperties);
 	}
 
-	@Bean
+	@Bean(destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config,
 			HierarchicalNameMapper nameMapper, Clock clock) {

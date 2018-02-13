@@ -16,18 +16,24 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
+import java.util.Map;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DatadogMetricsExportAutoConfiguration}.
@@ -87,6 +93,32 @@ public class DatadogMetricsExportAutoConfigurationTests {
 						.hasBean("customRegistry").hasSingleBean(DatadogConfig.class));
 	}
 
+	@Test
+	public void stopsMeterRegistryWhenContextIsClosed() {
+		this.runner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
+				.run((context) -> {
+					DatadogMeterRegistry registry = spyOnDisposableBean(
+							DatadogMeterRegistry.class, context);
+					context.close();
+					verify(registry).stop();
+				});
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T spyOnDisposableBean(Class<T> type,
+			AssertableApplicationContext context) {
+		String[] names = context.getBeanNamesForType(type);
+		assertThat(names).hasSize(1);
+		String registryBeanName = names[0];
+		Map<String, Object> disposableBeans = (Map<String, Object>) ReflectionTestUtils
+				.getField(context.getAutowireCapableBeanFactory(), "disposableBeans");
+		Object registryAdapter = disposableBeans.get(registryBeanName);
+		T registry = (T) spy(ReflectionTestUtils.getField(registryAdapter, "bean"));
+		ReflectionTestUtils.setField(registryAdapter, "bean", registry);
+		return registry;
+	}
+
 	@Configuration
 	static class BaseConfiguration {
 
@@ -122,7 +154,7 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean
+		@Bean(destroyMethod = "stop")
 		public DatadogMeterRegistry customRegistry(DatadogConfig config, Clock clock) {
 			return new DatadogMeterRegistry(config, clock);
 		}
