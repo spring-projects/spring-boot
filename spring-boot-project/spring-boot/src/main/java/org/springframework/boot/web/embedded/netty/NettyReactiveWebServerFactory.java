@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +43,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
 
+	private Duration lifecycleTimeout;
+
 	public NettyReactiveWebServerFactory() {
 	}
 
@@ -51,10 +54,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
-		HttpServer server = createHttpServer();
+		HttpServer httpServer = createHttpServer();
 		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
 				httpHandler);
-		return new NettyWebServer(server, handlerAdapter);
+		return new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
 	}
 
 	/**
@@ -84,6 +87,15 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	public void addServerCustomizers(NettyServerCustomizer... serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizer must not be null");
 		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
+	}
+
+	/**
+	 * Set the maximum amount of time that should be waited when starting or stopping the
+	 * server.
+	 * @param lifecycleTimeout the lefecycle timeout
+	 */
+	public void setLifecycleTimeout(Duration lifecycleTimeout) {
+		this.lifecycleTimeout = lifecycleTimeout;
 	}
 
 	private HttpServer createHttpServer() {
