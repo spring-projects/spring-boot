@@ -131,6 +131,9 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isEqualTo(("/bind")).jsonPath("exception").doesNotExist()
 					.jsonPath("errors").isArray().jsonPath("message").isNotEmpty();
 		});
+		this.output.expect(allOf(containsString("Failed to handle request [POST /bind]"),
+				containsString("Validation failed for argument"),
+				containsString("Field error in object 'dummyBody' on field 'content'")));
 	}
 
 	@Test
