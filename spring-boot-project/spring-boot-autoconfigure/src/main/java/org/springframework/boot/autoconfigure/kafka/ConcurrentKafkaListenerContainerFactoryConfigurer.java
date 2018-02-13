@@ -72,7 +72,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 
 	/**
 	 * Add the {@link ConcurrentKafkaListenerContainerFactoryCustomizer}
-	 * customizer to use.`
+	 * customizer to use.
 	 * @param customizer the customizer
 	 */
 	public void addCustomizer(
