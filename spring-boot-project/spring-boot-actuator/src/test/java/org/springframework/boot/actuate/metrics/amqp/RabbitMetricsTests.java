@@ -35,19 +35,20 @@ public class RabbitMetricsTests {
 	public void connectionFactoryIsInstrumented() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
-		new RabbitMetrics(connectionFactory, "rabbit", null).bindTo(registry);
-		registry.get("rabbit.connections");
+		new RabbitMetrics(connectionFactory, null).bindTo(registry);
+		registry.get("rabbitmq.connections");
 	}
 
 	@Test
 	public void connectionFactoryWithTagsIsInstrumented() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
-		new RabbitMetrics(connectionFactory, "test", Tags.of("env", "prod"))
+		new RabbitMetrics(connectionFactory, Tags.of("env", "prod"))
 				.bindTo(registry);
-		assertThat(registry.get("test.connections").tags("env", "prod").meter())
+		assertThat(registry.get("rabbitmq.connections").tags("env", "prod").meter())
 				.isNotNull();
-		assertThat(registry.find("test.connections").tags("env", "dev").meter()).isNull();
+		assertThat(registry.find("rabbitmq.connections").tags("env", "dev").meter())
+				.isNull();
 	}
 
 }

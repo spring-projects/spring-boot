@@ -210,24 +210,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.metrics.cache.instrument",
-      "type": "java.lang.Boolean",
-      "description": "Instrument all available caches.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.metrics.jdbc.instrument",
-      "type": "java.lang.Boolean",
-      "description": "Instrument all available data sources.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.metrics.rabbitmq.instrument",
-      "type": "java.lang.Boolean",
-      "description": "Instrument all available connection factories.",
-      "defaultValue": true
-    },
-    {
       "name": "management.trace.http.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response tracing.",
