@@ -71,24 +71,21 @@ public class BannerTests {
 
 	@Test
 	public void testDefaultBanner() {
-		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
+		SpringApplication application = createSpringApplication();
 		this.context = application.run();
 		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
 
 	@Test
 	public void testDefaultBannerInLog() {
-		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
+		SpringApplication application = createSpringApplication();
 		this.context = application.run();
 		assertThat(this.out.toString()).contains(":: Spring Boot ::");
 	}
 
 	@Test
 	public void testCustomBanner() {
-		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
+		SpringApplication application = createSpringApplication();
 		application.setBanner(new DummyBanner());
 		this.context = application.run();
 		assertThat(this.out.toString()).contains("My Banner");
@@ -96,16 +93,14 @@ public class BannerTests {
 
 	@Test
 	public void testBannerInContext() {
-		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
+		SpringApplication application = createSpringApplication();
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isTrue();
 	}
 
 	@Test
 	public void testCustomBannerInContext() {
-		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
+		SpringApplication application = createSpringApplication();
 		Banner banner = mock(Banner.class);
 		application.setBanner(banner);
 		this.context = application.run();
@@ -122,11 +117,16 @@ public class BannerTests {
 
 	@Test
 	public void testDisableBannerInContext() {
-		SpringApplication application = new SpringApplication(Config.class);
+		SpringApplication application = createSpringApplication();
 		application.setBannerMode(Mode.OFF);
-		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.containsBean("springBootBanner")).isFalse();
+	}
+
+	private SpringApplication createSpringApplication() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		return application;
 	}
 
 	static class DummyBanner implements Banner {
