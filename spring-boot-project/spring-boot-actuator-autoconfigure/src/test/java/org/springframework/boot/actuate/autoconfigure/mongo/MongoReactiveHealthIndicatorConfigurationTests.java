@@ -39,8 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MongoReactiveHealthIndicatorConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					MongoAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
 					MongoDataAutoConfiguration.class,
 					MongoReactiveAutoConfiguration.class,
 					MongoReactiveDataAutoConfiguration.class,
@@ -49,10 +48,10 @@ public class MongoReactiveHealthIndicatorConfigurationTests {
 
 	@Test
 	public void runShouldCreateIndicator() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(MongoReactiveHealthIndicator.class)
-						.doesNotHaveBean(MongoHealthIndicator.class)
-						.doesNotHaveBean(ApplicationHealthIndicator.class));
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(MongoReactiveHealthIndicator.class)
+				.doesNotHaveBean(MongoHealthIndicator.class)
+				.doesNotHaveBean(ApplicationHealthIndicator.class));
 	}
 
 	@Test

@@ -49,8 +49,8 @@ public class DataSourcePoolMetrics implements MeterBinder {
 	private final Iterable<Tag> tags;
 
 	public DataSourcePoolMetrics(DataSource dataSource,
-			Collection<DataSourcePoolMetadataProvider> metadataProviders, String dataSourceName,
-			Iterable<Tag> tags) {
+			Collection<DataSourcePoolMetadataProvider> metadataProviders,
+			String dataSourceName, Iterable<Tag> tags) {
 		this(dataSource, new CompositeDataSourcePoolMetadataProvider(metadataProviders),
 				dataSourceName, tags);
 	}
@@ -75,9 +75,10 @@ public class DataSourcePoolMetrics implements MeterBinder {
 		}
 	}
 
-	private <N extends Number> void bindPoolMetadata(MeterRegistry registry, String metricName,
-			Function<DataSourcePoolMetadata, N> function) {
-		bindDataSource(registry, metricName, this.metadataProvider.getValueFunction(function));
+	private <N extends Number> void bindPoolMetadata(MeterRegistry registry,
+			String metricName, Function<DataSourcePoolMetadata, N> function) {
+		bindDataSource(registry, metricName,
+				this.metadataProvider.getValueFunction(function));
 	}
 
 	private <N extends Number> void bindDataSource(MeterRegistry registry,

@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -189,29 +190,23 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	}
 
 	/**
-	 * Log the original exception if handling it results in a Server Error or a Bad Request
-	 * (Client Error with 400 status code) one.
+	 * Log the original exception if handling it results in a Server Error or a Bad
+	 * Request (Client Error with 400 status code) one.
 	 * @param request the source request
 	 * @param errorStatus the HTTP error status
 	 */
 	protected void logError(ServerRequest request, HttpStatus errorStatus) {
-		if (errorStatus.is5xxServerError()) {
-			Throwable ex = getError(request);
-			if (ex instanceof ResponseStatusException) {
-				logger.error(buildMessage(request, ex));
-			}
-			else {
-				logger.error(buildMessage(request, null), ex);
-			}
+		Throwable ex = getError(request);
+		log(request, ex, (errorStatus.is5xxServerError() ? logger::error : logger::warn));
+	}
+
+	private void log(ServerRequest request, Throwable ex,
+			BiConsumer<Object, Throwable> logger) {
+		if (ex instanceof ResponseStatusException) {
+			logger.accept(buildMessage(request, ex), null);
 		}
-		else if (errorStatus == HttpStatus.BAD_REQUEST) {
-			Throwable ex = getError(request);
-			if (ex instanceof ResponseStatusException) {
-				logger.warn(buildMessage(request, ex));
-			}
-			else {
-				logger.warn(buildMessage(request, null), ex);
-			}
+		else {
+			logger.accept(buildMessage(request, null), ex);
 		}
 	}
 

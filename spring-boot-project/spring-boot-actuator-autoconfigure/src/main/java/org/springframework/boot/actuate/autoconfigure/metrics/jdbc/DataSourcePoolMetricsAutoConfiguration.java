@@ -69,8 +69,8 @@ public class DataSourcePoolMetricsAutoConfiguration {
 
 	private void bindDataSourceToRegistry(String beanName, DataSource dataSource) {
 		String dataSourceName = getDataSourceName(beanName);
-		new DataSourcePoolMetrics(dataSource, this.metadataProviders,
-				dataSourceName, Collections.emptyList()).bindTo(this.registry);
+		new DataSourcePoolMetrics(dataSource, this.metadataProviders, dataSourceName,
+				Collections.emptyList()).bindTo(this.registry);
 	}
 
 	/**

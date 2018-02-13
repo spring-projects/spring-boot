@@ -68,8 +68,8 @@ public class RabbitMetricsAutoConfiguration {
 		ConnectionFactory rabbitConnectionFactory = connectionFactory
 				.getRabbitConnectionFactory();
 		String connectionFactoryName = getConnectionFactoryName(beanName);
-		new RabbitMetrics(rabbitConnectionFactory,
-				Tags.of("name", connectionFactoryName)).bindTo(this.registry);
+		new RabbitMetrics(rabbitConnectionFactory, Tags.of("name", connectionFactoryName))
+				.bindTo(this.registry);
 	}
 
 	/**

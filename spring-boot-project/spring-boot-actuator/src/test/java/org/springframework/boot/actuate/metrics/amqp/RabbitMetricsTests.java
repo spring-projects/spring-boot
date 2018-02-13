@@ -43,8 +43,7 @@ public class RabbitMetricsTests {
 	public void connectionFactoryWithTagsIsInstrumented() {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		SimpleMeterRegistry registry = new SimpleMeterRegistry();
-		new RabbitMetrics(connectionFactory, Tags.of("env", "prod"))
-				.bindTo(registry);
+		new RabbitMetrics(connectionFactory, Tags.of("env", "prod")).bindTo(registry);
 		assertThat(registry.get("rabbitmq.connections").tags("env", "prod").meter())
 				.isNotNull();
 		assertThat(registry.find("rabbitmq.connections").tags("env", "dev").meter())

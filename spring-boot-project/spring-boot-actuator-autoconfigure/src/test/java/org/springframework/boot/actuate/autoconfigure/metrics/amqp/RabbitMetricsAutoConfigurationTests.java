@@ -47,8 +47,7 @@ public class RabbitMetricsAutoConfigurationTests {
 
 	@Test
 	public void rabbitmqNativeConnectionFactoryInstrumentationCanBeDisabled() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.enable.rabbitmq=false")
+		this.contextRunner.withPropertyValues("management.metrics.enable.rabbitmq=false")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("rabbitmq.connections").meter()).isNull();

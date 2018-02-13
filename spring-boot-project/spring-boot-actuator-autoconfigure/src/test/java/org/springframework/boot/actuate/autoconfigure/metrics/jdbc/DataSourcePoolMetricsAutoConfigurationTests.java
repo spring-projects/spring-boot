@@ -88,8 +88,7 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 					context.getBean("secondOne", DataSource.class).getConnection()
 							.getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("jdbc.max.connections").tags("name", "first")
-							.meter();
+					registry.get("jdbc.max.connections").tags("name", "first").meter();
 					registry.get("jdbc.max.connections").tags("name", "secondOne")
 							.meter();
 				});

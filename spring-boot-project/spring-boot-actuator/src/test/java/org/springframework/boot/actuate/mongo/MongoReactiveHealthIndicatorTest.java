@@ -42,10 +42,10 @@ public class MongoReactiveHealthIndicatorTest {
 		Document buildInfo = mock(Document.class);
 		given(buildInfo.getString("version")).willReturn("2.6.4");
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(
-				Mono.just(buildInfo));
-
-		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
+		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }"))
+				.willReturn(Mono.just(buildInfo));
+		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(
+				reactiveMongoTemplate);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
@@ -57,10 +57,10 @@ public class MongoReactiveHealthIndicatorTest {
 	@Test
 	public void testMongoIsDown() {
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(
-				new MongoException("Connection failed"));
-
-		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
+		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }"))
+				.willThrow(new MongoException("Connection failed"));
+		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(
+				reactiveMongoTemplate);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);

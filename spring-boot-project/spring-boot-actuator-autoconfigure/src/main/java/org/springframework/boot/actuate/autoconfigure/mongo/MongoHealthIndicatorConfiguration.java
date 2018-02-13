@@ -41,8 +41,7 @@ class MongoHealthIndicatorConfiguration extends
 
 	private final Map<String, MongoTemplate> mongoTemplates;
 
-	MongoHealthIndicatorConfiguration(
-			Map<String, MongoTemplate> mongoTemplates) {
+	MongoHealthIndicatorConfiguration(Map<String, MongoTemplate> mongoTemplates) {
 		this.mongoTemplates = mongoTemplates;
 	}
 
