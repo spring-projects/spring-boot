@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
@@ -90,6 +91,12 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public JvmThreadMetrics jvmThreadMetrics() {
 			return new JvmThreadMetrics();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ClassLoaderMetrics classLoaderMetrics() {
+			return new ClassLoaderMetrics();
 		}
 
 	}
