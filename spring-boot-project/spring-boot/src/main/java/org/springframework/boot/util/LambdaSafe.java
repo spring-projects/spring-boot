@@ -370,7 +370,7 @@ public final class LambdaSafe {
 	 * {@code null} as a valid value.
 	 * @param <R> The result type
 	 */
-	public final static class InvocationResult<R> {
+	public static final class InvocationResult<R> {
 
 		private static final InvocationResult<?> NONE = new InvocationResult<>(null);
 

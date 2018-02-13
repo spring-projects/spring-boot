@@ -45,7 +45,7 @@ public class HttpTunnelPayload {
 
 	private static final int BUFFER_SIZE = 1024 * 100;
 
-	protected final static char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
+	protected static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
 	private static final Log logger = LogFactory.getLog(HttpTunnelPayload.class);
 
