@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -31,6 +33,7 @@ import org.springframework.kafka.support.converter.RecordMessageConverter;
  *
  * @author Gary Russell
  * @author Eddú Meléndez
+ * @author Patryk Kostrzewa
  * @since 1.5.0
  */
 public class ConcurrentKafkaListenerContainerFactoryConfigurer {
@@ -40,6 +43,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private RecordMessageConverter messageConverter;
 
 	private KafkaTemplate<Object, Object> replyTemplate;
+
+	private LinkedList<ConcurrentKafkaListenerContainerFactoryCustomizer> customizers = new LinkedList<>();
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -66,6 +71,24 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Add the {@link ConcurrentKafkaListenerContainerFactoryCustomizer} customizer to use.
+	 * @param customizer the customizer
+	 */
+	public void addCustomizer(
+			ConcurrentKafkaListenerContainerFactoryCustomizer customizer) {
+		this.customizers.add(customizer);
+	}
+
+	/**
+	 * Add the {@link ConcurrentKafkaListenerContainerFactoryCustomizer} customizers to use.
+	 * @param customizers the customizers to add
+	 */
+	public void addCustomizers(
+			ConcurrentKafkaListenerContainerFactoryCustomizer... customizers) {
+		Collections.addAll(this.customizers, customizers);
+	}
+
+	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param listenerFactory the {@link ConcurrentKafkaListenerContainerFactory} instance
@@ -78,6 +101,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		listenerFactory.setConsumerFactory(consumerFactory);
 		configureListenerFactory(listenerFactory);
 		configureContainer(listenerFactory.getContainerProperties());
+		customize(listenerFactory);
 	}
 
 	private void configureListenerFactory(
@@ -112,4 +136,10 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 				.to(container::setLogContainerConfig);
 	}
 
+	private void customize(
+			ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
+		for (ConcurrentKafkaListenerContainerFactoryCustomizer customizer : this.customizers) {
+			customizer.customize(factory);
+		}
+	}
 }
