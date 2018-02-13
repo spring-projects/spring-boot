@@ -31,7 +31,6 @@ public interface ConcurrentKafkaListenerContainerFactoryCustomizer {
 
 	/**
 	 * Customize the {@link ConcurrentKafkaListenerContainerFactory}.
-	 *
 	 * @param factory the factory to customize
 	 */
 	void customize(ConcurrentKafkaListenerContainerFactory<Object, Object> factory);
