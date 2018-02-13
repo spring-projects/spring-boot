@@ -59,12 +59,12 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	/**
 	 * Name of the {@code spring.application.json} property.
 	 */
-	public static String SPRING_APPLICATION_JSON_PROPERTY = "spring.application.json";
+	public static final String SPRING_APPLICATION_JSON_PROPERTY = "spring.application.json";
 
 	/**
 	 * Name of the {@code SPRING_APPLICATION_JSON} environment variable.
 	 */
-	public static String SPRING_APPLICATION_JSON_ENVIRONMENT_VARIABLE = "SPRING_APPLICATION_JSON";
+	public static final String SPRING_APPLICATION_JSON_ENVIRONMENT_VARIABLE = "SPRING_APPLICATION_JSON";
 
 	private static final String SERVLET_ENVIRONMENT_CLASS = "org.springframework.web."
 			+ "context.support.StandardServletEnvironment";
@@ -176,7 +176,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 		private final JsonPropertyValue propertyValue;
 
 		JsonPropertySource(JsonPropertyValue propertyValue, Map<String, Object> source) {
-			super("spring.application.json", source);
+			super(SPRING_APPLICATION_JSON_PROPERTY, source);
 			this.propertyValue = propertyValue;
 		}
 
