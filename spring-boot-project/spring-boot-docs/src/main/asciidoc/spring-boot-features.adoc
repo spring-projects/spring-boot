@@ -3023,6 +3023,7 @@ commonly used locations.
 
 [[boot-features-security-webflux]]
 === WebFlux Security
+Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
 The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and in
 the classes imported from there (`WebFluxSecurityConfiguration` for web security
 and `ReactiveAuthenticationManagerConfiguration` for authentication configuration, which is also
@@ -3040,6 +3041,13 @@ that is based on the `management.endpoints.web.base-path` property.
 
 `PathRequest` can be used to create a `ServerWebExchangeMatcher` for resources in
 commonly used locations.
+
+For example, you can customize your security configuration by adding something like:
+
+[source,java,indent=0]
+----
+include::{code-examples}/web/security/CustomWebFluxSecurityExample.java[tag=custom-webflux-security]
+----
 
 
 [[boot-features-security-oauth2]]
