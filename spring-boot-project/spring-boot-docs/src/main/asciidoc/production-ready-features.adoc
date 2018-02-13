@@ -1243,11 +1243,9 @@ is required. A `CacheMetricsRegistrar` bean is made available to make that proce
 [[production-ready-metrics-jdbc]]
 === DataSource Metrics
 Auto-configuration enables the instrumentation of all available ``DataSource`` objects
-with a metric named `data.source`. Data source instrumentation results in gauges
-representing the currently active, maximum allowed, and minimum allowed connections in the
-pool. Each of these gauges has a name that is prefixed by `data.source` by default. The
-prefix can be customized by setting the `management.metrics.jdbc.metric-name`
-property.
+with a metric named `jdbc`. Data source instrumentation results in gauges representing the
+currently active, maximum allowed, and minimum allowed connections in the pool. Each of
+these gauges has a name that is prefixed by `jdbc`.
 
 Metrics are also tagged by the name of the `DataSource` computed based on the bean name.
 
@@ -1256,8 +1254,7 @@ Metrics are also tagged by the name of the `DataSource` computed based on the be
 [[production-ready-metrics-rabbitmq]]
 === RabbitMQ metrics
 Auto-configuration will enable the instrumentation of all available RabbitMQ connection
-factories with a metric named `rabbitmq`. The prefix can be customized by using the
-`management.metrics.rabbitmq.metric-name` property.
+factories with a metric named `rabbitmq`.
 
 
 

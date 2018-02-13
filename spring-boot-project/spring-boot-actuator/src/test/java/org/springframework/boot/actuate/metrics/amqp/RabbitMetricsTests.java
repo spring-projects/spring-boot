@@ -47,7 +47,8 @@ public class RabbitMetricsTests {
 				.bindTo(registry);
 		assertThat(registry.get("rabbitmq.connections").tags("env", "prod").meter())
 				.isNotNull();
-		assertThat(registry.find("rabbitmq.connections").tags("env", "dev").meter()).isNull();
+		assertThat(registry.find("rabbitmq.connections").tags("env", "dev").meter())
+				.isNull();
 	}
 
 }
