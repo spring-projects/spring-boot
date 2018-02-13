@@ -19,48 +19,36 @@ package org.springframework.boot.actuate.autoconfigure.mongo;
 import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthIndicatorConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.mongo.MongoReactiveHealthIndicator;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
-
-
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link MongoReactiveHealthIndicator}.
+ * Configuration for {@link MongoReactiveHealthIndicator}.
  *
- * @author Yulin Qin
- * @since 2.0.0
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(ReactiveMongoTemplate.class)
 @ConditionalOnBean(ReactiveMongoTemplate.class)
-@ConditionalOnEnabledHealthIndicator("mongo")
-@AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter(MongoReactiveDataAutoConfiguration.class)
-public class MongoReactiveHealthIndicatorAutoConfiguration extends
+class MongoReactiveHealthIndicatorConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<MongoReactiveHealthIndicator, ReactiveMongoTemplate> {
 
 	private final Map<String, ReactiveMongoTemplate> reactiveMongoTemplate;
 
-	public MongoReactiveHealthIndicatorAutoConfiguration(
+	MongoReactiveHealthIndicatorConfiguration(
 			Map<String, ReactiveMongoTemplate> reactiveMongoTemplate) {
 		this.reactiveMongoTemplate = reactiveMongoTemplate;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "mongoReactiveHealthIndicator")
-	public ReactiveHealthIndicator mongoReactiveHealthIndicator() {
+	@ConditionalOnMissingBean(name = "mongoHealthIndicator")
+	public ReactiveHealthIndicator mongoHealthIndicator() {
 		return createHealthIndicator(this.reactiveMongoTemplate);
 	}
 

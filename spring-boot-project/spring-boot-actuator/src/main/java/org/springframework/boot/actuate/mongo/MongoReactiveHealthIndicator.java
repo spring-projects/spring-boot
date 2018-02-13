@@ -25,8 +25,6 @@ import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.util.Assert;
 
-
-
 /**
  * A {@link ReactiveHealthIndicator} for Mongo.
  *
@@ -44,12 +42,14 @@ public class MongoReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		Mono<Document> documentMono = this.reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }");
-		return documentMono.map(document -> up(builder, document));
+		Mono<Document> buildInfo = this.reactiveMongoTemplate.executeCommand(
+				"{ buildInfo: 1 }");
+		return buildInfo.map(document -> up(builder, document));
 	}
 
 	private Health up(Health.Builder builder, Document document) {
 		return builder.up().withDetail("version", document.getString("version")).build();
 	}
+
 }
 

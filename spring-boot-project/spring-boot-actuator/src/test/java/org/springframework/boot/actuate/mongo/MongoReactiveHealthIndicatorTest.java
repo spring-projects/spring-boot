@@ -38,11 +38,12 @@ import static org.mockito.Mockito.mock;
 public class MongoReactiveHealthIndicatorTest {
 
 	@Test
-	public void testMongoIsUp() throws Exception {
-		Document document = mock(Document.class);
+	public void testMongoIsUp() {
+		Document buildInfo = mock(Document.class);
+		given(buildInfo.getString("version")).willReturn("2.6.4");
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(Mono.just(document));
-		given(document.getString("version")).willReturn("2.6.4");
+		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(
+				Mono.just(buildInfo));
 
 		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
@@ -54,9 +55,10 @@ public class MongoReactiveHealthIndicatorTest {
 	}
 
 	@Test
-	public void testMongoIsDown() throws Exception {
+	public void testMongoIsDown() {
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(new MongoException("Connection failed"));
+		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(
+				new MongoException("Connection failed"));
 
 		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
@@ -65,6 +67,6 @@ public class MongoReactiveHealthIndicatorTest {
 			assertThat(h.getDetails()).containsOnlyKeys("error");
 			assertThat(h.getDetails().get("error")).isEqualTo("Connection failed");
 		}).verifyComplete();
-
 	}
+
 }
