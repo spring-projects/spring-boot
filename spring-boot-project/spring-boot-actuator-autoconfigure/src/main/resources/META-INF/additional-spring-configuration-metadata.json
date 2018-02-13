@@ -179,7 +179,13 @@
       "name": "management.info.git.mode",
       "defaultValue": "simple"
     },
-        {
+    {
+      "name": "management.metrics.binders.files.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable files metrics.",
+      "defaultValue": true
+    },
+    {
       "name": "management.metrics.binders.integration.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring Integration metrics.",

@@ -18,10 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
@@ -92,6 +94,12 @@ public class MetricsAutoConfiguration {
 			return new JvmThreadMetrics();
 		}
 
+		@Bean
+		@ConditionalOnMissingBean
+		public ClassLoaderMetrics classLoaderMetrics() {
+			return new ClassLoaderMetrics();
+		}
+
 	}
 
 	@Configuration
@@ -117,6 +125,13 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public ProcessorMetrics processorMetrics() {
 			return new ProcessorMetrics();
+		}
+
+		@Bean
+		@ConditionalOnProperty(name = "management.metrics.binders.files.enabled", matchIfMissing = true)
+		@ConditionalOnMissingBean
+		public FileDescriptorMetrics fileDescriptorMetrics() {
+			return new FileDescriptorMetrics();
 		}
 
 	}
