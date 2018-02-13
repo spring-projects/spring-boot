@@ -40,7 +40,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 			AggregateElementBinder elementBinder) {
 		Class<?> collectionType = (target.getValue() == null
 				? target.getType().resolve(Object.class) : List.class);
-		ResolvableType aggregateType = ResolvableType.forClassWithGenerics(List.class,
+		ResolvableType aggregateType = forClassWithGenerics(List.class,
 				target.getType().asCollection().getGenerics());
 		ResolvableType elementType = target.getType().asCollection().getGeneric();
 		IndexedCollectionSupplier result = new IndexedCollectionSupplier(

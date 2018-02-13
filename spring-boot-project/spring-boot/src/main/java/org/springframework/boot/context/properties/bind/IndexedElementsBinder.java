@@ -83,8 +83,8 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		if (property != null) {
 			Object aggregate = convert(property.getValue(), aggregateType,
 					target.getAnnotations());
-			ResolvableType collectionType = ResolvableType
-					.forClassWithGenerics(collection.get().getClass(), elementType);
+			ResolvableType collectionType = forClassWithGenerics(
+					collection.get().getClass(), elementType);
 			Collection<Object> elements = convert(aggregate, collectionType);
 			collection.get().addAll(elements);
 		}
@@ -143,6 +143,17 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		BinderConversionService conversionService = getContext().getConversionService();
 		return ResolvableTypeDescriptor.forType(type, annotations)
 				.convert(conversionService, value);
+	}
+
+	// Work around for SPR-16456
+	protected static ResolvableType forClassWithGenerics(Class<?> type,
+			ResolvableType... generics) {
+		ResolvableType[] resolvedGenerics = new ResolvableType[generics.length];
+		for (int i = 0; i < generics.length; i++) {
+			resolvedGenerics[i] = forClassWithGenerics(generics[i].resolve(Object.class),
+					generics[i].getGenerics());
+		}
+		return ResolvableType.forClassWithGenerics(type, resolvedGenerics);
 	}
 
 	/**
