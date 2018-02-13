@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +36,6 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CacheAutoConfiguration.class })
 @ConditionalOnBean(CacheManager.class)
-@ConditionalOnProperty(value = "management.metrics.cache.instrument", matchIfMissing = true)
 @Import({ CacheMeterBinderProvidersConfiguration.class,
 		CacheMetricsRegistrarConfiguration.class })
 public class CacheMetricsAutoConfiguration {

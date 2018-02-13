@@ -32,8 +32,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
@@ -49,20 +47,14 @@ import org.springframework.util.StringUtils;
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass({ ConnectionFactory.class, AbstractConnectionFactory.class })
 @ConditionalOnBean({ AbstractConnectionFactory.class, MeterRegistry.class })
-@ConditionalOnProperty(value = "management.metrics.rabbitmq.instrument", matchIfMissing = true)
-@EnableConfigurationProperties(RabbitMetricsProperties.class)
 public class RabbitMetricsAutoConfiguration {
 
 	private static final String CONNECTION_FACTORY_SUFFIX = "connectionFactory";
 
 	private final MeterRegistry registry;
 
-	private final String metricName;
-
-	public RabbitMetricsAutoConfiguration(MeterRegistry registry,
-			RabbitMetricsProperties rabbitMetricsProperties) {
+	public RabbitMetricsAutoConfiguration(MeterRegistry registry) {
 		this.registry = registry;
-		this.metricName = rabbitMetricsProperties.getMetricName();
 	}
 
 	@Autowired
@@ -76,7 +68,7 @@ public class RabbitMetricsAutoConfiguration {
 		ConnectionFactory rabbitConnectionFactory = connectionFactory
 				.getRabbitConnectionFactory();
 		String connectionFactoryName = getConnectionFactoryName(beanName);
-		new RabbitMetrics(rabbitConnectionFactory, this.metricName,
+		new RabbitMetrics(rabbitConnectionFactory,
 				Tags.of("name", connectionFactoryName)).bindTo(this.registry);
 	}
 

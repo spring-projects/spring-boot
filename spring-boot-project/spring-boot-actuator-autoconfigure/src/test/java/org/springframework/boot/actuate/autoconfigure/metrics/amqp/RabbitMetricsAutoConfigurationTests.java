@@ -46,20 +46,9 @@ public class RabbitMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguredConnectionFactoryWithCustomMetricName() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.rabbitmq.metric-name=custom.name")
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("custom.name.connections").meter();
-					assertThat(registry.find("rabbitmq.connections").meter()).isNull();
-				});
-	}
-
-	@Test
 	public void rabbitmqNativeConnectionFactoryInstrumentationCanBeDisabled() {
 		this.contextRunner
-				.withPropertyValues("management.metrics.rabbitmq.instrument=false")
+				.withPropertyValues("management.metrics.enable.rabbitmq=false")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("rabbitmq.connections").meter()).isNull();

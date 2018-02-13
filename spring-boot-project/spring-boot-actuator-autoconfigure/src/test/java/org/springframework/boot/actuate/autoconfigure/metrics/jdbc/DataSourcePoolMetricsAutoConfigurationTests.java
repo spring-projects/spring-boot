@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataSourcePoolMetricsAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.with(MetricsRun.simple())
 			.withConfiguration(
 					AutoConfigurations.of(DataSourcePoolMetricsAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class);
@@ -55,22 +57,7 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("data.source.max.connections").tags("name", "dataSource")
-							.meter();
-				});
-	}
-
-	@Test
-	public void autoConfiguredDataSourceWithCustomMetricName() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.metric-name=custom.name")
-				.run((context) -> {
-					context.getBean(DataSource.class).getConnection().getMetaData();
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("custom.name.max.connections").tags("name", "dataSource")
+					registry.get("jdbc.max.connections").tags("name", "dataSource")
 							.meter();
 				});
 	}
@@ -81,11 +68,11 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"management.metrics.jdbc.instrument=false")
+						"management.metrics.enable.jdbc=false")
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("data.source.max.connections")
+					assertThat(registry.find("jdbc.max.connections")
 							.tags("name", "dataSource").meter()).isNull();
 				});
 	}
@@ -101,9 +88,9 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 					context.getBean("secondOne", DataSource.class).getConnection()
 							.getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("data.source.max.connections").tags("name", "first")
+					registry.get("jdbc.max.connections").tags("name", "first")
 							.meter();
-					registry.get("data.source.max.connections").tags("name", "secondOne")
+					registry.get("jdbc.max.connections").tags("name", "secondOne")
 							.meter();
 				});
 	}

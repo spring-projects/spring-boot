@@ -37,29 +37,23 @@ public class RabbitMetrics implements MeterBinder {
 
 	private final Iterable<Tag> tags;
 
-	private final String name;
-
 	private final ConnectionFactory connectionFactory;
 
 	/**
 	 * Create a new meter binder recording the specified {@link ConnectionFactory}.
 	 * @param connectionFactory the {@link ConnectionFactory} to instrument
-	 * @param name the name prefix of the metrics
 	 * @param tags tags to apply to all recorded metrics
 	 */
-	public RabbitMetrics(ConnectionFactory connectionFactory, String name,
-			Iterable<Tag> tags) {
+	public RabbitMetrics(ConnectionFactory connectionFactory, Iterable<Tag> tags) {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
-		Assert.notNull(name, "Name must not be null");
 		this.connectionFactory = connectionFactory;
-		this.name = name;
 		this.tags = (tags != null ? tags : Collections.emptyList());
 	}
 
 	@Override
 	public void bindTo(MeterRegistry registry) {
 		this.connectionFactory.setMetricsCollector(
-				new MicrometerMetricsCollector(registry, this.name, this.tags));
+				new MicrometerMetricsCollector(registry, "rabbitmq", this.tags));
 	}
 
 }
