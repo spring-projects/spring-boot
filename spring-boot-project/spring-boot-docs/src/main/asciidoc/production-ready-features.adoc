@@ -1068,7 +1068,7 @@ If you use Jolokia but do not want Spring Boot to configure it, set the
 
 [source,properties,indent=0]
 ----
-	management.jolokia.enabled=false
+	management.endpoint.jolokia.enabled=false
 ----
 
 
