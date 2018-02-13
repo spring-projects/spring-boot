@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import java.util.Collections;
-
 import com.mongodb.reactivestreams.client.MongoClient;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -32,10 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
-import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
 
 /**
@@ -78,21 +73,5 @@ public class MongoReactiveDataAutoConfiguration {
 			ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MongoConverter converter) {
 		return new ReactiveMongoTemplate(reactiveMongoDatabaseFactory, converter);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(MongoConverter.class)
-	public MappingMongoConverter mappingMongoConverter() {
-		MongoCustomConversions conversions = new MongoCustomConversions(Collections.emptyList());
-
-		MongoMappingContext context = new MongoMappingContext();
-		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
-		context.afterPropertiesSet();
-
-		MappingMongoConverter converter = new MappingMongoConverter(org.springframework.data.mongodb.core.ReactiveMongoTemplate.NO_OP_REF_RESOLVER, context);
-		converter.setCustomConversions(conversions);
-		converter.afterPropertiesSet();
-
-		return converter;
 	}
 }

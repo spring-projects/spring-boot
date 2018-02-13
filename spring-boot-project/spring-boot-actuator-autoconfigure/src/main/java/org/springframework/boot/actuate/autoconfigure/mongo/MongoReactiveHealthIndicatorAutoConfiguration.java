@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -48,7 +47,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 @ConditionalOnBean(ReactiveMongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter({MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class})
+@AutoConfigureAfter(MongoReactiveDataAutoConfiguration.class)
 public class MongoReactiveHealthIndicatorAutoConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<MongoReactiveHealthIndicator, ReactiveMongoTemplate> {
 

@@ -35,9 +35,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Yulin Qin
  */
-
 public class MongoReactiveHealthIndicatorTest {
-	private MongoReactiveHealthIndicator mongoReactiveHealthIndicator;
 
 	@Test
 	public void testMongoIsUp() throws Exception {
@@ -46,8 +44,8 @@ public class MongoReactiveHealthIndicatorTest {
 		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(Mono.just(document));
 		given(document.getString("version")).willReturn("2.6.4");
 
-		this.mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
-		Mono<Health> health = this.mongoReactiveHealthIndicator.health();
+		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
+		Mono<Health> health = mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("version");
@@ -60,8 +58,8 @@ public class MongoReactiveHealthIndicatorTest {
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
 		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(new MongoException("Connection failed"));
 
-		this.mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
-		Mono<Health> health = this.mongoReactiveHealthIndicator.health();
+		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(reactiveMongoTemplate);
+		Mono<Health> health = mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
