@@ -229,7 +229,6 @@ public class SysVinitLaunchScriptIT {
 	@Test
 	public void pidFolderOwnership() throws Exception {
 		String output = doTest("pid-folder-ownership.sh");
-		System.err.println(output);
 		assertThat(output).contains("phil root");
 	}
 
@@ -243,6 +242,18 @@ public class SysVinitLaunchScriptIT {
 	public void logFileOwnership() throws Exception {
 		String output = doTest("log-file-ownership.sh");
 		assertThat(output).contains("phil root");
+	}
+
+	@Test
+	public void logFileOwnershipIsChangedWhenCreated() throws Exception {
+		String output = doTest("log-file-ownership-is-changed-when-created.sh");
+		assertThat(output).contains("andy root");
+	}
+
+	@Test
+	public void logFileOwnershipIsUnchangedWhenExists() throws Exception {
+		String output = doTest("log-file-ownership-is-unchanged-when-exists.sh");
+		assertThat(output).contains("root root");
 	}
 
 	@Test

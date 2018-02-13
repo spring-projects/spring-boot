@@ -156,7 +156,15 @@ do_start() {
   pushd "$working_dir" > /dev/null
   if [[ ! -e "$PID_FOLDER" ]]; then
     mkdir -p "$PID_FOLDER" &> /dev/null
-    chown "$run_user" "$PID_FOLDER"
+    if [[ -n "$run_user" ]]; then
+      chown "$run_user" "$PID_FOLDER"
+    fi
+  fi
+  if [[ ! -e "$log_file" ]]; then
+    touch "$log_file" &> /dev/null
+    if [[ -n "$run_user" ]]; then
+      chown "$run_user" "$log_file"
+    fi
   fi
   if [[ -n "$run_user" ]]; then
     checkPermissions || return $?
