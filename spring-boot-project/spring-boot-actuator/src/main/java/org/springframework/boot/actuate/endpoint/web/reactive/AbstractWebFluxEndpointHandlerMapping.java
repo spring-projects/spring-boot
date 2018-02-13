@@ -297,7 +297,6 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 			return arguments;
 		}
 
-		@SuppressWarnings("unchecked")
 		private Map<String, String> getTemplateVariables(ServerWebExchange exchange) {
 			return exchange.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 		}
