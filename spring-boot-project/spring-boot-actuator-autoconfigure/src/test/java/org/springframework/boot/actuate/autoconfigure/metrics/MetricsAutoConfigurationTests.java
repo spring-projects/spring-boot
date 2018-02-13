@@ -26,6 +26,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
@@ -210,6 +211,28 @@ public class MetricsAutoConfigurationTests {
 						.hasBean("customProcessorMetrics"));
 	}
 
+	@Test
+	public void autoConfiguresFileDescriptorMetrics() {
+		this.runner.run(
+				(context) -> assertThat(context)
+						.hasSingleBean(FileDescriptorMetrics.class));
+	}
+
+	@Test
+	public void allowsFileDescriptorMetricsToBeDisabled() {
+		this.runner.withPropertyValues("management.metrics.binders.fds.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(FileDescriptorMetrics.class));
+	}
+
+	@Test
+	public void allowsCustomFileDescriptorToBeUsed() {
+		this.runner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(FileDescriptorMetrics.class)
+						.hasBean("customFileDescriptorMetrics"));
+	}
+
 	@Configuration
 	static class CustomClockConfiguration {
 
@@ -308,6 +331,16 @@ public class MetricsAutoConfigurationTests {
 		@Bean
 		ProcessorMetrics customProcessorMetrics() {
 			return new ProcessorMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomFileDescriptorMetricsConfiguration {
+
+		@Bean
+		FileDescriptorMetrics customFileDescriptorMetrics() {
+			return new FileDescriptorMetrics();
 		}
 
 	}
