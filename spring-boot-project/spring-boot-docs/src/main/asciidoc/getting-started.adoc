@@ -38,7 +38,7 @@ configuration).
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8 or 9] and
 {spring-reference}[Spring Framework {spring-version}] or above. Explicit build support is
 provided for Maven 3.2+ and Gradle 4.
 
