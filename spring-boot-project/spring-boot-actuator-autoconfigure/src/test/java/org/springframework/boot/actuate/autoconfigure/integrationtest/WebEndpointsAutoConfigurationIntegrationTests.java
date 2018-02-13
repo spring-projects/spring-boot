@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoCo
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -39,6 +40,7 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -81,8 +83,10 @@ public class WebEndpointsAutoConfigurationIntegrationTests {
 			LiquibaseAutoConfiguration.class, CassandraAutoConfiguration.class,
 			CassandraDataAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class,
+			MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+			MongoReactiveDataAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
-			MongoDataAutoConfiguration.class, ElasticsearchAutoConfiguration.class,
+			ElasticsearchAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class, JestAutoConfiguration.class,
 			SolrRepositoriesAutoConfiguration.class, SolrAutoConfiguration.class,
 			RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class,

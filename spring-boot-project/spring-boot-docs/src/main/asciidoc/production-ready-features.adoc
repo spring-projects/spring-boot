@@ -723,6 +723,9 @@ appropriate:
 |===
 |Name |Description
 
+|{sc-spring-boot-actuator}/mongo/MongoReactiveHealthIndicator.{sc-ext}[`MongoReactiveHealthIndicator`]
+|Checks that a Mongo database is up.
+
 |{sc-spring-boot-actuator}/redis/RedisReactiveHealthIndicator.{sc-ext}[`RedisReactiveHealthIndicator`]
 |Checks that a Redis server is up.
 |===
