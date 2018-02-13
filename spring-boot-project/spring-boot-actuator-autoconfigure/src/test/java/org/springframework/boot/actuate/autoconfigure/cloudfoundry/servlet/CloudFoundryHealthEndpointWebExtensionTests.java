@@ -45,29 +45,26 @@ public class CloudFoundryHealthEndpointWebExtensionTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withPropertyValues("VCAP_APPLICATION={}")
-			.withConfiguration(
-					AutoConfigurations.of(SecurityAutoConfiguration.class,
-							WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-							DispatcherServletAutoConfiguration.class,
-							HttpMessageConvertersAutoConfiguration.class,
-							PropertyPlaceholderAutoConfiguration.class,
-							RestTemplateAutoConfiguration.class,
-							ManagementContextAutoConfiguration.class,
-							ServletManagementContextAutoConfiguration.class,
-							EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-							HealthIndicatorAutoConfiguration.class,
-							HealthEndpointAutoConfiguration.class,
-							CloudFoundryActuatorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
+					WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class,
+					HttpMessageConvertersAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class,
+					RestTemplateAutoConfiguration.class,
+					ManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class,
+					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					HealthIndicatorAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class,
+					CloudFoundryActuatorAutoConfiguration.class));
 
 	@Test
 	public void healthDetailsAlwaysPresent() {
-		this.contextRunner
-				.run((context) -> {
-					CloudFoundryHealthEndpointWebExtension extension = context
-							.getBean(CloudFoundryHealthEndpointWebExtension.class);
-					assertThat(extension.getHealth().getBody()
-							.getDetails()).isNotEmpty();
-				});
+		this.contextRunner.run((context) -> {
+			CloudFoundryHealthEndpointWebExtension extension = context
+					.getBean(CloudFoundryHealthEndpointWebExtension.class);
+			assertThat(extension.getHealth().getBody().getDetails()).isNotEmpty();
+		});
 	}
 
 }

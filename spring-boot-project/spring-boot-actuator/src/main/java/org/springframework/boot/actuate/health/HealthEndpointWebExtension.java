@@ -60,8 +60,7 @@ public class HealthEndpointWebExtension {
 		Health health = this.delegate.health();
 		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
 		if (showDetails == ShowDetails.NEVER
-				|| (showDetails == ShowDetails.WHEN_AUTHENTICATED
-						&& principal == null)) {
+				|| (showDetails == ShowDetails.WHEN_AUTHENTICATED && principal == null)) {
 			health = Health.status(health.getStatus()).build();
 		}
 		return new WebEndpointResponse<>(health, status);

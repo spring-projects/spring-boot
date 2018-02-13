@@ -44,27 +44,27 @@ public class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withPropertyValues("VCAP_APPLICATION={}")
-			.withConfiguration(
-					AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
-							ReactiveUserDetailsServiceAutoConfiguration.class,
-							WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
-							HttpMessageConvertersAutoConfiguration.class,
-							PropertyPlaceholderAutoConfiguration.class,
-							ReactiveCloudFoundryActuatorAutoConfigurationTests.WebClientCustomizerConfig.class,
-							WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-							EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-							HealthIndicatorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-							ReactiveCloudFoundryActuatorAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(
+					ReactiveSecurityAutoConfiguration.class,
+					ReactiveUserDetailsServiceAutoConfiguration.class,
+					WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
+					HttpMessageConvertersAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class,
+					ReactiveCloudFoundryActuatorAutoConfigurationTests.WebClientCustomizerConfig.class,
+					WebClientAutoConfiguration.class,
+					ManagementContextAutoConfiguration.class,
+					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					HealthIndicatorAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class,
+					ReactiveCloudFoundryActuatorAutoConfiguration.class));
 
 	@Test
 	public void healthDetailsAlwaysPresent() {
-		this.contextRunner
-				.run((context) -> {
-					CloudFoundryReactiveHealthEndpointWebExtension extension = context
-							.getBean(CloudFoundryReactiveHealthEndpointWebExtension.class);
-					assertThat(extension.health().block().getBody().getDetails())
-							.isNotEmpty();
-				});
+		this.contextRunner.run((context) -> {
+			CloudFoundryReactiveHealthEndpointWebExtension extension = context
+					.getBean(CloudFoundryReactiveHealthEndpointWebExtension.class);
+			assertThat(extension.health().block().getBody().getDetails()).isNotEmpty();
+		});
 	}
 
 }

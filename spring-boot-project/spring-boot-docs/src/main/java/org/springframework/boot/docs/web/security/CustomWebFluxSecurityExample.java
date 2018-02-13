@@ -30,6 +30,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class CustomWebFluxSecurityExample {
 
+	// @formatter:off
+	// tag::configuration[]
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 		http
@@ -40,6 +42,7 @@ public class CustomWebFluxSecurityExample {
 				.formLogin();
 		return http.build();
 	}
+	// end::configuration[]
+	// @formatter:on
 
 }
-
