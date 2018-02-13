@@ -92,7 +92,7 @@ public final class StaticResourceRequest {
 	 * The server web exchange matcher used to match against resource
 	 * {@link StaticResourceLocation Locations}.
 	 */
-	public final static class StaticResourceServerWebExchange
+	public static final class StaticResourceServerWebExchange
 			implements ServerWebExchangeMatcher {
 
 		private final Set<StaticResourceLocation> locations;

@@ -319,7 +319,7 @@ public class ArtemisAutoConfigurationTests {
 		return transportConfigurations[0];
 	}
 
-	private final static class DestinationChecker {
+	private static final class DestinationChecker {
 
 		private final JmsTemplate jmsTemplate;
 
