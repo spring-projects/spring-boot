@@ -32,6 +32,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's reactive mongo
  * support.
@@ -43,6 +44,7 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
  * to the {@literal test} database.
  *
  * @author Mark Paluch
+ * @author Yulin Qin
  * @since 2.0.0
  */
 @Configuration
@@ -73,5 +75,4 @@ public class MongoReactiveDataAutoConfiguration {
 			MongoConverter converter) {
 		return new ReactiveMongoTemplate(reactiveMongoDatabaseFactory, converter);
 	}
-
 }
