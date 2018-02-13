@@ -21,6 +21,7 @@ import java.util.List;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
@@ -94,7 +95,8 @@ public class MetricsAutoConfigurationTests {
 	public void autoConfiguresJvmMetrics() {
 		this.runner.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 				.hasSingleBean(JvmMemoryMetrics.class)
-				.hasSingleBean(JvmThreadMetrics.class));
+				.hasSingleBean(JvmThreadMetrics.class)
+				.hasSingleBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
@@ -102,7 +104,8 @@ public class MetricsAutoConfigurationTests {
 		this.runner.withPropertyValues("management.metrics.binders.jvm.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(JvmGcMetrics.class)
 						.doesNotHaveBean(JvmMemoryMetrics.class)
-						.doesNotHaveBean(JvmThreadMetrics.class));
+						.doesNotHaveBean(JvmThreadMetrics.class)
+						.doesNotHaveBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
@@ -111,7 +114,8 @@ public class MetricsAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasBean("customJvmGcMetrics")
 						.hasSingleBean(JvmMemoryMetrics.class)
-						.hasSingleBean(JvmThreadMetrics.class));
+						.hasSingleBean(JvmThreadMetrics.class)
+						.hasSingleBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
@@ -120,7 +124,8 @@ public class MetricsAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class)
 						.hasBean("customJvmMemoryMetrics")
-						.hasSingleBean(JvmThreadMetrics.class));
+						.hasSingleBean(JvmThreadMetrics.class)
+						.hasSingleBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
@@ -129,7 +134,18 @@ public class MetricsAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class)
 						.hasSingleBean(JvmThreadMetrics.class)
+						.hasSingleBean(ClassLoaderMetrics.class)
 						.hasBean("customJvmThreadMetrics"));
+	}
+
+	@Test
+	public void allowsCustomClassLoaderMetricsToBeUsed() {
+		this.runner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+						.hasSingleBean(JvmMemoryMetrics.class)
+						.hasSingleBean(JvmThreadMetrics.class)
+						.hasSingleBean(ClassLoaderMetrics.class)
+						.hasBean("customClassLoaderMetrics"));
 	}
 
 	@Test
@@ -252,6 +268,16 @@ public class MetricsAutoConfigurationTests {
 		@Bean
 		JvmThreadMetrics customJvmThreadMetrics() {
 			return new JvmThreadMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomClassLoaderMetricsConfiguration {
+
+		@Bean
+		ClassLoaderMetrics customClassLoaderMetrics() {
+			return new ClassLoaderMetrics();
 		}
 
 	}
