@@ -22,7 +22,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.Meter.Type;
 import io.micrometer.core.instrument.config.MeterFilterReply;
-import io.micrometer.core.instrument.histogram.HistogramConfig;
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,7 +50,7 @@ public class PropertiesMeterFilterTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
-	private HistogramConfig config;
+	private DistributionStatisticConfig config;
 
 	@Before
 	public void setup() {
@@ -139,32 +139,32 @@ public class PropertiesMeterFilterTests {
 	public void configureWhenHasHistogramTrueShouldSetPercentilesHistogramToTrue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles-histogram.spring.boot=true"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.isPercentileHistogram()).isTrue();
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isTrue();
 	}
 
 	@Test
 	public void configureWhenHasHistogramFalseShouldSetPercentilesHistogramToFalse() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles-histogram.spring.boot=false"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.isPercentileHistogram()).isFalse();
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isFalse();
 	}
 
 	@Test
 	public void configureWhenHasHigherHistogramTrueShouldSetPercentilesHistogramToTrue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles-histogram.spring=true"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.isPercentileHistogram()).isTrue();
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isTrue();
 	}
 
 	@Test
 	public void configureWhenHasHigherHistogramFalseShouldSetPercentilesHistogramToFalse() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles-histogram.spring=false"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.isPercentileHistogram()).isFalse();
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isFalse();
 	}
 
 	@Test
@@ -172,8 +172,8 @@ public class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles-histogram.spring=true",
 						"distribution.percentiles-histogram.spring.boot=false"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.isPercentileHistogram()).isFalse();
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isFalse();
 	}
 
 	@Test
@@ -181,32 +181,34 @@ public class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles-histogram.spring=false",
 						"distribution.percentiles-histogram.spring.boot=true"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.isPercentileHistogram()).isTrue();
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isTrue();
 	}
 
 	@Test
 	public void configureWhenAllHistogramTrueSetPercentilesHistogramToTrue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles-histogram.all=true"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.isPercentileHistogram()).isTrue();
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).isPercentileHistogram()).isTrue();
 	}
 
 	@Test
 	public void configureWhenHasPercentilesShouldSetPercentilesToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles.spring.boot=1,1.5,2"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getPercentiles()).containsExactly(1, 1.5, 2);
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getPercentiles()).containsExactly(1,
+						1.5, 2);
 	}
 
 	@Test
 	public void configureWhenHasHigherPercentilesShouldSetPercentilesToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles.spring=1,1.5,2"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getPercentiles()).containsExactly(1, 1.5, 2);
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getPercentiles()).containsExactly(1,
+						1.5, 2);
 	}
 
 	@Test
@@ -214,48 +216,54 @@ public class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles.spring=1,1.5,2",
 						"distribution.percentiles.spring.boot=3,3.5,4"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getPercentiles()).containsExactly(3, 3.5, 4);
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getPercentiles()).containsExactly(3,
+						3.5, 4);
 	}
 
 	@Test
 	public void configureWhenAllPercentilesSetShouldSetPercentilesToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.percentiles.all=1,1.5,2"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getPercentiles()).containsExactly(1, 1.5, 2);
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getPercentiles()).containsExactly(1,
+						1.5, 2);
 	}
 
 	@Test
 	public void configureWhenHasSlaShouldSetSlaToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.sla.spring.boot=1,2,3"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
+						.containsExactly(1000000, 2000000, 3000000);
 	}
 
 	@Test
 	public void configureWhenHasHigherSlaShouldSetPercentilesToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.sla.spring=1,2,3"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
+						.containsExactly(1000000, 2000000, 3000000);
 	}
 
 	@Test
 	public void configureWhenHasHigherSlaAndLowerShouldSetSlaToHigher() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties(
 				"distribution.sla.spring=1,2,3", "distribution.sla.spring.boot=4,5,6"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(4000000, 5000000, 6000000);
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
+						.containsExactly(4000000, 5000000, 6000000);
 	}
 
 	@Test
 	public void configureWhenAllSlaSetShouldSetSlaToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.sla.all=1,2,3"));
-		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
+		assertThat(filter.configure(createMeterId("spring.boot"),
+				DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
+						.containsExactly(1000000, 2000000, 3000000);
 	}
 
 	@Test
@@ -265,12 +273,12 @@ public class PropertiesMeterFilterTests {
 		Meter.Id timer = createMeterId("spring.boot", Meter.Type.TIMER);
 		Meter.Id summary = createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY);
 		Meter.Id counter = createMeterId("spring.boot", Meter.Type.COUNTER);
-		assertThat(filter.configure(timer, HistogramConfig.DEFAULT).getSlaBoundaries())
-				.containsExactly(1000000, 2000000, 3000000);
-		assertThat(filter.configure(summary, HistogramConfig.DEFAULT).getSlaBoundaries())
-				.isEmpty();
-		assertThat(filter.configure(counter, HistogramConfig.DEFAULT).getSlaBoundaries())
-				.isEmpty();
+		assertThat(filter.configure(timer, DistributionStatisticConfig.DEFAULT)
+				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
+		assertThat(filter.configure(summary, DistributionStatisticConfig.DEFAULT)
+				.getSlaBoundaries()).isEmpty();
+		assertThat(filter.configure(counter, DistributionStatisticConfig.DEFAULT)
+				.getSlaBoundaries()).isEmpty();
 	}
 
 	@Test
@@ -280,12 +288,12 @@ public class PropertiesMeterFilterTests {
 		Meter.Id timer = createMeterId("spring.boot", Meter.Type.TIMER);
 		Meter.Id summary = createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY);
 		Meter.Id counter = createMeterId("spring.boot", Meter.Type.COUNTER);
-		assertThat(filter.configure(timer, HistogramConfig.DEFAULT).getSlaBoundaries())
-				.containsExactly(1000000, 2000000, 3000000);
-		assertThat(filter.configure(summary, HistogramConfig.DEFAULT).getSlaBoundaries())
-				.containsExactly(1, 2, 3);
-		assertThat(filter.configure(counter, HistogramConfig.DEFAULT).getSlaBoundaries())
-				.isEmpty();
+		assertThat(filter.configure(timer, DistributionStatisticConfig.DEFAULT)
+				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
+		assertThat(filter.configure(summary, DistributionStatisticConfig.DEFAULT)
+				.getSlaBoundaries()).containsExactly(1, 2, 3);
+		assertThat(filter.configure(counter, DistributionStatisticConfig.DEFAULT)
+				.getSlaBoundaries()).isEmpty();
 	}
 
 	private Id createMeterId(String name) {
