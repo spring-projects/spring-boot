@@ -213,20 +213,19 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguresFileDescriptorMetrics() {
-		this.runner.run(
-				(context) -> assertThat(context)
-						.hasSingleBean(FileDescriptorMetrics.class));
+		this.runner.run((context) -> assertThat(context)
+				.hasSingleBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
 	public void allowsFileDescriptorMetricsToBeDisabled() {
-		this.runner.withPropertyValues("management.metrics.binders.fds.enabled=false")
+		this.runner.withPropertyValues("management.metrics.binders.files.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
-	public void allowsCustomFileDescriptorToBeUsed() {
+	public void allowsCustomFileDescriptorMetricsToBeUsed() {
 		this.runner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(FileDescriptorMetrics.class)
