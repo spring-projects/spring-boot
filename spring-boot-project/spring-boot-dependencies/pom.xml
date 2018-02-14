@@ -169,7 +169,7 @@
 		<undertow.version>1.4.22.Final</undertow.version>
 		<unboundid-ldapsdk.version>4.0.4</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
-		<webjars-locator.version>0.32-1</webjars-locator.version>
+		<webjars-locator-core.version>0.35</webjars-locator-core.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 		<xmlunit2.version>2.5.1</xmlunit2.version>
@@ -2536,8 +2536,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>
-				<artifactId>webjars-locator</artifactId>
-				<version>${webjars-locator.version}</version>
+				<artifactId>webjars-locator-core</artifactId>
+				<version>${webjars-locator-core.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.xmlunit</groupId>
