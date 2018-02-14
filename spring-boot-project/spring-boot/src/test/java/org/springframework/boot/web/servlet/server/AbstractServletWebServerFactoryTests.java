@@ -802,6 +802,21 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	public void sslSessionTracking() {
+		AbstractServletWebServerFactory factory = getFactory();
+		Ssl ssl = new Ssl();
+		ssl.setEnabled(true);
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
+		factory.getSession().setTrackingModes(EnumSet.of(SessionTrackingMode.SSL));
+		AtomicReference<ServletContext> contextReference = new AtomicReference<>();
+		this.webServer = factory.getWebServer(contextReference::set);
+		assertThat(contextReference.get().getEffectiveSessionTrackingModes())
+				.isEqualTo(EnumSet.of(javax.servlet.SessionTrackingMode.SSL));
+	}
+
+	@Test
 	public void compressionOfResponseToGetRequest() throws Exception {
 		assertThat(doTestCompression(10000, null, null)).isTrue();
 	}

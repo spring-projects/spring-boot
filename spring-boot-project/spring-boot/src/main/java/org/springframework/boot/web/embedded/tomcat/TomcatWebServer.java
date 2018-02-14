@@ -27,6 +27,7 @@ import javax.naming.NamingException;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
+import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
@@ -92,8 +93,15 @@ public class TomcatWebServer implements WebServer {
 			try {
 				addInstanceIdToEngineName();
 
-				// Remove service connectors so that protocol binding doesn't happen yet
-				removeServiceConnectors();
+				Context context = findContext();
+				context.addLifecycleListener((event) -> {
+					if (context.equals(event.getSource())
+							&& Lifecycle.START_EVENT.equals(event.getType())) {
+						// Remove service connectors so that protocol binding doesn't
+						// happen when the service is started.
+						removeServiceConnectors();
+					}
+				});
 
 				// Start the server to trigger initialization listeners
 				this.tomcat.start();
@@ -101,7 +109,6 @@ public class TomcatWebServer implements WebServer {
 				// We can re-throw failure exception directly in the main thread
 				rethrowDeferredStartupExceptions();
 
-				Context context = findContext();
 				try {
 					ContextBindings.bindClassLoader(context, context.getNamingToken(),
 							getClass().getClassLoader());
