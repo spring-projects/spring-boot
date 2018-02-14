@@ -24,7 +24,7 @@
 	</scm>
 	<properties>
 		<!-- Dependency versions -->
-		<activemq.version>5.15.2</activemq.version>
+		<activemq.version>5.15.3</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.60</appengine-sdk.version>
 		<artemis.version>2.4.0</artemis.version>
