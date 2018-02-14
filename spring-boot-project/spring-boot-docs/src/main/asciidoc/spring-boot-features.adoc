@@ -6093,29 +6093,30 @@ NOTE: If you directly use `@ComponentScan` (that is, not through
 
 
 
-[[boot-features-testing-spring-boot-applications-working-with-random-ports]]
-==== Working with Random Ports
-If you need to start a full running server for tests, we recommend that you use random
-ports. If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an
+[[boot-features-testing-spring-boot-applications-testing-with-running-server]]
+==== Testing with a running server
+If you need to start a full running server, we recommend that you use random ports.
+If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an
 available port is picked at random each time your test runs.
 
 The `@LocalServerPort` annotation can be used to
 <<howto-discover-the-http-port-at-runtime,inject the actual port used>> into your test.
 For convenience, tests that need to make REST calls to the started server can
-additionally `@Autowire` a `TestRestTemplate`, which resolves relative links to the
-running server, as shown in the following example:
-
-[source,java,indent=0]
-----
-include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[tag=test-random-port]
-----
-
-If you prefer to use a {spring-reference}testing.html#webtestclient[`WebTestClient`], you
-can use that as well:
+additionally `@Autowire` a
+{spring-reference}testing.html#webtestclient-tests[`WebTestClient`], which resolves
+relative links to the running server and comes with a dedicated API for verifying
+responses, as shown in the following example:
 
 [source,java,indent=0]
 ----
 include::{code-examples}/test/web/RandomPortWebTestClientExampleTests.java[tag=test-random-port]
+----
+
+Spring Boot also provides a `TestRestTemplate` facility:
+
+[source,java,indent=0]
+----
+include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[tag=test-random-port]
 ----
 
 
@@ -6389,6 +6390,9 @@ definition.
 A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
+TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you running
+<<boot-features-testing-spring-boot-applications-testing-with-running-server,
+full end-to-end tests with an actual server>>.
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-webflux-tests]]
@@ -6452,6 +6456,9 @@ example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 A list of the auto-configuration that is enabled by `@WebFluxTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
+TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you running
+<<boot-features-testing-spring-boot-applications-testing-with-running-server,
+full end-to-end tests with an actual server>>.
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
@@ -7110,6 +7117,15 @@ for assertions, as follows:
 
 [[boot-features-rest-templates-test-utility]]
 ==== TestRestTemplate
+
+TIP: Spring Framework 5.0 provides a new `WebTestClient` that works for
+<<boot-features-testing-spring-boot-applications-testing-autoconfigured-webflux-tests,
+WebFlux integration tests>> and both
+<<boot-features-testing-spring-boot-applications-testing-with-running-server,
+WebFlux and MVC end-to-end testing>>. It provides a fluent API for assertions,
+unlike `TestRestTemplate`.
+
+
 `TestRestTemplate` is a convenience alternative to Spring's `RestTemplate` that is useful
 in integration tests. You can get a vanilla template or one that sends Basic HTTP
 authentication (with a username and password). In either case, the template behaves in a
