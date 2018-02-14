@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
 
@@ -218,6 +220,19 @@ public class NarayanaProperties {
 
 	public void setRecoveryJmsPass(String recoveryJmsPass) {
 		this.recoveryJmsPass = recoveryJmsPass;
+	}
+
+	/**
+	 * Narayana connection pool properties.
+	 */
+	@ConfigurationProperties(prefix = PoolProperties.PROPERTIES_PREFIX)
+	public static class PoolProperties extends GenericObjectPoolConfig {
+
+		/**
+		 * Prefix for Narayana connection pool specific properties.
+		 */
+		public static final String PROPERTIES_PREFIX = NarayanaProperties.PROPERTIES_PREFIX + ".pool";
+
 	}
 
 }

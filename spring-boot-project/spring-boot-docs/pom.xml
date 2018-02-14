@@ -524,11 +524,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jdbc</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
 			<artifactId>jms</artifactId>
 			<optional>true</optional>
 		</dependency>

@@ -1935,11 +1935,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.narayana.jta</groupId>
-				<artifactId>jdbc</artifactId>
-				<version>${narayana.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.narayana.jta</groupId>
 				<artifactId>jms</artifactId>
 				<version>${narayana.version}</version>
 			</dependency>
