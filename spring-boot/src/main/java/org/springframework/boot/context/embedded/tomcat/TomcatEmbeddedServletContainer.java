@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,10 @@ import javax.naming.NamingException;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
@@ -91,9 +94,21 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			try {
 				addInstanceIdToEngineName();
 				try {
-					// Remove service connectors to that protocol binding doesn't happen
-					// yet
-					removeServiceConnectors();
+					final Context context = findContext();
+					context.addLifecycleListener(new LifecycleListener() {
+
+						@Override
+						public void lifecycleEvent(LifecycleEvent event) {
+							if (context.equals(event.getSource())
+									&& Lifecycle.START_EVENT.equals(event.getType())) {
+								// Remove service connectors so that protocol
+								// binding doesn't happen when the service is
+								// started.
+								removeServiceConnectors();
+							}
+						}
+
+					});
 
 					// Start the server to trigger initialization listeners
 					this.tomcat.start();
@@ -101,7 +116,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					// We can re-throw failure exception directly in the main thread
 					rethrowDeferredStartupExceptions();
 
-					Context context = findContext();
 					try {
 						ContextBindings.bindClassLoader(context, getNamingToken(context),
 								getClass().getClassLoader());
