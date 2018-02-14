@@ -107,7 +107,7 @@
 		<junit-platform.version>1.0.3</junit-platform.version>
 		<kotlin.version>1.2.20</kotlin.version>
 		<lettuce.version>5.0.1.RELEASE</lettuce.version>
-		<liquibase.version>3.5.3</liquibase.version>
+		<liquibase.version>3.5.4</liquibase.version>
 		<log4j2.version>2.10.0</log4j2.version>
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.16.20</lombok.version>
@@ -165,7 +165,7 @@
 		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.27</tomcat.version>
+		<tomcat.version>8.5.28</tomcat.version>
 		<undertow.version>1.4.22.Final</undertow.version>
 		<unboundid-ldapsdk.version>4.0.4</unboundid-ldapsdk.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
