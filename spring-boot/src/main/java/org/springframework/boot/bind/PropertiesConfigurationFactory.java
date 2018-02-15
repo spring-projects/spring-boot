@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.support.ResourceEditorRegistrar;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.core.convert.ConversionService;
@@ -52,7 +55,7 @@ import org.springframework.validation.Validator;
  * @author Dave Syer
  */
 public class PropertiesConfigurationFactory<T>
-		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
+		implements FactoryBean<T>, ApplicationContextAware, MessageSourceAware, InitializingBean {
 
 	private static final char[] EXACT_DELIMITERS = { '_', '.', '[' };
 
@@ -72,6 +75,8 @@ public class PropertiesConfigurationFactory<T>
 	private final T target;
 
 	private Validator validator;
+
+	private ApplicationContext applicationContext;
 
 	private MessageSource messageSource;
 
@@ -147,6 +152,11 @@ public class PropertiesConfigurationFactory<T>
 	 */
 	public void setTargetName(String targetName) {
 		this.targetName = targetName;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
 	}
 
 	/**
@@ -265,6 +275,11 @@ public class PropertiesConfigurationFactory<T>
 		dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
 		customizeBinder(dataBinder);
+		if (this.applicationContext != null) {
+			ResourceEditorRegistrar resourceEditorRegistrar = new ResourceEditorRegistrar(
+					this.applicationContext, this.applicationContext.getEnvironment());
+			resourceEditorRegistrar.registerCustomEditors(dataBinder);
+		}
 		Iterable<String> relaxedTargetNames = getRelaxedTargetNames();
 		Set<String> names = getNames(relaxedTargetNames);
 		PropertyValues propertyValues = getPropertySourcesPropertyValues(names,
