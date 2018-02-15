@@ -39,6 +39,12 @@ import org.springframework.util.ReflectionUtils;
  */
 public class ConfigurationBeanFactoryMetadata implements BeanFactoryPostProcessor {
 
+	/**
+	 * The bean name that this class is registered with.
+	 */
+	public static final String BEAN_NAME = ConfigurationBeanFactoryMetadata.class
+			.getName();
+
 	private ConfigurableListableBeanFactory beanFactory;
 
 	private final Map<String, FactoryMetadata> beansFactoryMetadata = new HashMap<>();

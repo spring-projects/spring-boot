@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties;
 
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
@@ -30,23 +30,38 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *
  * @author Phillip Webb
  */
-class Jsr303ConfigurationPropertiesValidator implements Validator {
+final class ConfigurationPropertiesJsr303Validator implements Validator {
+
+	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
+			"javax.validation.ValidatorFactory",
+			"javax.validation.bootstrap.GenericBootstrap" };
 
 	private final Delegate delegate;
 
-	Jsr303ConfigurationPropertiesValidator(ApplicationContext applicationContext) {
+	private ConfigurationPropertiesJsr303Validator(
+			ApplicationContext applicationContext) {
 		this.delegate = new Delegate(applicationContext);
 	}
 
 	@Override
 	public boolean supports(Class<?> type) {
-		return AnnotatedElementUtils.hasAnnotation(type, Validated.class)
-				&& this.delegate.supports(type);
+		return this.delegate.supports(type);
 	}
 
 	@Override
 	public void validate(Object target, Errors errors) {
 		this.delegate.validate(target, errors);
+	}
+
+	public static ConfigurationPropertiesJsr303Validator getIfJsr303Present(
+			ApplicationContext applicationContext) {
+		ClassLoader classLoader = applicationContext.getClassLoader();
+		for (String validatorClass : VALIDATOR_CLASSES) {
+			if (!ClassUtils.isPresent(validatorClass, classLoader)) {
+				return null;
+			}
+		}
+		return new ConfigurationPropertiesJsr303Validator(applicationContext);
 	}
 
 	private static class Delegate extends LocalValidatorFactoryBean {

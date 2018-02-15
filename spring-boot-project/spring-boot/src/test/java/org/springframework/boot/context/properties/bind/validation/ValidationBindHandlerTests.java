@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,8 +127,8 @@ public class ValidationBindHandlerTests {
 		BindValidationException cause = bindAndExpectValidationError(
 				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
 						Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
-		assertThat(cause.getValidationErrors().getName().toString())
-				.isEqualTo("foo.nested");
+		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo");
+		assertThat(cause.getMessage()).contains("nested.age");
 	}
 
 	@Test
@@ -144,11 +144,13 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldNotValidateWithoutAnnotation() {
+	public void bindShouldValidateWithoutAnnotation() {
 		ExampleNonValidatedBean existingValue = new ExampleNonValidatedBean();
-		this.binder.bind(ConfigurationPropertyName.of("foo"), Bindable
-				.of(ExampleNonValidatedBean.class).withExistingValue(existingValue),
-				this.handler);
+		bindAndExpectValidationError(
+				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
+						Bindable.of(ExampleNonValidatedBean.class)
+								.withExistingValue(existingValue),
+						this.handler));
 	}
 
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
@@ -156,8 +158,6 @@ public class ValidationBindHandlerTests {
 			action.run();
 		}
 		catch (BindException ex) {
-			ex.printStackTrace();
-
 			BindValidationException cause = (BindValidationException) ex.getCause();
 			return cause;
 		}

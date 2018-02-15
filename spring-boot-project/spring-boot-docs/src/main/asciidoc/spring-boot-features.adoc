@@ -1213,9 +1213,13 @@ to your fields, as shown in the following example:
 	}
 ----
 
-In order to validate the values of nested properties, you must annotate the associated
-field as `@Valid` to trigger its validation. The following example builds on the
-preceding `AcmeProperties` example:
+TIP: You can also trigger validation by annotating the `@Bean` method that creates the
+configuration properties with `@Validated`.
+
+Although nested properties will also be validated when bound, it's good practice to
+also annotate the associated field as `@Valid`. This ensure that validation is triggered
+even if no nested properties are found. The following example builds on the preceding
+`AcmeProperties` example:
 
 [source,java,indent=0]
 ----
