@@ -208,3 +208,10 @@ The sample applications are used as integration tests during the build (when you
 they cannot be called directly, and so instead are launched via the
 `maven-invoker-plugin`. If you encounter build failures running the integration tests,
 check the `build.log` file in the appropriate sample directory.
+
+
+== Cloning the git repository on Windows
+Some files in the git repository may exceed the Windows maximum file path (260 characters), depending on where you clone the repository. If you get `Filename too long` errors, set the `core.longPaths=true` git option:
+```
+git clone -c core.longPaths=true https://github.com/spring-projects/spring-boot.git
+```
