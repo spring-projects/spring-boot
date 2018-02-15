@@ -15,6 +15,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :github-repo: spring-projects/spring-boot
 :github-raw: https://raw.github.com/{github-repo}/{github-tag}
 :github-code: https://github.com/{github-repo}/tree/{github-tag}
+:github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
 :github-master-code: https://github.com/{github-repo}/tree/master
 :sc-ext: java
@@ -68,6 +69,8 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :jetty-documentation: https://www.eclipse.org/jetty/documentation/9.4.x
 :micrometer-concepts-documentation: https://micrometer.io/docs/concepts
 :tomcat-documentation: https://tomcat.apache.org/tomcat-8.5-doc
+:kotlin-documentation: https://kotlinlang.org/docs/reference/
+:junit5-documentation: https://junit.org/junit5/docs/current/user-guide
 // ======================================================================================
 
 include::documentation-overview.adoc[]
