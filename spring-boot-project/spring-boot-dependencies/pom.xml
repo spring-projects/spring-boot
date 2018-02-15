@@ -903,6 +903,11 @@
 				<version>${micrometer.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-wavefront</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-bom</artifactId>
 				<version>${netty.version}</version>
