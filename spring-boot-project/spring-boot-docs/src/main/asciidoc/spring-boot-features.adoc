@@ -7533,93 +7533,91 @@ relies on another starter). If a project is created with only your custom starte
 Boot's core features will be honoured by the presence of the core starter.
 
 
-[[kotlin]]
+
+[[boot-features-kotlin]]
 == Kotlin support
-
 https://kotlinlang.org[Kotlin] is a statically-typed language targeting the JVM (and other
-platforms) which allows writing concise and elegant code while providing very good
-{kotlin-documentation}java-interop.html[interoperability] with
-existing libraries written in Java.
+platforms) which allows writing concise and elegant code while providing
+{kotlin-documentation}java-interop.html[interoperability] with existing libraries written
+in Java.
 
-As of version 2.0, Spring Boot provides Kotlin support leveraging other Spring projects
-Kotlin support like Spring Framework, Spring Data and Reactor. See the
-{spring-reference}languages.html#kotlin[Spring Framework Kotlin support] documentation
+Spring Boot provides Kotlin support by leveraging the support in other Spring projects
+such as Spring Framework, Spring Data, and Reactor. See the
+{spring-reference}languages.html#kotlin[Spring Framework Kotlin support documentation]
 for more information.
 
-The easy way to start with Spring Boot and Kotlin is to create a project via
+The easiest way to start with Spring Boot and Kotlin is to create a project via
 https://start.spring.io/#!language=kotlin[start.spring.io]. Feel free to join the #spring
 channel of http://slack.kotlinlang.org/[Kotlin Slack] or ask a question with `spring`
-and `kotlin` tags on https://stackoverflow.com/questions/tagged/spring+kotlin[Stackoverflow]
-if you need support.
+and `kotlin` tags on https://stackoverflow.com/questions/tagged/spring+kotlin[Stack
+Overflow] if you need support.
 
 
-[[kotlin-requirements]]
+
+[[boot-features-kotlin-requirements]]
 === Requirements
+Spring Boot supports Kotlin 1.2.x. To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and
+`org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath. The
+`kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
 
-Spring Boot supports Kotlin 1.2+ and requires
-https://bintray.com/bintray/jcenter/org.jetbrains.kotlin%3Akotlin-stdlib[`kotlin-stdlib`]
-(or one of its https://bintray.com/bintray/jcenter/org.jetbrains.kotlin%3Akotlin-stdlib-jdk7[`kotlin-stdlib-jdk7`]
-/ https://bintray.com/bintray/jcenter/org.jetbrains.kotlin%3Akotlin-stdlib-jdk8[`kotlin-stdlib-jdk8`] variants)
-and https://bintray.com/bintray/jcenter/org.jetbrains.kotlin%3Akotlin-reflect[`kotlin-reflect`]
-to be present on the classpath.
-
-Since https://discuss.kotlinlang.org/t/classes-final-by-default/166[classes are final by default in Kotlin],
-you are likely to want to configure
+Since https://discuss.kotlinlang.org/t/classes-final-by-default/166[Kotlin classes are
+final by default], you are likely to want to configure
 {kotlin-documentation}compiler-plugins.html#spring-support[kotlin-spring]
-plugin in order to automatically open Spring-annotated classes.
+plugin in order to automatically open Spring-annotated classes so that they can be
+proxied.
 
-https://github.com/FasterXML/jackson-module-kotlin[Jackson Kotlin module] which is required
-for serializing / deserializing JSON data is automatically registered when
-found in the classpath and a warning message will be logged if Jackson and Kotlin are
-detected without the Jackson Kotlin module present.
+https://github.com/FasterXML/jackson-module-kotlin[Jackson's Kotlin module] is required
+for serializing / deserializing JSON data in Kotlin. It is automatically registered when
+found on the classpath. A warning message is logged if Jackson and Kotlin are present but
+the Jackson Kotlin module is not.
 
-These dependencies and plugins are provided by default if one bootstraps a Kotlin project on
-https://start.spring.io/#!language=kotlin[start.spring.io].
+TIP: These dependencies and plugins are provided by default if one bootstraps a Kotlin
+project on https://start.spring.io/#!language=kotlin[start.spring.io].
 
 
-[[kotlin-null-safety]]
+
+[[boot-features-kotlin-null-safety]]
 === Null-safety
+One of Kotlin's key features is {kotlin-documentation}null-safety.html[null-safety]. It
+deals with `null` values at compile time rather than deferring the problem to runtime and
+encountering a `NullPointerException`. This helps to eliminate a common source of bugs
+without paying the cost of wrappers like `Optional`. Kotlin also allows using functional
+constructs with nullable values as described in this
+http://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
 
-One of Kotlin's key features is {kotlin-documentation}null-safety.html[null-safety]
-- which cleanly deals with `null` values at compile time rather than bumping into the
-famous `NullPointerException` at runtime. This makes applications safer through
-nullability declarations and expressing "value or no value" semantics without paying the
-cost of wrappers like `Optional`. (Kotlin allows using functional constructs with nullable
-values; check out this
-http://www.baeldung.com/kotlin-null-safety[comprehensive guide to Kotlin null-safety].)
-
-Although Java does not allow one to express null-safety in its type-system, Spring
-Framework, Spring Data and Reactor now provides null-safety of their API via
+Although Java does not allow one to express null-safety in its type system, Spring
+Framework, Spring Data, and Reactor now provide null-safety of their API via
 tooling-friendly annotations. By default, types from Java APIs used in Kotlin are
 recognized as
 {kotlin-documentation}java-interop.html#null-safety-and-platform-types[platform types]
 for which null-checks are relaxed.
-{kotlin-documentation}java-interop.html#jsr-305-support[Kotlin support for JSR 305 annotations]
-+ Spring nullability annotations provide null-safety for the related Spring API to Kotlin
-developers, with the advantage of dealing with `null` related issues at compile time.
+{kotlin-documentation}java-interop.html#jsr-305-support[Kotlin's support for JSR 305
+annotations] combined with nullability annotations provide null-safety for the related
+Spring API in Kotlin.
 
 The JSR 305 checks can be configured by adding the `-Xjsr305` compiler flag with the
-following options: `-Xjsr305={strict|warn|ignore}`. The default behavior is the same to
+following options: `-Xjsr305={strict|warn|ignore}`. The default behavior is the same as
 `-Xjsr305=warn`. The `strict` value is required to have null-safety taken in account in
 Kotlin types inferred from Spring API but should be used with the knowledge that Spring
 API nullability declaration could evolve even between minor releases and more checks may
 be added in the future).
 
-Note: Generic type arguments, varargs and array elements nullability are not supported yet,
-but should be in an upcoming release, see https://jira.spring.io/browse/SPR-15942[SPR-15942]
-for up-to-date information. Also be aware that Spring Boot own API is
-{github-issues}10712[not annotated yet].
+WARN: Generic type arguments, varargs and array elements nullability are not yet
+supported. See https://jira.spring.io/browse/SPR-15942[SPR-15942] for up-to-date
+information. Also be aware that Spring Boot's own API is {github-issues}10712[not yet
+annotated].
 
 
-[[kotlin-api]]
+
+[[boot-features-kotlin-api]]
 === Kotlin API
 
-[[kotlin-api-runapplication]]
-==== runApplication
 
-Spring Boot provides a Kotlin idiomatic way to run an application with
-`runApplication<FooApplication>(*args)` which is a drop in replacement for
-`SpringApplication.run(FooApplication::class.java, *args)`.
+
+[[boot-features-kotlin-api-runapplication]]
+==== runApplication
+Spring Boot provides an idiomatic way to run an application with
+`runApplication<FooApplication>(*args)` as shown in the following example:
 
 [source,kotlin,indent=0]
 ----
@@ -7630,35 +7628,39 @@ import org.springframework.boot.runApplication
 class FooApplication
 
 fun main(args: Array<String>) {
-    runApplication<FooApplication>(*args)
+	runApplication<FooApplication>(*args)
 }
 ----
 
-It also allows to customize the application thanks to the following syntax:
+This is a drop-in replacement for
+`SpringApplication.run(FooApplication::class.java, *args)`. It also allows customization
+of the application as shown in the following example:
 
 [source,kotlin,indent=0]
 ----
 runApplication<FooApplication>(*args) {
-   setBannerMode(OFF)
+	setBannerMode(OFF)
 }
 ----
 
-[[kotlin-api-extensions]]
-==== Extensions
 
+
+[[boot-features-kotlin-api-extensions]]
+==== Extensions
 Kotlin {kotlin-documentation}extensions.html[extensions] provide the ability
 to extend existing classes with additional functionality. The Spring Boot Kotlin API makes
-use of these extensions to add new Kotlin specific conveniences to existing Spring APIs.
+use of these extensions to add new Kotlin specific conveniences to existing APIs.
 
-`TestRestTemplate` extensions are provided similar to the `RestOperations` ones in order
-to be able to take advantage of Kotlin reified type parameters for example.
+`TestRestTemplate` extensions, similar to those provided by Spring Framework for
+`RestOperations` in Spring Framework, are provided. Among other things, the extensions
+make it possible to take advantage of Kotlin reified type parameters.
 
 
-[[kotlin-dependency-management]]
+
+[[boot-features-kotlin-dependency-management]]
 === Dependency management
-
-Dependency management of the following Kotlin dependencies is provided in order to avoid
-mixing different version of Kotlin dependencies in the classpath:
+In order to avoid mixing different version of Kotlin dependencies on the classpath,
+dependency management of the following Kotlin dependencies is provided:
 
  - `kotlin-reflect`
  - `kotlin-runtime`
@@ -7668,69 +7670,80 @@ mixing different version of Kotlin dependencies in the classpath:
  - `kotlin-stdlib-jre7`
  - `kotlin-stdlib-jre8`
 
-More dependencies should be managed {github-issues}9486[when a Kotlin BOM] will be available.
-
 With Maven, the Kotlin version can be customized via the `kotlin.version` property and
-plugin management is provided for `kotlin-maven-plugin`. With Gradle, Spring Boot plugin
-automatically defines `kotlin.version` based on the version
-specified for the Kotlin plugin.
+plugin management is provided for `kotlin-maven-plugin`. With Gradle, the Spring Boot
+plugin automatically aligns the `kotlin.version` with the version of the Kotlin plugin.
 
 
-=== @ConfigurationProperties
 
-`@ConfigurationProperties` currently only works with `lateinit` or nullable `var` properties
-(the former is recommended) since immutable classes initialized by constructors are not
-supported yet until {github-issues}8762[this issue] is fixed.
+[[boot-features-kotlin-configuration-properties]]
+=== `@ConfigurationProperties`
+`@ConfigurationProperties` currently only works with `lateinit` or nullable `var`
+properties (the former is recommended), since immutable classes initialized by
+constructors are {github-issues}8762[not yet supported].
 
 [source,kotlin,indent=0]
 ----
-@ConfigurationProperties("foo")
-class FooProperties {
+@ConfigurationProperties("example.kotlin")
+class KotlinExampleProperties {
+
 	lateinit var foo1: String
+
 	lateinit var foo2: String
+
 	lateinit val bar = Bar()
 
 	class Bar {
+
 		lateinit var bar1: String
+
 		lateinit var bar2: String
+
 	}
+
 }
 ----
 
 
-[[kotlin-testing]]
+[[boot-features-kotlin-testing]]
 === Testing
+While it is possible to use JUnit 4 (the default provided by `spring-boot-starter-test`)
+to test Kotlin code, JUnit 5 is recommended. JUnit 5 enables a test class to be
+instantiated once and reused for all of the class's tests. This makes it possible to use
+`@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for
+Kotlin.
 
-While using JUnit 4 (used by default in `spring-boot-starter-test`) is possible, JUnit 5
-enables a single instantiation of test classes which makes it possible to use `@BeforeAll`
-and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
-
-To use it, you need to exclude `junit:junit` dependency from `spring-boot-starter-test`
-and add JUnit 5 dependencies and configure Maven/Gradle plugin accordingly, see
+To use JUnit 5, exclude `junit:junit` dependency from `spring-boot-starter-test`, add
+JUnit 5 dependencies, and configure the Maven or Gradle plugin accordingly. See the
 {junit5-documentation}/#dependency-metadata-junit-jupiter-samples[JUnit 5
 documentation] for more details. You also need to
 {junit5-documentation}/#writing-tests-test-instance-lifecycle-changing-default[switch test
 instance lifecycle to "per-class"].
 
 
-[[kotlin-resources]]
+
+[[boot-features-kotlin-resources]]
 === Resources
 
+
+
+[[boot-features-kotlin-resources-further-reading]]
+==== Further reading
 * {kotlin-documentation}[Kotlin language reference]
 * http://slack.kotlinlang.org/[Kotlin Slack] (with a dedicated #spring channel)
 * https://stackoverflow.com/questions/tagged/spring+kotlin[Stackoverflow with `spring` and `kotlin` tags]
 * https://try.kotlinlang.org/[Try Kotlin in your browser]
 * https://blog.jetbrains.com/kotlin/[Kotlin blog]
 * https://kotlin.link/[Awesome Kotlin]
-
-=== Blog posts
-
 * https://spring.io/blog/2016/02/15/developing-spring-boot-applications-with-kotlin[Developing Spring Boot applications with Kotlin]
 * https://spring.io/blog/2016/03/20/a-geospatial-messenger-with-kotlin-spring-boot-and-postgresql[A Geospatial Messenger with Kotlin, Spring Boot and PostgreSQL]
 * https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0[Introducing Kotlin support in Spring Framework 5.0]
 * https://spring.io/blog/2017/08/01/spring-framework-5-kotlin-apis-the-functional-way[Spring Framework 5 Kotlin APIs, the functional way]
 
-=== Examples
+
+
+[[boot-features-kotlin-resources-examples]]
+==== Examples
 
 * https://github.com/sdeleuze/spring-boot-kotlin-demo[spring-boot-kotlin-demo]: regular Spring Boot + Spring Data JPA project
 * https://github.com/mixitconf/mixit[mixit]: Spring Boot 2 + WebFlux + Reactive Spring Data MongoDB
