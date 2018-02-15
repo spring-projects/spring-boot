@@ -105,9 +105,9 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
-		ServletContextInitializerBeans Initializers = new ServletContextInitializerBeans(
+		ServletContextInitializerBeans initializers = new ServletContextInitializerBeans(
 				this.context);
-		for (ServletContextInitializer initializer : Initializers) {
+		for (ServletContextInitializer initializer : initializers) {
 			if (initializer instanceof FilterRegistrationBean) {
 				addFilter(builder, (FilterRegistrationBean<?>) initializer);
 			}

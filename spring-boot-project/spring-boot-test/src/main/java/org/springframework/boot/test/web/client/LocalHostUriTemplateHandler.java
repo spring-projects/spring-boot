@@ -38,7 +38,7 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
 	private final String scheme;
 
-	private final String prefix = "server.servlet.";
+	private static final String PREFIX = "server.servlet.";
 
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate {@code http}
@@ -68,7 +68,7 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	@Override
 	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
-		String contextPath = this.environment.getProperty(this.prefix + "context-path",
+		String contextPath = this.environment.getProperty(PREFIX + "context-path",
 				"");
 		return this.scheme + "://localhost:" + port + contextPath;
 	}

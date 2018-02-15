@@ -33,7 +33,7 @@ class Tree extends ReflectionWrapper {
 	private final Method acceptMethod = findMethod("accept", this.treeVisitorType,
 			Object.class);
 
-	private final Method GET_CLASS_TREE_MEMBERS = findMethod(
+	private final Method getClassTreeMembers = findMethod(
 			findClass("com.sun.source.tree.ClassTree"), "getMembers");
 
 	Tree(Object instance) {
@@ -65,7 +65,7 @@ class Tree extends ReflectionWrapper {
 				throws Throwable {
 			if (method.getName().equals("visitClass")) {
 				if ((Integer) args[1] == 0) {
-					Iterable members = (Iterable) Tree.this.GET_CLASS_TREE_MEMBERS
+					Iterable members = (Iterable) Tree.this.getClassTreeMembers
 							.invoke(args[0]);
 					for (Object member : members) {
 						if (member != null) {
