@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class SimplMetricsExportAutoConfigurationTests {
+public class SimpleMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner()
 			.withConfiguration(

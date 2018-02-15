@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx;
 import java.util.Map;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.influx.InfluxMeterRegistry;
 import io.micrometer.signalfx.SignalFxConfig;
 import io.micrometer.signalfx.SignalFxMeterRegistry;
 import org.junit.Test;
@@ -50,7 +49,7 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 	@Test
 	public void backsOffWithoutAClock() {
 		this.runner.run((context) -> assertThat(context)
-				.doesNotHaveBean(InfluxMeterRegistry.class));
+				.doesNotHaveBean(SignalFxMeterRegistry.class));
 	}
 
 	@Test

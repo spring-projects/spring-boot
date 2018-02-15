@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 import java.util.Map;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.influx.InfluxMeterRegistry;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import org.junit.Test;
@@ -51,7 +50,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	@Test
 	public void backsOffWithoutAClock() {
 		this.runner.run((context) -> assertThat(context)
-				.doesNotHaveBean(InfluxMeterRegistry.class));
+				.doesNotHaveBean(NewRelicMeterRegistry.class));
 	}
 
 	@Test
