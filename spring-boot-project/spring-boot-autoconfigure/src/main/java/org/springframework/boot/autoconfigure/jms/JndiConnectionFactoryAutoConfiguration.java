@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
 public class JndiConnectionFactoryAutoConfiguration {
 
 	// Keep these in sync with the condition below
-	private static String[] JNDI_LOCATIONS = { "java:/JmsXA",
+	private static final String[] JNDI_LOCATIONS = { "java:/JmsXA",
 			"java:/XAConnectionFactory" };
 
 	private final JmsProperties properties;
