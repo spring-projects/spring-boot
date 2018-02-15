@@ -165,7 +165,6 @@ content into your application. Rather, pick only the properties that you need.
 	server.compression.mime-types=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript # Comma-separated list of MIME types that should be compressed.
 	server.compression.min-response-size=2048 # Minimum response size that is required for compression to be performed.
 	server.connection-timeout= # Time that connectors wait for another HTTP request before closing the connection. When not set, the connector's container-specific default is used. Use a value of -1 to indicate no (that is, an infinite) timeout.
-	server.display-name=application # Display name of the application.
 	server.error.include-exception=false # Include the "exception" attribute.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
@@ -192,6 +191,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.use-forward-headers= # Whether X-Forwarded-* headers should be applied to the HttpRequest.
 	server.servlet.context-parameters.*= # Servlet context init parameters
 	server.servlet.context-path= # Context path of the application.
+	server.servlet.application-display-name=application # Display name of the application.
 	server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
 	server.servlet.jsp.init-parameters.*= # Init parameters used to configure the JSP servlet.
 	server.servlet.jsp.registered=true # Whether the JSP servlet is registered.

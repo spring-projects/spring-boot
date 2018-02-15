@@ -978,6 +978,16 @@
       }
     },
     {
+      "name" : "server.display-name",
+      "type" : "java.lang.String",
+      "description" : "Display name of the application.",
+      "defaultValue" : "application",
+      "deprecation" : {
+        "replacement" : "server.servlet.application-display-name",
+        "level" : "error"
+      }
+    },
+    {
       "name": "server.jsp-servlet.class-name",
       "type": "java.lang.String",
       "deprecation": {

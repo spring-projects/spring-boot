@@ -68,11 +68,6 @@ public class ServerProperties {
 	 */
 	private InetAddress address;
 
-	/**
-	 * Display name of the application.
-	 */
-	private String displayName = "application";
-
 	@NestedConfigurationProperty
 	private final ErrorProperties error = new ErrorProperties();
 
@@ -129,14 +124,6 @@ public class ServerProperties {
 
 	public void setAddress(InetAddress address) {
 		this.address = address;
-	}
-
-	public String getDisplayName() {
-		return this.displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public Boolean isUseForwardHeaders() {
@@ -223,6 +210,11 @@ public class ServerProperties {
 		private String contextPath;
 
 		/**
+		 * Display name of the application.
+		 */
+		private String applicationDisplayName = "application";
+
+		/**
 		 * Path of the main dispatcher servlet.
 		 */
 		private String path = "/";
@@ -246,6 +238,14 @@ public class ServerProperties {
 				return contextPath.substring(0, contextPath.length() - 1);
 			}
 			return contextPath;
+		}
+
+		public String getApplicationDisplayName() {
+			return this.applicationDisplayName;
+		}
+
+		public void setApplicationDisplayName(String displayName) {
+			this.applicationDisplayName = displayName;
 		}
 
 		public String getPath() {

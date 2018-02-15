@@ -216,7 +216,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	public void testCustomizeDisplayName() {
 		ConfigurableServletWebServerFactory factory = mock(
 				ConfigurableServletWebServerFactory.class);
-		this.properties.setDisplayName("TestName");
+		this.properties.getServlet().setApplicationDisplayName("TestName");
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("TestName");
 	}
@@ -281,7 +281,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 	@Test
 	public void customizeTomcatDisplayName() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.display-name", "MyBootApp");
+		map.put("server.servlet.application-display-name", "MyBootApp");
 		bindProperties(map);
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 		this.customizer.customize(factory);

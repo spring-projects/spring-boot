@@ -74,7 +74,7 @@ public class DefaultServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getAddress).to(factory::setAddress);
 		map.from(this.serverProperties.getServlet()::getContextPath)
 				.to(factory::setContextPath);
-		map.from(this.serverProperties::getDisplayName).to(factory::setDisplayName);
+		map.from(this.serverProperties.getServlet()::getApplicationDisplayName).to(factory::setDisplayName);
 		map.from(this.serverProperties.getServlet()::getSession).to(factory::setSession);
 		map.from(this.serverProperties::getSsl).to(factory::setSsl);
 		map.from(this.serverProperties::getServlet).as(ServerProperties.Servlet::getJsp)
