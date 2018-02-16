@@ -78,6 +78,8 @@
         name="org.eclipse.wst.web_ui.feature.feature.group"/>
     <requirement
         name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
+    <requirement
+        name="org.springframework.ide.eclipse.boot.feature.feature.group"/>
     <repository
         url="http://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
     <repository
@@ -90,6 +92,8 @@
         url="http://download.eclipse.org/egit/github/updates/"/>
     <repository
         url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
+    <repository
+        url="http://dist.springsource.com/release/TOOLS/update/e4.7"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
