@@ -62,10 +62,4 @@ public class SignalFxMetricsExportAutoConfiguration {
 		return new SignalFxMeterRegistry(config, clock);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
-		return Clock.SYSTEM;
-	}
-
 }
