@@ -140,9 +140,13 @@ public class DispatcherServletsMappingDescriptionProvider
 
 		private DispatcherServletMappingDescription describe(
 				Entry<RequestMappingInfo, HandlerMethod> mapping) {
+			DispatcherServletMappingDetails mappingDetails = new DispatcherServletMappingDetails();
+			mappingDetails
+					.setHandlerMethod(new HandlerMethodDescription(mapping.getValue()));
+			mappingDetails.setRequestMappingConditions(
+					new RequestMappingConditionsDescription(mapping.getKey()));
 			return new DispatcherServletMappingDescription(mapping.getKey().toString(),
-					mapping.getValue().toString(), new DispatcherServletMappingDetails(
-							new HandlerMethodDescription(mapping.getValue())));
+					mapping.getValue().toString(), mappingDetails);
 		}
 
 	}

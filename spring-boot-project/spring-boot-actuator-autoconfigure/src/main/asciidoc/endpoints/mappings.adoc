@@ -40,7 +40,7 @@ When using Spring MVC, the response contains details of any `DispatcherServlet`
 request mappings beneath `contexts.*.mappings.dispatcherServlets`. The following
 table describes the structure of this section of the response:
 
-[cols="3,1,3"]
+[cols="4,1,2"]
 include::{snippets}mappings/response-fields-dispatcher-servlets.adoc[]
 
 
@@ -76,5 +76,5 @@ When using Spring WebFlux, the response contains details of any `DispatcherHandl
 request mappings beneath `contexts.*.mappings.dispatcherHandlers`. The following
 table describes the structure of this section of the response:
 
-[cols="3,1,3"]
+[cols="4,1,2"]
 include::{snippets}mappings/response-fields-dispatcher-handlers.adoc[]

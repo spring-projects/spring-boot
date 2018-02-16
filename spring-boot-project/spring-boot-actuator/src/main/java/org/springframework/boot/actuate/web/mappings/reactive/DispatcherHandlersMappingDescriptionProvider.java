@@ -125,6 +125,8 @@ public class DispatcherHandlersMappingDescriptionProvider
 			DispatcherHandlerMappingDetails handlerMapping = new DispatcherHandlerMappingDetails();
 			handlerMapping
 					.setHandlerMethod(new HandlerMethodDescription(mapping.getValue()));
+			handlerMapping.setRequestMappingConditions(
+					new RequestMappingConditionsDescription(mapping.getKey()));
 			return new DispatcherHandlerMappingDescription(mapping.getKey().toString(),
 					mapping.getValue().toString(), handlerMapping);
 		}

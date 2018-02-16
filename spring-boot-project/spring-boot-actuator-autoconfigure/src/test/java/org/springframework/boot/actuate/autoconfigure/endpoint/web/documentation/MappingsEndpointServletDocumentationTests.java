@@ -16,7 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,11 +39,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -91,39 +98,75 @@ public class MappingsEndpointServletDocumentationTests
 						.description("Dispatcher handler mappings, if any.").optional()
 						.type(JsonFieldType.OBJECT),
 				parentIdField());
+		List<FieldDescriptor> dispatcherServletFields = new ArrayList<>(Arrays.asList(
+				fieldWithPath("*")
+						.description("Dispatcher servlet mappings, if any, keyed by "
+								+ "dispatcher servlet bean name."),
+				fieldWithPath("*.[].details").optional().type(JsonFieldType.OBJECT)
+						.description("Additional implementation-specific "
+								+ "details about the mapping. Optional."),
+				fieldWithPath("*.[].handler").description("Handler for the mapping."),
+				fieldWithPath("*.[].predicate")
+						.description("Predicate for the mapping.")));
+		List<FieldDescriptor> requestMappingConditions = Arrays.asList(
+				requestMappingConditionField("")
+						.description("Details of the request mapping conditions.")
+						.optional(),
+				requestMappingConditionField(".consumes")
+						.description("Details of the consumes condition"),
+				requestMappingConditionField(".consumes.[].mediaType")
+						.description("Consumed media type."),
+				requestMappingConditionField(".consumes.[].negated")
+						.description("Whether the media type is negated."),
+				requestMappingConditionField(".headers")
+						.description("Details of the headers condition."),
+				requestMappingConditionField(".headers.[].name")
+						.description("Name of the header."),
+				requestMappingConditionField(".headers.[].value")
+						.description("Required value of the header, if any."),
+				requestMappingConditionField(".headers.[].negated")
+						.description("Whether the value is negated."),
+				requestMappingConditionField(".methods")
+						.description("HTTP methods that are handled."),
+				requestMappingConditionField(".params")
+						.description("Details of the params condition."),
+				requestMappingConditionField(".params.[].name")
+						.description("Name of the parameter."),
+				requestMappingConditionField(".params.[].value")
+						.description("Required value of the parameter, if any."),
+				requestMappingConditionField(".params.[].negated")
+						.description("Whether the value is negated."),
+				requestMappingConditionField(".patterns").description(
+						"Patterns identifying the paths handled by the mapping."),
+				requestMappingConditionField(".produces")
+						.description("Details of the produces condition."),
+				requestMappingConditionField(".produces.[].mediaType")
+						.description("Produced media type."),
+				requestMappingConditionField(".produces.[].negated")
+						.description("Whether the media type is negated."));
+		List<FieldDescriptor> handlerMethod = Arrays.asList(
+				fieldWithPath("*.[].details.handlerMethod").optional()
+						.type(JsonFieldType.OBJECT)
+						.description("Details of the method, if any, "
+								+ "that will handle requests to this mapping."),
+				fieldWithPath("*.[].details.handlerMethod.className")
+						.type(JsonFieldType.STRING)
+						.description("Fully qualified name of the class of the method."),
+				fieldWithPath("*.[].details.handlerMethod.name")
+						.type(JsonFieldType.STRING).description("Name of the method."),
+				fieldWithPath("*.[].details.handlerMethod.descriptor")
+						.type(JsonFieldType.STRING)
+						.description("Descriptor of the method as specified in the Java "
+								+ "Language Specification."));
+		dispatcherServletFields.addAll(handlerMethod);
+		dispatcherServletFields.addAll(requestMappingConditions);
 		this.client.get().uri("/actuator/mappings").exchange().expectBody()
-				.consumeWith(document("mappings", commonResponseFields,
-						responseFields(
-								beneathPath("contexts.*.mappings.dispatcherServlets")
+				.consumeWith(document(
+						"mappings", commonResponseFields,
+						responseFields(beneathPath(
+								"contexts.*.mappings.dispatcherServlets")
 										.withSubsectionId("dispatcher-servlets"),
-								fieldWithPath("*").description(
-										"Dispatcher servlet mappings, if any, keyed by "
-												+ "dispatcher servlet bean name."),
-								fieldWithPath("*.[].handler")
-										.description("Handler for the mapping."),
-								fieldWithPath("*.[].predicate")
-										.description("Predicate for the mapping."),
-								fieldWithPath("*.[].details").optional()
-										.type(JsonFieldType.OBJECT)
-										.description("Additional implementation-specific "
-												+ "details about the mapping. Optional."),
-								fieldWithPath("*.[].details.handlerMethod").optional()
-										.type(JsonFieldType.OBJECT)
-										.description("Details of the method, if any, "
-												+ "that will handle requests to "
-												+ "this mapping."),
-								fieldWithPath("*.[].details.handlerMethod.className")
-										.type(JsonFieldType.STRING)
-										.description("Fully qualified name of the class"
-												+ " of the method."),
-								fieldWithPath("*.[].details.handlerMethod.name")
-										.type(JsonFieldType.STRING)
-										.description("Name of the method."),
-								fieldWithPath("*.[].details.handlerMethod.descriptor")
-										.type(JsonFieldType.STRING)
-										.description("Descriptor of the method as "
-												+ "specified in the Java Language "
-												+ "Specification.")),
+								dispatcherServletFields),
 						responseFields(
 								beneathPath("contexts.*.mappings.servletFilters")
 										.withSubsectionId("servlet-filters"),
@@ -144,6 +187,10 @@ public class MappingsEndpointServletDocumentationTests
 										.description("Name of the servlet."),
 								fieldWithPath("[].className")
 										.description("Class name of the servlet"))));
+	}
+
+	private FieldDescriptor requestMappingConditionField(String path) {
+		return fieldWithPath("*.[].details.requestMappingConditions" + path);
 	}
 
 	@Configuration
@@ -175,6 +222,22 @@ public class MappingsEndpointServletDocumentationTests
 				Collection<MappingDescriptionProvider> descriptionProviders,
 				ConfigurableApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
+		}
+
+		@Bean
+		public ExampleController exampleController() {
+			return new ExampleController();
+		}
+
+	}
+
+	@RestController
+	private static class ExampleController {
+
+		@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE,
+				"!application/xml" }, produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
+		public String example() {
+			return "Hello World";
 		}
 
 	}

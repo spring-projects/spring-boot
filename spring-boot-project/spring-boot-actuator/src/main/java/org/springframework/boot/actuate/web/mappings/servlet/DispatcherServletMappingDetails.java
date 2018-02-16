@@ -27,14 +27,25 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 public class DispatcherServletMappingDetails {
 
-	private final HandlerMethodDescription handlerMethod;
+	private HandlerMethodDescription handlerMethod;
 
-	DispatcherServletMappingDetails(HandlerMethodDescription handlerMethod) {
-		this.handlerMethod = handlerMethod;
-	}
+	private RequestMappingConditionsDescription requestMappingConditions;
 
 	public HandlerMethodDescription getHandlerMethod() {
 		return this.handlerMethod;
+	}
+
+	void setHandlerMethod(HandlerMethodDescription handlerMethod) {
+		this.handlerMethod = handlerMethod;
+	}
+
+	public RequestMappingConditionsDescription getRequestMappingConditions() {
+		return this.requestMappingConditions;
+	}
+
+	void setRequestMappingConditions(
+			RequestMappingConditionsDescription requestMappingConditions) {
+		this.requestMappingConditions = requestMappingConditions;
 	}
 
 }
