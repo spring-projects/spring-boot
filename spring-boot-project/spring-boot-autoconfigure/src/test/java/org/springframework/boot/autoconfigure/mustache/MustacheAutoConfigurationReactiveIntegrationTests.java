@@ -27,7 +27,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -72,7 +72,7 @@ public class MustacheAutoConfigurationReactiveIntegrationTests {
 	}
 
 	@Configuration
-	@Import({ ReactiveWebServerAutoConfiguration.class, WebFluxAutoConfiguration.class,
+	@Import({ ReactiveWebServerFactoryAutoConfiguration.class, WebFluxAutoConfiguration.class,
 			HttpHandlerAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	@Controller

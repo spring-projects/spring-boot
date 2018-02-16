@@ -24,7 +24,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -95,7 +95,7 @@ public class TomcatMetricsAutoConfigurationTests {
 				AnnotationConfigReactiveWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(
 								TomcatMetricsAutoConfiguration.class,
-								ReactiveWebServerAutoConfiguration.class))
+								ReactiveWebServerFactoryAutoConfiguration.class))
 						.withUserConfiguration(ReactiveWebServerConfiguration.class)
 						.run((context) -> {
 							assertThat(context).hasSingleBean(TomcatMetrics.class);

@@ -36,11 +36,11 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Brian Clozel
  */
-abstract class ReactiveWebServerConfiguration {
+abstract class ReactiveWebServerFactoryConfiguration {
 
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ HttpServer.class })
-	static class ReactorNettyAutoConfiguration {
+	static class ReactorNettyConfiguration {
 
 		@Bean
 		public NettyReactiveWebServerFactory NettyReactiveWebServerFactory() {
@@ -51,7 +51,7 @@ abstract class ReactiveWebServerConfiguration {
 
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ org.apache.catalina.startup.Tomcat.class })
-	static class TomcatAutoConfiguration {
+	static class TomcatConfiguration {
 
 		@Bean
 		public TomcatReactiveWebServerFactory tomcatReactiveWebServerFactory() {
@@ -62,7 +62,7 @@ abstract class ReactiveWebServerConfiguration {
 
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ org.eclipse.jetty.server.Server.class })
-	static class JettyAutoConfiguration {
+	static class JettyConfiguration {
 
 		@Bean
 		public JettyReactiveWebServerFactory jettyReactiveWebServerFactory() {
@@ -73,7 +73,7 @@ abstract class ReactiveWebServerConfiguration {
 
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)
 	@ConditionalOnClass({ Undertow.class })
-	static class UndertowAutoConfiguration {
+	static class UndertowConfiguration {
 
 		@Bean
 		public UndertowReactiveWebServerFactory undertowReactiveWebServerFactory() {

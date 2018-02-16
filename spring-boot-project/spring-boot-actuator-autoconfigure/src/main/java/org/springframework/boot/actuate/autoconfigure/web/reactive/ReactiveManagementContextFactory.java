@@ -24,7 +24,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -44,7 +44,7 @@ class ReactiveManagementContextFactory implements ManagementContextFactory {
 		AnnotationConfigReactiveWebServerApplicationContext child = new AnnotationConfigReactiveWebServerApplicationContext();
 		child.setParent(parent);
 		Class<?>[] combinedClasses = ObjectUtils.addObjectToArray(configClasses,
-				ReactiveWebServerAutoConfiguration.class);
+				ReactiveWebServerFactoryAutoConfiguration.class);
 		child.register(combinedClasses);
 		registerReactiveWebServerFactory(parent, child);
 		return child;

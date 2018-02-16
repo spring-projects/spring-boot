@@ -86,7 +86,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
-@AutoConfigureAfter({ ReactiveWebServerAutoConfiguration.class,
+@AutoConfigureAfter({ ReactiveWebServerFactoryAutoConfiguration.class,
 		CodecsAutoConfiguration.class, ValidationAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {

@@ -35,11 +35,11 @@ import org.springframework.http.server.reactive.HttpHandler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ReactiveWebServerAutoConfiguration}.
+ * Tests for {@link ReactiveWebServerFactoryAutoConfiguration}.
  *
  * @author Brian Clozel
  */
-public class ReactiveWebServerAutoConfigurationTests {
+public class ReactiveWebServerFactoryAutoConfigurationTests {
 
 	private AnnotationConfigReactiveWebServerApplicationContext context;
 
@@ -87,7 +87,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 
 	@Configuration
 	@Import({ MockWebServerAutoConfiguration.class,
-			ReactiveWebServerAutoConfiguration.class })
+			ReactiveWebServerFactoryAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 		@Bean
@@ -99,7 +99,7 @@ public class ReactiveWebServerAutoConfigurationTests {
 
 	@Configuration
 	@Import({ MockWebServerAutoConfiguration.class,
-			ReactiveWebServerAutoConfiguration.class })
+			ReactiveWebServerFactoryAutoConfiguration.class })
 	protected static class MissingHttpHandlerConfiguration {
 
 	}
