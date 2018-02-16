@@ -26,7 +26,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class WavefrontPropertiesConfigAdapter extends PropertiesConfigAdapter<WavefrontProperties> implements WavefrontConfig {
+public class WavefrontPropertiesConfigAdapter
+		extends PropertiesConfigAdapter<WavefrontProperties> implements WavefrontConfig {
 
 	public WavefrontPropertiesConfigAdapter(WavefrontProperties properties) {
 		super(properties);
@@ -39,7 +40,7 @@ public class WavefrontPropertiesConfigAdapter extends PropertiesConfigAdapter<Wa
 
 	@Override
 	public String uri() {
-		return get(WavefrontProperties::getUri, WavefrontConfig.DEFAULT_DIRECT::uri);
+		return get(this::getUriAsString, WavefrontConfig.DEFAULT_DIRECT::uri);
 	}
 
 	@Override
@@ -54,6 +55,12 @@ public class WavefrontPropertiesConfigAdapter extends PropertiesConfigAdapter<Wa
 
 	@Override
 	public String globalPrefix() {
-		return get(WavefrontProperties::getGlobalPrefix, WavefrontConfig.super::globalPrefix);
+		return get(WavefrontProperties::getGlobalPrefix,
+				WavefrontConfig.super::globalPrefix);
 	}
+
+	private String getUriAsString(WavefrontProperties properties) {
+		return properties.getUri() == null ? null : properties.getUri().toString();
+	}
+
 }

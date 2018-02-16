@@ -33,7 +33,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Wavefront.
  *
@@ -57,7 +56,9 @@ public class WavefrontMetricsExportAutoConfiguration {
 
 	@Bean(destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig config, Clock clock) {
+	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig config,
+			Clock clock) {
 		return new WavefrontMeterRegistry(config, clock);
 	}
+
 }

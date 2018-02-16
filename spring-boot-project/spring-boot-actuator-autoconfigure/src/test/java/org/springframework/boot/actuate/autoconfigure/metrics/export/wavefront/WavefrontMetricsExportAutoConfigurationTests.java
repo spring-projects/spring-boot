@@ -53,10 +53,15 @@ public class WavefrontMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	public void failsWithoutAnApiTokenWhenPublishingDirectly() {
+		this.runner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasFailed());
+	}
+
+	@Test
 	public void autoConfigurationCanBeDisabled() {
 		this.runner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues(
-						"management.metrics.export.wavefront.enabled=false")
+				.withPropertyValues("management.metrics.export.wavefront.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(WavefrontMeterRegistry.class)
 						.doesNotHaveBean(WavefrontConfig.class));
@@ -64,8 +69,7 @@ public class WavefrontMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsConfigToBeCustomized() {
-		this.runner
-				.withUserConfiguration(CustomConfigConfiguration.class)
+		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
 						.hasSingleBean(WavefrontMeterRegistry.class)
 						.hasSingleBean(WavefrontConfig.class).hasBean("customConfig"));
@@ -73,10 +77,8 @@ public class WavefrontMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsRegistryToBeCustomized() {
-		this.runner
-				.withUserConfiguration(CustomRegistryConfiguration.class)
-				.withPropertyValues(
-						"management.metrics.export.wavefront.api-token=abcde")
+		this.runner.withUserConfiguration(CustomRegistryConfiguration.class)
+				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde")
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
 						.hasSingleBean(WavefrontConfig.class)
 						.hasSingleBean(WavefrontMeterRegistry.class)
@@ -85,10 +87,8 @@ public class WavefrontMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.runner
-				.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues(
-						"management.metrics.export.wavefront.api-token=abcde")
+		this.runner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde")
 				.run((context) -> {
 					WavefrontMeterRegistry registry = spyOnDisposableBean(
 							WavefrontMeterRegistry.class, context);
@@ -115,7 +115,7 @@ public class WavefrontMetricsExportAutoConfigurationTests {
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock customClock() {
+		public Clock clock() {
 			return Clock.SYSTEM;
 		}
 
@@ -147,7 +147,8 @@ public class WavefrontMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean(destroyMethod = "stop")
-		public WavefrontMeterRegistry customRegistry(WavefrontConfig config, Clock clock) {
+		public WavefrontMeterRegistry customRegistry(WavefrontConfig config,
+				Clock clock) {
 			return new WavefrontMeterRegistry(config, clock);
 		}
 
