@@ -91,6 +91,10 @@
 				</exclusion>
 				<exclusion>
 					<groupId>org.glassfish.hk2.external</groupId>
+					<artifactId>bean-validator</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish.hk2.external</groupId>
 					<artifactId>javax.inject</artifactId>
 				</exclusion>
 				<exclusion>
