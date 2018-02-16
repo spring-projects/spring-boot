@@ -56,7 +56,7 @@ class DatadogPropertiesConfigAdapter extends
 
 	@Override
 	public boolean descriptions() {
-		return get(DatadogProperties::getDescriptions, DatadogConfig.super::descriptions);
+		return get(DatadogProperties::isDescriptions, DatadogConfig.super::descriptions);
 	}
 
 }

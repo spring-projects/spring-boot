@@ -14,33 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
-import java.time.Duration;
+import io.micrometer.core.instrument.simple.SimpleConfig;
+import org.junit.Test;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * {@link ConfigurationProperties} for configuring JMX metrics export.
  *
- * @author Jon Schneider
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.jmx")
-public class JmxProperties {
+public class SimplePropertiesTests {
 
-	/**
-	 * Step size (i.e. reporting frequency) to use.
-	 */
-	private Duration step = Duration.ofMinutes(1);
-
-	public Duration getStep() {
-		return this.step;
-	}
-
-	public void setStep(Duration step) {
-		this.step = step;
+	@Test
+	public void defaultValuesAreConsistent() {
+		SimpleProperties properties = new SimpleProperties();
+		SimpleConfig config = SimpleConfig.DEFAULT;
+		assertThat(properties.getStep()).isEqualTo(config.step());
+		assertThat(properties.getMode()).isEqualTo(config.mode());
 	}
 
 }

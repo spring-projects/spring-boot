@@ -216,10 +216,62 @@
       "defaultValue": true
     },
     {
+      "name": "management.metrics.export.jmx.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether exporting of metrics to JMX is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.ganglia.addressing-mode",
+      "defaultValue": "multicast"
+    },
+    {
+      "name": "management.metrics.export.ganglia.duration-units",
+      "defaultValue": "milliseconds"
+    },
+    {
+      "name": "management.metrics.export.ganglia.rate-units",
+      "defaultValue": "seconds"
+    },
+    {
+      "name": "management.metrics.export.graphite.duration-units",
+      "defaultValue": "milliseconds"
+    },
+    {
+      "name": "management.metrics.export.graphite.protocol",
+      "defaultValue": "pickled"
+    },
+    {
+      "name": "management.metrics.export.graphite.rate-units",
+      "defaultValue": "seconds"
+    },
+    {
+      "name": "management.metrics.export.influx.consistency",
+      "defaultValue": "one"
+    },
+    {
+      "name": "management.metrics.export.prometheus.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether exporting of metrics to Prometheus is enabled.",
+      "defaultValue": true
+    },
+    {
       "name": "management.metrics.export.simple.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.",
       "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.simple.mode",
+      "defaultValue": "cumulative"
+    },
+    {
+      "name": "management.metrics.export.statsd.flavor",
+      "defaultValue": "datadog"
+    },
+    {
+      "name": "management.metrics.export.statsd.queue-size",
+      "defaultValue": 2147483647
     },
     {
       "name": "management.trace.http.enabled",

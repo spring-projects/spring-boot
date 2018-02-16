@@ -52,7 +52,7 @@ public abstract class StepRegistryPropertiesConfigAdapter<T extends StepRegistry
 
 	@Override
 	public boolean enabled() {
-		return get(T::getEnabled, StepRegistryConfig.super::enabled);
+		return get(T::isEnabled, StepRegistryConfig.super::enabled);
 	}
 
 	@Override

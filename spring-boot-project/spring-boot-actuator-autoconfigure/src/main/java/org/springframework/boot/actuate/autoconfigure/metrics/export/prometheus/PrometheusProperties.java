@@ -24,40 +24,28 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for configuring metrics export to Prometheus.
  *
  * @author Jon Schneider
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.prometheus")
 public class PrometheusProperties {
 
 	/**
-	 * Whether exporting of metrics to this backend is enabled.
+	 * Whether to enable publishing descriptions as part of the scrape payload to
+	 * Prometheus. Turn this off to minimize the amount of data sent on each scrape.
 	 */
-	private Boolean enabled;
-
-	/**
-	 * Enable publishing descriptions as part of the scrape payload to Prometheus. Turn
-	 * this off to minimize the amount of data sent on each scrape.
-	 */
-	private Boolean descriptions;
+	private boolean descriptions = true;
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
-	private Duration step;
+	private Duration step = Duration.ofMinutes(1);
 
-	public Boolean getEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public Boolean getDescriptions() {
+	public boolean isDescriptions() {
 		return this.descriptions;
 	}
 
-	public void setDescriptions(Boolean descriptions) {
+	public void setDescriptions(boolean descriptions) {
 		this.descriptions = descriptions;
 	}
 

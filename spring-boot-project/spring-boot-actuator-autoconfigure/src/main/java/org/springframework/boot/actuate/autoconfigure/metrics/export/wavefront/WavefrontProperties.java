@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import java.net.URI;
+import java.time.Duration;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,9 +32,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class WavefrontProperties extends StepRegistryProperties {
 
 	/**
+	 * Step size (i.e. reporting frequency) to use.
+	 */
+	private Duration step = Duration.ofSeconds(10);
+
+	/**
 	 * URI to ship metrics to.
 	 */
-	private URI uri;
+	private URI uri = URI.create("https://longboard.wavefront.com");
 
 	/**
 	 * Unique identifier for the app instance that is the source of metrics being
@@ -59,6 +65,16 @@ public class WavefrontProperties extends StepRegistryProperties {
 
 	public void setUri(URI uri) {
 		this.uri = uri;
+	}
+
+	@Override
+	public Duration getStep() {
+		return this.step;
+	}
+
+	@Override
+	public void setStep(Duration step) {
+		this.step = step;
 	}
 
 	public String getSource() {

@@ -24,6 +24,7 @@ import java.time.Duration;
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public abstract class StepRegistryProperties {
@@ -36,28 +37,28 @@ public abstract class StepRegistryProperties {
 	/**
 	 * Whether exporting of metrics to this backend is enabled.
 	 */
-	private Boolean enabled;
+	private boolean enabled = true;
 
 	/**
 	 * Connection timeout for requests to this backend.
 	 */
-	private Duration connectTimeout;
+	private Duration connectTimeout = Duration.ofSeconds(1);
 
 	/**
 	 * Read timeout for requests to this backend.
 	 */
-	private Duration readTimeout;
+	private Duration readTimeout = Duration.ofSeconds(10);
 
 	/**
 	 * Number of threads to use with the metrics publishing scheduler.
 	 */
-	private Integer numThreads;
+	private Integer numThreads = 2;
 
 	/**
 	 * Number of measurements per request to use for this backend. If more measurements
 	 * are found, then multiple requests will be made.
 	 */
-	private Integer batchSize;
+	private Integer batchSize = 10000;
 
 	public Duration getStep() {
 		return this.step;
@@ -67,11 +68,11 @@ public abstract class StepRegistryProperties {
 		this.step = step;
 	}
 
-	public Boolean getEnabled() {
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 

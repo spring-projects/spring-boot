@@ -27,61 +27,63 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for configuring Ganglia metrics export.
  *
  * @author Jon Schneider
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.ganglia")
 public class GangliaProperties {
 
 	/**
-	 * Whether exporting of metrics to this backend is enabled.
+	 * Whether exporting of metrics to Ganglia is enabled.
 	 */
-	private Boolean enabled;
+	private boolean enabled = true;
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
-	private Duration step;
+	private Duration step = Duration.ofMinutes(1);
 
 	/**
 	 * Base time unit used to report rates.
 	 */
-	private TimeUnit rateUnits;
+	private TimeUnit rateUnits = TimeUnit.SECONDS;
 
 	/**
 	 * Base time unit used to report durations.
 	 */
-	private TimeUnit durationUnits;
+	private TimeUnit durationUnits = TimeUnit.MILLISECONDS;
 
 	/**
 	 * Ganglia protocol version. Must be either 3.1 or 3.0.
 	 */
-	private String protocolVersion;
+	private String protocolVersion = "3.1";
 
 	/**
 	 * UDP addressing mode, either unicast or multicast.
 	 */
-	private GMetric.UDPAddressingMode addressingMode;
+	private GMetric.UDPAddressingMode addressingMode = GMetric.UDPAddressingMode.MULTICAST;
 
 	/**
-	 * Time to live for metrics on Ganglia.
+	 * Time to live for metrics on Ganglia. Set the multi-cast Time-To-Live to be one
+	 * greater than the number of hops (routers) between the hosts.
 	 */
-	private Integer timeToLive;
+	private Integer timeToLive = 1;
 
 	/**
 	 * Host of the Ganglia server to receive exported metrics.
 	 */
-	private String host;
+	private String host = "localhost";
 
 	/**
 	 * Port of the Ganglia server to receive exported metrics.
 	 */
-	private Integer port;
+	private Integer port = 8649;
 
-	public Boolean getEnabled() {
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 

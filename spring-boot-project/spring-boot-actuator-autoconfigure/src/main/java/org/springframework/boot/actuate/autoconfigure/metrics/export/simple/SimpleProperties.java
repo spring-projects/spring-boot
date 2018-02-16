@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link SimpleMeterRegistry}.
  *
  * @author Jon Schneider
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.simple")
@@ -36,7 +37,7 @@ public class SimpleProperties {
 	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
-	private Duration step = Duration.ofSeconds(10);
+	private Duration step = Duration.ofMinutes(1);
 
 	/**
 	 * Counting mode.

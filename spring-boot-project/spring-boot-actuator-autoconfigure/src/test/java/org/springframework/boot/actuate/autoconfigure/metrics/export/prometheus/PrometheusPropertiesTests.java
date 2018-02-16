@@ -14,33 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
-import java.time.Duration;
+import io.micrometer.prometheus.PrometheusConfig;
+import org.junit.Test;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * {@link ConfigurationProperties} for configuring JMX metrics export.
+ * Tests for {@link PrometheusProperties}.
  *
- * @author Jon Schneider
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.jmx")
-public class JmxProperties {
+public class PrometheusPropertiesTests {
 
-	/**
-	 * Step size (i.e. reporting frequency) to use.
-	 */
-	private Duration step = Duration.ofMinutes(1);
-
-	public Duration getStep() {
-		return this.step;
-	}
-
-	public void setStep(Duration step) {
-		this.step = step;
+	@Test
+	public void defaultValuesAreConsistent() {
+		PrometheusProperties properties = new PrometheusProperties();
+		PrometheusConfig config = PrometheusConfig.DEFAULT;
+		assertThat(properties.isDescriptions()).isEqualTo(config.descriptions());
+		assertThat(properties.getStep()).isEqualTo(config.step());
 	}
 
 }

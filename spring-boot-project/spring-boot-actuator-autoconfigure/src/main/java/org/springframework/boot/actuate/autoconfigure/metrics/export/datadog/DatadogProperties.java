@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for configuring Datadog metrics export.
  *
  * @author Jon Schneider
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.datadog")
@@ -43,19 +44,18 @@ public class DatadogProperties extends StepRegistryProperties {
 	 * Whether to publish descriptions metadata to Datadog. Turn this off to minimize the
 	 * amount of metadata sent.
 	 */
-	private Boolean descriptions;
+	private boolean descriptions = true;
 
 	/**
-	 * Tag that will be mapped to "host" when shipping metrics to Datadog. Can be omitted
-	 * if host should be omitted on publishing.
+	 * Tag that will be mapped to "host" when shipping metrics to Datadog.
 	 */
-	private String hostTag;
+	private String hostTag = "instance";
 
 	/**
 	 * URI to ship metrics to. If you need to publish metrics to an internal proxy
 	 * en-route to Datadog, you can define the location of the proxy with this.
 	 */
-	private String uri;
+	private String uri = "https://app.datadoghq.com";
 
 	public String getApiKey() {
 		return this.apiKey;
@@ -73,11 +73,11 @@ public class DatadogProperties extends StepRegistryProperties {
 		this.applicationKey = applicationKey;
 	}
 
-	public Boolean getDescriptions() {
+	public boolean isDescriptions() {
 		return this.descriptions;
 	}
 
-	public void setDescriptions(Boolean descriptions) {
+	public void setDescriptions(boolean descriptions) {
 		this.descriptions = descriptions;
 	}
 

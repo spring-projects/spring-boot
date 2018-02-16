@@ -48,7 +48,7 @@ public class StatsdPropertiesConfigAdapter
 
 	@Override
 	public boolean enabled() {
-		return get(StatsdProperties::getEnabled, StatsdConfig.super::enabled);
+		return get(StatsdProperties::isEnabled, StatsdConfig.super::enabled);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class StatsdPropertiesConfigAdapter
 
 	@Override
 	public boolean publishUnchangedMeters() {
-		return get(StatsdProperties::getPublishUnchangedMeters,
+		return get(StatsdProperties::isPublishUnchangedMeters,
 				StatsdConfig.super::publishUnchangedMeters);
 	}
 
