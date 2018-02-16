@@ -283,8 +283,8 @@ public class CacheAutoConfigurationTests {
 				.withPropertyValues("spring.cache.type=redis",
 						"spring.cache.redis.time-to-live=15000",
 						"spring.cache.redis.cacheNullValues=false",
-						"spring.cache.redis.keyPrefix=foo",
-						"spring.cache.redis.useKeyPrefix=false")
+						"spring.cache.redis.keyPrefix=prefix",
+						"spring.cache.redis.useKeyPrefix=true")
 				.run((context) -> {
 					RedisCacheManager cacheManager = getCacheManager(context,
 							RedisCacheManager.class);
@@ -295,8 +295,8 @@ public class CacheAutoConfigurationTests {
 							.isEqualTo(java.time.Duration.ofSeconds(15));
 					assertThat(redisCacheConfiguration.getAllowCacheNullValues())
 							.isFalse();
-					assertThat(redisCacheConfiguration.getKeyPrefix()).contains("foo");
-					assertThat(redisCacheConfiguration.usePrefix()).isFalse();
+					assertThat(redisCacheConfiguration.getKeyPrefixFor("keyName")).isEqualTo("prefix");
+					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
 				});
 	}
 
@@ -342,7 +342,7 @@ public class CacheAutoConfigurationTests {
 							.isEqualTo(java.time.Duration.ofMinutes(0));
 					assertThat(redisCacheConfiguration.getAllowCacheNullValues())
 							.isTrue();
-					assertThat(redisCacheConfiguration.getKeyPrefix()).isEmpty();
+					assertThat(redisCacheConfiguration.getKeyPrefixFor("test")).isEqualTo("test::");
 					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
 				});
 	}
