@@ -3155,7 +3155,17 @@ NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure tha
 exposed actuators do not contain sensitive information and/or are secured by placing them
 behind a firewall or by something like Spring Security.
 
+==== Cross Site Request Forgery Protection
 
+Since Spring Boot relies on Spring Security's defaults, CSRF protection is turned on by default.
+This means that the actuator endpoints that require a `POST` (shutdown and loggers endpoints), `PUT`
+or `DELETE` will get a 403 forbidden error when the default security configuration is in use.
+
+NOTE: We recommend disabling CSRF protection completely only if you are creating a service that
+is used by non-browser clients.
+
+Additional information about CSRF protection can be found in the {spring-security-reference}#csrf[Spring
+Security Reference Guide].
 
 [[boot-features-sql]]
 == Working with SQL Databases
