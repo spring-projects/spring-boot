@@ -447,7 +447,7 @@ content into your application; rather pick only the properties that you need.
 	security.basic.enabled=true # Enable basic authentication.
 	security.basic.path=/** # Comma-separated list of paths to secure.
 	security.basic.realm=Spring # HTTP basic realm name.
-	security.enable-csrf=false # Enable Cross Site Request Forgery support.
+	security.enable-csrf=true # Enable Cross Site Request Forgery support.
 	security.filter-order=0 # Security filter chain order.
 	security.filter-dispatcher-types=ASYNC, FORWARD, INCLUDE, REQUEST # Security filter chain dispatcher types.
 	security.headers.cache=true # Enable cache control HTTP headers.
