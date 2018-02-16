@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
 import java.util.Collections;
 
 import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
-import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;
 
@@ -27,9 +26,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
-import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -43,32 +43,29 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ TomcatMetrics.class, Manager.class })
 public class TomcatMetricsAutoConfiguration {
 
+	private volatile Context context;
+
 	@Bean
 	@ConditionalOnMissingBean(TomcatMetrics.class)
 	public TomcatMetrics tomcatMetrics(ApplicationContext applicationContext) {
-		Context context = findContext(applicationContext);
-		return new TomcatMetrics(context == null ? null : context.getManager(),
+		return new TomcatMetrics(this.context == null ? null : this.context.getManager(),
 				Collections.emptyList());
 	}
 
-	private Context findContext(ApplicationContext context) {
-		if (!(context instanceof WebServerApplicationContext)) {
-			return null;
-		}
-		WebServer webServer = ((WebServerApplicationContext) context).getWebServer();
-		if (!(webServer instanceof TomcatWebServer)) {
-			return null;
-		}
-		return findContext((TomcatWebServer) webServer);
+	@Bean
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> contextCapturingServletTomcatCustomizer() {
+		return (tomcatFactory) -> tomcatFactory.addContextCustomizers(this::setContext);
 	}
 
-	private Context findContext(TomcatWebServer webServer) {
-		for (Container child : webServer.getTomcat().getHost().findChildren()) {
-			if (child instanceof Context) {
-				return (Context) child;
-			}
-		}
-		return null;
+	@Bean
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	public WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> contextCapturingReactiveTomcatCustomizer() {
+		return (tomcatFactory) -> tomcatFactory.addContextCustomizers(this::setContext);
+	}
+
+	private void setContext(Context context) {
+		this.context = context;
 	}
 
 }

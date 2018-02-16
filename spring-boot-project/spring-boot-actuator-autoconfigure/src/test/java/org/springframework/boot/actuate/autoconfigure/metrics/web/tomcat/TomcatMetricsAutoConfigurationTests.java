@@ -18,17 +18,22 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat;
 
 import java.util.Collections;
 
+import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -47,9 +52,31 @@ public class TomcatMetricsAutoConfigurationTests {
 	public void autoConfiguresTomcatMetricsWithEmbeddedServletTomcat() {
 		new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(TomcatMetricsAutoConfiguration.class))
+						.withConfiguration(AutoConfigurations.of(
+								TomcatMetricsAutoConfiguration.class,
+								ServletWebServerFactoryAutoConfiguration.class))
 						.withUserConfiguration(ServletWebServerConfiguration.class)
+						.run((context) -> {
+							assertThat(context).hasSingleBean(TomcatMetrics.class);
+							SimpleMeterRegistry registry = new SimpleMeterRegistry();
+							context.getBean(TomcatMetrics.class).bindTo(registry);
+							assertThat(
+									registry.find("tomcat.sessions.active.max").meter())
+											.isNotNull();
+							assertThat(registry.find("tomcat.threads.current").meter())
+									.isNotNull();
+						});
+	}
+
+	@Test
+	public void sessionMetricsAreAvailableWhenEarlyMeterBinderInitializationOccurs() {
+		new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(
+								TomcatMetricsAutoConfiguration.class,
+								ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(ServletWebServerConfiguration.class,
+								EarlyMeterBinderInitializationConfiguration.class)
 						.run((context) -> {
 							assertThat(context).hasSingleBean(TomcatMetrics.class);
 							SimpleMeterRegistry registry = new SimpleMeterRegistry();
@@ -66,8 +93,9 @@ public class TomcatMetricsAutoConfigurationTests {
 	public void autoConfiguresTomcatMetricsWithEmbeddedReactiveTomcat() {
 		new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations
-								.of(TomcatMetricsAutoConfiguration.class))
+						.withConfiguration(AutoConfigurations.of(
+								TomcatMetricsAutoConfiguration.class,
+								ReactiveWebServerAutoConfiguration.class))
 						.withUserConfiguration(ReactiveWebServerConfiguration.class)
 						.run((context) -> {
 							assertThat(context).hasSingleBean(TomcatMetrics.class);
@@ -130,6 +158,16 @@ public class TomcatMetricsAutoConfigurationTests {
 		@Bean
 		public TomcatMetrics customTomcatMetrics() {
 			return new TomcatMetrics(null, Collections.emptyList());
+		}
+
+	}
+
+	@Configuration
+	static class EarlyMeterBinderInitializationConfiguration {
+
+		@Bean
+		public ServletContextInitializer earlyInitializer(ApplicationContext context) {
+			return (servletContext) -> context.getBeansOfType(MeterBinder.class);
 		}
 
 	}
