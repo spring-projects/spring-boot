@@ -244,6 +244,26 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.isEqualTo(new String[] { "TLSv1.1" });
 	}
 
+	@Test
+	public void sslEnabledSpecificIPAddress() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+		factory.setAddress(InetAddress.getByAddress(InetAddress.getLocalHost().getAddress()));
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
+				.getConnectors()[0];
+		assertThat(connector.getHost()).isEqualTo(factory.getAddress().getHostAddress());
+	}
+
 	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
 			int expected) {
 		this.container = factory.getEmbeddedServletContainer();
