@@ -138,6 +138,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-wavefront</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.projectreactor.ipc</groupId>
 			<artifactId>reactor-netty</artifactId>
 			<optional>true</optional>

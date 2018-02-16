@@ -1391,6 +1391,11 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.statsd.polling-frequency=10s # How often gauges will be polled. When a gauge is polled, its value is recalculated and if the value has changed, it is sent to the StatsD server.
 	management.metrics.export.statsd.port=8125 # Port of the StatsD server to receive exported metrics.
 	management.metrics.export.statsd.queue-size=2147483647 # Maximum size of the queue of items waiting to be sent to the StatsD server.
+	management.metrics.export.wavefront.api-token= # API token used when publishing metrics directly to the Wavefront API host.
+	management.metrics.export.wavefront.enabled= # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.wavefront.global-prefix= # Global prefix to separate metrics originating from this app's white box instrumentation from those originating from other Wavefront integrations when viewed in the Wavefront UI.
+	management.metrics.export.wavefront.source= # Unique identifier for the app instance that is the source of metrics being published to Wavefront. Defaults to the local host name.
+	management.metrics.export.wavefront.uri= #  URI to which metrics are published. May represent a Wavefront sidecar or the Wavefront API host. This host could also represent an internal proxy set up in your environment that forwards metrics data to the Wavefront API host.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
 	management.metrics.web.client.max-uri-tags=100 # Maximum number of unique URI tag values allowed. After the max number of tag values is reached, metrics with additional tag values are denied by filter.
 	management.metrics.web.client.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
