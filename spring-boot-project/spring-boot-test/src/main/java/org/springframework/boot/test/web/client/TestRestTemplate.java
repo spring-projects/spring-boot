@@ -17,6 +17,7 @@
 package org.springframework.boot.test.web.client;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,12 +46,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
@@ -135,7 +138,8 @@ public class TestRestTemplate {
 			HttpClientOption... httpClientOptions) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.httpClientOptions = httpClientOptions;
-		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
+		if (restTemplate.getRequestFactory().getClass().getName()
+				.equals("org.springframework.http.client.HttpComponentsClientHttpRequestFactory")) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
@@ -1021,13 +1025,25 @@ public class TestRestTemplate {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setMessageConverters(getRestTemplate().getMessageConverters());
 		restTemplate.setInterceptors(getRestTemplate().getInterceptors());
-		restTemplate.setRequestFactory(getRestTemplate().getRequestFactory());
+		restTemplate.setRequestFactory(getRequestFactory(getRestTemplate()));
 		restTemplate.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
 		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
 				password, this.httpClientOptions);
 		testRestTemplate.getRestTemplate()
 				.setErrorHandler(getRestTemplate().getErrorHandler());
 		return testRestTemplate;
+	}
+
+	private ClientHttpRequestFactory getRequestFactory(RestTemplate restTemplate) {
+		ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
+		if (InterceptingClientHttpRequestFactory.class.isAssignableFrom(requestFactory.getClass())) {
+			Field requestFactoryField = ReflectionUtils
+					.findField(RestTemplate.class, "requestFactory");
+			ReflectionUtils.makeAccessible(requestFactoryField);
+			requestFactory = (ClientHttpRequestFactory)
+					ReflectionUtils.getField(requestFactoryField, getRestTemplate());
+		}
+		return requestFactory;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

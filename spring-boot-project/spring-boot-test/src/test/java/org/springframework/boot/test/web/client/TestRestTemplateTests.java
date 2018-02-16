@@ -37,6 +37,8 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -83,6 +85,15 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
+	public void doNotReplaceCustomRequestFactory() {
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+				.requestFactory(OkHttp3ClientHttpRequestFactory.class);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
+		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
+				.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+	}
+
+	@Test
 	public void getRootUriRootUriSetViaRestTemplateBuilder() {
 		String rootUri = "http://example.com";
 		RestTemplateBuilder delegate = new RestTemplateBuilder().rootUri(rootUri);
@@ -125,6 +136,7 @@ public class TestRestTemplateTests {
 	@Test
 	public void restOperationsAreAvailable() {
 		RestTemplate delegate = mock(RestTemplate.class);
+		given(delegate.getRequestFactory()).willReturn(new SimpleClientHttpRequestFactory());
 		given(delegate.getUriTemplateHandler())
 				.willReturn(new DefaultUriBuilderFactory());
 		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
