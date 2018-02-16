@@ -39,13 +39,13 @@ import static org.mockito.Mockito.mock;
  */
 public class SimpleMetricsExportAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(SimpleMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguresConfigAndMeterRegistry() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(SimpleMeterRegistry.class)
 						.hasSingleBean(Clock.class).hasSingleBean(SimpleConfig.class));
@@ -53,14 +53,14 @@ public class SimpleMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsConfigToBeCustomized() {
-		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(SimpleConfig.class)
 						.hasBean("customConfig"));
 	}
 
 	@Test
 	public void backsOffEntirelyWithCustomMeterRegistry() {
-		this.runner.withUserConfiguration(CustomRegistryConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(MeterRegistry.class)
 						.hasBean("customRegistry").doesNotHaveBean(SimpleConfig.class));
 	}

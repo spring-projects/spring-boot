@@ -42,19 +42,19 @@ import static org.mockito.Mockito.verify;
  */
 public class AtlasMetricsExportAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(AtlasMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void backsOffWithoutAClock() {
-		this.runner.run((context) -> assertThat(context)
+		this.contextRunner.run((context) -> assertThat(context)
 				.doesNotHaveBean(AtlasMeterRegistry.class));
 	}
 
 	@Test
 	public void autoConfiguresItsConfigAndMeterRegistry() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(AtlasMeterRegistry.class)
 						.hasSingleBean(AtlasConfig.class));
@@ -62,7 +62,7 @@ public class AtlasMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationCanBeDisabled() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.atlas.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(AtlasMeterRegistry.class)
@@ -71,7 +71,7 @@ public class AtlasMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomConfigToBeUsed() {
-		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(AtlasMeterRegistry.class)
 						.hasSingleBean(AtlasConfig.class).hasBean("customConfig"));
@@ -79,7 +79,7 @@ public class AtlasMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomRegistryToBeUsed() {
-		this.runner.withUserConfiguration(CustomRegistryConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(AtlasMeterRegistry.class).hasBean("customRegistry")
 						.hasSingleBean(AtlasConfig.class));
@@ -87,12 +87,13 @@ public class AtlasMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.runner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-			AtlasMeterRegistry registry = spyOnDisposableBean(AtlasMeterRegistry.class,
-					context);
-			context.close();
-			verify(registry).stop();
-		});
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
+					AtlasMeterRegistry registry = spyOnDisposableBean(
+							AtlasMeterRegistry.class, context);
+					context.close();
+					verify(registry).stop();
+				});
 	}
 
 	@SuppressWarnings("unchecked")

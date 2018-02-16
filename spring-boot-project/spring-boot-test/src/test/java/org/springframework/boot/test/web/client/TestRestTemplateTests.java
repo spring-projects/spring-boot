@@ -136,7 +136,8 @@ public class TestRestTemplateTests {
 	@Test
 	public void restOperationsAreAvailable() {
 		RestTemplate delegate = mock(RestTemplate.class);
-		given(delegate.getRequestFactory()).willReturn(new SimpleClientHttpRequestFactory());
+		given(delegate.getRequestFactory())
+				.willReturn(new SimpleClientHttpRequestFactory());
 		given(delegate.getUriTemplateHandler())
 				.willReturn(new DefaultUriBuilderFactory());
 		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);

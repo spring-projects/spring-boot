@@ -33,9 +33,8 @@ public class WavefrontProperties extends StepRegistryProperties {
 	/**
 	 * URI to which metrics are published. May represent a Wavefront sidecar or the
 	 * Wavefront API host. This host could also represent an internal proxy set up in your
-	 * environment that forwards metrics data to the Wavefront API host.
-	 *
-	 * If publishing metrics to a Wavefront proxy (as described in
+	 * environment that forwards metrics data to the Wavefront API host. If publishing
+	 * metrics to a Wavefront proxy (as described in
 	 * https://docs.wavefront.com/proxies_installing.html), the host must be in the
 	 * proxy://HOST:PORT format.
 	 */

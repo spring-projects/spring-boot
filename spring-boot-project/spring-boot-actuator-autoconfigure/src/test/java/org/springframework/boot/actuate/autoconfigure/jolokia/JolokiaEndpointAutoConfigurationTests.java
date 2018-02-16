@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JolokiaEndpointAutoConfigurationTests {
 
-	private final WebApplicationContextRunner runner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					ManagementContextAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class,
@@ -57,7 +57,7 @@ public class JolokiaEndpointAutoConfigurationTests {
 
 	@Test
 	public void jolokiaServletShouldBeEnabledByDefault() {
-		this.runner.run((context) -> {
+		this.contextRunner.run((context) -> {
 			ExposableServletEndpoint endpoint = getEndpoint(context);
 			assertThat(endpoint.getRootPath()).isEqualTo("jolokia");
 			Object servlet = ReflectionTestUtils.getField(endpoint.getEndpointServlet(),
@@ -68,7 +68,7 @@ public class JolokiaEndpointAutoConfigurationTests {
 
 	@Test
 	public void jolokiaServletWhenDisabledShouldNotBeDiscovered() {
-		this.runner.withPropertyValues("management.endpoint.jolokia.enabled=false")
+		this.contextRunner.withPropertyValues("management.endpoint.jolokia.enabled=false")
 				.run((context) -> {
 					Collection<ExposableServletEndpoint> endpoints = context
 							.getBean(ServletEndpointsSupplier.class).getEndpoints();
@@ -78,7 +78,8 @@ public class JolokiaEndpointAutoConfigurationTests {
 
 	@Test
 	public void jolokiaServletWhenHasCustomConfigShouldApplyInitParams() {
-		this.runner.withPropertyValues("management.endpoint.jolokia.config.debug=true")
+		this.contextRunner
+				.withPropertyValues("management.endpoint.jolokia.config.debug=true")
 				.run((context) -> {
 					ExposableServletEndpoint endpoint = getEndpoint(context);
 					assertThat(endpoint.getEndpointServlet()).extracting("initParameters")

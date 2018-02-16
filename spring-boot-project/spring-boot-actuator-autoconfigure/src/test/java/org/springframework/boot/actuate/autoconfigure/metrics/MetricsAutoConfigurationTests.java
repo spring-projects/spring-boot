@@ -52,24 +52,24 @@ import static org.mockito.Mockito.verify;
  */
 public class MetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class));
 
 	@Test
 	public void autoConfiguresAClock() {
-		this.runner.run((context) -> assertThat(context).hasSingleBean(Clock.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Clock.class));
 	}
 
 	@Test
 	public void allowsACustomClockToBeUsed() {
-		this.runner.withUserConfiguration(CustomClockConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomClockConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
 						.hasBean("customClock"));
 	}
 
 	@Test
 	public void autoConfiguresACompositeMeterRegistry() {
-		this.runner.run((context) -> {
+		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(CompositeMeterRegistry.class);
 			assertThat(context.getBean(CompositeMeterRegistry.class).getRegistries())
 					.isEmpty();
@@ -79,7 +79,7 @@ public class MetricsAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void configuresMeterRegistries() {
-		this.runner.withUserConfiguration(MeterRegistryConfiguration.class)
+		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class)
 				.run((context) -> {
 					MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 					List<MeterFilter> filters = (List<MeterFilter>) ReflectionTestUtils
@@ -94,7 +94,7 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguresJvmMetrics() {
-		this.runner.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 				.hasSingleBean(JvmMemoryMetrics.class)
 				.hasSingleBean(JvmThreadMetrics.class)
 				.hasSingleBean(ClassLoaderMetrics.class));
@@ -102,7 +102,7 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsJvmMetricsToBeDisabled() {
-		this.runner.withPropertyValues("management.metrics.binders.jvm.enabled=false")
+		this.contextRunner.withPropertyValues("management.metrics.binders.jvm.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(JvmGcMetrics.class)
 						.doesNotHaveBean(JvmMemoryMetrics.class)
 						.doesNotHaveBean(JvmThreadMetrics.class)
@@ -111,7 +111,7 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomJvmGcMetricsToBeUsed() {
-		this.runner.withUserConfiguration(CustomJvmGcMetricsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomJvmGcMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasBean("customJvmGcMetrics")
 						.hasSingleBean(JvmMemoryMetrics.class)
@@ -121,7 +121,7 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomJvmMemoryMetricsToBeUsed() {
-		this.runner.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class)
 						.hasBean("customJvmMemoryMetrics")
@@ -131,7 +131,7 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomJvmThreadMetricsToBeUsed() {
-		this.runner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class)
 						.hasSingleBean(JvmThreadMetrics.class)
@@ -141,7 +141,7 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomClassLoaderMetricsToBeUsed() {
-		this.runner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class)
 						.hasSingleBean(JvmThreadMetrics.class)
@@ -151,53 +151,53 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguresLogbackMetrics() {
-		this.runner.run(
+		this.contextRunner.run(
 				(context) -> assertThat(context).hasSingleBean(LogbackMetrics.class));
 	}
 
 	@Test
 	public void allowsLogbackMetricsToBeDisabled() {
-		this.runner.withPropertyValues("management.metrics.binders.logback.enabled=false")
+		this.contextRunner.withPropertyValues("management.metrics.binders.logback.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(LogbackMetrics.class));
 	}
 
 	@Test
 	public void allowsCustomLogbackMetricsToBeUsed() {
-		this.runner.withUserConfiguration(CustomLogbackMetricsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(LogbackMetrics.class)
 						.hasBean("customLogbackMetrics"));
 	}
 
 	@Test
 	public void autoConfiguresUptimeMetrics() {
-		this.runner
+		this.contextRunner
 				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class));
 	}
 
 	@Test
 	public void allowsUptimeMetricsToBeDisabled() {
-		this.runner.withPropertyValues("management.metrics.binders.uptime.enabled=false")
+		this.contextRunner.withPropertyValues("management.metrics.binders.uptime.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(UptimeMetrics.class));
 	}
 
 	@Test
 	public void allowsCustomUptimeMetricsToBeUsed() {
-		this.runner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class)
 						.hasBean("customUptimeMetrics"));
 	}
 
 	@Test
 	public void autoConfiguresProcessorMetrics() {
-		this.runner.run(
+		this.contextRunner.run(
 				(context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
 	}
 
 	@Test
 	public void allowsProcessorMetricsToBeDisabled() {
-		this.runner
+		this.contextRunner
 				.withPropertyValues("management.metrics.binders.processor.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(ProcessorMetrics.class));
@@ -205,7 +205,7 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomProcessorMetricsToBeUsed() {
-		this.runner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ProcessorMetrics.class)
 						.hasBean("customProcessorMetrics"));
@@ -213,20 +213,20 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguresFileDescriptorMetrics() {
-		this.runner.run((context) -> assertThat(context)
+		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
 	public void allowsFileDescriptorMetricsToBeDisabled() {
-		this.runner.withPropertyValues("management.metrics.binders.files.enabled=false")
+		this.contextRunner.withPropertyValues("management.metrics.binders.files.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
 	public void allowsCustomFileDescriptorMetricsToBeUsed() {
-		this.runner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(FileDescriptorMetrics.class)
 						.hasBean("customFileDescriptorMetrics"));

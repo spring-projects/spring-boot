@@ -295,7 +295,8 @@ public class CacheAutoConfigurationTests {
 							.isEqualTo(java.time.Duration.ofSeconds(15));
 					assertThat(redisCacheConfiguration.getAllowCacheNullValues())
 							.isFalse();
-					assertThat(redisCacheConfiguration.getKeyPrefixFor("keyName")).isEqualTo("prefix");
+					assertThat(redisCacheConfiguration.getKeyPrefixFor("keyName"))
+							.isEqualTo("prefix");
 					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
 				});
 	}
@@ -342,7 +343,8 @@ public class CacheAutoConfigurationTests {
 							.isEqualTo(java.time.Duration.ofMinutes(0));
 					assertThat(redisCacheConfiguration.getAllowCacheNullValues())
 							.isTrue();
-					assertThat(redisCacheConfiguration.getKeyPrefixFor("test")).isEqualTo("test::");
+					assertThat(redisCacheConfiguration.getKeyPrefixFor("test"))
+							.isEqualTo("test::");
 					assertThat(redisCacheConfiguration.usePrefix()).isTrue();
 				});
 	}

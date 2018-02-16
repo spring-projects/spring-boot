@@ -42,25 +42,25 @@ import static org.mockito.Mockito.verify;
  */
 public class DatadogMetricsExportAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(DatadogMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void backsOffWithoutAClock() {
-		this.runner.run((context) -> assertThat(context)
+		this.contextRunner.run((context) -> assertThat(context)
 				.doesNotHaveBean(DatadogMeterRegistry.class));
 	}
 
 	@Test
 	public void failsWithoutAnApiKey() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
 	public void autoConfiguresConfigAndMeterRegistry() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(DatadogMeterRegistry.class)
@@ -69,7 +69,7 @@ public class DatadogMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationCanBeDisabled() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.datadog.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(DatadogMeterRegistry.class)
@@ -78,7 +78,7 @@ public class DatadogMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomConfigToBeUsed() {
-		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(DatadogMeterRegistry.class)
 						.hasSingleBean(DatadogConfig.class).hasBean("customConfig"));
@@ -86,7 +86,7 @@ public class DatadogMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomRegistryToBeUsed() {
-		this.runner.withUserConfiguration(CustomRegistryConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
 				.run((context) -> assertThat(context)
 						.hasSingleBean(DatadogMeterRegistry.class)
@@ -95,7 +95,7 @@ public class DatadogMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.datadog.api-key=abcde")
 				.run((context) -> {
 					DatadogMeterRegistry registry = spyOnDisposableBean(

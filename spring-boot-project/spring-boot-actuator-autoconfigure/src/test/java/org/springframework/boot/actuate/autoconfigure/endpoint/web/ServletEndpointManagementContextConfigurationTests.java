@@ -38,12 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ServletEndpointManagementContextConfigurationTests {
 
-	private WebApplicationContextRunner runner = new WebApplicationContextRunner()
+	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withUserConfiguration(TestConfig.class);
 
 	@Test
 	public void contextShouldContainServletEndpointRegistrar() {
-		this.runner.run((context) -> assertThat(context)
+		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(ServletEndpointRegistrar.class));
 	}
 

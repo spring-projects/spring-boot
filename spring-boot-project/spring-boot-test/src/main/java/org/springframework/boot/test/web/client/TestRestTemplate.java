@@ -130,22 +130,16 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username,
 			String password, HttpClientOption... httpClientOptions) {
-		this(buildRestTemplate(restTemplateBuilder), username, password,
-				httpClientOptions);
-	}
-
-	private static RestTemplate buildRestTemplate(
-			RestTemplateBuilder restTemplateBuilder) {
-		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
-		return restTemplateBuilder.build();
+		this(restTemplateBuilder == null ? null : restTemplateBuilder.build(), username,
+				password, httpClientOptions);
 	}
 
 	private TestRestTemplate(RestTemplate restTemplate, String username, String password,
 			HttpClientOption... httpClientOptions) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.httpClientOptions = httpClientOptions;
-		if (getRequestFactoryClass(restTemplate).getName()
-				.equals("org.springframework.http.client.HttpComponentsClientHttpRequestFactory")) {
+		if (getRequestFactoryClass(restTemplate).getName().equals(
+				"org.springframework.http.client.HttpComponentsClientHttpRequestFactory")) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
@@ -154,14 +148,16 @@ public class TestRestTemplate {
 		this.restTemplate = restTemplate;
 	}
 
-	private Class<? extends ClientHttpRequestFactory> getRequestFactoryClass(RestTemplate restTemplate) {
+	private Class<? extends ClientHttpRequestFactory> getRequestFactoryClass(
+			RestTemplate restTemplate) {
 		ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
-		if (InterceptingClientHttpRequestFactory.class.isAssignableFrom(requestFactory.getClass())) {
-			Field requestFactoryField = ReflectionUtils
-					.findField(RestTemplate.class, "requestFactory");
+		if (InterceptingClientHttpRequestFactory.class
+				.isAssignableFrom(requestFactory.getClass())) {
+			Field requestFactoryField = ReflectionUtils.findField(RestTemplate.class,
+					"requestFactory");
 			ReflectionUtils.makeAccessible(requestFactoryField);
-			requestFactory = (ClientHttpRequestFactory)
-					ReflectionUtils.getField(requestFactoryField, restTemplate);
+			requestFactory = (ClientHttpRequestFactory) ReflectionUtils
+					.getField(requestFactoryField, restTemplate);
 		}
 		return requestFactory.getClass();
 	}
@@ -1037,8 +1033,7 @@ public class TestRestTemplate {
 		RestTemplate restTemplate = new RestTemplateBuilder()
 				.messageConverters(getRestTemplate().getMessageConverters())
 				.interceptors(getRestTemplate().getInterceptors())
-				.uriTemplateHandler(getRestTemplate().getUriTemplateHandler())
-				.build();
+				.uriTemplateHandler(getRestTemplate().getUriTemplateHandler()).build();
 		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
 				password, this.httpClientOptions);
 		testRestTemplate.getRestTemplate()

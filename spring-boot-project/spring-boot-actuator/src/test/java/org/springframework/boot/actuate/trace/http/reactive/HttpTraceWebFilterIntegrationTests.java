@@ -51,11 +51,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HttpTraceWebFilterIntegrationTests {
 
+	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+			.withUserConfiguration(Config.class);
+
 	@Test
 	public void traceForNotFoundResponseHas404Status() {
-		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner()
-				.withUserConfiguration(Config.class);
-		runner.run((context) -> {
+		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/")
 					.exchange().expectStatus().isNotFound();
 			HttpTraceRepository repository = context.getBean(HttpTraceRepository.class);
@@ -67,9 +68,7 @@ public class HttpTraceWebFilterIntegrationTests {
 
 	@Test
 	public void traceForMonoErrorWithRuntimeExceptionHas500Status() {
-		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner()
-				.withUserConfiguration(Config.class);
-		runner.run((context) -> {
+		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get()
 					.uri("/mono-error").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -82,9 +81,7 @@ public class HttpTraceWebFilterIntegrationTests {
 
 	@Test
 	public void traceForThrownRuntimeExceptionHas500Status() {
-		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner()
-				.withUserConfiguration(Config.class);
-		runner.run((context) -> {
+		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/thrown")
 					.exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);

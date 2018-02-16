@@ -42,25 +42,25 @@ import static org.mockito.Mockito.verify;
  */
 public class SignalFxMetricsExportAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(SignalFxMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void backsOffWithoutAClock() {
-		this.runner.run((context) -> assertThat(context)
+		this.contextRunner.run((context) -> assertThat(context)
 				.doesNotHaveBean(SignalFxMeterRegistry.class));
 	}
 
 	@Test
 	public void failsWithoutAnAccessToken() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
 	public void autoConfiguresWithAnAccessToken() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues(
 						"management.metrics.export.signalfx.access-token=abcde")
 				.run((context) -> assertThat(context)
@@ -70,7 +70,7 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationCanBeDisabled() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues(
 						"management.metrics.export.signalfx.access-token=abcde",
 						"management.metrics.export.signalfx.enabled=false")
@@ -81,7 +81,7 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsConfigToBeCustomized() {
-		this.runner
+		this.contextRunner
 				.withPropertyValues(
 						"management.metrics.export.signalfx.access-token=abcde")
 				.withUserConfiguration(CustomConfigConfiguration.class)
@@ -92,7 +92,7 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsRegistryToBeCustomized() {
-		this.runner
+		this.contextRunner
 				.withPropertyValues(
 						"management.metrics.export.signalfx.access-token=abcde")
 				.withUserConfiguration(CustomRegistryConfiguration.class)
@@ -104,7 +104,7 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.runner
+		this.contextRunner
 				.withPropertyValues(
 						"management.metrics.export.signalfx.access-token=abcde")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {

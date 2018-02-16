@@ -45,19 +45,19 @@ import static org.mockito.Mockito.verify;
  */
 public class JmxMetricsExportAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(JmxMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void backsOffWithoutAClock() {
-		this.runner.run(
+		this.contextRunner.run(
 				(context) -> assertThat(context).doesNotHaveBean(JmxMeterRegistry.class));
 	}
 
 	@Test
 	public void autoConfiguresItsConfigMeterRegistryAndNameMapper() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(JmxMeterRegistry.class)
 						.hasSingleBean(JmxConfig.class)
@@ -66,7 +66,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationCanBeDisabled() {
-		this.runner.withUserConfiguration(BaseConfiguration.class)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.jmx.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(JmxMeterRegistry.class)
@@ -76,7 +76,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomConfigToBeUsed() {
-		this.runner.withUserConfiguration(CustomConfigConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(JmxMeterRegistry.class)
 						.hasSingleBean(JmxConfig.class).hasBean("customConfig")
@@ -85,7 +85,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomRegistryToBeUsed() {
-		this.runner.withUserConfiguration(CustomRegistryConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(JmxMeterRegistry.class).hasBean("customRegistry")
 						.hasSingleBean(JmxConfig.class)
@@ -94,7 +94,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomHierarchicalNameMapperToBeUsed() {
-		this.runner.withUserConfiguration(CustomNameMapperConfiguration.class)
+		this.contextRunner.withUserConfiguration(CustomNameMapperConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(JmxMeterRegistry.class)
 						.hasSingleBean(JmxConfig.class).hasBean("customNameMapper")
@@ -103,7 +103,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.runner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			JmxMeterRegistry registry = spyOnDisposableBean(JmxMeterRegistry.class,
 					context);
 			context.close();
