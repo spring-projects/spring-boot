@@ -56,6 +56,7 @@ public class HelloWebSecurityApplicationTests {
 
 	@Test
 	public void requiresAuthentication() throws Exception {
+		this.request.setMethod("GET");
 		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
 		assertThat(this.response.getStatus())
 				.isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
@@ -63,6 +64,7 @@ public class HelloWebSecurityApplicationTests {
 
 	@Test
 	public void userAuthenticates() throws Exception {
+		this.request.setMethod("GET");
 		this.request.addHeader("Authorization",
 				"Basic " + new String(Base64.encode("user:password".getBytes("UTF-8"))));
 
