@@ -27,16 +27,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyState;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.env.Environment;
@@ -69,7 +71,9 @@ public class Binder {
 
 	private final PlaceholdersResolver placeholdersResolver;
 
-	private final BinderConversionService conversionService;
+	private final ConversionService conversionService;
+
+	private final Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -77,7 +81,7 @@ public class Binder {
 	 * @param sources the sources used for binding
 	 */
 	public Binder(ConfigurationPropertySource... sources) {
-		this(Arrays.asList(sources), null, null);
+		this(Arrays.asList(sources), null, null, null);
 	}
 
 	/**
@@ -86,7 +90,7 @@ public class Binder {
 	 * @param sources the sources used for binding
 	 */
 	public Binder(Iterable<ConfigurationPropertySource> sources) {
-		this(sources, null, null);
+		this(sources, null, null, null);
 	}
 
 	/**
@@ -96,25 +100,29 @@ public class Binder {
 	 */
 	public Binder(Iterable<ConfigurationPropertySource> sources,
 			PlaceholdersResolver placeholdersResolver) {
-		this(sources, placeholdersResolver, null);
+		this(sources, placeholdersResolver, null, null);
 	}
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources.
 	 * @param sources the sources used for binding
 	 * @param placeholdersResolver strategy to resolve any property place-holders
-	 * @param conversionService the conversion service to convert values
+	 * @param conversionService the conversion service to convert values (or {@code null}
+	 * to use {@link ApplicationConversionService})
+	 * @param propertyEditorInitializer initializer used to configure the property editors
+	 * that can convert values
 	 */
 	public Binder(Iterable<ConfigurationPropertySource> sources,
 			PlaceholdersResolver placeholdersResolver,
-			ConversionService conversionService) {
+			ConversionService conversionService,
+			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null ? placeholdersResolver
 				: PlaceholdersResolver.NONE);
-		this.conversionService = (conversionService instanceof BinderConversionService
-				? (BinderConversionService) conversionService
-				: new BinderConversionService(conversionService));
+		this.conversionService = (conversionService != null ? conversionService
+				: ApplicationConversionService.getSharedInstance());
+		this.propertyEditorInitializer = propertyEditorInitializer;
 	}
 
 	/**
@@ -208,17 +216,17 @@ public class Binder {
 			BindHandler handler, Context context, Object result) throws Exception {
 		if (result != null) {
 			result = handler.onSuccess(name, target, context, result);
-			result = convert(result, target);
+			result = context.getConverter().convert(result, target);
 		}
 		handler.onFinish(name, target, context, result);
-		return convert(result, target);
+		return context.getConverter().convert(result, target);
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, Exception error) {
 		try {
 			Object result = handler.onFailure(name, target, context, error);
-			return convert(result, target);
+			return context.getConverter().convert(result, target);
 		}
 		catch (Exception ex) {
 			if (ex instanceof BindException) {
@@ -226,11 +234,6 @@ public class Binder {
 			}
 			throw new BindException(name, target, context.getConfigurationProperty(), ex);
 		}
-	}
-
-	private <T> T convert(Object value, Bindable<T> target) {
-		return ResolvableTypeDescriptor.forBindable(target)
-				.convert(this.conversionService, value);
 	}
 
 	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
@@ -300,7 +303,7 @@ public class Binder {
 		context.setConfigurationProperty(property);
 		Object result = property.getValue();
 		result = this.placeholdersResolver.resolvePlaceholders(result);
-		result = convert(result, target);
+		result = context.getConverter().convert(result, target);
 		return result;
 	}
 
@@ -356,35 +359,37 @@ public class Binder {
 	}
 
 	/**
-	 * {@link BindContext} implementation.
+	 * Context used when binding and the {@link BindContext} implementation.
 	 */
 	final class Context implements BindContext {
 
-		private int depth;
+		private final BindConverter converter;
 
-		private int sourcePushCount;
+		private int depth;
 
 		private final List<ConfigurationPropertySource> source = Arrays
 				.asList((ConfigurationPropertySource) null);
+
+		private int sourcePushCount;
 
 		private final Deque<Class<?>> beans = new ArrayDeque<>();
 
 		private ConfigurationProperty configurationProperty;
 
-		void increaseDepth() {
+		Context() {
+			this.converter = new BindConverter(Binder.this.conversionService,
+					Binder.this.propertyEditorInitializer);
+		}
+
+		private void increaseDepth() {
 			this.depth++;
 		}
 
-		void decreaseDepth() {
+		private void decreaseDepth() {
 			this.depth--;
 		}
 
-		@Override
-		public int getDepth() {
-			return this.depth;
-		}
-
-		public <T> T withSource(ConfigurationPropertySource source,
+		private <T> T withSource(ConfigurationPropertySource source,
 				Supplier<T> supplier) {
 			if (source == null) {
 				return supplier.get();
@@ -399,7 +404,7 @@ public class Binder {
 			}
 		}
 
-		public <T> T withBean(Class<?> bean, Supplier<T> supplier) {
+		private <T> T withBean(Class<?> bean, Supplier<T> supplier) {
 			this.beans.push(bean);
 			try {
 				return withIncreasedDepth(supplier);
@@ -409,7 +414,11 @@ public class Binder {
 			}
 		}
 
-		public <T> T withIncreasedDepth(Supplier<T> supplier) {
+		private boolean hasBoundBean(Class<?> bean) {
+			return this.beans.contains(bean);
+		}
+
+		private <T> T withIncreasedDepth(Supplier<T> supplier) {
 			increaseDepth();
 			try {
 				return supplier.get();
@@ -417,6 +426,35 @@ public class Binder {
 			finally {
 				decreaseDepth();
 			}
+		}
+
+		private void setConfigurationProperty(
+				ConfigurationProperty configurationProperty) {
+			this.configurationProperty = configurationProperty;
+		}
+
+		private void clearConfigurationProperty() {
+			this.configurationProperty = null;
+		}
+
+		public Stream<ConfigurationPropertySource> streamSources() {
+			if (this.sourcePushCount > 0) {
+				return this.source.stream();
+			}
+			return StreamSupport.stream(Binder.this.sources.spliterator(), false);
+		}
+
+		public PlaceholdersResolver getPlaceholdersResolver() {
+			return Binder.this.placeholdersResolver;
+		}
+
+		public BindConverter getConverter() {
+			return this.converter;
+		}
+
+		@Override
+		public int getDepth() {
+			return this.depth;
 		}
 
 		@Override
@@ -428,38 +466,8 @@ public class Binder {
 		}
 
 		@Override
-		public Stream<ConfigurationPropertySource> streamSources() {
-			if (this.sourcePushCount > 0) {
-				return this.source.stream();
-			}
-			return StreamSupport.stream(Binder.this.sources.spliterator(), false);
-		}
-
-		public boolean hasBoundBean(Class<?> bean) {
-			return this.beans.contains(bean);
-		}
-
-		@Override
 		public ConfigurationProperty getConfigurationProperty() {
 			return this.configurationProperty;
-		}
-
-		void setConfigurationProperty(ConfigurationProperty configurationProperty) {
-			this.configurationProperty = configurationProperty;
-		}
-
-		void clearConfigurationProperty() {
-			this.configurationProperty = null;
-		}
-
-		@Override
-		public PlaceholdersResolver getPlaceholdersResolver() {
-			return Binder.this.placeholdersResolver;
-		}
-
-		@Override
-		public BinderConversionService getConversionService() {
-			return Binder.this.conversionService;
 		}
 
 	}

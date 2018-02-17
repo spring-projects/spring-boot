@@ -14,34 +14,41 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link DurationConverter}.
+ * Tests for {@link StringToDurationConverter}.
  *
  * @author Phillip Webb
  */
-public class DurationConverterTests {
+@RunWith(Parameterized.class)
+public class StringToDurationConverterTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private DurationConverter converter = new DurationConverter();
+	private final ConversionService conversionService;
+
+	public StringToDurationConverterTests(String name,
+			ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
 
 	@Test
 	public void convertWhenIso8601ShouldReturnDuration() {
@@ -112,16 +119,25 @@ public class DurationConverterTests {
 
 	@Test
 	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDuration() {
-		assertThat(convert("10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert("+10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert("-10", ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(-10));
+		assertThat(convert("10", ChronoUnit.SECONDS, null))
+				.isEqualTo(Duration.ofSeconds(10));
+		assertThat(convert("+10", ChronoUnit.SECONDS, null))
+				.isEqualTo(Duration.ofSeconds(10));
+		assertThat(convert("-10", ChronoUnit.SECONDS, null))
+				.isEqualTo(Duration.ofSeconds(-10));
 	}
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expect(ConversionFailedException.class);
 		this.thrown.expectMessage("'10foo' is not a valid duration");
 		convert("10foo");
+	}
+
+	@Test
+	public void convertWhenStyleMismatchShouldThrowException() {
+		this.thrown.expect(ConversionFailedException.class);
+		convert("10s", null, DurationStyle.ISO8601);
 	}
 
 	@Test
@@ -130,18 +146,18 @@ public class DurationConverterTests {
 	}
 
 	private Duration convert(String source) {
-		return (Duration) this.converter.convert(source, TypeDescriptor.forObject(source),
-				TypeDescriptor.valueOf(Duration.class));
+		return this.conversionService.convert(source, Duration.class);
 	}
 
-	private Duration convert(String source, ChronoUnit defaultUnit) {
-		TypeDescriptor targetType = mock(TypeDescriptor.class);
-		DefaultDurationUnit annotation = AnnotationUtils.synthesizeAnnotation(
-				Collections.singletonMap("value", defaultUnit), DefaultDurationUnit.class,
-				null);
-		given(targetType.getAnnotation(DefaultDurationUnit.class)).willReturn(annotation);
-		return (Duration) this.converter.convert(source, TypeDescriptor.forObject(source),
-				targetType);
+	private Duration convert(String source, ChronoUnit unit, DurationStyle style) {
+		return (Duration) this.conversionService.convert(source,
+				TypeDescriptor.forObject(source),
+				MockDurationTypeDescriptor.get(unit, style));
+	}
+
+	@Parameters(name = "{0}")
+	public static Iterable<Object[]> conversionServices() {
+		return new ConversionServiceParameters(new StringToDurationConverter());
 	}
 
 }

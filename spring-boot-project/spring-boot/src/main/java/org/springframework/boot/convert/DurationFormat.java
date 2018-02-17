@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
-import org.springframework.core.convert.converter.Converter;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.time.Duration;
 
 /**
- * Converts a String to a Char Array.
+ * Annotation that can be used to indivate the format to use when converting a
+ * {@link Duration}.
  *
  * @author Phillip Webb
+ * @since 2.0.0
  */
-class StringToCharArrayConverter implements Converter<String, char[]> {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface DurationFormat {
 
-	@Override
-	public char[] convert(String source) {
-		return source.toCharArray();
-	}
+	/**
+	 * The duration format style.
+	 * @return the duration format style.
+	 */
+	DurationStyle value();
 
 }

@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Configuration properties for JDBC.
@@ -58,7 +58,7 @@ public class JdbcProperties {
 		 * Query timeout. Default is to use the JDBC driver's default configuration. If a
 		 * duration suffix is not specified, seconds will be used.
 		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration queryTimeout;
 
 		public int getFetchSize() {

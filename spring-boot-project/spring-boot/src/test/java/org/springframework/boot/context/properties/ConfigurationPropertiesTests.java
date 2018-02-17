@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.beans.PropertyEditorSupport;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -673,6 +674,16 @@ public class ConfigurationPropertiesTests {
 				+ "'ConfigurationPropertiesTests.IgnoreUnknownFieldsFalseProperties' : "
 				+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false;");
 		load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz");
+	}
+
+	@Test
+	public void loadWhenHasCustomPropertyEditorShouldBind() {
+		this.context.getBeanFactory().registerCustomEditor(Person.class,
+				PersonPropertyEditor.class);
+		load(PersonProperties.class, "test.person=boot,spring");
+		PersonProperties bean = this.context.getBean(PersonProperties.class);
+		assertThat(bean.getPerson().firstName).isEqualTo("spring");
+		assertThat(bean.getPerson().lastName).isEqualTo("boot");
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
@@ -1554,6 +1565,16 @@ public class ConfigurationPropertiesTests {
 			String[] content = StringUtils.split((String) source, " ");
 			return new Person(content[0], content[1]);
 		}
+	}
+
+	static class PersonPropertyEditor extends PropertyEditorSupport {
+
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {
+			String[] split = text.split(",");
+			setValue(new Person(split[1], split[0]));
+		}
+
 	}
 
 	static class Person {

@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
@@ -31,7 +32,7 @@ import org.springframework.core.ResolvableType;
  */
 class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 
-	CollectionBinder(BindContext context) {
+	CollectionBinder(Context context) {
 		super(context);
 	}
 

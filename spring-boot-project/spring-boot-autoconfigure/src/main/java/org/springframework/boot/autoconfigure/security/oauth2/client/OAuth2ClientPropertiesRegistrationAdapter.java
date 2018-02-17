@@ -22,7 +22,7 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -107,7 +107,7 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static CommonOAuth2Provider getCommonProvider(String providerId) {
 		try {
-			return new BinderConversionService(null).convert(providerId,
+			return ApplicationConversionService.getSharedInstance().convert(providerId,
 					CommonOAuth2Provider.class);
 		}
 		catch (ConversionException ex) {

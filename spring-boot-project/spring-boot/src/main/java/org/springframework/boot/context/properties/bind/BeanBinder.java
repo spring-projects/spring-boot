@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 
 /**
@@ -36,7 +37,7 @@ interface BeanBinder {
 	 * @param <T> The source type
 	 * @return a bound instance or {@code null}
 	 */
-	<T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindContext context,
+	<T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
 			BeanPropertyBinder propertyBinder);
 
 }

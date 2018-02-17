@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -30,7 +30,8 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-class StringToEnumConverterFactory implements ConverterFactory<String, Enum> {
+final class StringToEnumIgnoringCaseConverterFactory
+		implements ConverterFactory<String, Enum> {
 
 	@Override
 	public <T extends Enum> Converter<String, T> getConverter(Class<T> targetType) {

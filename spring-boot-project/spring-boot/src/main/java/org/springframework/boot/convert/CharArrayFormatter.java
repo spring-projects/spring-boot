@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
-import java.beans.PropertyEditor;
-import java.net.InetAddress;
+import java.text.ParseException;
+import java.util.Locale;
 
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.Formatter;
 
 /**
- * {@link PropertyEditor} for {@link InetAddress} objects.
+ * {@link Formatter} for {@code char[]}.
  *
- * @author Dave Syer
  * @author Phillip Webb
  */
-class InetAddressToStringConverter implements Converter<InetAddress, String> {
+final class CharArrayFormatter implements Formatter<char[]> {
 
 	@Override
-	public String convert(InetAddress source) {
-		return source.getHostAddress();
+	public String print(char[] object, Locale locale) {
+		return new String(object);
+	}
+
+	@Override
+	public char[] parse(String text, Locale locale) throws ParseException {
+		return text.toCharArray();
 	}
 
 }

@@ -21,12 +21,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.core.convert.support.DefaultConversionService;
 
 /**
  * Utility to deduce the {@link ConversionService} to use for configuration properties
@@ -83,7 +83,10 @@ class ConversionServiceDeducer {
 		}
 
 		public ConversionService create() {
-			DefaultConversionService conversionService = new DefaultConversionService();
+			if (this.converters.isEmpty() && this.genericConverters.isEmpty()) {
+				return ApplicationConversionService.getSharedInstance();
+			}
+			ApplicationConversionService conversionService = new ApplicationConversionService();
 			for (Converter<?, ?> converter : this.converters) {
 				conversionService.addConverter(converter);
 			}

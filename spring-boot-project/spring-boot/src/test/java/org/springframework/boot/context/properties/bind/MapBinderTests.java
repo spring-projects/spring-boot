@@ -536,7 +536,7 @@ public class MapBinderTests {
 	public void bindToMapWithCustomConverter() {
 		DefaultConversionService conversionService = new DefaultConversionService();
 		conversionService.addConverter(new MapConverter());
-		Binder binder = new Binder(this.sources, null, conversionService);
+		Binder binder = new Binder(this.sources, null, conversionService, null);
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "a,b");
 		this.sources.add(source);
@@ -550,7 +550,7 @@ public class MapBinderTests {
 		// gh-11892
 		DefaultConversionService conversionService = new DefaultConversionService();
 		conversionService.addConverter(new MapConverter());
-		Binder binder = new Binder(this.sources, null, conversionService);
+		Binder binder = new Binder(this.sources, null, conversionService, null);
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "boom");
 		source.put("foo.a", "a");

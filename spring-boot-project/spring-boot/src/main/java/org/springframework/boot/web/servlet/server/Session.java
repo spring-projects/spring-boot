@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
-import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Session properties.
@@ -34,7 +34,7 @@ public class Session {
 	/**
 	 * Session timeout. If a duration suffix is not specified, seconds will be used.
 	 */
-	@DefaultDurationUnit(ChronoUnit.SECONDS)
+	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration timeout = Duration.ofMinutes(30);
 
 	/**
@@ -135,7 +135,7 @@ public class Session {
 		/**
 		 * Maximum age of the session cookie.
 		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration maxAge;
 
 		public String getName() {

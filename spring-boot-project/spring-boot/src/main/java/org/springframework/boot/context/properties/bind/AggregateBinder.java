@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.function.Supplier;
 
+import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 
@@ -30,9 +31,9 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
  */
 abstract class AggregateBinder<T> {
 
-	private final BindContext context;
+	private final Context context;
 
-	AggregateBinder(BindContext context) {
+	AggregateBinder(Context context) {
 		this.context = context;
 	}
 
@@ -84,7 +85,7 @@ abstract class AggregateBinder<T> {
 	 * Return the context being used by this binder.
 	 * @return the context
 	 */
-	protected final BindContext getContext() {
+	protected final Context getContext() {
 		return this.context;
 	}
 

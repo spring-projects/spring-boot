@@ -23,7 +23,7 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
@@ -45,7 +45,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private static final String INDEX_ZERO = "[0]";
 
-	IndexedElementsBinder(BindContext context) {
+	IndexedElementsBinder(Context context) {
 		super(context);
 	}
 
@@ -140,9 +140,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private <C> C convert(Object value, ResolvableType type, Annotation... annotations) {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
-		BinderConversionService conversionService = getContext().getConversionService();
-		return ResolvableTypeDescriptor.forType(type, annotations)
-				.convert(conversionService, value);
+		return getContext().getConverter().convert(value, type, annotations);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.util.Locale;
 
-import org.junit.AssumptionViolatedException;
+import org.springframework.format.Formatter;
 
 /**
- * Base class for {@link InetAddress} tests.
+ * {@link Formatter} for {@link InetAddress}.
  *
  * @author Phillip Webb
  */
-public abstract class AbstractInetAddressTests {
+final class InetAddressFormatter implements Formatter<InetAddress> {
 
-	public void assumeResolves(String host) {
+	@Override
+	public String print(InetAddress object, Locale locale) {
+		return object.getHostAddress();
+	}
+
+	@Override
+	public InetAddress parse(String text, Locale locale) throws ParseException {
 		try {
-			InetAddress.getByName(host);
+			return InetAddress.getByName(text);
 		}
 		catch (UnknownHostException ex) {
-			throw new AssumptionViolatedException("Host " + host + " not resolvable", ex);
+			throw new IllegalStateException("Unknown host " + text, ex);
 		}
 	}
 

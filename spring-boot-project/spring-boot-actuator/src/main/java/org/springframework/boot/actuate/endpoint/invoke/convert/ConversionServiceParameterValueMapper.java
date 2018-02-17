@@ -19,9 +19,8 @@ package org.springframework.boot.actuate.endpoint.invoke.convert;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterMappingException;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
 
 /**
@@ -39,7 +38,7 @@ public class ConversionServiceParameterValueMapper implements ParameterValueMapp
 	 * Create a new {@link ConversionServiceParameterValueMapper} instance.
 	 */
 	public ConversionServiceParameterValueMapper() {
-		this(createConversionService());
+		this(ApplicationConversionService.getSharedInstance());
 	}
 
 	/**
@@ -49,7 +48,7 @@ public class ConversionServiceParameterValueMapper implements ParameterValueMapp
 	 */
 	public ConversionServiceParameterValueMapper(ConversionService conversionService) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
-		this.conversionService = new BinderConversionService(conversionService);
+		this.conversionService = conversionService;
 	}
 
 	@Override
@@ -61,12 +60,6 @@ public class ConversionServiceParameterValueMapper implements ParameterValueMapp
 		catch (Exception ex) {
 			throw new ParameterMappingException(parameter, value, ex);
 		}
-	}
-
-	private static ConversionService createConversionService() {
-		DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
-		IsoOffsetDateTimeConverter.registerConverter(conversionService);
-		return conversionService;
 	}
 
 }

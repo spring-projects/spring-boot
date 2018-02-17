@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -161,6 +162,16 @@ public class BinderTests {
 	}
 
 	@Test
+	public void bindToValueWithCustomPropertyEditorShouldReturnConvertedValue() {
+		this.binder = new Binder(this.sources, null, null, (registry) -> registry
+				.registerCustomEditor(JavaBean.class, new JavaBeanPropertyEditor()));
+		this.sources.add(new MockConfigurationPropertySource("foo", "123"));
+		BindResult<JavaBean> result = this.binder.bind("foo",
+				Bindable.of(JavaBean.class));
+		assertThat(result.get().getValue()).isEqualTo("123");
+	}
+
+	@Test
 	public void bindToValueShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1", "line1"));
 		BindHandler handler = mock(BindHandler.class,
@@ -280,8 +291,8 @@ public class BinderTests {
 		this.binder.bind("foo", target);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void bindToBeanWithUnresolvableGenerics() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "hello");
@@ -369,6 +380,17 @@ public class BinderTests {
 
 		public void setBar(T bar) {
 			this.bar = bar;
+		}
+
+	}
+
+	public static class JavaBeanPropertyEditor extends PropertyEditorSupport {
+
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {
+			JavaBean value = new JavaBean();
+			value.setValue(text);
+			setValue(value);
 		}
 
 	}

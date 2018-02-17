@@ -18,7 +18,9 @@ package org.springframework.boot.context.properties;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
+import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -26,9 +28,12 @@ import org.springframework.boot.context.properties.bind.PropertySourcesPlacehold
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.bind.handler.NoUnboundElementsBindHandler;
 import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 import org.springframework.validation.Validator;
@@ -115,13 +120,32 @@ class ConfigurationPropertiesBinder {
 
 	private Binder getBinder() {
 		if (this.binder == null) {
-			this.binder = new Binder(
-					ConfigurationPropertySources.from(this.propertySources),
-					new PropertySourcesPlaceholdersResolver(this.propertySources),
-					new ConversionServiceDeducer(this.applicationContext)
-							.getConversionService());
+			this.binder = new Binder(getConfigurationPropertySources(),
+					getPropertySourcesPlaceholdersResolver(), getConversionService(),
+					getPropertyEditorInitializer());
 		}
 		return this.binder;
+	}
+
+	private Iterable<ConfigurationPropertySource> getConfigurationPropertySources() {
+		return ConfigurationPropertySources.from(this.propertySources);
+	}
+
+	private PropertySourcesPlaceholdersResolver getPropertySourcesPlaceholdersResolver() {
+		return new PropertySourcesPlaceholdersResolver(this.propertySources);
+	}
+
+	private ConversionService getConversionService() {
+		return new ConversionServiceDeducer(this.applicationContext)
+				.getConversionService();
+	}
+
+	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
+		if (this.applicationContext instanceof ConfigurableApplicationContext) {
+			return ((ConfigurableApplicationContext) this.applicationContext)
+					.getBeanFactory()::copyRegisteredEditorsTo;
+		}
+		return null;
 	}
 
 }

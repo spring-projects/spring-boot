@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  */
-class DelimitedStringToCollectionConverter implements ConditionalGenericConverter {
+final class DelimitedStringToCollectionConverter implements ConditionalGenericConverter {
 
 	private final ConversionService conversionService;
 
@@ -51,10 +51,8 @@ class DelimitedStringToCollectionConverter implements ConditionalGenericConverte
 
 	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return targetType.hasAnnotation(Delimiter.class)
-				&& (targetType.getElementTypeDescriptor() == null
-						|| this.conversionService.canConvert(sourceType,
-								targetType.getElementTypeDescriptor()));
+		return targetType.getElementTypeDescriptor() == null || this.conversionService
+				.canConvert(sourceType, targetType.getElementTypeDescriptor());
 	}
 
 	@Override
@@ -70,8 +68,8 @@ class DelimitedStringToCollectionConverter implements ConditionalGenericConverte
 	private Object convert(String source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		Delimiter delimiter = targetType.getAnnotation(Delimiter.class);
-		Assert.state(delimiter != null, "Missing @DelimitedStringFormat annotation");
-		String[] elements = getElements(source, delimiter.value());
+		String[] elements = getElements(source,
+				(delimiter == null ? "," : delimiter.value()));
 		TypeDescriptor elementDescriptor = targetType.getElementTypeDescriptor();
 		Collection<Object> target = createCollection(targetType, elementDescriptor,
 				elements.length);
