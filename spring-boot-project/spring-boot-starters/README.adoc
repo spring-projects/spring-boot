@@ -97,6 +97,9 @@ do as they were designed before this was clarified.
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/spring-boot-starter-jade4j
 
+| https://github.com/sbraconnier/jodconverter[JODConverter]
+| https://github.com/sbraconnier/jodconverter
+
 | JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
 | http://joinfaces.org
 
