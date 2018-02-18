@@ -34,7 +34,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SimpleProperties {
 
 	/**
-	 * Enable publishing to the backend.
+	 * Enable in-memory metrics that aren't published anywhere (allows you to see
+	 * what metrics are collected in the metrics actuator endpoint).
 	 */
 	private boolean enabled;
 
