@@ -79,6 +79,16 @@ public class ControllerEndpointHandlerMappingTests {
 	}
 
 	@Test
+	public void mappingWithNoPath() throws Exception {
+		ExposableControllerEndpoint pathless = pathlessEndpoint();
+		ControllerEndpointHandlerMapping mapping = createMapping("actuator", pathless);
+		assertThat(getHandler(mapping, HttpMethod.GET, "/actuator/pathless"))
+				.isEqualTo(handlerOf(pathless.getController(), "get"));
+		assertThat(getHandler(mapping, HttpMethod.GET, "/pathless")).isNull();
+		assertThat(getHandler(mapping, HttpMethod.GET, "/")).isNull();
+	}
+
+	@Test
 	public void mappingNarrowedToMethod() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
@@ -118,6 +128,10 @@ public class ControllerEndpointHandlerMappingTests {
 		return mockEndpoint("second", new SecondTestMvcEndpoint());
 	}
 
+	private ExposableControllerEndpoint pathlessEndpoint() {
+		return mockEndpoint("pathless", new PathlessControllerEndpoint());
+	}
+
 	private ExposableControllerEndpoint mockEndpoint(String id, Object controller) {
 		ExposableControllerEndpoint endpoint = mock(ExposableControllerEndpoint.class);
 		given(endpoint.getId()).willReturn(id);
@@ -142,6 +156,16 @@ public class ControllerEndpointHandlerMappingTests {
 		@PostMapping("/")
 		public void save() {
 
+		}
+
+	}
+
+	@ControllerEndpoint(id = "pathless")
+	private static class PathlessControllerEndpoint {
+
+		@GetMapping
+		public String get() {
+			return "test";
 		}
 
 	}
