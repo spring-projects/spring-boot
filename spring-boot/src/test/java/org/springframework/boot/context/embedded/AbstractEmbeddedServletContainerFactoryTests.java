@@ -1055,6 +1055,23 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void includeJarWithStaticResourcesWithUrlEncodedSpaces() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.temporaryFolder.newFolder("test parent");
+		File jarFile = this.temporaryFolder.newFile("test parent/test.jar");
+		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarFile));
+		JarEntry jarEntry = new JarEntry("META-INF/resources");
+		jarOutputStream.putNextEntry(jarEntry);
+		jarOutputStream.closeEntry();
+		jarOutputStream.close();
+		String path = "file:" + jarFile.getAbsolutePath().replaceAll(" ", "%20");
+
+		boolean isStaticResource = factory.isStaticResource(new URL(path));
+
+		assertThat(isStaticResource).isTrue();
+	}
+
+	@Test
 	public void excludeJarWithoutStaticResources() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		File jarFile = this.temporaryFolder.newFile("test.jar");
