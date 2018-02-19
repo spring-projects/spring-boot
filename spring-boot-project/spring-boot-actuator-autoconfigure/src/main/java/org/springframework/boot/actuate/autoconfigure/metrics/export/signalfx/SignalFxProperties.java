@@ -39,6 +39,11 @@ public class SignalFxProperties extends StepRegistryProperties {
 	 */
 	private String uri;
 
+	/**
+	 * Uniquely identifies the app instance that is publishing metrics to SignalFx. Defaults to the local host name.
+	 */
+	private String source;
+
 	public String getAccessToken() {
 		return this.accessToken;
 	}
@@ -53,6 +58,14 @@ public class SignalFxProperties extends StepRegistryProperties {
 
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 
 }
