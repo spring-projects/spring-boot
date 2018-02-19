@@ -90,12 +90,10 @@ public class StaticResourceRequestTests {
 		this.resourceRequest.atCommonLocations().excluding(null);
 	}
 
-	private StaticResourceRequestTests.RequestMatcherAssert assertMatcher(
-			ServerWebExchangeMatcher matcher) {
+	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		context.registerBean(ServerProperties.class);
-		return assertThat(
-				new StaticResourceRequestTests.RequestMatcherAssert(context, matcher));
+		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
 	private static class RequestMatcherAssert implements AssertDelegateTarget {

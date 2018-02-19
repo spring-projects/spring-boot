@@ -21,7 +21,7 @@ import org.springframework.boot.configurationsample.ReadOperation;
 import org.springframework.lang.Nullable;
 
 /**
- * An meta-annotated endpoint similar to {@code @WebEndpoint} or {@code @JmxEndpoint} in
+ * A meta-annotated endpoint similar to {@code @WebEndpoint} or {@code @JmxEndpoint} in
  * Spring Boot. Also with a package private read operation that has an optional argument.
  *
  * @author Stephane Nicoll

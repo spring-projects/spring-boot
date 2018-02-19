@@ -33,7 +33,7 @@ public final class PathRequest {
 
 	/**
 	 * Returns a {@link StaticResourceRequest} that can be used to create a matcher for
-	 * {@link StaticResourceLocation Locations}.
+	 * {@link StaticResourceLocation locations}.
 	 * @return a {@link StaticResourceRequest}
 	 */
 	public static StaticResourceRequest toStaticResources() {

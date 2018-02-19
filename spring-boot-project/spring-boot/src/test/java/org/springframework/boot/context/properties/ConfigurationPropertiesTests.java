@@ -275,15 +275,15 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenPrefixedPropertiesDecalredAsBeanShouldBind() {
-		load(PrefixPropertiesDecalredAsBeanConfiguration.class, "spring.foo.name=foo");
+	public void loadWhenPrefixedPropertiesDeclaredAsBeanShouldBind() {
+		load(PrefixPropertiesDeclaredAsBeanConfiguration.class, "spring.foo.name=foo");
 		PrefixProperties bean = this.context.getBean(PrefixProperties.class);
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadWhenPrefixedPropertiesDecalredAsAnnotationValueShouldBind() {
-		load(PrefixPropertiesDecalredAsAnnotationValueConfiguration.class,
+	public void loadWhenPrefixedPropertiesDeclaredAsAnnotationValueShouldBind() {
+		load(PrefixPropertiesDeclaredAsAnnotationValueConfiguration.class,
 				"spring.foo.name=foo");
 		PrefixProperties bean = this.context.getBean(
 				"spring.foo-" + PrefixProperties.class.getName(), PrefixProperties.class);
@@ -291,8 +291,8 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenMultiplePrefixedPropertiesDecalredAsAnnotationValueShouldBind() {
-		load(MultiplePrefixPropertiesDecalredAsAnnotationValueConfiguration.class,
+	public void loadWhenMultiplePrefixedPropertiesDeclaredAsAnnotationValueShouldBind() {
+		load(MultiplePrefixPropertiesDeclaredAsAnnotationValueConfiguration.class,
 				"spring.foo.name=foo", "spring.bar.name=bar");
 		PrefixProperties bean1 = this.context.getBean(PrefixProperties.class);
 		AnotherPrefixProperties bean2 = this.context
@@ -510,7 +510,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenOverridingPropertiesWithPlaceholderResolutionInEnvionmentShouldBindWithOverride() {
+	public void loadWhenOverridingPropertiesWithPlaceholderResolutionInEnvironmentShouldBindWithOverride() {
 		MutablePropertySources sources = this.context.getEnvironment()
 				.getPropertySources();
 		sources.addFirst(new SystemEnvironmentPropertySource("system",
@@ -790,7 +790,7 @@ public class ConfigurationPropertiesTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	static class PrefixPropertiesDecalredAsBeanConfiguration {
+	static class PrefixPropertiesDeclaredAsBeanConfiguration {
 
 		@Bean
 		public PrefixProperties prefixProperties() {
@@ -801,14 +801,14 @@ public class ConfigurationPropertiesTests {
 
 	@Configuration
 	@EnableConfigurationProperties(PrefixProperties.class)
-	static class PrefixPropertiesDecalredAsAnnotationValueConfiguration {
+	static class PrefixPropertiesDeclaredAsAnnotationValueConfiguration {
 
 	}
 
 	@Configuration
 	@EnableConfigurationProperties({ PrefixProperties.class,
 			AnotherPrefixProperties.class })
-	static class MultiplePrefixPropertiesDecalredAsAnnotationValueConfiguration {
+	static class MultiplePrefixPropertiesDeclaredAsAnnotationValueConfiguration {
 
 	}
 

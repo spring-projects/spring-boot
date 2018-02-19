@@ -142,7 +142,7 @@ public class BindableTests {
 	}
 
 	@Test
-	public void getAnnotationWhenMatchShouldReuturnAnnotation() {
+	public void getAnnotationWhenMatchShouldReturnAnnotation() {
 		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
 		assertThat(Bindable.of(String.class).withAnnotations(annotation)
 				.getAnnotation(Test.class)).isSameAs(annotation);
