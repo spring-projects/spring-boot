@@ -92,7 +92,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	/**
 	 * Set the maximum amount of time that should be waited when starting or stopping the
 	 * server.
-	 * @param lifecycleTimeout the lefecycle timeout
+	 * @param lifecycleTimeout the lifecycle timeout
 	 */
 	public void setLifecycleTimeout(Duration lifecycleTimeout) {
 		this.lifecycleTimeout = lifecycleTimeout;

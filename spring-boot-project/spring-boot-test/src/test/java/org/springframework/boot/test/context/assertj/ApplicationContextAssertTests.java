@@ -260,7 +260,7 @@ public class ApplicationContextAssertTests {
 	}
 
 	@Test
-	public void getBeanOfTypeWhenInParentWithLimtedScopeShouldReturnNullAssert() {
+	public void getBeanOfTypeWhenInParentWithLimitedScopeShouldReturnNullAssert() {
 		this.parent.registerSingleton("foo", Foo.class);
 		assertThat(getAssert(this.context)).getBean(Foo.class, Scope.NO_ANCESTORS)
 				.isNull();

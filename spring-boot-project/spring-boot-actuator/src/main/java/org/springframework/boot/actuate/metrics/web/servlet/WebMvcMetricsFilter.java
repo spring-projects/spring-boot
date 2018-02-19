@@ -113,8 +113,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private void filterAndRecordMetrics(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
-			throws IOException, ServletException, NestedServletException {
-		Object handler = null;
+			throws IOException, ServletException {
+		Object handler;
 		try {
 			handler = getHandler(request);
 		}
@@ -149,7 +149,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private void filterAndRecordMetrics(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain, Object handler)
-			throws IOException, ServletException, NestedServletException {
+			throws IOException, ServletException {
 		TimingContext timingContext = TimingContext.get(request);
 		if (timingContext == null) {
 			timingContext = startAndAttachTimingContext(request, handler);
