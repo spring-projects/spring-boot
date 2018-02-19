@@ -55,7 +55,7 @@ public class NewRelicMetricsExportAutoConfiguration {
 		return new NewRelicPropertiesConfigAdapter(props);
 	}
 
-	@Bean(destroyMethod = "stop")
+	@Bean
 	@ConditionalOnMissingBean
 	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig config,
 			Clock clock) {

@@ -55,7 +55,7 @@ public class GraphiteMetricsExportAutoConfiguration {
 		return new GraphitePropertiesConfigAdapter(graphiteProperties);
 	}
 
-	@Bean(destroyMethod = "stop")
+	@Bean
 	@ConditionalOnMissingBean
 	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig graphiteConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {
