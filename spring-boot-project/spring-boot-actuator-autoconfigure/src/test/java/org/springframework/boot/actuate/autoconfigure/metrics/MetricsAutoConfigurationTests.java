@@ -29,7 +29,6 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
@@ -65,15 +64,6 @@ public class MetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomClockConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
 						.hasBean("customClock"));
-	}
-
-	@Test
-	public void autoConfiguresACompositeMeterRegistry() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(CompositeMeterRegistry.class);
-			assertThat(context.getBean(CompositeMeterRegistry.class).getRegistries())
-					.isEmpty();
-		});
 	}
 
 	@SuppressWarnings("unchecked")

@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration;
@@ -71,8 +72,8 @@ public final class MetricsRun {
 	}
 
 	private static final AutoConfigurations AUTO_CONFIGURATIONS = AutoConfigurations.of(
-			MetricsAutoConfiguration.class, RabbitMetricsAutoConfiguration.class,
-			CacheMetricsAutoConfiguration.class,
+			MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
+			RabbitMetricsAutoConfiguration.class, CacheMetricsAutoConfiguration.class,
 			DataSourcePoolMetricsAutoConfiguration.class,
 			RestTemplateMetricsAutoConfiguration.class,
 			WebFluxMetricsAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class);

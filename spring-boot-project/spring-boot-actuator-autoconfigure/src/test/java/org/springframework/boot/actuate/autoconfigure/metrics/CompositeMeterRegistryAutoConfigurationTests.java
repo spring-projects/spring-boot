@@ -22,31 +22,35 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CompositeMeterRegistryPostProcessor}.
+ * Tests for {@link CompositeMeterRegistryAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-public class CompositeMeterRegistryPostProcessorTests {
+public class CompositeMeterRegistryAutoConfigurationTests {
 
 	private static final String COMPOSITE_NAME = "compositeMeterRegistry";
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(BaseConfig.class);
+			.withUserConfiguration(BaseConfig.class).withConfiguration(
+					AutoConfigurations.of(CompositeMeterRegistryAutoConfiguration.class));
 
 	@Test
-	public void registerWhenHasNoMeterRegistryShouldRegisterEmptyComposite() {
+	public void registerWhenHasNoMeterRegistryShouldRegisterEmptyNoOpComposite() {
 		this.contextRunner.withUserConfiguration(NoMeterRegistryConfig.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(MeterRegistry.class);
-					CompositeMeterRegistry registry = context.getBean(COMPOSITE_NAME,
+					CompositeMeterRegistry registry = context.getBean("noOpMeterRegistry",
 							CompositeMeterRegistry.class);
 					assertThat(registry.getRegistries()).isEmpty();
 				});
@@ -79,16 +83,18 @@ public class CompositeMeterRegistryPostProcessorTests {
 
 	@Test
 	public void registerWhenHasMultipleRegistriesAndOneIsPrimaryShouldDoNothing() {
-
+		this.contextRunner
+				.withUserConfiguration(MultipleMeterRegistriesWithOnePrimaryConfig.class)
+				.run((context) -> {
+					assertThat(context.getBeansOfType(MeterRegistry.class)).hasSize(2)
+							.containsKeys("meterRegistryOne", "meterRegistryTwo");
+					MeterRegistry primary = context.getBean(MeterRegistry.class);
+					assertThat(primary).isInstanceOf(TestMeterRegistry.class);
+				});
 	}
 
 	@Configuration
 	static class BaseConfig {
-
-		@Bean
-		public CompositeMeterRegistryPostProcessor compositeMeterRegistryPostProcessor() {
-			return new CompositeMeterRegistryPostProcessor();
-		}
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -117,6 +123,22 @@ public class CompositeMeterRegistryPostProcessorTests {
 	static class MultipleMeterRegistriesConfig {
 
 		@Bean
+		public MeterRegistry meterRegistryOne() {
+			return new TestMeterRegistry();
+		}
+
+		@Bean
+		public MeterRegistry meterRegistryTwo() {
+			return new SimpleMeterRegistry();
+		}
+
+	}
+
+	@Configuration
+	static class MultipleMeterRegistriesWithOnePrimaryConfig {
+
+		@Bean
+		@Primary
 		public MeterRegistry meterRegistryOne() {
 			return new TestMeterRegistry();
 		}

@@ -27,6 +27,7 @@ import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,17 +48,13 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
+@AutoConfigureBefore(CompositeMeterRegistryAutoConfiguration.class)
 public class MetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public Clock micrometerClock() {
 		return Clock.SYSTEM;
-	}
-
-	@Bean
-	public static CompositeMeterRegistryPostProcessor compositeMeterRegistryPostProcessor() {
-		return new CompositeMeterRegistryPostProcessor();
 	}
 
 	@Bean
