@@ -75,4 +75,5 @@ public class StatsdMetricsExportAutoConfiguration {
 	public StatsdMetrics statsdMetrics() {
 		return new StatsdMetrics();
 	}
+
 }
