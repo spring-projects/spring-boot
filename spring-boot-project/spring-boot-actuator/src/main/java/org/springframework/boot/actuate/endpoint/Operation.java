@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
-
 /**
  * An operation on an {@link ExposableEndpoint endpoint}.
  *

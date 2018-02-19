@@ -32,7 +32,7 @@ import javax.management.ReflectionException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
-import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
+import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 

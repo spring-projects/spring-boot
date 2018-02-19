@@ -21,7 +21,7 @@ import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.actuate.endpoint.invoke.InvocationContext;
+import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;

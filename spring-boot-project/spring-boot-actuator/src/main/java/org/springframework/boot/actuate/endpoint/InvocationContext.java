@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.invoke;
+package org.springframework.boot.actuate.endpoint;
 
 import java.security.Principal;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
 
 /**

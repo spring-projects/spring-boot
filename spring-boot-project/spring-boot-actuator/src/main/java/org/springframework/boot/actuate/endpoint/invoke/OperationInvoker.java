@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.invoke;
 
+import org.springframework.boot.actuate.endpoint.InvocationContext;
+
 /**
  * Interface to perform an operation invocation.
  *
