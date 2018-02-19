@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.config.NamingConvention;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
+import io.micrometer.statsd.StatsdMetrics;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -67,7 +68,8 @@ public class StatsdMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.export.statsd.enabled=false")
+		this.contextRunner
+				.withPropertyValues("management.metrics.export.statsd.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(StatsdMeterRegistry.class)
 						.doesNotHaveBean(StatsdConfig.class)
@@ -103,12 +105,13 @@ public class StatsdMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-			StatsdMeterRegistry registry = spyOnDisposableBean(StatsdMeterRegistry.class,
-					context);
-			context.close();
-			verify(registry).stop();
-		});
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
+					StatsdMeterRegistry registry = spyOnDisposableBean(
+							StatsdMeterRegistry.class, context);
+					context.close();
+					verify(registry).stop();
+				});
 	}
 
 	@SuppressWarnings("unchecked")
