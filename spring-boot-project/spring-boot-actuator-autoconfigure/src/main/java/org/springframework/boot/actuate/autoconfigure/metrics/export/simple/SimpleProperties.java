@@ -34,11 +34,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SimpleProperties {
 
 	/**
-	 * Enable publishing to the backend.
-	 */
-	private boolean enabled;
-
-	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step = Duration.ofSeconds(10);
@@ -47,14 +42,6 @@ public class SimpleProperties {
 	 * Counting mode.
 	 */
 	private CountingMode mode = CountingMode.CUMULATIVE;
-
-	public boolean getEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 
 	public Duration getStep() {
 		return this.step;

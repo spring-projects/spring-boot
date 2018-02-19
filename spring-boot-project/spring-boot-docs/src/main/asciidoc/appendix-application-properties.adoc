@@ -1384,7 +1384,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.signalfx.uri= # Optional custom URI for the SignalFX API.
 	management.metrics.export.simple.mode=cumulative # Counting mode.
 	management.metrics.export.simple.step=10s # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.statsd.enabled= # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.statsd.enabled=true # Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.
 	management.metrics.export.statsd.flavor=datadog # StatsD line protocol to use.
 	management.metrics.export.statsd.host=localhost # Host of the StatsD server to receive exported metrics.
 	management.metrics.export.statsd.max-packet-length=1400 # Total length of a single payload should be kept within your network's MTU.

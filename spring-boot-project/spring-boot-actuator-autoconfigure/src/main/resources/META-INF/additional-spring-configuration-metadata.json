@@ -216,6 +216,12 @@
       "defaultValue": true
     },
     {
+      "name": "management.metrics.export.simple.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.",
+      "defaultValue": true
+    },
+    {
       "name": "management.trace.http.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response tracing.",

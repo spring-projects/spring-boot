@@ -1272,6 +1272,22 @@ using:
 
 
 
+[[production-ready-metrics-export-simple]]
+==== Simple
+Micrometer ships with a simple, in-memory backend that is automatically used as a fallback
+if no other registry is configured. This allows you to see what metrics are collected in
+the <<production-ready-metrics-endpoint,metrics endpoint>>.
+
+The in-memory backend disables itself as soon as you're using any of the other available
+backend. You can also disable it explicitly:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.simple.enabled=false
+----
+
+
+
 [[production-ready-metrics-export-newrelic]]
 ==== New Relic
 New Relic registry pushes metrics to New Relic periodically. To export metrics to
