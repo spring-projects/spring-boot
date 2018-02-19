@@ -54,7 +54,7 @@ public class WavefrontMetricsExportAutoConfiguration {
 		return new WavefrontPropertiesConfigAdapter(props);
 	}
 
-	@Bean(destroyMethod = "stop")
+	@Bean
 	@ConditionalOnMissingBean
 	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig config,
 			Clock clock) {
