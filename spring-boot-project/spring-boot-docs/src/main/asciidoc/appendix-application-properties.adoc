@@ -1380,6 +1380,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.signalfx.enabled= # Whether exporting of metrics to this backend is enabled.
 	management.metrics.export.signalfx.num-threads= # Number of threads to use with the metrics publishing scheduler.
 	management.metrics.export.signalfx.read-timeout= # Read timeout for requests to this backend.
+	management.metrics.export.signalfx.source= # Uniquely identifies the app instance that is publishing metrics to SignalFx. Defaults to the local host name.
 	management.metrics.export.signalfx.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.signalfx.uri= # Optional custom URI for the SignalFX API.
 	management.metrics.export.simple.mode=cumulative # Counting mode.

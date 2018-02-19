@@ -44,4 +44,9 @@ public class SignalFxPropertiesConfigAdapter
 		return get(SignalFxProperties::getUri, SignalFxConfig.super::uri);
 	}
 
+	@Override
+	public String source() {
+		return get(SignalFxProperties::getSource, SignalFxConfig.super::source);
+	}
+
 }
