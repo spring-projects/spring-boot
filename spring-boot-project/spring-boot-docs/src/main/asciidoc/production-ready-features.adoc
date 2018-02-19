@@ -1126,6 +1126,7 @@ monitoring systems, including:
 - https://prometheus.io[Prometheus]
 - https://signalfx.com[SignalFx]
 - StatsD
+- https://www.wavefront.com/[Wavefront]
 
 TIP: To learn more about Micrometer's capabilities, please refer to its
 https://micrometer.io/docs[reference documentation], in particular the
@@ -1367,6 +1368,38 @@ You can also change the StatsD line protocol to use (default to Datadog):
 [source,properties,indent=0]
 ----
 	management.metrics.export.statsd.flavor=etsy
+----
+
+
+
+[[production-ready-metrics-export-wavefront]]
+==== Wavefront
+Wavefront registry pushes metrics to Wavefront periodically. If you are exporting
+metrics to {micrometer-registry-documentation}/wavefront[Wavefront] directly, your API
+token must be provided:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.wavefront.api-token=YOUR_API_TOKEN
+----
+
+Alternatively, you may use a a Wavefront sidecar or an internal proxy set up in your
+environment that forwards metrics data to the Wavefront API host:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.uri=proxy://localhost:7828
+----
+
+TIP: If publishing metrics to a Wavefront proxy (as described in
+https://docs.wavefront.com/proxies_installing.html[the documentation]), the host must be
+in the `proxy://HOST:PORT` format.
+
+You can also change the interval at which metrics are sent to Wavefront:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.wavefront.steps=30s
 ----
 
 
