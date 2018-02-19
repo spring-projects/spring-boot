@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
+import io.micrometer.statsd.StatsdMetrics;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -68,6 +69,11 @@ public class StatsdMetricsExportAutoConfiguration {
 	@ConditionalOnMissingBean
 	public HierarchicalNameMapper hierarchicalNameMapper() {
 		return HierarchicalNameMapper.DEFAULT;
+	}
+
+	@Bean
+	public StatsdMetrics statsdMetrics() {
+		return new StatsdMetrics();
 	}
 
 }

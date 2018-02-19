@@ -56,12 +56,13 @@ public class StatsdMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguresItsConfigMeterRegistryAndNameMapper() {
+	public void autoConfiguresItsConfigMeterRegistryNameMapperAndMetrics() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(StatsdMeterRegistry.class)
 						.hasSingleBean(StatsdConfig.class)
-						.hasSingleBean(HierarchicalNameMapper.class));
+						.hasSingleBean(HierarchicalNameMapper.class)
+						.hasSingleBean(StatsdMetrics.class));
 	}
 
 	@Test
