@@ -57,7 +57,7 @@ public class GangliaMetricsExportAutoConfiguration {
 		return new GangliaPropertiesConfigAdapter(gangliaProperties);
 	}
 
-	@Bean(destroyMethod = "stop")
+	@Bean
 	@ConditionalOnMissingBean
 	public GangliaMeterRegistry gangliaMeterRegistry(GangliaConfig gangliaConfig,
 			HierarchicalNameMapper nameMapper, Clock clock) {

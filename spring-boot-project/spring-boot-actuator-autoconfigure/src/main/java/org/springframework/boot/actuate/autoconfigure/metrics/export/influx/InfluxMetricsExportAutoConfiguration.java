@@ -56,7 +56,7 @@ public class InfluxMetricsExportAutoConfiguration {
 		return new InfluxPropertiesConfigAdapter(influxProperties);
 	}
 
-	@Bean(destroyMethod = "stop")
+	@Bean
 	@ConditionalOnMissingBean
 	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig,
 			Clock clock) {
