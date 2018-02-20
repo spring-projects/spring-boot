@@ -46,6 +46,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -389,6 +390,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 	private static final class ReactiveSecurityContext implements SecurityContext {
 
+		private static final String ROLE_PREFIX = "ROLE_";
+
 		private final Authentication authentication;
 
 		ReactiveSecurityContext(Authentication authentication) {
@@ -402,8 +405,12 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 		@Override
 		public boolean isUserInRole(String role) {
-			if (this.authentication == null || !this.authentication.isAuthenticated()) {
+			if (this.authentication == null || !this.authentication.isAuthenticated()
+					|| CollectionUtils.isEmpty(this.authentication.getAuthorities())) {
 				return false;
+			}
+			if (!role.startsWith(ROLE_PREFIX)) {
+				role = ROLE_PREFIX + role;
 			}
 			for (GrantedAuthority grantedAuthority : this.authentication
 					.getAuthorities()) {
