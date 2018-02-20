@@ -284,15 +284,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.trace.filter.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable the trace servlet filter.",
-      "deprecation": {
-        "replacement": "management.trace.http.enabled",
-        "level": "error"
-      }
-    },
-    {
       "name": "endpoints.actuator.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable the endpoint.",
