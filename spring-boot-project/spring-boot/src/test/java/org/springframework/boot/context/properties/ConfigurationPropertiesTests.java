@@ -61,6 +61,10 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ProtocolResolver;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.lang.Nullable;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
@@ -75,6 +79,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ConfigurationProperties} annotated beans. Covers
@@ -582,6 +592,38 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void customProtocolResolverIsInvoked() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"test.resource=application.properties");
+		ProtocolResolver protocolResolver = mock(ProtocolResolver.class);
+		given(protocolResolver.resolve(anyString(), any(ResourceLoader.class)))
+				.willReturn(null);
+		this.context.addProtocolResolver(protocolResolver);
+		this.context.register(PropertiesWithResource.class);
+		this.context.refresh();
+		verify(protocolResolver).resolve(eq("application.properties"),
+				any(ResourceLoader.class));
+	}
+
+	@Test
+	public void customProtocolResolver() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"test.resource=test:/application.properties");
+		this.context.addProtocolResolver(new TestProtocolResolver());
+		this.context.register(PropertiesWithResource.class);
+		this.context.refresh();
+		Resource resource = this.context.getBean(PropertiesWithResource.class)
+				.getResource();
+		assertThat(resource).isNotNull();
+		assertThat(resource).isInstanceOf(ClassPathResource.class);
+		assertThat(resource.exists()).isTrue();
+		assertThat(((ClassPathResource) resource).getPath())
+				.isEqualTo("application.properties");
+	}
+
+	@Test
 	public void loadShouldUseConfigurationConverter() {
 		prepareConverterContext(ConverterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
@@ -917,6 +959,36 @@ public class ConfigurationPropertiesTests {
 			return new PrototypeBean();
 		}
 
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertiesWithResource {
+
+		private Resource resource;
+
+		public Resource getResource() {
+			return this.resource;
+		}
+
+		public void setResource(Resource resource) {
+			this.resource = resource;
+		}
+
+	}
+
+	private static class TestProtocolResolver implements ProtocolResolver {
+
+		public static final String PREFIX = "test:/";
+
+		@Override
+		public Resource resolve(String location, ResourceLoader resourceLoader) {
+			if (location.startsWith(PREFIX)) {
+				String path = location.substring(PREFIX.length(), location.length());
+				return new ClassPathResource(path);
+			}
+			return null;
+		}
 	}
 
 	@Configuration
