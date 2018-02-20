@@ -25,7 +25,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,17 +50,16 @@ import org.springframework.util.ObjectUtils;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableConfigurationProperties(ServerProperties.class)
 @Import({ ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar.class,
-		ReactiveWebServerFactoryConfiguration.TomcatConfiguration.class,
-		ReactiveWebServerFactoryConfiguration.JettyConfiguration.class,
-		ReactiveWebServerFactoryConfiguration.UndertowConfiguration.class,
-		ReactiveWebServerFactoryConfiguration.ReactorNettyConfiguration.class })
+		ReactiveWebServerFactoryConfiguration.EmbeddedNetty.class,
+		ReactiveWebServerFactoryConfiguration.EmbeddedTomcat.class,
+		ReactiveWebServerFactoryConfiguration.EmbeddedJetty.class,
+		ReactiveWebServerFactoryConfiguration.EmbeddedUndertow.class })
 public class ReactiveWebServerFactoryAutoConfiguration {
 
-	@ConditionalOnMissingBean
 	@Bean
-	public DefaultReactiveWebServerFactoryCustomizer defaultReactiveWebServerCustomizer(
+	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
-		return new DefaultReactiveWebServerFactoryCustomizer(serverProperties);
+		return new ReactiveWebServerFactoryCustomizer(serverProperties);
 	}
 
 	/**
@@ -86,14 +84,18 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 			if (this.beanFactory == null) {
 				return;
 			}
-			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
-					WebServerFactoryCustomizerBeanPostProcessor.class, true, false))) {
-				RootBeanDefinition beanDefinition = new RootBeanDefinition(
-						WebServerFactoryCustomizerBeanPostProcessor.class);
-				beanDefinition.setSynthetic(true);
-				registry.registerBeanDefinition(
-						"webServerFactoryCustomizerBeanPostProcessor", beanDefinition);
+			registerSyntheticBeanIfMissing(registry,
+					"webServerFactoryCustomizerBeanPostProcessor",
+					WebServerFactoryCustomizerBeanPostProcessor.class);
+		}
 
+		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry,
+				String name, Class<?> beanClass) {
+			if (ObjectUtils.isEmpty(
+					this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
+				beanDefinition.setSynthetic(true);
+				registry.registerBeanDefinition(name, beanDefinition);
 			}
 		}
 

@@ -21,15 +21,18 @@ import java.io.File;
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 
+import org.springframework.boot.web.server.ConfigurableWebServerFactory;
+
 /**
- * Web Server Factory configuration for Undertow-specific features.
+ * {@link ConfigurableWebServerFactory} for Undertow-specific features.
  *
  * @author Brian Clozel
  * @since 2.0.0
  * @see UndertowServletWebServerFactory
  * @see UndertowReactiveWebServerFactory
  */
-public interface ConfigurableUndertowWebServerFactory {
+public interface ConfigurableUndertowWebServerFactory
+		extends ConfigurableWebServerFactory {
 
 	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the

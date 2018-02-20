@@ -15,8 +15,6 @@
  */
 
 /**
- * Configuration for embedded reactive and servlet Jetty web servers.
- *
- * @see org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory
+ * Configuration for embedded reactive and servlet web servers.
  */
-package org.springframework.boot.autoconfigure.web.embedded.jetty;
+package org.springframework.boot.autoconfigure.web.embedded;

@@ -18,15 +18,17 @@ package org.springframework.boot.web.embedded.jetty;
 
 import org.eclipse.jetty.server.Server;
 
+import org.springframework.boot.web.server.ConfigurableWebServerFactory;
+
 /**
- * Web Server Factory configuration for Jetty-specific features.
+ * {@link ConfigurableWebServerFactory} for Jetty-specific features.
  *
  * @author Brian Clozel
  * @since 2.0.0
  * @see JettyServletWebServerFactory
  * @see JettyReactiveWebServerFactory
  */
-public interface ConfigurableJettyWebServerFactory {
+public interface ConfigurableJettyWebServerFactory extends ConfigurableWebServerFactory {
 
 	/**
 	 * Set the number of acceptor threads to use.

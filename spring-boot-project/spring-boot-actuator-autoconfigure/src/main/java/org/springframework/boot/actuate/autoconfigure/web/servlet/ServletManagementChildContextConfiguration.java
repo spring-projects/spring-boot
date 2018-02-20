@@ -26,15 +26,19 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerFactoryCustomizer;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.servlet.DefaultServletWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.embedded.JettyWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.servlet.TomcatServletWebServerFactoryCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -61,9 +65,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 class ServletManagementChildContextConfiguration {
 
 	@Bean
-	public ServletManagementServerFactoryCustomizer serverFactoryCustomizer(
+	public ServletManagementWebServerFactoryCustomizer servletManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
-		return new ServletManagementServerFactoryCustomizer(beanFactory);
+		return new ServletManagementWebServerFactoryCustomizer(beanFactory);
 	}
 
 	@Bean
@@ -90,11 +94,15 @@ class ServletManagementChildContextConfiguration {
 
 	}
 
-	static class ServletManagementServerFactoryCustomizer extends
-			ManagementServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+	static class ServletManagementWebServerFactoryCustomizer extends
+			ManagementWebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
 
-		ServletManagementServerFactoryCustomizer(ListableBeanFactory beanFactory) {
-			super(beanFactory, DefaultServletWebServerFactoryCustomizer.class);
+		ServletManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
+			super(beanFactory, ServletWebServerFactoryCustomizer.class,
+					TomcatServletWebServerFactoryCustomizer.class,
+					TomcatWebServerFactoryCustomizer.class,
+					JettyWebServerFactoryCustomizer.class,
+					UndertowWebServerFactoryCustomizer.class);
 		}
 
 		@Override

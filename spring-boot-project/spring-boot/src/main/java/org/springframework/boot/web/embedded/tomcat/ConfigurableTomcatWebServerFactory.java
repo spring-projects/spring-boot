@@ -24,15 +24,17 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 
+import org.springframework.boot.web.server.ConfigurableWebServerFactory;
+
 /**
- * Web Server Factory configuration for Tomcat-specific features.
+ * {@link ConfigurableWebServerFactory} for Tomcat-specific features.
  *
  * @author Brian Clozel
  * @since 2.0.0
  * @see TomcatServletWebServerFactory
  * @see TomcatReactiveWebServerFactory
  */
-public interface ConfigurableTomcatWebServerFactory {
+public interface ConfigurableTomcatWebServerFactory extends ConfigurableWebServerFactory {
 
 	/**
 	 * Set the Tomcat base directory. If not specified a temporary directory will be used.

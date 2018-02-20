@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.Ssl;
@@ -36,17 +42,18 @@ import org.springframework.core.Ordered;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public abstract class ManagementServerFactoryCustomizer<T extends ConfigurableWebServerFactory>
+public abstract class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServerFactory>
 		implements WebServerFactoryCustomizer<T>, Ordered {
 
 	private final ListableBeanFactory beanFactory;
 
-	private final Class<? extends WebServerFactoryCustomizer<T>> customizerClass;
+	private final Class<? extends WebServerFactoryCustomizer<?>>[] customizerClasses;
 
-	protected ManagementServerFactoryCustomizer(ListableBeanFactory beanFactory,
-			Class<? extends WebServerFactoryCustomizer<T>> customizerClass) {
+	@SafeVarargs
+	protected ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory,
+			Class<? extends WebServerFactoryCustomizer<?>>... customizerClasses) {
 		this.beanFactory = beanFactory;
-		this.customizerClass = customizerClass;
+		this.customizerClasses = customizerClasses;
 	}
 
 	@Override
@@ -59,17 +66,40 @@ public abstract class ManagementServerFactoryCustomizer<T extends ConfigurableWe
 		ManagementServerProperties managementServerProperties = BeanFactoryUtils
 				.beanOfTypeIncludingAncestors(this.beanFactory,
 						ManagementServerProperties.class);
-		ServerProperties serverProperties = BeanFactoryUtils
-				.beanOfTypeIncludingAncestors(this.beanFactory, ServerProperties.class);
-		WebServerFactoryCustomizer<T> webServerFactoryCustomizer = BeanFactoryUtils
-				.beanOfTypeIncludingAncestors(this.beanFactory, this.customizerClass);
 		// Customize as per the parent context first (so e.g. the access logs go to
 		// the same place)
-		webServerFactoryCustomizer.customize(factory);
+		customizeSameAsParentContext(factory);
 		// Then reset the error pages
 		factory.setErrorPages(Collections.emptySet());
 		// and add the management-specific bits
+		ServerProperties serverProperties = BeanFactoryUtils
+				.beanOfTypeIncludingAncestors(this.beanFactory, ServerProperties.class);
 		customize(factory, managementServerProperties, serverProperties);
+	}
+
+	private void customizeSameAsParentContext(T factory) {
+		List<WebServerFactoryCustomizer<?>> customizers = Arrays
+				.stream(this.customizerClasses).map(this::getCustomizer)
+				.filter(Objects::nonNull).collect(Collectors.toList());
+		invokeCustomizers(factory, customizers);
+	}
+
+	private WebServerFactoryCustomizer<?> getCustomizer(
+			Class<? extends WebServerFactoryCustomizer<?>> customizerClass) {
+		try {
+			return BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
+					customizerClass);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void invokeCustomizers(T factory,
+			List<WebServerFactoryCustomizer<?>> customizers) {
+		LambdaSafe.callbacks(WebServerFactoryCustomizer.class, customizers, factory)
+				.invoke((customizer) -> customizer.customize(factory));
 	}
 
 	protected void customize(T factory,

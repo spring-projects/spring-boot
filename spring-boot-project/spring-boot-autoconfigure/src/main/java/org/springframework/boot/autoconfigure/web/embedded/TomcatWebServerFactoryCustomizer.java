@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.embedded.tomcat;
+package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
 
@@ -29,9 +29,12 @@ import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
@@ -42,34 +45,44 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @author Yulin Qin
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.0.0
  */
-public final class TomcatCustomizer {
+public class TomcatWebServerFactoryCustomizer implements
+		WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory>, Ordered {
 
-	private TomcatCustomizer() {
+	private final Environment environment;
+
+	private final ServerProperties serverProperties;
+
+	public TomcatWebServerFactoryCustomizer(Environment environment,
+			ServerProperties serverProperties) {
+		this.environment = environment;
+		this.serverProperties = serverProperties;
 	}
 
-	public static void customizeTomcat(ServerProperties serverProperties,
-			Environment environment, ConfigurableTomcatWebServerFactory factory) {
-		ServerProperties.Tomcat tomcatProperties = serverProperties.getTomcat();
+	@Override
+	public int getOrder() {
+		return 0;
+	}
+
+	@Override
+	public void customize(ConfigurableTomcatWebServerFactory factory) {
+		ServerProperties properties = this.serverProperties;
+		ServerProperties.Tomcat tomcatProperties = properties.getTomcat();
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(tomcatProperties::getBasedir).whenNonNull()
 				.to(factory::setBaseDirectory);
 		propertyMapper.from(tomcatProperties::getBackgroundProcessorDelay).whenNonNull()
 				.as(Duration::getSeconds).as(Long::intValue)
 				.to(factory::setBackgroundProcessorDelay);
-		customizeRemoteIpValve(serverProperties, environment, factory);
-		propertyMapper.from(tomcatProperties::getMaxThreads)
-				.when(TomcatCustomizer::isPositive)
+		customizeRemoteIpValve(factory);
+		propertyMapper.from(tomcatProperties::getMaxThreads).when(this::isPositive)
 				.to((maxThreads) -> customizeMaxThreads(factory,
 						tomcatProperties.getMaxThreads()));
-		propertyMapper.from(tomcatProperties::getMinSpareThreads)
-				.when(TomcatCustomizer::isPositive)
+		propertyMapper.from(tomcatProperties::getMinSpareThreads).when(this::isPositive)
 				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
-		propertyMapper
-				.from(() -> determineMaxHttpHeaderSize(serverProperties,
-						tomcatProperties))
-				.when(TomcatCustomizer::isPositive)
+		propertyMapper.from(() -> determineMaxHttpHeaderSize()).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpPostSize)
@@ -78,34 +91,31 @@ public final class TomcatCustomizer {
 						maxHttpPostSize));
 		propertyMapper.from(tomcatProperties::getAccesslog)
 				.when(ServerProperties.Tomcat.Accesslog::isEnabled)
-				.to((enabled) -> customizeAccessLog(tomcatProperties, factory));
+				.to((enabled) -> customizeAccessLog(factory));
 		propertyMapper.from(tomcatProperties::getUriEncoding).whenNonNull()
 				.to(factory::setUriEncoding);
-		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
+		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory,
 						connectionTimeout));
-		propertyMapper.from(tomcatProperties::getMaxConnections)
-				.when(TomcatCustomizer::isPositive)
+		propertyMapper.from(tomcatProperties::getMaxConnections).when(this::isPositive)
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
-		propertyMapper.from(tomcatProperties::getAcceptCount)
-				.when(TomcatCustomizer::isPositive)
+		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
-		customizeStaticResources(serverProperties.getTomcat().getResource(), factory);
-		customizeErrorReportValve(serverProperties.getError(), factory);
+		customizeStaticResources(factory);
+		customizeErrorReportValve(properties.getError(), factory);
 	}
 
-	private static boolean isPositive(int value) {
+	private boolean isPositive(int value) {
 		return value > 0;
 	}
 
-	private static int determineMaxHttpHeaderSize(ServerProperties serverProperties,
-			ServerProperties.Tomcat tomcatProperties) {
-		return serverProperties.getMaxHttpHeaderSize() > 0
-				? serverProperties.getMaxHttpHeaderSize()
-				: tomcatProperties.getMaxHttpHeaderSize();
+	private int determineMaxHttpHeaderSize() {
+		return this.serverProperties.getMaxHttpHeaderSize() > 0
+				? this.serverProperties.getMaxHttpHeaderSize()
+				: this.serverProperties.getTomcat().getMaxHttpHeaderSize();
 	}
 
-	private static void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory,
+	private void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory,
 			int acceptCount) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
@@ -116,8 +126,8 @@ public final class TomcatCustomizer {
 		});
 	}
 
-	private static void customizeMaxConnections(
-			ConfigurableTomcatWebServerFactory factory, int maxConnections) {
+	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory,
+			int maxConnections) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractProtocol) {
@@ -127,8 +137,8 @@ public final class TomcatCustomizer {
 		});
 	}
 
-	private static void customizeConnectionTimeout(
-			ConfigurableTomcatWebServerFactory factory, Duration connectionTimeout) {
+	private void customizeConnectionTimeout(ConfigurableTomcatWebServerFactory factory,
+			Duration connectionTimeout) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractProtocol) {
@@ -138,13 +148,13 @@ public final class TomcatCustomizer {
 		});
 	}
 
-	private static void customizeRemoteIpValve(ServerProperties properties,
-			Environment environment, ConfigurableTomcatWebServerFactory factory) {
-		String protocolHeader = properties.getTomcat().getProtocolHeader();
-		String remoteIpHeader = properties.getTomcat().getRemoteIpHeader();
+	private void customizeRemoteIpValve(ConfigurableTomcatWebServerFactory factory) {
+		Tomcat tomcatProperties = this.serverProperties.getTomcat();
+		String protocolHeader = tomcatProperties.getProtocolHeader();
+		String remoteIpHeader = tomcatProperties.getRemoteIpHeader();
 		// For back compatibility the valve is also enabled if protocol-header is set
 		if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
-				|| getOrDeduceUseForwardHeaders(properties, environment)) {
+				|| getOrDeduceUseForwardHeaders()) {
 			RemoteIpValve valve = new RemoteIpValve();
 			valve.setProtocolHeader(StringUtils.hasLength(protocolHeader) ? protocolHeader
 					: "X-Forwarded-Proto");
@@ -153,26 +163,25 @@ public final class TomcatCustomizer {
 			}
 			// The internal proxies default to a white list of "safe" internal IP
 			// addresses
-			valve.setInternalProxies(properties.getTomcat().getInternalProxies());
-			valve.setPortHeader(properties.getTomcat().getPortHeader());
+			valve.setInternalProxies(tomcatProperties.getInternalProxies());
+			valve.setPortHeader(tomcatProperties.getPortHeader());
 			valve.setProtocolHeaderHttpsValue(
-					properties.getTomcat().getProtocolHeaderHttpsValue());
+					tomcatProperties.getProtocolHeaderHttpsValue());
 			// ... so it's safe to add this valve by default.
 			factory.addEngineValves(valve);
 		}
 	}
 
-	private static boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
-			Environment environment) {
-		if (serverProperties.isUseForwardHeaders() != null) {
-			return serverProperties.isUseForwardHeaders();
+	private boolean getOrDeduceUseForwardHeaders() {
+		if (this.serverProperties.isUseForwardHeaders() != null) {
+			return this.serverProperties.isUseForwardHeaders();
 		}
-		CloudPlatform platform = CloudPlatform.getActive(environment);
+		CloudPlatform platform = CloudPlatform.getActive(this.environment);
 		return platform != null && platform.isUsingForwardHeaders();
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static void customizeMaxThreads(ConfigurableTomcatWebServerFactory factory,
+	private void customizeMaxThreads(ConfigurableTomcatWebServerFactory factory,
 			int maxThreads) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
@@ -184,7 +193,7 @@ public final class TomcatCustomizer {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static void customizeMinThreads(ConfigurableTomcatWebServerFactory factory,
+	private void customizeMinThreads(ConfigurableTomcatWebServerFactory factory,
 			int minSpareThreads) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
@@ -196,8 +205,8 @@ public final class TomcatCustomizer {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static void customizeMaxHttpHeaderSize(
-			ConfigurableTomcatWebServerFactory factory, int maxHttpHeaderSize) {
+	private void customizeMaxHttpHeaderSize(ConfigurableTomcatWebServerFactory factory,
+			int maxHttpHeaderSize) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractHttp11Protocol) {
@@ -207,14 +216,14 @@ public final class TomcatCustomizer {
 		});
 	}
 
-	private static void customizeMaxHttpPostSize(
-			ConfigurableTomcatWebServerFactory factory, int maxHttpPostSize) {
+	private void customizeMaxHttpPostSize(ConfigurableTomcatWebServerFactory factory,
+			int maxHttpPostSize) {
 		factory.addConnectorCustomizers(
 				(connector) -> connector.setMaxPostSize(maxHttpPostSize));
 	}
 
-	private static void customizeAccessLog(ServerProperties.Tomcat tomcatProperties,
-			ConfigurableTomcatWebServerFactory factory) {
+	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
+		ServerProperties.Tomcat tomcatProperties = this.serverProperties.getTomcat();
 		AccessLogValve valve = new AccessLogValve();
 		valve.setPattern(tomcatProperties.getAccesslog().getPattern());
 		valve.setDirectory(tomcatProperties.getAccesslog().getDirectory());
@@ -229,9 +238,9 @@ public final class TomcatCustomizer {
 		factory.addEngineValves(valve);
 	}
 
-	private static void customizeStaticResources(
-			ServerProperties.Tomcat.Resource resource,
-			ConfigurableTomcatWebServerFactory factory) {
+	private void customizeStaticResources(ConfigurableTomcatWebServerFactory factory) {
+		ServerProperties.Tomcat.Resource resource = this.serverProperties.getTomcat()
+				.getResource();
 		if (resource.getCacheTtl() == null) {
 			return;
 		}
@@ -245,7 +254,7 @@ public final class TomcatCustomizer {
 		});
 	}
 
-	private static void customizeErrorReportValve(ErrorProperties error,
+	private void customizeErrorReportValve(ErrorProperties error,
 			ConfigurableTomcatWebServerFactory factory) {
 		if (error.getIncludeStacktrace() == IncludeStacktrace.NEVER) {
 			factory.addContextCustomizers((context) -> {

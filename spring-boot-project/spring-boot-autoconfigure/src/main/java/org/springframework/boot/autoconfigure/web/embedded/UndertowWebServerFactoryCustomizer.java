@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.embedded.undertow;
+package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
 
@@ -24,6 +24,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.undertow.ConfigurableUndertowWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 
 /**
@@ -33,15 +35,31 @@ import org.springframework.core.env.Environment;
  * @author Brian Clozel
  * @author Yulin Qin
  * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 2.0.0
  */
-public final class UndertowCustomizer {
+public class UndertowWebServerFactoryCustomizer implements
+		WebServerFactoryCustomizer<ConfigurableUndertowWebServerFactory>, Ordered {
 
-	private UndertowCustomizer() {
+	private final Environment environment;
+
+	private final ServerProperties serverProperties;
+
+	public UndertowWebServerFactoryCustomizer(Environment environment,
+			ServerProperties serverProperties) {
+		this.environment = environment;
+		this.serverProperties = serverProperties;
 	}
 
-	public static void customizeUndertow(ServerProperties serverProperties,
-			Environment environment, ConfigurableUndertowWebServerFactory factory) {
-		ServerProperties.Undertow undertowProperties = serverProperties.getUndertow();
+	@Override
+	public int getOrder() {
+		return 0;
+	}
+
+	@Override
+	public void customize(ConfigurableUndertowWebServerFactory factory) {
+		ServerProperties properties = this.serverProperties;
+		ServerProperties.Undertow undertowProperties = properties.getUndertow();
 		ServerProperties.Undertow.Accesslog accesslogProperties = undertowProperties
 				.getAccesslog();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -63,52 +81,48 @@ public final class UndertowCustomizer {
 				.to(factory::setAccessLogSuffix);
 		propertyMapper.from(accesslogProperties::isRotate)
 				.to(factory::setAccessLogRotate);
-		propertyMapper
-				.from(() -> getOrDeduceUseForwardHeaders(serverProperties, environment))
+		propertyMapper.from(() -> getOrDeduceUseForwardHeaders())
 				.to(factory::setUseForwardHeaders);
-		propertyMapper.from(serverProperties::getMaxHttpHeaderSize)
-				.when(UndertowCustomizer::isPositive)
+		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
-		propertyMapper.from(undertowProperties::getMaxHttpPostSize)
-				.when(UndertowCustomizer::isPositive)
+		propertyMapper.from(undertowProperties::getMaxHttpPostSize).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
-		propertyMapper.from(serverProperties::getConnectionTimeout)
+		propertyMapper.from(properties::getConnectionTimeout)
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory,
 						connectionTimeout));
 		factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
 				.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
 	}
 
-	private static boolean isPositive(Number value) {
+	private boolean isPositive(Number value) {
 		return value.longValue() > 0;
 	}
 
-	private static void customizeConnectionTimeout(
-			ConfigurableUndertowWebServerFactory factory, Duration connectionTimeout) {
+	private void customizeConnectionTimeout(ConfigurableUndertowWebServerFactory factory,
+			Duration connectionTimeout) {
 		factory.addBuilderCustomizers((builder) -> builder.setSocketOption(
 				UndertowOptions.NO_REQUEST_TIMEOUT, (int) connectionTimeout.toMillis()));
 	}
 
-	private static void customizeMaxHttpHeaderSize(
-			ConfigurableUndertowWebServerFactory factory, int maxHttpHeaderSize) {
+	private void customizeMaxHttpHeaderSize(ConfigurableUndertowWebServerFactory factory,
+			int maxHttpHeaderSize) {
 		factory.addBuilderCustomizers((builder) -> builder
 				.setServerOption(UndertowOptions.MAX_HEADER_SIZE, maxHttpHeaderSize));
 	}
 
-	private static void customizeMaxHttpPostSize(
-			ConfigurableUndertowWebServerFactory factory, long maxHttpPostSize) {
+	private void customizeMaxHttpPostSize(ConfigurableUndertowWebServerFactory factory,
+			long maxHttpPostSize) {
 		factory.addBuilderCustomizers((builder) -> builder
 				.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, maxHttpPostSize));
 	}
 
-	private static boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
-			Environment environment) {
-		if (serverProperties.isUseForwardHeaders() != null) {
-			return serverProperties.isUseForwardHeaders();
+	private boolean getOrDeduceUseForwardHeaders() {
+		if (this.serverProperties.isUseForwardHeaders() != null) {
+			return this.serverProperties.isUseForwardHeaders();
 		}
-		CloudPlatform platform = CloudPlatform.getActive(environment);
+		CloudPlatform platform = CloudPlatform.getActive(this.environment);
 		return platform != null && platform.isUsingForwardHeaders();
 	}
 
