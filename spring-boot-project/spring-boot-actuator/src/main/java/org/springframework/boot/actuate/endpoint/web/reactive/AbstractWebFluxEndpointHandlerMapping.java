@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -42,11 +43,12 @@ import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicat
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -390,7 +392,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 	private static final class ReactiveSecurityContext implements SecurityContext {
 
-		private static final String ROLE_PREFIX = "ROLE_";
+		private final RoleVoter roleVoter = new RoleVoter();
 
 		private final Authentication authentication;
 
@@ -405,20 +407,12 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 		@Override
 		public boolean isUserInRole(String role) {
-			if (this.authentication == null || !this.authentication.isAuthenticated()
-					|| CollectionUtils.isEmpty(this.authentication.getAuthorities())) {
-				return false;
+			if (!role.startsWith(this.roleVoter.getRolePrefix())) {
+				role = this.roleVoter.getRolePrefix() + role;
 			}
-			if (!role.startsWith(ROLE_PREFIX)) {
-				role = ROLE_PREFIX + role;
-			}
-			for (GrantedAuthority grantedAuthority : this.authentication
-					.getAuthorities()) {
-				if (role.equals(grantedAuthority.getAuthority())) {
-					return true;
-				}
-			}
-			return false;
+			return this.roleVoter.vote(this.authentication, null,
+					Collections.singletonList(new SecurityConfig(
+							role))) == AccessDecisionVoter.ACCESS_GRANTED;
 		}
 
 	}
