@@ -69,6 +69,10 @@
       "description": "Auto-configuration classes to exclude."
     },
     {
+      "name": "spring.batch.initialize-schema",
+      "defaultValue": "embedded"
+    },
+    {
       "name": "spring.batch.job.enabled",
       "type": "java.lang.Boolean",
       "description": "Execute all Spring Batch jobs in the context on startup.",
@@ -171,6 +175,10 @@
       }
     },
     {
+      "name": "spring.data.neo4j.auto-index",
+      "defaultValue": "none"
+    },
+    {
       "name": "spring.data.neo4j.open-in-view",
       "defaultValue": true
     },
@@ -236,6 +244,10 @@
       "name": "spring.http.converters.preferred-json-mapper",
       "type": "java.lang.String",
       "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
+    },
+    {
+      "name": "spring.integration.jdbc.initialize-schema",
+      "defaultValue": "embedded"
     },
     {
       "name": "spring.jersey.type",
@@ -423,6 +435,10 @@
       "defaultValue": "accept-header"
     },
     {
+      "name": "spring.quartz.jdbc.initialize-schema",
+      "defaultValue": "embedded"
+    },
+    {
       "name": "spring.quartz.job-store-type",
       "defaultValue": "memory"
     },
@@ -437,12 +453,20 @@
       "defaultValue": true
     },
     {
+      "name": "spring.rabbitmq.listener.type",
+      "defaultValue": "simple"
+    },
+    {
       "name": "spring.security.filter.dispatcher-types",
       "defaultValue": [
         "async",
         "error",
         "request"
       ]
+    },
+    {
+      "name": "spring.session.jdbc.initialize-schema",
+      "defaultValue": "embedded"
     },
     {
       "name": "spring.session.hazelcast.flush-mode",

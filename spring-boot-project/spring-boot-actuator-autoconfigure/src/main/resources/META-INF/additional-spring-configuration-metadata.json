@@ -23,6 +23,10 @@
       ]
     },
     {
+      "name": "management.endpoint.health.show-details",
+      "defaultValue": "when-authorized"
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
       "description": "Whether to enable or disable all endpoints by default."
