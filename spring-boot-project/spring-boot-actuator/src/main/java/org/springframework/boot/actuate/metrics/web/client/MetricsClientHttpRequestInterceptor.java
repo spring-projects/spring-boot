@@ -93,14 +93,9 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 	private Timer.Builder getTimeBuilder(HttpRequest request,
 			ClientHttpResponse response) {
-		String url = ensureLeadingSlash(urlTemplate.get());
 		return Timer.builder(this.metricName)
-				.tags(this.tagProvider.getTags(url, request, response))
+				.tags(this.tagProvider.getTags(urlTemplate.get(), request, response))
 				.description("Timer of RestTemplate operation");
-	}
-
-	private String ensureLeadingSlash(String url) {
-		return (url == null || url.startsWith("/") ? url : "/" + url);
 	}
 
 }
