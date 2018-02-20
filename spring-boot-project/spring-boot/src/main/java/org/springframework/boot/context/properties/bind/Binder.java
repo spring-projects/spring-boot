@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.PropertyEditorRegistry;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -109,8 +110,22 @@ public class Binder {
 	 * @param placeholdersResolver strategy to resolve any property place-holders
 	 * @param conversionService the conversion service to convert values (or {@code null}
 	 * to use {@link ApplicationConversionService})
+	 */
+	public Binder(Iterable<ConfigurationPropertySource> sources,
+			PlaceholdersResolver placeholdersResolver,
+			ConversionService conversionService) {
+		this(sources, placeholdersResolver, conversionService, null);
+	}
+
+	/**
+	 * Create a new {@link Binder} instance for the specified sources.
+	 * @param sources the sources used for binding
+	 * @param placeholdersResolver strategy to resolve any property place-holders
+	 * @param conversionService the conversion service to convert values (or {@code null}
+	 * to use {@link ApplicationConversionService})
 	 * @param propertyEditorInitializer initializer used to configure the property editors
-	 * that can convert values
+	 * that can convert values (or {@code null} if no initialization is required). Often
+	 * used to call {@link ConfigurableListableBeanFactory#copyRegisteredEditorsTo}.
 	 */
 	public Binder(Iterable<ConfigurationPropertySource> sources,
 			PlaceholdersResolver placeholdersResolver,
