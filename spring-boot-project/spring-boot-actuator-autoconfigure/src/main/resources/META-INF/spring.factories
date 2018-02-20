@@ -50,6 +50,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxM
 org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.jdbc.HikariDataSourceMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.integration.MetricsIntegrationAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration,\
