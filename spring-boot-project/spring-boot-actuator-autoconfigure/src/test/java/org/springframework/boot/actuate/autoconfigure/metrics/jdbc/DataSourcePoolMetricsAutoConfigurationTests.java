@@ -57,7 +57,7 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("jdbc.max.connections").tags("name", "dataSource")
+					registry.get("jdbc.connections.max").tags("name", "dataSource")
 							.meter();
 				});
 	}
@@ -72,7 +72,7 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 				.run((context) -> {
 					context.getBean(DataSource.class).getConnection().getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("jdbc.max.connections")
+					assertThat(registry.find("jdbc.connections.max")
 							.tags("name", "dataSource").meter()).isNull();
 				});
 	}
@@ -88,8 +88,8 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 					context.getBean("secondOne", DataSource.class).getConnection()
 							.getMetaData();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					registry.get("jdbc.max.connections").tags("name", "first").meter();
-					registry.get("jdbc.max.connections").tags("name", "secondOne")
+					registry.get("jdbc.connections.max").tags("name", "first").meter();
+					registry.get("jdbc.connections.max").tags("name", "secondOne")
 							.meter();
 				});
 	}
