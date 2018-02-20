@@ -1339,7 +1339,7 @@ provided:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.signalfx.acesss-token=YOUR_ACCESS_TOKEN
+	management.metrics.export.signalfx.access-token=YOUR_ACCESS_TOKEN
 ----
 
 You can also change the interval at which metrics are sent to SignalFx:

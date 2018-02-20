@@ -51,7 +51,7 @@ public enum StaticResourceLocation {
 	 */
 	FAVICON("/**/favicon.ico");
 
-	private String[] patterns;
+	private final String[] patterns;
 
 	StaticResourceLocation(String... patterns) {
 		this.patterns = patterns;
