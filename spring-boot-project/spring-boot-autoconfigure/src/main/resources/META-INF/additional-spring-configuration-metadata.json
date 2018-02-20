@@ -1138,7 +1138,7 @@
       }
     }, {
       "name" : "server.session.tracking-modes",
-      "type" : "java.util.Set<org.springframework.boot.autoconfigure.web.ServerProperties.Session.SessionTrackingMode>",
+      "type" : "java.util.Set<org.springframework.boot.web.servlet.server.Session.SessionTrackingMode>",
       "description" : "Session tracking modes (one or more of the following: \"cookie\", \"url\", \"ssl\").",
       "deprecation" : {
         "replacement" : "server.servlet.session.tracking-modes",
