@@ -25,32 +25,22 @@ import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTrackerFactory;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for metrics on all
- * {@link HikariDataSource HikariDataSources}.
+ * Specific configuration for {@link HikariDataSource} metrics.
  *
  * @author Tommy Ludwig
- * @since 2.0.0
+ * @author Stephane Nicoll
  */
 @Configuration
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass(HikariDataSource.class)
-@ConditionalOnBean({ DataSource.class, MeterRegistry.class })
-public class HikariDataSourceMetricsAutoConfiguration {
+class HikariDataSourceMetricsConfiguration {
 
 	private final MeterRegistry registry;
 
-	public HikariDataSourceMetricsAutoConfiguration(MeterRegistry registry) {
+	HikariDataSourceMetricsConfiguration(MeterRegistry registry) {
 		this.registry = registry;
 	}
 

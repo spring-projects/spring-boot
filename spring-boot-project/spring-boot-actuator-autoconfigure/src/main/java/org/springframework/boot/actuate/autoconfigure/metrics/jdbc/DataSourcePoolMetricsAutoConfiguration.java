@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.util.StringUtils;
 
 /**
@@ -48,6 +49,7 @@ import org.springframework.util.StringUtils;
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnBean({ DataSource.class, DataSourcePoolMetadataProvider.class,
 		MeterRegistry.class })
+@Import(HikariDataSourceMetricsConfiguration.class)
 public class DataSourcePoolMetricsAutoConfiguration {
 
 	private static final String DATASOURCE_SUFFIX = "dataSource";
