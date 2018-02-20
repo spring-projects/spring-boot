@@ -51,8 +51,11 @@ class HikariDataSourceMetricsPostProcessor implements BeanPostProcessor {
 
 	private void bindMetricsRegistryToHikariDataSource(MeterRegistry registry,
 			HikariDataSource dataSource) {
-		dataSource.setMetricsTrackerFactory(
-				new MicrometerMetricsTrackerFactory(registry));
+		if (dataSource.getMetricRegistry() == null
+				&& dataSource.getMetricsTrackerFactory() == null) {
+			dataSource.setMetricsTrackerFactory(
+					new MicrometerMetricsTrackerFactory(registry));
+		}
 	}
 
 	private MeterRegistry getMeterRegistry() {
