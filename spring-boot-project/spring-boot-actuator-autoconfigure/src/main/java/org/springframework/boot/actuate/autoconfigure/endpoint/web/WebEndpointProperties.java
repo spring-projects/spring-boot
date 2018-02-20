@@ -70,7 +70,6 @@ public class WebEndpointProperties {
 		return this.pathMapping;
 	}
 
-
 	public static class Exposure {
 
 		/**

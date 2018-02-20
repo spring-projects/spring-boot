@@ -62,8 +62,8 @@ public class WebMvcEndpointCorsIntegrationTests {
 				ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class,
 				BeansEndpointAutoConfiguration.class);
-		TestPropertyValues.of("management.endpoints.web.exposure.include:*").applyTo(
-				this.context);
+		TestPropertyValues.of("management.endpoints.web.exposure.include:*")
+				.applyTo(this.context);
 	}
 
 	@Test

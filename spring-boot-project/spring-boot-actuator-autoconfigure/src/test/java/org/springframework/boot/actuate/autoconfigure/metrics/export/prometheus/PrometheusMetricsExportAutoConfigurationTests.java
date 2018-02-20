@@ -88,7 +88,8 @@ public class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomCollectorRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomCollectorRegistryConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CustomCollectorRegistryConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(PrometheusMeterRegistry.class)
 						.hasBean("customCollectorRegistry")

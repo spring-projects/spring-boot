@@ -56,7 +56,8 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguresAClock() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Clock.class));
+		this.contextRunner
+				.run((context) -> assertThat(context).hasSingleBean(Clock.class));
 	}
 
 	@Test
@@ -84,15 +85,16 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void autoConfiguresJvmMetrics() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
-				.hasSingleBean(JvmMemoryMetrics.class)
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
 				.hasSingleBean(JvmThreadMetrics.class)
 				.hasSingleBean(ClassLoaderMetrics.class));
 	}
 
 	@Test
 	public void allowsJvmMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.jvm.enabled=false")
+		this.contextRunner
+				.withPropertyValues("management.metrics.binders.jvm.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(JvmGcMetrics.class)
 						.doesNotHaveBean(JvmMemoryMetrics.class)
 						.doesNotHaveBean(JvmThreadMetrics.class)
@@ -111,7 +113,8 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomJvmMemoryMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class)
 						.hasBean("customJvmMemoryMetrics")
@@ -121,7 +124,8 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomJvmThreadMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class)
 						.hasSingleBean(JvmThreadMetrics.class)
@@ -131,7 +135,8 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomClassLoaderMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class)
 						.hasSingleBean(JvmThreadMetrics.class)
@@ -147,7 +152,8 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsLogbackMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.logback.enabled=false")
+		this.contextRunner
+				.withPropertyValues("management.metrics.binders.logback.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(LogbackMetrics.class));
 	}
@@ -167,7 +173,8 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsUptimeMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.uptime.enabled=false")
+		this.contextRunner
+				.withPropertyValues("management.metrics.binders.uptime.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(UptimeMetrics.class));
 	}
@@ -195,7 +202,8 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsCustomProcessorMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(ProcessorMetrics.class)
 						.hasBean("customProcessorMetrics"));
@@ -209,14 +217,16 @@ public class MetricsAutoConfigurationTests {
 
 	@Test
 	public void allowsFileDescriptorMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.files.enabled=false")
+		this.contextRunner
+				.withPropertyValues("management.metrics.binders.files.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
 	public void allowsCustomFileDescriptorMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(FileDescriptorMetrics.class)
 						.hasBean("customFileDescriptorMetrics"));

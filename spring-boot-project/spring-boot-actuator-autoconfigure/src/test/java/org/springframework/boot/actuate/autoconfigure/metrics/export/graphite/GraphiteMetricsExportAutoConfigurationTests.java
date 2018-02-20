@@ -87,12 +87,13 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-			GraphiteMeterRegistry registry = spyOnDisposableBean(
-					GraphiteMeterRegistry.class, context);
-			context.close();
-			verify(registry).stop();
-		});
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
+					GraphiteMeterRegistry registry = spyOnDisposableBean(
+							GraphiteMeterRegistry.class, context);
+					context.close();
+					verify(registry).stop();
+				});
 	}
 
 	@SuppressWarnings("unchecked")

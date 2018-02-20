@@ -103,12 +103,13 @@ public class JmxMetricsExportAutoConfigurationTests {
 
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-			JmxMeterRegistry registry = spyOnDisposableBean(JmxMeterRegistry.class,
-					context);
-			context.close();
-			verify(registry).stop();
-		});
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
+					JmxMeterRegistry registry = spyOnDisposableBean(
+							JmxMeterRegistry.class, context);
+					context.close();
+					verify(registry).stop();
+				});
 	}
 
 	@SuppressWarnings("unchecked")
