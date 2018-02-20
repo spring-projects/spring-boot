@@ -59,7 +59,7 @@ public class HibernateJpaAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 	static class HibernateEntityManagerCondition extends SpringBootCondition {
 
-		private static String[] CLASS_NAMES = {
+		private static final String[] CLASS_NAMES = {
 				"org.hibernate.ejb.HibernateEntityManager",
 				"org.hibernate.jpa.HibernateEntityManager" };
 

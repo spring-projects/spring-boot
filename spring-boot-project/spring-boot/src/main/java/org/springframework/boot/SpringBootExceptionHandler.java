@@ -32,7 +32,7 @@ import java.util.Set;
  */
 class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 
-	private static Set<String> LOG_CONFIGURATION_MESSAGES;
+	private static final Set<String> LOG_CONFIGURATION_MESSAGES;
 
 	static {
 		Set<String> messages = new HashSet<>();

@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
 public class JndiConnectionFactoryAutoConfiguration {
 
 	// Keep these in sync with the condition below
-	private static String[] JNDI_LOCATIONS = { "java:/JmsXA",
+	private static final String[] JNDI_LOCATIONS = { "java:/JmsXA",
 			"java:/XAConnectionFactory" };
 
 	private final JmsProperties properties;

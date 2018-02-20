@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  */
 public class EncodePasswordCommand extends OptionParsingCommand {
 
-	private static Map<String, Supplier<PasswordEncoder>> ENCODERS;
+	private static final Map<String, Supplier<PasswordEncoder>> ENCODERS;
 
 	static {
 		Map<String, Supplier<PasswordEncoder>> encoders = new LinkedHashMap<>();
