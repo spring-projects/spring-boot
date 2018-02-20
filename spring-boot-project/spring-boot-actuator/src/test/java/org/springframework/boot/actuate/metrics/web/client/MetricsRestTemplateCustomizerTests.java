@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.web.client;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.stream.StreamSupport;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -99,4 +101,15 @@ public class MetricsRestTemplateCustomizerTests {
 		this.mockServer.verify();
 	}
 
+	@Test
+	public void interceptRestTemplateWithUri() throws URISyntaxException {
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("http://localhost/test/123"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK",
+						MediaType.APPLICATION_JSON));
+		String result = this.restTemplate.getForObject(new URI("http://localhost/test/123"), String.class);
+		assertThat(result).isEqualTo("OK");
+		this.registry.get("http.client.requests").tags("uri", "/test/123").timer();
+		this.mockServer.verify();
+	}
 }
