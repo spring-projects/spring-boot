@@ -271,14 +271,16 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 		private ReactiveWebOperationAdapter(OperationInvoker invoker) {
 			this.invoker = invoker;
+			this.securityContextSupplier = getSecurityContextSupplier();
+		}
+
+		private Supplier<Mono<? extends SecurityContext>> getSecurityContextSupplier() {
 			if (ClassUtils.isPresent(
 					"org.springframework.security.core.context.ReactiveSecurityContextHolder",
 					getClass().getClassLoader())) {
-				this.securityContextSupplier = this::springSecurityContext;
+				return this::springSecurityContext;
 			}
-			else {
-				this.securityContextSupplier = this::emptySecurityContext;
-			}
+			return this::emptySecurityContext;
 		}
 
 		public Mono<? extends SecurityContext> springSecurityContext() {
@@ -289,19 +291,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		}
 
 		public Mono<SecurityContext> emptySecurityContext() {
-			return Mono.just(new SecurityContext() {
-
-				@Override
-				public Principal getPrincipal() {
-					return null;
-				}
-
-				@Override
-				public boolean isUserInRole(String role) {
-					return false;
-				}
-
-			});
+			return Mono.just(SecurityContext.NONE);
 		}
 
 		@Override

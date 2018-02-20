@@ -26,6 +26,20 @@ import java.security.Principal;
  */
 public interface SecurityContext {
 
+	public static SecurityContext NONE = new SecurityContext() {
+
+		@Override
+		public Principal getPrincipal() {
+			return null;
+		}
+
+		@Override
+		public boolean isUserInRole(String role) {
+			return false;
+		}
+
+	};
+
 	/**
 	 * Return the currently authenticated {@link Principal} or {@code null}.
 	 * @return the principal or {@code null}
