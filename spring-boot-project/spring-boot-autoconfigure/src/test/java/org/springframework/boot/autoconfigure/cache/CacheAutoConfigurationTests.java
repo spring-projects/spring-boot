@@ -316,7 +316,8 @@ public class CacheAutoConfigurationTests {
 							cacheManager).getPropertyValue("defaultCacheConfig");
 					assertThat(redisCacheConfiguration.getTtl())
 							.isEqualTo(java.time.Duration.ofSeconds(30));
-					assertThat(redisCacheConfiguration.getKeyPrefix()).contains("bar");
+					assertThat(redisCacheConfiguration.getKeyPrefixFor(""))
+							.isEqualTo("bar");
 				});
 	}
 
