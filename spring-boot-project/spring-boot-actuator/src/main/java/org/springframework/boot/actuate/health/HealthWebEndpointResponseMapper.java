@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Maps a {@link Health} to a {@WebEndpointResponse}.
+ * Maps a {@link Health} to a {@link WebEndpointResponse}.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
