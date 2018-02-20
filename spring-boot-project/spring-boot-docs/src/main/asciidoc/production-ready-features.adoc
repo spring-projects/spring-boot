@@ -1117,16 +1117,17 @@ Spring Boot Actuator provides dependency management and auto-configuration for
 https://micrometer.io[Micrometer], an application metrics facade that supports numerous
 monitoring systems, including:
 
-- https://github.com/Netflix/atlas[Atlas]
-- https://www.datadoghq.com[Datadog]
-- http://ganglia.sourceforge.net[Ganglia]
-- https://graphiteapp.org[Graphite]
-- https://www.influxdata.com[Influx]
-- https://newrelic.com[New Relic]
-- https://prometheus.io[Prometheus]
-- https://signalfx.com[SignalFx]
-- StatsD
-- https://www.wavefront.com/[Wavefront]
+- <<production-ready-metrics-export-atlas,Atlas>>
+- <<production-ready-metrics-export-datadog,Datadog>>
+- <<production-ready-metrics-export-ganglia,Ganglia>>
+- <<production-ready-metrics-export-graphite,Graphite>>
+- <<production-ready-metrics-export-influx,Influx>>
+- <<production-ready-metrics-export-simple,Simple (in-memory)>>
+- <<production-ready-metrics-export-newrelic,New Relic>>
+- <<production-ready-metrics-export-prometheus,Prometheus>>
+- <<production-ready-metrics-export-signalfx,SignalFx>>
+- <<production-ready-metrics-export-statsd,StatsD>>
+- <<production-ready-metrics-export-wavefront,Wavefront>>
 
 TIP: To learn more about Micrometer's capabilities, please refer to its
 https://micrometer.io/docs[reference documentation], in particular the
@@ -1203,8 +1204,8 @@ annotation markers.
 [[production-ready-metrics-export-atlas]]
 ==== Atlas
 By default, metrics are exported to {micrometer-registry-documentation}/atlas[Atlas]
-running on your local machine. The location of the Atlas server to use can be provided
-using:
+running on your local machine. The location of the
+https://github.com/Netflix/atlas[Atlas server] to use can be provided using:
 
 [source,properties,indent=0]
 ----
@@ -1215,8 +1216,9 @@ using:
 
 [[production-ready-metrics-export-datadog]]
 ==== Datadog
-Datadog registry pushes metrics to datadoghq periodically. To export metrics
-to {micrometer-registry-documentation}/datadog[Datadog], your API key must be provided:
+Datadog registry pushes metrics to https://www.datadoghq.com[datadoghq] periodically. To
+export metrics to {micrometer-registry-documentation}/datadog[Datadog], your API key must
+be provided:
 
 [source,properties,indent=0]
 ----
@@ -1235,8 +1237,8 @@ You can also change the interval at which metrics are sent to Datadog:
 [[production-ready-metrics-export-ganglia]]
 ==== Ganglia
 By default, metrics are exported to {micrometer-registry-documentation}/ganglia[Ganglia]
-running on your local machine. The Ganglia server host and port to use can be provided
-using:
+running on your local machine. The http://ganglia.sourceforge.net[Ganglia server] host and
+port to use can be provided using:
 
 [source,properties,indent=0]
 ----
@@ -1249,8 +1251,8 @@ using:
 [[production-ready-metrics-export-graphite]]
 ==== Graphite
 By default, metrics are exported to {micrometer-registry-documentation}/graphite[Graphite]
-running on your local machine. The Graphite server host and port to use can be provided
-using:
+running on your local machine. The https://graphiteapp.org[Graphite server] host and port
+to use can be provided using:
 
 [source,properties,indent=0]
 ----
@@ -1263,8 +1265,8 @@ using:
 [[production-ready-metrics-export-influx]]
 ==== Influx
 By default, metrics are exported to {micrometer-registry-documentation}/influx[Influx]
-running on your local machine. The location of the Influx server to use can be provided
-using:
+running on your local machine. The location of the https://www.influxdata.com[Influx
+server] to use can be provided using:
 
 [source,properties,indent=0]
 ----
@@ -1291,9 +1293,9 @@ backend. You can also disable it explicitly:
 
 [[production-ready-metrics-export-newrelic]]
 ==== New Relic
-New Relic registry pushes metrics to New Relic periodically. To export metrics to
-{micrometer-registry-documentation}/newrelic[New Relic], your API key and account id
-must be provided:
+New Relic registry pushes metrics to {micrometer-registry-documentation}/newrelic[New
+Relic] periodically. To export metrics to https://newrelic.com[New Relic], your API key
+and account id must be provided:
 
 [source,properties,indent=0]
 ----
@@ -1312,11 +1314,13 @@ You can also change the interval at which metrics are sent to New Relic:
 
 [[production-ready-metrics-export-prometheus]]
 ==== Prometheus
-Prometheus expects to scrape or poll individual app instances for metrics. Spring Boot
-provides an actuator endpoint available at `/actuator/prometheus` to present a Prometheus
-scrape with the appropriate format. The endpoint is not available by default and must be
-exposed, see <<production-ready-endpoints-exposing-endpoints,exposing endpoints>> for more
-details.
+{micrometer-registry-documentation}/prometheus[Prometheus] expects to scrape or poll
+individual app instances for metrics. Spring Boot provides an actuator endpoint available
+at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the
+appropriate format.
+
+TIP: The endpoint is not available by default and must be exposed, see
+<<production-ready-endpoints-exposing-endpoints,exposing endpoints>> for more details.
 
 Here is an example `scrape_config` to add to `prometheus.yml`:
 
@@ -1333,9 +1337,9 @@ Here is an example `scrape_config` to add to `prometheus.yml`:
 
 [[production-ready-metrics-export-signalfx]]
 ==== SignalFx
-SignalFx registry pushes metrics to SignalFx periodically. To export metrics to
-{micrometer-registry-documentation}/signalfx[SignalFx], your access token must be
-provided:
+SignalFx registry pushes metrics to {micrometer-registry-documentation}/signalfx[SignalFx]
+periodically. To export metrics to https://signalfx.com[SignalFx], your access token must
+be provided:
 
 [source,properties,indent=0]
 ----
@@ -1374,9 +1378,10 @@ You can also change the StatsD line protocol to use (default to Datadog):
 
 [[production-ready-metrics-export-wavefront]]
 ==== Wavefront
-Wavefront registry pushes metrics to Wavefront periodically. If you are exporting
-metrics to {micrometer-registry-documentation}/wavefront[Wavefront] directly, your API
-token must be provided:
+Wavefront registry pushes metrics to
+{micrometer-registry-documentation}/wavefront[Wavefront] periodically. If you are
+exporting metrics to https://www.wavefront.com/[Wavefront] directly, your API token must
+be provided:
 
 [source,properties,indent=0]
 ----
