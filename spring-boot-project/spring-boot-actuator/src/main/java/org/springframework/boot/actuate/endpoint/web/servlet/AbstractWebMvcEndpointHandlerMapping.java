@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -243,7 +245,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 			try {
 				return handleResult(
 						this.invoker.invoke(new InvocationContext(
-								request.getUserPrincipal(), arguments)),
+								new ServletSecurityContext(request), arguments)),
 						HttpMethod.valueOf(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
@@ -308,6 +310,26 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 
 		BadOperationRequestException(String message) {
 			super(message);
+		}
+
+	}
+
+	private static final class ServletSecurityContext implements SecurityContext {
+
+		private final HttpServletRequest request;
+
+		private ServletSecurityContext(HttpServletRequest request) {
+			this.request = request;
+		}
+
+		@Override
+		public Principal getPrincipal() {
+			return this.request.getUserPrincipal();
+		}
+
+		@Override
+		public boolean isUserInRole(String role) {
+			return this.request.isUserInRole(role);
 		}
 
 	}

@@ -75,7 +75,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 	}
 
 	private boolean hasInput(InvocationContext context) {
-		if (context.getPrincipal() != null) {
+		if (context.getSecurityContext().getPrincipal() != null) {
 			return true;
 		}
 		Map<String, Object> arguments = context.getArguments();

@@ -24,6 +24,7 @@ import java.util.function.Function;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
@@ -58,8 +59,8 @@ public class CloudFoundryWebEndpointDiscovererTests {
 			for (ExposableWebEndpoint endpoint : endpoints) {
 				if (endpoint.getId().equals("health")) {
 					WebOperation operation = endpoint.getOperations().iterator().next();
-					assertThat(operation
-							.invoke(new InvocationContext(null, Collections.emptyMap())))
+					assertThat(operation.invoke(new InvocationContext(
+							mock(SecurityContext.class), Collections.emptyMap())))
 									.isEqualTo("cf");
 				}
 			}

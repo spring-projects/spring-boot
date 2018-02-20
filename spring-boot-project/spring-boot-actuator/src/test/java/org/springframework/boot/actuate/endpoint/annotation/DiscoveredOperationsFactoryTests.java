@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
@@ -34,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DiscoveredOperationsFactory}.
@@ -106,7 +108,8 @@ public class DiscoveredOperationsFactoryTests {
 		TestOperation operation = getFirst(
 				this.factory.createOperations("test", new ExampleWithParams()));
 		Map<String, Object> params = Collections.singletonMap("name", 123);
-		Object result = operation.invoke(new InvocationContext(null, params));
+		Object result = operation
+				.invoke(new InvocationContext(mock(SecurityContext.class), params));
 		assertThat(result).isEqualTo("123");
 	}
 
@@ -116,7 +119,8 @@ public class DiscoveredOperationsFactoryTests {
 		this.invokerAdvisors.add(advisor);
 		TestOperation operation = getFirst(
 				this.factory.createOperations("test", new ExampleRead()));
-		operation.invoke(new InvocationContext(null, Collections.emptyMap()));
+		operation.invoke(new InvocationContext(mock(SecurityContext.class),
+				Collections.emptyMap()));
 		assertThat(advisor.getEndpointId()).isEqualTo("test");
 		assertThat(advisor.getOperationType()).isEqualTo(OperationType.READ);
 		assertThat(advisor.getParameters()).isEmpty();

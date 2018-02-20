@@ -25,12 +25,14 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ReflectiveOperationInvoker}.
@@ -84,8 +86,8 @@ public class ReflectiveOperationInvokerTests {
 	public void invokeShouldInvokeMethod() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
 				this.operationMethod, this.parameterValueMapper);
-		Object result = invoker.invoke(
-				new InvocationContext(null, Collections.singletonMap("name", "boot")));
+		Object result = invoker.invoke(new InvocationContext(mock(SecurityContext.class),
+				Collections.singletonMap("name", "boot")));
 		assertThat(result).isEqualTo("toob");
 	}
 
@@ -94,8 +96,8 @@ public class ReflectiveOperationInvokerTests {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
 				this.operationMethod, this.parameterValueMapper);
 		this.thrown.expect(MissingParametersException.class);
-		invoker.invoke(
-				new InvocationContext(null, Collections.singletonMap("name", null)));
+		invoker.invoke(new InvocationContext(mock(SecurityContext.class),
+				Collections.singletonMap("name", null)));
 	}
 
 	@Test
@@ -104,8 +106,8 @@ public class ReflectiveOperationInvokerTests {
 				Example.class, "reverseNullable", String.class), OperationType.READ);
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
 				operationMethod, this.parameterValueMapper);
-		Object result = invoker.invoke(
-				new InvocationContext(null, Collections.singletonMap("name", null)));
+		Object result = invoker.invoke(new InvocationContext(mock(SecurityContext.class),
+				Collections.singletonMap("name", null)));
 		assertThat(result).isEqualTo("llun");
 	}
 
@@ -113,8 +115,8 @@ public class ReflectiveOperationInvokerTests {
 	public void invokeShouldResolveParameters() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
 				this.operationMethod, this.parameterValueMapper);
-		Object result = invoker.invoke(
-				new InvocationContext(null, Collections.singletonMap("name", 1234)));
+		Object result = invoker.invoke(new InvocationContext(mock(SecurityContext.class),
+				Collections.singletonMap("name", 1234)));
 		assertThat(result).isEqualTo("4321");
 	}
 

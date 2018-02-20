@@ -1200,7 +1200,8 @@ content into your application. Rather, pick only the properties that you need.
 	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint], {sc-spring-boot-actuator-autoconfigure}/health/HealthEndpointProperties.{sc-ext}[HealthEndpointProperties])
 	management.endpoint.health.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.health.enabled= # Whether to enable the health endpoint.
-	management.endpoint.health.show-details=false # Whether to show full health details instead of just the status when exposed over a potentially insecure connection.
+	management.endpoint.health.roles= # Roles used to determine whether or not a user is authorized to be shown details. When empty, all authenticated users are authorized.
+	management.endpoint.health.show-details=when-authorized # When to show full health details.
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
 	management.endpoint.heapdump.cache.time-to-live=0ms # Maximum time that a response can be cached.

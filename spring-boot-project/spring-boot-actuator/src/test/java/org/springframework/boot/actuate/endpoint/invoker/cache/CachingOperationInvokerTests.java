@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,7 +68,8 @@ public class CachingOperationInvokerTests {
 	private void assertCacheIsUsed(Map<String, Object> parameters) {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Object expected = new Object();
-		InvocationContext context = new InvocationContext(null, parameters);
+		InvocationContext context = new InvocationContext(mock(SecurityContext.class),
+				parameters);
 		given(target.invoke(context)).willReturn(expected);
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
 		Object response = invoker.invoke(context);
@@ -84,7 +86,8 @@ public class CachingOperationInvokerTests {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("test", "value");
 		parameters.put("something", null);
-		InvocationContext context = new InvocationContext(null, parameters);
+		InvocationContext context = new InvocationContext(mock(SecurityContext.class),
+				parameters);
 		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
 		invoker.invoke(context);
@@ -97,7 +100,8 @@ public class CachingOperationInvokerTests {
 	public void targetInvokedWhenCacheExpires() throws InterruptedException {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
-		InvocationContext context = new InvocationContext(null, parameters);
+		InvocationContext context = new InvocationContext(mock(SecurityContext.class),
+				parameters);
 		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 50L);
 		invoker.invoke(context);

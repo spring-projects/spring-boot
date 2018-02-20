@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
-import java.security.Principal;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -40,10 +39,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.ServerWebExchangeDecorator;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
@@ -152,34 +153,15 @@ public class WebFluxEndpointIntegrationTests extends
 				@Override
 				public Mono<Void> filter(ServerWebExchange exchange,
 						WebFilterChain chain) {
-					return chain.filter(
-							new MockPrincipalServerWebExchangeDecorator(exchange));
+					return chain.filter(exchange).subscriberContext(
+							ReactiveSecurityContextHolder.withAuthentication(
+									new UsernamePasswordAuthenticationToken("Alice",
+											"secret",
+											Arrays.asList(new SimpleGrantedAuthority(
+													"ROLE_ACTUATOR")))));
 				}
 
 			};
-		}
-
-	}
-
-	private static class MockPrincipalServerWebExchangeDecorator
-			extends ServerWebExchangeDecorator {
-
-		MockPrincipalServerWebExchangeDecorator(ServerWebExchange delegate) {
-			super(delegate);
-		}
-
-		@Override
-		public Mono<Principal> getPrincipal() {
-			return Mono.just(new MockPrincipal());
-		}
-
-	}
-
-	private static class MockPrincipal implements Principal {
-
-		@Override
-		public String getName() {
-			return "Alice";
 		}
 
 	}

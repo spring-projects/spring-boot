@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.ShowDetails;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -29,9 +32,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HealthEndpointProperties {
 
 	/**
-	 * Whether to show full health details.
+	 * When to show full health details.
 	 */
-	private ShowDetails showDetails = ShowDetails.WHEN_AUTHENTICATED;
+	private ShowDetails showDetails = ShowDetails.WHEN_AUTHORIZED;
+
+	/**
+	 * Roles used to determine whether or not a user is authorized to be shown details.
+	 * When empty, all authenticated users are authorized.
+	 */
+	private Set<String> roles = new HashSet<>();
 
 	public ShowDetails getShowDetails() {
 		return this.showDetails;
@@ -39,6 +48,14 @@ public class HealthEndpointProperties {
 
 	public void setShowDetails(ShowDetails showDetails) {
 		this.showDetails = showDetails;
+	}
+
+	public Set<String> getRoles() {
+		return this.roles;
+	}
+
+	public void setRoles(Set<String> roles) {
+		this.roles = roles;
 	}
 
 }

@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
+package org.springframework.boot.actuate.endpoint;
+
+import java.security.Principal;
 
 /**
- * Options for showing details in responses from the {@link HealthEndpoint} web
- * extensions.
+ * Security context in which an endpoint is being invoked.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public enum ShowDetails {
+public interface SecurityContext {
 
 	/**
-	 * Never show details in the response.
+	 * Return the currently authenticated {@link Principal} or {@code null}.
+	 * @return the principal or {@code null}
 	 */
-	NEVER,
+	Principal getPrincipal();
 
 	/**
-	 * Show details in the response when accessed by an authorized user.
+	 * Returns {@code true} if the currently authenticated user is in the given
+	 * {@code role}, or false otherwise.
+	 * @param role name of the role
+	 * @return {@code true} if the user is in the given role
 	 */
-	WHEN_AUTHORIZED,
-
-	/**
-	 * Always show details in the response.
-	 */
-	ALWAYS;
+	boolean isUserInRole(String role);
 
 }

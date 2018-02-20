@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
@@ -89,7 +90,10 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 			return false;
 		}
 		if (Principal.class.equals(parameter.getType())) {
-			return context.getPrincipal() == null;
+			return context.getSecurityContext().getPrincipal() == null;
+		}
+		if (SecurityContext.class.equals(parameter.getType())) {
+			return false;
 		}
 		return context.getArguments().get(parameter.getName()) == null;
 	}
@@ -102,7 +106,10 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	private Object resolveArgument(OperationParameter parameter,
 			InvocationContext context) {
 		if (Principal.class.equals(parameter.getType())) {
-			return context.getPrincipal();
+			return context.getSecurityContext().getPrincipal();
+		}
+		if (SecurityContext.class.equals(parameter.getType())) {
+			return context.getSecurityContext();
 		}
 		Object value = context.getArguments().get(parameter.getName());
 		return this.parameterValueMapper.mapParameterValue(parameter, value);

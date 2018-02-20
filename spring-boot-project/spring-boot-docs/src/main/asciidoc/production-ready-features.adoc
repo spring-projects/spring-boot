@@ -523,14 +523,18 @@ following values:
 |`never`
 |Details are never shown.
 
-|`when-authenticated`
-|Details are only shown to authenticated users.
+|`when-authorized`
+|Details are only shown to authorized users. Authorized roles can be configured using
+`management.endpoint.health.roles`.
 
 |`always`
 |Details are shown to all users.
 |===
 
-The default value is `when-authenticated`.
+The default value is `when-authorized`. A user is considered to be authorized when they
+are in one or more of the endpoint's roles. If the endpoint has no configured roles
+(the default) all authenticated users are considered to be authorized. The roles can
+be configured using the `management.endpoint.health.roles` property.
 
 NOTE: If you have secured your application and wish to use `always`, your security
 configuration must permit access to the health endpoint for both authenticated and

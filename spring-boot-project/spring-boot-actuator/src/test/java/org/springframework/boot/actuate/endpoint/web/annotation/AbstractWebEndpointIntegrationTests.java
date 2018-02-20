@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -361,6 +362,52 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 				.expectBody(String.class).isEqualTo("Zoe"));
 	}
 
+	@Test
+	public void securityContextIsAvailableAndHasNullPrincipalWhenRequestHasNoPrincipal() {
+		load(SecurityContextEndpointConfiguration.class,
+				(client) -> client.get().uri("/securitycontext")
+						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+						.isOk().expectBody(String.class).isEqualTo("None"));
+	}
+
+	@Test
+	public void securityContextIsAvailableAndHasPrincipalWhenRequestHasPrincipal() {
+		load((context) -> {
+			this.authenticatedContextCustomizer.accept(context);
+			context.register(SecurityContextEndpointConfiguration.class);
+		}, (client) -> client.get().uri("/securitycontext")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("Alice"));
+	}
+
+	@Test
+	public void userInRoleReturnsFalseWhenRequestHasNoPrincipal() {
+		load(UserInRoleEndpointConfiguration.class,
+				(client) -> client.get().uri("/userinrole?role=ADMIN")
+						.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+						.isOk().expectBody(String.class).isEqualTo("ADMIN: false"));
+	}
+
+	@Test
+	public void userInRoleReturnsFalseWhenUserIsNotInRole() {
+		load((context) -> {
+			this.authenticatedContextCustomizer.accept(context);
+			context.register(UserInRoleEndpointConfiguration.class);
+		}, (client) -> client.get().uri("/userinrole?role=ADMIN")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("ADMIN: false"));
+	}
+
+	@Test
+	public void userInRoleReturnsTrueWhenUserIsInRole() {
+		load((context) -> {
+			this.authenticatedContextCustomizer.accept(context);
+			context.register(UserInRoleEndpointConfiguration.class);
+		}, (client) -> client.get().uri("/userinrole?role=ACTUATOR")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("ACTUATOR: true"));
+	}
+
 	protected abstract int getPort(T context);
 
 	protected void validateErrorBody(WebTestClient.BodyContentSpec body,
@@ -581,6 +628,28 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	}
 
+	@Configuration
+	@Import(BaseConfiguration.class)
+	protected static class SecurityContextEndpointConfiguration {
+
+		@Bean
+		public SecurityContextEndpoint securityContextEndpoint() {
+			return new SecurityContextEndpoint();
+		}
+
+	}
+
+	@Configuration
+	@Import(BaseConfiguration.class)
+	protected static class UserInRoleEndpointConfiguration {
+
+		@Bean
+		public UserInRoleEndpoint userInRoleEndpoint() {
+			return new UserInRoleEndpoint();
+		}
+
+	}
+
 	@Endpoint(id = "test")
 	static class TestEndpoint {
 
@@ -775,6 +844,27 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		public String read(String principal) {
 			return principal;
+		}
+
+	}
+
+	@Endpoint(id = "securitycontext")
+	static class SecurityContextEndpoint {
+
+		@ReadOperation
+		public String read(SecurityContext securityContext) {
+			Principal principal = securityContext.getPrincipal();
+			return principal == null ? "None" : principal.getName();
+		}
+
+	}
+
+	@Endpoint(id = "userinrole")
+	static class UserInRoleEndpoint {
+
+		@ReadOperation
+		public String read(SecurityContext securityContext, String role) {
+			return role + ": " + securityContext.isUserInRole(role);
 		}
 
 	}

@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
+import org.springframework.boot.actuate.health.HealthWebEndpointResponseMapper;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
@@ -59,6 +60,15 @@ class HealthEndpointWebExtensionConfiguration {
 		return statusHttpMapper;
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	public HealthWebEndpointResponseMapper healthWebEndpointResponseMapper(
+			HealthStatusHttpMapper statusHttpMapper,
+			HealthEndpointProperties properties) {
+		return new HealthWebEndpointResponseMapper(statusHttpMapper,
+				properties.getShowDetails(), properties.getRoles());
+	}
+
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	static class ReactiveWebHealthConfiguration {
@@ -81,10 +91,9 @@ class HealthEndpointWebExtensionConfiguration {
 		@ConditionalOnEnabledEndpoint
 		@ConditionalOnBean(HealthEndpoint.class)
 		public ReactiveHealthEndpointWebExtension reactiveHealthEndpointWebExtension(
-				HealthStatusHttpMapper healthStatusHttpMapper,
-				HealthEndpointProperties properties) {
+				HealthWebEndpointResponseMapper responseMapper) {
 			return new ReactiveHealthEndpointWebExtension(this.reactiveHealthIndicator,
-					healthStatusHttpMapper, properties.getShowDetails());
+					responseMapper);
 		}
 
 	}
@@ -99,11 +108,10 @@ class HealthEndpointWebExtensionConfiguration {
 		@ConditionalOnBean(HealthEndpoint.class)
 		public HealthEndpointWebExtension healthEndpointWebExtension(
 				ApplicationContext applicationContext,
-				HealthStatusHttpMapper healthStatusHttpMapper,
-				HealthEndpointProperties properties) {
+				HealthWebEndpointResponseMapper responseMapper) {
 			return new HealthEndpointWebExtension(
 					HealthIndicatorBeansComposite.get(applicationContext),
-					healthStatusHttpMapper, properties.getShowDetails());
+					responseMapper);
 		}
 
 	}

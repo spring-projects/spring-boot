@@ -16,12 +16,10 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.security.Principal;
-
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
-import org.springframework.lang.Nullable;
 
 /**
  * {@link EndpointWebExtension} for the {@link HealthEndpoint}.
@@ -39,31 +37,23 @@ public class HealthEndpointWebExtension {
 
 	private final HealthIndicator delegate;
 
-	private final HealthStatusHttpMapper statusHttpMapper;
-
-	private final ShowDetails showDetails;
+	private final HealthWebEndpointResponseMapper responseMapper;
 
 	public HealthEndpointWebExtension(HealthIndicator delegate,
-			HealthStatusHttpMapper statusHttpMapper, ShowDetails showDetails) {
+			HealthWebEndpointResponseMapper responseMapper) {
 		this.delegate = delegate;
-		this.statusHttpMapper = statusHttpMapper;
-		this.showDetails = showDetails;
+		this.responseMapper = responseMapper;
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Health> getHealth(@Nullable Principal principal) {
-		return getHealth(principal, this.showDetails);
+	public WebEndpointResponse<Health> getHealth(SecurityContext securityContext) {
+		return this.responseMapper.map(this.delegate.health(), securityContext);
 	}
 
-	public WebEndpointResponse<Health> getHealth(Principal principal,
+	public WebEndpointResponse<Health> getHealth(SecurityContext securityContext,
 			ShowDetails showDetails) {
-		Health health = this.delegate.health();
-		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-		if (showDetails == ShowDetails.NEVER
-				|| (showDetails == ShowDetails.WHEN_AUTHENTICATED && principal == null)) {
-			health = Health.status(health.getStatus()).build();
-		}
-		return new WebEndpointResponse<>(health, status);
+		return this.responseMapper.map(this.delegate.health(), securityContext,
+				showDetails);
 	}
 
 }

@@ -17,15 +17,15 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.security.Principal;
-import java.util.Map;
 
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
+import org.springframework.boot.actuate.health.HealthWebEndpointResponseMapper;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -69,12 +70,17 @@ public class ReactiveHealthEndpointWebExtensionTests {
 				.run((context) -> {
 					Object extension = context
 							.getBean(ReactiveHealthEndpointWebExtension.class);
-					HealthStatusHttpMapper mapper = (HealthStatusHttpMapper) ReflectionTestUtils
-							.getField(extension, "statusHttpMapper");
-					Map<String, Integer> statusMappings = mapper.getStatusMapping();
-					assertThat(statusMappings).containsEntry("DOWN", 503);
-					assertThat(statusMappings).containsEntry("OUT_OF_SERVICE", 503);
-					assertThat(statusMappings).containsEntry("CUSTOM", 500);
+					HealthWebEndpointResponseMapper responseMapper = (HealthWebEndpointResponseMapper) ReflectionTestUtils
+							.getField(extension, "responseMapper");
+					Class<SecurityContext> securityContext = SecurityContext.class;
+					assertThat(responseMapper
+							.map(Health.down().build(), mock(securityContext))
+							.getStatus()).isEqualTo(503);
+					assertThat(responseMapper.map(Health.status("OUT_OF_SERVICE").build(),
+							mock(securityContext)).getStatus()).isEqualTo(503);
+					assertThat(responseMapper
+							.map(Health.status("CUSTOM").build(), mock(securityContext))
+							.getStatus()).isEqualTo(500);
 				});
 	}
 
@@ -86,8 +92,11 @@ public class ReactiveHealthEndpointWebExtensionTests {
 					ReactiveHealthEndpointWebExtension extension = context
 							.getBean(ReactiveHealthEndpointWebExtension.class);
 					Health endpointHealth = endpoint.health();
-					Health extensionHealth = extension.health(mock(Principal.class))
-							.block().getBody();
+					SecurityContext securityContext = mock(SecurityContext.class);
+					given(securityContext.getPrincipal())
+							.willReturn(mock(Principal.class));
+					Health extensionHealth = extension.health(securityContext).block()
+							.getBody();
 					assertThat(endpointHealth.getDetails())
 							.containsOnlyKeys("application", "first", "second");
 					assertThat(extensionHealth.getDetails())
@@ -100,7 +109,8 @@ public class ReactiveHealthEndpointWebExtensionTests {
 		this.contextRunner.run((context) -> {
 			ReactiveHealthEndpointWebExtension extension = context
 					.getBean(ReactiveHealthEndpointWebExtension.class);
-			assertThat(extension.health(null).block().getBody().getDetails()).isEmpty();
+			assertThat(extension.health(mock(SecurityContext.class)).block().getBody()
+					.getDetails()).isEmpty();
 		});
 	}
 
@@ -109,8 +119,10 @@ public class ReactiveHealthEndpointWebExtensionTests {
 		this.contextRunner.run((context) -> {
 			ReactiveHealthEndpointWebExtension extension = context
 					.getBean(ReactiveHealthEndpointWebExtension.class);
-			assertThat(extension.health(mock(Principal.class)).block().getBody()
-					.getDetails()).isNotEmpty();
+			SecurityContext securityContext = mock(SecurityContext.class);
+			given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
+			assertThat(extension.health(securityContext).block().getBody().getDetails())
+					.isNotEmpty();
 		});
 	}
 
@@ -133,8 +145,57 @@ public class ReactiveHealthEndpointWebExtensionTests {
 				.run((context) -> {
 					ReactiveHealthEndpointWebExtension extension = context
 							.getBean(ReactiveHealthEndpointWebExtension.class);
-					assertThat(extension.health(mock(Principal.class)).block().getBody()
+					SecurityContext securityContext = mock(SecurityContext.class);
+					assertThat(extension.health(securityContext).block().getBody()
 							.getDetails()).isEmpty();
+				});
+	}
+
+	@Test
+	public void detailsCanBeHiddenFromUnauthorizedUsers() {
+		this.contextRunner.withPropertyValues(
+				"management.endpoint.health.show-details=when-authorized",
+				"management.endpoint.health.roles=ACTUATOR").run((context) -> {
+					ReactiveHealthEndpointWebExtension extension = context
+							.getBean(ReactiveHealthEndpointWebExtension.class);
+					SecurityContext securityContext = mock(SecurityContext.class);
+					given(securityContext.getPrincipal())
+							.willReturn(mock(Principal.class));
+					given(securityContext.isUserInRole("ACTUATOR")).willReturn(false);
+					assertThat(extension.health(securityContext).block().getBody()
+							.getDetails()).isEmpty();
+				});
+	}
+
+	@Test
+	public void detailsCanBeShownToAuthorizedUsers() {
+		this.contextRunner.withPropertyValues(
+				"management.endpoint.health.show-details=when-authorized",
+				"management.endpoint.health.roles=ACTUATOR").run((context) -> {
+					ReactiveHealthEndpointWebExtension extension = context
+							.getBean(ReactiveHealthEndpointWebExtension.class);
+					SecurityContext securityContext = mock(SecurityContext.class);
+					given(securityContext.getPrincipal())
+							.willReturn(mock(Principal.class));
+					given(securityContext.isUserInRole("ACTUATOR")).willReturn(true);
+					assertThat(extension.health(securityContext).block().getBody()
+							.getDetails()).isNotEmpty();
+				});
+	}
+
+	@Test
+	public void roleCanBeCustomized() {
+		this.contextRunner.withPropertyValues(
+				"management.endpoint.health.show-details=when-authorized",
+				"management.endpoint.health.roles=ADMIN").run((context) -> {
+					ReactiveHealthEndpointWebExtension extension = context
+							.getBean(ReactiveHealthEndpointWebExtension.class);
+					SecurityContext securityContext = mock(SecurityContext.class);
+					given(securityContext.getPrincipal())
+							.willReturn(mock(Principal.class));
+					given(securityContext.isUserInRole("ADMIN")).willReturn(true);
+					assertThat(extension.health(securityContext).block().getBody()
+							.getDetails()).isNotEmpty();
 				});
 	}
 

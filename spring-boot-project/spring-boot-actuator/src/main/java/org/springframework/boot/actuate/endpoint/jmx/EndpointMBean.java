@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -97,7 +99,8 @@ public class EndpointMBean implements DynamicMBean {
 			String[] parameterNames = operation.getParameters().stream()
 					.map(JmxOperationParameter::getName).toArray(String[]::new);
 			Map<String, Object> arguments = getArguments(parameterNames, params);
-			Object result = operation.invoke(new InvocationContext(null, arguments));
+			Object result = operation
+					.invoke(new InvocationContext(new JmxSecurityContext(), arguments));
 			if (REACTOR_PRESENT) {
 				result = ReactiveHandler.handle(result);
 			}
@@ -145,6 +148,20 @@ public class EndpointMBean implements DynamicMBean {
 				return ((Mono<?>) result).block();
 			}
 			return result;
+		}
+
+	}
+
+	private static final class JmxSecurityContext implements SecurityContext {
+
+		@Override
+		public Principal getPrincipal() {
+			return null;
+		}
+
+		@Override
+		public boolean isUserInRole(String role) {
+			return false;
 		}
 
 	}

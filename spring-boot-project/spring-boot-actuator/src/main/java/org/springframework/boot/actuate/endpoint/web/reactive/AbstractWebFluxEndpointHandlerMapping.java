@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
@@ -30,6 +31,7 @@ import reactor.core.scheduler.Schedulers;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -40,6 +42,10 @@ import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicat
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorityReactiveAuthorizationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -256,33 +262,55 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 	private static final class ReactiveWebOperationAdapter
 			implements ReactiveWebOperation {
 
-		private static final Principal NO_PRINCIPAL = new Principal() {
-
-			@Override
-			public String getName() {
-				throw new UnsupportedOperationException();
-			}
-
-		};
-
 		private final OperationInvoker invoker;
+
+		private final Supplier<Mono<? extends SecurityContext>> securityContextSupplier;
 
 		private ReactiveWebOperationAdapter(OperationInvoker invoker) {
 			this.invoker = invoker;
+			if (ClassUtils.isPresent(
+					"org.springframework.security.core.context.ReactiveSecurityContextHolder",
+					getClass().getClassLoader())) {
+				this.securityContextSupplier = this::springSecurityContext;
+			}
+			else {
+				this.securityContextSupplier = this::emptySecurityContext;
+			}
+		}
+
+		public Mono<? extends SecurityContext> springSecurityContext() {
+			return ReactiveSecurityContextHolder.getContext()
+					.map((securityContext) -> new ReactiveSecurityContext(
+							securityContext.getAuthentication()))
+					.switchIfEmpty(Mono.just(new ReactiveSecurityContext(null)));
+		}
+
+		public Mono<SecurityContext> emptySecurityContext() {
+			return Mono.just(new SecurityContext() {
+
+				@Override
+				public Principal getPrincipal() {
+					return null;
+				}
+
+				@Override
+				public boolean isUserInRole(String role) {
+					return false;
+				}
+
+			});
 		}
 
 		@Override
 		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				Map<String, String> body) {
-			return exchange.getPrincipal().defaultIfEmpty(NO_PRINCIPAL)
-					.flatMap((principal) -> {
-						Map<String, Object> arguments = getArguments(exchange, body);
-						return handleResult(
-								(Publisher<?>) this.invoker.invoke(new InvocationContext(
-										principal == NO_PRINCIPAL ? null : principal,
-										arguments)),
-								exchange.getRequest().getMethod());
-					});
+			Map<String, Object> arguments = getArguments(exchange, body);
+			return this.securityContextSupplier.get()
+					.map((securityContext) -> new InvocationContext(securityContext,
+							arguments))
+					.flatMap((invocationContext) -> handleResult(
+							(Publisher<?>) this.invoker.invoke(invocationContext),
+							exchange.getRequest().getMethod()));
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange,
@@ -358,4 +386,29 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 		}
 
 	}
+
+	private static final class ReactiveSecurityContext implements SecurityContext {
+
+		private final Authentication authentication;
+
+		ReactiveSecurityContext(Authentication authentication) {
+			this.authentication = authentication;
+		}
+
+		@Override
+		public Principal getPrincipal() {
+			return this.authentication;
+		}
+
+		@Override
+		public boolean isUserInRole(String role) {
+			if (this.authentication == null) {
+				return false;
+			}
+			return AuthorityReactiveAuthorizationManager.hasRole(role)
+					.check(Mono.just(this.authentication), null).block().isGranted();
+		}
+
+	}
+
 }

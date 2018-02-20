@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.web.jersey;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +41,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -150,7 +152,7 @@ public class JerseyEndpointResourceFactory {
 			arguments.putAll(extractQueryParameters(data));
 			try {
 				Object response = this.operation.invoke(new InvocationContext(
-						data.getSecurityContext().getUserPrincipal(), arguments));
+						new JerseySecurityContext(data.getSecurityContext()), arguments));
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}
 			catch (InvalidEndpointRequestException ex) {
@@ -271,6 +273,26 @@ public class JerseyEndpointResourceFactory {
 			Map<String, Link> links = this.linksResolver
 					.resolveLinks(request.getUriInfo().getAbsolutePath().toString());
 			return Response.ok(Collections.singletonMap("_links", links)).build();
+		}
+
+	}
+
+	private static final class JerseySecurityContext implements SecurityContext {
+
+		private final javax.ws.rs.core.SecurityContext securityContext;
+
+		private JerseySecurityContext(javax.ws.rs.core.SecurityContext securityContext) {
+			this.securityContext = securityContext;
+		}
+
+		@Override
+		public Principal getPrincipal() {
+			return this.securityContext.getUserPrincipal();
+		}
+
+		@Override
+		public boolean isUserInRole(String role) {
+			return this.securityContext.isUserInRole(role);
 		}
 
 	}

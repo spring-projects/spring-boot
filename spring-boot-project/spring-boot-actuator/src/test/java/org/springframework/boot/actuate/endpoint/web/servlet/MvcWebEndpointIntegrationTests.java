@@ -17,14 +17,12 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Arrays;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
@@ -48,6 +46,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -145,32 +148,21 @@ public class MvcWebEndpointIntegrationTests extends
 				protected void doFilterInternal(HttpServletRequest request,
 						HttpServletResponse response, FilterChain filterChain)
 						throws ServletException, IOException {
-					filterChain.doFilter(new MockPrincipalWrapper(request), response);
+					SecurityContext context = SecurityContextHolder.createEmptyContext();
+					context.setAuthentication(new UsernamePasswordAuthenticationToken(
+							"Alice", "secret",
+							Arrays.asList(new SimpleGrantedAuthority("ROLE_ACTUATOR"))));
+					SecurityContextHolder.setContext(context);
+					try {
+						filterChain.doFilter(new SecurityContextHolderAwareRequestWrapper(
+								request, "ROLE_"), response);
+					}
+					finally {
+						SecurityContextHolder.clearContext();
+					}
 				}
 
 			};
-		}
-
-	}
-
-	private static class MockPrincipalWrapper extends HttpServletRequestWrapper {
-
-		MockPrincipalWrapper(HttpServletRequest request) {
-			super(request);
-		}
-
-		@Override
-		public Principal getUserPrincipal() {
-			return new MockPrincipal();
-		}
-
-	}
-
-	private static class MockPrincipal implements Principal {
-
-		@Override
-		public String getName() {
-			return "Alice";
 		}
 
 	}

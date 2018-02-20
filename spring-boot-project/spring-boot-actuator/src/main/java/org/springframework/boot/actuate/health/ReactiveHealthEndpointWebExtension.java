@@ -16,14 +16,12 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.security.Principal;
-
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
-import org.springframework.lang.Nullable;
 
 /**
  * Reactive {@link EndpointWebExtension} for the {@link HealthEndpoint}.
@@ -36,33 +34,24 @@ public class ReactiveHealthEndpointWebExtension {
 
 	private final ReactiveHealthIndicator delegate;
 
-	private final HealthStatusHttpMapper statusHttpMapper;
-
-	private final ShowDetails showDetails;
+	private final HealthWebEndpointResponseMapper responseMapper;
 
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthIndicator delegate,
-			HealthStatusHttpMapper statusHttpMapper, ShowDetails showDetails) {
+			HealthWebEndpointResponseMapper responseMapper) {
 		this.delegate = delegate;
-		this.statusHttpMapper = statusHttpMapper;
-		this.showDetails = showDetails;
+		this.responseMapper = responseMapper;
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> health(@Nullable Principal principal) {
-		return health(principal, this.showDetails);
+	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext) {
+		return this.delegate.health()
+				.map((health) -> this.responseMapper.map(health, securityContext));
 	}
 
-	public Mono<WebEndpointResponse<Health>> health(Principal principal,
+	public Mono<WebEndpointResponse<Health>> health(SecurityContext securityContext,
 			ShowDetails showDetails) {
-		return this.delegate.health().map((health) -> {
-			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-			if (showDetails == ShowDetails.NEVER
-					|| (showDetails == ShowDetails.WHEN_AUTHENTICATED
-							&& principal == null)) {
-				health = Health.status(health.getStatus()).build();
-			}
-			return new WebEndpointResponse<>(health, status);
-		});
+		return this.delegate.health().map((health) -> this.responseMapper.map(health,
+				securityContext, showDetails));
 	}
 
 }
