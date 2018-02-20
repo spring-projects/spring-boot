@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ class Tree extends ReflectionWrapper {
 	private final Method acceptMethod = findMethod("accept", this.treeVisitorType,
 			Object.class);
 
-	private final Method GET_CLASS_TREE_MEMBERS = findMethod(
+	private final Method getClassTreeMembers = findMethod(
 			findClass("com.sun.source.tree.ClassTree"), "getMembers");
 
 	Tree(Object instance) {
@@ -65,7 +65,7 @@ class Tree extends ReflectionWrapper {
 				throws Throwable {
 			if (method.getName().equals("visitClass")) {
 				if ((Integer) args[1] == 0) {
-					Iterable members = (Iterable) Tree.this.GET_CLASS_TREE_MEMBERS
+					Iterable members = (Iterable) Tree.this.getClassTreeMembers
 							.invoke(args[0]);
 					for (Object member : members) {
 						if (member != null) {

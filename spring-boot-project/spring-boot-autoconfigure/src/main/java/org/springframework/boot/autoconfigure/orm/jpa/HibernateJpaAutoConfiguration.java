@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class HibernateJpaAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 	static class HibernateEntityManagerCondition extends SpringBootCondition {
 
-		private static String[] CLASS_NAMES = {
+		private static final String[] CLASS_NAMES = {
 				"org.hibernate.ejb.HibernateEntityManager",
 				"org.hibernate.jpa.HibernateEntityManager" };
 
