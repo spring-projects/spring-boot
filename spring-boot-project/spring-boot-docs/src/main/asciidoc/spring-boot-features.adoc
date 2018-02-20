@@ -1988,13 +1988,14 @@ Spring Boot also supports the advanced resource handling features provided by Sp
 allowing use cases such as cache-busting static resources or using version agnostic URLs
 for Webjars.
 
-To use version agnostic URLs for Webjars, add the `webjars-locator` dependency.
+To use version agnostic URLs for Webjars, add the `webjars-locator-core` dependency.
 Then declare your Webjar. Using jQuery as an example, adding
 `"/webjars/jquery/dist/jquery.min.js"` results in
 `"/webjars/jquery/x.y.z/dist/jquery.min.js"`. where `x.y.z` is the Webjar version.
 
 NOTE: If you use JBoss, you need to declare the `webjars-locator-jboss-vfs`
-dependency instead of the `webjars-locator`. Otherwise, all Webjars resolve as a `404`.
+dependency instead of the `webjars-locator-core`. Otherwise, all Webjars resolve as a
+`404`.
 
 To use cache busting, the following configuration configures a cache busting solution for
 all static resources, effectively adding a content hash, such as
