@@ -57,7 +57,7 @@ public class HealthWebEndpointResponseMapper {
 
 	/**
 	 * Maps the given {@code health} to a {@link WebEndpointResponse}, honouring the given
-	 * {@showDetails} using the given {@code securityContext}.
+	 * {@code showDetails} using the given {@code securityContext}.
 	 * @param health the health to map
 	 * @param securityContext the security context
 	 * @param showDetails when to show details in the response
