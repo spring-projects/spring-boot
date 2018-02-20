@@ -84,7 +84,7 @@ public class DataSourcePoolMetrics implements MeterBinder {
 	private <N extends Number> void bindDataSource(MeterRegistry registry,
 			String metricName, Function<DataSource, N> function) {
 		if (function.apply(this.dataSource) != null) {
-			registry.gauge("jdbc." + metricName + ".connections", this.tags,
+			registry.gauge("jdbc.connections." + metricName, this.tags,
 					this.dataSource, (m) -> function.apply(m).doubleValue());
 		}
 	}
