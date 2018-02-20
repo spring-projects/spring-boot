@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jta.XAConnectionFactoryWrapper;
-import org.springframework.boot.jta.XADataSourceWrapper;
+import org.springframework.boot.jdbc.XADataSourceWrapper;
+import org.springframework.boot.jms.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
 import org.springframework.boot.jta.bitronix.BitronixXAConnectionFactoryWrapper;
 import org.springframework.boot.jta.bitronix.BitronixXADataSourceWrapper;
