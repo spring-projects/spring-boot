@@ -2653,7 +2653,7 @@ Spring WebFlux provides a `WebFilter` interface that can be implemented to filte
 request-response exchanges. `WebFilter` beans found in the application context will
 be automatically used to filter each exchange.
 
-Where the order of the filters is important they can implemented `Ordered` or be annotated
+Where the order of the filters is important they can implement `Ordered` or be annotated
 with `@Order`. Spring Boot auto-configuration may configure web filters for you. When it
 does so, the orders shown in the following table will be used:
 
@@ -5721,8 +5721,8 @@ The following example shows how to inject `ConnectionFactory` instances:
 
 [[boot-features-jta-supporting-alternative-embedded]]
 === Supporting an Alternative Embedded Transaction Manager
-The {sc-spring-boot}/jta/XAConnectionFactoryWrapper.{sc-ext}[`XAConnectionFactoryWrapper`]
-and {sc-spring-boot}/jta/XADataSourceWrapper.{sc-ext}[`XADataSourceWrapper`] interfaces
+The {sc-spring-boot}/jms/XAConnectionFactoryWrapper.{sc-ext}[`XAConnectionFactoryWrapper`]
+and {sc-spring-boot}/jdbc/XADataSourceWrapper.{sc-ext}[`XADataSourceWrapper`] interfaces
 can be used to support alternative embedded transaction managers. The interfaces are
 responsible for wrapping `XAConnectionFactory` and `XADataSource` beans and exposing them
 as regular `ConnectionFactory` and `DataSource` beans, which transparently enroll in the

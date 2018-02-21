@@ -20,9 +20,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -42,9 +40,6 @@ import static org.mockito.Mockito.mock;
  */
 @RunWith(Parameterized.class)
 public class NumberToDurationConverterTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private final ConversionService conversionService;
 

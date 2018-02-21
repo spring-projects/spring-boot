@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import java.time.Duration;
 
 /**
- * Annotation that can be used to indivate the format to use when converting a
+ * Annotation that can be used to indicate the format to use when converting a
  * {@link Duration}.
  *
  * @author Phillip Webb
