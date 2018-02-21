@@ -24,7 +24,7 @@
     },
     {
       "name": "management.endpoint.health.show-details",
-      "defaultValue": "when-authorized"
+      "defaultValue": "never"
     },
     {
       "name": "management.endpoints.enabled-by-default",
