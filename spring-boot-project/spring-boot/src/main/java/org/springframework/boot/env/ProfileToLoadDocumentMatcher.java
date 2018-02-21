@@ -36,14 +36,15 @@ class ProfileToLoadDocumentMatcher extends SpringProfilesDocumentMatcher {
 	@Override
 	protected boolean matches(String[] profiles) {
 		String[] positiveProfiles = (profiles == null ? null : Arrays.stream(profiles)
-				.filter(this::isPositveProfile).toArray(String[]::new));
+				.filter(this::isPositiveProfile).toArray(String[]::new));
 		if (this.profile == null) {
 			return ObjectUtils.isEmpty(positiveProfiles);
 		}
 		return ObjectUtils.containsElement(positiveProfiles, this.profile);
 	}
 
-	private boolean isPositveProfile(String profile) {
+	private boolean isPositiveProfile(String profile) {
 		return !profile.startsWith("!");
 	}
+
 }

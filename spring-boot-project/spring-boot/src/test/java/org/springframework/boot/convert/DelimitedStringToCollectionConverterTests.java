@@ -20,9 +20,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -48,9 +46,6 @@ public class DelimitedStringToCollectionConverterTests {
 			ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void canConvertFromStringToCollectionShouldReturnTrue() {
