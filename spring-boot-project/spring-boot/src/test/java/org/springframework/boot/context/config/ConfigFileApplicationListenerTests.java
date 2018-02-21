@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -502,6 +502,29 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(property).isEqualTo("fromdevprofile");
 		property = this.environment.getProperty("my.other");
 		assertThat(property).isEqualTo("notempty");
+	}
+
+	@Test
+	public void yamlNegatedProfiles() {
+		// gh-8011
+		this.initializer.setSearchNames("testnegatedprofiles");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property).isEqualTo("fromnototherprofile");
+		property = this.environment.getProperty("my.notother");
+		assertThat(property).isEqualTo("foo");
+	}
+
+	@Test
+	public void yamlNegatedProfilesWithProfile() {
+		// gh-8011
+		this.initializer.setSearchNames("testnegatedprofiles");
+		this.environment.setActiveProfiles("other");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property).isEqualTo("fromotherprofile");
+		property = this.environment.getProperty("my.notother");
+		assertThat(property).isNull();
 	}
 
 	@Test

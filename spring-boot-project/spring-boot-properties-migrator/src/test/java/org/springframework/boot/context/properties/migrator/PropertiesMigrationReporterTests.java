@@ -181,7 +181,7 @@ public class PropertiesMigrationReporterTests {
 			throws IOException {
 		ClassPathResource resource = new ClassPathResource(path);
 		PropertySource<?> propertySource = new PropertiesPropertySourceLoader().load(name,
-				resource, null);
+				resource, null, (profile) -> true);
 		assertThat(propertySource).isNotNull();
 		return propertySource;
 	}

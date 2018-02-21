@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.env;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -38,14 +39,14 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public PropertySource<?> load(String name, Resource resource, String profile)
-			throws IOException {
+	public PropertySource<?> load(String name, Resource resource, String profileToLoad,
+			Predicate<String[]> acceptsProfiles) throws IOException {
 		if (!ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
 			throw new IllegalStateException("Attempted to load " + name
 					+ " but snakeyaml was not found on the classpath");
 		}
-		Map<String, Object> source = new OriginTrackedYamlLoader(resource, profile)
-				.load();
+		Map<String, Object> source = new OriginTrackedYamlLoader(resource, profileToLoad,
+				acceptsProfiles).load();
 		if (!source.isEmpty()) {
 			return new OriginTrackedMapPropertySource(name, source);
 		}

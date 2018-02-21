@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +45,8 @@ public class YamlPropertySourceLoaderTests {
 	public void load() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource(
 				"foo:\n  bar: spam".getBytes());
-		PropertySource<?> source = this.loader.load("resource", resource, null);
+		PropertySource<?> source = this.loader.load("resource", resource, null,
+				(profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
 	}
@@ -59,7 +61,7 @@ public class YamlPropertySourceLoaderTests {
 		}
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
 		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader
-				.load("resource", resource, null);
+				.load("resource", resource, null, (profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getPropertyNames())
 				.isEqualTo(expected.toArray(new String[] {}));
@@ -72,7 +74,8 @@ public class YamlPropertySourceLoaderTests {
 		yaml.append("---\n");
 		yaml.append("foo:\n  baz: wham\n");
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
-		PropertySource<?> source = this.loader.load("resource", resource, null);
+		PropertySource<?> source = this.loader.load("resource", resource, null,
+				(profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
 		assertThat(source.getProperty("foo.baz")).isEqualTo("wham");
@@ -81,7 +84,8 @@ public class YamlPropertySourceLoaderTests {
 	@Test
 	public void timestampLikeItemsDoNotBecomeDates() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource("foo: 2015-01-28".getBytes());
-		PropertySource<?> source = this.loader.load("resource", resource, null);
+		PropertySource<?> source = this.loader.load("resource", resource, null,
+				(profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo")).isEqualTo("2015-01-28");
 	}
@@ -89,11 +93,42 @@ public class YamlPropertySourceLoaderTests {
 	@Test
 	public void loadOriginAware() throws Exception {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
-		PropertySource<?> source = this.loader.load("resource", resource, null);
+		PropertySource<?> source = this.loader.load("resource", resource, null,
+				(profile) -> true);
 		EnumerablePropertySource<?> enumerableSource = (EnumerablePropertySource<?>) source;
 		for (String name : enumerableSource.getPropertyNames()) {
 			System.out.println(name + " = " + enumerableSource.getProperty(name));
 		}
+	}
+
+	@Test
+	public void loadSpecificProfile() throws Exception {
+		StringBuilder yaml = new StringBuilder();
+		yaml.append("foo:\n  bar: spam\n");
+		yaml.append("---\n");
+		yaml.append("spring:\n  profiles: foo\n");
+		yaml.append("foo:\n  bar: wham\n");
+		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
+		PropertySource<?> source = this.loader.load("resource", resource, "foo",
+				(profile) -> true);
+		assertThat(source).isNotNull();
+		assertThat(source.getProperty("foo.bar")).isEqualTo("wham");
+	}
+
+	@Test
+	public void loadWithAcceptProfile() throws Exception {
+		StringBuilder yaml = new StringBuilder();
+		yaml.append("---\n");
+		yaml.append("spring:\n  profiles: yay,foo\n");
+		yaml.append("foo:\n  bar: bang\n");
+		yaml.append("---\n");
+		yaml.append("spring:\n  profiles: yay,!foo\n");
+		yaml.append("foo:\n  bar: wham\n");
+		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
+		PropertySource<?> source = this.loader.load("resource", resource, "yay",
+				(profiles) -> ObjectUtils.containsElement(profiles, "!foo"));
+		assertThat(source).isNotNull();
+		assertThat(source.getProperty("foo.bar")).isEqualTo("wham");
 	}
 
 }

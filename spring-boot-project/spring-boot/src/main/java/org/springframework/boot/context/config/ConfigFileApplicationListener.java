@@ -466,7 +466,8 @@ public class ConfigFileApplicationListener
 				}
 				String name = "applicationConfig: [" + location + "]"
 						+ (loadProfile == null ? "" : "#" + loadProfile);
-				PropertySource<?> loaded = loader.load(name, resource, loadProfile);
+				PropertySource<?> loaded = loader.load(name, resource, loadProfile,
+						this.environment::acceptsProfiles);
 				if (loaded == null) {
 					this.logger.trace("Skipped unloaded config " + description);
 					return;
