@@ -42,7 +42,7 @@ import org.springframework.integration.support.management.micrometer.MicrometerM
 @AutoConfigureAfter({ IntegrationAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnBean(MeterRegistry.class)
-public class MetricsIntegrationAutoConfiguration {
+public class IntegrationMetricsAutoConfiguration {
 
 	@Bean
 	public MicrometerMetricsFactory integrationMicrometerMetricsFactory(

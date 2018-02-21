@@ -36,15 +36,15 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MetricsIntegrationAutoConfiguration}.
+ * Tests for {@link IntegrationMetricsAutoConfiguration}.
  *
  * @author Phillip Webb
  */
-public class MetricsIntegrationAutoConfigurationTests {
+public class IntegrationMetricsAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class,
-					MetricsIntegrationAutoConfiguration.class))
+					IntegrationMetricsAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class)
 			.withPropertyValues("spring.jmx.enabled=false");
 
