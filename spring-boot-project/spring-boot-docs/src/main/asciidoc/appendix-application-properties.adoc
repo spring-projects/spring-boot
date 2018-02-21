@@ -820,7 +820,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.bitronix.connectionfactory.test-connections=true # Whether connections should be tested when acquired from the pool.
 	spring.jta.bitronix.connectionfactory.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE).
 	spring.jta.bitronix.connectionfactory.unique-name=jmsConnectionFactory # The unique name used to identify the resource during recovery.
-	spring.jta.bitronix.connectionfactory.use-tm-join=true Whether TMJOIN should be used when starting XAResources.
+	spring.jta.bitronix.connectionfactory.use-tm-join=true # Whether TMJOIN should be used when starting XAResources.
 	spring.jta.bitronix.connectionfactory.user= # The user to use to connect to the JMS provider.
 	spring.jta.bitronix.datasource.acquire-increment=1 # Number of connections to create when growing the pool.
 	spring.jta.bitronix.datasource.acquisition-interval=1 # Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired.
@@ -847,7 +847,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.bitronix.datasource.test-query= # SQL query or statement used to validate a connection before returning it.
 	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, and always last is Integer.MAX_VALUE).
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery.
-	spring.jta.bitronix.datasource.use-tm-join=true Whether TMJOIN should be used when starting XAResources.
+	spring.jta.bitronix.datasource.use-tm-join=true # Whether TMJOIN should be used when starting XAResources.
 	spring.jta.bitronix.properties.allow-multiple-lrc=false # Whether to allow multiple LRC resources to be enlisted into the same transaction.
 	spring.jta.bitronix.properties.asynchronous2-pc=false # Enable asynchronously execution of two phase commit.
 	spring.jta.bitronix.properties.background-recovery-interval-seconds=60 # Interval in seconds at which to run the recovery process in the background.
@@ -1304,7 +1304,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.
 	management.metrics.distribution.percentiles-histogram.*= # Whether meter IDs starting-with the specified name should be publish percentile histograms.
 	management.metrics.distribution.percentiles.*= # Specific computed non-aggregable percentiles to ship to the backend for meter IDs starting-with the specified name.
-	management.metrics.distribution.sla.*= Specific SLA boundaries for meter IDs starting-with the specified name. The longest match wins, the key `all` can also be used to configure all meters.
+	management.metrics.distribution.sla.*= # Specific SLA boundaries for meter IDs starting-with the specified name. The longest match wins, the key `all` can also be used to configure all meters.
 	management.metrics.enable.*= # Whether meter IDs starting-with the specified name should be enabled. The longest match wins, the key `all` can also be used to configure all meters.
 	management.metrics.export.atlas.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.atlas.config-refresh-frequency=10s # Frequency for refreshing config settings from the LWC service.
