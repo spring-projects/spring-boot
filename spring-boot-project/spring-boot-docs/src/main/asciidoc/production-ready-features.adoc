@@ -1127,10 +1127,10 @@ monitoring systems, including:
 - <<production-ready-metrics-export-graphite,Graphite>>
 - <<production-ready-metrics-export-influx,Influx>>
 - <<production-ready-metrics-export-jmx,JMX>>
-- <<production-ready-metrics-export-simple,Simple (in-memory)>>
 - <<production-ready-metrics-export-newrelic,New Relic>>
 - <<production-ready-metrics-export-prometheus,Prometheus>>
 - <<production-ready-metrics-export-signalfx,SignalFx>>
+- <<production-ready-metrics-export-simple,Simple (in-memory)>>
 - <<production-ready-metrics-export-statsd,StatsD>>
 - <<production-ready-metrics-export-wavefront,Wavefront>>
 
@@ -1291,22 +1291,6 @@ TIP: To take control over this behaviour, define your own `HierarchicalNameMappe
 
 
 
-[[production-ready-metrics-export-simple]]
-==== Simple
-Micrometer ships with a simple, in-memory backend that is automatically used as a fallback
-if no other registry is configured. This allows you to see what metrics are collected in
-the <<production-ready-metrics-endpoint,metrics endpoint>>.
-
-The in-memory backend disables itself as soon as you're using any of the other available
-backend. You can also disable it explicitly:
-
-[source,properties,indent=0]
-----
-	management.metrics.export.simple.enabled=false
-----
-
-
-
 [[production-ready-metrics-export-newrelic]]
 ==== New Relic
 New Relic registry pushes metrics to {micrometer-registry-documentation}/newrelic[New
@@ -1367,6 +1351,22 @@ You can also change the interval at which metrics are sent to SignalFx:
 [source,properties,indent=0]
 ----
 	management.metrics.export.signalfx.steps=30s
+----
+
+
+
+[[production-ready-metrics-export-simple]]
+==== Simple
+Micrometer ships with a simple, in-memory backend that is automatically used as a fallback
+if no other registry is configured. This allows you to see what metrics are collected in
+the <<production-ready-metrics-endpoint,metrics endpoint>>.
+
+The in-memory backend disables itself as soon as you're using any of the other available
+backend. You can also disable it explicitly:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.simple.enabled=false
 ----
 
 
