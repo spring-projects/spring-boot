@@ -90,15 +90,32 @@ public class HealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void authenticatedUsersAreShownDetailsByDefault() {
+	public void authenticatedUsersAreNotShownDetailsByDefault() {
 		this.contextRunner.run((context) -> {
 			HealthEndpointWebExtension extension = context
 					.getBean(HealthEndpointWebExtension.class);
 			SecurityContext securityContext = mock(SecurityContext.class);
 			given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
 			assertThat(extension.getHealth(securityContext).getBody().getDetails())
-					.isNotEmpty();
+					.isEmpty();
 		});
+	}
+
+	@Test
+	public void authenticatedUsersWhenAuthorizedCanBeShownDetails() {
+		this.contextRunner
+				.withPropertyValues(
+						"management.endpoint.health.show-details=when-authorized")
+				.run((context) -> {
+					HealthEndpointWebExtension extension = context
+							.getBean(HealthEndpointWebExtension.class);
+					SecurityContext securityContext = mock(SecurityContext.class);
+					given(securityContext.getPrincipal())
+							.willReturn(mock(Principal.class));
+					assertThat(
+							extension.getHealth(securityContext).getBody().getDetails())
+									.isNotEmpty();
+				});
 	}
 
 	@Test

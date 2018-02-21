@@ -34,7 +34,7 @@ public class HealthEndpointProperties {
 	/**
 	 * When to show full health details.
 	 */
-	private ShowDetails showDetails = ShowDetails.WHEN_AUTHORIZED;
+	private ShowDetails showDetails = ShowDetails.NEVER;
 
 	/**
 	 * Roles used to determine whether or not a user is authorized to be shown details.

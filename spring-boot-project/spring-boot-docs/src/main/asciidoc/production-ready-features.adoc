@@ -531,7 +531,7 @@ following values:
 |Details are shown to all users.
 |===
 
-The default value is `when-authorized`. A user is considered to be authorized when they
+The default value is `never`. A user is considered to be authorized when they
 are in one or more of the endpoint's roles. If the endpoint has no configured roles
 (the default) all authenticated users are considered to be authorized. The roles can
 be configured using the `management.endpoint.health.roles` property.

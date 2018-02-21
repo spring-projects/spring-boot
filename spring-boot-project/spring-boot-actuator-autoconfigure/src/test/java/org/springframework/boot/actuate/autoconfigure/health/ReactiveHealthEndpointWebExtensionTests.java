@@ -86,7 +86,9 @@ public class ReactiveHealthEndpointWebExtensionTests {
 
 	@Test
 	public void regularAndReactiveHealthIndicatorsMatch() {
-		this.contextRunner.withUserConfiguration(HealthIndicatorsConfiguration.class)
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.show-details=always")
+				.withUserConfiguration(HealthIndicatorsConfiguration.class)
 				.run((context) -> {
 					HealthEndpoint endpoint = context.getBean(HealthEndpoint.class);
 					ReactiveHealthEndpointWebExtension extension = context
@@ -115,15 +117,31 @@ public class ReactiveHealthEndpointWebExtensionTests {
 	}
 
 	@Test
-	public void authenticatedUsersAreShownDetailsByDefault() {
+	public void authenticatedUsersAreNotShownDetailsByDefault() {
 		this.contextRunner.run((context) -> {
 			ReactiveHealthEndpointWebExtension extension = context
 					.getBean(ReactiveHealthEndpointWebExtension.class);
 			SecurityContext securityContext = mock(SecurityContext.class);
 			given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
 			assertThat(extension.health(securityContext).block().getBody().getDetails())
-					.isNotEmpty();
+					.isEmpty();
 		});
+	}
+
+	@Test
+	public void authenticatedUsersWhenAuthorizedCanBeShownDetails() {
+		this.contextRunner
+				.withPropertyValues(
+						"management.endpoint.health.show-details=when-authorized")
+				.run((context) -> {
+					ReactiveHealthEndpointWebExtension extension = context
+							.getBean(ReactiveHealthEndpointWebExtension.class);
+					SecurityContext securityContext = mock(SecurityContext.class);
+					given(securityContext.getPrincipal())
+							.willReturn(mock(Principal.class));
+					assertThat(extension.health(securityContext).block().getBody()
+							.getDetails()).isNotEmpty();
+				});
 	}
 
 	@Test
