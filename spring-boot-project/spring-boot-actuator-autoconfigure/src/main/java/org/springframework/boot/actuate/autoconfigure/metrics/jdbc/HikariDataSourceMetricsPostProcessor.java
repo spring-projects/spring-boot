@@ -19,9 +19,12 @@ package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTrackerFactory;
 import io.micrometer.core.instrument.MeterRegistry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.Ordered;
 
 /**
  * {@link BeanPostProcessor} that configures Hikari metrics. Such arrangement is necessary
@@ -30,7 +33,10 @@ import org.springframework.context.ApplicationContext;
  *
  * @author Stephane Nicoll
  */
-class HikariDataSourceMetricsPostProcessor implements BeanPostProcessor {
+class HikariDataSourceMetricsPostProcessor implements BeanPostProcessor, Ordered {
+
+	private static final Log logger = LogFactory
+			.getLog(HikariDataSourceMetricsPostProcessor.class);
 
 	private final ApplicationContext context;
 
@@ -53,8 +59,13 @@ class HikariDataSourceMetricsPostProcessor implements BeanPostProcessor {
 			HikariDataSource dataSource) {
 		if (dataSource.getMetricRegistry() == null
 				&& dataSource.getMetricsTrackerFactory() == null) {
-			dataSource.setMetricsTrackerFactory(
-					new MicrometerMetricsTrackerFactory(registry));
+			try {
+				dataSource.setMetricsTrackerFactory(
+						new MicrometerMetricsTrackerFactory(registry));
+			}
+			catch (Exception ex) {
+				logger.warn("Failed to bind Hikari metrics: " + ex.getMessage());
+			}
 		}
 	}
 
@@ -63,6 +74,11 @@ class HikariDataSourceMetricsPostProcessor implements BeanPostProcessor {
 			this.meterRegistry = this.context.getBean(MeterRegistry.class);
 		}
 		return this.meterRegistry;
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 }

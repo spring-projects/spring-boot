@@ -33,11 +33,9 @@ import org.springframework.core.Ordered;
  */
 class DataSourceInitializerPostProcessor implements BeanPostProcessor, Ordered {
 
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
 	@Override
 	public int getOrder() {
-		return this.order;
+		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
 	@Autowired

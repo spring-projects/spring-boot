@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -26,6 +27,8 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -33,6 +36,8 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.PriorityOrdered;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -94,6 +99,29 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			registry.get("hikaricp.connections").meter();
 		});
+	}
+
+	@Test
+	public void autoConfiguredHikariDataSourceIsInstrumentedWhenUsingDataSourceInitialization() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.datasource.schema:db/create-custom-schema.sql")
+				.run((context) -> {
+					context.getBean(DataSource.class).getConnection();
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					registry.get("hikaricp.connections").meter();
+				});
+	}
+
+	@Test
+	public void failureToInstrumentHikariDataSourceIsTolerated() {
+		this.contextRunner.withUserConfiguration(HikariSealingConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					context.getBean(DataSource.class).getConnection();
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					assertThat(registry.find("hikaricp.connections").meter()).isNull();
+				});
 	}
 
 	@Test
@@ -211,6 +239,39 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
 			return DataSourceBuilder.create().url(url)
 					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
+		}
+
+	}
+
+	@Configuration
+	static class HikariSealingConfiguration {
+
+		@Bean
+		public static HikariSealer hikariSealer() {
+			return new HikariSealer();
+		}
+
+		static class HikariSealer implements BeanPostProcessor, PriorityOrdered {
+
+			@Override
+			public int getOrder() {
+				return Ordered.HIGHEST_PRECEDENCE;
+			}
+
+			@Override
+			public Object postProcessAfterInitialization(Object bean, String beanName)
+					throws BeansException {
+				if (bean instanceof HikariDataSource) {
+					try {
+						((HikariDataSource) bean).getConnection().close();
+					}
+					catch (SQLException ex) {
+						throw new IllegalStateException(ex);
+					}
+				}
+				return bean;
+			}
+
 		}
 
 	}
