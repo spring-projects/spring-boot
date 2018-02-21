@@ -113,7 +113,7 @@ public class EmbeddedLdapAutoConfiguration {
 
 	@Bean
 	public InMemoryDirectoryServer directoryServer() throws LDAPException {
-		String[] baseDn = this.embeddedProperties.getBaseDn().toArray(new String[0]);
+		String[] baseDn = this.embeddedProperties.getBaseDn().toArray(new String[this.embeddedProperties.getBaseDn().size()]);
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
 		if (hasCredentials(this.embeddedProperties.getCredential())) {
 			config.addAdditionalBindCredentials(

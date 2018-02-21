@@ -93,7 +93,7 @@ public class MongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 					MongoReactiveRepositoriesAutoConfiguration.class }) {
 				names.add(type.getName());
 			}
-			return names.toArray(new String[0]);
+			return names.toArray(new String[names.size()]);
 		}
 
 	}

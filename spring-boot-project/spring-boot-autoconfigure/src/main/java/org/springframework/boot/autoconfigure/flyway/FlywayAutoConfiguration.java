@@ -137,7 +137,7 @@ public class FlywayAutoConfiguration {
 				String password = getProperty(this.properties::getPassword,
 						this.dataSourceProperties::getPassword);
 				flyway.setDataSource(url, user, password,
-						this.properties.getInitSqls().toArray(new String[0]));
+						this.properties.getInitSqls().toArray(new String[this.properties.getInitSqls().size()]));
 			}
 			else if (this.flywayDataSource != null) {
 				flyway.setDataSource(this.flywayDataSource);
