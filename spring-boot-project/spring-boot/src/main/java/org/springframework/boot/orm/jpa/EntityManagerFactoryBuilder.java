@@ -142,7 +142,7 @@ public class EntityManagerFactoryBuilder {
 			for (Class<?> type : basePackageClasses) {
 				packages.add(ClassUtils.getPackageName(type));
 			}
-			this.packagesToScan = packages.toArray(new String[0]);
+			this.packagesToScan = packages.toArray(new String[packages.size()]);
 			return this;
 		}
 
