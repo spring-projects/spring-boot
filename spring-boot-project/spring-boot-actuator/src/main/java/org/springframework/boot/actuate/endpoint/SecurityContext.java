@@ -29,7 +29,7 @@ public interface SecurityContext {
 	/**
 	 * Empty security context.
 	 */
-	public static SecurityContext NONE = new SecurityContext() {
+	static SecurityContext NONE = new SecurityContext() {
 
 		@Override
 		public Principal getPrincipal() {
