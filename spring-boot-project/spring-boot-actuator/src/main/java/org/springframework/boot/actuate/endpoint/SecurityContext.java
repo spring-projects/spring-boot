@@ -26,6 +26,9 @@ import java.security.Principal;
  */
 public interface SecurityContext {
 
+	/**
+	 * Empty security context.
+	 */
 	public static SecurityContext NONE = new SecurityContext() {
 
 		@Override
