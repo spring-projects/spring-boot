@@ -58,7 +58,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
 		"management.endpoints.web.exposure.include=*",
 		"spring.jackson.default-property-inclusion=non_null" })
-public class AbstractEndpointDocumentationTests {
+public abstract class AbstractEndpointDocumentationTests {
 
 	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {
 		return StringUtils

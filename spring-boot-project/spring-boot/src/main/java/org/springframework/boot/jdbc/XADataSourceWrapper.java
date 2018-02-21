@@ -21,7 +21,7 @@ import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
 
 /**
- * Strategy interface used to wrap a JMS {@link XADataSource} enrolling it with a JTA
+ * Strategy interface used to wrap an {@link XADataSource} enrolling it with a JTA
  * {@link TransactionManager}.
  *
  * @author Phillip Webb
