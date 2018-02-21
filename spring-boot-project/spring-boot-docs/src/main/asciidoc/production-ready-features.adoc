@@ -1126,6 +1126,7 @@ monitoring systems, including:
 - <<production-ready-metrics-export-ganglia,Ganglia>>
 - <<production-ready-metrics-export-graphite,Graphite>>
 - <<production-ready-metrics-export-influx,Influx>>
+- <<production-ready-metrics-export-jmx,JMX>>
 - <<production-ready-metrics-export-simple,Simple (in-memory)>>
 - <<production-ready-metrics-export-newrelic,New Relic>>
 - <<production-ready-metrics-export-prometheus,Prometheus>>
@@ -1276,6 +1277,17 @@ server] to use can be provided using:
 ----
 	management.metrics.export.influx.uri=http://influx.example.com:8086
 ----
+
+
+
+[[production-ready-metrics-export-jmx]]
+==== JMX
+Micrometer provides a hierarchical mapping to
+{micrometer-registry-documentation}/jmx[JMX], primarily as a cheap and portable way to
+view metrics locally. Spring Boot provides a default `HierarchicalNameMapper` that governs
+how a dimensional meter id is mapped to flat hierarchical names.
+
+TIP: To take control over this behaviour, define your own `HierarchicalNameMapper` bean.
 
 
 
