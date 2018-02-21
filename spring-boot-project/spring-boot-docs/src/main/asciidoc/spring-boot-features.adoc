@@ -4476,8 +4476,6 @@ in properties files, you must include the index as part of the property name:
 
 ====
 
-WARNING: `spring.ldap.embedded.base-dn` supports multi base DN, so it must define as follows `spring.ldap.embedded.base-dn[0]=dc=spring,dc=io`
-
 By default, the server starts on a random port and triggers the regular LDAP support.
 There is no need to specify a `spring.ldap.urls` property.
 
