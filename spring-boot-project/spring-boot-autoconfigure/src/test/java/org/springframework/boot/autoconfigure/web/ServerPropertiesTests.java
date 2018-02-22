@@ -175,11 +175,11 @@ public class ServerPropertiesTests {
 		map.put("server.jetty.accesslog.append", "true");
 		bind(map);
 		ServerProperties.Jetty jetty = this.properties.getJetty();
-		assertThat(jetty.getAccesslog().isEnabled()).isEqualTo(true);
+		assertThat(jetty.getAccesslog().isEnabled()).isTrue();
 		assertThat(jetty.getAccesslog().getFilename()).isEqualTo("foo.txt");
 		assertThat(jetty.getAccesslog().getFileDateFormat()).isEqualTo("yyyymmdd");
 		assertThat(jetty.getAccesslog().getRetentionPeriod()).isEqualTo(4);
-		assertThat(jetty.getAccesslog().isAppend()).isEqualTo(true);
+		assertThat(jetty.getAccesslog().isAppend()).isTrue();
 	}
 
 	private void bind(String name, String value) {

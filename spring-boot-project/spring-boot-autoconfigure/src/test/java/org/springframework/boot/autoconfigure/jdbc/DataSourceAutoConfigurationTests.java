@@ -137,7 +137,7 @@ public class DataSourceAutoConfigurationTests {
 	public void commonsDbcp2ValidatesConnectionByDefault() {
 		assertDataSource(org.apache.commons.dbcp2.BasicDataSource.class,
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"), (dataSource) -> {
-					assertThat(dataSource.getTestOnBorrow()).isEqualTo(true);
+					assertThat(dataSource.getTestOnBorrow()).isTrue();
 					assertThat(dataSource.getValidationQuery()).isNull(); // Use
 																			// Connection#isValid()
 				});

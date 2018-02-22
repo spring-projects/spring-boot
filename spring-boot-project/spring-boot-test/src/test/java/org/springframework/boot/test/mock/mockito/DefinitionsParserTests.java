@@ -73,7 +73,7 @@ public class DefinitionsParserTests {
 		assertThat(definition.getExtraInterfaces())
 				.containsExactly(ExampleExtraInterface.class);
 		assertThat(definition.getAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
-		assertThat(definition.isSerializable()).isEqualTo(true);
+		assertThat(definition.isSerializable()).isTrue();
 		assertThat(definition.getReset()).isEqualTo(MockReset.NONE);
 		assertThat(definition.getQualifier()).isNull();
 	}
