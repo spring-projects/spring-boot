@@ -22,22 +22,24 @@
       "name": "spring.banner.image.location",
       "type": "org.springframework.core.io.Resource",
       "description": "Banner image file location (jpg or png can also be used).",
-      "defaultValue": "banner.gif"
+      "defaultValue": "classpath:banner.gif"
     },
     {
       "name": "spring.banner.image.width",
       "type": "java.lang.Integer",
-      "description": "Banner image width (in chars)."
+      "description": "Width of the banner image in chars.",
+      "defaultValue": 76
     },
     {
       "name": "spring.banner.image.height",
       "type": "java.lang.Integer",
-      "description": "Banner image height (in chars)."
+      "description": "Height of the banner image in chars (default based on image height)."
     },
     {
       "name": "spring.banner.image.margin",
       "type": "java.lang.Integer",
-      "description": "Left hand image margin (in chars)."
+      "description": "Left hand image margin in chars.",
+      "defaultValue": 2
     },
     {
       "name": "spring.banner.image.invert",
@@ -55,7 +57,7 @@
     {
       "name": "logging.config",
       "type": "java.lang.String",
-      "description": "Location of the logging configuration file. For instance, 'classpath:logback.xml' for Logback.",
+      "description": "Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
@@ -68,7 +70,7 @@
     {
       "name": "logging.file",
       "type": "java.lang.String",
-      "description": "Log file name. For instance, 'myapp.log'. Names can be an exact location or relative to the current directory.",
+      "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
@@ -81,20 +83,20 @@
     {
       "name": "logging.file.max-history",
       "type": "java.lang.Integer",
-      "description": "Maximum number of archive log files to keep. Only supported with the default logback setup.",
+      "description": "Maximum of archive log files to keep. Only supported with the default logback setup.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": 0
     },
     {
       "name": "logging.level",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
-      "description": "Log levels severity mapping. For instance, 'logging.level.org.springframework=DEBUG'",
+      "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.path",
       "type": "java.lang.String",
-      "description": "Location of the log file. For instance, '/var/log'.",
+      "description": "Location of the log file. For instance, `/var/log`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
@@ -129,13 +131,8 @@
       "name": "logging.register-shutdown-hook",
       "type": "java.lang.Boolean",
       "description": "Register a shutdown hook for the logging system when it is initialized.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
-    },
-    {
-      "name": "spring.mandatory-file-encoding",
-      "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
-      "type": "java.nio.charset.Charset",
-      "description": "Expected character encoding the application must use."
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
     },
     {
       "name": "spring.application.name",
@@ -168,6 +165,12 @@
       "type": "java.lang.String",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Config file locations that replace the defaults."
+    },
+    {
+      "name": "spring.jta.narayana.expiry-scanners",
+      "defaultValue": [
+        "com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner"
+      ]
     },
     {
       "name": "spring.main.banner-mode",
@@ -203,10 +206,15 @@
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",
       "description": "Run the application in a web environment (auto-detected by default).",
-      "deprecated": true,
       "deprecation": {
         "replacement": "spring.main.web-application-type"
       }
+    },
+    {
+      "name": "spring.mandatory-file-encoding",
+      "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
+      "type": "java.nio.charset.Charset",
+      "description": "Expected character encoding the application must use."
     },
     {
       "name": "spring.output.ansi.enabled",

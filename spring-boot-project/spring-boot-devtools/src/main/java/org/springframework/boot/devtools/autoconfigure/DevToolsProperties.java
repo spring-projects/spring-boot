@@ -91,7 +91,7 @@ public class DevToolsProperties {
 
 		/**
 		 * Name of a specific file that, when changed, triggers the restart check. If not
-		 * specified, any classpath file change will trigger the restart.
+		 * specified, any classpath file change triggers the restart.
 		 */
 		private String triggerFile;
 

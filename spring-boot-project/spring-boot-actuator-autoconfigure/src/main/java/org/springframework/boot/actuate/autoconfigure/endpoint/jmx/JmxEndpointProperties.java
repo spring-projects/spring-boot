@@ -41,7 +41,7 @@ public class JmxEndpointProperties {
 	private String domain = "org.springframework.boot";
 
 	/**
-	 * Ensure that ObjectNames are modified in case of conflict.
+	 * Whether to ensure that ObjectNames are modified in case of conflict.
 	 */
 	private boolean uniqueNames = false;
 

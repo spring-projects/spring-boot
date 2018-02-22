@@ -260,14 +260,13 @@ public class KafkaProperties {
 		private Duration fetchMaxWait;
 
 		/**
-		 * Minimum amount of data, in bytes, the server should return for a fetch request
-		 * in bytes.
+		 * Minimum amount of data, in bytes, the server should return for a fetch request.
 		 */
 		private Integer fetchMinSize;
 
 		/**
-		 * Unique string that identifies the consumer group to which this consumer belongs
-		 * to.
+		 * Unique string that identifies the consumer group to which this consumer
+		 * belongs.
 		 */
 		private String groupId;
 
@@ -951,7 +950,7 @@ public class KafkaProperties {
 		private Resource keystoreLocation;
 
 		/**
-		 * Password of the key store file.
+		 * Store password for the key store file.
 		 */
 		private String keystorePassword;
 

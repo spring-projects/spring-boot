@@ -60,7 +60,7 @@ public class FlywayProperties {
 	private String user;
 
 	/**
-	 * Login password of the database to migrate.
+	 * JDBC password to use if you want Flyway to create its own DataSource.
 	 */
 	private String password;
 

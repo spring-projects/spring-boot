@@ -40,6 +40,10 @@
       "defaultValue": true
     },
     {
+      "name": "server.port",
+      "defaultValue": 8080
+    },
+    {
       "name": "spring.aop.auto",
       "type": "java.lang.Boolean",
       "description": "Add @EnableAspectJAutoProxy.",
@@ -175,6 +179,10 @@
       }
     },
     {
+      "name": "spring.data.mongodb.uri",
+      "defaultValue": "mongodb://localhost/test"
+    },
+    {
       "name": "spring.data.neo4j.auto-index",
       "defaultValue": "none"
     },
@@ -282,7 +290,7 @@
     },
     {
       "name": "spring.jta.bitronix.properties.allow-multiple-lrc",
-      "description": "Allow multiple LRC resources to be enlisted into the same transaction.",
+      "description": "Whether to allow multiple LRC resources to be enlisted into the same transaction.",
       "defaultValue": false
     },
     {
@@ -305,17 +313,17 @@
     },
     {
       "name": "spring.jta.bitronix.properties.current-node-only-recovery",
-      "description": "Recover only the current node. Should be enabled if you run multiple instances of the transaction manager on the same JMS and JDBC resources.",
+      "description": "Whether to recover only the current node. Should be enabled if you run multiple instances of the transaction manager on the same JMS and JDBC resources.",
       "defaultValue": true
     },
     {
       "name": "spring.jta.bitronix.properties.debug-zero-resource-transaction",
-      "description": "Log the creation and commit call stacks of transactions executed without a single enlisted resource.",
+      "description": "Whether to log the creation and commit call stacks of transactions executed without a single enlisted resource.",
       "defaultValue": false
     },
     {
       "name": "spring.jta.bitronix.properties.default-transaction-timeout",
-      "description": "Default transaction timeout in seconds.",
+      "description": "Default transaction timeout, in seconds.",
       "defaultValue": 60
     },
     {
@@ -334,17 +342,17 @@
     },
     {
       "name": "spring.jta.bitronix.properties.force-batching-enabled",
-      "description": " Set if disk forces are batched.",
+      "description": "Whether disk forces are batched.",
       "defaultValue": true
     },
     {
       "name": "spring.jta.bitronix.properties.forced-write-enabled",
-      "description": "Set if logs are forced to disk.",
+      "description": "Whether logs are forced to disk.",
       "defaultValue": true
     },
     {
       "name": "spring.jta.bitronix.properties.graceful-shutdown-interval",
-      "description": "Maximum amount of seconds the TM will wait for transactions to get done before aborting them at shutdown time.",
+      "description": "Maximum amount of seconds the TM waits for transactions to get done before aborting them at shutdown time.",
       "defaultValue": 60
     },
     {
@@ -357,7 +365,7 @@
     },
     {
       "name": "spring.jta.bitronix.properties.journal",
-      "description": "Name of the journal. Can be 'disk', 'null' or a class name.",
+      "description": "Name of the journal. Can be 'disk', 'null', or a class name.",
       "defaultValue": "disk"
     },
     {
@@ -381,7 +389,7 @@
     },
     {
       "name": "spring.jta.bitronix.properties.server-id",
-      "description": "ASCII ID that must uniquely identify this TM instance. Default to the machine's IP address."
+      "description": "ASCII ID that must uniquely identify this TM instance. Defaults to the machine's IP address."
     },
     {
       "name": "spring.jta.bitronix.properties.skip-corrupted-logs",
@@ -390,7 +398,7 @@
     },
     {
       "name": "spring.jta.bitronix.properties.warn-about-zero-resource-transaction",
-      "description": "Log a warning for transactions executed without a single enlisted resource.",
+      "description": "Whether to log a warning for transactions executed without a single enlisted resource.",
       "defaultValue": true
     },
     {
@@ -400,6 +408,12 @@
     {
       "name": "spring.kafka.listener.type",
       "defaultValue": "single"
+    },
+    {
+      "name": "spring.mongodb.embedded.features",
+      "defaultValue": [
+        "sync_delay"
+      ]
     },
     {
       "name": "spring.mustache.prefix",
@@ -463,6 +477,10 @@
         "error",
         "request"
       ]
+    },
+    {
+      "name": "spring.security.filter.order",
+      "defaultValue": -100
     },
     {
       "name": "spring.session.jdbc.initialize-schema",

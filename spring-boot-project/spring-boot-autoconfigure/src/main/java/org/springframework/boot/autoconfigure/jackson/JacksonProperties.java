@@ -54,9 +54,8 @@ public class JacksonProperties {
 	private String jodaDateTimeFormat;
 
 	/**
-	 * One of the constants on Jackson's PropertyNamingStrategy
-	 * (CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES). Can also be a fully-qualified class
-	 * name of a PropertyNamingStrategy subclass.
+	 * One of the constants on Jackson's PropertyNamingStrategy. Can also be a
+	 * fully-qualified class name of a PropertyNamingStrategy subclass.
 	 */
 	private String propertyNamingStrategy;
 

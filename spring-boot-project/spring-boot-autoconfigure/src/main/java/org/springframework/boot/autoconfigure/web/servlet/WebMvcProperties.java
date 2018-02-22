@@ -55,7 +55,7 @@ public class WebMvcProperties {
 	private LocaleResolver localeResolver = LocaleResolver.ACCEPT_HEADER;
 
 	/**
-	 * Date format to use. For instance, "dd/MM/yyyy".
+	 * Date format to use. For instance, `dd/MM/yyyy`.
 	 */
 	private String dateFormat;
 
@@ -286,8 +286,8 @@ public class WebMvcProperties {
 		private boolean favorParameter = false;
 
 		/**
-		 * Maps file extensions to media types for content negotiation, e.g. yml to
-		 * text/yaml.
+		 * Map file extensions to media types for content negotiation. For instance, yml
+		 * to text/yaml.
 		 */
 		private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
 
@@ -340,7 +340,7 @@ public class WebMvcProperties {
 
 		/**
 		 * Whether suffix pattern matching should work only against extensions registered
-		 * with "spring.mvc.content-negotiation.media-types.*". This is generally
+		 * with "spring.mvc.contentnegotiation.media-types.*". This is generally
 		 * recommended to reduce ambiguity and to avoid issues such as when a "." appears
 		 * in the path for other reasons.
 		 */

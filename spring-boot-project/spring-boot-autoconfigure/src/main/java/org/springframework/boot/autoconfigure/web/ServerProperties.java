@@ -333,7 +333,7 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Regular expression that matches proxies that are to be trusted.
+		 * Regular expression matching trusted IP addresses.
 		 */
 		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
@@ -360,12 +360,12 @@ public class ServerProperties {
 
 		/**
 		 * Name of the HTTP header from which the remote IP is extracted. For instance,
-		 * 'X-FORWARDED-FOR'.
+		 * `X-FORWARDED-FOR`.
 		 */
 		private String remoteIpHeader;
 
 		/**
-		 * Tomcat base directory. If not specified, a temporary directory will be used.
+		 * Tomcat base directory. If not specified, a temporary directory is used.
 		 */
 		private File basedir;
 

@@ -73,7 +73,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private String driverClassName;
 
 	/**
-	 * JDBC url of the database.
+	 * JDBC URL of the database.
 	 */
 	private String url;
 
@@ -94,7 +94,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private String jndiName;
 
 	/**
-	 * Initialize the datasource using available DDL and DML scripts.
+	 * Initialize the datasource with available DDL and DML scripts.
 	 */
 	private DataSourceInitializationMode initializationMode = DataSourceInitializationMode.EMBEDDED;
 
@@ -110,7 +110,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private List<String> schema;
 
 	/**
-	 * User of the database to execute DDL scripts (if different).
+	 * Username of the database to execute DDL scripts (if different).
 	 */
 	private String schemaUsername;
 
@@ -125,12 +125,12 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private List<String> data;
 
 	/**
-	 * Username of the database to execute DML scripts.
+	 * Username of the database to execute DML scripts (if different).
 	 */
 	private String dataUsername;
 
 	/**
-	 * Password of the database to execute DML scripts.
+	 * Password of the database to execute DML scripts (if different).
 	 */
 	private String dataPassword;
 

@@ -556,7 +556,7 @@ public class RabbitProperties {
 		private Integer prefetch;
 
 		/**
-		 * Whether rejected deliveries are re-queued by default. Defaults to true.
+		 * Whether rejected deliveries are re-queued by default.
 		 */
 		private Boolean defaultRequeueRejected;
 
@@ -694,12 +694,12 @@ public class RabbitProperties {
 		private Boolean mandatory;
 
 		/**
-		 * Timeout for receive() operations.
+		 * Timeout for `receive()` operations.
 		 */
 		private Long receiveTimeout;
 
 		/**
-		 * Timeout for sendAndReceive() operations.
+		 * Timeout for `sendAndReceive()` operations.
 		 */
 		private Long replyTimeout;
 
@@ -762,17 +762,17 @@ public class RabbitProperties {
 	public static class Retry {
 
 		/**
-		 * Whether to enable retries in the RabbitTemplate.
+		 * Whether publishing retries are enabled.
 		 */
 		private boolean enabled;
 
 		/**
-		 * Maximum number of attempts to publish or deliver a message.
+		 * Maximum number of attempts to deliver a message.
 		 */
 		private int maxAttempts = 3;
 
 		/**
-		 * Interval between the first and second attempt to publish or deliver a message.
+		 * Interval, in milliseconds, between the first and second attempt to deliver a message.
 		 */
 		private long initialInterval = 1000L;
 
@@ -782,7 +782,7 @@ public class RabbitProperties {
 		private double multiplier = 1.0;
 
 		/**
-		 * Maximum interval between attempts.
+		 * Maximum interval, in milliseconds, between attempts.
 		 */
 		private long maxInterval = 10000L;
 

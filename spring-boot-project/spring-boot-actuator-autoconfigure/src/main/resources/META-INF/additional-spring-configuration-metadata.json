@@ -62,13 +62,13 @@
     {
       "name": "management.health.cassandra.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable cassandra health check.",
+      "description": "Whether to enable Cassandra health check.",
       "defaultValue": true
     },
     {
       "name": "management.health.couchbase.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable couchbase health check.",
+      "description": "Whether to enable Couchbase health check.",
       "defaultValue": true
     },
     {
@@ -92,7 +92,7 @@
     {
       "name": "management.health.elasticsearch.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable elasticsearch health check.",
+      "description": "Whether to enable Elasticsearch health check.",
       "defaultValue": true
     },
     {
@@ -142,6 +142,15 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Solr health check.",
       "defaultValue": true
+    },
+    {
+      "name": "management.health.status.order",
+      "defaultValue": [
+        "DOWN",
+        "OUT_OF_SERVICE",
+        "UP",
+        "UNKNOWN"
+      ]
     },
     {
       "name": "management.health.mail.enabled",
@@ -282,6 +291,15 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response tracing.",
       "defaultValue": true
+    },
+    {
+      "name": "management.trace.http.include",
+      "defaultValue": [
+        "request-headers",
+        "response-headers",
+        "cookies",
+        "errors"
+      ]
     },
     {
       "name": "endpoints.actuator.enabled",
