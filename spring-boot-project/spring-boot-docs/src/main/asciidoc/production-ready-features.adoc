@@ -1379,7 +1379,7 @@ local machine. The StatsD agent host and port to use can be provided using:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.statsd.host=http://statsd.example.com
+	management.metrics.export.statsd.host=statsd.example.com
 	management.metrics.export.statsd.port=9125
 ----
 
