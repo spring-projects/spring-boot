@@ -42,12 +42,12 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 
 /**
- * {@link ContextCustomizer} for {@link SpringBootTest}.
+ * {@link ContextCustomizer} for {@link TestRestTemplate}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class TestRestTemplateTestContextCustomizer implements ContextCustomizer {
+class TestRestTemplateContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
