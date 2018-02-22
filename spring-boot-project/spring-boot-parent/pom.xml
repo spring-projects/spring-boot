@@ -525,6 +525,25 @@
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>regex-property</id>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>modulename</name>
+							<value>${artifactId}</value>
+							<regex>-</regex>
+							<replacement>.</replacement>
+							<failIfNoMatch>true</failIfNoMatch>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
 				<inherited>true</inherited>
 				<executions>
@@ -634,10 +653,17 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
 						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
 						</manifest>
+						<manifestEntries>
+							<Implementation-Title>${project.name}</Implementation-Title>
+							<Automatic-Module-Name>${modulename}</Automatic-Module-Name>
+							<Implementation-Version>${project.version}</Implementation-Version>
+							<Built-By>Spring</Built-By>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
