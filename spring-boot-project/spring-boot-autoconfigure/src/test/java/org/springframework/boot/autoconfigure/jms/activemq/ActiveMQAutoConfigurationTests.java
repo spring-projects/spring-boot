@@ -114,7 +114,7 @@ public class ActiveMQAutoConfigurationTests {
 					assertThat(connectionFactory.getPassword()).isEqualTo("bar");
 					assertThat(connectionFactory.getCloseTimeout()).isEqualTo(500);
 					assertThat(connectionFactory.isNonBlockingRedelivery())
-							.isEqualTo(true);
+							.isTrue();
 					assertThat(connectionFactory.getSendTimeout()).isEqualTo(1000);
 					assertThat(connectionFactory.isTrustAllPackages()).isFalse();
 					assertThat(connectionFactory.getTrustedPackages())
@@ -178,22 +178,22 @@ public class ActiveMQAutoConfigurationTests {
 					PooledConnectionFactory connectionFactory = context
 							.getBean(PooledConnectionFactory.class);
 					assertThat(connectionFactory.isBlockIfSessionPoolIsFull())
-							.isEqualTo(false);
+							.isFalse();
 					assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout())
 							.isEqualTo(64);
 					assertThat(connectionFactory.isCreateConnectionOnStartup())
-							.isEqualTo(false);
+							.isFalse();
 					assertThat(connectionFactory.getExpiryTimeout()).isEqualTo(4096);
 					assertThat(connectionFactory.getIdleTimeout()).isEqualTo(512);
 					assertThat(connectionFactory.getMaxConnections()).isEqualTo(256);
 					assertThat(connectionFactory.getMaximumActiveSessionPerConnection())
 							.isEqualTo(1024);
 					assertThat(connectionFactory.isReconnectOnException())
-							.isEqualTo(false);
+							.isFalse();
 					assertThat(connectionFactory.getTimeBetweenExpirationCheckMillis())
 							.isEqualTo(2048);
 					assertThat(connectionFactory.isUseAnonymousProducers())
-							.isEqualTo(false);
+							.isFalse();
 				});
 	}
 

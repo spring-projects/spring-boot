@@ -77,7 +77,7 @@ public class TomcatServletWebServerFactoryCustomizerTests {
 	public void redirectContextRootCanBeConfigured() {
 		bind("server.tomcat.redirect-context-root=false");
 		ServerProperties.Tomcat tomcat = this.serverProperties.getTomcat();
-		assertThat(tomcat.getRedirectContextRoot()).isEqualTo(false);
+		assertThat(tomcat.getRedirectContextRoot()).isFalse();
 		TomcatWebServer server = customizeAndGetServer();
 		Context context = (Context) server.getTomcat().getHost().findChildren()[0];
 		assertThat(context.getMapperContextRootRedirectEnabled()).isFalse();
