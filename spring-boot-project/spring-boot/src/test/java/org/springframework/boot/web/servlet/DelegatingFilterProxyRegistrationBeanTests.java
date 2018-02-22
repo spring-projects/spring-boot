@@ -91,7 +91,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 		assertThat(mockFilterInitialized.get()).isNull();
 		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
 				new MockFilterChain());
-		assertThat(mockFilterInitialized.get()).isEqualTo(true);
+		assertThat(mockFilterInitialized.get()).isTrue();
 	}
 
 	@Test

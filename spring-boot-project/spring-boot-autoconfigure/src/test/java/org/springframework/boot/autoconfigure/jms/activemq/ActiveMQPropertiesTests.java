@@ -71,7 +71,7 @@ public class ActiveMQPropertiesTests {
 		this.properties.getPackages().setTrustAll(true);
 		assertThat(createFactory(this.properties)
 				.createConnectionFactory(ActiveMQConnectionFactory.class)
-				.isTrustAllPackages()).isEqualTo(true);
+				.isTrustAllPackages()).isTrue();
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class ActiveMQPropertiesTests {
 		this.properties.getPackages().getTrusted().add("trusted.package");
 		ActiveMQConnectionFactory factory = createFactory(this.properties)
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
-		assertThat(factory.isTrustAllPackages()).isEqualTo(false);
+		assertThat(factory.isTrustAllPackages()).isFalse();
 		assertThat(factory.getTrustedPackages().size()).isEqualTo(1);
 		assertThat(factory.getTrustedPackages().get(0)).isEqualTo("trusted.package");
 	}

@@ -246,7 +246,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		StandardWrapper jspServletWrapper = (StandardWrapper) context.findChild("jsp");
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
 				.getField(jspServletWrapper.getServlet(), "options");
-		assertThat(options.getDevelopment()).isEqualTo(true);
+		assertThat(options.getDevelopment()).isTrue();
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,

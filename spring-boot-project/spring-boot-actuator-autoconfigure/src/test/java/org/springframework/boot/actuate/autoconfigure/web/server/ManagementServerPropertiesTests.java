@@ -33,7 +33,7 @@ public class ManagementServerPropertiesTests {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		assertThat(properties.getPort()).isNull();
 		assertThat(properties.getServlet().getContextPath()).isEqualTo("");
-		assertThat(properties.getAddApplicationContextHeader()).isEqualTo(false);
+		assertThat(properties.getAddApplicationContextHeader()).isFalse();
 	}
 
 	@Test

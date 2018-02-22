@@ -982,7 +982,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		JspServlet jspServlet = getJspServlet();
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
 				.getField(jspServlet, "options");
-		assertThat(options.getDevelopment()).isEqualTo(false);
+		assertThat(options.getDevelopment()).isFalse();
 	}
 
 	@Test
