@@ -438,7 +438,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (hasMainReadOperation(element)) {
 			this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,
 					"cache.time-to-live", Duration.class.getName(), type, null,
-					"Maximum time that a response can be cached.", 0, null));
+					"Maximum time that a response can be cached.", "0ms", null));
 		}
 	}
 

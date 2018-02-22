@@ -706,7 +706,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
 		return Metadata
 				.withProperty("management.endpoint." + endpointId + ".cache.time-to-live")
-				.ofType(Duration.class).withDefaultValue(0)
+				.ofType(Duration.class).withDefaultValue("0ms")
 				.withDescription("Maximum time that a response can be cached.");
 	}
 
