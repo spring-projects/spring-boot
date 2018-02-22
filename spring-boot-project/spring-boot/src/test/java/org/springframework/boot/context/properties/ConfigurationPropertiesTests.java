@@ -728,6 +728,15 @@ public class ConfigurationPropertiesTests {
 		assertThat(bean.getPerson().lastName).isEqualTo("boot");
 	}
 
+	@Test
+	public void loadWhenBindingToListOfGenericClassShouldBind() {
+		// gh-12166
+		load(ListOfGenericClassProperties.class, "test.list=java.lang.RuntimeException");
+		ListOfGenericClassProperties bean = this.context
+				.getBean(ListOfGenericClassProperties.class);
+		assertThat(bean.getList()).containsExactly(RuntimeException.class);
+	}
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
 			String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
@@ -1595,6 +1604,22 @@ public class ConfigurationPropertiesTests {
 
 		public void setFoo(String foo) {
 			this.foo = foo;
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class ListOfGenericClassProperties {
+
+		private List<Class<? extends Throwable>> list;
+
+		public List<Class<? extends Throwable>> getList() {
+			return this.list;
+		}
+
+		public void setList(List<Class<? extends Throwable>> list) {
+			this.list = list;
 		}
 
 	}

@@ -465,6 +465,17 @@ public class JavaBeanBinderTests {
 		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
 	}
 
+	@Test
+	public void bindWhenValueIsConvertedWithPropertyEditorShouldBind() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value", "java.lang.RuntimeException");
+		this.sources.add(source);
+		ExampleWithPropertyEditorType bean = this.binder
+				.bind("foo", Bindable.of(ExampleWithPropertyEditorType.class)).get();
+		assertThat(bean.getValue()).isEqualTo(RuntimeException.class);
+	}
+
 	public static class ExampleValueBean {
 
 		private int intValue;
@@ -821,6 +832,20 @@ public class JavaBeanBinderTests {
 
 		public void setDate(LocalDate date) {
 			this.date = date;
+		}
+
+	}
+
+	public static class ExampleWithPropertyEditorType {
+
+		private Class<? extends Throwable> value;
+
+		public Class<? extends Throwable> getValue() {
+			return this.value;
+		}
+
+		public void setValue(Class<? extends Throwable> value) {
+			this.value = value;
 		}
 
 	}

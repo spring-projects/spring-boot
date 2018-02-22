@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -351,6 +351,27 @@ public class CollectionBinderTests {
 		assertThat(foo.getValue()).isEqualTo("one");
 		assertThat(foo.getFoos().get(0).getValue()).isEqualTo("two");
 		assertThat(foo.getFoos().get(1).getValue()).isEqualTo("three");
+	}
+
+	@Test
+	public void bindToCollectionShouldUsePropertyEditor() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "java.lang.RuntimeException");
+		source.put("foo[1]", "java.lang.IllegalStateException");
+		this.sources.add(source);
+		assertThat(this.binder.bind("foo", Bindable.listOf(Class.class)).get())
+				.containsExactly(RuntimeException.class, IllegalStateException.class);
+	}
+
+	@Test
+	public void bindToCollectionWhenStringShouldUsePropertyEditor() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "java.lang.RuntimeException,java.lang.IllegalStateException");
+		this.sources.add(source);
+		assertThat(this.binder.bind("foo", Bindable.listOf(Class.class)).get())
+				.containsExactly(RuntimeException.class, IllegalStateException.class);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -276,6 +276,27 @@ public class ArrayBinderTests {
 		this.sources.add(source);
 		String[] result = this.binder.bind("foo", Bindable.of(String[].class)).get();
 		assertThat(result).containsExactly("1", "2", "3");
+	}
+
+	@Test
+	public void bindToArrayShouldUsePropertyEditor() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "java.lang.RuntimeException");
+		source.put("foo[1]", "java.lang.IllegalStateException");
+		this.sources.add(source);
+		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get())
+				.containsExactly(RuntimeException.class, IllegalStateException.class);
+	}
+
+	@Test
+	public void bindToArrayWhenStringShouldUsePropertyEditor() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "java.lang.RuntimeException,java.lang.IllegalStateException");
+		this.sources.add(source);
+		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get())
+				.containsExactly(RuntimeException.class, IllegalStateException.class);
 	}
 
 }

@@ -47,6 +47,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -568,6 +569,30 @@ public class MapBinderTests {
 		this.sources.add(source);
 		this.thrown.expect(BindException.class);
 		this.binder.bind("foo", STRING_STRING_MAP);
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void bindToMapWithPropertyEditorForKey() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.[java.lang.RuntimeException]", "bar");
+		this.sources.add(source);
+		Map<Class, String> map = this.binder
+				.bind("foo", Bindable.mapOf(Class.class, String.class)).get();
+		assertThat(map).containsExactly(entry(RuntimeException.class, "bar"));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void bindToMapWithPropertyEditorForValue() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "java.lang.RuntimeException");
+		this.sources.add(source);
+		Map<String, Class> map = this.binder
+				.bind("foo", Bindable.mapOf(String.class, Class.class)).get();
+		assertThat(map).containsExactly(entry("bar", RuntimeException.class));
 	}
 
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
