@@ -25,19 +25,19 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 
 /**
- * {@link ContextCustomizerFactory} for {@link SpringBootTest}.
+ * {@link ContextCustomizerFactory} for {@link TestRestTemplate}.
  *
  * @author Andy Wilkinson
- * @see TestRestTemplateTestContextCustomizer
+ * @see TestRestTemplateContextCustomizer
  */
-class TestRestTemplateTestContextCustomizerFactory implements ContextCustomizerFactory {
+class TestRestTemplateContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		if (AnnotatedElementUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class) != null) {
-			return new TestRestTemplateTestContextCustomizer();
+			return new TestRestTemplateContextCustomizer();
 		}
 		return null;
 	}
