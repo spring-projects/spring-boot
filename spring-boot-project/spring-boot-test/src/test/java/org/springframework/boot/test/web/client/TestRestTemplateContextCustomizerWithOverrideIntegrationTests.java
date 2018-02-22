@@ -40,7 +40,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for {@link TestRestTemplateTestContextCustomizer} with a custom
+ * Integration tests for {@link TestRestTemplateContextCustomizer} with a custom
  * {@link TestRestTemplate} bean.
  *
  * @author Phillip Webb
@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
-public class TestRestTemplateTestContextCustomizerWithOverrideIntegrationTests {
+public class TestRestTemplateContextCustomizerWithOverrideIntegrationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
