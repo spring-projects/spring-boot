@@ -50,10 +50,10 @@ import org.springframework.util.ObjectUtils;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableConfigurationProperties(ServerProperties.class)
 @Import({ ReactiveWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar.class,
-		ReactiveWebServerFactoryConfiguration.EmbeddedNetty.class,
 		ReactiveWebServerFactoryConfiguration.EmbeddedTomcat.class,
 		ReactiveWebServerFactoryConfiguration.EmbeddedJetty.class,
-		ReactiveWebServerFactoryConfiguration.EmbeddedUndertow.class })
+		ReactiveWebServerFactoryConfiguration.EmbeddedUndertow.class,
+		ReactiveWebServerFactoryConfiguration.EmbeddedNetty.class })
 public class ReactiveWebServerFactoryAutoConfiguration {
 
 	@Bean

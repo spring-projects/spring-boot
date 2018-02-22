@@ -16,12 +16,12 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import org.hamcrest.Matchers;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -29,7 +29,6 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,66 +40,78 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ReactiveWebServerFactoryAutoConfigurationTests {
 
-	private AnnotationConfigReactiveWebServerApplicationContext context;
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	private ReactiveWebApplicationContextRunner contextRunner =
+			new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
+					.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class));
 
 	@Test
 	public void createFromConfigClass() {
-		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
-				BaseConfiguration.class);
-		assertThat(this.context.getBeansOfType(ReactiveWebServerFactory.class))
-				.hasSize(1);
-		assertThat(this.context.getBeansOfType(WebServerFactoryCustomizer.class))
-				.hasSize(1);
-		assertThat(this.context
-				.getBeansOfType(ReactiveWebServerFactoryCustomizer.class))
-						.hasSize(1);
+		this.contextRunner
+				.withUserConfiguration(MockWebServerAutoConfiguration.class,
+						HttpHandlerConfiguration.class)
+				.run(context -> {
+					assertThat(context.getBeansOfType(ReactiveWebServerFactory.class))
+							.hasSize(1);
+					assertThat(context.getBeansOfType(WebServerFactoryCustomizer.class))
+							.hasSize(1);
+					assertThat(context.getBeansOfType(ReactiveWebServerFactoryCustomizer.class))
+							.hasSize(1);
+				});
 	}
 
 	@Test
 	public void missingHttpHandler() {
-		this.thrown.expect(ApplicationContextException.class);
-		this.thrown.expectMessage(Matchers.containsString("missing HttpHandler bean"));
-		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
-				MissingHttpHandlerConfiguration.class);
+		this.contextRunner
+				.withUserConfiguration(MockWebServerAutoConfiguration.class)
+				.run(context -> {
+					assertThat(context.getStartupFailure())
+							.isInstanceOf(ApplicationContextException.class)
+							.hasMessageContaining("missing HttpHandler bean");
+				});
 	}
 
 	@Test
 	public void multipleHttpHandler() {
-		this.thrown.expect(ApplicationContextException.class);
-		this.thrown.expectMessage(Matchers.containsString(
-				"multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
-		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
-				BaseConfiguration.class, TooManyHttpHandlers.class);
+		this.contextRunner
+				.withUserConfiguration(MockWebServerAutoConfiguration.class,
+						HttpHandlerConfiguration.class, TooManyHttpHandlers.class)
+				.run(context -> {
+					assertThat(context.getStartupFailure())
+							.isInstanceOf(ApplicationContextException.class)
+							.hasMessageContaining("multiple HttpHandler beans : " +
+									"httpHandler,additionalHttpHandler");
+				});
 	}
 
 	@Test
 	public void customizeReactiveWebServer() {
-		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
-				BaseConfiguration.class, ReactiveWebServerCustomization.class);
-		MockReactiveWebServerFactory factory = this.context
-				.getBean(MockReactiveWebServerFactory.class);
-		assertThat(factory.getPort()).isEqualTo(9000);
+		this.contextRunner
+				.withUserConfiguration(MockWebServerAutoConfiguration.class,
+						HttpHandlerConfiguration.class, ReactiveWebServerCustomization.class)
+				.run(context -> {
+					assertThat(context.getBean(MockReactiveWebServerFactory.class).getPort())
+							.isEqualTo(9000);
+				});
+	}
+
+	@Test
+	public void defaultWebServerIsTomcat() {
+		// Tomcat should be chosen over Netty if the Tomcat library is present.
+		this.contextRunner
+				.withUserConfiguration(HttpHandlerConfiguration.class)
+				.run(context -> {
+					assertThat(context.getBean(ReactiveWebServerFactory.class))
+							.isInstanceOf(TomcatReactiveWebServerFactory.class);
+				});
 	}
 
 	@Configuration
-	@Import({ MockWebServerAutoConfiguration.class,
-			ReactiveWebServerFactoryAutoConfiguration.class })
-	protected static class BaseConfiguration {
+	protected static class HttpHandlerConfiguration {
 
 		@Bean
 		public HttpHandler httpHandler() {
 			return Mockito.mock(HttpHandler.class);
 		}
-
-	}
-
-	@Configuration
-	@Import({ MockWebServerAutoConfiguration.class,
-			ReactiveWebServerFactoryAutoConfiguration.class })
-	protected static class MissingHttpHandlerConfiguration {
 
 	}
 
