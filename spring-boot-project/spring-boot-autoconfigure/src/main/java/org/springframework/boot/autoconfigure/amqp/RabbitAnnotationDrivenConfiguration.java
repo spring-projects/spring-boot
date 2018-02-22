@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,17 @@ class RabbitAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<MessageRecoverer> messageRecoverer;
 
+	private final ObjectProvider<RabbitListenerRetryTemplateCustomizer> retryTemplateCustomizer;
+
 	private final RabbitProperties properties;
 
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
+			ObjectProvider<RabbitListenerRetryTemplateCustomizer> retryCustomizer,
 			RabbitProperties properties) {
 		this.messageConverter = messageConverter;
 		this.messageRecoverer = messageRecoverer;
+		this.retryTemplateCustomizer = retryCustomizer;
 		this.properties = properties;
 	}
 
@@ -61,6 +65,7 @@ class RabbitAnnotationDrivenConfiguration {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setRetryTemplateCustomizer(this.retryTemplateCustomizer.getIfUnique());
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}
@@ -82,6 +87,7 @@ class RabbitAnnotationDrivenConfiguration {
 		DirectRabbitListenerContainerFactoryConfigurer configurer = new DirectRabbitListenerContainerFactoryConfigurer();
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setRetryTemplateCustomizer(this.retryTemplateCustomizer.getIfUnique());
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}
