@@ -29,9 +29,7 @@ import org.springframework.boot.web.embedded.undertow.ConfigurableUndertowWebSer
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -100,14 +98,6 @@ public class UndertowWebServerFactoryCustomizerTests {
 				ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
-	}
-
-	@Test
-	public void skipNullElementsForUndertow() {
-		ConfigurableUndertowWebServerFactory factory = mock(
-				ConfigurableUndertowWebServerFactory.class);
-		this.customizer.customize(factory);
-		verify(factory, never()).setAccessLogEnabled(anyBoolean());
 	}
 
 	private void bind(String... inlinedProperties) {

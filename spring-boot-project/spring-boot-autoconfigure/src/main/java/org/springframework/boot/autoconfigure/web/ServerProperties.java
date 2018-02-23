@@ -1058,7 +1058,7 @@ public class ServerProperties {
 			/**
 			 * Whether to enable the access log.
 			 */
-			private Boolean enabled;
+			private boolean enabled = false;
 
 			/**
 			 * Format pattern for access logs.
@@ -1085,11 +1085,11 @@ public class ServerProperties {
 			 */
 			private boolean rotate = true;
 
-			public Boolean getEnabled() {
+			public boolean isEnabled() {
 				return this.enabled;
 			}
 
-			public void setEnabled(Boolean enabled) {
+			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
 			}
 

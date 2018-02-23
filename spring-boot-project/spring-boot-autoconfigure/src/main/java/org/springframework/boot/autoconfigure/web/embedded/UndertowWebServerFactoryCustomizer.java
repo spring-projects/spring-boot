@@ -69,7 +69,7 @@ public class UndertowWebServerFactoryCustomizer implements
 				.to(factory::setWorkerThreads);
 		propertyMapper.from(undertowProperties::getDirectBuffers)
 				.to(factory::setUseDirectBuffers);
-		propertyMapper.from(accesslogProperties::getEnabled)
+		propertyMapper.from(accesslogProperties::isEnabled)
 				.to(factory::setAccessLogEnabled);
 		propertyMapper.from(accesslogProperties::getDir)
 				.to(factory::setAccessLogDirectory);
