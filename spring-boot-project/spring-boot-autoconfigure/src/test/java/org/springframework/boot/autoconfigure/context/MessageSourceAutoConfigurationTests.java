@@ -23,7 +23,9 @@ import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -80,6 +82,30 @@ public class MessageSourceAutoConfigurationTests {
 				.run((context) -> assertThat(
 						context.getMessage("foo", null, "Foo message", Locale.UK))
 								.isEqualTo("Some text with some swedish öäå!"));
+	}
+
+	@Test
+	public void testCacheDurationNoUnit() {
+		this.contextRunner
+				.withPropertyValues("spring.messages.basename:test/messages",
+						"spring.messages.cache-duration=10")
+				.run(assertCache(10 * 1000));
+	}
+
+	@Test
+	public void testCacheDurationWithUnit() {
+		this.contextRunner
+				.withPropertyValues("spring.messages.basename:test/messages",
+						"spring.messages.cache-duration=1m")
+				.run(assertCache(60 * 1000));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertCache(long expected) {
+		return (context) -> {
+			assertThat(assertThat(context).hasSingleBean(MessageSource.class));
+			assertThat(new DirectFieldAccessor(context.getBean(MessageSource.class))
+					.getPropertyValue("cacheMillis")).isEqualTo(expected);
+		};
 	}
 
 	@Test

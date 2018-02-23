@@ -19,6 +19,9 @@ package org.springframework.boot.autoconfigure.context;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
+import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Configuration properties for Message Source.
@@ -44,8 +47,9 @@ public class MessageSourceProperties {
 
 	/**
 	 * Loaded resource bundle files cache duration. When not set, bundles are cached
-	 * forever.
+	 * forever. If a duration suffix is not specified, seconds will be used.
 	 */
+	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration cacheDuration;
 
 	/**
