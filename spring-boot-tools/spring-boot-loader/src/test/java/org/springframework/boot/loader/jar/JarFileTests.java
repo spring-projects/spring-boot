@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -169,7 +170,9 @@ public class JarFileTests {
 
 	@Test
 	public void getSize() throws Exception {
-		assertThat(this.jarFile.size()).isEqualTo((int) this.rootJarFile.length());
+		try (ZipFile zip = new ZipFile(this.rootJarFile)) {
+			assertThat(this.jarFile.size()).isEqualTo(zip.size());
+		}
 	}
 
 	@Test

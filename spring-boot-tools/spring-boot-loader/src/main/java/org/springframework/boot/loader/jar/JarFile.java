@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
 			RandomAccessData data, JarEntryFilter filter, JarFileType type)
-			throws IOException {
+					throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
@@ -293,7 +293,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public int size() {
-		return (int) this.data.getSize();
+		return this.entries.getSize();
 	}
 
 	@Override
