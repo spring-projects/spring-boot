@@ -4575,9 +4575,6 @@ TIP: It is also possible to transparently
 {spring-reference}integration.html#cache-annotations-evict[evict] data from the cache.
 
 
-NOTE: If you use the cache infrastructure with beans that are not interface-based, make
-sure to enable the `proxyTargetClass` attribute of `@EnableCaching`.
-
 
 === Supported Cache Providers
 The cache abstraction does not provide an actual store and relies on abstraction

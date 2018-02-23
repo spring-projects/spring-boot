@@ -75,7 +75,7 @@ public class AopAutoConfigurationTests {
 	}
 
 	@Test
-	public void aopWithCustomConfiguration() {
+	public void customConfigurationWithProxyTargetClassDefaultDoesNotDisableProxying() {
 		this.contextRunner.withUserConfiguration(CustomTestConfiguration.class)
 				.run(proxyTargetClassEnabled());
 	}
@@ -101,7 +101,7 @@ public class AopAutoConfigurationTests {
 		};
 	}
 
-	@EnableAspectJAutoProxy(proxyTargetClass = true)
+	@EnableAspectJAutoProxy
 	@Configuration
 	@Import(TestConfiguration.class)
 	protected static class CustomTestConfiguration {
