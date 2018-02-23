@@ -167,8 +167,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 				? compile.getOptions().getAnnotationProcessorPath().getFiles()
 				: compile.getClasspath().getFiles();
 		return files.stream().map(File::getName)
-				.filter((name) -> name.startsWith("spring-boot-configuration-processor"))
-				.findFirst().isPresent();
+				.anyMatch((name) -> name.startsWith("spring-boot-configuration-processor"));
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile,
