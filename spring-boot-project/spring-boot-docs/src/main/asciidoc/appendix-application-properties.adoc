@@ -1123,7 +1123,7 @@ content into your application. Rather, pick only the properties that you need.
 	# ----------------------------------------
 
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator-autoconfigure}/web/server/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
-	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response. Requires a custom management.server.port.
+	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response.
 	management.server.address= # Network address to which the management endpoints should bind. Requires a custom management.server.port.
 	management.server.port= # Management endpoint HTTP port (uses the same port as the application by default). Configure a different port to use management-specific SSL.
 	management.server.servlet.context-path= # Management endpoint context-path (for instance, `/management`). Requires a custom management.server.port.

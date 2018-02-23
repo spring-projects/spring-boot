@@ -56,8 +56,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	private Ssl ssl;
 
 	/**
-	 * Add the "X-Application-Context" HTTP header in each response. Requires a custom
-	 * management.server.port.
+	 * Add the "X-Application-Context" HTTP header in each response.
 	 */
 	private boolean addApplicationContextHeader = false;
 
