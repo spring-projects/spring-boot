@@ -49,7 +49,7 @@ public class ServletManagementContextAutoConfiguration {
 	@Bean
 	public ManagementServletContext managementServletContext(
 			WebEndpointProperties properties) {
-		return () -> properties.getBasePath();
+		return properties::getBasePath;
 	}
 
 	// Put Servlets and Filters in their own nested class so they don't force early
