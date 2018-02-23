@@ -1071,9 +1071,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published.
 	spring.rabbitmq.listener.direct.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.direct.retry.enabled=false # Whether publishing retries are enabled.
-	spring.rabbitmq.listener.direct.retry.initial-interval=1000ms # Interval, in milliseconds, between the first and second attempt to deliver a message.
+	spring.rabbitmq.listener.direct.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.direct.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
-	spring.rabbitmq.listener.direct.retry.max-interval=10000ms # Maximum interval, in milliseconds, between attempts.
+	spring.rabbitmq.listener.direct.retry.max-interval=10000ms # Maximum duration between attempts.
 	spring.rabbitmq.listener.direct.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.listener.direct.retry.stateless=true # Whether retries are stateless or stateful.
 	spring.rabbitmq.listener.simple.acknowledge-mode= # Acknowledge mode of container.
@@ -1084,9 +1084,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.simple.max-concurrency= # Maximum number of listener invoker threads.
 	spring.rabbitmq.listener.simple.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.simple.retry.enabled=false # Whether publishing retries are enabled.
-	spring.rabbitmq.listener.simple.retry.initial-interval=1000 # Interval, in milliseconds, between the first and second attempt to deliver a message.
+	spring.rabbitmq.listener.simple.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.simple.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
-	spring.rabbitmq.listener.simple.retry.max-interval=10000 # Maximum interval, in milliseconds, between attempts.
+	spring.rabbitmq.listener.simple.retry.max-interval=10000ms #  Maximum duration between attempts.
 	spring.rabbitmq.listener.simple.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.listener.simple.retry.stateless=true # Whether retries are stateless or stateful.
 	spring.rabbitmq.listener.simple.transaction-size= # Number of messages to be processed in a transaction. That is, the number of messages between acks. For best results, it should be less than or equal to the prefetch count.
@@ -1109,9 +1109,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.template.receive-timeout= # Timeout for `receive()` operations.
 	spring.rabbitmq.template.reply-timeout= # Timeout for `sendAndReceive()` operations.
 	spring.rabbitmq.template.retry.enabled=false # Whether publishing retries are enabled.
-	spring.rabbitmq.template.retry.initial-interval=1000 # Interval, in milliseconds, between the first and second attempt to deliver a message.
+	spring.rabbitmq.template.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
 	spring.rabbitmq.template.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
-	spring.rabbitmq.template.retry.max-interval=10000 # Maximum interval, in milliseconds, between attempts.
+	spring.rabbitmq.template.retry.max-interval=10000ms # Maximum duration between attempts.
 	spring.rabbitmq.template.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.template.routing-key= # Value of a default routing key to use for send operations.
 	spring.rabbitmq.username=guest # Login user to authenticate to the broker.

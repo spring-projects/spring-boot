@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ public class RabbitAutoConfiguration {
 			map.from(properties::isPublisherReturns).to(factory::setPublisherReturns);
 			RabbitProperties.Cache.Channel channel = properties.getCache().getChannel();
 			map.from(channel::getSize).whenNonNull().to(factory::setChannelCacheSize);
-			map.from(channel::getCheckoutTimeout).whenNonNull()
+			map.from(channel::getCheckoutTimeout).whenNonNull().as(Duration::toMillis)
 					.to(factory::setChannelCheckoutTimeout);
 			RabbitProperties.Cache.Connection connection = properties.getCache()
 					.getConnection();
@@ -175,9 +175,9 @@ public class RabbitAutoConfiguration {
 			if (properties.getRetry().isEnabled()) {
 				template.setRetryTemplate(createRetryTemplate(properties.getRetry()));
 			}
-			map.from(properties::getReceiveTimeout).whenNonNull()
+			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
 					.to(template::setReceiveTimeout);
-			map.from(properties::getReplyTimeout).whenNonNull()
+			map.from(properties::getReplyTimeout).whenNonNull().as(Duration::toMillis)
 					.to(template::setReplyTimeout);
 			map.from(properties::getExchange).to(template::setExchange);
 			map.from(properties::getRoutingKey).to(template::setRoutingKey);
@@ -196,10 +196,11 @@ public class RabbitAutoConfiguration {
 			map.from(properties::getMaxAttempts).to(policy::setMaxAttempts);
 			template.setRetryPolicy(policy);
 			ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-			map.from(properties::getInitialInterval)
+			map.from(properties::getInitialInterval).whenNonNull().as(Duration::toMillis)
 					.to(backOffPolicy::setInitialInterval);
 			map.from(properties::getMultiplier).to(backOffPolicy::setMultiplier);
-			map.from(properties::getMaxInterval).to(backOffPolicy::setMaxInterval);
+			map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis)
+					.to(backOffPolicy::setMaxInterval);
 			template.setBackOffPolicy(backOffPolicy);
 			return template;
 		}

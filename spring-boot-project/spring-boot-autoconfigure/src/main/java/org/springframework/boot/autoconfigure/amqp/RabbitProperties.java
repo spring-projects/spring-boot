@@ -438,10 +438,10 @@ public class RabbitProperties {
 			private Integer size;
 
 			/**
-			 * Number of milliseconds to wait to obtain a channel if the cache size has
-			 * been reached. If 0, always create a new channel.
+			 * Duration to wait to obtain a channel if the cache size has been reached. If
+			 * 0, always create a new channel.
 			 */
-			private Long checkoutTimeout;
+			private Duration checkoutTimeout;
 
 			public Integer getSize() {
 				return this.size;
@@ -451,14 +451,13 @@ public class RabbitProperties {
 				this.size = size;
 			}
 
-			public Long getCheckoutTimeout() {
+			public Duration getCheckoutTimeout() {
 				return this.checkoutTimeout;
 			}
 
-			public void setCheckoutTimeout(Long checkoutTimeout) {
+			public void setCheckoutTimeout(Duration checkoutTimeout) {
 				this.checkoutTimeout = checkoutTimeout;
 			}
-
 		}
 
 		public static class Connection {
@@ -696,12 +695,12 @@ public class RabbitProperties {
 		/**
 		 * Timeout for `receive()` operations.
 		 */
-		private Long receiveTimeout;
+		private Duration receiveTimeout;
 
 		/**
 		 * Timeout for `sendAndReceive()` operations.
 		 */
-		private Long replyTimeout;
+		private Duration replyTimeout;
 
 		/**
 		 * Name of the default exchange to use for send operations.
@@ -725,19 +724,19 @@ public class RabbitProperties {
 			this.mandatory = mandatory;
 		}
 
-		public Long getReceiveTimeout() {
+		public Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
-		public void setReceiveTimeout(Long receiveTimeout) {
+		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 
-		public Long getReplyTimeout() {
+		public Duration getReplyTimeout() {
 			return this.replyTimeout;
 		}
 
-		public void setReplyTimeout(Long replyTimeout) {
+		public void setReplyTimeout(Duration replyTimeout) {
 			this.replyTimeout = replyTimeout;
 		}
 
@@ -772,9 +771,9 @@ public class RabbitProperties {
 		private int maxAttempts = 3;
 
 		/**
-		 * Interval, in milliseconds, between the first and second attempt to deliver a message.
+		 * Duration between the first and second attempt to deliver a message.
 		 */
-		private long initialInterval = 1000L;
+		private Duration initialInterval = Duration.ofMillis(1000);
 
 		/**
 		 * Multiplier to apply to the previous retry interval.
@@ -782,9 +781,9 @@ public class RabbitProperties {
 		private double multiplier = 1.0;
 
 		/**
-		 * Maximum interval, in milliseconds, between attempts.
+		 * Maximum duration between attempts.
 		 */
-		private long maxInterval = 10000L;
+		private Duration maxInterval = Duration.ofMillis(10000);
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -802,12 +801,16 @@ public class RabbitProperties {
 			this.maxAttempts = maxAttempts;
 		}
 
-		public long getInitialInterval() {
+		public Duration getInitialInterval() {
 			return this.initialInterval;
 		}
 
-		public void setInitialInterval(long initialInterval) {
+		public void setInitialInterval(Duration initialInterval) {
 			this.initialInterval = initialInterval;
+		}
+
+		public void setMaxInterval(Duration maxInterval) {
+			this.maxInterval = maxInterval;
 		}
 
 		public double getMultiplier() {
@@ -818,12 +821,8 @@ public class RabbitProperties {
 			this.multiplier = multiplier;
 		}
 
-		public long getMaxInterval() {
+		public Duration getMaxInterval() {
 			return this.maxInterval;
-		}
-
-		public void setMaxInterval(long maxInterval) {
-			this.maxInterval = maxInterval;
 		}
 
 	}
