@@ -809,10 +809,6 @@ public class RabbitProperties {
 			this.initialInterval = initialInterval;
 		}
 
-		public void setMaxInterval(Duration maxInterval) {
-			this.maxInterval = maxInterval;
-		}
-
 		public double getMultiplier() {
 			return this.multiplier;
 		}
@@ -823,6 +819,10 @@ public class RabbitProperties {
 
 		public Duration getMaxInterval() {
 			return this.maxInterval;
+		}
+
+		public void setMaxInterval(Duration maxInterval) {
+			this.maxInterval = maxInterval;
 		}
 
 	}
