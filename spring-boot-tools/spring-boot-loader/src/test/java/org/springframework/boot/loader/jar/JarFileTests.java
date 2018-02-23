@@ -170,8 +170,12 @@ public class JarFileTests {
 
 	@Test
 	public void getSize() throws Exception {
-		try (ZipFile zip = new ZipFile(this.rootJarFile)) {
+		ZipFile zip = new ZipFile(this.rootJarFile);
+		try {
 			assertThat(this.jarFile.size()).isEqualTo(zip.size());
+		}
+		finally {
+			zip.close();
 		}
 	}
 
