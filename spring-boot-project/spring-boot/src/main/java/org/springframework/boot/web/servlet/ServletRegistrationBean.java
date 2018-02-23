@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link ServletContextInitializer} to register {@link Servlet}s in a Servlet 3.0+
@@ -193,8 +194,7 @@ public class ServletRegistrationBean<T extends Servlet>
 	@Override
 	protected void configure(ServletRegistration.Dynamic registration) {
 		super.configure(registration);
-		String[] urlMapping = this.urlMappings
-				.toArray(new String[this.urlMappings.size()]);
+		String[] urlMapping = StringUtils.toStringArray(this.urlMappings);
 		if (urlMapping.length == 0 && this.alwaysMapUrl) {
 			urlMapping = DEFAULT_MAPPINGS;
 		}

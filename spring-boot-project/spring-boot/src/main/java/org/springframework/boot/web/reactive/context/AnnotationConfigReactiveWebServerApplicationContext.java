@@ -33,6 +33,7 @@ import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -209,8 +210,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 			this.scanner.scan(this.basePackages);
 		}
 		if (!this.annotatedClasses.isEmpty()) {
-			this.reader.register(this.annotatedClasses
-					.toArray(new Class<?>[this.annotatedClasses.size()]));
+			this.reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 		}
 	}
 

@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.result.PrintingResultHandler;
 import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -133,7 +134,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			builder.addFilters(filter);
 		}
 		else {
-			builder.addFilter(filter, urls.toArray(new String[urls.size()]));
+			builder.addFilter(filter, StringUtils.toStringArray(urls));
 		}
 	}
 

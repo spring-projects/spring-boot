@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class RunArguments {
 	}
 
 	public String[] asArray() {
-		return this.args.toArray(new String[this.args.size()]);
+		return this.args.toArray(new String[0]);
 	}
 
 	private static String[] parseArgs(String arguments) {

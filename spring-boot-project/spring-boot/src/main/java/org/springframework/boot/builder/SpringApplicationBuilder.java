@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StringUtils;
 
 /**
  * Builder for {@link SpringApplication} and {@link ApplicationContext} instances with
@@ -455,16 +456,16 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder profiles(String... profiles) {
 		this.additionalProfiles.addAll(Arrays.asList(profiles));
-		this.application.setAdditionalProfiles(this.additionalProfiles
-				.toArray(new String[this.additionalProfiles.size()]));
+		this.application.setAdditionalProfiles(
+				StringUtils.toStringArray(this.additionalProfiles));
 		return this;
 	}
 
 	private SpringApplicationBuilder additionalProfiles(
 			Collection<String> additionalProfiles) {
 		this.additionalProfiles = new LinkedHashSet<>(additionalProfiles);
-		this.application.setAdditionalProfiles(this.additionalProfiles
-				.toArray(new String[this.additionalProfiles.size()]));
+		this.application.setAdditionalProfiles(
+				StringUtils.toStringArray(this.additionalProfiles));
 		return this;
 	}
 

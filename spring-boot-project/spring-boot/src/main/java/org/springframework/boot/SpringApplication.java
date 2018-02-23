@@ -380,7 +380,7 @@ public class SpringApplication {
 		// Load the sources
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
-		load(context, sources.toArray(new Object[sources.size()]));
+		load(context, sources.toArray(new Object[0]));
 		listeners.contextLoaded(context);
 	}
 
@@ -516,7 +516,7 @@ public class SpringApplication {
 		// But these ones should go first (last wins in a property key clash)
 		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
-		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
+		environment.setActiveProfiles(StringUtils.toStringArray(profiles));
 	}
 
 	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {

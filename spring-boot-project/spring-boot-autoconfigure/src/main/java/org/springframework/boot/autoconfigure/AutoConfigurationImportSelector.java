@@ -50,6 +50,7 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
@@ -100,7 +101,7 @@ public class AutoConfigurationImportSelector
 			configurations.removeAll(exclusions);
 			configurations = filter(configurations, autoConfigurationMetadata);
 			fireAutoConfigurationImportEvents(configurations, exclusions);
-			return configurations.toArray(new String[configurations.size()]);
+			return StringUtils.toStringArray(configurations);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
@@ -235,7 +236,7 @@ public class AutoConfigurationImportSelector
 	private List<String> filter(List<String> configurations,
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		long startTime = System.nanoTime();
-		String[] candidates = configurations.toArray(new String[configurations.size()]);
+		String[] candidates = StringUtils.toStringArray(configurations);
 		boolean[] skip = new boolean[candidates.length];
 		boolean skipped = false;
 		for (AutoConfigurationImportFilter filter : getAutoConfigurationImportFilters()) {

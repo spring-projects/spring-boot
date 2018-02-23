@@ -460,8 +460,7 @@ public final class ConfigurationPropertyName
 				elements.add(elementValue);
 			}
 		});
-		return new ConfigurationPropertyName(
-				elements.toArray(new CharSequence[elements.size()]));
+		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
 	}
 
 	/**
@@ -508,8 +507,7 @@ public final class ConfigurationPropertyName
 				elements.add(elementValue);
 			}
 		});
-		return new ConfigurationPropertyName(
-				elements.toArray(new CharSequence[elements.size()]));
+		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
 	}
 
 	private static void process(CharSequence name, char separator,

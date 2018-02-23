@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -177,8 +178,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
 			if (!CollectionUtils.isEmpty(keysToSanitize)) {
-				endpoint.setKeysToSanitize(
-						keysToSanitize.toArray(new String[keysToSanitize.size()]));
+				endpoint.setKeysToSanitize(StringUtils.toStringArray(keysToSanitize));
 			}
 			properties.accept(context, endpoint.configurationProperties().getContexts()
 					.get(context.getId()));

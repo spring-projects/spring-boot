@@ -337,8 +337,7 @@ public class JacksonAutoConfiguration {
 			private void configureModules(Jackson2ObjectMapperBuilder builder) {
 				Collection<Module> moduleBeans = getBeans(this.applicationContext,
 						Module.class);
-				builder.modulesToInstall(
-						moduleBeans.toArray(new Module[moduleBeans.size()]));
+				builder.modulesToInstall(moduleBeans.toArray(new Module[0]));
 			}
 
 			private void configureLocale(Jackson2ObjectMapperBuilder builder) {

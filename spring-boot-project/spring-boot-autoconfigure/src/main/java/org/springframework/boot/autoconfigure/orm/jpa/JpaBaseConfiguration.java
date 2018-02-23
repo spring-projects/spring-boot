@@ -55,6 +55,7 @@ import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -160,13 +161,13 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		if (packages.isEmpty() && AutoConfigurationPackages.has(this.beanFactory)) {
 			packages = AutoConfigurationPackages.get(this.beanFactory);
 		}
-		return packages.toArray(new String[packages.size()]);
+		return StringUtils.toStringArray(packages);
 	}
 
 	private String[] getMappingResources() {
 		List<String> mappingResources = this.properties.getMappingResources();
 		return (!ObjectUtils.isEmpty(mappingResources)
-				? mappingResources.toArray(new String[mappingResources.size()]) : null);
+				? StringUtils.toStringArray(mappingResources) : null);
 	}
 
 	/**

@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
@@ -62,7 +63,7 @@ class WebFluxEndpointsRunner extends AbstractWebEndpointRunner {
 	private static ConfigurableApplicationContext createContext(List<Class<?>> classes) {
 		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
 		classes.add(WebFluxEndpointConfiguration.class);
-		context.register(classes.toArray(new Class<?>[classes.size()]));
+		context.register(ClassUtils.toClassArray(classes));
 		context.refresh();
 		return context;
 	}

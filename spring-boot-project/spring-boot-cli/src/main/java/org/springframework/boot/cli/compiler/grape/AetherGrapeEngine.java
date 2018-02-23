@@ -290,7 +290,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 			for (File file : files) {
 				uris.add(file.toURI());
 			}
-			return uris.toArray(new URI[uris.size()]);
+			return uris.toArray(new URI[0]);
 		}
 		catch (Exception ex) {
 			throw new DependencyResolutionFailedException(ex);

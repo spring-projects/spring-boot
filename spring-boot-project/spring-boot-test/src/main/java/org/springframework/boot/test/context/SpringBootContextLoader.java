@@ -173,7 +173,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		if (!isEmbeddedWebEnvironment(config) && !hasCustomServerPort(properties)) {
 			properties.add("server.port=-1");
 		}
-		return properties.toArray(new String[properties.size()]);
+		return StringUtils.toStringArray(properties);
 	}
 
 	private void disableJmx(List<String> properties) {
@@ -187,9 +187,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private ConfigurationPropertySource convertToConfigurationPropertySource(
 			List<String> properties) {
-		String[] array = properties.toArray(new String[properties.size()]);
-		return new MapConfigurationPropertySource(
-				TestPropertySourceUtils.convertInlinedPropertiesToMap(array));
+		return new MapConfigurationPropertySource(TestPropertySourceUtils
+				.convertInlinedPropertiesToMap(StringUtils.toStringArray(properties)));
 	}
 
 	/**

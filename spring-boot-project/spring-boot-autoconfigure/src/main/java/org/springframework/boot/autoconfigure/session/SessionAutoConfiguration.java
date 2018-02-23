@@ -48,6 +48,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -113,7 +114,7 @@ public class SessionAutoConfiguration {
 				imports.add(SessionStoreMappings.getConfigurationClass(webApplicationType,
 						types[i]));
 			}
-			return imports.toArray(new String[imports.size()]);
+			return StringUtils.toStringArray(imports);
 		}
 
 	}

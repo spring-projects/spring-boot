@@ -51,6 +51,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -228,7 +229,7 @@ public class BasicErrorControllerIntegrationTests {
 			args.addAll(Arrays.asList(arguments));
 		}
 		this.context = SpringApplication.run(TestConfiguration.class,
-				args.toArray(new String[args.size()]));
+				StringUtils.toStringArray(args));
 	}
 
 	@Target(ElementType.TYPE)

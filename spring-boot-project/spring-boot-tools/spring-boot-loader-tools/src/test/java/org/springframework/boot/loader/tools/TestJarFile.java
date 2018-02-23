@@ -123,7 +123,7 @@ public class TestJarFile {
 	public File getFile(String extension) throws IOException {
 		File file = this.temporaryFolder.newFile();
 		file = new File(file.getParent(), file.getName() + "." + extension);
-		ZipUtil.pack(this.entries.toArray(new ZipEntrySource[this.entries.size()]), file);
+		ZipUtil.pack(this.entries.toArray(new ZipEntrySource[0]), file);
 		return file;
 	}
 

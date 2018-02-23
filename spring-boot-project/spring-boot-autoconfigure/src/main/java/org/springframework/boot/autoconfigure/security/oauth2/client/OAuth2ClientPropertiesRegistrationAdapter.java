@@ -29,6 +29,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.util.StringUtils;
 
 /**
  * Adapter class to convert {@link OAuth2ClientProperties} to a
@@ -63,8 +64,7 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 		map.from(properties::getAuthorizationGrantType).as(AuthorizationGrantType::new)
 				.to(builder::authorizationGrantType);
 		map.from(properties::getRedirectUriTemplate).to(builder::redirectUriTemplate);
-		map.from(properties::getScope)
-				.as((scope) -> scope.toArray(new String[scope.size()]))
+		map.from(properties::getScope).as((scope) -> StringUtils.toStringArray(scope))
 				.to(builder::scope);
 		map.from(properties::getClientName).to(builder::clientName);
 		return builder.build();

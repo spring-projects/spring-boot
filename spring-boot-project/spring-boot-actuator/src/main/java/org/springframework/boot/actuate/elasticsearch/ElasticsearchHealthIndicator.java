@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link HealthIndicator} for an Elasticsearch cluster.
@@ -53,8 +54,8 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
 			List<String> indices) {
-		this(client, responseTimeout, (indices == null ? null
-				: indices.toArray(new String[indices.size()])));
+		this(client, responseTimeout,
+				(indices == null ? null : StringUtils.toStringArray(indices)));
 	}
 
 	/**

@@ -32,6 +32,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.util.StringUtils;
 
 /**
  * Selects configuration classes for the management context configuration. Entries are
@@ -65,7 +66,7 @@ class ManagementContextConfigurationImportSelector
 				names.add(configuration.getClassName());
 			}
 		}
-		return names.toArray(new String[names.size()]);
+		return StringUtils.toStringArray(names);
 	}
 
 	private List<ManagementConfiguration> getConfigurations() {

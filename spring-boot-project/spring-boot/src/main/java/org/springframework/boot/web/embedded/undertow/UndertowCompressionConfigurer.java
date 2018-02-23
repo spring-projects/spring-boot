@@ -74,7 +74,7 @@ final class UndertowCompressionConfigurer {
 				predicates.add(Predicates.not(Predicates.regex(agentHeader, agent)));
 			}
 		}
-		return predicates.toArray(new Predicate[predicates.size()]);
+		return predicates.toArray(new Predicate[0]);
 	}
 
 	private static class CompressibleMimeTypePredicate implements Predicate {

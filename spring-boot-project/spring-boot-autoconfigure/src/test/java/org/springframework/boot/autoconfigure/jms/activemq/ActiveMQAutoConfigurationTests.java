@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -89,8 +90,9 @@ public class ActiveMQAutoConfigurationTests {
 							.isEqualTo(defaultFactory.getSendTimeout());
 					assertThat(connectionFactory.isTrustAllPackages())
 							.isEqualTo(defaultFactory.isTrustAllPackages());
-					assertThat(connectionFactory.getTrustedPackages()).containsExactly(
-							defaultFactory.getTrustedPackages().toArray(new String[] {}));
+					assertThat(connectionFactory.getTrustedPackages())
+							.containsExactly(StringUtils
+									.toStringArray(defaultFactory.getTrustedPackages()));
 				});
 	}
 
@@ -113,8 +115,7 @@ public class ActiveMQAutoConfigurationTests {
 					assertThat(connectionFactory.getUserName()).isEqualTo("foo");
 					assertThat(connectionFactory.getPassword()).isEqualTo("bar");
 					assertThat(connectionFactory.getCloseTimeout()).isEqualTo(500);
-					assertThat(connectionFactory.isNonBlockingRedelivery())
-							.isTrue();
+					assertThat(connectionFactory.isNonBlockingRedelivery()).isTrue();
 					assertThat(connectionFactory.getSendTimeout()).isEqualTo(1000);
 					assertThat(connectionFactory.isTrustAllPackages()).isFalse();
 					assertThat(connectionFactory.getTrustedPackages())
@@ -177,23 +178,19 @@ public class ActiveMQAutoConfigurationTests {
 							.hasSize(1);
 					PooledConnectionFactory connectionFactory = context
 							.getBean(PooledConnectionFactory.class);
-					assertThat(connectionFactory.isBlockIfSessionPoolIsFull())
-							.isFalse();
+					assertThat(connectionFactory.isBlockIfSessionPoolIsFull()).isFalse();
 					assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout())
 							.isEqualTo(64);
-					assertThat(connectionFactory.isCreateConnectionOnStartup())
-							.isFalse();
+					assertThat(connectionFactory.isCreateConnectionOnStartup()).isFalse();
 					assertThat(connectionFactory.getExpiryTimeout()).isEqualTo(4096);
 					assertThat(connectionFactory.getIdleTimeout()).isEqualTo(512);
 					assertThat(connectionFactory.getMaxConnections()).isEqualTo(256);
 					assertThat(connectionFactory.getMaximumActiveSessionPerConnection())
 							.isEqualTo(1024);
-					assertThat(connectionFactory.isReconnectOnException())
-							.isFalse();
+					assertThat(connectionFactory.isReconnectOnException()).isFalse();
 					assertThat(connectionFactory.getTimeBetweenExpirationCheckMillis())
 							.isEqualTo(2048);
-					assertThat(connectionFactory.isUseAnonymousProducers())
-							.isFalse();
+					assertThat(connectionFactory.isUseAnonymousProducers()).isFalse();
 				});
 	}
 

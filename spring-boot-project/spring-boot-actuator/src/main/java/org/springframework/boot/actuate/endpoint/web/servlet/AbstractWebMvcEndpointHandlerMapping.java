@@ -155,15 +155,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.valueOf(predicate.getHttpMethod().name()));
 		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
-				toStringArray(predicate.getConsumes()));
+				StringUtils.toStringArray(predicate.getConsumes()));
 		ProducesRequestCondition produces = new ProducesRequestCondition(
-				toStringArray(predicate.getProduces()));
+				StringUtils.toStringArray(predicate.getProduces()));
 		return new RequestMappingInfo(null, patterns, methods, null, null, consumes,
 				produces, null);
-	}
-
-	private String[] toStringArray(Collection<String> collection) {
-		return collection.toArray(new String[collection.size()]);
 	}
 
 	private void registerLinksMapping() {
@@ -171,8 +167,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
 				RequestMethod.GET);
 		ProducesRequestCondition produces = new ProducesRequestCondition(
-				this.endpointMediaTypes.getProduced().toArray(
-						new String[this.endpointMediaTypes.getProduced().size()]));
+				this.endpointMediaTypes.getProduced().toArray(StringUtils
+						.toStringArray(this.endpointMediaTypes.getProduced())));
 		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null,
 				null, produces, null);
 		registerMapping(mapping, this, this.linksMethod);

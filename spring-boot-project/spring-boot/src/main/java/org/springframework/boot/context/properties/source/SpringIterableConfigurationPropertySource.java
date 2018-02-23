@@ -121,7 +121,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 				mappings.add(mapping);
 			}
 		}
-		result = mappings.toArray(new PropertyMapping[mappings.size()]);
+		result = mappings.toArray(new PropertyMapping[0]);
 		if (cache != null) {
 			cache.setMappings(result);
 		}

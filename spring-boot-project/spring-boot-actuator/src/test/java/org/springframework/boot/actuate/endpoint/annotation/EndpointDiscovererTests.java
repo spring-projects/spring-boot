@@ -264,7 +264,7 @@ public class EndpointDiscovererTests {
 		methods.add(findTestEndpointMethod("getOne", String.class));
 		methods.add(findTestEndpointMethod("update", String.class, String.class));
 		methods.add(findTestEndpointMethod("deleteOne", String.class));
-		return methods.toArray(new Method[] {});
+		return methods.toArray(new Method[0]);
 	}
 
 	private Method findTestEndpointMethod(String name, Class<?>... paramTypes) {

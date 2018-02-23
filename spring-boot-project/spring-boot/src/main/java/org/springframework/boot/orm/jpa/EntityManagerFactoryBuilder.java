@@ -30,6 +30,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Convenient builder for JPA EntityManagerFactory instances. Collects common
@@ -142,7 +143,7 @@ public class EntityManagerFactoryBuilder {
 			for (Class<?> type : basePackageClasses) {
 				packages.add(ClassUtils.getPackageName(type));
 			}
-			this.packagesToScan = packages.toArray(new String[0]);
+			this.packagesToScan = StringUtils.toStringArray(packages);
 			return this;
 		}
 

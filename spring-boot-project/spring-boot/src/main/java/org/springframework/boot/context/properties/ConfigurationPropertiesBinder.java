@@ -113,7 +113,7 @@ class ConfigurationPropertiesBinder {
 		}
 		if (!validators.isEmpty()) {
 			handler = new ValidationBindHandler(handler,
-					validators.toArray(new Validator[validators.size()]));
+					validators.toArray(new Validator[0]));
 		}
 		return handler;
 	}

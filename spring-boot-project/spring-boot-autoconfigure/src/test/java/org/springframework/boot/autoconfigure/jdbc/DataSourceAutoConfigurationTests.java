@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -226,7 +227,7 @@ public class DataSourceAutoConfigurationTests {
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType,
 			List<String> hiddenPackages, Consumer<T> consumer) {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
-				hiddenPackages.toArray(new String[hiddenPackages.size()]));
+				StringUtils.toStringArray(hiddenPackages));
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			DataSource bean = context.getBean(DataSource.class);
 			assertThat(bean).isInstanceOf(expectedType);

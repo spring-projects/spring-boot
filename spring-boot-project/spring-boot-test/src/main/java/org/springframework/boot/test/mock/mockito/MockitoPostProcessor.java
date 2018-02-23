@@ -279,7 +279,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			}
 		}
 		beans.removeIf(this::isScopedTarget);
-		return beans.toArray(new String[beans.size()]);
+		return StringUtils.toStringArray(beans);
 	}
 
 	private boolean isScopedTarget(String beanName) {

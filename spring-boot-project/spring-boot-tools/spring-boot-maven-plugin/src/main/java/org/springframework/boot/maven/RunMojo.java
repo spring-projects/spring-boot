@@ -71,7 +71,7 @@ public class RunMojo extends AbstractRunMojo {
 					new JavaExecutable().toString());
 			Runtime.getRuntime()
 					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-			int exitCode = runProcess.run(true, args.toArray(new String[args.size()]));
+			int exitCode = runProcess.run(true, args.toArray(new String[0]));
 			if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
 				return;
 			}

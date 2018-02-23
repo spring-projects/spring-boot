@@ -49,6 +49,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.util.ClassUtils;
 
 /**
  * Compiler for Groovy sources. Primarily a simple Facade for
@@ -220,7 +221,7 @@ public class GroovyCompiler {
 			classes.add(0, mainClass);
 		}
 
-		return classes.toArray(new Class<?>[classes.size()]);
+		return ClassUtils.toClassArray(classes);
 	}
 
 	@SuppressWarnings("rawtypes")

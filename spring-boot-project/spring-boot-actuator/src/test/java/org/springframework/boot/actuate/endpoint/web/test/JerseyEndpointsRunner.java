@@ -47,6 +47,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link BlockJUnit4ClassRunner} for Jersey.
@@ -63,7 +64,7 @@ class JerseyEndpointsRunner extends AbstractWebEndpointRunner {
 	private static ConfigurableApplicationContext createContext(List<Class<?>> classes) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 		classes.add(JerseyEndpointConfiguration.class);
-		context.register(classes.toArray(new Class<?>[classes.size()]));
+		context.register(ClassUtils.toClassArray(classes));
 		context.refresh();
 		return context;
 	}

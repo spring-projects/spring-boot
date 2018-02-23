@@ -27,6 +27,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,7 +65,7 @@ public class YamlPropertySourceLoaderTests {
 				.load("resource", resource, null, (profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getPropertyNames())
-				.isEqualTo(expected.toArray(new String[] {}));
+				.isEqualTo(StringUtils.toStringArray(expected));
 	}
 
 	@Test

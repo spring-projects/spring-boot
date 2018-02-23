@@ -32,6 +32,7 @@ import org.springframework.boot.web.context.ConfigurableWebServerApplicationCont
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ClassUtils;
 
 /**
  * A {@link ManagementContextFactory} for servlet-based web applications.
@@ -47,7 +48,7 @@ class ServletManagementContextFactory implements ManagementContextFactory {
 		child.setParent(parent);
 		List<Class<?>> combinedClasses = new ArrayList<>(Arrays.asList(configClasses));
 		combinedClasses.add(ServletWebServerFactoryAutoConfiguration.class);
-		child.register(combinedClasses.toArray(new Class<?>[combinedClasses.size()]));
+		child.register(ClassUtils.toClassArray(combinedClasses));
 		registerServletWebServerFactory(parent, child);
 		return child;
 	}

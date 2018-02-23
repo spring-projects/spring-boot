@@ -277,8 +277,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 					resources.add(resource);
 				}
 			}
-			handler.setBaseResource(new ResourceCollection(
-					resources.toArray(new Resource[resources.size()])));
+			handler.setBaseResource(
+					new ResourceCollection(resources.toArray(new Resource[0])));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -343,7 +343,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		configurations.addAll(getConfigurations());
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
-		return configurations.toArray(new Configuration[configurations.size()]);
+		return configurations.toArray(new Configuration[0]);
 	}
 
 	/**

@@ -565,7 +565,7 @@ public class ConfigFileApplicationListener
 			// But this one should go first (last wins in a property key clash)
 			profiles.add(profile.getName());
 			profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
-			environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
+			environment.setActiveProfiles(StringUtils.toStringArray(profiles));
 		}
 
 		private Set<String> getSearchLocations() {

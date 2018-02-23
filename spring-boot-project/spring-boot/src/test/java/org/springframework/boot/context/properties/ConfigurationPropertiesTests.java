@@ -213,7 +213,7 @@ public class ConfigurationPropertiesTests {
 		for (int i = 0; i < 1000; i++) {
 			pairs.add("list[" + i + "]:" + i);
 		}
-		load(BasicConfiguration.class, pairs.toArray(new String[] {}));
+		load(BasicConfiguration.class, StringUtils.toStringArray(pairs));
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.list).hasSize(1000);
 	}

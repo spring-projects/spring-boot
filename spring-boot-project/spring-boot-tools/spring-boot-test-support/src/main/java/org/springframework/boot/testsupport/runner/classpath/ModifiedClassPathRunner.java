@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 				extractedUrls.add(url);
 			}
 		});
-		return extractedUrls.toArray(new URL[extractedUrls.size()]);
+		return extractedUrls.toArray(new URL[0]);
 	}
 
 	private Stream<URL> doExtractUrls(ClassLoader classLoader) throws Exception {
@@ -158,7 +158,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 				processedUrls.add(url);
 			}
 		}
-		return processedUrls.toArray(new URL[processedUrls.size()]);
+		return processedUrls.toArray(new URL[0]);
 	}
 
 	private List<URL> getAdditionalUrls(Class<?> testClass) throws Exception {

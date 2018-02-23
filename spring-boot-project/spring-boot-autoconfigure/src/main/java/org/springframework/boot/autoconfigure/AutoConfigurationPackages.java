@@ -114,7 +114,7 @@ public abstract class AutoConfigurationPackages {
 		Set<String> merged = new LinkedHashSet<>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(Arrays.asList(packageNames));
-		return merged.toArray(new String[merged.size()]);
+		return StringUtils.toStringArray(merged);
 	}
 
 	/**

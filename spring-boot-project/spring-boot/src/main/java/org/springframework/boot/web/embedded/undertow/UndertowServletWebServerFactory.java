@@ -387,7 +387,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		}
 		resourceManagers.add(new MetaInfResourcesResourceManager(resourceJarUrls));
 		return new CompositeResourceManager(
-				resourceManagers.toArray(new ResourceManager[resourceManagers.size()]));
+				resourceManagers.toArray(new ResourceManager[0]));
 	}
 
 	private File getCanonicalDocumentRoot(File docBase) {

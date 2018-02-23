@@ -36,6 +36,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}. Adds an
@@ -71,7 +72,7 @@ public class UserDetailsServiceAutoConfiguration {
 		List<String> roles = user.getRoles();
 		return new InMemoryUserDetailsManager(User.withUsername(user.getName())
 				.password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
-				.roles(roles.toArray(new String[roles.size()])).build());
+				.roles(StringUtils.toStringArray(roles)).build());
 	}
 
 	public String getOrDeducePassword(SecurityProperties.User user,
