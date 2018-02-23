@@ -344,7 +344,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void bindWithValueDefault() {
+	public void loadWithPropertyPlaceholderValueShouldBind() {
 		load(WithPropertyPlaceholderValueConfiguration.class, "default.value=foo");
 		WithPropertyPlaceholderValueProperties bean = this.context
 				.getBean(WithPropertyPlaceholderValueProperties.class);
