@@ -780,7 +780,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.atomikos.datasource.xa-data-source-class-name= # Vendor-specific implementation of XAConnectionFactory.
 	spring.jta.atomikos.datasource.xa-properties= # Vendor-specific XA properties.
 	spring.jta.atomikos.properties.allow-sub-transactions=true # Specify whether sub-transactions are allowed.
-	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints, in milliseconds.
+	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints, expressed as the number of log writes between two checkpoint.
 	spring.jta.atomikos.properties.default-jta-timeout=10000ms # Default timeout for JTA transactions.
 	spring.jta.atomikos.properties.default-max-wait-time-on-shutdown=9223372036854775807 # How long should normal shutdown (no-force) wait for transactions to complete.
 	spring.jta.atomikos.properties.enable-logging=true # Whether to enable disk logging.
