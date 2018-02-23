@@ -534,7 +534,7 @@
 						</goals>
 						<configuration>
 							<name>modulename</name>
-							<value>${artifactId}</value>
+							<value>${project.artifactId}</value>
 							<regex>-</regex>
 							<replacement>.</replacement>
 							<failIfNoMatch>true</failIfNoMatch>
