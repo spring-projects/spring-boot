@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * Provides access to entries from a {@link JarFile}. In order to reduce memory
@@ -41,6 +40,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  * which should consume about 122K.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
@@ -177,18 +177,16 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return getEntry(name, JarEntry.class, true);
 	}
 
-	public InputStream getInputStream(String name, ResourceAccess access)
-			throws IOException {
+	public InputStream getInputStream(String name) throws IOException {
 		FileHeader entry = getEntry(name, FileHeader.class, false);
-		return getInputStream(entry, access);
+		return getInputStream(entry);
 	}
 
-	public InputStream getInputStream(FileHeader entry, ResourceAccess access)
-			throws IOException {
+	public InputStream getInputStream(FileHeader entry) throws IOException {
 		if (entry == null) {
 			return null;
 		}
-		InputStream inputStream = getEntryData(entry).getInputStream(access);
+		InputStream inputStream = getEntryData(entry).getInputStream();
 		if (entry.getMethod() == ZipEntry.DEFLATED) {
 			inputStream = new ZipInflaterInputStream(inputStream, (int) entry.getSize());
 		}
@@ -208,8 +206,8 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		// local directory to the central directory. We need to re-read
 		// here to skip them
 		RandomAccessData data = this.jarFile.getData();
-		byte[] localHeader = Bytes.get(
-				data.getSubsection(entry.getLocalHeaderOffset(), LOCAL_FILE_HEADER_SIZE));
+		byte[] localHeader = data.read(entry.getLocalHeaderOffset(),
+				LOCAL_FILE_HEADER_SIZE);
 		long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);
 		long extraLength = Bytes.littleEndianValue(localHeader, 28, 2);
 		return data.getSubsection(entry.getLocalHeaderOffset() + LOCAL_FILE_HEADER_SIZE

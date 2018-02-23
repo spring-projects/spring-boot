@@ -31,7 +31,6 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 /**
@@ -45,6 +44,7 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  * </ul>
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class JarFile extends java.util.jar.JarFile {
 
@@ -162,8 +162,7 @@ public class JarFile extends java.util.jar.JarFile {
 				}
 			}
 			else {
-				try (InputStream inputStream = getInputStream(MANIFEST_NAME,
-						ResourceAccess.ONCE)) {
+				try (InputStream inputStream = getInputStream(MANIFEST_NAME)) {
 					if (inputStream == null) {
 						return null;
 					}
@@ -213,19 +212,14 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
-		return getInputStream(ze, ResourceAccess.PER_READ);
-	}
-
-	public InputStream getInputStream(ZipEntry ze, ResourceAccess access)
-			throws IOException {
 		if (ze instanceof JarEntry) {
-			return this.entries.getInputStream((JarEntry) ze, access);
+			return this.entries.getInputStream((JarEntry) ze);
 		}
-		return getInputStream(ze == null ? null : ze.getName(), access);
+		return getInputStream(ze == null ? null : ze.getName());
 	}
 
-	InputStream getInputStream(String name, ResourceAccess access) throws IOException {
-		return this.entries.getInputStream(name, access);
+	InputStream getInputStream(String name) throws IOException {
+		return this.entries.getInputStream(name);
 	}
 
 	/**
@@ -333,7 +327,7 @@ public class JarFile extends java.util.jar.JarFile {
 		// happening that often.
 		try {
 			try (JarInputStream inputStream = new JarInputStream(
-					getData().getInputStream(ResourceAccess.ONCE))) {
+					getData().getInputStream())) {
 				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
 				while (certEntry != null) {
 					inputStream.closeEntry();

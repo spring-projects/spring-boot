@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.jar.Manifest;
  * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
@@ -49,11 +50,10 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 		setCompressedSize(header.getCompressedSize());
 		setMethod(header.getMethod());
 		setCrc(header.getCrc());
-		setSize(header.getSize());
-		setExtra(header.getExtra());
 		setComment(header.getComment().toString());
 		setSize(header.getSize());
 		setTime(header.getTime());
+		setExtra(header.getExtra());
 	}
 
 	AsciiBytes getAsciiBytesName() {

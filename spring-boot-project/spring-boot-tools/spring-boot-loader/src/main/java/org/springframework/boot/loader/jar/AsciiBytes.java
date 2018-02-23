@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
  * @author Andy Wilkinson
  */
 final class AsciiBytes {
+
+	private static final String EMPTY_STRING = "";
 
 	private static final int[] EXCESS = { 0x0, 0x1080, 0x96, 0x1c82080 };
 
@@ -123,8 +125,13 @@ final class AsciiBytes {
 	@Override
 	public String toString() {
 		if (this.string == null) {
-			this.string = new String(this.bytes, this.offset, this.length,
-					StandardCharsets.UTF_8);
+			if (this.length == 0) {
+				this.string = EMPTY_STRING;
+			}
+			else {
+				this.string = new String(this.bytes, this.offset, this.length,
+						StandardCharsets.UTF_8);
+			}
 		}
 		return this.string;
 	}

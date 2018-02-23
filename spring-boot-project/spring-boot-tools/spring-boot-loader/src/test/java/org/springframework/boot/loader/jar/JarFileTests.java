@@ -186,7 +186,7 @@ public class JarFileTests {
 	@Test
 	public void close() throws Exception {
 		RandomAccessDataFile randomAccessDataFile = spy(
-				new RandomAccessDataFile(this.rootJarFile, 1));
+				new RandomAccessDataFile(this.rootJarFile));
 		JarFile jarFile = new JarFile(randomAccessDataFile);
 		jarFile.close();
 		verify(randomAccessDataFile).close();
