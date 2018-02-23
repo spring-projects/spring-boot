@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.beans.PropertyEditorSupport;
+import java.io.File;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -193,6 +194,18 @@ public class BindConverterTests {
 				ApplicationConversionService.getSharedInstance(), null);
 		this.thrown.expect(ConverterNotFoundException.class);
 		bindConverter.convert("test", ResolvableType.forClass(SampleType.class));
+	}
+
+	@Test
+	public void convertWhenConvertingToFileShouldExcludeFileEditor() {
+		// For back compatibility we want true file conversion and not an accidental
+		// classpath resource reference. See gh-12163
+		BindConverter bindConverter = new BindConverter(new GenericConversionService(),
+				null);
+		assertThat(bindConverter.canConvert(".", ResolvableType.forClass(File.class)))
+				.isFalse();
+		this.thrown.expect(ConverterNotFoundException.class);
+		bindConverter.convert(".", ResolvableType.forClass(File.class));
 	}
 
 	private BindConverter getPropertyEditorOnlyBindConverter(

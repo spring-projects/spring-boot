@@ -20,6 +20,7 @@ import java.beans.PropertyEditor;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -27,6 +28,7 @@ import java.util.function.Consumer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.beans.propertyeditors.FileEditor;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
@@ -42,6 +44,13 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 class BindConverter {
+
+	private static final Set<Class<?>> EXCLUDED_EDITORS;
+	static {
+		Set<Class<?>> excluded = new HashSet<>();
+		excluded.add(FileEditor.class); // gh-12163
+		EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
+	}
 
 	private final ConversionService typeConverterConversionService;
 
@@ -162,6 +171,9 @@ class BindConverter {
 			}
 			if (editor == null && String.class != type) {
 				editor = BeanUtils.findEditorByConvention(type);
+			}
+			if (editor == null || EXCLUDED_EDITORS.contains(editor.getClass())) {
+				return null;
 			}
 			return editor;
 		}

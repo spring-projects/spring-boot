@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties;
 
 import java.beans.PropertyEditorSupport;
+import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -735,6 +736,13 @@ public class ConfigurationPropertiesTests {
 		ListOfGenericClassProperties bean = this.context
 				.getBean(ListOfGenericClassProperties.class);
 		assertThat(bean.getList()).containsExactly(RuntimeException.class);
+	}
+
+	@Test
+	public void loadWhenBindingCurrentDirectoryToFileShouldBind() {
+		load(FileProperties.class, "test.file=.");
+		FileProperties bean = this.context.getBean(FileProperties.class);
+		assertThat(bean.getFile()).isEqualTo(new File("."));
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
@@ -1620,6 +1628,22 @@ public class ConfigurationPropertiesTests {
 
 		public void setList(List<Class<? extends Throwable>> list) {
 			this.list = list;
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class FileProperties {
+
+		private File file;
+
+		public File getFile() {
+			return this.file;
+		}
+
+		public void setFile(File file) {
+			this.file = file;
 		}
 
 	}
