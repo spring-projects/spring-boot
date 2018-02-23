@@ -120,6 +120,10 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		}
 	}
 
+	int getSize() {
+		return this.size;
+	}
+
 	private void sort(int left, int right) {
 		// Quick sort algorithm, uses hashCodes as the source but sorts all arrays
 		if (left < right) {
