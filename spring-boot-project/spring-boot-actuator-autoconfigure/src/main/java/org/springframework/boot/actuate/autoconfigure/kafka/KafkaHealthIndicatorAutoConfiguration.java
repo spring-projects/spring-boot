@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,7 @@ import org.springframework.kafka.core.KafkaAdmin;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link KafkaHealthIndicator}.
  *
  * @author Juan Rada
+ * @author Gary Russell
  * @since 2.0.0
  */
 @Configuration
@@ -56,10 +58,14 @@ public class KafkaHealthIndicatorAutoConfiguration
 
 	private final KafkaHealthIndicatorProperties properties;
 
+	private final KafkaProperties kafkaProperties;
+
 	public KafkaHealthIndicatorAutoConfiguration(Map<String, KafkaAdmin> admins,
-			KafkaHealthIndicatorProperties properties) {
+			KafkaHealthIndicatorProperties properties,
+			KafkaProperties kafkaProperties) {
 		this.admins = admins;
 		this.properties = properties;
+		this.kafkaProperties = kafkaProperties;
 	}
 
 	@Bean
@@ -71,7 +77,7 @@ public class KafkaHealthIndicatorAutoConfiguration
 	@Override
 	protected KafkaHealthIndicator createHealthIndicator(KafkaAdmin source) {
 		Duration responseTimeout = this.properties.getResponseTimeout();
-		return new KafkaHealthIndicator(source, responseTimeout.toMillis());
+		return new KafkaHealthIndicator(source, this.kafkaProperties, responseTimeout.toMillis());
 	}
 
 }

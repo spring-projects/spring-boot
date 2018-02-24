@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.test.rule.KafkaEmbedded;
 import org.springframework.util.SocketUtils;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Juan Rada
  * @author Stephane Nicoll
+ * @author Gary Russell
  */
 public class KafkaHealthIndicatorTests {
 
@@ -53,7 +55,7 @@ public class KafkaHealthIndicatorTests {
 	@Test
 	public void kafkaIsUp() throws Exception {
 		startKafka(1);
-		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin,
+		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin, new KafkaProperties(),
 				1000L);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -65,7 +67,7 @@ public class KafkaHealthIndicatorTests {
 		int freePort = SocketUtils.findAvailableTcpPort();
 		this.kafkaAdmin = new KafkaAdmin(Collections.singletonMap(
 				ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:" + freePort));
-		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin,
+		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin, new KafkaProperties(),
 				1L);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -75,7 +77,9 @@ public class KafkaHealthIndicatorTests {
 	@Test
 	public void notEnoughNodesForReplicationFactor() throws Exception {
 		startKafka(2);
-		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin,
+		KafkaProperties kafkaProperties = new KafkaProperties();
+		kafkaProperties.getProducer().setTransactionIdPrefix("foo-");
+		KafkaHealthIndicator healthIndicator = new KafkaHealthIndicator(this.kafkaAdmin, kafkaProperties,
 				1000L);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);

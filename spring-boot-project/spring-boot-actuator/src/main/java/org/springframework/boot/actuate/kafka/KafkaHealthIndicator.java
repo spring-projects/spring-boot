@@ -36,8 +36,10 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link HealthIndicator} for Kafka cluster.
@@ -56,6 +58,8 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator implements Dis
 
 	private final AdminClient adminClient;
 
+	private final KafkaProperties kafkaProperties;
+
 	private final DescribeClusterOptions describeOptions;
 
 	/**
@@ -64,9 +68,10 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator implements Dis
 	 * @param kafkaAdmin the kafka admin
 	 * @param requestTimeout the request timeout in milliseconds
 	 */
-	public KafkaHealthIndicator(KafkaAdmin kafkaAdmin, long requestTimeout) {
+	public KafkaHealthIndicator(KafkaAdmin kafkaAdmin, KafkaProperties kafkaProperties, long requestTimeout) {
 		Assert.notNull(kafkaAdmin, "KafkaAdmin must not be null");
 		this.adminClient = AdminClient.create(kafkaAdmin.getConfig());
+		this.kafkaProperties = kafkaProperties;
 		this.describeOptions = new DescribeClusterOptions()
 				.timeoutMs((int) requestTimeout);
 	}
@@ -83,6 +88,9 @@ public class KafkaHealthIndicator extends AbstractHealthIndicator implements Dis
 	}
 
 	private int getReplicationFactor(String brokerId, AdminClient adminClient) throws Exception {
+		if (!StringUtils.hasText(this.kafkaProperties.getProducer().getTransactionIdPrefix())) {
+			return 1;
+		}
 		try {
 			ConfigResource configResource = new ConfigResource(Type.BROKER, brokerId);
 			Map<ConfigResource, Config> kafkaConfig = adminClient
