@@ -144,14 +144,14 @@ public class RestartClassLoaderTests {
 	public void getDeletedResource() {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		assertThat(this.reloadClassLoader.getResource(name)).isEqualTo(null);
+		assertThat(this.reloadClassLoader.getResource(name)).isNull();
 	}
 
 	@Test
 	public void getDeletedResourceAsStream() {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		assertThat(this.reloadClassLoader.getResourceAsStream(name)).isEqualTo(null);
+		assertThat(this.reloadClassLoader.getResourceAsStream(name)).isNull();
 	}
 
 	@Test

@@ -370,7 +370,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.ldap.username= # Login username of the server.
 
 	# EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
-	spring.ldap.embedded.base-dn= # List of base DN.
+	spring.ldap.embedded.base-dn= # List of base DNs.
 	spring.ldap.embedded.credential.username= # Embedded LDAP username.
 	spring.ldap.embedded.credential.password= # Embedded LDAP password.
 	spring.ldap.embedded.ldif=classpath:schema.ldif # Schema (LDIF) script resource reference.

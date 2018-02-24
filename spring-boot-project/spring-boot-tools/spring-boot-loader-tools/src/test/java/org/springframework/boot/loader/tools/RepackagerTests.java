@@ -209,7 +209,7 @@ public class RepackagerTests {
 		repackager.repackage(file, NO_LIBRARIES);
 		Manifest actualManifest = getManifest(file);
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-				.isEqualTo(null);
+				.isNull();
 		assertThat(hasLauncherClasses(file)).isFalse();
 	}
 

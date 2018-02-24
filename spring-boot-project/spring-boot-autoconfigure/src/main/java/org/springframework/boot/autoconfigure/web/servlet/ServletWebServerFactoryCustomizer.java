@@ -57,8 +57,7 @@ public class ServletWebServerFactoryCustomizer implements
 				.to(factory::setDisplayName);
 		map.from(this.serverProperties.getServlet()::getSession).to(factory::setSession);
 		map.from(this.serverProperties::getSsl).to(factory::setSsl);
-		map.from(this.serverProperties::getServlet).as(ServerProperties.Servlet::getJsp)
-				.to(factory::setJsp);
+		map.from(this.serverProperties.getServlet()::getJsp).to(factory::setJsp);
 		map.from(this.serverProperties::getCompression).to(factory::setCompression);
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);

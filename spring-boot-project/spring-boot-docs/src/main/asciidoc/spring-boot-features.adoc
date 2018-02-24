@@ -4466,7 +4466,7 @@ In yaml files, you can use the yaml list notation:
 	  - dc=pivotal,dc=io
 ----
 
-in properties files, you must include the index as part of the property name:
+In properties files, you must include the index as part of the property name:
 
 [source,properties,indent=0]
 ----

@@ -143,7 +143,7 @@ public class PropertyMapperTests {
 	}
 
 	@Test
-	public void whenInstanceOfToWhenValueIsTargetTypeShouldMatch() {
+	public void whenInstanceOfWhenValueIsTargetTypeShouldMatch() {
 		Long result = this.map.from(() -> 123L).whenInstanceOf(Long.class)
 				.toInstance((value) -> value + 1);
 		assertThat(result).isEqualTo(124L);
