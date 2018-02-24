@@ -55,9 +55,8 @@ public class JerseyManagementChildContextConfiguration {
 
 	@Bean
 	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration() {
-		ServletRegistrationBean<ServletContainer> registration = new ServletRegistrationBean<>(
+		return new ServletRegistrationBean<>(
 				new ServletContainer(endpointResourceConfig()), "/*");
-		return registration;
 	}
 
 	@Bean

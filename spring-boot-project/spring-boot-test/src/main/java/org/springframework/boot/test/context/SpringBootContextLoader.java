@@ -135,8 +135,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
-		ConfigurableApplicationContext context = application.run();
-		return context;
+		return application.run();
 	}
 
 	/**
