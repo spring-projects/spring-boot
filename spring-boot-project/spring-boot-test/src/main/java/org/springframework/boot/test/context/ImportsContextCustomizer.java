@@ -112,8 +112,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	private BeanDefinition registerBean(BeanDefinitionRegistry registry,
 			AnnotatedBeanDefinitionReader reader, String beanName, Class<?> type) {
 		reader.registerBean(type, beanName);
-		BeanDefinition definition = registry.getBeanDefinition(beanName);
-		return definition;
+		return registry.getBeanDefinition(beanName);
 	}
 
 	@Override

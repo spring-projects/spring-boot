@@ -57,8 +57,7 @@ public class ElasticsearchAutoConfiguration {
 		factory.setClusterNodes(this.properties.getClusterNodes());
 		factory.setProperties(createProperties());
 		factory.afterPropertiesSet();
-		TransportClient client = factory.getObject();
-		return client;
+		return factory.getObject();
 	}
 
 	private Properties createProperties() {
