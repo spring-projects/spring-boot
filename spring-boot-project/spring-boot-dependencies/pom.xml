@@ -80,6 +80,7 @@
 		<javax-money.version>1.0.1</javax-money.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<javax-validation.version>2.0.1.Final</javax-validation.version>
+		<jaxb-api.version>2.3.0</jaxb-api.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<jaybird.version>3.0.3</jaybird.version>
 		<jboss-logging.version>3.3.1.Final</jboss-logging.version>
@@ -1002,6 +1003,11 @@
 				<groupId>javax.validation</groupId>
 				<artifactId>validation-api</artifactId>
 				<version>${javax-validation.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.xml.bind</groupId>
+				<artifactId>jaxb-api</artifactId>
+				<version>${jaxb-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jaxen</groupId>
