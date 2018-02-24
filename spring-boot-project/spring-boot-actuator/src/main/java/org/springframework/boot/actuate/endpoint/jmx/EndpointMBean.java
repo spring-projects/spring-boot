@@ -29,8 +29,11 @@ import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -46,10 +49,14 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class EndpointMBean implements DynamicMBean {
+public class EndpointMBean implements DynamicMBean, BeanClassLoaderAware {
 
 	private static final boolean REACTOR_PRESENT = ClassUtils.isPresent(
 			"reactor.core.publisher.Mono", EndpointMBean.class.getClassLoader());
+
+	private static final Log logger = LogFactory.getLog(EndpointMBean.class);
+
+	private ClassLoader classLoader;
 
 	private final JmxOperationResponseMapper responseMapper;
 
@@ -67,6 +74,11 @@ public class EndpointMBean implements DynamicMBean {
 		this.endpoint = endpoint;
 		this.info = new MBeanInfoFactory(responseMapper).getMBeanInfo(endpoint);
 		this.operations = getOperations(endpoint);
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
 	}
 
 	private Map<String, JmxOperation> getOperations(ExposableJmxEndpoint endpoint) {
@@ -90,7 +102,28 @@ public class EndpointMBean implements DynamicMBean {
 					+ "' has no operation named " + actionName;
 			throw new ReflectionException(new IllegalArgumentException(message), message);
 		}
-		return invoke(operation, params);
+		ClassLoader previousClassLoader = overrideThreadContextClassLoaderSafe(this.classLoader);
+		try {
+			return invoke(operation, params);
+		}
+		finally {
+			overrideThreadContextClassLoaderSafe(previousClassLoader);
+		}
+	}
+
+	private static ClassLoader overrideThreadContextClassLoaderSafe(ClassLoader classLoader) {
+		if (classLoader == null) {
+			return null;
+		}
+
+		try {
+			return ClassUtils.overrideThreadContextClassLoader(classLoader);
+		}
+		catch (SecurityException exc) {
+			// can't set class loader, ignore it and proceed
+			logger.warn("Unable to override class loader for JMX endpoint.");
+		}
+		return null;
 	}
 
 	private Object invoke(JmxOperation operation, Object[] params)
