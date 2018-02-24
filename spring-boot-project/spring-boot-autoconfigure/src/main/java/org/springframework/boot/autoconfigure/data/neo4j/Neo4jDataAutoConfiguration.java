@@ -64,9 +64,7 @@ public class Neo4jDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
-		org.neo4j.ogm.config.Configuration configuration = properties
-				.createConfiguration();
-		return configuration;
+		return properties.createConfiguration();
 	}
 
 	@Bean

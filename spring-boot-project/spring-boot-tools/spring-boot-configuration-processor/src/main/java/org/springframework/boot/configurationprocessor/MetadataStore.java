@@ -95,15 +95,13 @@ public class MetadataStore {
 	}
 
 	private FileObject getMetadataResource() throws IOException {
-		FileObject resource = this.environment.getFiler()
+		return this.environment.getFiler()
 				.getResource(StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
-		return resource;
 	}
 
 	private FileObject createMetadataResource() throws IOException {
-		FileObject resource = this.environment.getFiler()
+		return this.environment.getFiler()
 				.createResource(StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
-		return resource;
 	}
 
 	private InputStream getAdditionalMetadataStream() throws IOException {

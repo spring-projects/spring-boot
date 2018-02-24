@@ -324,10 +324,9 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	private DependencyRequest getDependencyRequest(CollectRequest collectRequest) {
-		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest,
+		return new DependencyRequest(collectRequest,
 				DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE,
 						JavaScopes.RUNTIME));
-		return dependencyRequest;
 	}
 
 	private void addManagedDependencies(DependencyResult result) {
