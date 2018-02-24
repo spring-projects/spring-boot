@@ -129,7 +129,7 @@ benefit of the dependency management (but not the plugin management) by using a
 				<artifactId>spring-boot-dependencies</artifactId>
 				<version>{spring-boot-version}</version>
 				<type>pom</type>
-		        <scope>import</scope>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -150,8 +150,8 @@ following element to your `pom.xml`:
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-releasetrain</artifactId>
 				<version>Fowler-SR2</version>
-				<scope>import</scope>
 				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
