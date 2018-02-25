@@ -29,11 +29,6 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 public interface GroovyCompilerConfiguration {
 
 	/**
-	 * Constant to be used when there is no {@link #getClasspath() classpath}.
-	 */
-	String[] DEFAULT_CLASSPATH = { "." };
-
-	/**
 	 * Returns the scope in which the compiler operates.
 	 * @return the scope of the compiler
 	 */

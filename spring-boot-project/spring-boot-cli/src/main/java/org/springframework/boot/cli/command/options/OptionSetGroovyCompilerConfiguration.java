@@ -34,6 +34,11 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
  */
 public class OptionSetGroovyCompilerConfiguration implements GroovyCompilerConfiguration {
 
+	/**
+	 * Constant to be used when there is no {@link #getClasspath() classpath}.
+	 */
+	private static final String[] DEFAULT_CLASSPATH = { "." };
+
 	private final OptionSet options;
 
 	private final CompilerOptionHandler optionHandler;
