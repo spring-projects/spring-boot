@@ -160,8 +160,7 @@ public abstract class ResourceUtils {
 			}
 			else {
 				if (location.startsWith(FILE_URL_PREFIX)) {
-					Resource resource = this.files.getResource(location);
-					return resource;
+					return this.files.getResource(location);
 				}
 				try {
 					// Try to parse the location as a URL...

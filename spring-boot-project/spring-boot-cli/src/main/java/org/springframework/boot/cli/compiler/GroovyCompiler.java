@@ -235,8 +235,7 @@ public class GroovyCompiler {
 		try {
 			Field field = CompilationUnit.class.getDeclaredField("phaseOperations");
 			field.setAccessible(true);
-			LinkedList[] phaseOperations = (LinkedList[]) field.get(compilationUnit);
-			return phaseOperations;
+			return (LinkedList[]) field.get(compilationUnit);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(

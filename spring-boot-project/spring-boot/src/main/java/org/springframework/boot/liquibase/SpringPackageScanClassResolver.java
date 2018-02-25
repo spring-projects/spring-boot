@@ -68,8 +68,7 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 				loader);
 		String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
 				+ ClassUtils.convertClassNameToResourcePath(packageName) + "/**/*.class";
-		Resource[] resources = resolver.getResources(pattern);
-		return resources;
+		return resolver.getResources(pattern);
 	}
 
 	private Class<?> loadClass(ClassLoader loader, MetadataReaderFactory readerFactory,
