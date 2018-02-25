@@ -105,6 +105,10 @@ exchanges).
 |Displays arbitrary application info.
 |Yes
 
+|`integrationgraph`
+|Exposes the Spring Integration graph.
+|No
+
 |`loggers`
 |Shows and modifies the configuration of loggers in the application.
 |Yes
@@ -249,6 +253,10 @@ endpoints:
 |No
 
 |`info`
+|Yes
+|Yes
+
+|`integrationgraph`
 |Yes
 |Yes
 
