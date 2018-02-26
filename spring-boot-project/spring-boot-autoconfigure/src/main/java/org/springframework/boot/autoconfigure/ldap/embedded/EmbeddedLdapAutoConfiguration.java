@@ -218,13 +218,12 @@ public class EmbeddedLdapAutoConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			Builder message = ConditionMessage.forCondition("Embedded LDAP");
 			Environment environment = context.getEnvironment();
-			if (environment != null) {
-				if (!Binder.get(environment)
+			if (environment != null
+					&& !Binder.get(environment)
 						.bind("spring.ldap.embedded.base-dn", STRING_LIST)
 						.orElseGet(Collections::emptyList).isEmpty()) {
-					return ConditionOutcome
-							.match(message.because("Found base-dn property"));
-				}
+				return ConditionOutcome
+						.match(message.because("Found base-dn property"));
 			}
 			return ConditionOutcome.noMatch(message.because("No base-dn property found"));
 		}

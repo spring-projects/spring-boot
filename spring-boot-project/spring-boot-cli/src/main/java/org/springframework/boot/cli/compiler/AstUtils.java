@@ -179,11 +179,10 @@ public abstract class AstUtils {
 	private static ClosureExpression getClosure(String name,
 			MethodCallExpression expression) {
 		Expression method = expression.getMethod();
-		if (method instanceof ConstantExpression) {
-			if (name.equals(((ConstantExpression) method).getValue())) {
-				return (ClosureExpression) ((ArgumentListExpression) expression
-						.getArguments()).getExpression(0);
-			}
+		if (method instanceof ConstantExpression
+				&& name.equals(((ConstantExpression) method).getValue())) {
+			return (ClosureExpression) ((ArgumentListExpression) expression
+					.getArguments()).getExpression(0);
 		}
 		return null;
 	}

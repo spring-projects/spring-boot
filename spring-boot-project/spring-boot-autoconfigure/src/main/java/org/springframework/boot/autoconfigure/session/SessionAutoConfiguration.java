@@ -248,14 +248,13 @@ public class SessionAutoConfiguration {
 		public void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
 			if (storeType != StoreType.NONE
-					&& this.sessionRepositoryProvider.getIfAvailable() == null) {
-				if (storeType != null) {
-					throw new SessionRepositoryUnavailableException(
-							"No session repository could be auto-configured, check your "
-									+ "configuration (session store type is '"
-									+ storeType.name().toLowerCase(Locale.ENGLISH) + "')",
-							storeType);
-				}
+					&& this.sessionRepositoryProvider.getIfAvailable() == null
+					&& storeType != null) {
+				throw new SessionRepositoryUnavailableException(
+						"No session repository could be auto-configured, check your "
+								+ "configuration (session store type is '"
+								+ storeType.name().toLowerCase(Locale.ENGLISH) + "')",
+						storeType);
 			}
 		}
 
