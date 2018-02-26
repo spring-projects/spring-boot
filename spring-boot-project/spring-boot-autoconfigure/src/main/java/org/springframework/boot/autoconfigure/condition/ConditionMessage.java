@@ -358,8 +358,7 @@ public final class ConditionMessage {
 		 * @return a built {@link ConditionMessage}
 		 */
 		public ConditionMessage items(Style style, Object... items) {
-			return items(style,
-					items == null ? null : Arrays.asList(items));
+			return items(style, items == null ? null : Arrays.asList(items));
 		}
 
 		/**

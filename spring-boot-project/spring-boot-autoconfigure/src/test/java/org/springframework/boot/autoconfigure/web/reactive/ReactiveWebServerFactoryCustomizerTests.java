@@ -42,8 +42,7 @@ public class ReactiveWebServerFactoryCustomizerTests {
 
 	@Before
 	public void setup() {
-		this.customizer = new ReactiveWebServerFactoryCustomizer(
-				this.properties);
+		this.customizer = new ReactiveWebServerFactoryCustomizer(this.properties);
 	}
 
 	@Test

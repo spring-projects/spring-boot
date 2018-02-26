@@ -140,9 +140,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(Project project) {
-		project.afterEvaluate((evaluated) ->
-			evaluated.getTasks().withType(JavaCompile.class,
-					this::configureAdditionalMetadataLocations));
+		project.afterEvaluate((evaluated) -> evaluated.getTasks()
+				.withType(JavaCompile.class, this::configureAdditionalMetadataLocations));
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {

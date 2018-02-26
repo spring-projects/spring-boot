@@ -77,7 +77,7 @@ final class TraceableHttpServletRequest implements TraceableRequest {
 	}
 
 	private List<String> toList(Enumeration<String> enumeration) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		while (enumeration.hasMoreElements()) {
 			list.add(enumeration.nextElement());
 		}

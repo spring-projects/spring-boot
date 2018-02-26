@@ -110,7 +110,7 @@ public final class LambdaSafe {
 
 		private Log logger;
 
-		private Filter<C, A> filter = new GenericTypeFilter<C, A>();
+		private Filter<C, A> filter = new GenericTypeFilter<>();
 
 		protected LambdaSafeCallback(Class<C> callbackType, A argument,
 				Object[] additionalArguments) {
@@ -414,7 +414,7 @@ public final class LambdaSafe {
 		 * @return an {@link InvocationResult}
 		 */
 		public static <R> InvocationResult<R> of(R value) {
-			return new InvocationResult<R>(value);
+			return new InvocationResult<>(value);
 		}
 
 		/**

@@ -129,9 +129,10 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 			File output = new File((String) nonOptionArguments.remove(0));
 			Assert.isTrue(
-					output.getName().toLowerCase(Locale.ENGLISH).endsWith("." + this.type),
-					"The output '" + output + "' is not a " + this.type.toUpperCase(
-							Locale.ENGLISH) + " file.");
+					output.getName().toLowerCase(Locale.ENGLISH)
+							.endsWith("." + this.type),
+					"The output '" + output + "' is not a "
+							+ this.type.toUpperCase(Locale.ENGLISH) + " file.");
 			deleteIfExists(output);
 
 			GroovyCompiler compiler = createCompiler(options);

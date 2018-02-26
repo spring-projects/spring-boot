@@ -62,8 +62,7 @@ public class ServletWebServerFactoryCustomizerTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.customizer = new ServletWebServerFactoryCustomizer(
-				this.properties);
+		this.customizer = new ServletWebServerFactoryCustomizer(this.properties);
 	}
 
 	@Test

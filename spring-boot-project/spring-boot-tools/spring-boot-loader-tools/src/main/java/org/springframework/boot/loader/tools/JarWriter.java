@@ -247,8 +247,8 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	}
 
 	/**
-	 * Perform the actual write of a {@link JarEntry}. All other write methods
-	 * delegate to this one.
+	 * Perform the actual write of a {@link JarEntry}. All other write methods delegate to
+	 * this one.
 	 * @param entry the entry to write
 	 * @param entryWriter the entry writer or {@code null} if there is no content
 	 * @param unpackHandler handles possible unpacking for the entry

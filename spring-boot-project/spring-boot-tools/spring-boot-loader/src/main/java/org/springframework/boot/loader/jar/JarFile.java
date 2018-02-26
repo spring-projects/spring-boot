@@ -108,7 +108,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
 			RandomAccessData data, JarEntryFilter filter, JarFileType type)
-					throws IOException {
+			throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
