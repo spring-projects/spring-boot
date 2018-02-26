@@ -16,9 +16,9 @@
 
 package org.springframework.boot.env;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -53,11 +53,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	private final Resource resource;
 
-	OriginTrackedYamlLoader(Resource resource, String profileToLoad,
-			Predicate<String[]> acceptsProfiles) {
+	OriginTrackedYamlLoader(Resource resource) {
 		this.resource = resource;
-		setDocumentMatchers(new ProfileToLoadDocumentMatcher(profileToLoad),
-				new AcceptsProfilesDocumentMatcher(acceptsProfiles));
 		setResources(resource);
 	}
 
@@ -70,9 +67,11 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		return new Yaml(constructor, representer, dumperOptions, resolver);
 	}
 
-	public Map<String, Object> load() {
-		final Map<String, Object> result = new LinkedHashMap<>();
-		process((properties, map) -> result.putAll(getFlattenedMap(map)));
+	public List<Map<String, Object>> load() {
+		final List<Map<String, Object>> result = new ArrayList<>();
+		process((properties, map) -> {
+			result.add(getFlattenedMap(map));
+		});
 		return result;
 	}
 

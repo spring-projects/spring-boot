@@ -17,8 +17,9 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -41,15 +42,14 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public PropertySource<?> load(String name, Resource resource, String profileToLoad,
-			Predicate<String[]> acceptsProfiles) throws IOException {
-		if (profileToLoad == null) {
-			Map<String, ?> properties = loadProperties(resource);
-			if (!properties.isEmpty()) {
-				return new OriginTrackedMapPropertySource(name, properties);
-			}
+	public List<PropertySource<?>> load(String name, Resource resource)
+			throws IOException {
+		Map<String, ?> properties = loadProperties(resource);
+		if (properties.isEmpty()) {
+			return Collections.emptyList();
 		}
-		return null;
+		return Collections
+				.singletonList(new OriginTrackedMapPropertySource(name, properties));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

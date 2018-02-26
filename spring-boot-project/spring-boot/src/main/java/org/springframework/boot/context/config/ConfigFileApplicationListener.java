@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -27,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 
@@ -36,6 +39,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -58,6 +62,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -100,6 +106,8 @@ public class ConfigFileApplicationListener
 	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/";
 
 	private static final String DEFAULT_NAMES = "application";
+
+	private static final Set<String> NO_SEARCH_NAMES = Collections.singleton(null);
 
 	/**
 	 * The "active profiles" property name.
@@ -302,6 +310,8 @@ public class ConfigFileApplicationListener
 
 		private Map<Profile, MutablePropertySources> loaded;
 
+		private Map<DocumentsCacheKey, List<Document>> loadDocumentsCache = new HashMap<>();
+
 		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
 			this.resourceLoader = resourceLoader == null ? new DefaultResourceLoader()
@@ -318,20 +328,12 @@ public class ConfigFileApplicationListener
 			initializeProfiles();
 			while (!this.profiles.isEmpty()) {
 				Profile profile = this.profiles.poll();
-				for (String location : getSearchLocations()) {
-					if (!location.endsWith("/")) {
-						// location is a filename already, so don't search for more
-						// filenames
-						load(profile, location, null);
-					}
-					else {
-						for (String name : getSearchNames()) {
-							load(profile, location, name);
-						}
-					}
-				}
+				load(profile, this::getPositiveProfileFilter,
+						addToLoaded(MutablePropertySources::addLast, false));
 				this.processedProfiles.add(profile);
 			}
+			load(null, this::getNegativeProfileFilter,
+					addToLoaded(MutablePropertySources::addFirst, true));
 			addLoadedPropertySources();
 		}
 
@@ -399,24 +401,66 @@ public class ConfigFileApplicationListener
 			return unprocessedActiveProfiles;
 		}
 
-		/**
-		 * Load an actual property source file.
-		 * @param profile the profile being loaded
-		 * @param location the location of the resource
-		 * @param name an optional name to be combined with the location
-		 */
-		private void load(Profile profile, String location, String name) {
+		private DocumentFilter getPositiveProfileFilter(Profile profile) {
+			return (Document document) -> {
+				if (profile == null) {
+					return ObjectUtils.isEmpty(document.getProfiles());
+				}
+				return ObjectUtils.containsElement(document.getProfiles(),
+						profile.getName())
+						&& this.environment.acceptsProfiles(document.getProfiles());
+			};
+		}
+
+		private DocumentFilter getNegativeProfileFilter(Profile profile) {
+			return (Document document) -> (profile == null
+					&& !ObjectUtils.isEmpty(document.getProfiles())
+					&& this.environment.acceptsProfiles(document.getProfiles()));
+		}
+
+		private DocumentConsumer addToLoaded(
+				BiConsumer<MutablePropertySources, PropertySource<?>> addMethod,
+				boolean checkForExisting) {
+			return (profile, document) -> {
+				if (checkForExisting) {
+					for (MutablePropertySources merged : this.loaded.values()) {
+						if (merged.contains(document.getPropertySource().getName())) {
+							return;
+						}
+					}
+				}
+				MutablePropertySources merged = this.loaded.computeIfAbsent(profile,
+						(k) -> new MutablePropertySources());
+				addMethod.accept(merged, document.getPropertySource());
+			};
+		}
+
+		private void load(Profile profile, DocumentFilterFactory filterFactory,
+				DocumentConsumer consumer) {
+			getSearchLocations().forEach((location) -> {
+				boolean isFolder = location.endsWith("/");
+				Set<String> names = (isFolder ? getSearchNames() : NO_SEARCH_NAMES);
+				names.forEach(
+						(name) -> load(location, name, profile, filterFactory, consumer));
+			});
+		}
+
+		private void load(String location, String name, Profile profile,
+				DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
 			if (!StringUtils.hasText(name)) {
 				for (PropertySourceLoader loader : this.propertySourceLoaders) {
 					if (canLoadFileExtension(loader, location)) {
-						load(loader, profile, location,
-								(profile == null ? null : profile.getName()));
+						load(loader, location, profile,
+								filterFactory.getDocumentFilter(profile), consumer);
 					}
 				}
 			}
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
-				for (String ext : loader.getFileExtensions()) {
-					loadForFileExtension(loader, profile, location + name, "." + ext);
+				for (String fileExtension : loader.getFileExtensions()) {
+					String prefix = location + name;
+					fileExtension = "." + fileExtension;
+					loadForFileExtension(loader, prefix, fileExtension, profile,
+							filterFactory, consumer);
 				}
 			}
 		}
@@ -427,28 +471,31 @@ public class ConfigFileApplicationListener
 							fileExtension));
 		}
 
-		private void loadForFileExtension(PropertySourceLoader loader, Profile profile,
-				String prefix, String ext) {
+		private void loadForFileExtension(PropertySourceLoader loader, String prefix,
+				String fileExtension, Profile profile,
+				DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
+			DocumentFilter defaultFilter = filterFactory.getDocumentFilter(null);
+			DocumentFilter profileFilter = filterFactory.getDocumentFilter(profile);
 			if (profile != null) {
-				// Try the profile-specific file
-				load(loader, profile, prefix + "-" + profile + ext, null);
-				// Support profile section in profile file (gh-340)
-				load(loader, profile, prefix + "-" + profile + ext, profile.getName());
+				// Try profile-specific file & profile section in profile file (gh-340)
+				String profileSpecificFile = prefix + "-" + profile + fileExtension;
+				load(loader, profileSpecificFile, profile, defaultFilter, consumer);
+				load(loader, profileSpecificFile, profile, profileFilter, consumer);
 				// Try profile specific sections in files we've already processed
 				for (Profile processedProfile : this.processedProfiles) {
 					if (processedProfile != null) {
-						String previouslyLoaded = prefix + "-" + processedProfile + ext;
-						load(loader, profile, previouslyLoaded, profile.getName());
+						String previouslyLoaded = prefix + "-" + processedProfile
+								+ fileExtension;
+						load(loader, previouslyLoaded, profile, profileFilter, consumer);
 					}
 				}
 			}
 			// Also try the profile-specific section (if any) of the normal file
-			load(loader, profile, prefix + ext,
-					(profile == null ? null : profile.getName()));
+			load(loader, prefix + fileExtension, profile, profileFilter, consumer);
 		}
 
-		private void load(PropertySourceLoader loader, Profile profile, String location,
-				String loadProfile) {
+		private void load(PropertySourceLoader loader, String location, Profile profile,
+				DocumentFilter filter, DocumentConsumer consumer) {
 			try {
 				Resource resource = this.resourceLoader.getResource(location);
 				String description = getDescription(location, resource);
@@ -464,23 +511,58 @@ public class ConfigFileApplicationListener
 					this.logger.trace("Skipped empty config extension " + description);
 					return;
 				}
-				String name = "applicationConfig: [" + location + "]"
-						+ (loadProfile == null ? "" : "#" + loadProfile);
-				PropertySource<?> loaded = loader.load(name, resource, loadProfile,
-						this.environment::acceptsProfiles);
-				if (loaded == null) {
+				String name = "applicationConfig: [" + location + "]";
+				List<Document> documents = loadDocuments(loader, name, resource);
+				if (CollectionUtils.isEmpty(documents)) {
 					this.logger.trace("Skipped unloaded config " + description);
 					return;
 				}
-				handleProfileProperties(loaded);
-				this.loaded.computeIfAbsent(profile, (k) -> new MutablePropertySources())
-						.addLast(loaded);
-				this.logger.debug("Loaded config file " + description);
+				List<Document> loaded = new ArrayList<>();
+				for (Document document : documents) {
+					if (filter.match(document)) {
+						maybeActivateProfiles(document.getActiveProfiles());
+						addProfiles(document.getIncludeProfiles());
+						loaded.add(document);
+					}
+				}
+				Collections.reverse(loaded);
+				if (!loaded.isEmpty()) {
+					loaded.forEach((document) -> consumer.accept(profile, document));
+					this.logger.debug("Loaded config file " + description);
+				}
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to load property "
 						+ "source from location '" + location + "'", ex);
 			}
+		}
+
+		private List<Document> loadDocuments(PropertySourceLoader loader, String name,
+				Resource resource) throws IOException {
+			loader.load(name, resource);
+			DocumentsCacheKey cacheKey = new DocumentsCacheKey(loader, resource);
+			List<Document> documents = this.loadDocumentsCache.get(cacheKey);
+			if (documents == null) {
+				List<PropertySource<?>> loaded = loader.load(name, resource);
+				documents = asDocuments(loaded);
+			}
+			return documents;
+		}
+
+		private List<Document> asDocuments(List<PropertySource<?>> loaded) {
+			if (loaded == null) {
+				return Collections.emptyList();
+			}
+			return loaded.stream().map((propertySource) -> {
+				Binder binder = new Binder(
+						ConfigurationPropertySources.from(propertySource),
+						new PropertySourcesPlaceholdersResolver(this.environment));
+				return new Document(propertySource,
+						binder.bind("spring.profiles", Bindable.of(String[].class))
+								.orElse(null),
+						getProfiles(binder, ACTIVE_PROFILES_PROPERTY),
+						getProfiles(binder, INCLUDE_PROFILES_PROPERTY));
+			}).collect(Collectors.toList());
 		}
 
 		private String getDescription(String location, Resource resource) {
@@ -493,15 +575,6 @@ public class ConfigFileApplicationListener
 			catch (IOException ex) {
 			}
 			return String.format("'%s'", location);
-		}
-
-		private void handleProfileProperties(PropertySource<?> propertySource) {
-			Binder binder = new Binder(ConfigurationPropertySources.from(propertySource),
-					new PropertySourcesPlaceholdersResolver(this.environment));
-			Set<Profile> active = getProfiles(binder, "spring.profiles.active");
-			Set<Profile> include = getProfiles(binder, "spring.profiles.include");
-			maybeActivateProfiles(active);
-			addProfiles(include);
 		}
 
 		private Set<Profile> getProfiles(Binder binder, String name) {
@@ -638,6 +711,9 @@ public class ConfigFileApplicationListener
 
 	}
 
+	/**
+	 * A Spring Profile that can be loaded.
+	 */
 	private static class Profile {
 
 		private final String name;
@@ -682,6 +758,119 @@ public class ConfigFileApplicationListener
 			}
 			return ((Profile) obj).name.equals(this.name);
 		}
+
+	}
+
+	/**
+	 * Cache key used to save loading the same document multiple times.
+	 */
+	private static class DocumentsCacheKey {
+
+		private final PropertySourceLoader loader;
+
+		private final Resource resource;
+
+		DocumentsCacheKey(PropertySourceLoader loader, Resource resource) {
+			this.loader = loader;
+			this.resource = resource;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.loader.hashCode() * 31 + this.resource.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			DocumentsCacheKey other = (DocumentsCacheKey) obj;
+			return this.loader.equals(other.loader)
+					&& this.resource.equals(other.resource);
+		}
+
+	}
+
+	/**
+	 * A single document loaded by a {@link PropertySourceLoader}.
+	 */
+	private static class Document {
+
+		private final PropertySource<?> propertySource;
+
+		private String[] profiles;
+
+		private final Set<Profile> activeProfiles;
+
+		private final Set<Profile> includeProfiles;
+
+		Document(PropertySource<?> propertySource, String[] profiles,
+				Set<Profile> activeProfiles, Set<Profile> includeProfiles) {
+			this.propertySource = propertySource;
+			this.profiles = profiles;
+			this.activeProfiles = activeProfiles;
+			this.includeProfiles = includeProfiles;
+		}
+
+		public PropertySource<?> getPropertySource() {
+			return this.propertySource;
+		}
+
+		public String[] getProfiles() {
+			return this.profiles;
+		}
+
+		public Set<Profile> getActiveProfiles() {
+			return this.activeProfiles;
+		}
+
+		public Set<Profile> getIncludeProfiles() {
+			return this.includeProfiles;
+		}
+
+		@Override
+		public String toString() {
+			return this.propertySource.toString();
+		}
+
+	}
+
+	/**
+	 * Factory used to create a {@link DocumentFilter}.
+	 */
+	@FunctionalInterface
+	private interface DocumentFilterFactory {
+
+		/**
+		 * Create a filter for the given profile.
+		 * @param profile the profile or {@code null}
+		 * @return the filter
+		 */
+		DocumentFilter getDocumentFilter(Profile profile);
+
+	}
+
+	/**
+	 * Filter used to restrict when a {@link Document} is loaded.
+	 */
+	@FunctionalInterface
+	private interface DocumentFilter {
+
+		boolean match(Document document);
+
+	}
+
+	/**
+	 * Consumer used to handle a loaded {@link Document}.
+	 */
+	@FunctionalInterface
+	private interface DocumentConsumer {
+
+		void accept(Profile profile, Document document);
 
 	}
 
