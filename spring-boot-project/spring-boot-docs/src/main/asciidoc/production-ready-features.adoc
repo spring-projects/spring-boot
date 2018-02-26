@@ -576,9 +576,6 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/jms/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
 |Checks that a JMS broker is up.
 
-|{sc-spring-boot-actuator}/kafka/KafkaHealthIndicator.{sc-ext}[`KafkaHealthIndicator`]
-|Checks that a Kafka server is up.
-
 |{sc-spring-boot-actuator}/mail/MailHealthIndicator.{sc-ext}[`MailHealthIndicator`]
 |Checks that a mail server is up.
 
