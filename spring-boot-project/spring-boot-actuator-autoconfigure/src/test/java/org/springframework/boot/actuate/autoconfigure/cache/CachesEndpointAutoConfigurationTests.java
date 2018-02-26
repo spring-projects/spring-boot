@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.cache.CacheEndpoint;
+import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.CacheManager;
@@ -29,28 +29,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link CacheEndpointAutoConfiguration}.
+ * Tests for {@link CachesEndpointAutoConfiguration}.
  *
  * @author Johannes Edmeier
  */
-public class CacheEndpointAutoConfigurationTests {
+public class CachesEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
-					AutoConfigurations.of(CacheEndpointAutoConfiguration.class))
+					AutoConfigurations.of(CachesEndpointAutoConfiguration.class))
 			.withUserConfiguration(CacheConfiguration.class);
 
 	@Test
 	public void runShouldHaveEndpointBean() {
 		this.contextRunner
-				.run((context) -> assertThat(context).hasSingleBean(CacheEndpoint.class));
+				.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.caches.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(CacheEndpoint.class));
+						.doesNotHaveBean(CachesEndpoint.class));
 	}
 
 	@Configuration

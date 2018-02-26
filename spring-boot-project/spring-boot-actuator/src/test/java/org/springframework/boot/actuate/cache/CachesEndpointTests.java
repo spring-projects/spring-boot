@@ -31,11 +31,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CacheEndpoint}.
+ * Tests for {@link CachesEndpoint}.
  *
  * @author Johannes Edmeier
  */
-public class CacheEndpointTests {
+public class CachesEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
@@ -43,10 +43,10 @@ public class CacheEndpointTests {
 	@Test
 	public void cacheReportIsReturned() {
 		this.contextRunner.withUserConfiguration(Config.class)
-				.run((context) -> assertThat(context.getBean(CacheEndpoint.class)
-						.cacheManagerBeans().getContexts().get(context.getId())
-						.getCacheManagerBeans().get("cacheManager").getCacheNames())
-								.containsOnly("first", "second"));
+				.run((context) -> assertThat(
+						context.getBean(CachesEndpoint.class).cacheManagerBeans()
+								.getCacheManagers().get("cacheManager").getCacheNames())
+										.containsOnly("first", "second"));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class CacheEndpointTests {
 			firstCache.put("key", "vale");
 			Cache secondCache = context.getBean("secondCache", Cache.class);
 			secondCache.put("key", "value");
-			context.getBean(CacheEndpoint.class).clearCaches(null, null, null);
+			context.getBean(CachesEndpoint.class).clearCaches(null, null);
 			assertThat(firstCache.get("key", String.class)).isNull();
 			assertThat(secondCache.get("key", String.class)).isNull();
 		});
@@ -69,8 +69,7 @@ public class CacheEndpointTests {
 			firstCache.put("key", "vale");
 			Cache secondCache = context.getBean("secondCache", Cache.class);
 			secondCache.put("key", "value");
-			context.getBean(CacheEndpoint.class).clearCaches(context.getId(), null,
-					"first");
+			context.getBean(CachesEndpoint.class).clearCaches(null, "first");
 			assertThat(firstCache.get("key", String.class)).isNull();
 			assertThat(secondCache.get("key", String.class)).isEqualTo("value");
 		});
@@ -90,10 +89,9 @@ public class CacheEndpointTests {
 		}
 
 		@Bean
-		public CacheEndpoint endpoint(ApplicationContext context) {
-			return new CacheEndpoint(context);
+		public CachesEndpoint endpoint(ApplicationContext context) {
+			return new CachesEndpoint(context);
 		}
-
 	}
 
 }

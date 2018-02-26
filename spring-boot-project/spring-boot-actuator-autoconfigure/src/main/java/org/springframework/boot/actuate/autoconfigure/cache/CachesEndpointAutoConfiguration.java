@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.cache;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.cache.CacheEndpoint;
+import org.springframework.boot.actuate.cache.CachesEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link CacheEndpoint}.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link CachesEndpoint}.
  *
  * @author Johannes Edmeier
  * @since 2.0.0
@@ -38,14 +38,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnClass(CacheManager.class)
 @AutoConfigureAfter(CacheAutoConfiguration.class)
-public class CacheEndpointAutoConfiguration {
+public class CachesEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(CacheManager.class)
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public CacheEndpoint cacheEndpoint(ApplicationContext context) {
-		return new CacheEndpoint(context);
+	public CachesEndpoint cachesEndpoint(ApplicationContext context) {
+		return new CachesEndpoint(context);
 	}
 
 }

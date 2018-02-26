@@ -422,33 +422,6 @@
       }
     },
     {
-      "name": "endpoints.caches.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Enable the endpoint.",
-      "deprecation": {
-        "replacement": "management.endpoint.caches.enabled",
-        "level": "error"
-      }
-    },
-    {
-      "name": "endpoints.caches.id",
-      "type": "java.lang.String",
-      "description": "Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped\n to a URL (e.g. 'foo' is mapped to '/foo').",
-      "deprecation": {
-        "reason": "Endpoint identifier is no longer customizable.",
-        "level": "error"
-      }
-    },
-    {
-      "name": "endpoints.caches.sensitive",
-      "type": "java.lang.Boolean",
-      "description": "Mark if the endpoint exposes sensitive information.",
-      "deprecation": {
-        "reason": "Endpoint sensitive flag is no longer customizable as Spring Boot no longer provides a customizable security auto-configuration\n. Create or adapt your security configuration accordingly.",
-        "level": "error"
-      }
-    },
-    {
       "name": "endpoints.configprops.enabled",
       "type": "java.lang.Boolean",
       "description": "Enable the endpoint.",

@@ -36,50 +36,30 @@ import org.springframework.lang.Nullable;
  * @since 2.0.0
  */
 @Endpoint(id = "caches")
-public class CacheEndpoint {
+public class CachesEndpoint {
 	private final ApplicationContext context;
 
-	public CacheEndpoint(ApplicationContext context) {
+	public CachesEndpoint(ApplicationContext context) {
 		this.context = context;
 	}
 
 	@ReadOperation
-	public ApplicationCacheManagerBeans cacheManagerBeans() {
-		ApplicationContext target = this.context;
-		Map<String, ContextCacheManagerBeans> contextCacheManagerBeans = new HashMap<>();
-		while (target != null) {
-			Map<String, CacheManagerDescriptor> cacheManagerBeans = new HashMap<>();
-			target.getBeansOfType(CacheManager.class)
-					.forEach((name, cacheManager) -> cacheManagerBeans.put(name,
-							new CacheManagerDescriptor(cacheManager.getCacheNames())));
-			ApplicationContext parent = target.getParent();
-			contextCacheManagerBeans.put(target.getId(), new ContextCacheManagerBeans(
-					cacheManagerBeans, parent == null ? null : parent.getId()));
-			target = parent;
-		}
-		return new ApplicationCacheManagerBeans(contextCacheManagerBeans);
+	public ContextCacheManagerBeans cacheManagerBeans() {
+		Map<String, CacheManagerDescriptor> cacheManagers = new HashMap<>();
+		this.context.getBeansOfType(CacheManager.class)
+				.forEach((name, cacheManager) -> cacheManagers.put(name,
+						new CacheManagerDescriptor(cacheManager.getCacheNames())));
+		return new ContextCacheManagerBeans(cacheManagers);
 	}
 
 	@DeleteOperation
-	public void clearCaches(@Nullable String contextId, @Nullable String cacheManagerName,
-			@Nullable String cacheName) {
-		ApplicationContext target = this.context;
-		while (target != null) {
-			if (contextId == null || contextId.equals(target.getId())) {
-				clearCaches(target, cacheManagerName, cacheName);
-			}
-			target = target.getParent();
-		}
-	}
-
-	private void clearCaches(ApplicationContext context, String cacheManagerName,
-			String cacheName) {
-		if (cacheManagerName == null) {
-			context.getBeansOfType(CacheManager.class)
+	public void clearCaches(@Nullable String cacheManager, @Nullable String cacheName) {
+		if (cacheManager == null) {
+			this.context.getBeansOfType(CacheManager.class)
 					.forEach((name, manager) -> this.clearCaches(manager, cacheName));
 		}
 		else {
-			this.clearCaches(context.getBean(cacheManagerName, CacheManager.class),
+			this.clearCaches(this.context.getBean(cacheManager, CacheManager.class),
 					cacheName);
 		}
 	}
@@ -94,48 +74,21 @@ public class CacheEndpoint {
 	}
 
 	/**
-	 * Description of an application's {@link CacheManager} beans, primarily intended for
-	 * serialization to JSON.
-	 */
-	public static final class ApplicationCacheManagerBeans {
-
-		private final Map<String, ContextCacheManagerBeans> contexts;
-
-		private ApplicationCacheManagerBeans(
-				Map<String, ContextCacheManagerBeans> contexts) {
-			this.contexts = contexts;
-		}
-
-		public Map<String, ContextCacheManagerBeans> getContexts() {
-			return this.contexts;
-		}
-
-	}
-
-	/**
 	 * Description of an application context's {@link CacheManager} beans, primarily
 	 * intended for serialization to JSON.
 	 */
 	public static final class ContextCacheManagerBeans {
 
-		private final Map<String, CacheManagerDescriptor> cacheManagerBeans;
-
-		private final String parentId;
+		private final Map<String, CacheManagerDescriptor> cacheManagers;
 
 		private ContextCacheManagerBeans(
-				Map<String, CacheManagerDescriptor> cacheManagerBeans, String parentId) {
-			this.cacheManagerBeans = cacheManagerBeans;
-			this.parentId = parentId;
+				Map<String, CacheManagerDescriptor> cacheManagers) {
+			this.cacheManagers = cacheManagers;
 		}
 
-		public Map<String, CacheManagerDescriptor> getCacheManagerBeans() {
-			return this.cacheManagerBeans;
+		public Map<String, CacheManagerDescriptor> getCacheManagers() {
+			return this.cacheManagers;
 		}
-
-		public String getParentId() {
-			return this.parentId;
-		}
-
 	}
 
 	/**
