@@ -428,9 +428,12 @@ the `beans` endpoint's cache to 10 seconds:
 NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the
 endpoint that is being configured.
 
+NOTE: When making an authenticated HTTP request, the `Principal` is considered as input to
+the endpoint and, therefore, the response will not be cached.
 
 
-[[production-ready-endpoint-hypermedia]]
+
+[[production-ready-endpoints-hypermedia]]
 === Hypermedia for Actuator Web Endpoints
 A "`discovery page`" is added with links to all the endpoints. The "`discovery page`" is
 available on `/actuator` by default.
@@ -443,12 +446,12 @@ disabled to prevent the possibility of a clash with other mappings.
 
 
 
-[[production-ready-endpoint-custom-mapping]]
+[[production-ready-endpoints-custom-mapping]]
 === Actuator Web Endpoint Paths
 By default, endpoints are exposed over HTTP under the `/actuator` path by using the ID of
 the endpoint. For example, the `beans` endpoint is exposed under `/actuator/beans`. If you
 want to map endpoints to a different path, you can use the
-`management.endpoints.web.path-mapping` property. Also,  if you want change the base path,
+`management.endpoints.web.path-mapping` property. Also, if you want change the base path,
 you can use `management.endpoints.web.base-path`.
 
 The following example remaps `/actuator/health` to `/healthcheck`:
@@ -462,7 +465,7 @@ The following example remaps `/actuator/health` to `/healthcheck`:
 
 
 
-[[production-ready-endpoint-cors]]
+[[production-ready-endpoints-cors]]
 === CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
 (CORS) is a https://www.w3.org/TR/cors/[W3C specification] that lets you specify in a
@@ -485,26 +488,187 @@ for a complete list of options.
 
 
 
-[[production-ready-customizing-endpoints-programmatically]]
-=== Adding Custom Endpoints
+[[production-ready-endpoints-custom]]
+=== Implementing Custom Endpoints
 If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with
 `@ReadOperation`, `@WriteOperation`, or `@DeleteOperation` are automatically exposed over
-JMX and, in a web application, over HTTP as well.
+JMX and, in a web application, over HTTP as well. Endpoints can be exposed over HTTP using
+Jersey, Spring MVC, or Spring WebFlux.
 
 You can also write technology-specific endpoints by using `@JmxEndpoint` or
-`@WebEndpoint`. These endpoints are filtered to their respective technologies. For
+`@WebEndpoint`. These endpoints are restricted to their respective technologies. For
 example, `@WebEndpoint` is exposed only over HTTP and not over JMX.
 
-Finally, you can write technology-specific extensions by using `@EndpointWebExtension` and
+You can write technology-specific extensions by using `@EndpointWebExtension` and
 `@EndpointJmxExtension`. These annotations let you provide technology-specific operations
 to augment an existing endpoint.
+
+Finally, if you need access to web-framework-specific functionality, you can implement
+Servlet or Spring `@Controller` and `@RestController` endpoints at the cost of them not
+being available over JMX or when using a different web framework.
 
 TIP: If you add endpoints as a library feature, consider adding a configuration class
 annotated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
 following key:
 `org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration`. If
-you do so and if your users ask for a separate management port or address, the endpoint
+you do so, and if your users ask for a separate management port or address, the endpoint
 moves to a child context with all the other web endpoints.
+
+
+
+[[production-ready-endpoints-custom-input]]
+==== Receiving Input
+Operations on an endpoint receive input via their parameters. When exposed via the web,
+the values for these parameters are taken from the URL's query parameters and from the
+JSON request body. When exposed via JMX, the parameters are mapped to the parameters of
+the MBean's operations. Parameters are required by default. They can be made optional
+by annotating them with `@org.springframework.lang.Nullable`.
+
+NOTE: To allow the input to be mapped to the operation method's parameters, code
+implementing an endpoint should be compiled with `-parameters`. This will happen
+automatically if you are using Spring Boot's Gradle plugin or if you are using Maven
+and `spring-boot-starter-parent`.
+
+
+
+[[production-ready-endpoints-custom-input-conversion]]
+===== Input type conversion
+The parameters passed to endpoint operation methods are, if necessary, automatically
+converted to the required type. Before calling an operation method, the input received via
+JMX or an HTTP request is converted to the required types using an instance of
+`ApplicationConversionService`.
+
+
+
+[[production-ready-endpoints-custom-web]]
+==== Custom Web Endpoints
+Operations on a `@Endpoint`, `@WebEndpoint`, or `@WebEndpointExtension` are automatically
+exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
+
+
+
+[[production-ready-endpoints-custom-web-predicate]]
+===== Web Endpoint Request Predicates
+A request predicate is automatically generated for each operation on a web-exposed
+endpoint.
+
+
+
+[[production-ready-endpoints-custom-web-predicate-path]]
+===== Path
+
+The path of the predicate is determined by the ID of the endpoint and the base path of
+web-exposed endpoints. The default base path is `/actuator`. For example, an endpoint with
+the ID `sessions` will use `/actuator/sessions` as its path in the predicate.
+
+The path can be further customized by annotating one or more parameters of the operation
+method with `@Selector`. Such a parameter is added to the path predicate as a path
+variable. The variable's value is passed into the operation method when the endpoint
+operation is invoked.
+
+
+
+[[production-ready-endpoints-custom-web-predicate-http-method]]
+===== HTTP method
+
+The HTTP method of the predicate is determined by the operation type, as shown in
+the following table:
+
+[cols="3, 1"]
+|===
+|Operation |HTTP method
+
+|`@ReadOperation`
+|`GET`
+
+|`@WriteOperation`
+|`POST`
+
+|`@DeleteOperation`
+|`DELETE`
+|===
+
+
+
+[[production-ready-endpoints-custom-web-predicate-consumes]]
+===== Consumes
+For a `@WriteOperation` (HTTP `POST`) that uses the request body, the consumes clause of
+the predicate is `application/vnd.spring-boot.actuator.v2+json, application/json`. For
+all other operations the consumes clause is empty.
+
+
+
+[[production-ready-endpoints-custom-web-predicate-produces]]
+===== Produces
+The produces clause of the predicate can be determined by the `produces` attribute of the
+`@DeleteOperation`, `@ReadOperation`, and `@WriteOperation` annotations. The attribute is
+optional. If it is not used, the produces clause is determined automatically.
+
+If the operation method returns `void` or `Void` the produces clause is empty. If the
+operation method returns a `org.springframework.core.io.Resource`, the produces clause is
+`application/octet-stream`. For all other operations the produces clause is
+`application/vnd.spring-boot.actuator.v2+json, application/json`.
+
+
+
+[[production-ready-endpoints-custom-web-response-status]]
+===== Web Endpoint Response Status
+The default response status for an endpoint operation depends on the operation type (read,
+write, or delete) and what, if anything, the operation returns.
+
+A `@ReadOperation` returns a value, the response status will be 200 (OK). If it does not
+return a value, the response status will be 404 (Not Found).
+
+If a `@WriteOperation` or `@DeleteOperation` returns a value, the response status will be
+200 (OK). If it does not return a value the response status will be 204 (No Content).
+
+If an operation is invoked without a required parameter, or with a parameter that cannot
+be converted to the required type, the operation method will not be called and the
+response status will be 400 (Bad Request).
+
+
+
+[[production-ready-endpoints-custom-web-range-requests]]
+===== Web Endpoint Range Requests
+An HTTP range request can be used to request part of an HTTP resource. When using Spring
+MVC or Spring Web Flux, operations that return a `org.springframework.core.io.Resource`
+automatically support range requests.
+
+NOTE: Range requests are not supported when using Jersey.
+
+
+
+[[production-ready-endpoints-custom-web-security]]
+===== Web Endpoint Security
+An operation on a web endpoint or a web-specific endpoint extension can receive the
+current `java.security.Principal` or
+`org.springframework.boot.actuate.endpoint.SecurityContext` as a method parameter. The
+former is typically used in conjuction with `@Nullable` to provide different behaviour for
+authenticated and unauthenticated users. The latter is typically used to perform
+authorization checks using its `isUserInRole(String)` method.
+
+
+
+[[production-ready-endpoints-custom-servlet]]
+==== Servlet endpoints
+A `Servlet` can be exposed as an endpoint by implementing a class annotated with
+`@ServletEndpoint` that also implements `Supplier<EndpointServlet>`. Servlet endpoints
+provide deeper integration with the Servlet container but at the expose of portability.
+They are intended to be used to expose an existing `Servlet` as an endpoint. For new
+endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever
+possible.
+
+
+
+[[production-ready-endpoints-custom-controller]]
+==== Controller endpoints
+`@ControllerEndpoint` and `@RestControllerEndpoint` can be used to implement an endpoint
+that is only exposed by Spring MVC or Spring WebFlux. Methods are mapped using the
+standard annotations Spring MVC and Spring WevFlux annotations such as `@RequestMapping`
+and `@GetMapping`, with the endpoint's ID being used as a prefix for the path. Controller
+endpoints provide deeper integration with Spring's web frameworks but at the expense of
+portability. The `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever
+possible.
 
 
 
