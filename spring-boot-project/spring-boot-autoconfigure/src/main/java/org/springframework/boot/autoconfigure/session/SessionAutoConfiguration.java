@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
@@ -252,7 +253,8 @@ public class SessionAutoConfiguration {
 					throw new SessionRepositoryUnavailableException("No session "
 							+ "repository could be auto-configured, check your "
 							+ "configuration (session store type is '"
-							+ storeType.name().toLowerCase() + "')", storeType);
+							+ storeType.name().toLowerCase(Locale.ENGLISH)
+							+ "')", storeType);
 				}
 			}
 		}

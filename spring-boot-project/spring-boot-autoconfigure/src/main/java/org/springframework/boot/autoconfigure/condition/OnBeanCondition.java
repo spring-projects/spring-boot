@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -479,7 +480,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				string.append(StringUtils.collectionToCommaDelimitedString(this.types));
 			}
 			string.append("; SearchStrategy: ");
-			string.append(this.strategy.toString().toLowerCase());
+			string.append(this.strategy.toString().toLowerCase(Locale.ENGLISH));
 			string.append(")");
 			return string.toString();
 		}

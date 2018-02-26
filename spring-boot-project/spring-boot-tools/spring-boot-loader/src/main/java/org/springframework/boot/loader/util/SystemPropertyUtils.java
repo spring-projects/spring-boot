@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.util;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
@@ -188,7 +189,8 @@ public abstract class SystemPropertyUtils {
 			}
 			if (propVal == null) {
 				// Try uppercase with underscores as well.
-				propVal = System.getenv(key.toUpperCase().replace('.', '_'));
+				propVal = System.getenv(key.toUpperCase(Locale.ENGLISH)
+						.replace('.', '_'));
 			}
 			if (propVal != null) {
 				return propVal;

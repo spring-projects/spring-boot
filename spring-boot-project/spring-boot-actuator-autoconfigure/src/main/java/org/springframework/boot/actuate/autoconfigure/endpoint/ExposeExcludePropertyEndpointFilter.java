@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -81,7 +82,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 		if (items == null) {
 			return Collections.emptySet();
 		}
-		return items.stream().map(String::toLowerCase)
+		return items.stream().map(item -> item.toLowerCase(Locale.ENGLISH))
 				.collect(Collectors.toCollection(HashSet::new));
 	}
 
@@ -109,7 +110,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 	}
 
 	private boolean contains(Set<String> items, ExposableEndpoint<?> endpoint) {
-		return items.contains(endpoint.getId().toLowerCase());
+		return items.contains(endpoint.getId().toLowerCase(Locale.ENGLISH));
 	}
 
 }

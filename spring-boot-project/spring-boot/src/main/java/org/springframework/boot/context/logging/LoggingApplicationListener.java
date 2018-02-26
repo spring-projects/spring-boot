@@ -18,6 +18,7 @@ package org.springframework.boot.context.logging;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -321,7 +322,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if ("false".equalsIgnoreCase(level)) {
 			return LogLevel.OFF;
 		}
-		return LogLevel.valueOf(level.toUpperCase());
+		return LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH));
 	}
 
 	private void registerShutdownHookIfNecessary(Environment environment,
