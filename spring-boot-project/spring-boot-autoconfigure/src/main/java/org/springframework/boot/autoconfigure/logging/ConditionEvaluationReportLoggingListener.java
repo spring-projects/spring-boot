@@ -74,11 +74,10 @@ public class ConditionEvaluationReportLoggingListener
 				logAutoConfigurationReport();
 			}
 		}
-		else if (event instanceof ApplicationFailedEvent) {
-			if (((ApplicationFailedEvent) event)
+		else if (event instanceof ApplicationFailedEvent
+					&& ((ApplicationFailedEvent) event)
 					.getApplicationContext() == initializerApplicationContext) {
-				logAutoConfigurationReport(true);
-			}
+			logAutoConfigurationReport(true);
 		}
 	}
 

@@ -103,11 +103,10 @@ public abstract class ResourceUtils {
 		List<String> result = new ArrayList<>();
 		for (Resource resource : resources) {
 			if (resource.exists()) {
-				if (resource.getURI().getScheme().equals("file")) {
-					if (resource.getFile().isDirectory()) {
-						result.addAll(getChildFiles(resource));
-						continue;
-					}
+				if (resource.getURI().getScheme().equals("file")
+						&& resource.getFile().isDirectory()) {
+					result.addAll(getChildFiles(resource));
+					continue;
 				}
 				result.add(absolutePath(resource));
 			}
