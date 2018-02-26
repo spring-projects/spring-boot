@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Manifest;
@@ -489,7 +490,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private Archive getArchive(File file) throws IOException {
-		String name = file.getName().toLowerCase();
+		String name = file.getName().toLowerCase(Locale.ENGLISH);
 		if (name.endsWith(".jar") || name.endsWith(".zip")) {
 			return new JarFileArchive(file);
 		}
@@ -566,7 +567,8 @@ public class PropertiesLauncher extends Launcher {
 		if (path.startsWith("./")) {
 			path = path.substring(2);
 		}
-		if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
+		String lowercasePath = path.toLowerCase(Locale.ENGLISH);
+		if (lowercasePath.endsWith(".jar") || lowercasePath.endsWith(".zip")) {
 			return path;
 		}
 		if (path.endsWith("/*")) {

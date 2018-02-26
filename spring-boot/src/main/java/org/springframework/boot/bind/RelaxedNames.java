@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.bind;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,7 +92,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 			@Override
 			public String apply(String value) {
-				return value.isEmpty() ? value : value.toLowerCase();
+				return value.isEmpty() ? value : value.toLowerCase(Locale.ENGLISH);
 			}
 
 		},
@@ -100,7 +101,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 			@Override
 			public String apply(String value) {
-				return value.isEmpty() ? value : value.toUpperCase();
+				return value.isEmpty() ? value : value.toUpperCase(Locale.ENGLISH);
 			}
 
 		};
@@ -225,7 +226,7 @@ public final class RelaxedNames implements Iterable<String> {
 			}
 			StringBuilder builder = new StringBuilder();
 			for (String field : SEPARATED_TO_CAMEL_CASE_PATTERN.split(value)) {
-				field = (caseInsensitive ? field.toLowerCase() : field);
+				field = (caseInsensitive ? field.toLowerCase(Locale.ENGLISH) : field);
 				builder.append(
 						builder.length() == 0 ? field : StringUtils.capitalize(field));
 			}

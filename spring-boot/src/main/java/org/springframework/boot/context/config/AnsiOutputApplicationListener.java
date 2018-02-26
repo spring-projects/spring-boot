@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.context.config;
+
+import java.util.Locale;
 
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
@@ -40,7 +42,8 @@ public class AnsiOutputApplicationListener
 				event.getEnvironment(), "spring.output.ansi.");
 		if (resolver.containsProperty("enabled")) {
 			String enabled = resolver.getProperty("enabled");
-			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class, enabled.toUpperCase()));
+			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class,
+					enabled.toUpperCase(Locale.ENGLISH)));
 		}
 
 		if (resolver.containsProperty("console-available")) {

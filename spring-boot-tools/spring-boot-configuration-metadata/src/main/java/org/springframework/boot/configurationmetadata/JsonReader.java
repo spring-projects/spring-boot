@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -183,7 +184,7 @@ class JsonReader {
 	private Deprecation.Level parseDeprecationLevel(String value) {
 		if (value != null) {
 			try {
-				return Deprecation.Level.valueOf(value.toUpperCase());
+				return Deprecation.Level.valueOf(value.toUpperCase(Locale.ENGLISH));
 			}
 			catch (IllegalArgumentException e) {
 				// let's use the default

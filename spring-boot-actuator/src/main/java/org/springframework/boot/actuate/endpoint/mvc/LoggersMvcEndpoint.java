@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.LoggersEndpoint;
@@ -78,7 +79,8 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 	private LogLevel getLogLevel(Map<String, String> configuration) {
 		String level = configuration.get("configuredLevel");
 		try {
-			return (level == null ? null : LogLevel.valueOf(level.toUpperCase()));
+			return (level == null ? null
+					: LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH)));
 		}
 		catch (IllegalArgumentException ex) {
 			throw new InvalidLogLevelException(level);

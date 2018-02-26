@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.session;
+
+import java.util.Locale;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -45,7 +47,8 @@ class SessionCondition extends SpringBootCondition {
 			return ConditionOutcome.noMatch(
 					message.didNotFind("spring.session.store-type property").atAll());
 		}
-		String value = resolver.getProperty("store-type").replace('-', '_').toUpperCase();
+		String value = resolver.getProperty("store-type").replace('-', '_')
+				.toUpperCase(Locale.ENGLISH);
 		if (value.equals(sessionStoreType.name())) {
 			return ConditionOutcome.match(message
 					.found("spring.session.store-type property").items(sessionStoreType));

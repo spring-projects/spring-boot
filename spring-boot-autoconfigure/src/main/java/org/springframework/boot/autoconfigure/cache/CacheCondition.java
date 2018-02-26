@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.cache;
+
+import java.util.Locale;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -50,7 +52,8 @@ class CacheCondition extends SpringBootCondition {
 		}
 		CacheType cacheType = CacheConfigurations
 				.getType(((AnnotationMetadata) metadata).getClassName());
-		String value = resolver.getProperty("type").replace('-', '_').toUpperCase();
+		String value = resolver.getProperty("type").replace('-', '_')
+				.toUpperCase(Locale.ENGLISH);
 		if (value.equals(cacheType.name())) {
 			return ConditionOutcome.match(message.because(value + " cache type"));
 		}

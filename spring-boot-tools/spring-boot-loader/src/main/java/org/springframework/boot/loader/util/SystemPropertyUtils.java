@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.util;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
@@ -188,7 +189,8 @@ public abstract class SystemPropertyUtils {
 			}
 			if (propVal == null) {
 				// Try uppercase with underscores as well.
-				propVal = System.getenv(key.toUpperCase().replace('.', '_'));
+				propVal = System.getenv(key.toUpperCase(Locale.ENGLISH)
+						.replace('.', '_'));
 			}
 			if (propVal != null) {
 				return propVal;

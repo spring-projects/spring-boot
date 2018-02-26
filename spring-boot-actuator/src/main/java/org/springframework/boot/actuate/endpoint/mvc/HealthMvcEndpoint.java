@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -151,7 +152,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	private HttpStatus getStatus(Health health) {
 		String code = health.getStatus().getCode();
 		if (code != null) {
-			code = code.toLowerCase().replace('_', '-');
+			code = code.toLowerCase(Locale.ENGLISH).replace('_', '-');
 			for (String candidate : RelaxedNames.forCamelCase(code)) {
 				HttpStatus status = this.statusMapping.get(candidate);
 				if (status != null) {

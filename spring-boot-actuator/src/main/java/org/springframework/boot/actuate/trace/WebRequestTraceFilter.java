@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -165,7 +166,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		Enumeration<String> names = request.getHeaderNames();
 		while (names.hasMoreElements()) {
 			String name = names.nextElement();
-			if (!excludedHeaders.contains(name.toLowerCase())) {
+			if (!excludedHeaders.contains(name.toLowerCase(Locale.ENGLISH))) {
 				headers.put(name, getHeaderValue(request, name));
 			}
 		}

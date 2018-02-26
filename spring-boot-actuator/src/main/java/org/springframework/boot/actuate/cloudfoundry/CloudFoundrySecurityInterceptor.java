@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.actuate.cloudfoundry;
+
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -107,7 +109,7 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 		String authorization = request.getHeader("Authorization");
 		String bearerPrefix = "bearer ";
 		if (authorization == null
-				|| !authorization.toLowerCase().startsWith(bearerPrefix)) {
+				|| !authorization.toLowerCase(Locale.ENGLISH).startsWith(bearerPrefix)) {
 			throw new CloudFoundryAuthorizationException(Reason.MISSING_AUTHORIZATION,
 					"Authorization header is missing or invalid");
 		}

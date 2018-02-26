@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.session;
+
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
@@ -100,7 +102,8 @@ public class SessionAutoConfiguration {
 				if (storeType != null) {
 					throw new IllegalArgumentException("No session repository could be "
 							+ "auto-configured, check your configuration (session store "
-							+ "type is '" + storeType.name().toLowerCase() + "')");
+							+ "type is '" + storeType.name().toLowerCase(Locale.ENGLISH)
+							+ "')");
 				}
 				throw new IllegalArgumentException("No Spring Session store is "
 						+ "configured: set the 'spring.session.store-type' property");

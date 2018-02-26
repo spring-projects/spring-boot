@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -197,7 +198,7 @@ public class ConfigurationMetadata {
 			previous = current;
 
 		}
-		return dashed.toString().toLowerCase();
+		return dashed.toString().toLowerCase(Locale.ENGLISH);
 	}
 
 	private static <T extends Comparable<T>> List<T> flattenValues(Map<?, List<T>> map) {
