@@ -274,19 +274,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForSmallResponse() throws Exception {
-		Assumptions.assumeThat(getFactory())
-				.isInstanceOf(NettyReactiveWebServerFactory.class);
-		Compression compression = new Compression();
-		compression.setEnabled(true);
-		compression.setMinResponseSize(3001);
-		WebClient client = prepareCompressionTest(compression);
-		ResponseEntity<Void> response = client.get().exchange()
-				.flatMap((res) -> res.toEntity(Void.class)).block();
-		assertResponseIsNotCompressed(response);
-	}
-
-	@Test
 	public void noCompressionForMimeType() throws Exception {
 		Assumptions.assumeThat(getFactory())
 				.isNotInstanceOf(NettyReactiveWebServerFactory.class);
