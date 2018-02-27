@@ -110,7 +110,7 @@ class BindConverter {
 	}
 
 	/**
-	 * Composite {@link ConversionService} used to call multiple services
+	 * Composite {@link ConversionService} used to call multiple services.
 	 */
 	static class CompositeConversionService implements ConversionService {
 
@@ -205,7 +205,7 @@ class BindConverter {
 
 		private final SimpleTypeConverter typeConverter;
 
-		public TypeConverterConverter(SimpleTypeConverter typeConverter) {
+		TypeConverterConverter(SimpleTypeConverter typeConverter) {
 			this.typeConverter = typeConverter;
 		}
 
