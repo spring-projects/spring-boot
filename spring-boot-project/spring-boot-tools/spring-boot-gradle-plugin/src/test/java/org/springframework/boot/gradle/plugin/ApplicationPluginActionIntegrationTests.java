@@ -133,6 +133,21 @@ public class ApplicationPluginActionIntegrationTests {
 				name + "-boot/bin/" + name + ".bat");
 	}
 
+	@Test
+	public void applicationNameCanBeUsedToCustomizeDistributionName() throws IOException {
+		assertThat(
+				this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
+						.isEqualTo(TaskOutcome.SUCCESS);
+		File distribution = new File(this.gradleBuild.getProjectDir(),
+				"build/distributions/custom-boot.tar");
+		assertThat(distribution).isFile();
+		String name = this.gradleBuild.getProjectDir().getName();
+		assertThat(tarEntryNames(distribution)).containsExactlyInAnyOrder("custom-boot/",
+				"custom-boot/lib/", "custom-boot/lib/" + name + ".jar",
+				"custom-boot/bin/", "custom-boot/bin/custom",
+				"custom-boot/bin/custom.bat");
+	}
+
 	private List<String> zipEntryNames(File distribution) throws IOException {
 		List<String> entryNames = new ArrayList<>();
 		try (ZipFile zipFile = new ZipFile(distribution)) {
