@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.gradle.tasks.buildinfo;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 import org.gradle.api.Project;
@@ -89,6 +91,29 @@ public class BuildInfoTests {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setVersion("2.3.4");
 		assertThat(buildInfoProperties(task)).containsEntry("build.version", "2.3.4");
+	}
+
+	@Test
+	public void timeIsSetInProperties() {
+		BuildInfo task = createTask(createProject("test"));
+		assertThat(buildInfoProperties(task)).containsEntry("build.time",
+				DateTimeFormatter.ISO_INSTANT.format(task.getProperties().getTime()));
+	}
+
+	@Test
+	public void timeCanBeRemovedFromProperties() {
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setTime(null);
+		assertThat(buildInfoProperties(task)).doesNotContainKey("build.time");
+	}
+
+	@Test
+	public void timeCanBeCustomizedInProperties() {
+		Instant now = Instant.now();
+		BuildInfo task = createTask(createProject("test"));
+		task.getProperties().setTime(now);
+		assertThat(buildInfoProperties(task)).containsEntry("build.time",
+				DateTimeFormatter.ISO_INSTANT.format(now));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,48 +69,19 @@ public class BuildInfoIntegrationTests {
 	}
 
 	@Test
-	public void upToDateWhenExecutedTwice() {
+	public void notUpToDateWhenExecutedTwiceAsTimeChanges() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
+				.isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@Test
-	public void notUpToDateWhenDestinationDirChanges() {
-		notUpToDateWithChangeToProperty("buildInfoDestinationDir");
-	}
-
-	@Test
-	public void notUpToDateWhenProjectArtifactChanges() {
-		notUpToDateWithChangeToProperty("buildInfoArtifact");
-	}
-
-	@Test
-	public void notUpToDateWhenProjectGroupChanges() {
-		notUpToDateWithChangeToProperty("buildInfoGroup");
-	}
-
-	@Test
-	public void notUpToDateWhenProjectVersionChanges() {
-		notUpToDateWithChangeToProperty("buildInfoVersion");
-	}
-
-	@Test
-	public void notUpToDateWhenProjectNameChanges() {
-		notUpToDateWithChangeToProperty("buildInfoName");
-	}
-
-	@Test
-	public void notUpToDateWhenAdditionalPropertyChanges() {
-		notUpToDateWithChangeToProperty("buildInfoAdditional");
-	}
-
-	private void notUpToDateWithChangeToProperty(String name) {
-		assertThat(this.gradleBuild.build("buildInfo", "--stacktrace").task(":buildInfo")
+	public void upToDateWhenExecutedTwiceWithFixedTime() {
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("buildInfo", "-P" + name + "=changed")
-				.task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
+				.getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
 	private Properties buildInfoProperties() {

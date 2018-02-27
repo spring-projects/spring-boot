@@ -61,7 +61,8 @@ public class BuildInfo extends ConventionTask {
 											? "unspecified"
 											: this.properties.getArtifact(),
 									this.properties.getVersion(),
-									this.properties.getName(), coerceToStringValues(
+									this.properties.getName(), this.properties.getTime(),
+									coerceToStringValues(
 											this.properties.getAdditional())));
 		}
 		catch (IOException ex) {

@@ -16,5 +16,8 @@ task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) 
 		group = property('buildInfoGroup', 'foo')
 		name = property('buildInfoName', 'foo')
 		additional = ['additional': property('buildInfoAdditional', 'foo')]
+		if (project.hasProperty('nullTime')) {
+			time = null
+		}
 	}
 }
