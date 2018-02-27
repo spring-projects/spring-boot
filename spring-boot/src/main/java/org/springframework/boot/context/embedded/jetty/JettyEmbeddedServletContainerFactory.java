@@ -700,8 +700,8 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	private interface SslServerConnectorFactory {
 
-		AbstractConnector createConnector(Server server, SslContextFactory sslContextFactory,
-				InetSocketAddress address);
+		AbstractConnector createConnector(Server server,
+				SslContextFactory sslContextFactory, InetSocketAddress address);
 
 	}
 

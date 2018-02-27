@@ -253,7 +253,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSsl(ssl);
-		factory.setAddress(InetAddress.getByAddress(InetAddress.getLocalHost().getAddress()));
+		factory.setAddress(
+				InetAddress.getByAddress(InetAddress.getLocalHost().getAddress()));
 
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
