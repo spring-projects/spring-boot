@@ -57,7 +57,10 @@ public class BuildInfoProperties implements Serializable {
 	 * @return the group
 	 */
 	public String getGroup() {
-		return this.group != null ? this.group : this.project.getGroup().toString();
+		if (this.group == null) {
+			this.group = this.project.getGroup().toString();
+		}
+		return this.group;
 	}
 
 	/**
@@ -94,7 +97,10 @@ public class BuildInfoProperties implements Serializable {
 	 * @return the version
 	 */
 	public String getVersion() {
-		return this.version != null ? this.version : this.project.getVersion().toString();
+		if (this.version == null) {
+			this.version = this.project.getVersion().toString();
+		}
+		return this.version;
 	}
 
 	/**
@@ -113,7 +119,10 @@ public class BuildInfoProperties implements Serializable {
 	 * @return the name
 	 */
 	public String getName() {
-		return this.name != null ? this.name : this.project.getName();
+		if (this.name == null) {
+			this.name = this.project.getName();
+		}
+		return this.name;
 	}
 
 	/**

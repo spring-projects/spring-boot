@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Rule;
 import org.junit.Test;
@@ -82,6 +83,16 @@ public class BuildInfoIntegrationTests {
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
+	}
+
+	@Test
+	public void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
+		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo")
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildResult result = this.gradleBuild.build("buildInfo", "-PnullTime",
+				"-PprojectVersion=0.2.0");
+		System.out.println(result.getOutput());
+		assertThat(result.task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	private Properties buildInfoProperties() {
