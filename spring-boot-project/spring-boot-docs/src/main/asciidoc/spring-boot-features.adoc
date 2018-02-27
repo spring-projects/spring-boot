@@ -1177,8 +1177,8 @@ such as `my.property-name=acme`.
 
 [[boot-features-external-config-conversion]]
 ==== Properties Conversion
-Spring attempts to coerce the external application properties to the right type when it
-binds to the `@ConfigurationProperties` beans. If you need custom type conversion, you
+Spring Boot attempts to coerce the external application properties to the right type when
+it binds to the `@ConfigurationProperties` beans. If you need custom type conversion, you
 can provide a `ConversionService` bean (with a bean named `conversionService`) or custom
 property editors (through a `CustomEditorConfigurer` bean) or custom `Converters` (with
 bean definitions annotated as `@ConfigurationPropertiesBinding`).
@@ -1188,6 +1188,50 @@ limit the dependencies that your `ConversionService` is using. Typically, any de
 that you require may not be fully initialized at creation time. You may want to rename
 your custom `ConversionService` if it is not required for configuration keys coercion and
 only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
+
+
+
+[[boot-features-external-config-conversion-duration]]
+===== Converting durations
+Spring Boot has dedicated support for expressing durations. If you expose a
+`java.time.Duration` property, the following formats in application properties are
+available:
+
+* A regular `long` representation (using milliseconds as the default unit unless a
+`@DefaultUnit` has been specified)
+* The standard ISO-8601 format
+{java-javadoc}/java/time/Duration.html#parse-java.lang.CharSequence-[used by
+`java.util.Duration`]
+* A more readable format where the value and the unit are coupled (e.g. `10s` means 10
+seconds)
+
+Consider the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/properties/bind/AppSystemProperties.java[tag=example]
+----
+
+To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent. A
+read timeout of 500ms can be specified in any of the following form: `500`, `PT0.5S` and
+`500ms`.
+
+You can also use any of the supported unit. These are:
+
+* `ns` for nanoseconds
+* `ms` for milliseconds
+* `s` for seconds
+* `m` for minutes
+* `h` for hours
+* `d` for days
+
+The default unit is milliseconds and can be overridden using `@DefaultUnit` as illustrated
+in the sample above.
+
+TIP: If you are upgrading from a previous version that is simply using `Long` to express
+the duration, make sure to define the unit (using `@DefaultUnit`) if it isn't
+milliseconds alongside the switch to `Duration`. Doing so gives a transparent upgrade path
+while supporting a much richer format.
 
 
 
@@ -1387,7 +1431,7 @@ See "<<boot-features-external-config-profile-specific-properties>>" for details.
 Spring Boot uses http://commons.apache.org/logging[Commons Logging] for all internal
 logging but leaves the underlying log implementation open. Default configurations are
 provided for
-https://docs.oracle.com/javase/8/docs/api/java/util/logging/package-summary.html[Java Util
+{java-javadoc}/java/util/logging/package-summary.html[Java Util
 Logging], http://logging.apache.org/log4j/2.x/[Log4J2], and
 http://logback.qos.ch/[Logback]. In each case, loggers are pre-configured to use console
 output with optional file output also available.
