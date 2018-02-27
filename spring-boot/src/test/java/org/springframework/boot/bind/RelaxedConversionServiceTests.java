@@ -36,10 +36,16 @@ public class RelaxedConversionServiceTests {
 
 	@Test
 	public void conversionServiceShouldAlwaysUseLocaleEnglish() {
-		Locale.setDefault(new Locale("tr"));
-		TestEnum result = this.conversionService
-				.convert("accept-case-insensitive-properties", TestEnum.class);
-		assertThat(result.equals(TestEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES));
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(new Locale("tr"));
+			TestEnum result = this.conversionService
+					.convert("accept-case-insensitive-properties", TestEnum.class);
+			assertThat(result.equals(TestEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES));
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
+		}
 	}
 
 	enum TestEnum {
