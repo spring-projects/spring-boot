@@ -39,7 +39,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
  * @author Mark Paluch
  */
 @Configuration
-@ConditionalOnClass(Flux.class)
+@ConditionalOnClass({ ReactiveRedisConnectionFactory.class, Flux.class })
 @ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 class RedisReactiveHealthIndicatorConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<RedisReactiveHealthIndicator, ReactiveRedisConnectionFactory> {
