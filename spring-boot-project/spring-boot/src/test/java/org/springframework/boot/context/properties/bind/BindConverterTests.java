@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.beans.PropertyEditorSupport;
 import java.io.File;
+import java.time.Duration;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link BindConverter}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class BindConverterTests {
 
@@ -202,10 +204,17 @@ public class BindConverterTests {
 		// classpath resource reference. See gh-12163
 		BindConverter bindConverter = new BindConverter(new GenericConversionService(),
 				null);
-		assertThat(bindConverter.canConvert(".", ResolvableType.forClass(File.class)))
-				.isFalse();
-		this.thrown.expect(ConverterNotFoundException.class);
-		bindConverter.convert(".", ResolvableType.forClass(File.class));
+		File result = bindConverter.convert(".", ResolvableType.forClass(File.class));
+		assertThat(result.getPath()).isEqualTo(".");
+	}
+
+	@Test
+	public void fallsBackToApplicationConversionService() {
+		BindConverter bindConverter = new BindConverter(new GenericConversionService(),
+				null);
+		Duration result = bindConverter.convert("10s",
+				ResolvableType.forClass(Duration.class));
+		assertThat(result.getSeconds()).isEqualTo(10);
 	}
 
 	private BindConverter getPropertyEditorOnlyBindConverter(

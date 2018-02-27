@@ -18,12 +18,16 @@ package org.springframework.boot.context.properties.bind;
 
 import java.beans.PropertyEditor;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.PropertyEditorRegistry;
@@ -42,6 +46,7 @@ import org.springframework.util.Assert;
  * and so a new instance is created for each top-level bind.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class BindConverter {
 
@@ -52,24 +57,21 @@ class BindConverter {
 		EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
 	}
 
-	private final ConversionService typeConverterConversionService;
-
 	private final ConversionService conversionService;
 
 	BindConverter(ConversionService conversionService,
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
-		this.typeConverterConversionService = new TypeConverterConversionService(
-				propertyEditorInitializer);
-		this.conversionService = conversionService;
+		this.conversionService = new CompositeConversionService(
+				new TypeConverterConversionService(propertyEditorInitializer),
+				conversionService);
 	}
 
 	public boolean canConvert(Object value, ResolvableType type,
 			Annotation... annotations) {
 		TypeDescriptor sourceType = TypeDescriptor.forObject(value);
 		TypeDescriptor targetType = new ResolvableTypeDescriptor(type, annotations);
-		return this.typeConverterConversionService.canConvert(sourceType, targetType)
-				|| this.conversionService.canConvert(sourceType, targetType);
+		return this.conversionService.canConvert(sourceType, targetType);
 	}
 
 	public <T> T convert(Object result, Bindable<T> target) {
@@ -83,10 +85,6 @@ class BindConverter {
 		}
 		TypeDescriptor sourceType = TypeDescriptor.forObject(value);
 		TypeDescriptor targetType = new ResolvableTypeDescriptor(type, annotations);
-		if (this.typeConverterConversionService.canConvert(sourceType, targetType)) {
-			return (T) this.typeConverterConversionService.convert(value, sourceType,
-					targetType);
-		}
 		return (T) this.conversionService.convert(value, sourceType, targetType);
 	}
 
@@ -176,6 +174,68 @@ class BindConverter {
 				return null;
 			}
 			return editor;
+		}
+
+	}
+
+	private static final class CompositeConversionService implements ConversionService {
+
+		private final List<ConversionService> delegates;
+
+		private CompositeConversionService(
+				TypeConverterConversionService typeConverterConversionService,
+				ConversionService conversionService) {
+			List<ConversionService> delegates = new ArrayList<ConversionService>();
+			delegates.add(typeConverterConversionService);
+			delegates.add(conversionService);
+			if (!(conversionService instanceof ApplicationConversionService)) {
+				delegates.add(ApplicationConversionService.getSharedInstance());
+			}
+			this.delegates = delegates;
+		}
+
+		@Override
+		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
+			return canConvert((delegate) -> delegate.canConvert(sourceType, targetType));
+		}
+
+		@Override
+		public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+			return canConvert((delegate) -> delegate.canConvert(sourceType, targetType));
+		}
+
+		private boolean canConvert(Predicate<ConversionService> canConvert) {
+			for (ConversionService delegate : this.delegates) {
+				if (canConvert.test(delegate)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public <T> T convert(Object source, Class<T> targetType) {
+			Class<?> sourceType = source.getClass();
+			return convert((delegate) -> delegate.canConvert(sourceType, targetType),
+					(delegate) -> delegate.convert(source, targetType));
+		}
+
+		@Override
+		public Object convert(Object source, TypeDescriptor sourceType,
+				TypeDescriptor targetType) {
+			return convert((delegate) -> delegate.canConvert(sourceType, targetType),
+					(delegate) -> delegate.convert(source, sourceType, targetType));
+		}
+
+		public <T> T convert(Predicate<ConversionService> canConvert,
+				Function<ConversionService, T> convert) {
+			for (int i = 0; i < this.delegates.size() - 1; i++) {
+				ConversionService delegate = this.delegates.get(i);
+				if (canConvert.test(delegate)) {
+					return convert.apply(delegate);
+				}
+			}
+			return convert.apply(this.delegates.get(this.delegates.size() - 1));
 		}
 
 	}
