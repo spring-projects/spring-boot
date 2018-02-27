@@ -6207,8 +6207,9 @@ features will be enabled:
 
 		@Test
 		public void testRequest() throws Exception {
-			HttpHeaders headers = template.getForEntity("http://myhost.com/example", String.class).getHeaders();
-			assertThat(headers.getLocation().toString(), containsString("myotherhost"));
+			HttpHeaders headers = this.template.getForEntity(
+					"http://myhost.example.com/example", String.class).getHeaders();
+			assertThat(headers.getLocation()).hasHost("other.example.com");
 		}
 
 	}
@@ -6222,32 +6223,7 @@ specify a host and port will automatically connect to the embedded server:
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
-	@SpringBootTest
-	public class MyTest {
-
-		@Autowired
-		private TestRestTemplate template;
-
-		@Test
-		public void testRequest() throws Exception {
-			HttpHeaders headers = template.getForEntity("/example", String.class).getHeaders();
-			assertThat(headers.getLocation().toString(), containsString("myotherhost"));
-		}
-
-		@TestConfiguration
-		static class Config {
-
-			@Bean
-			public RestTemplateBuilder restTemplateBuilder() {
-				return new RestTemplateBuilder()
-					.additionalMessageConverters(...)
-					.customizers(...);
-			}
-
-		}
-
-	}
+include::{test-examples}/web/client/SampleWebClientTests.java[tag=test]
 ----
 
 

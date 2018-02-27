@@ -50,6 +50,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :propdeps-plugin: https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
 :ant-manual: http://ant.apache.org/manual
 :code-examples: ../java/org/springframework/boot
+:test-examples: ../../test/java/org/springframework/boot
 :gradle-user-guide: https://docs.gradle.org/2.14.1/userguide
 :gradle-dsl: https://docs.gradle.org/2.14.1/dsl
 // ======================================================================================
