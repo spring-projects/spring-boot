@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.util.function.Supplier;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
@@ -69,14 +71,14 @@ public final class PathRequest {
 		}
 
 		@Override
-		protected void initialized(H2ConsoleProperties h2ConsoleProperties) {
+		protected void initialized(Supplier<H2ConsoleProperties> h2ConsoleProperties) {
 			this.delegate = new AntPathRequestMatcher(
-					h2ConsoleProperties.getPath() + "/**");
+					h2ConsoleProperties.get().getPath() + "/**");
 		}
 
 		@Override
 		protected boolean matches(HttpServletRequest request,
-				H2ConsoleProperties context) {
+				Supplier<H2ConsoleProperties> context) {
 			return this.delegate.matches(request);
 		}
 

@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -129,13 +130,13 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(PathMappedEndpoints pathMappedEndpoints) {
+		protected void initialized(Supplier<PathMappedEndpoints> pathMappedEndpoints) {
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
-				paths.addAll(pathMappedEndpoints.getAllPaths());
+				paths.addAll(pathMappedEndpoints.get().getAllPaths());
 			}
-			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
-			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
+			streamPaths(this.includes, pathMappedEndpoints.get()).forEach(paths::add);
+			streamPaths(this.excludes, pathMappedEndpoints.get()).forEach(paths::remove);
 			this.delegate = new OrRequestMatcher(getDelegateMatchers(paths));
 		}
 
@@ -169,7 +170,7 @@ public final class EndpointRequest {
 
 		@Override
 		protected boolean matches(HttpServletRequest request,
-				PathMappedEndpoints context) {
+				Supplier<PathMappedEndpoints> context) {
 			return this.delegate.matches(request);
 		}
 
