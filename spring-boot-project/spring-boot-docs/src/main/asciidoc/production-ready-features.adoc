@@ -1454,7 +1454,7 @@ TIP: To take control over this behaviour, define your own `HierarchicalNameMappe
 
 [[production-ready-metrics-export-newrelic]]
 ==== New Relic
-New Relic registry pushes metrics to {micrometer-registry-documentation}/newrelic[New
+New Relic registry pushes metrics to {micrometer-registry-documentation}/new-relic[New
 Relic] periodically. To export metrics to https://newrelic.com[New Relic], your API key
 and account id must be provided:
 
