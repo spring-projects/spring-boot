@@ -87,8 +87,8 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 			Locale.setDefault(new Locale("tr"));
 			LocaleSensitiveEnum result = this.conversionService.convert(
 					"accept-case-insensitive-properties", LocaleSensitiveEnum.class);
-			assertThat(result
-					.equals(LocaleSensitiveEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES));
+			assertThat(result)
+					.isEqualTo(LocaleSensitiveEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 		}
 		finally {
 			Locale.setDefault(defaultLocale);

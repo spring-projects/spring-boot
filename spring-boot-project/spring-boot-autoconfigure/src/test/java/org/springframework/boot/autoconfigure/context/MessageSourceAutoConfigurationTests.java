@@ -98,7 +98,7 @@ public class MessageSourceAutoConfigurationTests {
 
 	private ContextConsumer<AssertableApplicationContext> assertCache(long expected) {
 		return (context) -> {
-			assertThat(assertThat(context).hasSingleBean(MessageSource.class));
+			assertThat(context).hasSingleBean(MessageSource.class);
 			assertThat(new DirectFieldAccessor(context.getBean(MessageSource.class))
 					.getPropertyValue("cacheMillis")).isEqualTo(expected);
 		};

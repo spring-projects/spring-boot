@@ -82,7 +82,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 		if (items == null) {
 			return Collections.emptySet();
 		}
-		return items.stream().map(item -> item.toLowerCase(Locale.ENGLISH))
+		return items.stream().map((item) -> item.toLowerCase(Locale.ENGLISH))
 				.collect(Collectors.toCollection(HashSet::new));
 	}
 
