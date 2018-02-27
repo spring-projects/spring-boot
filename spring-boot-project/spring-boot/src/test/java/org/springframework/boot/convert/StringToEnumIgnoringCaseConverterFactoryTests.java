@@ -16,6 +16,8 @@
 
 package org.springframework.boot.convert;
 
+import java.util.Locale;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -78,6 +80,21 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 				.isEqualTo(TestEnum.THREE_AND_FOUR);
 	}
 
+	@Test
+	public void convertFromStringToEnumWhenUsingNonEnglishLocaleShouldConvertValue() {
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(new Locale("tr"));
+			LocaleSensitiveEnum result = this.conversionService.convert(
+					"accept-case-insensitive-properties", LocaleSensitiveEnum.class);
+			assertThat(result
+					.equals(LocaleSensitiveEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES));
+		}
+		finally {
+			Locale.setDefault(defaultLocale);
+		}
+	}
+
 	@Parameters(name = "{0}")
 	public static Iterable<Object[]> conversionServices() {
 		return new ConversionServiceParameters(
@@ -87,6 +104,12 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 	enum TestEnum {
 
 		ONE, TWO, THREE_AND_FOUR
+
+	}
+
+	enum LocaleSensitiveEnum {
+
+		ACCEPT_CASE_INSENSITIVE_PROPERTIES
 
 	}
 
