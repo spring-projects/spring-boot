@@ -180,7 +180,7 @@ public class JettyEmbeddedServletContainerFactory
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			configureSsl(sslContextFactory, getSsl());
 			AbstractConnector connector = getSslServerConnectorFactory()
-					.getConnector(server, sslContextFactory, port);
+					.createConnector(server, sslContextFactory, address);
 			server.setConnectors(new Connector[] { connector });
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
@@ -700,8 +700,8 @@ public class JettyEmbeddedServletContainerFactory
 	 */
 	private interface SslServerConnectorFactory {
 
-		AbstractConnector getConnector(Server server, SslContextFactory sslContextFactory,
-				int port);
+		AbstractConnector createConnector(Server server,
+				SslContextFactory sslContextFactory, InetSocketAddress address);
 
 	}
 
@@ -712,8 +712,8 @@ public class JettyEmbeddedServletContainerFactory
 			implements SslServerConnectorFactory {
 
 		@Override
-		public ServerConnector getConnector(Server server,
-				SslContextFactory sslContextFactory, int port) {
+		public ServerConnector createConnector(Server server,
+				SslContextFactory sslContextFactory, InetSocketAddress address) {
 			HttpConfiguration config = new HttpConfiguration();
 			config.setSendServerVersion(false);
 			config.addCustomizer(new SecureRequestCustomizer());
@@ -722,7 +722,8 @@ public class JettyEmbeddedServletContainerFactory
 					sslContextFactory, HttpVersion.HTTP_1_1.asString());
 			ServerConnector serverConnector = new ServerConnector(server,
 					sslConnectionFactory, connectionFactory);
-			serverConnector.setPort(port);
+			serverConnector.setPort(address.getPort());
+			serverConnector.setHost(address.getHostString());
 			return serverConnector;
 		}
 
@@ -735,8 +736,8 @@ public class JettyEmbeddedServletContainerFactory
 			implements SslServerConnectorFactory {
 
 		@Override
-		public AbstractConnector getConnector(Server server,
-				SslContextFactory sslContextFactory, int port) {
+		public AbstractConnector createConnector(Server server,
+				SslContextFactory sslContextFactory, InetSocketAddress address) {
 			try {
 				Class<?> connectorClass = Class
 						.forName("org.eclipse.jetty.server.ssl.SslSocketConnector");
@@ -744,7 +745,9 @@ public class JettyEmbeddedServletContainerFactory
 						.getConstructor(SslContextFactory.class)
 						.newInstance(sslContextFactory);
 				connector.getClass().getMethod("setPort", int.class).invoke(connector,
-						port);
+						address.getPort());
+				connector.getClass().getMethod("setHost", String.class).invoke(connector,
+						address.getHostString());
 				return connector;
 			}
 			catch (Exception ex) {
