@@ -145,7 +145,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		server.setHandler(addHandlerWrappers(context));
 		this.logger.info("Server initialized with port: " + port);
 		if (getSsl() != null && getSsl().isEnabled()) {
-			customizeSsl(server, port);
+			customizeSsl(server, address);
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
@@ -193,8 +193,8 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		return wrapper;
 	}
 
-	private void customizeSsl(Server server, int port) {
-		new SslServerCustomizer(port, getSsl(), getSslStoreProvider(), getHttp2())
+	private void customizeSsl(Server server, InetSocketAddress address) {
+		new SslServerCustomizer(address, getSsl(), getSslStoreProvider(), getHttp2())
 				.customize(server);
 	}
 

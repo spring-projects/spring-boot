@@ -288,6 +288,24 @@ public class JettyServletWebServerFactoryTests
 				.isEqualTo(localhost.getHostAddress());
 	}
 
+	@Test
+	public void specificIPAddressWithSslIsNotReverseResolved() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		InetAddress localhost = InetAddress.getLocalHost();
+		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		Connector connector = ((JettyWebServer) this.webServer).getServer()
+				.getConnectors()[0];
+		assertThat(((ServerConnector) connector).getHost())
+				.isEqualTo(localhost.getHostAddress());
+	}
+
 	@Override
 	protected JspServlet getJspServlet() throws Exception {
 		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer)
