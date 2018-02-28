@@ -106,8 +106,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 						getSsl(), getSslStoreProvider());
 				sslServerCustomizer.customize(options);
 			}
-			if (getCompression() != null) {
-				options.compression(getCompression().getEnabled());
+			if (getCompression() != null && getCompression().getEnabled()) {
+				CompressionCustomizer compressionCustomizer = new CompressionCustomizer(
+						getCompression());
+				compressionCustomizer.customize(options);
 			}
 			applyCustomizers(options);
 		}).build();
