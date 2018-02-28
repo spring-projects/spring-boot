@@ -64,8 +64,8 @@ class DataSourceJmxConfiguration {
 		public void validateMBeans() {
 			HikariDataSource hikariDataSource = unwrapHikariDataSource();
 			if (hikariDataSource != null && hikariDataSource.isRegisterMbeans()) {
-				this.mBeanExporter.ifUnique((exporter) ->
-						exporter.addExcludedBean("dataSource"));
+				this.mBeanExporter
+						.ifUnique((exporter) -> exporter.addExcludedBean("dataSource"));
 			}
 		}
 

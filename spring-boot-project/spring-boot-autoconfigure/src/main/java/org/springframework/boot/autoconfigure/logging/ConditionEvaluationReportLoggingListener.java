@@ -75,8 +75,8 @@ public class ConditionEvaluationReportLoggingListener
 			}
 		}
 		else if (event instanceof ApplicationFailedEvent
-					&& ((ApplicationFailedEvent) event)
-					.getApplicationContext() == initializerApplicationContext) {
+				&& ((ApplicationFailedEvent) event)
+						.getApplicationContext() == initializerApplicationContext) {
 			logAutoConfigurationReport(true);
 		}
 	}

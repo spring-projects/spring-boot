@@ -142,8 +142,7 @@ public class ApplicationPidFileWriter
 				writePidFile(event);
 			}
 			catch (Exception ex) {
-				String message = String.format("Cannot create pid file %s",
-						this.file);
+				String message = String.format("Cannot create pid file %s", this.file);
 				if (failOnWriteError(event)) {
 					throw new IllegalStateException(message, ex);
 				}

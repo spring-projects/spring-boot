@@ -49,24 +49,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataSourceJmxConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("spring.datasource.url="
-					+ "jdbc:hsqldb:mem:test-" + UUID.randomUUID())
+			.withPropertyValues("spring.datasource.url=" + "jdbc:hsqldb:mem:test-"
+					+ UUID.randomUUID())
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class,
 					DataSourceAutoConfiguration.class));
 
 	@Test
 	public void hikariAutoConfiguredCanUseRegisterMBeans() {
 		String poolName = UUID.randomUUID().toString();
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.datasource.name=" + poolName,
-				"spring.datasource.hikari.register-mbeans=true").run((context) -> {
-			assertThat(context).hasSingleBean(HikariDataSource.class);
-			assertThat(context.getBean(HikariDataSource.class).isRegisterMbeans())
-					.isTrue();
-			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			validateHikariMBeansRegistration(mBeanServer, poolName, true);
-		});
+		this.contextRunner
+				.withPropertyValues(
+						"spring.datasource.type=" + HikariDataSource.class.getName(),
+						"spring.datasource.name=" + poolName,
+						"spring.datasource.hikari.register-mbeans=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(HikariDataSource.class);
+					assertThat(context.getBean(HikariDataSource.class).isRegisterMbeans())
+							.isTrue();
+					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+					validateHikariMBeansRegistration(mBeanServer, poolName, true);
+				});
 	}
 
 	@Test
@@ -75,34 +77,39 @@ public class DataSourceJmxConfigurationTests {
 		MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 		Set<ObjectInstance> existingInstances = mBeanServer
 				.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null);
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.register-mbeans=true").run((context) -> {
-			assertThat(context).hasSingleBean(HikariDataSource.class);
-			assertThat(context.getBean(HikariDataSource.class).isRegisterMbeans())
-					.isTrue();
-			// We can't rely on the number of MBeans so we're checking that the pool and pool
-			// config MBeans were registered
-			assertThat(mBeanServer
-					.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null).size())
-					.isEqualTo(existingInstances.size() + 2);
-		});
+		this.contextRunner
+				.withPropertyValues(
+						"spring.datasource.type=" + HikariDataSource.class.getName(),
+						"spring.datasource.hikari.register-mbeans=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(HikariDataSource.class);
+					assertThat(context.getBean(HikariDataSource.class).isRegisterMbeans())
+							.isTrue();
+					// We can't rely on the number of MBeans so we're checking that the
+					// pool and pool
+					// config MBeans were registered
+					assertThat(mBeanServer
+							.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null)
+							.size()).isEqualTo(existingInstances.size() + 2);
+				});
 	}
 
 	@Test
 	public void hikariAutoConfiguredUsesJmsFlag() {
 		String poolName = UUID.randomUUID().toString();
-		this.contextRunner.withPropertyValues(
-				"spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.jmx.enabled=false", "spring.datasource.name=" + poolName,
-				"spring.datasource.hikari.register-mbeans=true").run((context) -> {
-			assertThat(context).hasSingleBean(HikariDataSource.class);
-			assertThat(context.getBean(HikariDataSource.class).isRegisterMbeans())
-					.isTrue();
-			// Hikari can still register mBeans
-			validateHikariMBeansRegistration(ManagementFactory.getPlatformMBeanServer(),
-					poolName, true);
-		});
+		this.contextRunner
+				.withPropertyValues(
+						"spring.datasource.type=" + HikariDataSource.class.getName(),
+						"spring.jmx.enabled=false", "spring.datasource.name=" + poolName,
+						"spring.datasource.hikari.register-mbeans=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(HikariDataSource.class);
+					assertThat(context.getBean(HikariDataSource.class).isRegisterMbeans())
+							.isTrue();
+					// Hikari can still register mBeans
+					validateHikariMBeansRegistration(
+							ManagementFactory.getPlatformMBeanServer(), poolName, true);
+				});
 	}
 
 	@Test
@@ -115,8 +122,9 @@ public class DataSourceJmxConfigurationTests {
 						"spring.datasource.hikari.register-mbeans=true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(javax.sql.DataSource.class);
-					HikariDataSource hikariDataSource = context.getBean(
-							javax.sql.DataSource.class).unwrap(HikariDataSource.class);
+					HikariDataSource hikariDataSource = context
+							.getBean(javax.sql.DataSource.class)
+							.unwrap(HikariDataSource.class);
 					assertThat(hikariDataSource.isRegisterMbeans()).isTrue();
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 					validateHikariMBeansRegistration(mBeanServer, poolName, true);
@@ -127,18 +135,19 @@ public class DataSourceJmxConfigurationTests {
 			String poolName, boolean expected) throws MalformedObjectNameException {
 		assertThat(mBeanServer.isRegistered(
 				new ObjectName("com.zaxxer.hikari:type=Pool (" + poolName + ")")))
-				.isEqualTo(expected);
+						.isEqualTo(expected);
 		assertThat(mBeanServer.isRegistered(
 				new ObjectName("com.zaxxer.hikari:type=PoolConfig (" + poolName + ")")))
-				.isEqualTo(expected);
+						.isEqualTo(expected);
 	}
 
 	@Test
 	public void tomcatDoesNotExposeMBeanPoolByDefault() {
 		this.contextRunner
-				.withPropertyValues("spring.datasource.type=" + DataSource.class.getName())
-				.run((context) ->
-						assertThat(context).doesNotHaveBean(ConnectionPool.class));
+				.withPropertyValues(
+						"spring.datasource.type=" + DataSource.class.getName())
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ConnectionPool.class));
 	}
 
 	@Test
@@ -146,10 +155,11 @@ public class DataSourceJmxConfigurationTests {
 		this.contextRunner.withPropertyValues(
 				"spring.datasource.type=" + DataSource.class.getName(),
 				"spring.datasource.jmx-enabled=true").run((context) -> {
-			assertThat(context).hasSingleBean(ConnectionPool.class);
-			assertThat(context.getBean(DataSourceProxy.class).createPool().getJmxPool())
-					.isSameAs(context.getBean(ConnectionPool.class));
-		});
+					assertThat(context).hasSingleBean(ConnectionPool.class);
+					assertThat(context.getBean(DataSourceProxy.class).createPool()
+							.getJmxPool())
+									.isSameAs(context.getBean(ConnectionPool.class));
+				});
 	}
 
 	@Configuration
@@ -161,7 +171,6 @@ public class DataSourceJmxConfigurationTests {
 		}
 
 	}
-
 
 	private static class DataSourceBeanPostProcessor implements BeanPostProcessor {
 

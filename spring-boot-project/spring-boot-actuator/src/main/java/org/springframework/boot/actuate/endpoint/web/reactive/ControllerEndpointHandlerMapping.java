@@ -95,8 +95,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 			ExposableControllerEndpoint endpoint, RequestMappingInfo mapping) {
 		Set<PathPattern> patterns = mapping.getPatternsCondition().getPatterns();
 		if (patterns.isEmpty()) {
-			patterns = new HashSet<>(
-					Arrays.asList(getPathPatternParser().parse("")));
+			patterns = new HashSet<>(Arrays.asList(getPathPatternParser().parse("")));
 		}
 		PathPattern[] endpointMappedPatterns = patterns.stream()
 				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern))

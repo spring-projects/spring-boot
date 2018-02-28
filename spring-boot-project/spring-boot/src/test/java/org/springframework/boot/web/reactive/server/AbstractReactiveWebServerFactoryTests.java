@@ -286,7 +286,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	@Test
 	public void noCompressionForMimeType() {
 		Compression compression = new Compression();
-		compression.setMimeTypes(new String[] {"application/json"});
+		compression.setMimeTypes(new String[] { "application/json" });
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().exchange()
 				.flatMap((res) -> res.toEntity(Void.class)).block();
@@ -297,7 +297,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	public void noCompressionForUserAgent() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
-		compression.setExcludedUserAgents(new String[] {"testUserAgent"});
+		compression.setExcludedUserAgents(new String[] { "testUserAgent" });
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().header("User-Agent", "testUserAgent")
 				.exchange().flatMap((res) -> res.toEntity(Void.class)).block();
