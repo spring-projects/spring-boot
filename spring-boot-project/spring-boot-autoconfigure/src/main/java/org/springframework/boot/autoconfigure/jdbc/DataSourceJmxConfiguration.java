@@ -55,8 +55,16 @@ class DataSourceJmxConfiguration {
 
 		private final ObjectProvider<MBeanExporter> mBeanExporter;
 
-		Hikari(HikariDataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) {
-			this.dataSource = dataSource;
+		Hikari(DataSource dataSource, ObjectProvider<MBeanExporter> mBeanExporter) throws SQLException {
+			if (dataSource instanceof HikariDataSource) {
+				this.dataSource = (HikariDataSource) dataSource;
+			}
+			else if (dataSource.isWrapperFor(HikariDataSource.class)) {
+				this.dataSource = (HikariDataSource) dataSource.unwrap(HikariDataSource.class);
+			}
+			else {
+				throw new IllegalArgumentException("DataSource is expected to be of type '" + HikariDataSource.class.getName() + "' but was actually of type '" + dataSource.getClass().getName() + "'");
+			}
 			this.mBeanExporter = mBeanExporter;
 		}
 
