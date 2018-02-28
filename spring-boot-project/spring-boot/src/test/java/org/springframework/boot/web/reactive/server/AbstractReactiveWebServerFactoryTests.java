@@ -275,8 +275,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	@Test
 	public void noCompressionForMimeType() throws Exception {
-		Assumptions.assumeThat(getFactory())
-				.isNotInstanceOf(NettyReactiveWebServerFactory.class);
 		Compression compression = new Compression();
 		compression.setMimeTypes(new String[] { "application/json" });
 		WebClient client = prepareCompressionTest(compression);
@@ -287,8 +285,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	@Test
 	public void noCompressionForUserAgent() throws Exception {
-		Assumptions.assumeThat(getFactory())
-				.isNotInstanceOf(NettyReactiveWebServerFactory.class);
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		compression.setExcludedUserAgents(new String[] { "testUserAgent" });
