@@ -31,9 +31,13 @@ import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.jmx.ConnectionPool;
 import org.junit.Test;
 
+import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -101,6 +105,24 @@ public class DataSourceJmxConfigurationTests {
 		});
 	}
 
+	@Test
+	public void hikariProxiedCanUseRegisterMBeans() {
+		String poolName = UUID.randomUUID().toString();
+		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
+				.withPropertyValues(
+						"spring.datasource.type=" + HikariDataSource.class.getName(),
+						"spring.datasource.name=" + poolName,
+						"spring.datasource.hikari.register-mbeans=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(javax.sql.DataSource.class);
+					HikariDataSource hikariDataSource = context.getBean(
+							javax.sql.DataSource.class).unwrap(HikariDataSource.class);
+					assertThat(hikariDataSource.isRegisterMbeans()).isTrue();
+					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+					validateHikariMBeansRegistration(mBeanServer, poolName, true);
+				});
+	}
+
 	private void validateHikariMBeansRegistration(MBeanServer mBeanServer,
 			String poolName, boolean expected) throws MalformedObjectNameException {
 		assertThat(mBeanServer.isRegistered(
@@ -128,6 +150,33 @@ public class DataSourceJmxConfigurationTests {
 			assertThat(context.getBean(DataSourceProxy.class).createPool().getJmxPool())
 					.isSameAs(context.getBean(ConnectionPool.class));
 		});
+	}
+
+	@Configuration
+	static class DataSourceProxyConfiguration {
+
+		@Bean
+		public static DataSourceBeanPostProcessor dataSourceBeanPostProcessor() {
+			return new DataSourceBeanPostProcessor();
+		}
+
+	}
+
+
+	private static class DataSourceBeanPostProcessor implements BeanPostProcessor {
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) {
+			if (bean instanceof javax.sql.DataSource) {
+				return wrap((javax.sql.DataSource) bean);
+			}
+			return bean;
+		}
+
+		private static javax.sql.DataSource wrap(javax.sql.DataSource dataSource) {
+			return (javax.sql.DataSource) new ProxyFactory(dataSource).getProxy();
+		}
+
 	}
 
 }
