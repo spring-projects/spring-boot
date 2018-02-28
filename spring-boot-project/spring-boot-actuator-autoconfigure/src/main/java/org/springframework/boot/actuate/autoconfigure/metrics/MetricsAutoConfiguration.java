@@ -26,17 +26,24 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics.
@@ -104,6 +111,7 @@ public class MetricsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnClass(name = "ch.qos.logback.classic.Logger")
+		@Conditional(Slf4jLoggerContextIsLogbackCondition.class)
 		@ConditionalOnMissingBean(LogbackMetrics.class)
 		@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
 		public LogbackMetrics logbackMetrics() {
@@ -131,6 +139,27 @@ public class MetricsAutoConfiguration {
 			return new FileDescriptorMetrics();
 		}
 
+		/**
+		 * Determine if Logback is the logging implementation being used by SLF4J.
+		 * It can be non-selected when the classpath contains multiple SLF4J bindings.
+		 */
+		static class Slf4jLoggerContextIsLogbackCondition extends SpringBootCondition {
+
+			@Override
+			public ConditionOutcome getMatchOutcome(ConditionContext context,
+					AnnotatedTypeMetadata metadata) {
+				ConditionMessage.Builder message = ConditionMessage.forCondition("Logback");
+
+				if (!"ch.qos.logback.classic.LoggerContext".equals(LoggerFactory.getILoggerFactory().getClass().getName())) {
+					return ConditionOutcome
+							.noMatch(message.because("SLF4J is not using a Logback-backed LoggerContext"));
+				}
+
+				return ConditionOutcome
+						.match(message.because("SLF4J is using a Logback-backed LoggerContext"));
+			}
+
+		}
 	}
 
 }
