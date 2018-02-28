@@ -147,11 +147,9 @@ class Installer {
 		String home = SystemPropertyUtils
 				.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
 		File extDirectory = new File(new File(home, "lib"), "ext");
-		if (!extDirectory.isDirectory()) {
-			if (!extDirectory.mkdirs()) {
-				throw new IllegalStateException(
-						"Failed to create ext directory " + extDirectory);
-			}
+		if (!extDirectory.isDirectory() && !extDirectory.mkdirs()) {
+			throw new IllegalStateException(
+					"Failed to create ext directory " + extDirectory);
 		}
 		return extDirectory;
 	}

@@ -60,12 +60,11 @@ public class ParentContextCloserApplicationListener
 	}
 
 	private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
-		if (child == this.context) {
-			if (child.getParent() instanceof ConfigurableApplicationContext) {
-				ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
-						.getParent();
-				parent.addApplicationListener(createContextCloserListener(child));
-			}
+		if (child == this.context
+				&& child.getParent() instanceof ConfigurableApplicationContext) {
+			ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
+					.getParent();
+			parent.addApplicationListener(createContextCloserListener(child));
 		}
 	}
 

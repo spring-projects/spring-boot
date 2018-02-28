@@ -51,10 +51,9 @@ public class SpringBootConfigurationFactory extends ConfigurationFactory {
 	@Override
 	public Configuration getConfiguration(LoggerContext loggerContext,
 			ConfigurationSource source) {
-		if (source != null && source != ConfigurationSource.NULL_SOURCE) {
-			if (LoggingSystem.get(loggerContext.getClass().getClassLoader()) != null) {
-				return new DefaultConfiguration();
-			}
+		if (source != null && source != ConfigurationSource.NULL_SOURCE
+				&& LoggingSystem.get(loggerContext.getClass().getClassLoader()) != null) {
+			return new DefaultConfiguration();
 		}
 		return null;
 	}
