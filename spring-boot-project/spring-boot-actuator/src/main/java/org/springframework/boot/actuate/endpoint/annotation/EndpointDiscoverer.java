@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -315,10 +314,6 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		return LambdaSafe.callback(EndpointFilter.class, filter, endpoint)
 				.withLogger(EndpointDiscoverer.class).invokeAnd((f) -> f.match(endpoint))
 				.get();
-	}
-
-	public <A, B> void doIt(Function<A, B> x) {
-
 	}
 
 	private E getFilterEndpoint(EndpointBean endpointBean) {
