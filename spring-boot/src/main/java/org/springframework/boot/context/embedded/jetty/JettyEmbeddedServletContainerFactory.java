@@ -433,7 +433,7 @@ public class JettyEmbeddedServletContainerFactory
 
 	private Resource createResource(URL url) throws IOException {
 		if ("file".equals(url.getProtocol())) {
-			File file = new File(url.getFile());
+			File file = new File(getDecodedFile(url));
 			if (file.isFile()) {
 				return Resource.newResource("jar:" + url + "!/META-INF/resources");
 			}

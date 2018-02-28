@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -50,8 +49,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
@@ -1036,54 +1033,6 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		File codeSourceFile = this.temporaryFolder.newFile("test.war");
 		File documentRoot = factory.getExplodedWarFileDocumentRoot(codeSourceFile);
 		assertThat(documentRoot).isNull();
-	}
-
-	@Test
-	public void includeJarWithStaticResources() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		File jarFile = this.temporaryFolder.newFile("test.jar");
-		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarFile));
-		JarEntry jarEntry = new JarEntry("META-INF/resources");
-		jarOutputStream.putNextEntry(jarEntry);
-		jarOutputStream.closeEntry();
-		jarOutputStream.close();
-		String path = "file:" + jarFile.getAbsolutePath();
-
-		boolean isStaticResource = factory.isStaticResource(new URL(path));
-
-		assertThat(isStaticResource).isTrue();
-	}
-
-	@Test
-	public void includeJarWithStaticResourcesWithUrlEncodedSpaces() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		this.temporaryFolder.newFolder("test parent");
-		File jarFile = this.temporaryFolder.newFile("test parent/test.jar");
-		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarFile));
-		JarEntry jarEntry = new JarEntry("META-INF/resources");
-		jarOutputStream.putNextEntry(jarEntry);
-		jarOutputStream.closeEntry();
-		jarOutputStream.close();
-		String path = "file:" + jarFile.getAbsolutePath().replaceAll(" ", "%20");
-
-		boolean isStaticResource = factory.isStaticResource(new URL(path));
-
-		assertThat(isStaticResource).isTrue();
-	}
-
-	@Test
-	public void excludeJarWithoutStaticResources() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		File jarFile = this.temporaryFolder.newFile("test.jar");
-		JarOutputStream jarOutputStream = new JarOutputStream(
-				new FileOutputStream(jarFile));
-		jarOutputStream.closeEntry();
-		jarOutputStream.close();
-		String path = "file:" + jarFile.getAbsolutePath();
-
-		boolean isStaticResource = factory.isStaticResource(new URL(path));
-
-		assertThat(isStaticResource).isFalse();
 	}
 
 	protected abstract void addConnector(int port,
