@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link OverrideAutoConfigurationContextCustomizerFactory}.
  *
- * @author pwebb
+ * @author Phillip Webb
  */
 public class OverrideAutoConfigurationContextCustomizerFactoryTests {
 

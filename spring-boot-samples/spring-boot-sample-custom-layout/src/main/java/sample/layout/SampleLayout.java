@@ -24,7 +24,7 @@ import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.LoaderClassesWriter;
 
 /**
- * @author pwebb
+ * @author Phillip Webb
  */
 public class SampleLayout extends Layouts.Jar implements CustomLoaderLayout {
 
