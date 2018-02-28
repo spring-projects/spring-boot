@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.List;
 
 import javax.naming.directory.DirContext;
@@ -47,7 +49,7 @@ abstract class TomcatResources {
 
 	void addResourceJars(List<URL> resourceJarUrls) {
 		for (URL url : resourceJarUrls) {
-			String file = url.getFile();
+			String file = getDecodedFile(url);
 			if (file.endsWith(".jar") || file.endsWith(".jar!/")) {
 				String jar = url.toString();
 				if (!jar.startsWith("jar:")) {
@@ -59,6 +61,16 @@ abstract class TomcatResources {
 			else {
 				addDir(file, url);
 			}
+		}
+	}
+
+	private String getDecodedFile(URL url) {
+		try {
+			return URLDecoder.decode(url.getFile(), "UTF-8");
+		}
+		catch (UnsupportedEncodingException ex) {
+			throw new IllegalStateException(
+					"Failed to decode '" + url.getFile() + "' using UTF-8");
 		}
 	}
 

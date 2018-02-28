@@ -18,10 +18,12 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,32 +98,44 @@ public abstract class AbstractEmbeddedServletContainerFactory
 		List<URL> staticResourceUrls = new ArrayList<URL>();
 		if (classLoader instanceof URLClassLoader) {
 			for (URL url : ((URLClassLoader) classLoader).getURLs()) {
-				try {
-					if ("file".equals(url.getProtocol())) {
-						File file = new File(url.getFile());
-						if (file.isDirectory()
-								&& new File(file, "META-INF/resources").isDirectory()) {
-							staticResourceUrls.add(url);
-						}
-						else if (isResourcesJar(file)) {
-							staticResourceUrls.add(url);
-						}
-					}
-					else {
-						URLConnection connection = url.openConnection();
-						if (connection instanceof JarURLConnection) {
-							if (isResourcesJar((JarURLConnection) connection)) {
-								staticResourceUrls.add(url);
-							}
-						}
-					}
-				}
-				catch (IOException ex) {
-					throw new IllegalStateException(ex);
+				if (isStaticResourceJar(url)) {
+					staticResourceUrls.add(url);
 				}
 			}
 		}
 		return staticResourceUrls;
+	}
+
+	private boolean isStaticResourceJar(URL url) {
+		try {
+			if ("file".equals(url.getProtocol())) {
+				File file = new File(getDecodedFile(url), "UTF-8");
+				return (file.isDirectory()
+						&& new File(file, "META-INF/resources").isDirectory())
+						|| isResourcesJar(file);
+			}
+			else {
+				URLConnection connection = url.openConnection();
+				if (connection instanceof JarURLConnection
+						&& isResourcesJar((JarURLConnection) connection)) {
+					return true;
+				}
+			}
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+		return false;
+	}
+
+	protected final String getDecodedFile(URL url) {
+		try {
+			return URLDecoder.decode(url.getFile(), "UTF-8");
+		}
+		catch (UnsupportedEncodingException ex) {
+			throw new IllegalStateException(
+					"Failed to decode '" + url.getFile() + "' using UTF-8");
+		}
 	}
 
 	private boolean isResourcesJar(JarURLConnection connection) {
@@ -129,23 +143,26 @@ public abstract class AbstractEmbeddedServletContainerFactory
 			return isResourcesJar(connection.getJarFile());
 		}
 		catch (IOException ex) {
+			this.logger.warn("Unable to open jar from connection '" + connection
+					+ "' to determine if it contains static resources", ex);
 			return false;
 		}
 	}
 
 	private boolean isResourcesJar(File file) {
 		try {
-			return isResourcesJar(new JarFile(file));
+			return file.getName().endsWith(".jar") && isResourcesJar(new JarFile(file));
 		}
 		catch (IOException ex) {
+			this.logger.warn("Unable to open jar '" + file
+					+ "' to determine if it contains static resources", ex);
 			return false;
 		}
 	}
 
 	private boolean isResourcesJar(JarFile jar) throws IOException {
 		try {
-			return jar.getName().endsWith(".jar")
-					&& (jar.getJarEntry("META-INF/resources") != null);
+			return jar.getJarEntry("META-INF/resources") != null;
 		}
 		finally {
 			jar.close();
