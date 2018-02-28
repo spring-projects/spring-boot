@@ -39,6 +39,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
  * {@code Project}.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public class BuildInfo extends ConventionTask {
 
@@ -73,7 +74,6 @@ public class BuildInfo extends ConventionTask {
 	/**
 	 * Returns the directory to which the {@code build-info.properties} file will be
 	 * written. Defaults to the {@link Project#getBuildDir() Project's build directory}.
-	 *
 	 * @return the destination directory
 	 */
 	@OutputDirectory

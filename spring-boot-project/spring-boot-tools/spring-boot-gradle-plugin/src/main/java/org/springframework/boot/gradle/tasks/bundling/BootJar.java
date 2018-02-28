@@ -136,7 +136,6 @@ public class BootJar extends Jar implements BootArchive {
 	 * <p>
 	 * By default, any file in {@code BOOT-INF/lib/} is stored and all other files are
 	 * deflated.
-	 *
 	 * @param details the details
 	 * @return the compression to use
 	 */

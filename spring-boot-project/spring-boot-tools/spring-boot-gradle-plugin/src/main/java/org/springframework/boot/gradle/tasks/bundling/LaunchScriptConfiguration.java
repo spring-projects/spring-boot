@@ -40,7 +40,6 @@ public class LaunchScriptConfiguration implements Serializable {
 	/**
 	 * Returns the properties that are applied to the launch script when it's being
 	 * including in the executable archive.
-	 *
 	 * @return the properties
 	 */
 	public Map<String, String> getProperties() {
@@ -50,7 +49,6 @@ public class LaunchScriptConfiguration implements Serializable {
 	/**
 	 * Sets the properties that are applied to the launch script when it's being including
 	 * in the executable archive.
-	 *
 	 * @param properties the properties
 	 */
 	public void properties(Map<String, String> properties) {
@@ -60,7 +58,6 @@ public class LaunchScriptConfiguration implements Serializable {
 	/**
 	 * Returns the script {@link File} that will be included in the executable archive.
 	 * When {@code null}, the default launch script will be used.
-	 *
 	 * @return the script file
 	 */
 	public File getScript() {
@@ -70,7 +67,6 @@ public class LaunchScriptConfiguration implements Serializable {
 	/**
 	 * Sets the script {@link File} that will be included in the executable archive. When
 	 * {@code null}, the default launch script will be used.
-	 *
 	 * @param script the script file
 	 */
 	public void setScript(File script) {

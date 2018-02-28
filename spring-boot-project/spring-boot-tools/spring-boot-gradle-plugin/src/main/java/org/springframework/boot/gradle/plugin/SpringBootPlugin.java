@@ -55,14 +55,12 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	/**
 	 * The name of the default {@link BootJar} task.
-	 *
 	 * @since 2.0.0
 	 */
 	public static final String BOOT_JAR_TASK_NAME = "bootJar";
 
 	/**
 	 * The name of the default {@link BootWar} task.
-	 *
 	 * @since 2.0.0
 	 */
 	public static final String BOOT_WAR_TASK_NAME = "bootWar";
