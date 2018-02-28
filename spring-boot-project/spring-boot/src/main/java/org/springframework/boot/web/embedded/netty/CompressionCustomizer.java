@@ -39,6 +39,9 @@ import org.springframework.util.StringUtils;
  */
 final class CompressionCustomizer implements NettyServerCustomizer {
 
+	private static final CompressionPredicate ALWAYS_COMPRESS = (request,
+			response) -> true;
+
 	private final Compression compression;
 
 	CompressionCustomizer(Compression compression) {
@@ -59,7 +62,7 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 
 	private CompressionPredicate getMimeTypesPredicate(String[] mimeTypes) {
 		if (ObjectUtils.isEmpty(mimeTypes)) {
-			return CompressionPredicate.ALWAYS;
+			return ALWAYS_COMPRESS;
 		}
 		return (request, response) -> {
 			String contentType = response.responseHeaders()
@@ -76,7 +79,7 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 	private CompressionPredicate getExcludedUserAgentsPredicate(
 			String[] excludedUserAgents) {
 		if (ObjectUtils.isEmpty(excludedUserAgents)) {
-			return CompressionPredicate.ALWAYS;
+			return ALWAYS_COMPRESS;
 		}
 		return (request, response) -> {
 			HttpHeaders headers = request.requestHeaders();
@@ -87,8 +90,6 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 
 	private interface CompressionPredicate
 			extends BiPredicate<HttpServerRequest, HttpServerResponse> {
-
-		static final CompressionPredicate ALWAYS = (request, response) -> true;
 
 	}
 
