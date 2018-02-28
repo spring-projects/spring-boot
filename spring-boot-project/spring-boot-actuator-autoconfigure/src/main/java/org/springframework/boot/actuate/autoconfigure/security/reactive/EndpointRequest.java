@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.security.reactive.ApplicationContextServerWebExchangeMatcher;
@@ -36,6 +37,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher.MatchResult;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -47,6 +49,9 @@ import org.springframework.web.server.ServerWebExchange;
  * @since 2.0.0
  */
 public final class EndpointRequest {
+
+	private static final ServerWebExchangeMatcher EMPTY_MATCHER = (request) -> MatchResult
+			.notMatch();
 
 	private EndpointRequest() {
 	}
@@ -134,19 +139,34 @@ public final class EndpointRequest {
 
 		@Override
 		protected void initialized(Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+			this.delegate = createDelegate(pathMappedEndpoints);
+		}
+
+		private ServerWebExchangeMatcher createDelegate(
+				Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+			try {
+				return createDelegate(pathMappedEndpoints.get());
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return EMPTY_MATCHER;
+			}
+		}
+
+		private ServerWebExchangeMatcher createDelegate(
+				PathMappedEndpoints pathMappedEndpoints) {
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
-				paths.addAll(pathMappedEndpoints.get().getAllPaths());
+				paths.addAll(pathMappedEndpoints.getAllPaths());
 			}
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
-			this.delegate = new OrServerWebExchangeMatcher(getDelegateMatchers(paths));
+			return new OrServerWebExchangeMatcher(getDelegateMatchers(paths));
 		}
 
 		private Stream<String> streamPaths(List<Object> source,
-				Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+				PathMappedEndpoints pathMappedEndpoints) {
 			return source.stream().filter(Objects::nonNull).map(this::getEndpointId)
-					.map(pathMappedEndpoints.get()::getPath);
+					.map(pathMappedEndpoints::getPath);
 		}
 
 		private String getEndpointId(Object source) {

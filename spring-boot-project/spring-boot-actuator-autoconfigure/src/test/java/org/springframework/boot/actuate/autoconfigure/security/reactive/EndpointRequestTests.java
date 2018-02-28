@@ -102,6 +102,13 @@ public class EndpointRequestTests {
 		assertMatcher(matcher).matches("/actuator/bar");
 	}
 
+	@Test
+	public void noEndpointPathsBeansShouldNeverMatch() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
+		assertMatcher(matcher, null).doesNotMatch("/actuator/foo");
+		assertMatcher(matcher, null).doesNotMatch("/actuator/bar");
+	}
+
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {
 		return assertMatcher(matcher, mockPathMappedEndpoints());
 	}
@@ -123,7 +130,9 @@ public class EndpointRequestTests {
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
 			PathMappedEndpoints pathMappedEndpoints) {
 		StaticApplicationContext context = new StaticApplicationContext();
-		context.registerBean(PathMappedEndpoints.class, () -> pathMappedEndpoints);
+		if (pathMappedEndpoints != null) {
+			context.registerBean(PathMappedEndpoints.class, () -> pathMappedEndpoints);
+		}
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
