@@ -147,7 +147,8 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(Class<?> source) {
-		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
+		if (isGroovyPresent()
+				&& GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source,
 					GroovyBeanDefinitionSource.class);

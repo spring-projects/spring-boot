@@ -268,7 +268,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		JarEntryName jarEntryName = JarEntryName.get(spec, index);
 		if (Boolean.TRUE.equals(useFastExceptions.get())
 				&& !jarEntryName.isEmpty()
-					&& !jarFile.containsEntry(jarEntryName.toString())) {
+				&& !jarFile.containsEntry(jarEntryName.toString())) {
 			return NOT_FOUND_CONNECTION;
 		}
 		return new JarURLConnection(url, jarFile, jarEntryName);
