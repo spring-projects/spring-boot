@@ -123,11 +123,11 @@ public class SecurityPropertiesTests {
 	}
 
 	@Test
-	public void testCSrf() {
-		assertThat(this.security.isEnableCsrf()).isEqualTo(true);
-		this.binder.bind(new MutablePropertyValues(
-				Collections.singletonMap("security.enable-csrf", false)));
+	public void testCsrf() {
 		assertThat(this.security.isEnableCsrf()).isEqualTo(false);
+		this.binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("security.enable-csrf", true)));
+		assertThat(this.security.isEnableCsrf()).isEqualTo(true);
 	}
 
 }

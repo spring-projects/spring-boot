@@ -75,7 +75,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Enable Cross Site Request Forgery support.
 	 */
-	private boolean enableCsrf = true;
+	private boolean enableCsrf = false;
 
 	private Basic basic = new Basic();
 

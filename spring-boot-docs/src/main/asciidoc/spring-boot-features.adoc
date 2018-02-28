@@ -2536,8 +2536,9 @@ The basic features you get out of the box in a web application are:
 * HTTP Basic security for all other endpoints.
 * Security events published to Spring's `ApplicationEventPublisher` (successful and
   unsuccessful authentication and access denied).
-* Common low-level features (HSTS, XSS, CSRF, caching) provided by Spring Security are
+* Common low-level features (HSTS, XSS, caching) provided by Spring Security are
   on by default.
+* Cross Site Request Forgery (CSRF) checks are disabled by default.
 
 All of the above can be switched on and off or modified using external properties
 (`+security.*+`). To override the access rules without changing any other auto-configured
@@ -2790,6 +2791,7 @@ If the Actuator is also in use, you will find:
 * Security events are transformed into `AuditEvent` instances and published to the
 `AuditEventRepository`.
 * The default user will have the `ACTUATOR` role as well as the `USER` role.
+* Cross Site Request Forgery (CSRF) checks are disabled for actuator endpoints.
 
 The Actuator security features can be modified using external properties
 (`+management.security.*+`). To override the application access rules
