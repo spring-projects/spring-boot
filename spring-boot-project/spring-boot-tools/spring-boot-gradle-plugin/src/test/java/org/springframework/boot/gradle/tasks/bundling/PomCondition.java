@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.assertj.core.api.Condition;
+import org.assertj.core.description.Description;
 import org.assertj.core.description.TextDescription;
 
 import org.springframework.util.FileCopyUtils;
