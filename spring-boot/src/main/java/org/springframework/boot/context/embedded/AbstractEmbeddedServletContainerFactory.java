@@ -109,7 +109,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	private boolean isStaticResourceJar(URL url) {
 		try {
 			if ("file".equals(url.getProtocol())) {
-				File file = new File(getDecodedFile(url), "UTF-8");
+				File file = new File(getDecodedFile(url));
 				return (file.isDirectory()
 						&& new File(file, "META-INF/resources").isDirectory())
 						|| isResourcesJar(file);
