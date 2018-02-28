@@ -26,25 +26,19 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.support.MessageBuilder;
-import org.springframework.integration.support.management.AbstractMessageChannelMetrics;
-import org.springframework.integration.support.management.DefaultMetricsFactory;
-import org.springframework.integration.support.management.MetricsFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link IntegrationMetricsAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Gary Russell
  */
 public class IntegrationMetricsAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class,
-					IntegrationMetricsAutoConfiguration.class))
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class)
 			.withPropertyValues("spring.jmx.enabled=false");
 
@@ -56,21 +50,8 @@ public class IntegrationMetricsAutoConfigurationTests {
 					SubscribableChannel.class);
 			channel.send(message);
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			registry.get("errorChannel.timer").timer();
-			registry.get("errorChannel.errorCounter").counter();
+			registry.get("spring.integration.send").tag("name", "errorChannel").timer();
 		});
-	}
-
-	@Test
-	public void autoConfigurationBacksOffWhenHasMetricsFactory() {
-		this.contextRunner.withUserConfiguration(LegacyConfiguration.class)
-				.run((context) -> {
-					SubscribableChannel channel = context.getBean("errorChannel",
-							SubscribableChannel.class);
-					AbstractMessageChannelMetrics metrics = (AbstractMessageChannelMetrics) ReflectionTestUtils
-							.getField(channel, "channelMetrics");
-					assertThat(metrics.getTimer()).isNull();
-				});
 	}
 
 	@Configuration
@@ -79,16 +60,6 @@ public class IntegrationMetricsAutoConfigurationTests {
 		@Bean
 		public SimpleMeterRegistry simpleMeterRegistry() {
 			return new SimpleMeterRegistry();
-		}
-
-	}
-
-	@Configuration
-	static class LegacyConfiguration {
-
-		@Bean
-		public MetricsFactory legacyMetricsFactory() {
-			return new DefaultMetricsFactory();
 		}
 
 	}
