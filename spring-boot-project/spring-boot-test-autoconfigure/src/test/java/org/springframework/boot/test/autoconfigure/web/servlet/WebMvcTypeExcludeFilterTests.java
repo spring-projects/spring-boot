@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,6 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
-		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 	}
 
 	@Test
@@ -69,7 +67,6 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
-		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 	}
 
 	@Test
@@ -83,7 +80,6 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isTrue();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
-		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isTrue();
 	}
 
 	@Test
@@ -110,7 +106,6 @@ public class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleMessageConverter.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
-		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 	}
 
 	private boolean excludes(WebMvcTypeExcludeFilter filter, Class<?> type)
@@ -175,10 +170,6 @@ public class WebMvcTypeExcludeFilterTests {
 
 	@Repository
 	static class ExampleRepository {
-
-	}
-
-	static class ExampleWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	}
 
