@@ -46,7 +46,6 @@ import reactor.ipc.netty.http.client.HttpClientOptions;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
-import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Ssl;
@@ -258,7 +257,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void compressionOfResponseToGetRequest() throws Exception {
+	public void compressionOfResponseToGetRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.get().exchange()
 				.flatMap((res) -> res.toEntity(Void.class)).block();
@@ -266,7 +265,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void compressionOfResponseToPostRequest() throws Exception {
+	public void compressionOfResponseToPostRequest() {
 		WebClient client = prepareCompressionTest();
 		ResponseEntity<Void> response = client.post().exchange()
 				.flatMap((res) -> res.toEntity(Void.class)).block();
@@ -274,9 +273,10 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForMimeType() throws Exception {
+	public void noCompressionForSmallResponse() {
 		Compression compression = new Compression();
-		compression.setMimeTypes(new String[] { "application/json" });
+		compression.setEnabled(true);
+		compression.setMinResponseSize(3001);
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().exchange()
 				.flatMap((res) -> res.toEntity(Void.class)).block();
@@ -284,10 +284,20 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void noCompressionForUserAgent() throws Exception {
+	public void noCompressionForMimeType() {
+		Compression compression = new Compression();
+		compression.setMimeTypes(new String[] {"application/json"});
+		WebClient client = prepareCompressionTest(compression);
+		ResponseEntity<Void> response = client.get().exchange()
+				.flatMap((res) -> res.toEntity(Void.class)).block();
+		assertResponseIsNotCompressed(response);
+	}
+
+	@Test
+	public void noCompressionForUserAgent() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
-		compression.setExcludedUserAgents(new String[] { "testUserAgent" });
+		compression.setExcludedUserAgents(new String[] {"testUserAgent"});
 		WebClient client = prepareCompressionTest(compression);
 		ResponseEntity<Void> response = client.get().header("User-Agent", "testUserAgent")
 				.exchange().flatMap((res) -> res.toEntity(Void.class)).block();
@@ -338,7 +348,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			extends ChannelInboundHandlerAdapter {
 
 		@Override
-		public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+		public void channelRead(ChannelHandlerContext ctx, Object msg) {
 			if (msg instanceof HttpResponse) {
 				HttpResponse response = (HttpResponse) msg;
 				boolean compressed = response.headers()
@@ -371,6 +381,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			response.setStatusCode(HttpStatus.OK);
 			response.getHeaders().setContentType(this.mediaType);
+			response.getHeaders().setContentLength(this.bytes.readableByteCount());
 			return response.writeWith(Mono.just(this.bytes));
 		}
 

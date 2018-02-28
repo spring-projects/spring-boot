@@ -163,7 +163,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.compression.enabled=false # Whether response compression is enabled.
 	server.compression.excluded-user-agents= # List of user-agents to exclude from compression.
 	server.compression.mime-types=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript # Comma-separated list of MIME types that should be compressed.
-	server.compression.min-response-size=2048 # Minimum response size that is required for compression to be performed.
+	server.compression.min-response-size=2048 # Minimum "Content-Length" value that is required for compression to be performed.
 	server.connection-timeout= # Time that connectors wait for another HTTP request before closing the connection. When not set, the connector's container-specific default is used. Use a value of -1 to indicate no (that is, an infinite) timeout.
 	server.error.include-exception=false # Include the "exception" attribute.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.

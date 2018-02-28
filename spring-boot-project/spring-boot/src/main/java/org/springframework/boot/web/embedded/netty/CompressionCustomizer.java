@@ -42,27 +42,22 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 
 	@Override
 	public void customize(HttpServerOptions.Builder builder) {
-		if (compression.getMinResponseSize() >= 0) {
-			builder.compression(compression.getMinResponseSize());
+		if (this.compression.getMinResponseSize() >= 0) {
+			builder.compression(this.compression.getMinResponseSize());
 		}
-		
 		BiPredicate<HttpServerRequest, HttpServerResponse> compressPredicate = null;
-
-		if (compression.getMimeTypes() != null &&
-				compression.getMimeTypes().length > 0) {
-			compressPredicate = new CompressibleMimeTypePredicate(compression.getMimeTypes());
+		if (this.compression.getMimeTypes() != null &&
+				this.compression.getMimeTypes().length > 0) {
+			compressPredicate = new CompressibleMimeTypePredicate(this.compression.getMimeTypes());
 		}
-
-		if (compression.getExcludedUserAgents() != null &&
-				compression.getExcludedUserAgents().length > 0 ) {
+		if (this.compression.getExcludedUserAgents() != null &&
+				this.compression.getExcludedUserAgents().length > 0) {
 			BiPredicate<HttpServerRequest, HttpServerResponse> agentCompressPredicate =
-					new CompressibleAgentPredicate(compression.getExcludedUserAgents());
-
+					new CompressibleAgentPredicate(this.compression.getExcludedUserAgents());
 			compressPredicate = compressPredicate == null ?
 					agentCompressPredicate :
 					compressPredicate.and(agentCompressPredicate);
 		}
-
 		if (compressPredicate != null) {
 			builder.compression(compressPredicate);
 		}
@@ -80,9 +75,9 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 
 		@Override
 		public boolean test(HttpServerRequest request, HttpServerResponse response) {
-			for(String excludedAgent : excludedAgents) {
+			for (String excludedAgent : this.excludedAgents) {
 				if (request.requestHeaders()
-				           .contains(HttpHeaderNames.USER_AGENT, excludedAgent, true)) {
+						.contains(HttpHeaderNames.USER_AGENT, excludedAgent, true)) {
 					return false;
 				}
 			}
@@ -105,7 +100,7 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 		@Override
 		public boolean test(HttpServerRequest request, HttpServerResponse response) {
 			String contentType = response.responseHeaders()
-			                             .get(HttpHeaderNames.CONTENT_TYPE);
+					.get(HttpHeaderNames.CONTENT_TYPE);
 			if (contentType != null) {
 				for (MimeType mimeType : this.mimeTypes) {
 					if (mimeType.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
