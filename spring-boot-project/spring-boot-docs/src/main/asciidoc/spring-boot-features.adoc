@@ -5866,6 +5866,7 @@ in a similar manner, as shown in the following example:
 	public class SampleJob extends QuartzJobBean {
 
 		private MyService myService;
+
 		private String name;
 
 		// Inject "MyService" bean
