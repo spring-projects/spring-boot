@@ -18,15 +18,18 @@ package org.springframework.boot.web.servlet.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
+import java.util.stream.Stream;
 
 /**
  * Logic to extract URLs of static resource jars (those containing
@@ -37,21 +40,25 @@ import java.util.jar.JarFile;
  */
 class StaticResourceJars {
 
-	public final List<URL> getUrls() {
+	List<URL> getUrls() {
 		ClassLoader classLoader = getClass().getClassLoader();
-		List<URL> urls = new ArrayList<>();
 		if (classLoader instanceof URLClassLoader) {
-			for (URL url : ((URLClassLoader) classLoader).getURLs()) {
-				addUrl(urls, url);
-			}
+			return getUrlsFrom(((URLClassLoader) classLoader).getURLs());
 		}
 		else {
-			for (String entry : ManagementFactory.getRuntimeMXBean().getClassPath()
-					.split(File.pathSeparator)) {
-				addUrl(urls, toUrl(entry));
-			}
+			return getUrlsFrom(Stream
+					.of(ManagementFactory.getRuntimeMXBean().getClassPath()
+							.split(File.pathSeparator))
+					.map(this::toUrl).toArray(URL[]::new));
 		}
-		return urls;
+	}
+
+	List<URL> getUrlsFrom(URL... urls) {
+		List<URL> resourceJarUrls = new ArrayList<>();
+		for (URL url : urls) {
+			addUrl(resourceJarUrls, url);
+		}
+		return resourceJarUrls;
 	}
 
 	private URL toUrl(String classPathEntry) {
@@ -67,7 +74,7 @@ class StaticResourceJars {
 	private void addUrl(List<URL> urls, URL url) {
 		try {
 			if ("file".equals(url.getProtocol())) {
-				addUrlFile(urls, url, new File(url.getFile()));
+				addUrlFile(urls, url, new File(getDecodedFile(url)));
 			}
 			else {
 				addUrlConnection(urls, url, url.openConnection());
@@ -75,6 +82,16 @@ class StaticResourceJars {
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
+		}
+	}
+
+	private String getDecodedFile(URL url) {
+		try {
+			return URLDecoder.decode(url.getFile(), "UTF-8");
+		}
+		catch (UnsupportedEncodingException ex) {
+			throw new IllegalStateException(
+					"Failed to decode '" + url.getFile() + "' using UTF-8");
 		}
 	}
 

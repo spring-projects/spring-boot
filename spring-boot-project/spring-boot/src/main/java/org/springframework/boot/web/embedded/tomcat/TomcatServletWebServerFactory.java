@@ -682,7 +682,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		private void addResourceJars(List<URL> resourceJarUrls) {
 			for (URL url : resourceJarUrls) {
-				String file = url.getFile();
+				String file = getDecodedFile(url);
 				if (file.endsWith(".jar") || file.endsWith(".jar!/")) {
 					String jar = url.toString();
 					if (!jar.startsWith("jar:")) {

@@ -17,7 +17,9 @@
 package org.springframework.boot.web.servlet.server;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -278,6 +280,16 @@ public abstract class AbstractServletWebServerFactory
 
 	protected final List<URL> getUrlsOfJarsWithMetaInfResources() {
 		return this.staticResourceJars.getUrls();
+	}
+
+	protected final String getDecodedFile(URL url) {
+		try {
+			return URLDecoder.decode(url.getFile(), "UTF-8");
+		}
+		catch (UnsupportedEncodingException ex) {
+			throw new IllegalStateException(
+					"Failed to decode '" + url.getFile() + "' using UTF-8");
+		}
 	}
 
 	protected final File getValidSessionStoreDir() {
