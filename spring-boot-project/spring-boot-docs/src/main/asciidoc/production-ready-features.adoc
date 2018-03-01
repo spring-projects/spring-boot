@@ -1601,6 +1601,7 @@ Spring Boot registers the following core metrics when applicable:
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the
 application's absolute start time
 * Tomcat metrics
+* https://docs.spring.io/spring-integration/docs/current/reference/html/system-management-chapter.html#micrometer-integration[Spring Integration] metrics
 
 
 
@@ -1701,14 +1702,6 @@ example, `/api/person/{id}`).
 To customize the tags, provide a `@Bean` that implements
 `RestTemplateExchangeTagsProvider`. There are convenience static functions in
 `RestTemplateExchangeTags`.
-
-
-
-[[production-ready-metrics-integration]]
-==== Spring Integration metrics
-When Spring Integration is available, a `timer` and `errorCounter` are registered for each
-`MessageHandler` and `MessageChannel`. For each `MessageSource`, a `counter` is
-registered.
 
 
 
