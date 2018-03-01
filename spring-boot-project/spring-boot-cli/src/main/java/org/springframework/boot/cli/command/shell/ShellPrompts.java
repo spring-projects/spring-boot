@@ -16,7 +16,8 @@
 
 package org.springframework.boot.cli.command.shell;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * Abstraction to manage a stack of prompts.
@@ -27,7 +28,7 @@ public class ShellPrompts {
 
 	private static final String DEFAULT_PROMPT = "$ ";
 
-	private final Stack<String> prompts = new Stack<>();
+	private final Deque<String> prompts = new ArrayDeque<>();
 
 	/**
 	 * Push a new prompt to be used by the shell.
