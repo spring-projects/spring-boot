@@ -253,9 +253,6 @@
 			<activation>
 				<jdk>9</jdk>
 			</activation>
-			<properties>
-				<aspectj.version>1.9.0.RC1</aspectj.version>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
