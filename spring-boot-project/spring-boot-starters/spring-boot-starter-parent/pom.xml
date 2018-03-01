@@ -270,10 +270,13 @@
 						<configuration>
 							<updatePomFile>true</updatePomFile>
 							<pomElements>
-								<pluginManagement>keep</pluginManagement>
 								<parent>expand</parent>
-								<dependencyManagement>keep</dependencyManagement>
+								<name>keep</name>
+								<description>keep</description>
+								<url>expand</url>
 								<properties>keep</properties>
+								<pluginManagement>keep</pluginManagement>
+								<dependencyManagement>keep</dependencyManagement>
 								<build>keep</build>
 							</pomElements>
 						</configuration>

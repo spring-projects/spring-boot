@@ -22,6 +22,14 @@
 	<scm>
 		<url>https://github.com/spring-projects/spring-boot</url>
 	</scm>
+	<developers>
+		<developer>
+			<name>Pivotal</name>
+			<email>info@pivotal.io</email>
+			<organization>Pivotal Software, Inc.</organization>
+			<organizationUrl>http://www.spring.io</organizationUrl>
+		</developer>
+	</developers>
 	<properties>
 		<!-- Dependency versions -->
 		<activemq.version>5.15.3</activemq.version>
@@ -956,7 +964,7 @@
 				<artifactId>scala-support</artifactId>
 				<version>${rest-assured.version}</version>
 			</dependency>
-			 <dependency>
+			<dependency>
 				<groupId>io.rest-assured</groupId>
 				<artifactId>spring-mock-mvc</artifactId>
 				<version>${rest-assured.version}</version>
