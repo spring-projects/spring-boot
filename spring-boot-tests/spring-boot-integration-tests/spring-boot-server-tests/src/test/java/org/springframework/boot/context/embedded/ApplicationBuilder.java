@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
@@ -37,7 +36,6 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,6 +72,7 @@ class ApplicationBuilder {
 		File resourcesJar = createResourcesJar();
 		File appFolder = new File(containerFolder, "app");
 		appFolder.mkdirs();
+		writeSettingsXml(appFolder);
 		writePom(appFolder, resourcesJar);
 		copyApplicationSource(appFolder);
 		packageApplication(appFolder);
@@ -110,6 +109,16 @@ class ApplicationBuilder {
 		out.close();
 	}
 
+	private void writeSettingsXml(File appFolder) throws IOException {
+		Map<String, Object> context = new HashMap<>();
+		context.put("repository", System.getProperty("repository"));
+		FileWriter out = new FileWriter(new File(appFolder, "settings.xml"));
+		Mustache.compiler().escapeHTML(false)
+				.compile(new FileReader("src/test/resources/settings-template.xml"))
+				.execute(context, out);
+		out.close();
+	}
+
 	private void copyApplicationSource(File appFolder) throws IOException {
 		File examplePackage = new File(appFolder, "src/main/java/com/example");
 		examplePackage.mkdirs();
@@ -128,12 +137,7 @@ class ApplicationBuilder {
 		InvocationRequest invocation = new DefaultInvocationRequest();
 		invocation.setBaseDirectory(appFolder);
 		invocation.setGoals(Collections.singletonList("package"));
-		String repository = System.getProperty("repository");
-		if (StringUtils.hasText(repository) && !repository.equals("${repository}")) {
-			Properties properties = new Properties();
-			properties.put("repository", repository);
-			invocation.setProperties(properties);
-		}
+		invocation.setUserSettingsFile(new File(appFolder, "settings.xml"));
 		InvocationResult execute = new DefaultInvoker().execute(invocation);
 		assertThat(execute.getExitCode()).isEqualTo(0);
 	}
