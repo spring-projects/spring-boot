@@ -36,6 +36,7 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,10 +73,10 @@ class ApplicationBuilder {
 		File resourcesJar = createResourcesJar();
 		File appFolder = new File(containerFolder, "app");
 		appFolder.mkdirs();
-		writeSettingsXml(appFolder);
+		File settingsXml = writeSettingsXml(appFolder);
 		writePom(appFolder, resourcesJar);
 		copyApplicationSource(appFolder);
-		packageApplication(appFolder);
+		packageApplication(appFolder, settingsXml);
 		return new File(appFolder, "target/app-0.0.1." + this.packaging);
 	}
 
@@ -109,14 +110,20 @@ class ApplicationBuilder {
 		out.close();
 	}
 
-	private void writeSettingsXml(File appFolder) throws IOException {
+	private File writeSettingsXml(File appFolder) throws IOException {
+		String repository = System.getProperty("repository");
+		if (!StringUtils.hasText(repository)) {
+			return null;
+		}
 		Map<String, Object> context = new HashMap<>();
-		context.put("repository", System.getProperty("repository"));
-		FileWriter out = new FileWriter(new File(appFolder, "settings.xml"));
-		Mustache.compiler().escapeHTML(false)
-				.compile(new FileReader("src/test/resources/settings-template.xml"))
-				.execute(context, out);
-		out.close();
+		context.put("repository", repository);
+		File settingsXml = new File(appFolder, "settings.xml");
+		try (FileWriter out = new FileWriter(settingsXml)) {
+			Mustache.compiler().escapeHTML(false)
+					.compile(new FileReader("src/test/resources/settings-template.xml"))
+					.execute(context, out);
+		}
+		return settingsXml;
 	}
 
 	private void copyApplicationSource(File appFolder) throws IOException {
@@ -133,11 +140,14 @@ class ApplicationBuilder {
 		}
 	}
 
-	private void packageApplication(File appFolder) throws MavenInvocationException {
+	private void packageApplication(File appFolder, File settingsXml)
+			throws MavenInvocationException {
 		InvocationRequest invocation = new DefaultInvocationRequest();
 		invocation.setBaseDirectory(appFolder);
 		invocation.setGoals(Collections.singletonList("package"));
-		invocation.setUserSettingsFile(new File(appFolder, "settings.xml"));
+		if (settingsXml != null) {
+			invocation.setUserSettingsFile(settingsXml);
+		}
 		InvocationResult execute = new DefaultInvoker().execute(invocation);
 		assertThat(execute.getExitCode()).isEqualTo(0);
 	}

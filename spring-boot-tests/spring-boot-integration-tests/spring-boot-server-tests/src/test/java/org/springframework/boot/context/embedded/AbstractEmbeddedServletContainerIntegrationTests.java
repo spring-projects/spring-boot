@@ -40,7 +40,14 @@ import org.springframework.web.util.UriTemplateHandler;
 public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 	@ClassRule
-	public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
+	public static final TemporaryFolder temporaryFolder = new TemporaryFolder() {
+
+		@Override
+		public void delete() {
+
+		}
+
+	};
 
 	@Rule
 	public final AbstractApplicationLauncher launcher;
