@@ -124,6 +124,7 @@ public class BasicJsonParser implements JsonParser {
 		int index = 0;
 		int inObject = 0;
 		int inList = 0;
+		boolean inValue = false;
 		StringBuilder build = new StringBuilder();
 		while (index < json.length()) {
 			char current = json.charAt(index);
@@ -139,7 +140,10 @@ public class BasicJsonParser implements JsonParser {
 			if (current == ']') {
 				inList--;
 			}
-			if (current == ',' && inObject == 0 && inList == 0) {
+			if (current == '"') {
+				inValue = !inValue;
+			}
+			if (current == ',' && inObject == 0 && inList == 0 && !inValue) {
 				list.add(build.toString());
 				build.setLength(0);
 			}
