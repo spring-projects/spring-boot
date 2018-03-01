@@ -36,7 +36,7 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	curl \
 		-s \
 		--connect-timeout 240 \
-		--max-time 900 \
+		--max-time 2700 \
 		-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
 		-H "Content-type:application/json" \
 		-d "{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\"}" \
@@ -47,7 +47,7 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 	curl \
 		-s \
 		--connect-timeout 240 \
-		--max-time 900 \
+		--max-time 2700 \
 		-u ${BINTRAY_USERNAME}:${BINTRAY_PASSWORD} \
 		-H "Content-Type: application/json" -d "{\"username\": \"${SONATYPE_USERNAME}\", \"password\": \"${SONATYPE_PASSWORD}\"}" \
 		-f \
