@@ -1,0 +1,66 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compile localGroovy()
+	compile gradleApi()
+	compile fileTree(dir: 'target/dependencies/compile', include: '*.jar')
+	testCompile gradleTestKit()
+	testCompile 'org.apache.commons:commons-compress:1.13'
+	testCompile fileTree(dir: 'target/dependencies/test', include: '*.jar')
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Version': (version ? version : 'unknown')
+	}
+}
+
+test {
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+eclipseJdt {
+	inputFile = rootProject.file('../../../eclipse/org.eclipse.jdt.core.prefs')
+	doLast {
+		project.file('.settings/org.eclipse.jdt.ui.prefs').withWriter { writer ->
+			writer << file('../../../eclipse/org.eclipse.jdt.ui.prefs').text
+		}
+	}
+}
+
+javadoc {
+	options {
+		author()
+		stylesheetFile = file('src/main/javadoc/spring-javadoc.css')
+		links = [
+			'http://docs.oracle.com/javase/8/docs/api/',
+			'https://docs.gradle.org/current/javadoc/'
+		]
+	}
+	title = "${project.description} $version API"
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+	classifier = "javadoc"
+	from javadoc
+}
+
+artifacts {
+	archives sourcesJar
+	archives javadocJar
+}

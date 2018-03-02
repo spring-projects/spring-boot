@@ -72,7 +72,7 @@ TIP: Run sample cache application using EhCache with
 
 === Hazelcast
 Both `com.hazelcast:hazelcast` and `com.hazelcast:hazelcast-spring` should be added
-to the project to enable support for Hazelcast.  Since there is a default
+to the project to enable support for Hazelcast. Since there is a default
 `hazelcast.xml` configuration file at the root of the classpath, it is used to
 automatically configure the underlying `HazelcastInstance`.
 
@@ -84,9 +84,8 @@ TIP: Run sample cache application using Hazelcast with
 === Infinispan
 Add the `org.infinispan:infinispan-spring4-embedded` dependency to enable support for
 Infinispan. There is no default location that Infinispan uses to look for a config
-file so if you don't specify anything it will bootstrap on a hardcoded default. You
-can set the `spring.cache.infinispan.config` property to use the provided
-`infinispan.xml` configuration instead.
+file so this sample is configured to use the provider `infinispan.xml` configuration
+file specified via the `spring.cache.infinispan.config` property.
 
 TIP: Run sample cache application using Infinispan with
 `$mvn spring-boot:run -Pinfinispan`.

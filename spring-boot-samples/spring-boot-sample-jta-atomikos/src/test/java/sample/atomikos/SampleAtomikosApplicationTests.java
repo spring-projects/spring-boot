@@ -44,7 +44,7 @@ public class SampleAtomikosApplicationTests {
 		assertThat(output).has(substring(1, "Simulated error"));
 	}
 
-	private Condition<String> substring(final int times, final String substring) {
+	private Condition<String> substring(int times, String substring) {
 		return new Condition<String>(
 				"containing '" + substring + "' " + times + " times") {
 

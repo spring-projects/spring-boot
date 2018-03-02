@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class SampleCouchbaseApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		this.userRepository.deleteAll();
 		User user = saveUser();
-		System.out.println(this.userRepository.findOne(user.getId()));
+		System.out.println(this.userRepository.findById(user.getId()));
 	}
 
 	private User saveUser() {

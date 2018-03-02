@@ -61,23 +61,21 @@ public class UserVehicleServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException()
-			throws Exception {
+	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be null");
 		this.service.getVehicleDetails(null);
 	}
 
 	@Test
-	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException()
-			throws Exception {
+	public void getVehicleDetailsWhenUsernameNotFoundShouldThrowException() {
 		given(this.userRepository.findByUsername(anyString())).willReturn(null);
 		this.thrown.expect(UserNameNotFoundException.class);
 		this.service.getVehicleDetails("sboot");
 	}
 
 	@Test
-	public void getVehicleDetailsShouldReturnMakeAndModel() throws Exception {
+	public void getVehicleDetailsShouldReturnMakeAndModel() {
 		given(this.userRepository.findByUsername(anyString()))
 				.willReturn(new User("sboot", VIN));
 		VehicleDetails details = new VehicleDetails("Honda", "Civic");

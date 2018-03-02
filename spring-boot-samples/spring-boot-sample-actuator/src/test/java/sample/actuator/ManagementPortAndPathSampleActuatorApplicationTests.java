@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,13 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.LocalManagementPort;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,12 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.port=0", "management.context-path=/admin" })
-@DirtiesContext
+		"management.server.port=0", "management.endpoints.web.base-path=/admin",
+		"management.endpoint.health.show-details=never" })
 public class ManagementPortAndPathSampleActuatorApplicationTests {
-
-	@Autowired
-	private SecurityProperties security;
 
 	@LocalServerPort
 	private int port = 9010;
@@ -56,7 +50,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	private int managementPort = 9011;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port, Map.class);
@@ -67,7 +61,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetrics() throws Exception {
+	public void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
@@ -76,16 +70,17 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/health",
-				String.class);
+	public void testHealth() {
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.withBasicAuth("user", getPassword())
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/health",
+						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
+		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\"}");
 	}
 
 	@Test
-	public void testMissing() throws Exception {
+	public void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity(
 						"http://localhost:" + this.managementPort + "/admin/missing",
@@ -95,9 +90,9 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testErrorPage() throws Exception {
+	public void testErrorPage() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate()
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/error", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
@@ -106,10 +101,11 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testManagementErrorPage() throws Exception {
+	public void testManagementErrorPage() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.managementPort + "/error", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.managementPort + "/error",
+						Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -117,7 +113,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return this.security.getUser().getPassword();
+		return "password";
 	}
 
 }

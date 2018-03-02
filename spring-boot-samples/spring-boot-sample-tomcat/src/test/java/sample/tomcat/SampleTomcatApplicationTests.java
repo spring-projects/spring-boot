@@ -17,7 +17,7 @@
 package sample.tomcat;
 
 import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.coyote.AbstractProtocol;
@@ -37,7 +37,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StreamUtils;
 
@@ -51,7 +50,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleTomcatApplicationTests {
 
 	@Autowired
@@ -61,7 +59,7 @@ public class SampleTomcatApplicationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
@@ -75,19 +73,15 @@ public class SampleTomcatApplicationTests {
 		ResponseEntity<byte[]> entity = this.restTemplate.exchange("/", HttpMethod.GET,
 				requestEntity, byte[].class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		GZIPInputStream inflater = new GZIPInputStream(
-				new ByteArrayInputStream(entity.getBody()));
-		try {
-			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
+		try (GZIPInputStream inflater = new GZIPInputStream(
+				new ByteArrayInputStream(entity.getBody()))) {
+			assertThat(StreamUtils.copyToString(inflater, StandardCharsets.UTF_8))
 					.isEqualTo("Hello World");
-		}
-		finally {
-			inflater.close();
 		}
 	}
 
 	@Test
-	public void testTimeout() throws Exception {
+	public void testTimeout() {
 		ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) this.applicationContext;
 		TomcatWebServer embeddedServletContainer = (TomcatWebServer) context
 				.getWebServer();

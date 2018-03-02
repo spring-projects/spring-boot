@@ -1,0 +1,68 @@
+ -----
+ Spring Boot
+ -----
+ Stephane Nicoll
+ -----
+ 2014-05-02
+ -----
+
+Spring Boot Maven Plugin
+
+  The Spring Boot Maven Plugin provides Spring Boot support in Maven, allowing you to package executable
+  jar or war archives and run an application “in-place”.
+
+* Goals Overview
+
+  The Spring Boot Plugin has the following goals.
+
+  * {{{./run-mojo.html}spring-boot:run}} runs your Spring Boot application.
+
+  * {{{./repackage-mojo.html}spring-boot:repackage}} repackages your jar/war to be executable.
+
+  * {{{./start-mojo.html}spring-boot:start}} and {{{./stop-mojo.html}spring-boot:stop}} to manage
+    the lifecycle of your Spring Boot application (i.e. for integration tests).
+
+  * {{{./build-info-mojo.html}spring-boot:build-info}} generates build information that can be used
+    by the Actuator.
+
+
+
+* Usage
+
+  General instructions on how to use the Spring Boot Plugin can be found on the {{{./usage.html}usage page}}. Some
+  more specific use cases are described in the examples given below.
+
+  In case you still have questions regarding the plugin's usage, please have a look at the existing
+  {{{http://stackoverflow.com/questions/tagged/spring-boot}stack overflow issue}}. If you still don't get an
+  answer, feel free to create a new thread with the <<<#spring-boot>>> tag.
+
+  If you feel like the plugin is missing a feature or has a defect, you can fill a feature request or bug report
+  in our {{{./issue-tracking.html}issue tracker}}.
+
+* Examples
+
+  To provide you with better understanding of some usages of Spring Boot, you can take a look into
+  the following examples:
+
+  * {{{./examples/repackage-classifier.html}Custom repackage classifier}}
+
+  * {{{./examples/repackage-disable-attach.html}Local repackaged artifact}}
+
+  * {{{./examples/exclude-dependency.html}Exclude a dependency}}
+
+  * {{{./examples/run-debug.html}Debug the application}}
+
+  * {{{./examples/it-random-port.html}Random port for integration tests}}
+
+  * {{{./examples/it-skip.html}Skip integration tests}}
+
+  * {{{./examples/run-profiles.html}Specify active profiles}}
+
+  * {{{./examples/build-info.html}Generate build information}}
+
+  * {{{./examples/custom-layout.html}Custom layout}}
+
+  []
+
+
+

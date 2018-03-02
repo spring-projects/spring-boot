@@ -1,0 +1,47 @@
+[[info]]
+= Info (`info`)
+
+The `info` endpoint provides general information about the application.
+
+
+
+[[info-retrieving]]
+== Retrieving the Info
+
+To retrieve the information about the application, make a `GET` request to
+`/actuator/info`, as shown in the following curl-based example:
+
+include::{snippets}info/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}info/http-response.adoc[]
+
+
+
+[[info-retrieving-response-structure]]
+=== Response Structure
+
+The response contains general information about the application. Each section of the
+response is contributed by an `InfoContributor`. Spring Boot provides `build` and `git`
+contributions.
+
+
+
+[[info-retrieving-response-structure-build]]
+==== `build` Response Structure
+
+The following table describe the structure of the `build` section of the response:
+
+[cols="2,1,3"]
+include::{snippets}info/response-fields-beneath-build.adoc[]
+
+
+
+[[info-retrieving-response-structure-git]]
+==== `git` Response Structure
+
+The following table describes the structure of the `git` section of the response:
+
+[cols="2,1,3"]
+include::{snippets}info/response-fields-beneath-git.adoc[]

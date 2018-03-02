@@ -1,0 +1,37 @@
+== Concourse pipeline
+
+The pipeline can be deployed using the following command:
+
+[source]
+----
+$ fly -t spring set-pipeline -p spring-boot -c ci/pipeline.yml -l ci/parameters.yml
+----
+
+NOTE: This assumes that you have credhub integration configured with the appropriate
+secrets.
+
+=== Release
+
+To release a milestone:
+
+[source]
+----
+$ fly -t spring trigger-job -j spring-boot/stage-milestone
+$ fly -t spring trigger-job -j spring-boot/promote-milestone
+----
+
+To release an RC:
+
+[source]
+----
+$ fly -t spring trigger-job -j spring-boot/stage-rc
+$ fly -t spring trigger-job -j spring-boot/promote-rc
+----
+
+To release a GA:
+
+[source]
+----
+$ fly -t spring trigger-job -j spring-boot/stage-release
+$ fly -t spring trigger-job -j spring-boot/promote-release
+----

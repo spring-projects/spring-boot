@@ -35,7 +35,7 @@ public class ChatService {
 	private final Logger logger = LoggerFactory.getLogger(ChatService.class);
 
 	@Ready
-	public void onReady(final AtmosphereResource resource) {
+	public void onReady(AtmosphereResource resource) {
 		this.logger.info("Connected", resource.uuid());
 	}
 

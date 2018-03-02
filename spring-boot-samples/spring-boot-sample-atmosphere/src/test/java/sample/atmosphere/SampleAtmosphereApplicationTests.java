@@ -35,7 +35,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -47,7 +46,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SampleAtmosphereApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class SampleAtmosphereApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleAtmosphereApplicationTests.class);
@@ -56,7 +54,7 @@ public class SampleAtmosphereApplicationTests {
 	private int port = 1234;
 
 	@Test
-	public void chatEndpoint() throws Exception {
+	public void chatEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
 						.properties("websocket.uri:ws://localhost:" + this.port

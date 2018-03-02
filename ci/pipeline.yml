@@ -1,0 +1,321 @@
+resource_types:
+- name: artifactory-resource
+  type: docker-image
+  source:
+    repository: springio/artifactory-resource
+    tag: 0.0.3
+- name: email
+  type: docker-image
+  source:
+    repository: pcfseceng/email-resource
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+resources:
+- name: git-repo
+  type: git
+  source:
+    uri: ((github-repo))
+    username: ((github-username))
+    password: ((github-password))
+    branch: ((branch))
+    ignore_paths: ["ci/images/*"]
+- name: git-pull-request
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: ((github-repo-name))
+    base: ((branch))
+    ignore_paths: ["ci/*"]
+- name: ci-images-git-repo
+  type: git
+  source:
+    uri: ((github-repo))
+    branch: ((branch))
+    paths: ["ci/images/*"]
+- name: spring-boot-ci-image
+  type: docker-image
+  source:
+    repository: ((docker-hub-organization))/spring-boot-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((branch))
+- name: spring-boot-jdk9-ci-image
+  type: docker-image
+  source:
+    repository: ((docker-hub-organization))/spring-boot-jdk9-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((branch))
+- name: artifactory-repo
+  type: artifactory-resource
+  source:
+    uri: ((artifactory-server))
+    username: ((artifactory-username))
+    password: ((artifactory-password))
+    build_name: ((build-name))
+- name: email-notification
+  type: email
+  source:
+    smtp:
+      host: ((email-server))
+      port: "25"
+      anonymous: true
+      skip_ssl_validation: true
+    from: ((email-from))
+    to: ((email-to))
+jobs:
+- name: build-spring-boot-ci-images
+  plan:
+  - get: ci-images-git-repo
+    trigger: true
+  - put: spring-boot-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/spring-boot-ci-image
+  - put: spring-boot-jdk9-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/spring-boot-jdk9-ci-image
+- name: build
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: true
+  - do:
+    - task: build-project
+      privileged: true
+      timeout: 1h30m
+      image: spring-boot-ci-image
+      file: git-repo/ci/tasks/build-project.yml
+    - aggregate:
+      - task: build-samples
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-samples.yml
+      - task: build-integration-tests
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_failure:
+      put: email-notification
+      params:
+        subject_text: "Build failure ${BUILD_PIPELINE_NAME} / ${BUILD_JOB_NAME} / ${BUILD_NAME}"
+        body_text: "Build ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME} has failed!"
+  - put: artifactory-repo
+    params: &artifactory-params
+      repo: libs-snapshot-local
+      build_number: "${BUILD_ID}"
+      folder: distribution-repository
+      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+      build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+      disable_checksum_uploads: true
+      artifact_set:
+      - include:
+        - "/**/spring-boot-docs-*.zip"
+        properties:
+          "zip.type": "docs"
+          "zip.deployed": "false"
+- name: build-pull-requests
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    resource: git-pull-request
+    trigger: true
+    version: every
+  - do:
+    - put: git-pull-request
+      params:
+        path: git-repo
+        status: pending
+    - task: build-project
+      timeout: 1h30m
+      image: spring-boot-ci-image
+      file: git-repo/ci/tasks/build-pr-project.yml
+    - aggregate:
+      - task: build-samples
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-samples.yml
+      - task: build-integration-tests
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_success:
+      put: git-pull-request
+      params:
+        path: git-repo
+        status: success
+    on_failure:
+      put: git-pull-request
+      params:
+        path: git-repo
+        status: failure
+- name: jdk9-build
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-jdk9-ci-image
+  - get: git-repo
+    trigger: true
+  - do:
+    - task: build-project
+      privileged: true
+      timeout: 1h30m
+      image: spring-boot-jdk9-ci-image
+      file: git-repo/ci/tasks/build-project.yml
+    - aggregate:
+      - task: build-samples
+        timeout: 1h30m
+        image: spring-boot-jdk9-ci-image
+        file: git-repo/ci/tasks/build-samples.yml
+      - task: build-integration-tests
+        timeout: 1h30m
+        image: spring-boot-jdk9-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: 1h30m
+        image: spring-boot-jdk9-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_failure:
+      put: email-notification
+      params:
+        subject_text: "JDK 9 Build failure ${BUILD_PIPELINE_NAME} / ${BUILD_JOB_NAME} / ${BUILD_NAME}"
+        body_text: "Build ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME} has failed!"
+- name: stage-milestone
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - task: stage
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: M
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
+- name: stage-rc
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - task: stage
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: RC
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
+- name: stage-release
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - task: stage
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: RELEASE
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
+- name: promote-milestone
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-milestone]
+    params:
+      save_build_info: true
+  - task: promote
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: M
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+- name: promote-rc
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-rc]
+    params:
+      save_build_info: true
+  - task: promote
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: RC
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+- name: promote-release
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-release]
+    params:
+      save_build_info: true
+  - task: promote
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: RELEASE
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+      BINTRAY_USERNAME: ((bintray-username))
+      BINTRAY_PASSWORD: ((bintray-password))
+      SONATYPE_USERNAME: ((sonatype-username))
+      SONATYPE_PASSWORD: ((sonatype-password))
+      BINTRAY_SUBJECT: ((bintray-subject))
+      BINTRAY_REPO: ((bintray-repo))
+groups:
+- name: "Build"
+  jobs: ["build", "jdk9-build"]
+- name: "Release"
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release"]
+- name: "CI Images"
+  jobs: ["build-spring-boot-ci-images"]
+- name: "Build Pull Requests"
+  jobs: ["build-pull-requests"]

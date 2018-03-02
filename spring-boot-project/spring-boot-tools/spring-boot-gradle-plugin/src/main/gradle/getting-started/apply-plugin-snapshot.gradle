@@ -1,0 +1,11 @@
+buildscript {
+	repositories {
+		maven { url 'https://repo.spring.io/libs-snapshot' }
+	}
+
+	dependencies {
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:{version}'
+	}
+}
+
+apply plugin: 'org.springframework.boot'

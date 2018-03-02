@@ -1,0 +1,15 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+task echoMainClassName {
+	dependsOn compileJava
+	doLast {
+		println 'Main class name = ' + bootRun.main
+	}
+}

@@ -32,7 +32,7 @@ public class SampleCouchbaseApplicationTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		try {
 			new SpringApplicationBuilder(SampleCouchbaseApplication.class)
 					.run("--server.port=0");

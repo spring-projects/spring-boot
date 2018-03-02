@@ -58,10 +58,6 @@ public class SampleSimpleApplicationTests {
 		SampleSimpleApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
 		assertThat(output).contains("Hello Phil");
-		assertThat(output).contains("The @ConfigurationProperties bean class "
-				+ "sample.simple.SampleConfigurationProperties contains "
-				+ "validation constraints but had not been annotated "
-				+ "with @Validated");
 	}
 
 	@Test

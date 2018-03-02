@@ -35,7 +35,7 @@ public class SampleNeo4jApplicationTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		try {
 			SampleNeo4jApplication.main(new String[0]);
 		}
