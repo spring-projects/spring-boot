@@ -75,7 +75,7 @@ public class UserDetailsServiceAutoConfiguration {
 				.roles(StringUtils.toStringArray(roles)).build());
 	}
 
-	public String getOrDeducePassword(SecurityProperties.User user,
+	private String getOrDeducePassword(SecurityProperties.User user,
 			PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
