@@ -730,8 +730,11 @@ property that defines the name of the Spring profile(s) to enable:
 You can easily generate your own configuration metadata file from items annotated with
 `@ConfigurationProperties` by using the `spring-boot-configuration-processor` jar.
 The jar includes a Java annotation processor which is invoked as your project is
-compiled. To use the processor, include `spring-boot-configuration-processor` as
-an optional dependency. For example, with Maven, you can add:
+compiled. To use the processor, include a dependency on
+`spring-boot-configuration-processor`.
+
+With Maven the dependency should be declared as optional, as shown in the following
+example:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -742,21 +745,37 @@ an optional dependency. For example, with Maven, you can add:
 	</dependency>
 ----
 
-With Gradle, you can use the https://github.com/spring-gradle-plugins/propdeps-plugin[propdeps-plugin]
-and specify the following dependency:
+With Gradle 4.5 and earlier, the dependency should be declared in the `compileOnly`
+configuration, as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
-		optional "org.springframework.boot:spring-boot-configuration-processor"
+		compileOnly "org.springframework.boot:spring-boot-configuration-processor"
 	}
+----
 
+With Gradle 4.6 and later, the dependency should be declared in the `annotationProcessor`
+configuration, as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	dependencies {
+		annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+	}
+----
+
+If you are using an `additional-spring-configuration-metadata.json` file, the
+`compileJava` task should be configured to depend on the `processResources` task, as shown
+in the following example:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
 	compileJava.dependsOn(processResources)
 ----
 
-NOTE: You need to add `compileJava.dependsOn(processResources)` to your build to ensure
-that resources are processed before code is compiled. Without this directive, any
-`additional-spring-configuration-metadata.json` files are not processed.
+This dependency ensures that the additional metadata is available when the annotation
+processor runs during compilation.
 
 The processor picks up both classes and methods that are annotated with
 `@ConfigurationProperties`. The Javadoc for field values within configuration classes
