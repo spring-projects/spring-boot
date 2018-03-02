@@ -48,7 +48,8 @@ public class KotlinPluginActionIntegrationTests {
 				.build("kotlinVersion", "dependencies", "--configuration", "compile")
 				.getOutput();
 		assertThat(output).contains("Kotlin version: 1.2.10");
-		assertThat(output).contains("org.jetbrains.kotlin:kotlin-stdlib-jdk8: -> 1.2.10");
+		assertThat(output)
+				.containsPattern("org.jetbrains.kotlin:kotlin-stdlib-jdk8:* -> 1.2.10");
 	}
 
 }
