@@ -186,6 +186,9 @@
 								<version>3.2.10</version>
 							</dependency>
 						</dependencies>
+						<configuration>
+							<skip>${skip.gradle.build}</skip>
+						</configuration>
 						<executions>
 							<execution>
 								<id>set-up-maven-properties</id>
@@ -298,6 +301,7 @@
 											<classifier>docs</classifier>
 										</artifact>
 									</artifacts>
+									<skipAttach>${skip.gradle.build}</skipAttach>
 								</configuration>
 							</execution>
 						</executions>
