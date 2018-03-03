@@ -67,7 +67,7 @@ public class ApplicationContextRequestMatcherTests {
 	}
 
 	@Test
-	public void matchesWhenContextClassIsBeanThatDoesntExistShouldSupplyException() {
+	public void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(
 				ExistingBean.class).callMatchesAndReturnProvidedContext(context);

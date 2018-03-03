@@ -643,8 +643,8 @@ NOTE: Range requests are not supported when using Jersey.
 An operation on a web endpoint or a web-specific endpoint extension can receive the
 current `java.security.Principal` or
 `org.springframework.boot.actuate.endpoint.SecurityContext` as a method parameter. The
-former is typically used in conjuction with `@Nullable` to provide different behaviour for
-authenticated and unauthenticated users. The latter is typically used to perform
+former is typically used in conjunction with `@Nullable` to provide different behaviour
+for authenticated and unauthenticated users. The latter is typically used to perform
 authorization checks using its `isUserInRole(String)` method.
 
 
@@ -664,7 +664,7 @@ possible.
 ==== Controller endpoints
 `@ControllerEndpoint` and `@RestControllerEndpoint` can be used to implement an endpoint
 that is only exposed by Spring MVC or Spring WebFlux. Methods are mapped using the
-standard annotations Spring MVC and Spring WevFlux annotations such as `@RequestMapping`
+standard annotations Spring MVC and Spring WebFlux annotations such as `@RequestMapping`
 and `@GetMapping`, with the endpoint's ID being used as a prefix for the path. Controller
 endpoints provide deeper integration with Spring's web frameworks but at the expense of
 portability. The `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever

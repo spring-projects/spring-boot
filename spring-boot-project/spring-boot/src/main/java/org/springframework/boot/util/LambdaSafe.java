@@ -63,7 +63,7 @@ public final class LambdaSafe {
 	 * interface})
 	 * @param callbackInstance the callback instance (may be a lambda)
 	 * @param argument the primary argument passed to the callback
-	 * @param additionalArguments any additional argument passed to the callback
+	 * @param additionalArguments any additional arguments passed to the callback
 	 * @param <C> the callback type
 	 * @param <A> the primary argument type
 	 * @return a {@link Callback} instance that can be invoked.
@@ -77,13 +77,13 @@ public final class LambdaSafe {
 	}
 
 	/**
-	 * Start a call to a single callback instance, dealing with common generic type
+	 * Start a call to callback instances, dealing with common generic type
 	 * concerns and exceptions.
 	 * @param callbackType the callback type (a {@link FunctionalInterface functional
 	 * interface})
 	 * @param callbackInstances the callback instances (elements may be lambdas)
 	 * @param argument the primary argument passed to the callbacks
-	 * @param additionalArguments any additional argument passed to the callbacks
+	 * @param additionalArguments any additional arguments passed to the callbacks
 	 * @param <C> the callback type
 	 * @param <A> the primary argument type
 	 * @return a {@link Callbacks} instance that can be invoked.
@@ -141,7 +141,7 @@ public final class LambdaSafe {
 		}
 
 		/**
-		 * Use a specific filter to determine when a callback should apply. If not
+		 * Use a specific filter to determine when a callback should apply. If no
 		 * explicit filter is set filter will be attempted using the generic type on the
 		 * callback type.
 		 * @param filter the filter to use
@@ -230,7 +230,7 @@ public final class LambdaSafe {
 	public static final class Callback<C, A>
 			extends LambdaSafeCallback<C, A, Callback<C, A>> {
 
-		private C callbackInstance;
+		private final C callbackInstance;
 
 		private Callback(Class<C> callbackType, C callbackInstance, A argument,
 				Object[] additionalArguments) {
@@ -272,7 +272,7 @@ public final class LambdaSafe {
 	public static final class Callbacks<C, A>
 			extends LambdaSafeCallback<C, A, Callbacks<C, A>> {
 
-		private Collection<? extends C> callbackInstances;
+		private final Collection<? extends C> callbackInstances;
 
 		private Callbacks(Class<C> callbackType,
 				Collection<? extends C> callbackInstances, A argument,
@@ -299,7 +299,7 @@ public final class LambdaSafe {
 		 * Invoke the callback instances where the callback method returns a result.
 		 * @param invoker the invoker used to invoke the callback
 		 * @param <R> the result type
-		 * @return the results of the invocation (may be an empty stream if not callbacks
+		 * @return the results of the invocation (may be an empty stream if no callbacks
 		 * could be called)
 		 */
 		public <R> Stream<R> invokeAnd(Function<C, R> invoker) {

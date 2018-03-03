@@ -2034,8 +2034,8 @@ for Webjars.
 
 To use version agnostic URLs for Webjars, add the `webjars-locator-core` dependency.
 Then declare your Webjar. Using jQuery as an example, adding
-`"/webjars/jquery/dist/jquery.min.js"` results in
-`"/webjars/jquery/x.y.z/dist/jquery.min.js"`. where `x.y.z` is the Webjar version.
+`"/webjars/jquery/jquery.min.js"` results in
+`"/webjars/jquery/x.y.z/jquery.min.js"`. where `x.y.z` is the Webjar version.
 
 NOTE: If you use JBoss, you need to declare the `webjars-locator-jboss-vfs`
 dependency instead of the `webjars-locator-core`. Otherwise, all Webjars resolve as a
@@ -3012,13 +3012,13 @@ that you can see how to set things up.
 [[boot-features-security]]
 == Security
 If {spring-security}[Spring Security] is on the classpath, then web applications are
-secure by default. Spring Boot relies on Spring Security’s content-negotiation strategy to
-determine whether to use `httpBasic` or `formLogin`. To add method-level security to a web
-application, you can also add `@EnableGlobalMethodSecurity` with your desired settings.
-Additional information can be found in the {spring-security-reference}#jc-method[Spring
-Security Reference Guide].
+secured by default. Spring Boot relies on Spring Security’s content-negotiation strategy
+to determine whether to use `httpBasic` or `formLogin`. To add method-level security to a
+web application, you can also add `@EnableGlobalMethodSecurity` with your desired
+settings. Additional information can be found in the
+{spring-security-reference}#jc-method[Spring Security Reference Guide].
 
-The default `AuthenticationManager` has a single user. The user name is `user`, and the
+The default `UserDetailsService` has a single user. The user name is `user`, and the
 password is random and is printed at INFO level when the application starts, as shown in
 the following example:
 
@@ -3049,14 +3049,15 @@ You can provide a different `AuthenticationEventPublisher` by adding a bean for 
 
 [[boot-features-security-mvc]]
 === MVC Security
-The default security configuration is implemented in `SecurityAutoConfiguration` and in
-the classes imported from there (`SpringBootWebSecurityConfiguration` for web security
-and `AuthenticationManagerConfiguration` for authentication configuration, which is also
-relevant in non-web applications). To switch off the default web application security
+The default security configuration is implemented in `SecurityAutoConfiguration` and
+`UserDetailsServiceAutoConfiguration`. `SecurityAutoConfiguration` imports
+`SpringBootWebSecurityConfiguration` for web security and
+`UserDetailsServiceAutoConfiguration` configures authentication, which is also
+relevant in non-web applications. To switch off the default web application security
 configuration completely, you can add a bean of type `WebSecurityConfigurerAdapter` (doing
-so does not disable the authentication manager configuration or Actuator's security).
+so does not disable the `UserDetailsService` configuration or Actuator's security).
 
-To also switch off the authentication manager configuration, you can add a bean of type
+To also switch off the `UserDetailsService` configuration, you can add a bean of type
 `UserDetailsService`, `AuthenticationProvider`, or `AuthenticationManager`.
 There are several secure applications in the {github-code}/spring-boot-samples/[Spring
 Boot samples] to get you started with common use cases.
@@ -3074,14 +3075,14 @@ commonly used locations.
 === WebFlux Security
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding
 the `spring-boot-starter-security` dependency. The default security configuration is
-implemented in `ReactiveSecurityAutoConfiguration` and in the classes imported from there
-(`WebFluxSecurityConfiguration` for web security and
-`ReactiveAuthenticationManagerConfiguration` for authentication configuration, which is
-also relevant in non-web applications). To switch off the default web application security
+implemented in `ReactiveSecurityAutoConfiguration` and
+`UserDetailsServiceAutoConfiguration`. `ReactiveSecurityAutoConfiguration` imports
+`WebFluxSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration`
+configures authentication, which is also relevant in non-web applications. To switch off the default web application security
 configuration completely, you can add a bean of type `WebFilterChainProxy` (doing so does
-not disable the authentication manager configuration or Actuator's security).
+not disable the `UserDetailsService` configuration or Actuator's security).
 
-To also switch off the authentication manager configuration, you can add a bean of type
+To also switch off the `UserDetailsService` configuration, you can add a bean of type
 `ReactiveUserDetailsService` or `ReactiveAuthenticationManager`.
 
 Access rules can be configured by adding a custom `SecurityWebFilterChain`. Spring
