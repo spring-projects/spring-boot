@@ -81,7 +81,7 @@ public class CachingOperationInvokerTests {
 	}
 
 	@Test
-	public void targetAlwaysInvokedWithArguments() {
+	public void targetAlwaysInvokedWithParameters() {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("test", "value");
