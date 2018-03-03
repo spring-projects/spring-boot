@@ -738,6 +738,13 @@
 								<inherited>true</inherited>
 							</execution>
 						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-lang3</artifactId>
+								<version>3.7</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
@@ -779,6 +786,8 @@
 				<jdk>10</jdk>
 			</activation>
 			<properties>
+				<maven-failsafe-plugin.version>2.21.0-SNAPSHOT</maven-failsafe-plugin.version>
+				<maven-site-plugin.version>3.7</maven-site-plugin.version>
 				<maven-surefire-plugin.version>2.21.0-SNAPSHOT</maven-surefire-plugin.version>
 			</properties>
 			<pluginRepositories>
