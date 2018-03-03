@@ -255,6 +255,7 @@
 			</activation>
 			<properties>
 				<maven-surefire-plugin.version>2.21.0-SNAPSHOT</maven-surefire-plugin.version>
+				<maven-failsafe-plugin.version>2.21.0-SNAPSHOT</maven-failsafe-plugin.version>
 			</properties>
 			<pluginRepositories>
 				<pluginRepository>
