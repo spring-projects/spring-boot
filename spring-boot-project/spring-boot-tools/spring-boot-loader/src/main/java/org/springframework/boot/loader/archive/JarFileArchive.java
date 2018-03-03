@@ -32,7 +32,6 @@ import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.boot.loader.jar.JarFile;
 
 /**
@@ -145,8 +144,7 @@ public class JarFileArchive implements Archive {
 	}
 
 	private void unpack(JarEntry entry, File file) throws IOException {
-		try (InputStream inputStream = this.jarFile.getInputStream(entry,
-				ResourceAccess.ONCE);
+		try (InputStream inputStream = this.jarFile.getInputStream(entry);
 				OutputStream outputStream = new FileOutputStream(file)) {
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int bytesRead;

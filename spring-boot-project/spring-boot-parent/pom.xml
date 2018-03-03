@@ -759,11 +759,8 @@
 		<profile>
 			<id>java9</id>
 			<activation>
-				<jdk>9</jdk>
+				<jdk>[9,)</jdk>
 			</activation>
-			<properties>
-				<aspectj.version>1.9.0.RC1</aspectj.version>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -775,6 +772,24 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>java10</id>
+			<activation>
+				<jdk>10</jdk>
+			</activation>
+			<properties>
+				<maven-surefire-plugin.version>2.21.0-SNAPSHOT</maven-surefire-plugin.version>
+			</properties>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>apache-snapshots</id>
+					<url>https://repository.apache.org/content/groups/snapshots</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
 		</profile>
 	</profiles>
 </project>

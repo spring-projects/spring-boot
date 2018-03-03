@@ -18,4 +18,5 @@
 	<xsl:template match="/m:project/m:groupId" />
 	<xsl:template match="/m:project/m:version" />
 	<xsl:template match="/m:project/m:build/m:plugins" />
+	<xsl:template match="/m:project/m:licenses" />
 </xsl:stylesheet>

@@ -46,7 +46,7 @@ public class NoSnakeYamlPropertySourceLoaderTests {
 				"Attempted to load resource but snakeyaml was not found on the classpath");
 		ByteArrayResource resource = new ByteArrayResource(
 				"foo:\n  bar: spam".getBytes());
-		this.loader.load("resource", resource, null, (profile) -> true);
+		this.loader.load("resource", resource);
 	}
 
 }

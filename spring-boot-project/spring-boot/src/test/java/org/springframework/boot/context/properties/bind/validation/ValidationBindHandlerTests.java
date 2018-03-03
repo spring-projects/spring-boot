@@ -153,6 +153,19 @@ public class ValidationBindHandlerTests {
 						this.handler));
 	}
 
+	@Test
+	public void bindShouldNotValidateDepthGreaterThanZero() {
+		// gh-12227
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "baz");
+		this.sources.add(source);
+		ExampleValidatedBeanWithGetterException existingValue = new ExampleValidatedBeanWithGetterException();
+		this.binder.bind(ConfigurationPropertyName.of("foo"),
+				Bindable.of(ExampleValidatedBeanWithGetterException.class)
+						.withExistingValue(existingValue),
+				this.handler);
+	}
+
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
 		try {
 			action.run();
@@ -244,6 +257,16 @@ public class ValidationBindHandlerTests {
 		public void setAddress(String address) {
 			this.address = address;
 		}
+
+	}
+
+	@Validated
+	public static class ExampleValidatedBeanWithGetterException {
+
+		public int getAge() {
+			throw new RuntimeException();
+		}
+
 	}
 
 }

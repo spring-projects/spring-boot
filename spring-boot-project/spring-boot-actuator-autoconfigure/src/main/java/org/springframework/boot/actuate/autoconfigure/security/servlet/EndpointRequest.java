@@ -23,11 +23,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
@@ -46,6 +48,8 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  */
 public final class EndpointRequest {
+
+	private static final RequestMatcher EMPTY_MATCHER = (request) -> false;
 
 	private EndpointRequest() {
 	}
@@ -129,14 +133,28 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(PathMappedEndpoints pathMappedEndpoints) {
+		protected void initialized(Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+			this.delegate = createDelegate(pathMappedEndpoints);
+		}
+
+		private RequestMatcher createDelegate(
+				Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+			try {
+				return createDelegate(pathMappedEndpoints.get());
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return EMPTY_MATCHER;
+			}
+		}
+
+		private RequestMatcher createDelegate(PathMappedEndpoints pathMappedEndpoints) {
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
 				paths.addAll(pathMappedEndpoints.getAllPaths());
 			}
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
-			this.delegate = new OrRequestMatcher(getDelegateMatchers(paths));
+			return new OrRequestMatcher(getDelegateMatchers(paths));
 		}
 
 		private Stream<String> streamPaths(List<Object> source,
@@ -169,7 +187,7 @@ public final class EndpointRequest {
 
 		@Override
 		protected boolean matches(HttpServletRequest request,
-				PathMappedEndpoints context) {
+				Supplier<PathMappedEndpoints> context) {
 			return this.delegate.matches(request);
 		}
 

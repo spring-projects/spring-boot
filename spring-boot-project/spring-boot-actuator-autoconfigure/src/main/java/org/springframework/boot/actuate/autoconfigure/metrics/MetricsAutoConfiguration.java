@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import ch.qos.logback.classic.LoggerContext;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
@@ -26,17 +27,25 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics.
@@ -103,7 +112,9 @@ public class MetricsAutoConfiguration {
 	static class MeterBindersConfiguration {
 
 		@Bean
-		@ConditionalOnClass(name = "ch.qos.logback.classic.Logger")
+		@ConditionalOnClass(name = { "ch.qos.logback.classic.LoggerContext",
+				"org.slf4j.LoggerFactory" })
+		@Conditional(LogbackLoggingCondition.class)
 		@ConditionalOnMissingBean(LogbackMetrics.class)
 		@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
 		public LogbackMetrics logbackMetrics() {
@@ -129,6 +140,25 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public FileDescriptorMetrics fileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
+		}
+
+	}
+
+	static class LogbackLoggingCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("LogbackLoggingCondition");
+			if (loggerFactory instanceof LoggerContext) {
+				return ConditionOutcome.match(
+						message.because("ILoggerFactory is a Logback LoggerContext"));
+			}
+			return ConditionOutcome
+					.noMatch(message.because("ILoggerFactory is an instance of "
+							+ loggerFactory.getClass().getCanonicalName()));
 		}
 
 	}

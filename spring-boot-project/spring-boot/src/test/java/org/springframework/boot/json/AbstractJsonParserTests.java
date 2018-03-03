@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Jean de Klerk
+ * @author Stephane Nicoll
  */
 public abstract class AbstractJsonParserTests {
 
@@ -61,6 +62,13 @@ public abstract class AbstractJsonParserTests {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"123\"}");
 		assertThat(map).hasSize(1);
 		assertThat(map.get("foo")).isEqualTo("123");
+	}
+
+	@Test
+	public void stringContainingComma() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar1,bar2\"}");
+		assertThat(map).hasSize(1);
+		assertThat(map.get("foo")).isEqualTo("bar1,bar2");
 	}
 
 	@Test

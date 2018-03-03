@@ -157,52 +157,42 @@ public class JettyServletWebServerFactoryTests
 
 	@Test
 	public void sslEnabledMultiProtocolsConfiguration() {
-		Ssl ssl = new Ssl();
-		ssl.setKeyStore("src/test/resources/test.jks");
-		ssl.setKeyStorePassword("secret");
-		ssl.setKeyPassword("password");
-		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
-		ssl.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1.2" });
-
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSsl(ssl);
-
+		factory.setSsl(getSslSettings("TLSv1.1", "TLSv1.2"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
-
 		JettyWebServer jettyWebServer = (JettyWebServer) this.webServer;
 		ServerConnector connector = (ServerConnector) jettyWebServer.getServer()
 				.getConnectors()[0];
 		SslConnectionFactory connectionFactory = connector
 				.getConnectionFactory(SslConnectionFactory.class);
-
 		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols())
-				.isEqualTo(new String[] { "TLSv1.1", "TLSv1.2" });
+				.containsExactly("TLSv1.1", "TLSv1.2");
 	}
 
 	@Test
 	public void sslEnabledProtocolsConfiguration() {
-		Ssl ssl = new Ssl();
-		ssl.setKeyStore("src/test/resources/test.jks");
-		ssl.setKeyStorePassword("secret");
-		ssl.setKeyPassword("password");
-		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
-		ssl.setEnabledProtocols(new String[] { "TLSv1.1" });
-
 		JettyServletWebServerFactory factory = getFactory();
-		factory.setSsl(ssl);
-
+		factory.setSsl(getSslSettings("TLSv1.1"));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
-
 		JettyWebServer jettyWebServer = (JettyWebServer) this.webServer;
 		ServerConnector connector = (ServerConnector) jettyWebServer.getServer()
 				.getConnectors()[0];
 		SslConnectionFactory connectionFactory = connector
 				.getConnectionFactory(SslConnectionFactory.class);
-
 		assertThat(connectionFactory.getSslContextFactory().getIncludeProtocols())
-				.isEqualTo(new String[] { "TLSv1.1" });
+				.containsExactly("TLSv1.1");
+	}
+
+	private Ssl getSslSettings(String... enabledProtocols) {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+		ssl.setEnabledProtocols(enabledProtocols);
+		return ssl;
 	}
 
 	private void assertTimeout(JettyServletWebServerFactory factory, int expected) {
@@ -280,6 +270,24 @@ public class JettyServletWebServerFactoryTests
 		JettyServletWebServerFactory factory = getFactory();
 		InetAddress localhost = InetAddress.getLocalHost();
 		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		Connector connector = ((JettyWebServer) this.webServer).getServer()
+				.getConnectors()[0];
+		assertThat(((ServerConnector) connector).getHost())
+				.isEqualTo(localhost.getHostAddress());
+	}
+
+	@Test
+	public void specificIPAddressWithSslIsNotReverseResolved() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		InetAddress localhost = InetAddress.getLocalHost();
+		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		Connector connector = ((JettyWebServer) this.webServer).getServer()

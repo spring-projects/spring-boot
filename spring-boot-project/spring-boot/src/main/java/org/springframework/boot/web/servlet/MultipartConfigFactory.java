@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.web.servlet;
+
+import java.util.Locale;
 
 import javax.servlet.MultipartConfigElement;
 
@@ -110,7 +112,7 @@ public class MultipartConfigFactory {
 
 	private long parseSize(String size) {
 		Assert.hasLength(size, "Size must not be empty");
-		size = size.toUpperCase();
+		size = size.toUpperCase(Locale.ENGLISH);
 		if (size.endsWith("KB")) {
 			return Long.valueOf(size.substring(0, size.length() - 2)) * 1024;
 		}

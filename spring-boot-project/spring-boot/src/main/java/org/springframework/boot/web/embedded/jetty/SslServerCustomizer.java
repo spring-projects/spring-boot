@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URL;
 
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
@@ -50,7 +51,7 @@ import org.springframework.util.ResourceUtils;
  */
 class SslServerCustomizer implements JettyServerCustomizer {
 
-	private final int port;
+	private final InetSocketAddress address;
 
 	private final Ssl ssl;
 
@@ -58,9 +59,9 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	private final Http2 http2;
 
-	SslServerCustomizer(int port, Ssl ssl, SslStoreProvider sslStoreProvider,
-			Http2 http2) {
-		this.port = port;
+	SslServerCustomizer(InetSocketAddress address, Ssl ssl,
+			SslStoreProvider sslStoreProvider, Http2 http2) {
+		this.address = address;
 		this.ssl = ssl;
 		this.sslStoreProvider = sslStoreProvider;
 		this.http2 = http2;
@@ -70,20 +71,22 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	public void customize(Server server) {
 		SslContextFactory sslContextFactory = new SslContextFactory();
 		configureSsl(sslContextFactory, this.ssl, this.sslStoreProvider);
-		ServerConnector connector = createConnector(server, sslContextFactory, this.port);
+		ServerConnector connector = createConnector(server, sslContextFactory,
+				this.address);
 		server.setConnectors(new Connector[] { connector });
 	}
 
 	private ServerConnector createConnector(Server server,
-			SslContextFactory sslContextFactory, int port) {
+			SslContextFactory sslContextFactory, InetSocketAddress address) {
 		HttpConfiguration config = new HttpConfiguration();
 		config.setSendServerVersion(false);
 		config.setSecureScheme("https");
-		config.setSecurePort(port);
+		config.setSecurePort(address.getPort());
 		config.addCustomizer(new SecureRequestCustomizer());
 		ServerConnector connector = createServerConnector(server, sslContextFactory,
 				config);
-		connector.setPort(port);
+		connector.setPort(address.getPort());
+		connector.setHost(address.getHostString());
 		return connector;
 	}
 

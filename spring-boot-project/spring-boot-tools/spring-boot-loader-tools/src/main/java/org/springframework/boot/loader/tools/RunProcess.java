@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -123,7 +124,8 @@ public class RunProcess {
 	// There's a bug in the Windows VM (https://bugs.openjdk.java.net/browse/JDK-8023130)
 	// that means we need to avoid inheritIO
 	private static boolean isInheritIOBroken() {
-		if (!System.getProperty("os.name", "none").toLowerCase().contains("windows")) {
+		if (!System.getProperty("os.name", "none").toLowerCase(Locale.ENGLISH)
+				.contains("windows")) {
 			return false;
 		}
 		String runtime = System.getProperty("java.runtime.version");

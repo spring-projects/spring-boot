@@ -19,6 +19,7 @@ package org.springframework.boot.web.context;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.After;
@@ -101,7 +102,7 @@ public class WebServerPortFileWriterTest {
 	@Test
 	public void createUpperCaseManagementPortFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		file = new File(file.getParentFile(), file.getName().toUpperCase());
+		file = new File(file.getParentFile(), file.getName().toUpperCase(Locale.ENGLISH));
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("management", 9090));
 		String managementFile = file.getName();

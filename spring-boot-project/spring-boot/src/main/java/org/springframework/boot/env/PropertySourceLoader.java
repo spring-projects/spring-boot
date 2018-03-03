@@ -17,7 +17,7 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
-import java.util.function.Predicate;
+import java.util.List;
 
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -39,17 +39,15 @@ public interface PropertySourceLoader {
 	String[] getFileExtensions();
 
 	/**
-	 * Load the resource into a property source.
-	 * @param name the name of the property source
+	 * Load the resource into one or more property sources. Implementations may either
+	 * return a list containing a single source, or in the case of a multi-document format
+	 * such as yaml a source or each document in the resource.
+	 * @param name the root name of the property source. If multiple documents are loaded
+	 * an additional suffix should be added to the name for each source loaded.
 	 * @param resource the resource to load
-	 * @param profileToLoad the name of the profile to load or {@code null}. The profile
-	 * can be used to load multi-document files (such as YAML). Simple property formats
-	 * should {@code null} when asked to load a profile.
-	 * @param acceptsProfiles predicate to determine if a particular profile is accepted
-	 * @return a property source or {@code null}
+	 * @return a list property sources
 	 * @throws IOException if the source cannot be loaded
 	 */
-	PropertySource<?> load(String name, Resource resource, String profileToLoad,
-			Predicate<String[]> acceptsProfiles) throws IOException;
+	List<PropertySource<?>> load(String name, Resource resource) throws IOException;
 
 }

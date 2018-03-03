@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Manifest;
@@ -488,7 +489,7 @@ public class PropertiesLauncher extends Launcher {
 		if (isNestedArchivePath(file)) {
 			return null;
 		}
-		String name = file.getName().toLowerCase();
+		String name = file.getName().toLowerCase(Locale.ENGLISH);
 		if (name.endsWith(".jar") || name.endsWith(".zip")) {
 			return new JarFileArchive(file);
 		}
@@ -564,7 +565,7 @@ public class PropertiesLauncher extends Launcher {
 		if (path.startsWith("./")) {
 			path = path.substring(2);
 		}
-		String lowerCasePath = path.toLowerCase();
+		String lowerCasePath = path.toLowerCase(Locale.ENGLISH);
 		if (lowerCasePath.endsWith(".jar") || lowerCasePath.endsWith(".zip")) {
 			return path;
 		}

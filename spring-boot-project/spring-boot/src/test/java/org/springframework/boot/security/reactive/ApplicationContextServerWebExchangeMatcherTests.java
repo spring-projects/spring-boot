@@ -16,11 +16,14 @@
 
 package org.springframework.boot.security.reactive;
 
+import java.util.function.Supplier;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -58,8 +61,8 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 		StaticApplicationContext context = (StaticApplicationContext) exchange
 				.getApplicationContext();
 		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(
-				ApplicationContext.class).callMatchesAndReturnProvidedContext(exchange))
-						.isEqualTo(context);
+				ApplicationContext.class).callMatchesAndReturnProvidedContext(exchange)
+						.get()).isEqualTo(context);
 	}
 
 	@Test
@@ -70,19 +73,17 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(
 				new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
-						.callMatchesAndReturnProvidedContext(exchange))
+						.callMatchesAndReturnProvidedContext(exchange).get())
 								.isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
-	public void matchesWhenContextClassIsNewBeanShouldProvideBean() {
+	public void matchesWhenContextClassIsMissingBeanShouldProvideException() {
 		ServerWebExchange exchange = createHttpWebHandlerAdapter();
-		StaticApplicationContext context = (StaticApplicationContext) exchange
-				.getApplicationContext();
-		context.registerSingleton("existingBean", ExistingBean.class);
-		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(NewBean.class)
-				.callMatchesAndReturnProvidedContext(exchange).getBean())
-						.isEqualTo(context.getBean(ExistingBean.class));
+		Supplier<ExistingBean> supplier = new TestApplicationContextServerWebExchangeMatcher<>(
+				ExistingBean.class).callMatchesAndReturnProvidedContext(exchange);
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		supplier.get();
 	}
 
 	@Test
@@ -139,24 +140,25 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 	static class TestApplicationContextServerWebExchangeMatcher<C>
 			extends ApplicationContextServerWebExchangeMatcher<C> {
 
-		private C providedContext;
+		private Supplier<C> providedContext;
 
 		TestApplicationContextServerWebExchangeMatcher(Class<? extends C> context) {
 			super(context);
 		}
 
-		C callMatchesAndReturnProvidedContext(ServerWebExchange exchange) {
+		Supplier<C> callMatchesAndReturnProvidedContext(ServerWebExchange exchange) {
 			matches(exchange);
 			return getProvidedContext();
 		}
 
 		@Override
-		protected Mono<MatchResult> matches(ServerWebExchange exchange, C context) {
+		protected Mono<MatchResult> matches(ServerWebExchange exchange,
+				Supplier<C> context) {
 			this.providedContext = context;
 			return MatchResult.match();
 		}
 
-		C getProvidedContext() {
+		Supplier<C> getProvidedContext() {
 			return this.providedContext;
 		}
 

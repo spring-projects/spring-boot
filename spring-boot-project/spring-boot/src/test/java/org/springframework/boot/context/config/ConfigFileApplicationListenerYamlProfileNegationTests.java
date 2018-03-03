@@ -88,6 +88,48 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 		assertVersionProperty(this.context, "NOT A", "C", "B");
 	}
 
+	@Test
+	public void yamlProfileCascading() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		String configName = "--spring.config.name=cascadingprofiles";
+		this.context = application.run(configName);
+		assertVersionProperty(this.context, "E", "D", "C", "E", "A", "B");
+		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-d")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
+	}
+
+	@Test
+	public void yamlProfileCascadingOverrideProfilesA() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		String configName = "--spring.config.name=cascadingprofiles";
+		this.context = application.run(configName, "--spring.profiles.active=A");
+		assertVersionProperty(this.context, "E", "C", "E", "A");
+		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-b")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-d")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
+	}
+
+	@Test
+	public void yamlProfileCascadingOverrideProfilesB() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		String configName = "--spring.config.name=cascadingprofiles";
+		this.context = application.run(configName, "--spring.profiles.active=B");
+		assertVersionProperty(this.context, "E", "D", "E", "B");
+		assertThat(this.context.getEnvironment().getProperty("not-a")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-c")).isEqualTo("true");
+		assertThat(this.context.getEnvironment().getProperty("not-d")).isNull();
+		assertThat(this.context.getEnvironment().getProperty("not-e")).isNull();
+	}
+
 	private void assertVersionProperty(ConfigurableApplicationContext context,
 			String expectedVersion, String... expectedActiveProfiles) {
 		assertThat(context.getEnvironment().getActiveProfiles())

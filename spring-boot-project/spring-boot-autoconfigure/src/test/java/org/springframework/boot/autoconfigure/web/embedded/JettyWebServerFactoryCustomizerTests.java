@@ -85,7 +85,8 @@ public class JettyWebServerFactoryCustomizerTests {
 		File logFile = File.createTempFile("jetty_log", ".log");
 		String timezone = TimeZone.getDefault().getID();
 		bind("server.jetty.accesslog.enabled=true",
-				"server.jetty.accesslog.filename=" + logFile.getAbsolutePath(),
+				"server.jetty.accesslog.filename="
+						+ logFile.getAbsolutePath().replace("\\", "\\\\"),
 				"server.jetty.accesslog.file-date-format=yyyy-MM-dd",
 				"server.jetty.accesslog.retention-period=42",
 				"server.jetty.accesslog.append=true",

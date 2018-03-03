@@ -540,8 +540,8 @@ public class ConfigFileApplicationListenerTests {
 				.map(org.springframework.core.env.PropertySource::getName)
 				.collect(Collectors.toList());
 		assertThat(names).contains(
-				"applicationConfig: [classpath:/testsetprofiles.yml]#dev",
-				"applicationConfig: [classpath:/testsetprofiles.yml]");
+				"applicationConfig: [classpath:/testsetprofiles.yml] (document #0)",
+				"applicationConfig: [classpath:/testsetprofiles.yml] (document #1)");
 	}
 
 	@Test

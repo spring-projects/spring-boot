@@ -54,7 +54,7 @@ public class LoggersEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWithNoneLoggerEndpointShouldNotHaveEndpointBean() {
+	public void runWithNoneLoggingSystemShouldNotHaveEndpointBean() {
 		this.contextRunner
 				.withSystemProperties(
 						"org.springframework.boot.logging.LoggingSystem=none")

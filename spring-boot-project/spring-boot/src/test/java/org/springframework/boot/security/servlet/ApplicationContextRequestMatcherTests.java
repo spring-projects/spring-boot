@@ -16,12 +16,15 @@
 
 package org.springframework.boot.security.servlet;
 
+import java.util.function.Supplier;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
@@ -51,7 +54,7 @@ public class ApplicationContextRequestMatcherTests {
 	public void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		assertThat(new TestApplicationContextRequestMatcher<>(ApplicationContext.class)
-				.callMatchesAndReturnProvidedContext(context)).isEqualTo(context);
+				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context);
 	}
 
 	@Test
@@ -59,17 +62,17 @@ public class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context))
+				.callMatchesAndReturnProvidedContext(context).get())
 						.isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
-	public void matchesWhenContextClassIsNewBeanShouldProvideBean() {
+	public void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
 		StaticWebApplicationContext context = createWebApplicationContext();
-		context.registerSingleton("existingBean", ExistingBean.class);
-		assertThat(new TestApplicationContextRequestMatcher<>(NewBean.class)
-				.callMatchesAndReturnProvidedContext(context).getBean())
-						.isEqualTo(context.getBean(ExistingBean.class));
+		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(
+				ExistingBean.class).callMatchesAndReturnProvidedContext(context);
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		supplier.get();
 	}
 
 	private StaticWebApplicationContext createWebApplicationContext() {
@@ -102,29 +105,31 @@ public class ApplicationContextRequestMatcherTests {
 	static class TestApplicationContextRequestMatcher<C>
 			extends ApplicationContextRequestMatcher<C> {
 
-		private C providedContext;
+		private Supplier<C> providedContext;
 
 		TestApplicationContextRequestMatcher(Class<? extends C> context) {
 			super(context);
 		}
 
-		public C callMatchesAndReturnProvidedContext(WebApplicationContext context) {
+		public Supplier<C> callMatchesAndReturnProvidedContext(
+				WebApplicationContext context) {
 			return callMatchesAndReturnProvidedContext(
 					new MockHttpServletRequest(context.getServletContext()));
 		}
 
-		public C callMatchesAndReturnProvidedContext(HttpServletRequest request) {
+		public Supplier<C> callMatchesAndReturnProvidedContext(
+				HttpServletRequest request) {
 			matches(request);
 			return getProvidedContext();
 		}
 
 		@Override
-		protected boolean matches(HttpServletRequest request, C context) {
+		protected boolean matches(HttpServletRequest request, Supplier<C> context) {
 			this.providedContext = context;
 			return false;
 		}
 
-		public C getProvidedContext() {
+		public Supplier<C> getProvidedContext() {
 			return this.providedContext;
 		}
 

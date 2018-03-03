@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,6 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URLStreamHandler;
 import java.security.Permission;
-
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -170,7 +168,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 		connect();
 		InputStream inputStream = (this.jarEntryName.isEmpty()
-				? this.jarFile.getData().getInputStream(ResourceAccess.ONCE)
+				? this.jarFile.getData().getInputStream()
 				: this.jarFile.getInputStream(this.jarEntry));
 		if (inputStream == null) {
 			throwFileNotFound(this.jarEntryName, this.jarFile);
@@ -268,11 +266,9 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			index = separator + SEPARATOR.length();
 		}
 		JarEntryName jarEntryName = JarEntryName.get(spec, index);
-		if (Boolean.TRUE.equals(useFastExceptions.get())) {
-			if (!jarEntryName.isEmpty()
-					&& !jarFile.containsEntry(jarEntryName.toString())) {
-				return NOT_FOUND_CONNECTION;
-			}
+		if (Boolean.TRUE.equals(useFastExceptions.get()) && !jarEntryName.isEmpty()
+				&& !jarFile.containsEntry(jarEntryName.toString())) {
+			return NOT_FOUND_CONNECTION;
 		}
 		return new JarURLConnection(url, jarFile, jarEntryName);
 	}

@@ -69,7 +69,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
 			BindContext context, Object result) throws Exception {
-		validate(name, target, result);
+		validate(name, target, context, result);
 		if (context.getDepth() == 0 && !this.exceptions.isEmpty()) {
 			throw this.exceptions.pop();
 		}
@@ -77,17 +77,18 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	private void validate(ConfigurationPropertyName name, Bindable<?> target,
-			Object result) {
-		Object validationTarget = getValidationTarget(target, result);
+			BindContext context, Object result) {
+		Object validationTarget = getValidationTarget(target, context, result);
 		Class<?> validationType = target.getBoxedType().resolve();
 		validate(name, validationTarget, validationType);
 	}
 
-	private Object getValidationTarget(Bindable<?> target, Object result) {
+	private Object getValidationTarget(Bindable<?> target, BindContext context,
+			Object result) {
 		if (result != null) {
 			return result;
 		}
-		if (target.getValue() != null) {
+		if (context.getDepth() == 0 && target.getValue() != null) {
 			return target.getValue().get();
 		}
 		return null;

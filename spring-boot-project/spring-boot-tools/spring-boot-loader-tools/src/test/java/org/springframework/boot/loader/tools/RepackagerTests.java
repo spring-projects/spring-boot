@@ -208,8 +208,7 @@ public class RepackagerTests {
 		repackager.setLayout(new Layouts.None());
 		repackager.repackage(file, NO_LIBRARIES);
 		Manifest actualManifest = getManifest(file);
-		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-				.isNull();
+		assertThat(actualManifest.getMainAttributes().getValue("Main-Class")).isNull();
 		assertThat(hasLauncherClasses(file)).isFalse();
 	}
 

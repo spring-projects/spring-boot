@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
@@ -74,9 +73,10 @@ class ApplicationBuilder {
 		File resourcesJar = createResourcesJar();
 		File appFolder = new File(containerFolder, "app");
 		appFolder.mkdirs();
+		File settingsXml = writeSettingsXml(appFolder);
 		writePom(appFolder, resourcesJar);
 		copyApplicationSource(appFolder);
-		packageApplication(appFolder);
+		packageApplication(appFolder, settingsXml);
 		return new File(appFolder, "target/app-0.0.1." + this.packaging);
 	}
 
@@ -110,6 +110,22 @@ class ApplicationBuilder {
 		out.close();
 	}
 
+	private File writeSettingsXml(File appFolder) throws IOException {
+		String repository = System.getProperty("repository");
+		if (!StringUtils.hasText(repository)) {
+			return null;
+		}
+		Map<String, Object> context = new HashMap<>();
+		context.put("repository", repository);
+		File settingsXml = new File(appFolder, "settings.xml");
+		try (FileWriter out = new FileWriter(settingsXml)) {
+			Mustache.compiler().escapeHTML(false)
+					.compile(new FileReader("src/test/resources/settings-template.xml"))
+					.execute(context, out);
+		}
+		return settingsXml;
+	}
+
 	private void copyApplicationSource(File appFolder) throws IOException {
 		File examplePackage = new File(appFolder, "src/main/java/com/example");
 		examplePackage.mkdirs();
@@ -124,15 +140,13 @@ class ApplicationBuilder {
 		}
 	}
 
-	private void packageApplication(File appFolder) throws MavenInvocationException {
+	private void packageApplication(File appFolder, File settingsXml)
+			throws MavenInvocationException {
 		InvocationRequest invocation = new DefaultInvocationRequest();
 		invocation.setBaseDirectory(appFolder);
 		invocation.setGoals(Collections.singletonList("package"));
-		String repository = System.getProperty("repository");
-		if (StringUtils.hasText(repository) && !repository.equals("${repository}")) {
-			Properties properties = new Properties();
-			properties.put("repository", repository);
-			invocation.setProperties(properties);
+		if (settingsXml != null) {
+			invocation.setUserSettingsFile(settingsXml);
 		}
 		InvocationResult execute = new DefaultInvoker().execute(invocation);
 		assertThat(execute.getExitCode()).isEqualTo(0);

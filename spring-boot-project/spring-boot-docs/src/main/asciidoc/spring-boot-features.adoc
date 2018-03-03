@@ -1177,8 +1177,8 @@ such as `my.property-name=acme`.
 
 [[boot-features-external-config-conversion]]
 ==== Properties Conversion
-Spring attempts to coerce the external application properties to the right type when it
-binds to the `@ConfigurationProperties` beans. If you need custom type conversion, you
+Spring Boot attempts to coerce the external application properties to the right type when
+it binds to the `@ConfigurationProperties` beans. If you need custom type conversion, you
 can provide a `ConversionService` bean (with a bean named `conversionService`) or custom
 property editors (through a `CustomEditorConfigurer` bean) or custom `Converters` (with
 bean definitions annotated as `@ConfigurationPropertiesBinding`).
@@ -1188,6 +1188,50 @@ limit the dependencies that your `ConversionService` is using. Typically, any de
 that you require may not be fully initialized at creation time. You may want to rename
 your custom `ConversionService` if it is not required for configuration keys coercion and
 only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
+
+
+
+[[boot-features-external-config-conversion-duration]]
+===== Converting durations
+Spring Boot has dedicated support for expressing durations. If you expose a
+`java.time.Duration` property, the following formats in application properties are
+available:
+
+* A regular `long` representation (using milliseconds as the default unit unless a
+`@DefaultUnit` has been specified)
+* The standard ISO-8601 format
+{java-javadoc}/java/time/Duration.html#parse-java.lang.CharSequence-[used by
+`java.util.Duration`]
+* A more readable format where the value and the unit are coupled (e.g. `10s` means 10
+seconds)
+
+Consider the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/properties/bind/AppSystemProperties.java[tag=example]
+----
+
+To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent. A
+read timeout of 500ms can be specified in any of the following form: `500`, `PT0.5S` and
+`500ms`.
+
+You can also use any of the supported unit. These are:
+
+* `ns` for nanoseconds
+* `ms` for milliseconds
+* `s` for seconds
+* `m` for minutes
+* `h` for hours
+* `d` for days
+
+The default unit is milliseconds and can be overridden using `@DefaultUnit` as illustrated
+in the sample above.
+
+TIP: If you are upgrading from a previous version that is simply using `Long` to express
+the duration, make sure to define the unit (using `@DefaultUnit`) if it isn't
+milliseconds alongside the switch to `Duration`. Doing so gives a transparent upgrade path
+while supporting a much richer format.
 
 
 
@@ -1387,7 +1431,7 @@ See "<<boot-features-external-config-profile-specific-properties>>" for details.
 Spring Boot uses http://commons.apache.org/logging[Commons Logging] for all internal
 logging but leaves the underlying log implementation open. Default configurations are
 provided for
-https://docs.oracle.com/javase/8/docs/api/java/util/logging/package-summary.html[Java Util
+{java-javadoc}/java/util/logging/package-summary.html[Java Util
 Logging], http://logging.apache.org/log4j/2.x/[Log4J2], and
 http://logback.qos.ch/[Logback]. In each case, loggers are pre-configured to use console
 output with optional file output also available.
@@ -1990,8 +2034,8 @@ for Webjars.
 
 To use version agnostic URLs for Webjars, add the `webjars-locator-core` dependency.
 Then declare your Webjar. Using jQuery as an example, adding
-`"/webjars/jquery/dist/jquery.min.js"` results in
-`"/webjars/jquery/x.y.z/dist/jquery.min.js"`. where `x.y.z` is the Webjar version.
+`"/webjars/jquery/jquery.min.js"` results in
+`"/webjars/jquery/x.y.z/jquery.min.js"`. where `x.y.z` is the Webjar version.
 
 NOTE: If you use JBoss, you need to declare the `webjars-locator-jboss-vfs`
 dependency instead of the `webjars-locator-core`. Otherwise, all Webjars resolve as a
@@ -2968,13 +3012,13 @@ that you can see how to set things up.
 [[boot-features-security]]
 == Security
 If {spring-security}[Spring Security] is on the classpath, then web applications are
-secure by default. Spring Boot relies on Spring Security’s content-negotiation strategy to
-determine whether to use `httpBasic` or `formLogin`. To add method-level security to a web
-application, you can also add `@EnableGlobalMethodSecurity` with your desired settings.
-Additional information can be found in the {spring-security-reference}#jc-method[Spring
-Security Reference Guide].
+secured by default. Spring Boot relies on Spring Security’s content-negotiation strategy
+to determine whether to use `httpBasic` or `formLogin`. To add method-level security to a
+web application, you can also add `@EnableGlobalMethodSecurity` with your desired
+settings. Additional information can be found in the
+{spring-security-reference}#jc-method[Spring Security Reference Guide].
 
-The default `AuthenticationManager` has a single user. The user name is `user`, and the
+The default `UserDetailsService` has a single user. The user name is `user`, and the
 password is random and is printed at INFO level when the application starts, as shown in
 the following example:
 
@@ -3005,14 +3049,15 @@ You can provide a different `AuthenticationEventPublisher` by adding a bean for 
 
 [[boot-features-security-mvc]]
 === MVC Security
-The default security configuration is implemented in `SecurityAutoConfiguration` and in
-the classes imported from there (`SpringBootWebSecurityConfiguration` for web security
-and `AuthenticationManagerConfiguration` for authentication configuration, which is also
-relevant in non-web applications). To switch off the default web application security
+The default security configuration is implemented in `SecurityAutoConfiguration` and
+`UserDetailsServiceAutoConfiguration`. `SecurityAutoConfiguration` imports
+`SpringBootWebSecurityConfiguration` for web security and
+`UserDetailsServiceAutoConfiguration` configures authentication, which is also
+relevant in non-web applications. To switch off the default web application security
 configuration completely, you can add a bean of type `WebSecurityConfigurerAdapter` (doing
-so does not disable the authentication manager configuration or Actuator's security).
+so does not disable the `UserDetailsService` configuration or Actuator's security).
 
-To also switch off the authentication manager configuration, you can add a bean of type
+To also switch off the `UserDetailsService` configuration, you can add a bean of type
 `UserDetailsService`, `AuthenticationProvider`, or `AuthenticationManager`.
 There are several secure applications in the {github-code}/spring-boot-samples/[Spring
 Boot samples] to get you started with common use cases.
@@ -3030,14 +3075,14 @@ commonly used locations.
 === WebFlux Security
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding
 the `spring-boot-starter-security` dependency. The default security configuration is
-implemented in `ReactiveSecurityAutoConfiguration` and in the classes imported from there
-(`WebFluxSecurityConfiguration` for web security and
-`ReactiveAuthenticationManagerConfiguration` for authentication configuration, which is
-also relevant in non-web applications). To switch off the default web application security
+implemented in `ReactiveSecurityAutoConfiguration` and
+`UserDetailsServiceAutoConfiguration`. `ReactiveSecurityAutoConfiguration` imports
+`WebFluxSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration`
+configures authentication, which is also relevant in non-web applications. To switch off the default web application security
 configuration completely, you can add a bean of type `WebFilterChainProxy` (doing so does
-not disable the authentication manager configuration or Actuator's security).
+not disable the `UserDetailsService` configuration or Actuator's security).
 
-To also switch off the authentication manager configuration, you can add a bean of type
+To also switch off the `UserDetailsService` configuration, you can add a bean of type
 `ReactiveUserDetailsService` or `ReactiveAuthenticationManager`.
 
 Access rules can be configured by adding a custom `SecurityWebFilterChain`. Spring
@@ -5822,6 +5867,7 @@ in a similar manner, as shown in the following example:
 	public class SampleJob extends QuartzJobBean {
 
 		private MyService myService;
+
 		private String name;
 
 		// Inject "MyService" bean
@@ -7165,8 +7211,9 @@ the following example:
 
 		@Test
 		public void testRequest() throws Exception {
-			HttpHeaders headers = template.getForEntity("http://myhost.com/example", String.class).getHeaders();
-			assertThat(headers.getLocation().toString(), containsString("myotherhost"));
+			HttpHeaders headers = this.template.getForEntity(
+					"http://myhost.example.com/example", String.class).getHeaders();
+			assertThat(headers.getLocation()).hasHost("other.example.com");
 		}
 
 	}
@@ -7181,32 +7228,7 @@ following example:
 
 [source,java,indent=0]
 ----
-	@RunWith(SpringRunner.class)
-	@SpringBootTest
-	public class MyTest {
-
-		@Autowired
-		private TestRestTemplate template;
-
-		@Test
-		public void testRequest() throws Exception {
-			HttpHeaders headers = template.getForEntity("/example", String.class).getHeaders();
-			assertThat(headers.getLocation().toString(), containsString("myotherhost"));
-		}
-
-		@TestConfiguration
-		static class Config {
-
-			@Bean
-			public RestTemplateBuilder restTemplateBuilder() {
-				return new RestTemplateBuilder()
-					.additionalMessageConverters(...)
-					.customizers(...);
-			}
-
-		}
-
-	}
+include::{test-examples}/web/client/SampleWebClientTests.java[tag=test]
 ----
 
 

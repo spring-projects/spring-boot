@@ -16,9 +16,10 @@
 
 package org.springframework.boot.security.reactive;
 
+import java.util.function.Supplier;
+
 import reactor.core.publisher.Mono;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
@@ -32,9 +33,8 @@ import org.springframework.web.server.ServerWebExchange;
  * that is autowired in the usual way.
  *
  * @param <C> The type of the context that the match method actually needs to use. Can be
- * an {@link ApplicationContext}, a class of an {@link ApplicationContext#getBean(Class)
- * existing bean} or a custom type that will be
- * {@link AutowireCapableBeanFactory#createBean(Class, int, boolean) created} on demand.
+ * an {@link ApplicationContext} or a class of an {@link ApplicationContext#getBean(Class)
+ * existing bean}.
  * @author Madhura Bhave
  * @since 2.0.0
  */
@@ -43,7 +43,7 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 
 	private final Class<? extends C> contextClass;
 
-	private volatile C context;
+	private volatile Supplier<C> context;
 
 	private final Object contextLock = new Object();
 
@@ -60,12 +60,13 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 	/**
 	 * Decides whether the rule implemented by the strategy matches the supplied exchange.
 	 * @param exchange the source exchange
-	 * @param context the context instance
+	 * @param context a supplier for the initialized context (may throw an exception)
 	 * @return if the exchange matches
 	 */
-	protected abstract Mono<MatchResult> matches(ServerWebExchange exchange, C context);
+	protected abstract Mono<MatchResult> matches(ServerWebExchange exchange,
+			Supplier<C> context);
 
-	protected C getContext(ServerWebExchange exchange) {
+	protected Supplier<C> getContext(ServerWebExchange exchange) {
 		if (this.context == null) {
 			synchronized (this.contextLock) {
 				if (this.context == null) {
@@ -79,26 +80,19 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C>
 
 	/**
 	 * Called once the context has been initialized.
-	 * @param context the initialized context
+	 * @param context a supplier for the initialized context (may throw an exception)
 	 */
-	protected void initialized(C context) {
+	protected void initialized(Supplier<C> context) {
 	}
 
 	@SuppressWarnings("unchecked")
-	private C createContext(ServerWebExchange exchange) {
+	private Supplier<C> createContext(ServerWebExchange exchange) {
 		ApplicationContext context = exchange.getApplicationContext();
 		Assert.state(context != null, "No WebApplicationContext found.");
 		if (this.contextClass.isInstance(context)) {
-			return (C) context;
+			return () -> (C) context;
 		}
-		try {
-			return context.getBean(this.contextClass);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return (C) context.getAutowireCapableBeanFactory().createBean(
-					this.contextClass, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR,
-					false);
-		}
+		return () -> context.getBean(this.contextClass);
 	}
 
 }

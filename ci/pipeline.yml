@@ -48,6 +48,13 @@ resources:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((branch))
+- name: spring-boot-jdk10-ci-image
+  type: docker-image
+  source:
+    repository: ((docker-hub-organization))/spring-boot-jdk10-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((branch))
 - name: artifactory-repo
   type: artifactory-resource
   source:
@@ -76,6 +83,9 @@ jobs:
   - put: spring-boot-jdk9-ci-image
     params:
       build: ci-images-git-repo/ci/images/spring-boot-jdk9-ci-image
+  - put: spring-boot-jdk10-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/spring-boot-jdk10-ci-image
 - name: build
   serial: true
   public: true
@@ -192,6 +202,37 @@ jobs:
       put: email-notification
       params:
         subject_text: "JDK 9 Build failure ${BUILD_PIPELINE_NAME} / ${BUILD_JOB_NAME} / ${BUILD_NAME}"
+        body_text: "Build ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME} has failed!"
+- name: jdk10-build
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-jdk10-ci-image
+  - get: git-repo
+    trigger: true
+  - do:
+    - task: build-project
+      privileged: true
+      timeout: 1h30m
+      image: spring-boot-jdk10-ci-image
+      file: git-repo/ci/tasks/build-project.yml
+    - aggregate:
+      - task: build-samples
+        timeout: 1h30m
+        image: spring-boot-jdk10-ci-image
+        file: git-repo/ci/tasks/build-samples.yml
+      - task: build-integration-tests
+        timeout: 1h30m
+        image: spring-boot-jdk10-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: 1h30m
+        image: spring-boot-jdk10-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_failure:
+      put: email-notification
+      params:
+        subject_text: "JDK 10 Build failure ${BUILD_PIPELINE_NAME} / ${BUILD_JOB_NAME} / ${BUILD_NAME}"
         body_text: "Build ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME} has failed!"
 - name: stage-milestone
   serial: true
@@ -312,7 +353,7 @@ jobs:
       BINTRAY_REPO: ((bintray-repo))
 groups:
 - name: "Build"
-  jobs: ["build", "jdk9-build"]
+  jobs: ["build", "jdk9-build", "jdk10-build"]
 - name: "Release"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release"]
 - name: "CI Images"

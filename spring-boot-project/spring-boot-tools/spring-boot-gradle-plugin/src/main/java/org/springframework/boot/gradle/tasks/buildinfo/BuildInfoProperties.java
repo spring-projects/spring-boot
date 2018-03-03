@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.buildinfo;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import org.gradle.api.Project;
  * The properties that are written into the {@code build-info.properties} file.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 @SuppressWarnings("serial")
 public class BuildInfoProperties implements Serializable {
@@ -40,25 +42,29 @@ public class BuildInfoProperties implements Serializable {
 
 	private String name;
 
+	private Instant time;
+
 	private Map<String, Object> additionalProperties = new HashMap<>();
 
 	BuildInfoProperties(Project project) {
 		this.project = project;
+		this.time = Instant.now();
 	}
 
 	/**
 	 * Returns the value used for the {@code build.group} property. Defaults to the
 	 * {@link Project#getGroup() Project's group}.
-	 *
 	 * @return the group
 	 */
 	public String getGroup() {
-		return this.group != null ? this.group : this.project.getGroup().toString();
+		if (this.group == null) {
+			this.group = this.project.getGroup().toString();
+		}
+		return this.group;
 	}
 
 	/**
 	 * Sets the value used for the {@code build.group} property.
-	 *
 	 * @param group the group name
 	 */
 	public void setGroup(String group) {
@@ -67,7 +73,6 @@ public class BuildInfoProperties implements Serializable {
 
 	/**
 	 * Returns the value used for the {@code build.artifact} property.
-	 *
 	 * @return the artifact
 	 */
 	public String getArtifact() {
@@ -76,7 +81,6 @@ public class BuildInfoProperties implements Serializable {
 
 	/**
 	 * Sets the value used for the {@code build.artifact} property.
-	 *
 	 * @param artifact the artifact
 	 */
 	public void setArtifact(String artifact) {
@@ -86,16 +90,17 @@ public class BuildInfoProperties implements Serializable {
 	/**
 	 * Returns the value used for the {@code build.version} property. Defaults to the
 	 * {@link Project#getVersion() Project's version}.
-	 *
 	 * @return the version
 	 */
 	public String getVersion() {
-		return this.version != null ? this.version : this.project.getVersion().toString();
+		if (this.version == null) {
+			this.version = this.project.getVersion().toString();
+		}
+		return this.version;
 	}
 
 	/**
 	 * Sets the value used for the {@code build.version} property.
-	 *
 	 * @param version the version
 	 */
 	public void setVersion(String version) {
@@ -105,16 +110,17 @@ public class BuildInfoProperties implements Serializable {
 	/**
 	 * Returns the value used for the {@code build.name} property. Defaults to the
 	 * {@link Project#getDisplayName() Project's display name}.
-	 *
 	 * @return the name
 	 */
 	public String getName() {
-		return this.name != null ? this.name : this.project.getName();
+		if (this.name == null) {
+			this.name = this.project.getName();
+		}
+		return this.name;
 	}
 
 	/**
 	 * Sets the value used for the {@code build.name} property.
-	 *
 	 * @param name the name
 	 */
 	public void setName(String name) {
@@ -122,9 +128,25 @@ public class BuildInfoProperties implements Serializable {
 	}
 
 	/**
+	 * Returns the value used for the {@code build.time} property. Defaults to
+	 * {@link Instant#now} when the {@code BuildInfoProperties} instance was created.
+	 * @return the time
+	 */
+	public Instant getTime() {
+		return this.time;
+	}
+
+	/**
+	 * Sets the value used for the {@code build.time} property.
+	 * @param time the build time
+	 */
+	public void setTime(Instant time) {
+		this.time = time;
+	}
+
+	/**
 	 * Returns the additional properties that will be included. When written, the name of
 	 * each additional property is prefixed with {@code build.}.
-	 *
 	 * @return the additional properties
 	 */
 	public Map<String, Object> getAdditional() {
@@ -134,7 +156,6 @@ public class BuildInfoProperties implements Serializable {
 	/**
 	 * Sets the additional properties that will be included. When written, the name of
 	 * each additional property is prefixed with {@code build.}.
-	 *
 	 * @param additionalProperties the additional properties
 	 */
 	public void setAdditional(Map<String, Object> additionalProperties) {
@@ -152,6 +173,7 @@ public class BuildInfoProperties implements Serializable {
 		result = prime * result + ((this.group == null) ? 0 : this.group.hashCode());
 		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
 		result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
+		result = prime * result + ((this.time == null) ? 0 : this.time.hashCode());
 		return result;
 	}
 
@@ -205,6 +227,14 @@ public class BuildInfoProperties implements Serializable {
 			}
 		}
 		else if (!this.version.equals(other.version)) {
+			return false;
+		}
+		if (this.time == null) {
+			if (other.time != null) {
+				return false;
+			}
+		}
+		else if (!this.time.equals(other.time)) {
 			return false;
 		}
 		return true;

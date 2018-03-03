@@ -43,7 +43,7 @@ public class Compression {
 	private String[] excludedUserAgents = null;
 
 	/**
-	 * Minimum response size that is required for compression to be performed.
+	 * Minimum "Content-Length" value that is required for compression to be performed.
 	 */
 	private int minResponseSize = 2048;
 

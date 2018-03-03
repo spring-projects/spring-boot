@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,12 @@ public class SampleAntApplicationIT {
 
 		});
 		assertThat(jarFiles).hasSize(1);
-		Process process = new JavaExecutable().processBuilder("-jar", jarFiles[0].getName()).directory(target).start();
+		Process process = new JavaExecutable().processBuilder("-jar", jarFiles[0]
+				.getName()).directory(target).start();
 		process.waitFor(5, TimeUnit.MINUTES);
 		assertThat(process.exitValue()).isEqualTo(0);
-		String output = FileCopyUtils.copyToString(new InputStreamReader(process.getInputStream()));
+		String output = FileCopyUtils.copyToString(new InputStreamReader(process
+				.getInputStream()));
 		assertThat(output).contains("Spring Boot Ant Example");
 	}
 

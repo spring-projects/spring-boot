@@ -180,10 +180,10 @@ public class PropertiesMigrationReporterTests {
 	private PropertySource<?> loadPropertySource(String name, String path)
 			throws IOException {
 		ClassPathResource resource = new ClassPathResource(path);
-		PropertySource<?> propertySource = new PropertiesPropertySourceLoader().load(name,
-				resource, null, (profile) -> true);
-		assertThat(propertySource).isNotNull();
-		return propertySource;
+		List<PropertySource<?>> propertySources = new PropertiesPropertySourceLoader()
+				.load(name, resource);
+		assertThat(propertySources).isNotEmpty();
+		return propertySources.get(0);
 	}
 
 	private ConfigurationMetadataRepository loadRepository(String... content) {

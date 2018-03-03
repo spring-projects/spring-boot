@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ class CentralDirectoryEndRecord {
 	private byte[] createBlockFromEndOfData(RandomAccessData data, int size)
 			throws IOException {
 		int length = (int) Math.min(data.getSize(), size);
-		return Bytes.get(data.getSubsection(data.getSize() - length, length));
+		return data.read(data.getSize() - length, length);
 	}
 
 	private boolean isValid() {

@@ -18,6 +18,7 @@ package org.springframework.boot.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Locale;
 
 import javax.sql.DataSource;
 
@@ -155,7 +156,7 @@ public enum EmbeddedDatabaseConnection {
 			if (productName == null) {
 				return false;
 			}
-			productName = productName.toUpperCase();
+			productName = productName.toUpperCase(Locale.ENGLISH);
 			EmbeddedDatabaseConnection[] candidates = EmbeddedDatabaseConnection.values();
 			for (EmbeddedDatabaseConnection candidate : candidates) {
 				if (candidate != NONE && productName.contains(candidate.name())) {

@@ -49,9 +49,8 @@ import org.apache.tomcat.JarScanFilter;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.server.WebServerException;
@@ -63,7 +62,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -147,22 +145,14 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
-	public void contextIsAddedToHostBeforeCustomizersAreCalled() throws Exception {
+	public void contextIsAddedToHostBeforeCustomizersAreCalled() {
 		TomcatServletWebServerFactory factory = getFactory();
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
-		willAnswer(new Answer<Void>() {
-
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable {
-				assertThat(((Context) invocation.getArguments()[0]).getParent())
-						.isNotNull();
-				return null;
-			}
-
-		}).given(customizer).customize(any(Context.class));
 		factory.addContextCustomizers(customizer);
 		this.webServer = factory.getWebServer();
-		verify(customizer).customize(any(Context.class));
+		ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+		verify(customizer).customize(contextCaptor.capture());
+		assertThat(contextCaptor.getValue().getParent()).isNotNull();
 	}
 
 	@Test

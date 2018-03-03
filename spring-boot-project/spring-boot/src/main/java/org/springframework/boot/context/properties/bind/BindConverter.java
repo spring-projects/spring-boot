@@ -18,9 +18,11 @@ package org.springframework.boot.context.properties.bind;
 
 import java.beans.PropertyEditor;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -31,6 +33,7 @@ import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.propertyeditors.FileEditor;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
@@ -42,6 +45,7 @@ import org.springframework.util.Assert;
  * and so a new instance is created for each top-level bind.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class BindConverter {
 
@@ -52,24 +56,32 @@ class BindConverter {
 		EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
 	}
 
-	private final ConversionService typeConverterConversionService;
-
 	private final ConversionService conversionService;
 
 	BindConverter(ConversionService conversionService,
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
-		this.typeConverterConversionService = new TypeConverterConversionService(
-				propertyEditorInitializer);
-		this.conversionService = conversionService;
+		List<ConversionService> conversionServices = getConversionServices(
+				conversionService, propertyEditorInitializer);
+		this.conversionService = new CompositeConversionService(conversionServices);
+	}
+
+	private List<ConversionService> getConversionServices(
+			ConversionService conversionService,
+			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+		List<ConversionService> services = new ArrayList<>();
+		services.add(new TypeConverterConversionService(propertyEditorInitializer));
+		services.add(conversionService);
+		if (!(conversionService instanceof ApplicationConversionService)) {
+			services.add(ApplicationConversionService.getSharedInstance());
+		}
+		return services;
 	}
 
 	public boolean canConvert(Object value, ResolvableType type,
 			Annotation... annotations) {
-		TypeDescriptor sourceType = TypeDescriptor.forObject(value);
-		TypeDescriptor targetType = new ResolvableTypeDescriptor(type, annotations);
-		return this.typeConverterConversionService.canConvert(sourceType, targetType)
-				|| this.conversionService.canConvert(sourceType, targetType);
+		return this.conversionService.canConvert(TypeDescriptor.forObject(value),
+				new ResolvableTypeDescriptor(type, annotations));
 	}
 
 	public <T> T convert(Object result, Bindable<T> target) {
@@ -81,13 +93,8 @@ class BindConverter {
 		if (value == null) {
 			return null;
 		}
-		TypeDescriptor sourceType = TypeDescriptor.forObject(value);
-		TypeDescriptor targetType = new ResolvableTypeDescriptor(type, annotations);
-		if (this.typeConverterConversionService.canConvert(sourceType, targetType)) {
-			return (T) this.typeConverterConversionService.convert(value, sourceType,
-					targetType);
-		}
-		return (T) this.conversionService.convert(value, sourceType, targetType);
+		return (T) this.conversionService.convert(value, TypeDescriptor.forObject(value),
+				new ResolvableTypeDescriptor(type, annotations));
 	}
 
 	/**
@@ -103,21 +110,80 @@ class BindConverter {
 	}
 
 	/**
+	 * Composite {@link ConversionService} used to call multiple services.
+	 */
+	static class CompositeConversionService implements ConversionService {
+
+		private final List<ConversionService> delegates;
+
+		CompositeConversionService(List<ConversionService> delegates) {
+			this.delegates = delegates;
+		}
+
+		@Override
+		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
+			Assert.notNull(targetType, "Target type to convert to cannot be null");
+			return canConvert(
+					(sourceType != null ? TypeDescriptor.valueOf(sourceType) : null),
+					TypeDescriptor.valueOf(targetType));
+		}
+
+		@Override
+		public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+			for (ConversionService service : this.delegates) {
+				if (service.canConvert(sourceType, targetType)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <T> T convert(Object source, Class<T> targetType) {
+			Assert.notNull(targetType, "Target type to convert to cannot be null");
+			return (T) convert(source, TypeDescriptor.forObject(source),
+					TypeDescriptor.valueOf(targetType));
+		}
+
+		@Override
+		public Object convert(Object source, TypeDescriptor sourceType,
+				TypeDescriptor targetType) {
+			for (int i = 0; i < this.delegates.size() - 1; i++) {
+				try {
+					ConversionService delegate = this.delegates.get(i);
+					if (delegate.canConvert(sourceType, targetType)) {
+						return delegate.convert(source, sourceType, targetType);
+					}
+				}
+				catch (ConversionException ex) {
+				}
+			}
+			return this.delegates.get(this.delegates.size() - 1).convert(source,
+					sourceType, targetType);
+		}
+
+	}
+
+	/**
 	 * A {@link ConversionService} implementation that delegates to a
 	 * {@link SimpleTypeConverter}. Allows {@link PropertyEditor} based conversion for
 	 * simple types, arrays and collections.
 	 */
 	private static class TypeConverterConversionService extends GenericConversionService {
 
-		private SimpleTypeConverter typeConverter;
-
 		TypeConverterConversionService(Consumer<PropertyEditorRegistry> initializer) {
-			this.typeConverter = new SimpleTypeConverter();
-			if (initializer != null) {
-				initializer.accept(this.typeConverter);
-			}
-			addConverter(new TypeConverterConverter(this.typeConverter));
+			addConverter(new TypeConverterConverter(createTypeConverter(initializer)));
 			ApplicationConversionService.addDelimitedStringConverters(this);
+		}
+
+		private SimpleTypeConverter createTypeConverter(
+				Consumer<PropertyEditorRegistry> initializer) {
+			SimpleTypeConverter typeConverter = new SimpleTypeConverter();
+			if (initializer != null) {
+				initializer.accept(typeConverter);
+			}
+			return typeConverter;
 		}
 
 		@Override
@@ -137,7 +203,7 @@ class BindConverter {
 	 */
 	private static class TypeConverterConverter implements ConditionalGenericConverter {
 
-		private SimpleTypeConverter typeConverter;
+		private final SimpleTypeConverter typeConverter;
 
 		TypeConverterConverter(SimpleTypeConverter typeConverter) {
 			this.typeConverter = typeConverter;
@@ -156,18 +222,20 @@ class BindConverter {
 		@Override
 		public Object convert(Object source, TypeDescriptor sourceType,
 				TypeDescriptor targetType) {
-			return this.typeConverter.convertIfNecessary(source, targetType.getType());
+			SimpleTypeConverter typeConverter = this.typeConverter;
+			return typeConverter.convertIfNecessary(source, targetType.getType());
 		}
 
 		private PropertyEditor getPropertyEditor(Class<?> type) {
+			SimpleTypeConverter typeConverter = this.typeConverter;
 			if (type == null || type == Object.class
 					|| Collection.class.isAssignableFrom(type)
 					|| Map.class.isAssignableFrom(type)) {
 				return null;
 			}
-			PropertyEditor editor = this.typeConverter.getDefaultEditor(type);
+			PropertyEditor editor = typeConverter.getDefaultEditor(type);
 			if (editor == null) {
-				editor = this.typeConverter.findCustomEditor(type, null);
+				editor = typeConverter.findCustomEditor(type, null);
 			}
 			if (editor == null && String.class != type) {
 				editor = BeanUtils.findEditorByConvention(type);

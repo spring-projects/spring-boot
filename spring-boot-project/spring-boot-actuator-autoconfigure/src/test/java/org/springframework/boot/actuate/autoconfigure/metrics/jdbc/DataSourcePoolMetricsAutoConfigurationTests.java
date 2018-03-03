@@ -114,13 +114,13 @@ public class DataSourcePoolMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void failureToInstrumentHikariDataSourceIsTolerated() {
+	public void hikariCanBeInstrumentedAfterThePoolHasBeenSealed() {
 		this.contextRunner.withUserConfiguration(HikariSealingConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasNotFailed();
 					context.getBean(DataSource.class).getConnection();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("hikaricp.connections").meter()).isNull();
+					assertThat(registry.find("hikaricp.connections").meter()).isNotNull();
 				});
 	}
 

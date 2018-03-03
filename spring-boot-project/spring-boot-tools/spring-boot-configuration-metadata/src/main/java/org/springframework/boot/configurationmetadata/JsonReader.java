@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -183,7 +184,7 @@ class JsonReader {
 	private Deprecation.Level parseDeprecationLevel(String value) {
 		if (value != null) {
 			try {
-				return Deprecation.Level.valueOf(value.toUpperCase());
+				return Deprecation.Level.valueOf(value.toUpperCase(Locale.ENGLISH));
 			}
 			catch (IllegalArgumentException e) {
 				// let's use the default

@@ -86,23 +86,19 @@ public class MessageSourceAutoConfigurationTests {
 
 	@Test
 	public void testCacheDurationNoUnit() {
-		this.contextRunner
-				.withPropertyValues("spring.messages.basename:test/messages",
-						"spring.messages.cache-duration=10")
-				.run(assertCache(10 * 1000));
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages",
+				"spring.messages.cache-duration=10").run(assertCache(10 * 1000));
 	}
 
 	@Test
 	public void testCacheDurationWithUnit() {
-		this.contextRunner
-				.withPropertyValues("spring.messages.basename:test/messages",
-						"spring.messages.cache-duration=1m")
-				.run(assertCache(60 * 1000));
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages",
+				"spring.messages.cache-duration=1m").run(assertCache(60 * 1000));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertCache(long expected) {
 		return (context) -> {
-			assertThat(assertThat(context).hasSingleBean(MessageSource.class));
+			assertThat(context).hasSingleBean(MessageSource.class);
 			assertThat(new DirectFieldAccessor(context.getBean(MessageSource.class))
 					.getPropertyValue("cacheMillis")).isEqualTo(expected);
 		};

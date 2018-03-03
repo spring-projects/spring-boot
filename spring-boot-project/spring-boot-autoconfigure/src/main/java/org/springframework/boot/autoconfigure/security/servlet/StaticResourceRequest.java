@@ -20,6 +20,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,8 +134,9 @@ public final class StaticResourceRequest {
 		}
 
 		@Override
-		protected void initialized(ServerProperties serverProperties) {
-			this.delegate = new OrRequestMatcher(getDelegateMatchers(serverProperties));
+		protected void initialized(Supplier<ServerProperties> serverProperties) {
+			this.delegate = new OrRequestMatcher(
+					getDelegateMatchers(serverProperties.get()));
 		}
 
 		private List<RequestMatcher> getDelegateMatchers(
@@ -149,7 +151,8 @@ public final class StaticResourceRequest {
 		}
 
 		@Override
-		protected boolean matches(HttpServletRequest request, ServerProperties context) {
+		protected boolean matches(HttpServletRequest request,
+				Supplier<ServerProperties> context) {
 			return this.delegate.matches(request);
 		}
 
