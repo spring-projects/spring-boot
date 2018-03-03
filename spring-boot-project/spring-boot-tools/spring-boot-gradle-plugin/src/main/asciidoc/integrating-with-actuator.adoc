@@ -52,7 +52,7 @@ include::../gradle/integrating-with-actuator/build-info-custom-values.gradle[tag
 
 The default value for `build.time` is the instant at which the project is being built. A
 side-effect of this is that the task will never be up-to-date and, therefore, builds will
-take slighly longer as more tasks will have to be executed. Another side-effect is that
+take slightly longer as more tasks will have to be executed. Another side-effect is that
 the task's output will always change and, therefore, the build will not be truly
 repeatable. If you value build performance or repeatability more highly than the accuracy
 of the `build.time` property, set `time` to `null` or a fixed value.

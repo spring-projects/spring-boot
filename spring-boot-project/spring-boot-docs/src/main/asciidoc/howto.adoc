@@ -2335,8 +2335,8 @@ If you define a `@Configuration` with a `WebSecurityConfigurerAdapter` in your a
 it switches off the default webapp security settings in Spring Boot.
 
 
-[[howto-change-the-authenticationmanager-and-add-user-accounts]]
-=== Change the AuthenticationManager and Add User Accounts
+[[howto-change-the-user-details-service-and-add-user-accounts]]
+=== Change the UserDetailsService and Add User Accounts
 If you provide a `@Bean` of type `AuthenticationManager`, `AuthenticationProvider`,
 or `UserDetailsService`, the default `@Bean` for `InMemoryUserDetailsManager` is not
 created, so you have the full feature set of Spring Security available (such as
