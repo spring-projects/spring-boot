@@ -16,18 +16,19 @@
 
 package org.springframework.boot.actuate.integration;
 
-import java.util.Map;
-
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.support.management.graph.Graph;
+import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.when;
 
 /**
  * Tests for {@link IntegrationGraphEndpoint}.
@@ -36,62 +37,34 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class IntegrationGraphEndpointTests {
 
-	@Test
-	public void shouldReturnEmptyGraph() {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(EndpointConfiguration.class);
-		contextRunner.run((context) -> {
-			Graph graph = context.getBean(IntegrationGraphEndpoint.class).graph();
-			assertContentDescriptor(graph);
-			assertThat(graph.getNodes()).isEmpty();
-			assertThat(graph.getLinks()).isEmpty();
-		});
+	@Mock
+	private IntegrationGraphServer integrationGraphServer;
+
+	@InjectMocks
+	private IntegrationGraphEndpoint integrationGraphEndpoint;
+
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
 	public void shouldReturnGraph() {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(EndpointConfiguration.class, IntegrationConfiguration.class);
-		contextRunner.run((context) -> {
-			Graph graph = context.getBean(IntegrationGraphEndpoint.class).graph();
-			assertContentDescriptor(graph);
-			assertThat(graph.getNodes()).hasSize(3);
-			assertThat(graph.getLinks()).hasSize(1);
-		});
+		Graph mockedGraph = mock(Graph.class);
+		when(this.integrationGraphServer.getGraph()).thenReturn(mockedGraph);
+
+		Graph graph = this.integrationGraphEndpoint.graph();
+
+		verify(this.integrationGraphServer).getGraph();
+
+		assertThat(graph).isEqualTo(mockedGraph);
 	}
 
 	@Test
 	public void shouldRebuildGraph() {
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(EndpointConfiguration.class);
-		contextRunner.run((context) -> {
-			context.getBean(IntegrationGraphEndpoint.class).rebuild();
-		});
-	}
+		this.integrationGraphEndpoint.rebuild();
 
-	private void assertContentDescriptor(Graph graph) {
-		Map<String, Object> contentDescriptor = graph.getContentDescriptor();
-		assertThat(contentDescriptor).isNotEmpty();
-		assertThat(contentDescriptor).containsOnlyKeys("provider", "providerFormatVersion", "providerVersion");
-		assertThat(contentDescriptor.get("provider")).isEqualTo("spring-integration");
-		assertThat(contentDescriptor.get("providerFormatVersion")).isEqualTo(1.0f);
-		assertThat(contentDescriptor.get("providerVersion")).isEqualTo("5.0.2.RELEASE");
-	}
-
-	@Configuration
-	public static class EndpointConfiguration {
-
-		@Bean
-		public IntegrationGraphEndpoint endpoint(ConfigurableApplicationContext context) {
-			return new IntegrationGraphEndpoint(context);
-		}
-
-	}
-
-	@Configuration
-	@EnableIntegration
-	static class IntegrationConfiguration {
-
+		verify(this.integrationGraphServer).rebuild();
 	}
 
 }

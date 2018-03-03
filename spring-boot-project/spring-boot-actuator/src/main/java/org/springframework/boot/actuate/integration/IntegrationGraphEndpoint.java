@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.integration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.integration.support.management.graph.Graph;
 import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 
@@ -36,14 +35,13 @@ public class IntegrationGraphEndpoint {
 
 	/**
 	 * Creates a new {@code IntegrationGraphEndpoint} that exposes a graph containing all the
-	 * Spring Integration components in the given {@code context}.
+	 * Spring Integration components in the given {@code integrationGraphServer}.
 	 *
-	 * @param context the application context
-	 * @see ConfigurableApplicationContext#getParent()
+	 * @param integrationGraphServer the integration graph server
+	 * @see IntegrationGraphServer
 	 */
-	public IntegrationGraphEndpoint(ConfigurableApplicationContext context) {
-		this.integrationGraphServer = new IntegrationGraphServer();
-		this.integrationGraphServer.setApplicationContext(context);
+	public IntegrationGraphEndpoint(IntegrationGraphServer integrationGraphServer) {
+		this.integrationGraphServer = integrationGraphServer;
 	}
 
 	@ReadOperation

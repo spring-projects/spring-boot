@@ -21,6 +21,9 @@ import org.junit.Test;
 import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,18 +34,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class IntegrationGraphEndpointAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunnerWithoutIntegrationGraph = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(IntegrationGraphEndpointAutoConfiguration.class));
+
+	private final ApplicationContextRunner contextRunnerWithIntegrationGraph = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(IntegrationGraphEndpointAutoConfiguration.class))
+			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
 	public void runShouldNotHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class));
+		this.contextRunnerWithoutIntegrationGraph.run((context) -> assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class));
+		this.contextRunnerWithoutIntegrationGraph.withPropertyValues("management.endpoint.integrationgraph.enabled:true")
+				.run((context) -> assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class));
+		this.contextRunnerWithIntegrationGraph.run((context) -> assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class));
 	}
 
 	@Test
 	public void runWhenEnabledPropertyIsTrueShouldHaveEndpointBean() {
-		this.contextRunner.withPropertyValues("management.endpoint.integrationgraph.enabled:true")
+		this.contextRunnerWithIntegrationGraph.withPropertyValues("management.endpoint.integrationgraph.enabled:true")
 				.run((context) -> assertThat(context).hasSingleBean(IntegrationGraphEndpoint.class));
+	}
+
+	@Configuration
+	public static class TestConfiguration {
+
+		@Bean
+		public IntegrationGraphServer integrationGraphServer() {
+			return new IntegrationGraphServer();
+		}
+
 	}
 
 }
