@@ -643,8 +643,8 @@ NOTE: Range requests are not supported when using Jersey.
 An operation on a web endpoint or a web-specific endpoint extension can receive the
 current `java.security.Principal` or
 `org.springframework.boot.actuate.endpoint.SecurityContext` as a method parameter. The
-former is typically used in conjunction with `@Nullable` to provide different behaviour for
-authenticated and unauthenticated users. The latter is typically used to perform
+former is typically used in conjunction with `@Nullable` to provide different behaviour
+for authenticated and unauthenticated users. The latter is typically used to perform
 authorization checks using its `isUserInRole(String)` method.
 
 

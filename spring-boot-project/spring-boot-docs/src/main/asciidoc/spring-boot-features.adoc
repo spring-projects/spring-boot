@@ -3012,11 +3012,11 @@ that you can see how to set things up.
 [[boot-features-security]]
 == Security
 If {spring-security}[Spring Security] is on the classpath, then web applications are
-secured by default. Spring Boot relies on Spring Security’s content-negotiation strategy to
-determine whether to use `httpBasic` or `formLogin`. To add method-level security to a web
-application, you can also add `@EnableGlobalMethodSecurity` with your desired settings.
-Additional information can be found in the {spring-security-reference}#jc-method[Spring
-Security Reference Guide].
+secured by default. Spring Boot relies on Spring Security’s content-negotiation strategy
+to determine whether to use `httpBasic` or `formLogin`. To add method-level security to a
+web application, you can also add `@EnableGlobalMethodSecurity` with your desired
+settings. Additional information can be found in the
+{spring-security-reference}#jc-method[Spring Security Reference Guide].
 
 The default `UserDetailsService` has a single user. The user name is `user`, and the
 password is random and is printed at INFO level when the application starts, as shown in
