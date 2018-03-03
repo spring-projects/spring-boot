@@ -69,7 +69,7 @@ public class CachingOperationInvokerAdvisorTests {
 
 	@Test
 	public void applyWhenHasAtLeaseOneMandatoryParameterShouldNotAddAdvise() {
-		OperationParameters parameters = getParameters("getWithParameter", String.class,
+		OperationParameters parameters = getParameters("getWithParameters", String.class,
 				String.class);
 		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
 				parameters, this.invoker);
@@ -104,7 +104,7 @@ public class CachingOperationInvokerAdvisorTests {
 	}
 
 	@Test
-	public void applyWithAllOptionalParameterShouldAddAdvise() {
+	public void applyWithAllOptionalParametersShouldAddAdvise() {
 		OperationParameters parameters = getParameters("getWithAllOptionalParameters",
 				String.class, String.class);
 		given(this.timeToLive.apply(any())).willReturn(100L);
@@ -138,7 +138,7 @@ public class CachingOperationInvokerAdvisorTests {
 			return "";
 		}
 
-		public String getWithParameter(@Nullable String foo, String bar) {
+		public String getWithParameters(@Nullable String foo, String bar) {
 			return "";
 		}
 
