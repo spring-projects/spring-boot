@@ -16,15 +16,16 @@
 
 package org.springframework.boot.actuate.integration;
 
+import java.util.Map;
+
 import org.junit.Test;
+
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.support.management.graph.Graph;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,8 +43,8 @@ public class IntegrationGraphEndpointTests {
 		contextRunner.run((context) -> {
 			Graph graph = context.getBean(IntegrationGraphEndpoint.class).graph();
 			assertContentDescriptor(graph);
-            assertThat(graph.getNodes()).isEmpty();
-            assertThat(graph.getLinks()).isEmpty();
+			assertThat(graph.getNodes()).isEmpty();
+			assertThat(graph.getLinks()).isEmpty();
 		});
 	}
 
@@ -54,8 +55,8 @@ public class IntegrationGraphEndpointTests {
 		contextRunner.run((context) -> {
 			Graph graph = context.getBean(IntegrationGraphEndpoint.class).graph();
 			assertContentDescriptor(graph);
-            assertThat(graph.getNodes()).hasSize(3);
-            assertThat(graph.getLinks()).hasSize(1);
+			assertThat(graph.getNodes()).hasSize(3);
+			assertThat(graph.getLinks()).hasSize(1);
 		});
 	}
 
