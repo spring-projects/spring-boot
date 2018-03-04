@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.rabbitmq.client.Address;
+import com.rabbitmq.client.Connection;
+
 import org.aopalliance.aop.Advice;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,6 +59,10 @@ import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -66,7 +72,6 @@ import static org.mockito.Mockito.verify;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Gary Russell
- * @author Stephane Nicoll
  */
 public class RabbitAutoConfigurationTests {
 
@@ -137,7 +142,8 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice",
 						"spring.rabbitmq.password:secret",
 						"spring.rabbitmq.virtual_host:/vhost",
-						"spring.rabbitmq.connection-timeout:123")
+						"spring.rabbitmq.connection-timeout:123",
+						"spring.rabbitmq.connection-name-prefix=test")
 				.run((context) -> {
 					CachingConnectionFactory connectionFactory = context
 							.getBean(CachingConnectionFactory.class);
@@ -148,7 +154,17 @@ public class RabbitAutoConfigurationTests {
 					com.rabbitmq.client.ConnectionFactory rcf = (com.rabbitmq.client.ConnectionFactory) dfa
 							.getPropertyValue("rabbitConnectionFactory");
 					assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
-					assertThat((Address[]) dfa.getPropertyValue("addresses")).hasSize(1);
+					Address[] addresses = (Address[]) dfa.getPropertyValue("addresses");
+					assertThat(addresses).hasSize(1);
+					rcf = mock(com.rabbitmq.client.ConnectionFactory.class);
+					willReturn(mock(Connection.class)).given(rcf).newConnection(isNull(), eq(addresses), anyString());
+					dfa.setPropertyValue("rabbitConnectionFactory", rcf);
+					connectionFactory.createConnection();
+					verify(rcf).newConnection(isNull(), eq(addresses), eq("test#0"));
+					connectionFactory.resetConnection();
+					connectionFactory.createConnection();
+					verify(rcf).newConnection(isNull(), eq(addresses), eq("test#1"));
+					connectionFactory.resetConnection();
 				});
 	}
 

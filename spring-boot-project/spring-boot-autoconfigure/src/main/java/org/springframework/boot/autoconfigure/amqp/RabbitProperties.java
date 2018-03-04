@@ -99,6 +99,11 @@ public class RabbitProperties {
 	private Duration connectionTimeout;
 
 	/**
+	 * Prefix for connection names.
+	 */
+	private String connectionNamePrefix;
+
+	/**
 	 * Cache configuration.
 	 */
 	private final Cache cache = new Cache();
@@ -293,6 +298,14 @@ public class RabbitProperties {
 
 	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
+	}
+
+	public String getConnectionNamePrefix() {
+		return this.connectionNamePrefix;
+	}
+
+	public void setConnectionNamePrefix(String connectionNamePrefix) {
+		this.connectionNamePrefix = connectionNamePrefix;
 	}
 
 	public Cache getCache() {
