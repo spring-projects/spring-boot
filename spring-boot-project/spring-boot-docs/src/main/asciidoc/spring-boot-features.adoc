@@ -261,19 +261,23 @@ by implementing `ApplicationContextAware` or, if the listener is a bean, by usin
 [[boot-features-web-environment]]
 === Web Environment
 A `SpringApplication` attempts to create the right type of `ApplicationContext` on your
-behalf. By default, an `AnnotationConfigApplicationContext` or
-`AnnotationConfigServletWebServerApplicationContext` is used, depending on whether you
-are developing a web application or not.
+behalf. The algorithm used to determine a `WebEnvironmentType` is fairly simple:
 
-The algorithm used to determine a "`web environment`" is fairly simplistic (it is based
-on the presence of a few classes).  If you need to override the default, you can use
-`setWebEnvironment(boolean webEnvironment)`.
+* If Spring MVC is present, an `AnnotationConfigServletWebServerApplicationContext` is
+used
+* If Spring MVC is not present and Spring WebFlux is present, an
+`AnnotationConfigReactiveWebApplicationContext` is used
+* Otherwise, `AnnotationConfigApplicationContext` is used
+
+This means that if you are using Spring MVC and the new `WebClient` from Spring WebFlux in
+the same application, Spring MVC will be used by default. You can override that easily
+by calling `setWebApplicationType(WebApplicationType)`.
 
 It is also possible to take complete control of the `ApplicationContext` type that is
 used by calling `setApplicationContextClass(...)`.
 
-TIP: It is often desirable to call `setWebEnvironment(false)` when using
-`SpringApplication` within a JUnit test.
+TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NONE)` when
+using `SpringApplication` within a JUnit test.
 
 
 
