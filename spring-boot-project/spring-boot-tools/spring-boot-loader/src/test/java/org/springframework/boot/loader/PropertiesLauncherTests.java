@@ -346,6 +346,17 @@ public class PropertiesLauncherTests {
 		assertThat(launcher.getMainClass()).isEqualTo("demo.FooApplication");
 	}
 
+	@Test
+	public void encodedFileUrlLoaderPathIsHandledCorrectly() throws Exception {
+		File loaderPath = this.temporaryFolder.newFolder("loader path");
+		System.setProperty("loader.path", loaderPath.toURI().toURL().toString());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		List<Archive> archives = launcher.getClassPathArchives();
+		assertThat(archives.size()).isEqualTo(1);
+		File archiveRoot = (File) ReflectionTestUtils.getField(archives.get(0), "root");
+		assertThat(archiveRoot).isEqualTo(loaderPath);
+	}
+
 	private void waitFor(String value) throws Exception {
 		int count = 0;
 		boolean timeout = false;

@@ -20,9 +20,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -203,21 +205,24 @@ public class PropertiesLauncher extends Launcher {
 		if (config.startsWith("classpath:")) {
 			return getClasspathResource(config.substring("classpath:".length()));
 		}
-		config = stripFileUrlPrefix(config);
+		config = handleUrl(config);
 		if (isUrl(config)) {
 			return getURLResource(config);
 		}
 		return getFileResource(config);
 	}
 
-	private String stripFileUrlPrefix(String config) {
-		if (config.startsWith("file:")) {
-			config = config.substring("file:".length());
-			if (config.startsWith("//")) {
-				config = config.substring(2);
+	private String handleUrl(String path) throws UnsupportedEncodingException {
+		if (path.startsWith("jar:file:") || path.startsWith("file:")) {
+			path = URLDecoder.decode(path, "UTF-8");
+			if (path.startsWith("file:")) {
+				path = path.substring("file:".length());
+				if (path.startsWith("//")) {
+					path = path.substring(2);
+				}
 			}
 		}
-		return config;
+		return path;
 	}
 
 	private boolean isUrl(String config) {
@@ -454,8 +459,8 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
-		String root = cleanupPath(stripFileUrlPrefix(path));
-		List<Archive> lib = new ArrayList<>();
+		String root = cleanupPath(handleUrl(path));
+		List<Archive> lib = new ArrayList<Archive>();
 		File file = new File(root);
 		if (!"/".equals(root)) {
 			if (!isAbsolutePath(root)) {
