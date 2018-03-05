@@ -1530,8 +1530,7 @@ Spring Boot's logging configuration entirely by using a value of `none`.
 
 NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it isn't
 possible to control logging from `@PropertySources` in Spring `@Configuration` files.
-System properties and the conventional Spring Boot external configuration files work just
-fine.)
+The only way to change the logging system or disable it entirely is via System properties.
 
 Depending on your logging system, the following files will be loaded:
 
