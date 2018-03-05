@@ -1749,9 +1749,18 @@ factories with a metric named `rabbitmq`.
 
 [[production-ready-metrics-custom]]
 === Registering custom metrics
-To register custom metrics, create a `MeterBinder` bean. By default, all `MeterBinder`
-beans will be automatically applied to the micrometer `MeterRegistry.Config`.
+To register custom metrics, inject `MeterRegistry` into your component, as shown in the
+following example:
 
+[source,java,indent=0]
+----
+include::{code-examples}/actuate/metrics/MetricsMeterRegistryInjectionExample.java[tag=component]
+----
+
+If you find that you repeatedly instrument a suite of metrics across components or
+applications, you may encapsulate this suite in a `MeterBinder` implementation. By
+default, metrics from all `MeterBinder` beans will be automatically bound to
+the Spring-managed `MeterRegistry`.
 
 
 [[production-ready-metrics-per-meter-properties]]
