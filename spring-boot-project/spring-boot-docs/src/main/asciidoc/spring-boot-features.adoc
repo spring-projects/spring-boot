@@ -3511,10 +3511,10 @@ how-to.
 
 [[boot-features-spring-data-jpa-repositories]]
 ==== Spring Data JPA Repositories
-{http://projects.spring.io/spring-data-jpa/}[Spring Data JPA] repositories are interfaces
-that you can define to access data. JPA queries are created automatically from your method
-names. For example, a `CityRepository` interface might declare a `findAllByState(String
-state)` method to find all the cities in a given state.
+{spring-data-jpa}[Spring Data JPA] repositories are interfaces that you can define to
+access data. JPA queries are created automatically from your method names. For example, a
+`CityRepository` interface might declare a `findAllByState(String state)` method to find
+all the cities in a given state.
 
 For more complex queries, you can annotate your method with Spring Data's
 {spring-data-javadoc}/repository/Query.html[`Query`] annotation.
