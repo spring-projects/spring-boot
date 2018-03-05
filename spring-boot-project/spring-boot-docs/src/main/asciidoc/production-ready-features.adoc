@@ -507,13 +507,6 @@ Finally, if you need access to web-framework-specific functionality, you can imp
 Servlet or Spring `@Controller` and `@RestController` endpoints at the cost of them not
 being available over JMX or when using a different web framework.
 
-TIP: If you add endpoints as a library feature, consider adding a configuration class
-annotated with `@ManagementContextConfiguration` to `/META-INF/spring.factories` under the
-following key:
-`org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration`. If
-you do so, and if your users ask for a separate management port or address, the endpoint
-moves to a child context with all the other web endpoints.
-
 
 
 [[production-ready-endpoints-custom-input]]
