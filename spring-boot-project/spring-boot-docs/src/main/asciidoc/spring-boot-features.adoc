@@ -6658,7 +6658,7 @@ A list of the auto-configuration that is enabled by `@JdbcTest` can be
 You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related tests.
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema,
 the existing `DataSource` is used. If you want to replace it with an in-memory database,
-you can use `@AutoconfigureTestDatabase` to override those settings. (For more about using
+you can use `@AutoConfigureTestDatabase` to override those settings. (For more about using
 jOOQ with Spring Boot, see "<<boot-features-jooq>>", earlier in this chapter.)
 
 `@JooqTest` configures a `DSLContext`. Regular `@Component` beans are not loaded into the

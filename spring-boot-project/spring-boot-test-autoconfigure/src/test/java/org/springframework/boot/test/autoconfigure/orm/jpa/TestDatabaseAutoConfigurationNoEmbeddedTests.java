@@ -58,7 +58,7 @@ public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 				.hasMessageContaining(
 						"If you want an embedded database please put a supported one on the classpath")
 				.hasMessageContaining(
-						"or tune the replace attribute of @AutoconfigureTestDatabase."));
+						"or tune the replace attribute of @AutoConfigureTestDatabase."));
 	}
 
 	@Test
