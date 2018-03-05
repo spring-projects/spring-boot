@@ -1749,19 +1749,12 @@ factories with a metric named `rabbitmq`.
 
 [[production-ready-metrics-custom]]
 === Registering custom metrics
-To register custom metrics, inject `MeterRegistry` into your component:
+To register custom metrics, inject `MeterRegistry` into your component, as shown in the
+following example:
 
 [source,java,indent=0]
 ----
-class Dictionary {
-	private List<String> words = new CopyOnWriteArrayList<>();
-
-	public MyComponent(MeterRegistry registry) {
-		registry.gaugeCollectionSize("dictionary.size", Tags.empty(), words);
-	}
-
-	...
-}
+include::{code-examples}/actuate/metrics/MetricsMeterRegistryInjectionExample.java[tag=component]
 ----
 
 If you find that you repeatedly instrument a suite of metrics across components or
