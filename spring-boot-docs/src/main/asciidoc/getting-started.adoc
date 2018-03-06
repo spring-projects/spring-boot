@@ -205,7 +205,7 @@ scope.
 [[getting-started-gradle-installation]]
 ==== Gradle installation
 Spring Boot is compatible with Gradle 2 (2.9 or later) and Gradle 3. If you don't already
-have Gradle installed you can follow the instructions at http://www.gradle.org/.
+have Gradle installed you can follow the instructions at http://www.gradle.org.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more
