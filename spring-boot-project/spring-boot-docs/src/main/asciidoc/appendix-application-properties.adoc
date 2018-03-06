@@ -1061,6 +1061,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.cache.channel.size= # Number of channels to retain in the cache.
 	spring.rabbitmq.cache.connection.mode=channel # Connection factory cache mode.
 	spring.rabbitmq.cache.connection.size= # Number of connections to cache.
+	spring.rabbitmq.connection-name-prefix= # Prefix for connection names.
 	spring.rabbitmq.connection-timeout= # Connection timeout. Set it to zero to wait forever.
 	spring.rabbitmq.dynamic=true # Whether to create an AmqpAdmin bean.
 	spring.rabbitmq.host=localhost # RabbitMQ host.

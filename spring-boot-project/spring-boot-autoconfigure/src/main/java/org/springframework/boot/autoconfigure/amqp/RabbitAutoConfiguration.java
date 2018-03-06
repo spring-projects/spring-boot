@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.rabbitmq.client.Channel;
 
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
@@ -109,6 +111,11 @@ public class RabbitAutoConfiguration {
 			map.from(connection::getMode).whenNonNull().to(factory::setCacheMode);
 			map.from(connection::getSize).whenNonNull()
 					.to(factory::setConnectionCacheSize);
+			String connectionNamePrefix = properties.getConnectionNamePrefix();
+			if (StringUtils.hasText(connectionNamePrefix)) {
+				final AtomicInteger connectionNumber = new AtomicInteger();
+				factory.setConnectionNameStrategy(f -> connectionNamePrefix + "#" + connectionNumber.getAndIncrement());
+			}
 			return factory;
 		}
 
