@@ -120,13 +120,13 @@ public final class EndpointRequest {
 			this.excludes = excludes;
 		}
 
-		EndpointRequestMatcher excluding(Class<?>... endpoints) {
+		public EndpointRequestMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
 			return new EndpointRequestMatcher(this.includes, excludes);
 		}
 
-		EndpointRequestMatcher excluding(String... endpoints) {
+		public EndpointRequestMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
 			return new EndpointRequestMatcher(this.includes, excludes);

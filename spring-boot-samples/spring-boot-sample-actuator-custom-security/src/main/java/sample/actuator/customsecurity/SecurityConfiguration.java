@@ -17,6 +17,7 @@
 package sample.actuator.customsecurity;
 
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// @formatter:off
 		http.authorizeRequests()
 				.requestMatchers(EndpointRequest.to("health", "info")).permitAll()
-				.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole("ACTUATOR")
+				.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 				.antMatchers("/foo").permitAll()
 				.antMatchers("/**").hasRole("USER")

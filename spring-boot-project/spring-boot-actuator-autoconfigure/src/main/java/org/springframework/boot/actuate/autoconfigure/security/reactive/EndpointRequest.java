@@ -125,13 +125,13 @@ public final class EndpointRequest {
 			this.excludes = excludes;
 		}
 
-		EndpointServerWebExchangeMatcher excluding(Class<?>... endpoints) {
+		public EndpointServerWebExchangeMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
 			return new EndpointServerWebExchangeMatcher(this.includes, excludes);
 		}
 
-		EndpointServerWebExchangeMatcher excluding(String... endpoints) {
+		public EndpointServerWebExchangeMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
 			return new EndpointServerWebExchangeMatcher(this.includes, excludes);

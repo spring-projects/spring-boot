@@ -125,6 +125,13 @@ public class SampleActuatorCustomSecurityApplicationTests {
 		assertThat(entity.getHeaders().getFirst("echo")).isEqualTo("test");
 	}
 
+	@Test
+	public void actuatorExcludedFromEndpointRequestMatcher() {
+		ResponseEntity<Object> entity = userRestTemplate().getForEntity("/actuator/mappings",
+				Object.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
 	private TestRestTemplate restTemplate() {
 		return configure(new TestRestTemplate());
 	}
