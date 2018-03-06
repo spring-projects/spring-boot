@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.ResourceLoaderAware;
@@ -37,7 +38,7 @@ import org.springframework.core.io.ResourceLoader;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
-public class ResourceProperties implements ResourceLoaderAware {
+public class ResourceProperties implements ResourceLoaderAware, InitializingBean {
 
 	private static final String[] SERVLET_RESOURCE_LOCATIONS = { "/" };
 
@@ -81,6 +82,11 @@ public class ResourceProperties implements ResourceLoaderAware {
 		this.resourceLoader = resourceLoader;
 	}
 
+	@Override
+	public void afterPropertiesSet() {
+		this.staticLocations = appendSlashIfNecessary(this.staticLocations);
+	}
+
 	public String[] getStaticLocations() {
 		return this.staticLocations;
 	}
@@ -93,7 +99,9 @@ public class ResourceProperties implements ResourceLoaderAware {
 		String[] normalized = new String[staticLocations.length];
 		for (int i = 0; i < staticLocations.length; i++) {
 			String location = staticLocations[i];
-			normalized[i] = (location.endsWith("/") ? location : location + "/");
+			if (location != null) {
+				normalized[i] = (location.endsWith("/") ? location : location + "/");
+			}
 		}
 		return normalized;
 	}
