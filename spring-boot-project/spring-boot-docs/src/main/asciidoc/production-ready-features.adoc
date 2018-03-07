@@ -341,6 +341,21 @@ except the `env` and `beans` endpoints, use the following properties:
 	management.endpoints.web.exposure.exclude=env,beans
 ----
 
+[NOTE]
+====
+`*` has a special meaning in YAML, so be sure to add quotes if you want to include (or
+exclude) all endpoints, as shown in the following example:
+
+[source,yaml,indent=0]
+----
+	management:
+		endpoints:
+			web:
+				exposure:
+					include: "*"
+----
+====
+
 NOTE: If your application is exposed publicly, we strongly recommend that you also
 <<production-ready-endpoints-security, secure your endpoints>>.
 
