@@ -486,6 +486,18 @@ public class JavaBeanBinderTests {
 		assertThat(bean.getName()).isEqualTo("something");
 	}
 
+	@Test
+	public void bindToClassShouldIgnoreStaticAccessors() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.name", "invalid");
+		source.put("foo.counter", "42");
+		this.sources.add(source);
+		ExampleWithStaticAccessors bean = this.binder
+				.bind("foo", Bindable.of(ExampleWithStaticAccessors.class)).get();
+		assertThat(ExampleWithStaticAccessors.name).isNull();
+		assertThat(bean.getCounter()).isEqualTo(42);
+	}
+
 	public static class ExampleValueBean {
 
 		private int intValue;
@@ -841,6 +853,30 @@ public class JavaBeanBinderTests {
 
 		public boolean is() {
 			throw new IllegalArgumentException("should not be invoked");
+		}
+
+	}
+
+	public static class ExampleWithStaticAccessors {
+
+		private static String name;
+
+		private int counter;
+
+		public static String getName() {
+			return name;
+		}
+
+		public static void setName(String name) {
+			ExampleWithStaticAccessors.name = name;
+		}
+
+		public int getCounter() {
+			return this.counter;
+		}
+
+		public void setCounter(int counter) {
+			this.counter = counter;
 		}
 
 	}

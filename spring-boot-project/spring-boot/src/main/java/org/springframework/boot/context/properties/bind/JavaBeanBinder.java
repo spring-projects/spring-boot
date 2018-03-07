@@ -118,7 +118,9 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		private boolean isCandidate(Method method) {
-			return Modifier.isPublic(method.getModifiers())
+			int modifiers = method.getModifiers();
+			return Modifier.isPublic(modifiers) && !Modifier.isAbstract(modifiers)
+					&& !Modifier.isStatic(modifiers)
 					&& !Object.class.equals(method.getDeclaringClass())
 					&& !Class.class.equals(method.getDeclaringClass());
 		}

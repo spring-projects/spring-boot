@@ -81,6 +81,7 @@ import org.springframework.boot.configurationsample.specific.InnerClassRootConfi
 import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
+import org.springframework.boot.configurationsample.specific.StaticAccessor;
 import org.springframework.boot.configurationsample.specific.WildcardConfig;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.util.FileCopyUtils;
@@ -363,6 +364,18 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.has(Metadata.withGroup("specific").fromSource(AnnotatedGetter.class));
 		assertThat(metadata).has(Metadata.withProperty("specific.name", String.class)
 				.fromSource(AnnotatedGetter.class));
+	}
+
+	@Test
+	public void staticAccessor() {
+		ConfigurationMetadata metadata = compile(StaticAccessor.class);
+		assertThat(metadata)
+				.has(Metadata.withGroup("specific").fromSource(StaticAccessor.class));
+		assertThat(metadata).has(Metadata.withProperty("specific.counter",
+				Integer.class).fromSource(StaticAccessor.class).withDefaultValue(42));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("specific.name",
+				String.class).fromSource(StaticAccessor.class));
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
