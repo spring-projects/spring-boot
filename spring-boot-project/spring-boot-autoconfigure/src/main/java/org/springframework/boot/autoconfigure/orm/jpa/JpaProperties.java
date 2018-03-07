@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Provider;
 import javax.sql.DataSource;
 
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
@@ -217,7 +218,7 @@ public class JpaProperties {
 			getNaming().applyNamingStrategies(result,
 					settings.getImplicitNamingStrategy(),
 					settings.getPhysicalNamingStrategy());
-			String ddlAuto = determineDdlAuto(existing, settings.getDdlAuto());
+			String ddlAuto = determineDdlAuto(existing, settings::getDdlAuto);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
 				result.put("hibernate.hbm2ddl.auto", ddlAuto);
 			}
@@ -243,11 +244,13 @@ public class JpaProperties {
 		}
 
 		private String determineDdlAuto(Map<String, String> existing,
-				String defaultDdlAuto) {
-			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto);
-			if (!existing.containsKey("hibernate.hbm2ddl.auto")
-					&& !"none".equals(ddlAuto)) {
-				return ddlAuto;
+				Provider<String> defaultDdlAuto) {
+			if (!existing.containsKey("hibernate.hbm2ddl.auto")) {
+				String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
+						: defaultDdlAuto.get());
+				if (!"none".equals(ddlAuto)) {
+					return ddlAuto;
+				}
 			}
 			if (existing.containsKey("hibernate.hbm2ddl.auto")) {
 				return existing.get("hibernate.hbm2ddl.auto");

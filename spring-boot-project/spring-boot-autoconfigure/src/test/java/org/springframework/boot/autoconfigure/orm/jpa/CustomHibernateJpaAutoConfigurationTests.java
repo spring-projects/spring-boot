@@ -69,7 +69,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				.run((context) -> {
 					JpaProperties bean = context.getBean(JpaProperties.class);
 					Map<String, Object> hibernateProperties = bean.getHibernateProperties(
-							new HibernateSettings().ddlAuto("create-drop"));
+							new HibernateSettings());
 					assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"))
 							.isNull();
 				});
