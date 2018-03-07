@@ -126,17 +126,17 @@ class JavaBeanBinder implements BeanBinder {
 		private void addMethod(Method method) {
 			String name = method.getName();
 			int parameterCount = method.getParameterCount();
-			if (name.startsWith("get") && parameterCount == 0) {
+			if (name.startsWith("get") && parameterCount == 0 && name.length() > 3) {
 				name = Introspector.decapitalize(name.substring(3));
 				this.properties.computeIfAbsent(name, this::getBeanProperty)
 						.addGetter(method);
 			}
-			else if (name.startsWith("is") && parameterCount == 0) {
+			else if (name.startsWith("is") && parameterCount == 0 && name.length() > 2) {
 				name = Introspector.decapitalize(name.substring(2));
 				this.properties.computeIfAbsent(name, this::getBeanProperty)
 						.addGetter(method);
 			}
-			else if (name.startsWith("set") && parameterCount == 1) {
+			else if (name.startsWith("set") && parameterCount == 1 && name.length() > 3) {
 				name = Introspector.decapitalize(name.substring(3));
 				this.properties.computeIfAbsent(name, this::getBeanProperty)
 						.addSetter(method);

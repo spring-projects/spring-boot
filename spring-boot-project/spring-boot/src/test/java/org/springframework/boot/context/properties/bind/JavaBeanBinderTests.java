@@ -476,6 +476,16 @@ public class JavaBeanBinderTests {
 		assertThat(bean.getValue()).isEqualTo(RuntimeException.class);
 	}
 
+	@Test
+	public void bindToClassShouldIgnoreInvalidAccessors() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.name", "something");
+		this.sources.add(source);
+		ExampleWithInvalidAccessors bean = this.binder
+				.bind("foo", Bindable.of(ExampleWithInvalidAccessors.class)).get();
+		assertThat(bean.getName()).isEqualTo("something");
+	}
+
 	public static class ExampleValueBean {
 
 		private int intValue;
@@ -809,6 +819,28 @@ public class JavaBeanBinderTests {
 
 		public void setSelf(ExampleWithSelfReference self) {
 			this.self = self;
+		}
+
+	}
+
+	public static class ExampleWithInvalidAccessors {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String get() {
+			throw new IllegalArgumentException("should not be invoked");
+		}
+
+		public boolean is() {
+			throw new IllegalArgumentException("should not be invoked");
 		}
 
 	}
