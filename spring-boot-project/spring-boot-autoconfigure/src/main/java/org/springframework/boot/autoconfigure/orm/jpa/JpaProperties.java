@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
-import javax.inject.Provider;
 import javax.sql.DataSource;
 
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
@@ -244,7 +244,7 @@ public class JpaProperties {
 		}
 
 		private String determineDdlAuto(Map<String, String> existing,
-				Provider<String> defaultDdlAuto) {
+				Supplier<String> defaultDdlAuto) {
 			if (!existing.containsKey("hibernate.hbm2ddl.auto")) {
 				String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
 						: defaultDdlAuto.get());
