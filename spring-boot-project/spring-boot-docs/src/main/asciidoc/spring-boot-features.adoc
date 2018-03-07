@@ -5187,8 +5187,10 @@ RabbitMQ configuration is controlled by external configuration properties in
 	spring.rabbitmq.password=secret
 ----
 
-See {sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitProperties`]
-for more of the supported options.
+If a `ConnectionNameStrategy` bean exists in the context, it will be automatically used to
+name connections created by the auto-configured `ConnectionFactory`. See
+{sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitProperties`] for more
+of the supported options.
 
 TIP: See
 https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding
