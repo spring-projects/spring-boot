@@ -64,7 +64,7 @@ public final class PathRequest {
 	public static final class H2ConsoleRequestMatcher
 			extends ApplicationContextRequestMatcher<H2ConsoleProperties> {
 
-		private RequestMatcher delegate;
+		private volatile RequestMatcher delegate;
 
 		private H2ConsoleRequestMatcher() {
 			super(H2ConsoleProperties.class);

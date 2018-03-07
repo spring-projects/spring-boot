@@ -69,8 +69,9 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 		if (this.context == null) {
 			synchronized (this.contextLock) {
 				if (this.context == null) {
-					this.context = createContext(request);
-					initialized(this.context);
+					Supplier<C> createdContext = createContext(request);
+					initialized(createdContext);
+					this.context = createdContext;
 				}
 			}
 		}

@@ -100,7 +100,7 @@ public final class StaticResourceRequest {
 
 		private final Set<StaticResourceLocation> locations;
 
-		private RequestMatcher delegate;
+		private volatile RequestMatcher delegate;
 
 		private StaticResourceRequestMatcher(Set<StaticResourceLocation> locations) {
 			super(ServerProperties.class);

@@ -100,7 +100,7 @@ public final class EndpointRequest {
 
 		private final List<Object> excludes;
 
-		private RequestMatcher delegate;
+		private volatile RequestMatcher delegate;
 
 		private EndpointRequestMatcher() {
 			this(Collections.emptyList(), Collections.emptyList());
