@@ -92,6 +92,16 @@ public class SampleSecureWebFluxCustomSecurityTests {
 				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
 	}
 
+	@Test
+	public void actuatorLinksIsSecure() {
+		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isUnauthorized();
+		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", "basic " + getBasicAuthForAdmin()).exchange()
+				.expectStatus().isOk();
+	}
+
 	@Configuration
 	static class SecurityConfiguration {
 
