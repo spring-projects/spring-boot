@@ -23,6 +23,7 @@ import java.nio.channels.ByteChannel;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
@@ -106,11 +107,9 @@ import org.springframework.util.Assert;
  */
 public class HttpTunnelServer {
 
-	private static final int SECONDS = 1000;
+	private static final int DEFAULT_LONG_POLL_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(10);
 
-	private static final int DEFAULT_LONG_POLL_TIMEOUT = 10 * SECONDS;
-
-	private static final long DEFAULT_DISCONNECT_TIMEOUT = 30 * SECONDS;
+	private static final long DEFAULT_DISCONNECT_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
 
 	private static final MediaType DISCONNECT_MEDIA_TYPE = new MediaType("application",
 			"x-disconnect");
