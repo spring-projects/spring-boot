@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ import org.springframework.util.Assert;
  */
 public class HttpTunnelServer {
 
-	private static final int DEFAULT_LONG_POLL_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(10);
+	private static final long DEFAULT_LONG_POLL_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	private static final long DEFAULT_DISCONNECT_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
 
@@ -118,7 +118,7 @@ public class HttpTunnelServer {
 
 	private final TargetServerConnection serverConnection;
 
-	private int longPollTimeout = DEFAULT_LONG_POLL_TIMEOUT;
+	private int longPollTimeout = (int) DEFAULT_LONG_POLL_TIMEOUT;
 
 	private long disconnectTimeout = DEFAULT_DISCONNECT_TIMEOUT;
 
