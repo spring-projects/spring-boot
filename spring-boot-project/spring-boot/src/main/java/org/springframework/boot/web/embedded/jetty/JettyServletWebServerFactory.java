@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
@@ -577,10 +578,24 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			return this.delegate.length();
 		}
 
+		/**
+		 * URL representing the resource.
+		 * @return an URL representing the given resource
+		 * @deprecated use {{@link #getURI()}.toURL() instead.
+		 */
 		@Override
 		@Deprecated
 		public URL getURL() {
 			return this.delegate.getURL();
+		}
+
+		/**
+		 * URI representing the resource.
+		 * @return an URI representing the given resource
+		 */
+		@Override
+		public URI getURI() {
+			return this.delegate.getURI();
 		}
 
 		@Override
