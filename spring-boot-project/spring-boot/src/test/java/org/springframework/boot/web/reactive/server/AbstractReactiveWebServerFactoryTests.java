@@ -39,7 +39,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyPipeline;
 import reactor.ipc.netty.http.client.HttpClientOptions;
@@ -74,9 +73,6 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
