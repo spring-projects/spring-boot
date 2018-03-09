@@ -65,13 +65,13 @@ public class HealthWebEndpointResponseMapper {
 	 */
 	public WebEndpointResponse<Health> map(Health health, SecurityContext securityContext,
 			ShowDetails showDetails) {
-		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
 		if (showDetails == ShowDetails.NEVER
 				|| (showDetails == ShowDetails.WHEN_AUTHORIZED
 						&& (securityContext.getPrincipal() == null
 								|| !isUserInRole(securityContext)))) {
 			health = Health.status(health.getStatus()).build();
 		}
+		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
 		return new WebEndpointResponse<>(health, status);
 	}
 
