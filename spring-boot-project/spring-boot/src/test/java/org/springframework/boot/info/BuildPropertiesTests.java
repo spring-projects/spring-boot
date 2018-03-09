@@ -18,6 +18,7 @@ package org.springframework.boot.info;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -39,7 +40,8 @@ public class BuildPropertiesTests {
 		assertThat(properties.getGroup()).isEqualTo("com.example");
 		assertThat(properties.getArtifact()).isEqualTo("demo");
 		assertThat(properties.getVersion()).isEqualTo("0.0.1");
-		assertThat(properties.getTime()).isEqualTo(instant);
+		assertThat(properties.getTime())
+				.isEqualTo(instant.truncatedTo(ChronoUnit.MILLIS));
 		assertThat(properties.get("time"))
 				.isEqualTo(String.valueOf(instant.toEpochMilli()));
 	}
