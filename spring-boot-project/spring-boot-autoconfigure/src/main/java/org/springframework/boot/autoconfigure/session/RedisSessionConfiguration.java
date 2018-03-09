@@ -52,13 +52,10 @@ class RedisSessionConfiguration {
 	public static class SpringBootRedisHttpSessionConfiguration
 			extends RedisHttpSessionConfiguration {
 
-		private SessionProperties sessionProperties;
-
 		@Autowired
 		public void customize(SessionProperties sessionProperties,
 				RedisSessionProperties redisSessionProperties) {
-			this.sessionProperties = sessionProperties;
-			Duration timeout = this.sessionProperties.getTimeout();
+			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
