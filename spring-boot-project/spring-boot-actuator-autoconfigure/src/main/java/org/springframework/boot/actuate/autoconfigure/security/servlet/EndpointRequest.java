@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
@@ -38,6 +39,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Factory that can be used to create a {@link RequestMatcher} for actuator endpoint
@@ -55,7 +57,8 @@ public final class EndpointRequest {
 	}
 
 	/**
-	 * Returns a matcher that includes all {@link Endpoint actuator endpoints}. The
+	 * Returns a matcher that includes all {@link Endpoint actuator endpoints}. It also includes
+	 * the links endpoint which is present at the base path of the actuator endpoints. The
 	 * {@link EndpointRequestMatcher#excluding(Class...) excluding} method can be used to
 	 * further remove specific endpoints if required. For example: <pre class="code">
 	 * EndpointRequest.toAnyEndpoint().excluding(ShutdownEndpoint.class)
@@ -63,7 +66,7 @@ public final class EndpointRequest {
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public static EndpointRequestMatcher toAnyEndpoint() {
-		return new EndpointRequestMatcher();
+		return new EndpointRequestMatcher(true);
 	}
 
 	/**
@@ -75,7 +78,7 @@ public final class EndpointRequest {
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public static EndpointRequestMatcher to(Class<?>... endpoints) {
-		return new EndpointRequestMatcher(endpoints);
+		return new EndpointRequestMatcher(endpoints, false);
 	}
 
 	/**
@@ -87,7 +90,21 @@ public final class EndpointRequest {
 	 * @return the configured {@link RequestMatcher}
 	 */
 	public static EndpointRequestMatcher to(String... endpoints) {
-		return new EndpointRequestMatcher(endpoints);
+		return new EndpointRequestMatcher(endpoints, false);
+	}
+
+	/**
+	 * Returns a matcher that matches only on the links endpoint. It can be used when security configuration
+	 * for the links endpoint is different from the other {@link Endpoint actuator endpoints}. The
+	 * {@link EndpointRequestMatcher#excludingLinks() excludingLinks} method can be used in combination with this
+	 * to remove the links endpoint from {@link EndpointRequest#toAnyEndpoint() toAnyEndpoint}.
+	 * For example: <pre class="code">
+	 * EndpointRequest.toLinks()
+	 * </pre>
+	 * @return the configured {@link RequestMatcher}
+	 */
+	public static LinksRequestMatcher toLinks() {
+		return new LinksRequestMatcher();
 	}
 
 	/**
@@ -100,36 +117,43 @@ public final class EndpointRequest {
 
 		private final List<Object> excludes;
 
+		private final boolean includeLinks;
+
 		private volatile RequestMatcher delegate;
 
-		private EndpointRequestMatcher() {
-			this(Collections.emptyList(), Collections.emptyList());
+		private EndpointRequestMatcher(boolean includeLinks) {
+			this(Collections.emptyList(), Collections.emptyList(), includeLinks);
 		}
 
-		private EndpointRequestMatcher(Class<?>[] endpoints) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList());
+		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks) {
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
-		private EndpointRequestMatcher(String[] endpoints) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList());
+		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks) {
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
-		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes) {
+		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
 			super(PathMappedEndpoints.class);
 			this.includes = includes;
 			this.excludes = excludes;
+			this.includeLinks = includeLinks;
 		}
 
 		public EndpointRequestMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointRequestMatcher(this.includes, excludes);
+			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks);
 		}
 
 		public EndpointRequestMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointRequestMatcher(this.includes, excludes);
+			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks);
+		}
+
+		public EndpointRequestMatcher excludingLinks() {
+			return new EndpointRequestMatcher(this.includes, this.excludes, false);
 		}
 
 		@Override
@@ -154,7 +178,11 @@ public final class EndpointRequest {
 			}
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
-			return new OrRequestMatcher(getDelegateMatchers(paths));
+			List<RequestMatcher> delegateMatchers = getDelegateMatchers(paths);
+			if (this.includeLinks && StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
+				delegateMatchers.add(new AntPathRequestMatcher(pathMappedEndpoints.getBasePath()));
+			}
+			return new OrRequestMatcher(delegateMatchers);
 		}
 
 		private Stream<String> streamPaths(List<Object> source,
@@ -191,6 +219,35 @@ public final class EndpointRequest {
 			return this.delegate.matches(request);
 		}
 
+	}
+
+	/**
+	 * The request matcher used to match against the links endpoint.
+	 */
+	public static final class LinksRequestMatcher
+			extends ApplicationContextRequestMatcher<WebEndpointProperties> {
+
+		private RequestMatcher delegate;
+
+		private LinksRequestMatcher() {
+			super(WebEndpointProperties.class);
+		}
+
+		@Override
+		protected void initialized(Supplier<WebEndpointProperties> propertiesSupplier) {
+			WebEndpointProperties webEndpointProperties = propertiesSupplier.get();
+			if (StringUtils.hasText(webEndpointProperties.getBasePath())) {
+				this.delegate = new AntPathRequestMatcher(webEndpointProperties.getBasePath());
+			}
+			else {
+				this.delegate = EMPTY_MATCHER;
+			}
+		}
+
+		@Override
+		protected boolean matches(HttpServletRequest request, Supplier<WebEndpointProperties> context) {
+			return this.delegate.matches(request);
+		}
 	}
 
 }

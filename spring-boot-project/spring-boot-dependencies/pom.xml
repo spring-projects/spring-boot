@@ -151,7 +151,7 @@
 		<solr.version>6.6.2</solr.version>
 		<spring.version>5.0.5.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>2.0.2.RELEASE</spring-amqp.version>
-		<spring-batch.version>4.0.0.RELEASE</spring-batch.version>
+		<spring-batch.version>4.0.1.RELEASE</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.1.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Kay-SR5</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.24.0.RELEASE</spring-hateoas.version>

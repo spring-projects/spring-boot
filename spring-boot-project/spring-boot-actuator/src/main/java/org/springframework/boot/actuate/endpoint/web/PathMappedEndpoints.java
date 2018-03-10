@@ -76,6 +76,14 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	}
 
 	/**
+	 * Return the base path for the endpoints.
+	 * @return the base path
+	 */
+	public String getBasePath() {
+		return this.basePath;
+	}
+
+	/**
 	 * Return the root path for the endpoint with the given ID or {@code null} if the
 	 * endpoint cannot be found.
 	 * @param endpointId the endpoint ID

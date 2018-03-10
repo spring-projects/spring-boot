@@ -786,19 +786,10 @@
 				<jdk>10</jdk>
 			</activation>
 			<properties>
-				<maven-failsafe-plugin.version>2.21.0-SNAPSHOT</maven-failsafe-plugin.version>
+				<maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
 				<maven-site-plugin.version>3.7</maven-site-plugin.version>
-				<maven-surefire-plugin.version>2.21.0-SNAPSHOT</maven-surefire-plugin.version>
+				<maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
 			</properties>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>apache-snapshots</id>
-					<url>https://repository.apache.org/content/groups/snapshots</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
 		</profile>
 	</profiles>
 </project>
