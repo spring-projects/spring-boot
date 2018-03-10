@@ -35,28 +35,16 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  * @see JsonParserFactory
  */
-public class BasicJsonParser implements JsonParser {
+public class BasicJsonParser extends AbstractJsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("{")) {
-				return parseMapInternal(json);
-			}
-		}
-		throw new IllegalArgumentException("Cannot parse JSON");
+		return parseMap(json, this::parseMapInternal);
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("[")) {
-				return parseListInternal(json);
-			}
-		}
-		throw new IllegalArgumentException("Cannot parse JSON");
+		return parseList(json, this::parseListInternal);
 	}
 
 	private List<Object> parseListInternal(String json) {
