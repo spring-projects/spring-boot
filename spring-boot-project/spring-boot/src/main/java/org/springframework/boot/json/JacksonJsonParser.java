@@ -42,7 +42,7 @@ public class JacksonJsonParser implements JsonParser {
 			return getObjectMapper().readValue(json, MAP_TYPE);
 		}
 		catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot parse JSON", ex);
+			throw AbstractJsonParser.cannotParseJson(ex);
 		}
 	}
 
@@ -52,7 +52,7 @@ public class JacksonJsonParser implements JsonParser {
 			return getObjectMapper().readValue(json, LIST_TYPE);
 		}
 		catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot parse JSON", ex);
+			throw AbstractJsonParser.cannotParseJson(ex);
 		}
 	}
 

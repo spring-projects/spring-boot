@@ -39,7 +39,7 @@ public class JsonSimpleJsonParser implements JsonParser {
 			return (Map<String, Object>) new JSONParser().parse(json);
 		}
 		catch (ParseException ex) {
-			throw new IllegalArgumentException("Cannot parse JSON", ex);
+			throw AbstractJsonParser.cannotParseJson(ex);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class JsonSimpleJsonParser implements JsonParser {
 			return (List<Object>) new JSONParser().parse(json);
 		}
 		catch (ParseException ex) {
-			throw new IllegalArgumentException("Cannot parse JSON", ex);
+			throw AbstractJsonParser.cannotParseJson(ex);
 		}
 	}
 
