@@ -100,7 +100,7 @@ public final class LambdaSafe {
 	/**
 	 * Abstract base class for lambda safe callbacks.
 	 */
-	private static abstract class LambdaSafeCallback<C, A, SELF extends LambdaSafeCallback<C, A, SELF>> {
+	private abstract static class LambdaSafeCallback<C, A, SELF extends LambdaSafeCallback<C, A, SELF>> {
 
 		private final Class<C> callbackType;
 
