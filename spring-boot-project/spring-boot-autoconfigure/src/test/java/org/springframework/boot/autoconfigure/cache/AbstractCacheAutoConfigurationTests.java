@@ -147,7 +147,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 	}
 
-	static abstract class CacheManagerTestCustomizer<T extends CacheManager>
+	abstract static class CacheManagerTestCustomizer<T extends CacheManager>
 			implements CacheManagerCustomizer<T> {
 
 		T cacheManager;

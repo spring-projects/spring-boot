@@ -167,7 +167,7 @@ public final class Verify {
 
 	}
 
-	private static abstract class AbstractArchiveVerification {
+	private abstract static class AbstractArchiveVerification {
 
 		private final File file;
 
