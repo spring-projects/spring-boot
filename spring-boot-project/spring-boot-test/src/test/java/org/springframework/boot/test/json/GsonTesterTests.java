@@ -65,7 +65,7 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 		return new GsonTester<>(resourceLoadClass, type, new GsonBuilder().create());
 	}
 
-	static abstract class InitFieldsBaseClass {
+	abstract static class InitFieldsBaseClass {
 
 		public GsonTester<ExampleObject> base;
 

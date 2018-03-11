@@ -66,7 +66,7 @@ public class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 		return new JsonbTester<>(resourceLoadClass, type, JsonbBuilder.create());
 	}
 
-	static abstract class InitFieldsBaseClass {
+	abstract static class InitFieldsBaseClass {
 
 		public JsonbTester<ExampleObject> base;
 

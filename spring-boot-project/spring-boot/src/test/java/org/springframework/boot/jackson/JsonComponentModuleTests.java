@@ -110,7 +110,7 @@ public class JsonComponentModuleTests {
 	@JsonComponent
 	static class ComponentWithInnerAbstractClass {
 
-		private static abstract class AbstractSerializer
+		private abstract static class AbstractSerializer
 				extends NameAndAgeJsonComponent.Serializer {
 
 		}
