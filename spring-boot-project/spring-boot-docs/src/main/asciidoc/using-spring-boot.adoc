@@ -767,7 +767,7 @@ As DevTools monitors classpath resources, the only way to trigger a restart is t
 the classpath. The way in which you cause the classpath to be updated depends on the IDE
 that you are using. In Eclipse, saving a modified file causes the classpath to be updated
 and triggers a restart. In IntelliJ IDEA, building the project
-(`Build +->+ Make Project`) has the same effect.
+(`Build +->+ Build Project`) has the same effect.
 ****
 
 [NOTE]
