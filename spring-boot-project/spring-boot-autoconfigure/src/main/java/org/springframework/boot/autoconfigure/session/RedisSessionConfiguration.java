@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,13 +52,10 @@ class RedisSessionConfiguration {
 	public static class SpringBootRedisHttpSessionConfiguration
 			extends RedisHttpSessionConfiguration {
 
-		private SessionProperties sessionProperties;
-
 		@Autowired
 		public void customize(SessionProperties sessionProperties,
 				RedisSessionProperties redisSessionProperties) {
-			this.sessionProperties = sessionProperties;
-			Duration timeout = this.sessionProperties.getTimeout();
+			Duration timeout = sessionProperties.getTimeout();
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
