@@ -49,7 +49,7 @@ class CloudFoundrySecurityInterceptor {
 
 	private final String applicationId;
 
-	private static SecurityResponse SUCCESS = SecurityResponse.success();
+	private static final SecurityResponse SUCCESS = SecurityResponse.success();
 
 	CloudFoundrySecurityInterceptor(TokenValidator tokenValidator,
 			CloudFoundrySecurityService cloudFoundrySecurityService,
