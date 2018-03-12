@@ -46,6 +46,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A container object which Binds objects from one or more
@@ -308,6 +309,9 @@ public class Binder {
 
 	private ConfigurationProperty findProperty(ConfigurationPropertyName name,
 			Context context) {
+		if (!StringUtils.hasText(name.toString())) {
+			return null;
+		}
 		return context.streamSources()
 				.map((source) -> source.getConfigurationProperty(name))
 				.filter(Objects::nonNull).findFirst().orElse(null);

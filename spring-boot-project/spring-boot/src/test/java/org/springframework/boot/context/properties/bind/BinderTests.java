@@ -20,7 +20,10 @@ import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Validation;
 
@@ -40,6 +43,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
@@ -299,6 +303,20 @@ public class BinderTests {
 		this.sources.add(source);
 		Bindable<GenericBean> target = Bindable.of(GenericBean.class);
 		this.binder.bind("foo", target);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void bindWithEmptyPrefixShouldIgnorePropertiesWithEmptyName() {
+		Map<String, Object> source = new HashMap<>();
+		source.put("value", "hello");
+		source.put("", "bar");
+		Iterable<ConfigurationPropertySource> propertySources = ConfigurationPropertySources.from(
+				new MapPropertySource("test", source));
+		this.sources.addAll((Set) propertySources);
+		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
+		JavaBean result = this.binder.bind("", target).get();
+		assertThat(result.getValue()).isEqualTo("hello");
 	}
 
 	public static class JavaBean {
