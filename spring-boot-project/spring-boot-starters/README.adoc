@@ -145,6 +145,9 @@ do as they were designed before this was clarified.
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
 
+| https://www.rabbitmq.com/ [RabbitMq] (Advanced usage)
+| https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
+
 | http://restfb.com/[RestFB] Messenger
 | https://github.com/marsbits/restfbmessenger
 
