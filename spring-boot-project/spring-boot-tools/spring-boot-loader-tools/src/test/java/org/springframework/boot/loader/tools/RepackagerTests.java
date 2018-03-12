@@ -621,6 +621,23 @@ public class RepackagerTests {
 		assertThat(unpackLibrary.getComment()).startsWith("UNPACK:");
 	}
 
+	@Test
+	public void layoutCanOmitLibraries() throws IOException {
+		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		final File libJarFile = libJar.getFile();
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		Layout layout = mock(Layout.class);
+		final LibraryScope scope = mock(LibraryScope.class);
+		repackager.setLayout(layout);
+		repackager.repackage(
+				(callback) -> callback.library(new Library(libJarFile, scope)));
+		assertThat(getEntryNames(file)).containsExactly("META-INF/",
+				"META-INF/MANIFEST.MF", "a/", "a/b/", "a/b/C.class");
+	}
+
 	private File createLibrary() throws IOException {
 		TestJarFile library = new TestJarFile(this.temporaryFolder);
 		library.addClass("com/example/library/Library.class",

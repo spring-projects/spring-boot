@@ -423,13 +423,14 @@ public class Repackager {
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library.getFile())) {
 					String libraryDestination = Repackager.this.layout
-							.getLibraryDestination(library.getName(), library.getScope())
-							+ library.getName();
-					Library existing = this.libraryEntryNames
-							.putIfAbsent(libraryDestination, library);
-					if (existing != null) {
-						throw new IllegalStateException(
-								"Duplicate library " + library.getName());
+							.getLibraryDestination(library.getName(), library.getScope());
+					if (libraryDestination != null) {
+						Library existing = this.libraryEntryNames.putIfAbsent(
+								libraryDestination + library.getName(), library);
+						if (existing != null) {
+							throw new IllegalStateException(
+									"Duplicate library " + library.getName());
+						}
 					}
 				}
 			});
