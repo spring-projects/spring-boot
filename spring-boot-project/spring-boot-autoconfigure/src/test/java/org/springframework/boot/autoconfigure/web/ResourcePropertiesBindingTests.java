@@ -48,11 +48,11 @@ public class ResourcePropertiesBindingTests {
 						"spring.resources.static-locations[3]=classpath:/four",
 						"spring.resources.static-locations[4]=classpath:/five/",
 						"spring.resources.static-locations[5]=classpath:/six")
-				.run(assertResourceProperties((properties) ->
-						assertThat(properties.getStaticLocations()).contains(
-								"classpath:/one/", "classpath:/two/", "classpath:/three/",
-								"classpath:/four/", "classpath:/five/",
-								"classpath:/six/")));
+				.run(assertResourceProperties(
+						(properties) -> assertThat(properties.getStaticLocations())
+								.contains("classpath:/one/", "classpath:/two/",
+										"classpath:/three/", "classpath:/four/",
+										"classpath:/five/", "classpath:/six/")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertResourceProperties(

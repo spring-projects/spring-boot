@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.validation.Validation;
 
@@ -306,14 +305,13 @@ public class BinderTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void bindWithEmptyPrefixShouldIgnorePropertiesWithEmptyName() {
 		Map<String, Object> source = new HashMap<>();
 		source.put("value", "hello");
 		source.put("", "bar");
-		Iterable<ConfigurationPropertySource> propertySources = ConfigurationPropertySources.from(
-				new MapPropertySource("test", source));
-		this.sources.addAll((Set) propertySources);
+		Iterable<ConfigurationPropertySource> propertySources = ConfigurationPropertySources
+				.from(new MapPropertySource("test", source));
+		propertySources.forEach(this.sources::add);
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		JavaBean result = this.binder.bind("", target).get();
 		assertThat(result.getValue()).isEqualTo("hello");

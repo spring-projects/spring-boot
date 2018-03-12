@@ -90,9 +90,11 @@ public class ReactiveWebServerFactoryAutoConfigurationTests {
 	@Test
 	public void defaultWebServerIsTomcat() {
 		// Tomcat should be chosen over Netty if the Tomcat library is present.
-		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class).run(
-				(context) -> assertThat(context.getBean(ReactiveWebServerFactory.class))
-						.isInstanceOf(TomcatReactiveWebServerFactory.class));
+		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+				.withPropertyValues("server.port=0")
+				.run((context) -> assertThat(
+						context.getBean(ReactiveWebServerFactory.class))
+								.isInstanceOf(TomcatReactiveWebServerFactory.class));
 	}
 
 	@Configuration

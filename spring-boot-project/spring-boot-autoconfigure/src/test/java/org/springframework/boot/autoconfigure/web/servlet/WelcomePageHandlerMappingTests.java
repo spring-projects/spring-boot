@@ -67,8 +67,10 @@ public class WelcomePageHandlerMappingTests {
 	public void isOrderedAtLowPriority() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> {
-					WelcomePageHandlerMapping handler = context.getBean(WelcomePageHandlerMapping.class);
-					assertThat(handler.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE - 1);
+					WelcomePageHandlerMapping handler = context
+							.getBean(WelcomePageHandlerMapping.class);
+					assertThat(handler.getOrder())
+							.isEqualTo(Ordered.LOWEST_PRECEDENCE - 1);
 				});
 	}
 

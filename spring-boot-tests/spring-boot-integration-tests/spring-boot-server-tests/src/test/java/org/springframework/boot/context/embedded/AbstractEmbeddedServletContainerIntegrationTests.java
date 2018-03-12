@@ -44,7 +44,6 @@ public abstract class AbstractEmbeddedServletContainerIntegrationTests {
 
 		@Override
 		public void delete() {
-
 		}
 
 	};

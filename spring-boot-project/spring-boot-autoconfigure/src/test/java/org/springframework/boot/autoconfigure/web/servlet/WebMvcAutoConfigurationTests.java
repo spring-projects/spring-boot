@@ -812,12 +812,12 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customConfigurerAppliedAfterAutoConfig() {
-		this.contextRunner
-				.withUserConfiguration(CustomConfigurer.class)
+		this.contextRunner.withUserConfiguration(CustomConfigurer.class)
 				.run((context) -> {
-					ContentNegotiationManager manager = context.getBean(ContentNegotiationManager.class);
-					assertThat(manager.getStrategies()).anyMatch(strategy ->
-							WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class
+					ContentNegotiationManager manager = context
+							.getBean(ContentNegotiationManager.class);
+					assertThat(manager.getStrategies()).anyMatch(
+							strategy -> WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class
 									.isAssignableFrom(strategy.getClass()));
 				});
 	}
@@ -1106,6 +1106,7 @@ public class WebMvcAutoConfigurationTests {
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			configurer.favorPathExtension(true);
 		}
+
 	}
 
 }

@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
@@ -126,22 +127,20 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		private void addMethod(Method method) {
-			String name = method.getName();
-			int parameterCount = method.getParameterCount();
-			if (name.startsWith("get") && parameterCount == 0 && name.length() > 3) {
-				name = Introspector.decapitalize(name.substring(3));
-				this.properties.computeIfAbsent(name, this::getBeanProperty)
-						.addGetter(method);
-			}
-			else if (name.startsWith("is") && parameterCount == 0 && name.length() > 2) {
-				name = Introspector.decapitalize(name.substring(2));
-				this.properties.computeIfAbsent(name, this::getBeanProperty)
-						.addGetter(method);
-			}
-			else if (name.startsWith("set") && parameterCount == 1 && name.length() > 3) {
-				name = Introspector.decapitalize(name.substring(3));
-				this.properties.computeIfAbsent(name, this::getBeanProperty)
-						.addSetter(method);
+			addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
+			addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
+			addMethodIfPossible(method, "set", 1, BeanProperty::addSetter);
+		}
+
+		private void addMethodIfPossible(Method method, String prefix, int parameterCount,
+				BiConsumer<BeanProperty, Method> consumer) {
+			if (method.getParameterCount() == parameterCount
+					&& method.getName().startsWith(prefix)
+					&& method.getName().length() > prefix.length()) {
+				String propertyName = Introspector
+						.decapitalize(method.getName().substring(prefix.length()));
+				consumer.accept(this.properties.computeIfAbsent(propertyName,
+						this::getBeanProperty), method);
 			}
 		}
 

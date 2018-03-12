@@ -371,10 +371,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(StaticAccessor.class);
 		assertThat(metadata)
 				.has(Metadata.withGroup("specific").fromSource(StaticAccessor.class));
-		assertThat(metadata).has(Metadata.withProperty("specific.counter",
-				Integer.class).fromSource(StaticAccessor.class).withDefaultValue(42));
-		assertThat(metadata).doesNotHave(Metadata.withProperty("specific.name",
-				String.class).fromSource(StaticAccessor.class));
+		assertThat(metadata).has(Metadata.withProperty("specific.counter", Integer.class)
+				.fromSource(StaticAccessor.class).withDefaultValue(42));
+		assertThat(metadata)
+				.doesNotHave(Metadata.withProperty("specific.name", String.class)
+						.fromSource(StaticAccessor.class));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
 

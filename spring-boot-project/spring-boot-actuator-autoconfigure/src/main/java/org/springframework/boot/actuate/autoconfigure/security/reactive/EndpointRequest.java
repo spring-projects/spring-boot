@@ -59,11 +59,11 @@ public final class EndpointRequest {
 	}
 
 	/**
-	 * Returns a matcher that includes all {@link Endpoint actuator endpoints}. It also includes
-	 * the links endpoint which is present at the base path of the actuator endpoints. The
-	 * {@link EndpointServerWebExchangeMatcher#excluding(Class...) excluding} method can
-	 * be used to further remove specific endpoints if required. For example:
-	 * <pre class="code">
+	 * Returns a matcher that includes all {@link Endpoint actuator endpoints}. It also
+	 * includes the links endpoint which is present at the base path of the actuator
+	 * endpoints. The {@link EndpointServerWebExchangeMatcher#excluding(Class...)
+	 * excluding} method can be used to further remove specific endpoints if required. For
+	 * example: <pre class="code">
 	 * EndpointRequest.toAnyEndpoint().excluding(ShutdownEndpoint.class)
 	 * </pre>
 	 * @return the configured {@link ServerWebExchangeMatcher}
@@ -97,11 +97,13 @@ public final class EndpointRequest {
 	}
 
 	/**
-	 * Returns a matcher that matches only on the links endpoint. It can be used when security configuration
-	 * for the links endpoint is different from the other {@link Endpoint actuator endpoints}. The
-	 * {@link EndpointServerWebExchangeMatcher#excludingLinks() excludingLinks} method can be used in combination with this
-	 * to remove the links endpoint from {@link EndpointRequest#toAnyEndpoint() toAnyEndpoint}.
-	 * For example: <pre class="code">
+	 * Returns a matcher that matches only on the links endpoint. It can be used when
+	 * security configuration for the links endpoint is different from the other
+	 * {@link Endpoint actuator endpoints}. The
+	 * {@link EndpointServerWebExchangeMatcher#excludingLinks() excludingLinks} method can
+	 * be used in combination with this to remove the links endpoint from
+	 * {@link EndpointRequest#toAnyEndpoint() toAnyEndpoint}. For example:
+	 * <pre class="code">
 	 * EndpointRequest.toLinks()
 	 * </pre>
 	 * @return the configured {@link ServerWebExchangeMatcher}
@@ -121,20 +123,24 @@ public final class EndpointRequest {
 
 		private final List<Object> excludes;
 
-		private ServerWebExchangeMatcher delegate;
+		private final boolean includeLinks;
 
-		private boolean includeLinks;
+		private ServerWebExchangeMatcher delegate;
 
 		private EndpointServerWebExchangeMatcher(boolean includeLinks) {
 			this(Collections.emptyList(), Collections.emptyList(), includeLinks);
 		}
 
-		private EndpointServerWebExchangeMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+		private EndpointServerWebExchangeMatcher(Class<?>[] endpoints,
+				boolean includeLinks) {
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(),
+					includeLinks);
 		}
 
-		private EndpointServerWebExchangeMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+		private EndpointServerWebExchangeMatcher(String[] endpoints,
+				boolean includeLinks) {
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(),
+					includeLinks);
 		}
 
 		private EndpointServerWebExchangeMatcher(List<Object> includes,
@@ -148,17 +154,20 @@ public final class EndpointRequest {
 		public EndpointServerWebExchangeMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks);
+			return new EndpointServerWebExchangeMatcher(this.includes, excludes,
+					this.includeLinks);
 		}
 
 		public EndpointServerWebExchangeMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks);
+			return new EndpointServerWebExchangeMatcher(this.includes, excludes,
+					this.includeLinks);
 		}
 
 		public EndpointServerWebExchangeMatcher excludingLinks() {
-			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, false);
+			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes,
+					false);
 		}
 
 		@Override
@@ -185,8 +194,10 @@ public final class EndpointRequest {
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths);
-			if (this.includeLinks && StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(new PathPatternParserServerWebExchangeMatcher(pathMappedEndpoints.getBasePath()));
+			if (this.includeLinks
+					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
+				delegateMatchers.add(new PathPatternParserServerWebExchangeMatcher(
+						pathMappedEndpoints.getBasePath()));
 			}
 			return new OrServerWebExchangeMatcher(delegateMatchers);
 		}
@@ -241,15 +252,17 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(Supplier<WebEndpointProperties> propertiesSupplier) {
-			WebEndpointProperties webEndpointProperties = propertiesSupplier.get();
-			if (StringUtils.hasText(webEndpointProperties.getBasePath())) {
-				this.delegate = new PathPatternParserServerWebExchangeMatcher(
-						webEndpointProperties.getBasePath());
+		protected void initialized(Supplier<WebEndpointProperties> properties) {
+			this.delegate = createDelegate(properties.get());
+		}
+
+		private ServerWebExchangeMatcher createDelegate(
+				WebEndpointProperties properties) {
+			if (StringUtils.hasText(properties.getBasePath())) {
+				return new PathPatternParserServerWebExchangeMatcher(
+						properties.getBasePath());
 			}
-			else {
-				this.delegate = EMPTY_MATCHER;
-			}
+			return EMPTY_MATCHER;
 		}
 
 		@Override

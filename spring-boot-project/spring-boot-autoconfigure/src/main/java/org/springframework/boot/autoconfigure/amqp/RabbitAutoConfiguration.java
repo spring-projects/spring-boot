@@ -95,7 +95,8 @@ public class RabbitAutoConfiguration {
 		@Bean
 		public CachingConnectionFactory rabbitConnectionFactory(
 				RabbitProperties properties,
-				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) throws Exception {
+				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy)
+				throws Exception {
 			PropertyMapper map = PropertyMapper.get();
 			CachingConnectionFactory factory = new CachingConnectionFactory(
 					getRabbitConnectionFactoryBean(properties).getObject());

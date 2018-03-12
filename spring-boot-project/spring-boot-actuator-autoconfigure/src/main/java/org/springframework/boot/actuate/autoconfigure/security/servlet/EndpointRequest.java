@@ -57,10 +57,11 @@ public final class EndpointRequest {
 	}
 
 	/**
-	 * Returns a matcher that includes all {@link Endpoint actuator endpoints}. It also includes
-	 * the links endpoint which is present at the base path of the actuator endpoints. The
-	 * {@link EndpointRequestMatcher#excluding(Class...) excluding} method can be used to
-	 * further remove specific endpoints if required. For example: <pre class="code">
+	 * Returns a matcher that includes all {@link Endpoint actuator endpoints}. It also
+	 * includes the links endpoint which is present at the base path of the actuator
+	 * endpoints. The {@link EndpointRequestMatcher#excluding(Class...) excluding} method
+	 * can be used to further remove specific endpoints if required. For example:
+	 * <pre class="code">
 	 * EndpointRequest.toAnyEndpoint().excluding(ShutdownEndpoint.class)
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
@@ -94,11 +95,13 @@ public final class EndpointRequest {
 	}
 
 	/**
-	 * Returns a matcher that matches only on the links endpoint. It can be used when security configuration
-	 * for the links endpoint is different from the other {@link Endpoint actuator endpoints}. The
-	 * {@link EndpointRequestMatcher#excludingLinks() excludingLinks} method can be used in combination with this
-	 * to remove the links endpoint from {@link EndpointRequest#toAnyEndpoint() toAnyEndpoint}.
-	 * For example: <pre class="code">
+	 * Returns a matcher that matches only on the links endpoint. It can be used when
+	 * security configuration for the links endpoint is different from the other
+	 * {@link Endpoint actuator endpoints}. The
+	 * {@link EndpointRequestMatcher#excludingLinks() excludingLinks} method can be used
+	 * in combination with this to remove the links endpoint from
+	 * {@link EndpointRequest#toAnyEndpoint() toAnyEndpoint}. For example:
+	 * <pre class="code">
 	 * EndpointRequest.toLinks()
 	 * </pre>
 	 * @return the configured {@link RequestMatcher}
@@ -126,14 +129,17 @@ public final class EndpointRequest {
 		}
 
 		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(),
+					includeLinks);
 		}
 
 		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(),
+					includeLinks);
 		}
 
-		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
+		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes,
+				boolean includeLinks) {
 			super(PathMappedEndpoints.class);
 			this.includes = includes;
 			this.excludes = excludes;
@@ -179,8 +185,10 @@ public final class EndpointRequest {
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			List<RequestMatcher> delegateMatchers = getDelegateMatchers(paths);
-			if (this.includeLinks && StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(new AntPathRequestMatcher(pathMappedEndpoints.getBasePath()));
+			if (this.includeLinks
+					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
+				delegateMatchers.add(
+						new AntPathRequestMatcher(pathMappedEndpoints.getBasePath()));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
@@ -234,20 +242,23 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(Supplier<WebEndpointProperties> propertiesSupplier) {
-			WebEndpointProperties webEndpointProperties = propertiesSupplier.get();
-			if (StringUtils.hasText(webEndpointProperties.getBasePath())) {
-				this.delegate = new AntPathRequestMatcher(webEndpointProperties.getBasePath());
+		protected void initialized(Supplier<WebEndpointProperties> properties) {
+			this.delegate = createDelegate(properties.get());
+		}
+
+		private RequestMatcher createDelegate(WebEndpointProperties properties) {
+			if (StringUtils.hasText(properties.getBasePath())) {
+				return new AntPathRequestMatcher(properties.getBasePath());
 			}
-			else {
-				this.delegate = EMPTY_MATCHER;
-			}
+			return EMPTY_MATCHER;
 		}
 
 		@Override
-		protected boolean matches(HttpServletRequest request, Supplier<WebEndpointProperties> context) {
+		protected boolean matches(HttpServletRequest request,
+				Supplier<WebEndpointProperties> context) {
 			return this.delegate.matches(request);
 		}
+
 	}
 
 }

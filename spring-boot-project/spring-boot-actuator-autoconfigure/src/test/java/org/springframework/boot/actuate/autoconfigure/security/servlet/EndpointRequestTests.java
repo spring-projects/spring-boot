@@ -125,8 +125,8 @@ public class EndpointRequestTests {
 
 	@Test
 	public void excludeByClassShouldNotMatchLinksIfExcluded() {
-		RequestMatcher matcher = EndpointRequest.toAnyEndpoint()
-				.excludingLinks().excluding(FooEndpoint.class);
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks()
+				.excluding(FooEndpoint.class);
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).doesNotMatch("/actuator");
 	}
@@ -141,8 +141,8 @@ public class EndpointRequestTests {
 
 	@Test
 	public void excludeByIdShouldNotMatchLinksIfExcluded() {
-		RequestMatcher matcher = EndpointRequest.toAnyEndpoint()
-				.excludingLinks().excluding("foo");
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks()
+				.excluding("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).doesNotMatch("/actuator");
 	}
@@ -199,7 +199,8 @@ public class EndpointRequestTests {
 		context.registerBean(WebEndpointProperties.class);
 		if (pathMappedEndpoints != null) {
 			context.registerBean(PathMappedEndpoints.class, () -> pathMappedEndpoints);
-			WebEndpointProperties properties = context.getBean(WebEndpointProperties.class);
+			WebEndpointProperties properties = context
+					.getBean(WebEndpointProperties.class);
 			if (!properties.getBasePath().equals(pathMappedEndpoints.getBasePath())) {
 				properties.setBasePath(pathMappedEndpoints.getBasePath());
 			}

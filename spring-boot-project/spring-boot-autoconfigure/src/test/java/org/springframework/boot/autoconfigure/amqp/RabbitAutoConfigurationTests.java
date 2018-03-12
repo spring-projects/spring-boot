@@ -168,7 +168,8 @@ public class RabbitAutoConfigurationTests {
 					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
 					Address[] addresses = (Address[]) dfa.getPropertyValue("addresses");
 					assertThat(addresses).hasSize(1);
-					com.rabbitmq.client.ConnectionFactory rcf = mock(com.rabbitmq.client.ConnectionFactory.class);
+					com.rabbitmq.client.ConnectionFactory rcf = mock(
+							com.rabbitmq.client.ConnectionFactory.class);
 					given(rcf.newConnection(isNull(), eq(addresses), anyString()))
 							.willReturn(mock(Connection.class));
 					dfa.setPropertyValue("rabbitConnectionFactory", rcf);
@@ -787,7 +788,7 @@ public class RabbitAutoConfigurationTests {
 
 		@Bean
 		public ConnectionNameStrategy myConnectionNameStrategy() {
-			return c -> "test#" + this.counter.getAndIncrement();
+			return (connectionFactory) -> "test#" + this.counter.getAndIncrement();
 		}
 
 	}

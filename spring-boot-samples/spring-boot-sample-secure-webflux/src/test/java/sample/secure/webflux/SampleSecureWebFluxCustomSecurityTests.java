@@ -95,8 +95,7 @@ public class SampleSecureWebFluxCustomSecurityTests {
 	@Test
 	public void actuatorLinksIsSecure() {
 		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
-				.exchange()
-				.expectStatus().isUnauthorized();
+				.exchange().expectStatus().isUnauthorized();
 		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
 				.header("Authorization", "basic " + getBasicAuthForAdmin()).exchange()
 				.expectStatus().isOk();
@@ -118,7 +117,9 @@ public class SampleSecureWebFluxCustomSecurityTests {
 		@Bean
 		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
-					.permitAll().matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
+					.permitAll()
+					.matchers(EndpointRequest.toAnyEndpoint()
+							.excluding(MappingsEndpoint.class))
 					.hasRole("ACTUATOR")
 					.matchers(PathRequest.toStaticResources().atCommonLocations())
 					.permitAll().pathMatchers("/login").permitAll().anyExchange()
