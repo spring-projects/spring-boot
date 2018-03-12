@@ -91,7 +91,7 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 
 	}
 
-	public static abstract class AbstractExecutor implements Executor {
+	public abstract static class AbstractExecutor implements Executor {
 
 	}
 
