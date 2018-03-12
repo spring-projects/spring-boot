@@ -45,7 +45,7 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	static class EmbeddedNetty {
 
 		@Bean
-		public NettyReactiveWebServerFactory NettyReactiveWebServerFactory() {
+		public NettyReactiveWebServerFactory nettyReactiveWebServerFactory() {
 			return new NettyReactiveWebServerFactory();
 		}
 
