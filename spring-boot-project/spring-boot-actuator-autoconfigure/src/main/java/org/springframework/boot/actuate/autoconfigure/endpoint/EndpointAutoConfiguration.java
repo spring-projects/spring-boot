@@ -31,7 +31,6 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @author Phillip Webb
  * @since 2.0.0
  */
 @Configuration
