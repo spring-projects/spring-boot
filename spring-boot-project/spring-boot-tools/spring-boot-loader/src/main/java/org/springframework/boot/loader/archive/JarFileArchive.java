@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -183,6 +184,9 @@ public class JarFileArchive implements Archive {
 
 		@Override
 		public Entry next() {
+			if(!hasNext()){
+				throw new NoSuchElementException();
+			}
 			return new JarFileEntry(this.enumeration.nextElement());
 		}
 
