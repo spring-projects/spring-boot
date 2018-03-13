@@ -72,7 +72,7 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 		switch (filterType) {
 		case ANNOTATION:
 			Assert.isAssignable(Annotation.class, filterClass,
-					"An error occurred while processing a ANNOTATION type filter: ");
+					"An error occurred while processing an ANNOTATION type filter: ");
 			return new AnnotationTypeFilter((Class<Annotation>) filterClass);
 		case ASSIGNABLE_TYPE:
 			return new AssignableTypeFilter(filterClass);
