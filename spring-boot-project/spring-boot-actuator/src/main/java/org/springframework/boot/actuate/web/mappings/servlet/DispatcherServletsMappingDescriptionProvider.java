@@ -168,7 +168,7 @@ public class DispatcherServletsMappingDescriptionProvider
 
 		private DispatcherServletMappingDescription describe(
 				Entry<String, Object> mapping) {
-			return new DispatcherServletMappingDescription(mapping.getKey().toString(),
+			return new DispatcherServletMappingDescription(mapping.getKey(),
 					mapping.getValue().toString(), null);
 		}
 
