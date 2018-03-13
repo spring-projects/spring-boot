@@ -179,7 +179,6 @@ public class TunnelClient implements SmartInitializingSingleton {
 					ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 					int amountRead = socketChannel.read(buffer);
 					if (amountRead == -1) {
-						outputChannel.close();
 						return;
 					}
 					if (amountRead > 0) {
