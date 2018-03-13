@@ -75,7 +75,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 				webEndpointProperties.getBasePath());
 		return new WebMvcEndpointHandlerMapping(endpointMapping, webEndpoints,
 				endpointMediaTypes, corsProperties.toCorsConfiguration(),
-				new EndpointLinksResolver(allEndpoints));
+				new EndpointLinksResolver(allEndpoints,
+						webEndpointProperties.getBasePath()));
 	}
 
 	@Bean

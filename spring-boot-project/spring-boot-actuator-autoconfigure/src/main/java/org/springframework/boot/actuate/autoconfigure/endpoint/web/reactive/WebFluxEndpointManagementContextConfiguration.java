@@ -72,7 +72,8 @@ public class WebFluxEndpointManagementContextConfiguration {
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
 		return new WebFluxEndpointHandlerMapping(endpointMapping, endpoints,
 				endpointMediaTypes, corsProperties.toCorsConfiguration(),
-				new EndpointLinksResolver(allEndpoints));
+				new EndpointLinksResolver(allEndpoints,
+						webEndpointProperties.getBasePath()));
 	}
 
 	@Bean

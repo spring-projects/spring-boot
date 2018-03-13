@@ -33,7 +33,6 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -76,7 +75,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 			resourceConfig.registerResources(
 					new HashSet<>(resourceFactory.createEndpointResources(endpointMapping,
 							webEndpoints, endpointMediaTypes,
-							new EndpointLinksResolver(allEndpoints))));
+							new EndpointLinksResolver(allEndpoints, basePath))));
 		};
 	}
 

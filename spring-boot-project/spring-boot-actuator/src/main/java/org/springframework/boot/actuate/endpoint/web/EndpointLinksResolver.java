@@ -20,6 +20,9 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 
 /**
@@ -30,10 +33,35 @@ import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
  */
 public class EndpointLinksResolver {
 
+	private static final Log logger = LogFactory.getLog(EndpointLinksResolver.class);
+
 	private final Collection<? extends ExposableEndpoint<?>> endpoints;
 
+	/**
+	 * Creates a new {@code EndpointLinksResolver} that will resolve links to the given
+	 * {@code endpoints}.
+	 * @param endpoints the endpoints
+	 * @deprecated since 2.0.1 in favor of
+	 * {@link #EndpointLinksResolver(Collection, String)}
+	 */
+	@Deprecated
 	public EndpointLinksResolver(Collection<? extends ExposableEndpoint<?>> endpoints) {
 		this.endpoints = endpoints;
+	}
+
+	/**
+	 * Creates a new {@code EndpointLinksResolver} that will resolve links to the given
+	 * {@code endpoints} that are exposed beneath the given {@code basePath}.
+	 * @param endpoints the endpoints
+	 * @param basePath the basePath
+	 */
+	public EndpointLinksResolver(Collection<? extends ExposableEndpoint<?>> endpoints,
+			String basePath) {
+		this.endpoints = endpoints;
+		if (logger.isInfoEnabled()) {
+			logger.info("Exposing " + endpoints.size()
+					+ " endpoint(s) beneath base path '" + basePath + "'");
+		}
 	}
 
 	/**
