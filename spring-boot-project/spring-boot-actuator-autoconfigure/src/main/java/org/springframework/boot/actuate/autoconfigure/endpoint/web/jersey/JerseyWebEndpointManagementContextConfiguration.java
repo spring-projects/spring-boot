@@ -62,13 +62,11 @@ class JerseyWebEndpointManagementContextConfiguration {
 	public ResourceConfigCustomizer webEndpointRegistrar(
 			WebEndpointsSupplier webEndpointsSupplier,
 			ServletEndpointsSupplier servletEndpointsSupplier,
-			ControllerEndpointsSupplier controllerEndpointsSupplier,
 			EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(webEndpointsSupplier.getEndpoints());
 		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
-		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
 		return (resourceConfig) -> {
 			JerseyEndpointResourceFactory resourceFactory = new JerseyEndpointResourceFactory();
 			String basePath = webEndpointProperties.getBasePath();

@@ -65,8 +65,8 @@ public class JerseyEndpointIntegrationTests {
 									.baseUrl("http://localhost:" + port).build();
 							client.get().uri("/actuator").exchange().expectStatus().isOk()
 									.expectBody().jsonPath("_links.beans").isNotEmpty()
-									.jsonPath("_links.restcontroller").isNotEmpty()
-									.jsonPath("_links.controller").isNotEmpty();
+									.jsonPath("_links.restcontroller").doesNotExist()
+									.jsonPath("_links.controller").doesNotExist();
 						});
 	}
 
