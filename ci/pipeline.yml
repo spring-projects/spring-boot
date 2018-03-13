@@ -345,6 +345,19 @@ jobs:
       ARTIFACTORY_SERVER: ((artifactory-server))
       ARTIFACTORY_USERNAME: ((artifactory-username))
       ARTIFACTORY_PASSWORD: ((artifactory-password))
+- name: sync-to-maven-central
+  serial: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    trigger: false
+  - get: artifactory-repo
+    trigger: false
+    passed: [promote-release]
+  - task: sync-to-maven-central
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/sync-to-maven-central.yml
+    params:
       BINTRAY_USERNAME: ((bintray-username))
       BINTRAY_PASSWORD: ((bintray-password))
       SONATYPE_USERNAME: ((sonatype-username))
@@ -355,7 +368,7 @@ groups:
 - name: "Build"
   jobs: ["build", "jdk9-build", "jdk10-build"]
 - name: "Release"
-  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release"]
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
 - name: "CI Images"
   jobs: ["build-spring-boot-ci-images"]
 - name: "Build Pull Requests"
