@@ -1578,7 +1578,7 @@ environment that forwards metrics data to the Wavefront API host:
 
 [source,properties,indent=0]
 ----
-	management.metrics.export.uri=proxy://localhost:7828
+	management.metrics.export.uri=proxy://localhost:2878
 ----
 
 TIP: If publishing metrics to a Wavefront proxy (as described in
