@@ -38,8 +38,6 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractHealthIndicator implements HealthIndicator {
 
-	private static final String NO_MESSAGE = null;
-
 	private static final String DEFAULT_MESSAGE = "Health check failed";
 
 	private final Log logger = LogFactory.getLog(getClass());
@@ -51,7 +49,7 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 	 * {@code healthCheckFailedMessage}.
 	 */
 	public AbstractHealthIndicator() {
-		this(NO_MESSAGE);
+		this(DEFAULT_MESSAGE);
 	}
 
 	/**
