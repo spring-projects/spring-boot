@@ -1573,7 +1573,7 @@ be provided:
 	management.metrics.export.wavefront.api-token=YOUR_API_TOKEN
 ----
 
-Alternatively, you may use a a Wavefront sidecar or an internal proxy set up in your
+Alternatively, you may use a Wavefront sidecar or an internal proxy set up in your
 environment that forwards metrics data to the Wavefront API host:
 
 [source,properties,indent=0]

@@ -37,7 +37,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 
 /**
- * Factory to creates an {@link Operation} for a annotated methods on an
+ * Factory to create an {@link Operation} for annotated methods on an
  * {@link Endpoint @Endpoint} or {@link EndpointExtension @EndpointExtension}.
  *
  * @param <O> The operation type
