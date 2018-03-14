@@ -29,8 +29,7 @@ import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Annotation that can be applied to a test class to enable a {@link WebTestClient}. At
- * the moment, only WebFlux applications are supported.
+ * Annotation that can be applied to a test class to enable a {@link WebTestClient}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
