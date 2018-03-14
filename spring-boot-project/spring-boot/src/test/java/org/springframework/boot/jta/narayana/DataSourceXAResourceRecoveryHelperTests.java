@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -89,7 +90,7 @@ public class DataSourceXAResourceRecoveryHelperTests {
 		XAResource[] xaResources = this.recoveryHelper.getXAResources();
 		assertThat(xaResources.length).isEqualTo(0);
 		verify(this.xaDataSource, times(1)).getXAConnection();
-		verify(this.xaConnection, times(0)).getXAResource();
+		verify(this.xaConnection, never()).getXAResource();
 	}
 
 	@Test
