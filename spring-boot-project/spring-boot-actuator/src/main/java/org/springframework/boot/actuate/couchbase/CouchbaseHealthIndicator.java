@@ -42,6 +42,7 @@ public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
+		super("Couchbase health check failed");
 		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
 		this.operations = couchbaseOperations;
 	}
