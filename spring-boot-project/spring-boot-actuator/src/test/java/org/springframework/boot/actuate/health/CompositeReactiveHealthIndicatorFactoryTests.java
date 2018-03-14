@@ -26,6 +26,7 @@ import reactor.test.StepVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -87,7 +88,7 @@ public class CompositeReactiveHealthIndicatorFactoryTests {
 			assertThat(h.getDetails()).containsOnlyKeys("test");
 		}).verifyComplete();
 		verify(reactiveHealthIndicator, times(1)).health();
-		verify(regularHealthIndicator, times(0)).health();
+		verify(regularHealthIndicator, never()).health();
 	}
 
 	private ReactiveHealthIndicator createHealthIndicator(

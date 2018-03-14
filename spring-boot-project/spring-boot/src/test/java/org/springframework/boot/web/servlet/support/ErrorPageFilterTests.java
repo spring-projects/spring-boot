@@ -48,7 +48,7 @@ import org.springframework.web.util.NestedServletException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -447,7 +447,7 @@ public class ErrorPageFilterTests {
 		given(committedResponse.isCommitted()).willReturn(true);
 		given(committedResponse.getStatus()).willReturn(200);
 		this.filter.doFilter(this.request, committedResponse, this.chain);
-		verify(committedResponse, times(0)).flushBuffer();
+		verify(committedResponse, never()).flushBuffer();
 	}
 
 	@Test

@@ -24,7 +24,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -50,7 +50,7 @@ public class ServletContextApplicationContextInitializerTests {
 	public void applicationContextIsNotStoredInServletContextByDefault() {
 		new ServletContextApplicationContextInitializer(this.servletContext)
 				.initialize(this.applicationContext);
-		verify(this.servletContext, times(0)).setAttribute(
+		verify(this.servletContext, never()).setAttribute(
 				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.applicationContext);
 	}

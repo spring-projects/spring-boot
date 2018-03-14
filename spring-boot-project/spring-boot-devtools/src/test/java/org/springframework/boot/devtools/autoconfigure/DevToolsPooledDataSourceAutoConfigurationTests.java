@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -66,7 +67,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -77,7 +78,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -99,7 +100,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -121,7 +122,7 @@ public class DevToolsPooledDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test

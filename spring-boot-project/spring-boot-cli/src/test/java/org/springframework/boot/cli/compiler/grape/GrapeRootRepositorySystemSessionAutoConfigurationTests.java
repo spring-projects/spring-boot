@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -67,7 +68,7 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 				});
 		new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session,
 				this.repositorySystem);
-		verify(this.repositorySystem, times(0))
+		verify(this.repositorySystem, never())
 				.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
 		assertThat(this.session.getLocalRepository()).isNull();
 	}
