@@ -41,7 +41,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -140,7 +139,7 @@ public class ServletRegistrationBeanTests {
 		bean.setServlet(this.servlet);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, times(0)).addServlet("mockServlet", this.servlet);
+		verify(this.servletContext, never()).addServlet("mockServlet", this.servlet);
 	}
 
 	@Test

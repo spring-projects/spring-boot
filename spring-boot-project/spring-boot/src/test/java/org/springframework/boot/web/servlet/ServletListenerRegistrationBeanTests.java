@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -67,7 +67,7 @@ public class ServletListenerRegistrationBeanTests {
 				this.listener);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, times(0))
+		verify(this.servletContext, never())
 				.addListener(any(ServletContextListener.class));
 	}
 

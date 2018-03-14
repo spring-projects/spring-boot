@@ -29,7 +29,7 @@ import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -49,7 +49,7 @@ public class DevToolsEmbeddedDataSourceAutoConfigurationTests
 		Statement statement = configureDataSourceBehavior(
 				context.getBean(DataSource.class));
 		context.close();
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 }
