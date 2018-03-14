@@ -6520,6 +6520,9 @@ example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 	}
 ----
 
+TIP: This setup is only supported by WebFlux applications as using `WebTestClient` in a
+mocked web application only works with WebFlux at the moment.
+
 A list of the auto-configuration that is enabled by `@WebFluxTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
