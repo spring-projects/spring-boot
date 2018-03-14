@@ -131,7 +131,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
 		loader.setDelegate(true);
 		context.setLoader(loader);
-		Tomcat.addServlet(context, "httpHandlerServlet", servlet);
+		Tomcat.addServlet(context, "httpHandlerServlet", servlet).setAsyncSupported(true);
 		context.addServletMappingDecoded("/", "httpHandlerServlet");
 		host.addChild(context);
 		configureContext(context);

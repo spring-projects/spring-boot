@@ -140,6 +140,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		Server server = new Server(getThreadPool());
 		server.addConnector(createConnector(address, server));
 		ServletHolder servletHolder = new ServletHolder(servlet);
+		servletHolder.setAsyncSupported(true);
 		ServletContextHandler contextHandler = new ServletContextHandler(server, "",
 				false, false);
 		contextHandler.addServlet(servletHolder, "/");
