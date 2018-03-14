@@ -138,8 +138,8 @@ public class TestRestTemplate {
 			HttpClientOption... httpClientOptions) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.httpClientOptions = httpClientOptions;
-		if (getRequestFactoryClass(restTemplate).getName().equals(
-				"org.springframework.http.client.HttpComponentsClientHttpRequestFactory")) {
+		if (getRequestFactoryClass(restTemplate).isAssignableFrom(
+				HttpComponentsClientHttpRequestFactory.class)) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
