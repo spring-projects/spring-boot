@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -75,7 +74,7 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 		ParameterizableViewController controller = new ParameterizableViewController();
 		controller.setViewName(viewName);
 		setRootHandler(controller);
-		setOrder(Ordered.LOWEST_PRECEDENCE - 1);
+		setOrder(2);
 	}
 
 	@Override

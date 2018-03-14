@@ -35,7 +35,6 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -70,7 +69,7 @@ public class WelcomePageHandlerMappingTests {
 					WelcomePageHandlerMapping handler = context
 							.getBean(WelcomePageHandlerMapping.class);
 					assertThat(handler.getOrder())
-							.isEqualTo(Ordered.LOWEST_PRECEDENCE - 1);
+							.isEqualTo(2);
 				});
 	}
 
