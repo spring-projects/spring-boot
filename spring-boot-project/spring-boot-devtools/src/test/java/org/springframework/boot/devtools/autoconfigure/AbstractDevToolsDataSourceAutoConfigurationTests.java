@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ import org.springframework.context.annotation.Configuration;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -57,7 +57,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 				SingleDataSourceConfiguration.class);
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
-		verify(statement, times(0)).execute("SHUTDOWN");
+		verify(statement, never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 				.values();
 		for (DataSource dataSource : dataSources) {
 			Statement statement = configureDataSourceBehavior(dataSource);
-			verify(statement, times(0)).execute("SHUTDOWN");
+			verify(statement, never()).execute("SHUTDOWN");
 		}
 	}
 

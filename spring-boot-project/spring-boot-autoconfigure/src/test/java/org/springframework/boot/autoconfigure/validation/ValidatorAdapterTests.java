@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -69,7 +70,7 @@ public class ValidatorAdapterTests {
 				.getBean(NonManagedBeanConfig.class).validator;
 		verify(validator, times(1)).setApplicationContext(any(ApplicationContext.class));
 		verify(validator, times(1)).afterPropertiesSet();
-		verify(validator, times(0)).destroy();
+		verify(validator, never()).destroy();
 		this.context.close();
 		this.context = null;
 		verify(validator, times(1)).destroy();
@@ -80,12 +81,12 @@ public class ValidatorAdapterTests {
 		load(ManagedBeanConfig.class);
 		LocalValidatorFactoryBean validator = this.context
 				.getBean(ManagedBeanConfig.class).validator;
-		verify(validator, times(0)).setApplicationContext(any(ApplicationContext.class));
-		verify(validator, times(0)).afterPropertiesSet();
-		verify(validator, times(0)).destroy();
+		verify(validator, never()).setApplicationContext(any(ApplicationContext.class));
+		verify(validator, never()).afterPropertiesSet();
+		verify(validator, never()).destroy();
 		this.context.close();
 		this.context = null;
-		verify(validator, times(0)).destroy();
+		verify(validator, never()).destroy();
 	}
 
 	private ValidatorAdapter load(Class<?> config) {
