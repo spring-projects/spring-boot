@@ -16,30 +16,21 @@
 
 package org.springframework.boot.json;
 
-import java.util.List;
-import java.util.Map;
-
-import org.yaml.snakeyaml.Yaml;
-
 /**
- * Thin wrapper to adapt Snake {@link Yaml} to {@link JsonParser}.
+ * {@link IllegalArgumentException} thrown when source JSON is invalid.
  *
- * @author Dave Syer
- * @author Jean de Klerk
- * @see JsonParserFactory
+ * @author Anton Telechev
+ * @author Phillip Webb
+ * @since 2.0.1
  */
-public class YamlJsonParser extends AbstractJsonParser {
+public class JsonParseException extends IllegalArgumentException {
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> parseMap(String json) {
-		return parseMap(json, (trimmed) -> new Yaml().loadAs(trimmed, Map.class));
+	public JsonParseException() {
+		this(null);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<Object> parseList(String json) {
-		return parseList(json, (trimmed) -> new Yaml().loadAs(trimmed, List.class));
+	public JsonParseException(Throwable cause) {
+		super("Cannot parse JSON", cause);
 	}
 
 }

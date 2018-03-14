@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,74 +18,49 @@ package org.springframework.boot.json;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
+
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Base class for parsers wrapped or implemented in this package.
  *
  * @author Anton Telechev
+ * @author Phillip Webb
  */
 abstract class AbstractJsonParser implements JsonParser {
 
-	/** Start symbol of a JSON map. **/
-	private static final String START_MAP = "{";
-
-	/** Start symbol of a JSON list. **/
-	private static final String START_LIST = "[";
-
-	/**
-	 * Parses the specified JSON string and returns the extracted contents as a Map of
-	 * String to Object.
-	 *
-	 * @param json the JSON string to parse.
-	 * @param parser the parser function.
-	 * @return Map&lt;String, Object&gt; parsed contents
-	 * @throws IllegalArgumentException if the json String cannot be parsed as a
-	 * Map&lt;String, Object&gt;
-	 */
-	Map<String, Object> parseMap(String json,
+	protected final Map<String, Object> parseMap(String json,
 			Function<String, Map<String, Object>> parser) {
-		assert parser != null;
-
-		return trimIfStartsWith(json, START_MAP).map(parser::apply)
-				.orElseThrow(AbstractJsonParser::cannotParseJson);
+		return trimParse(json, "{", parser);
 	}
 
-	/**
-	 * Parses the specified JSON string and returns the extracted contents as a List of Objects.
-	 *
-	 * @param json the JSON string to parse.
-	 * @param parser the parser function.
-	 * @return List&lt;Object&gt; parsed contents
-	 * @throws IllegalArgumentException if the json String cannot be parsed as a
-	 * List&lt;Object&gt;
-	 */
-	List<Object> parseList(String json, Function<String, List<Object>> parser) {
-		assert parser != null;
-
-		return trimIfStartsWith(json, START_LIST).map(parser::apply)
-				.orElseThrow(AbstractJsonParser::cannotParseJson);
+	protected final List<Object> parseList(String json,
+			Function<String, List<Object>> parser) {
+		return trimParse(json, "[", parser);
 	}
 
-	private static IllegalArgumentException cannotParseJson() {
-		return cannotParseJson(null);
-	}
-
-	static IllegalArgumentException cannotParseJson(Exception cause) {
-		return new IllegalArgumentException("Cannot parse JSON", cause);
-	}
-
-	private static Optional<String> trimIfStartsWith(String json, String expectedPrefix) {
-		assert expectedPrefix != null;
-
-		if (json != null) {
-			final String trimmed = json.trim();
-			if (trimmed.startsWith(expectedPrefix)) {
-				return Optional.of(trimmed);
-			}
+	protected final <T> T trimParse(String json, String prefix,
+			Function<String, T> parser) {
+		String trimmed = (json == null ? "" : json.trim());
+		if (trimmed.startsWith(prefix)) {
+			return parser.apply(trimmed);
 		}
-		return Optional.empty();
+		throw new JsonParseException();
+	}
+
+	protected final <T> T tryParse(Callable<T> parser, Class<? extends Exception> check) {
+		try {
+			return parser.call();
+		}
+		catch (Exception ex) {
+			if (check.isAssignableFrom(ex.getClass())) {
+				throw new JsonParseException(ex);
+			}
+			ReflectionUtils.rethrowRuntimeException(ex);
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }
