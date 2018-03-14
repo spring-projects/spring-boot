@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import com.google.gson.reflect.TypeToken;
  * @since 1.2.0
  * @see JsonParserFactory
  */
-public class GsonJsonParser implements JsonParser {
+public class GsonJsonParser extends AbstractJsonParser {
 
 	private static final TypeToken<?> MAP_TYPE = new MapTypeToken();
 
@@ -41,24 +41,14 @@ public class GsonJsonParser implements JsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("{")) {
-				return this.gson.fromJson(json, MAP_TYPE.getType());
-			}
-		}
-		throw new IllegalArgumentException("Cannot parse JSON");
+		return parseMap(json,
+				(trimmed) -> this.gson.fromJson(trimmed, MAP_TYPE.getType()));
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("[")) {
-				return this.gson.fromJson(json, LIST_TYPE.getType());
-			}
-		}
-		throw new IllegalArgumentException("Cannot parse JSON");
+		return parseList(json,
+				(trimmed) -> this.gson.fromJson(trimmed, LIST_TYPE.getType()));
 	}
 
 	private static final class MapTypeToken extends TypeToken<Map<String, Object>> {
