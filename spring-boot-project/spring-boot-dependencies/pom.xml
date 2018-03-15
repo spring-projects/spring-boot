@@ -2295,6 +2295,16 @@
 				<version>${spring-amqp.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.amqp</groupId>
+				<artifactId>spring-rabbit-junit</artifactId>
+				<version>${spring-amqp.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.amqp</groupId>
+				<artifactId>spring-rabbit-test</artifactId>
+				<version>${spring-amqp.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.batch</groupId>
 				<artifactId>spring-batch-core</artifactId>
 				<version>${spring-batch.version}</version>
