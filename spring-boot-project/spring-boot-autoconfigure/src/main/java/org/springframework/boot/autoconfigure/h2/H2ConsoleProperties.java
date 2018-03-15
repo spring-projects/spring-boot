@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.h2;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for H2's console.
@@ -25,6 +26,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Marten Deinum
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.h2.console")
@@ -48,8 +50,8 @@ public class H2ConsoleProperties {
 
 	public void setPath(String path) {
 		Assert.notNull(path, "Path must not be null");
-		Assert.isTrue(path.isEmpty() || path.startsWith("/"),
-				"Path must start with / or be empty");
+		Assert.isTrue(path.startsWith("/") && StringUtils.hasText(path)
+				&& path.length() > 1, "Path must start with `/`. E.g. `/h2-console`");
 		this.path = path;
 	}
 
