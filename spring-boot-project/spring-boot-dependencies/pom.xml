@@ -125,7 +125,7 @@
 		<mongo-driver-reactivestreams.version>1.7.1</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.6.3</mongodb.version>
 		<mssql-jdbc.version>6.2.2.jre8</mssql-jdbc.version>
-		<mysql.version>5.1.45</mysql.version>
+		<mysql.version>5.1.46</mysql.version>
 		<narayana.version>5.8.0.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.1.0</neo4j-ogm.version>
@@ -172,7 +172,7 @@
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.28</tomcat.version>
+		<tomcat.version>8.5.29</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.4</unboundid-ldapsdk.version>
 		<undertow.version>1.4.23.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
