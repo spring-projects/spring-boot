@@ -124,7 +124,8 @@ public final class ConfigurationPropertySources {
 	 * This method will flatten any nested property sources and will filter all
 	 * {@link StubPropertySource stub property sources}. Updates to the underlying source,
 	 * identified by changes in the sources returned by its iterator, will be
-	 * automatically tracked.
+	 * automatically tracked. The underlying source should be thread safe, for example a
+	 * {@link MutablePropertySources}
 	 * @param sources the Spring property sources to adapt
 	 * @return an {@link Iterable} containing newly adapted
 	 * {@link SpringConfigurationPropertySource} instances
