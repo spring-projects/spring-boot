@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.bind.BinderTests.JavaBean;
@@ -306,7 +305,6 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	@Ignore
 	public void bindToCollectionWithNoDefaultConstructor() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c,c");
@@ -389,8 +387,7 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar[0]", "hello");
 		this.sources.add(source);
-		Bindable<ClonedArrayBean> target = Bindable
-				.of(ClonedArrayBean.class);
+		Bindable<ClonedArrayBean> target = Bindable.of(ClonedArrayBean.class);
 		ClonedArrayBean bean = this.binder.bind("foo", target).get();
 		assertThat(bean.getBar()).contains("hello");
 	}
@@ -467,7 +464,6 @@ public class CollectionBinderTests {
 			this.value = value;
 		}
 	}
-
 
 	public static class ClonedArrayBean {
 
