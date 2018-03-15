@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -55,7 +56,7 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 	}
 
 	@Override
-	protected Object merge(Object existing, Object additional) {
+	protected Object merge(Supplier<?> existing, Object additional) {
 		return additional;
 	}
 

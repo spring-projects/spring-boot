@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -54,12 +55,17 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	@Override
-	protected Collection<Object> merge(Collection<Object> existing,
+	@SuppressWarnings("unchecked")
+	protected Collection<Object> merge(Supplier<?> existing,
 			Collection<Object> additional) {
+		Collection<Object> existingCollection = (Collection<Object>) existing.get();
+		if (existingCollection == null) {
+			return additional;
+		}
 		try {
-			existing.clear();
-			existing.addAll(additional);
-			return existing;
+			existingCollection.clear();
+			existingCollection.addAll(additional);
+			return existingCollection;
 		}
 		catch (UnsupportedOperationException ex) {
 			return createNewCollection(additional);

@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
@@ -82,10 +83,15 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	@Override
-	protected Map<Object, Object> merge(Map<Object, Object> existing,
+	@SuppressWarnings("unchecked")
+	protected Map<Object, Object> merge(Supplier<?> existing,
 			Map<Object, Object> additional) {
-		existing.putAll(additional);
-		return existing;
+		Map<Object, Object> existingMap = (Map<Object, Object>) existing.get();
+		if (existingMap == null) {
+			return additional;
+		}
+		existingMap.putAll(additional);
+		return existingMap;
 	}
 
 	private class EntryBinder {

@@ -57,10 +57,10 @@ abstract class AggregateBinder<T> {
 			AggregateElementBinder elementBinder) {
 		Object result = bindAggregate(name, target, elementBinder);
 		Supplier<?> value = target.getValue();
-		if (result == null || value == null || value.get() == null) {
+		if (result == null || value == null) {
 			return result;
 		}
-		return merge((T) value.get(), (T) result);
+		return merge(value, (T) result);
 	}
 
 	/**
@@ -75,11 +75,11 @@ abstract class AggregateBinder<T> {
 
 	/**
 	 * Merge any additional elements into the existing aggregate.
-	 * @param existing the existing value
+	 * @param existing the supplier for the existing value
 	 * @param additional the additional elements to merge
 	 * @return the merged result
 	 */
-	protected abstract T merge(T existing, T additional);
+	protected abstract T merge(Supplier<?> existing, T additional);
 
 	/**
 	 * Return the context being used by this binder.

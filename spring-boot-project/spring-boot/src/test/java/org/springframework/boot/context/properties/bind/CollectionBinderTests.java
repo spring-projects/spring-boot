@@ -384,6 +384,17 @@ public class CollectionBinderTests {
 		this.binder.bind("foo", target);
 	}
 
+	@Test
+	public void bindToBeanWithClonedArray() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar[0]", "hello");
+		this.sources.add(source);
+		Bindable<ClonedArrayBean> target = Bindable
+				.of(ClonedArrayBean.class);
+		ClonedArrayBean bean = this.binder.bind("foo", target).get();
+		assertThat(bean.getBar()).contains("hello");
+	}
+
 	public static class ExampleCollectionBean {
 
 		private List<String> items = new ArrayList<>();
@@ -455,6 +466,21 @@ public class CollectionBinderTests {
 		public void setValue(String value) {
 			this.value = value;
 		}
+	}
+
+
+	public static class ClonedArrayBean {
+
+		private String[] bar;
+
+		public String[] getBar() {
+			return this.bar.clone();
+		}
+
+		public void setBar(String[] bar) {
+			this.bar = bar;
+		}
+
 	}
 
 }
