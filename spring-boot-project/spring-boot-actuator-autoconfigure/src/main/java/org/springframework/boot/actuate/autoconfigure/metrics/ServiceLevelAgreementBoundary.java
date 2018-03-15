@@ -27,7 +27,7 @@ import org.springframework.boot.convert.DurationStyle;
 /**
  * A service level agreement boundary for use when configuring micrometer. Can be
  * specified as either a {@link Long} (applicable to timers and distribution summaries) or
- * a {@link Long} (applicable to only timers).
+ * a {@link Duration} (applicable to only timers).
  *
  * @author Phillip Webb
  * @since 2.0.0
