@@ -33,12 +33,16 @@ import org.springframework.context.ApplicationListener;
 class ConditionEvaluationDeltaLoggingListener
 		implements ApplicationListener<ApplicationReadyEvent> {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory.getLog(ConditionEvaluationDeltaLoggingListener.class);
 
 	private static ConditionEvaluationReport previousReport;
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
+		logConditionEvaluationDelta(event);
+	}
+
+	private static synchronized void logConditionEvaluationDelta(ApplicationReadyEvent event) {
 		ConditionEvaluationReport report = event.getApplicationContext()
 				.getBean(ConditionEvaluationReport.class);
 		if (previousReport != null) {
@@ -46,14 +50,14 @@ class ConditionEvaluationDeltaLoggingListener
 			if (!delta.getConditionAndOutcomesBySource().isEmpty()
 					|| !delta.getExclusions().isEmpty()
 					|| !delta.getUnconditionalClasses().isEmpty()) {
-				if (this.logger.isInfoEnabled()) {
-					this.logger.info("Condition evaluation delta:"
+				if (logger.isInfoEnabled()) {
+					logger.info("Condition evaluation delta:"
 							+ new ConditionEvaluationReportMessage(delta,
 									"CONDITION EVALUATION DELTA"));
 				}
 			}
 			else {
-				this.logger.info("Condition evaluation unchanged");
+				logger.info("Condition evaluation unchanged");
 			}
 		}
 		previousReport = report;

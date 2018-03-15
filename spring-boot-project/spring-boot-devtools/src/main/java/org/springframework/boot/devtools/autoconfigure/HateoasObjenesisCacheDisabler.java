@@ -46,18 +46,18 @@ class HateoasObjenesisCacheDisabler implements InitializingBean {
 		disableCaching();
 	}
 
-	private void disableCaching() {
+	private static synchronized void disableCaching() {
 		if (!cacheDisabled) {
 			cacheDisabled = true;
 			doDisableCaching();
 		}
 	}
 
-	private void doDisableCaching() {
+	private static void doDisableCaching() {
 		try {
 			Class<?> type = ClassUtils.forName(
 					"org.springframework.hateoas.core.DummyInvocationUtils",
-					getClass().getClassLoader());
+					HateoasObjenesisCacheDisabler.class.getClassLoader());
 			removeObjenesisCache(type);
 		}
 		catch (Exception ex) {
@@ -65,7 +65,7 @@ class HateoasObjenesisCacheDisabler implements InitializingBean {
 		}
 	}
 
-	private void removeObjenesisCache(Class<?> dummyInvocationUtils) {
+	private static void removeObjenesisCache(Class<?> dummyInvocationUtils) {
 		try {
 			Field objenesisField = ReflectionUtils.findField(dummyInvocationUtils,
 					"OBJENESIS");
