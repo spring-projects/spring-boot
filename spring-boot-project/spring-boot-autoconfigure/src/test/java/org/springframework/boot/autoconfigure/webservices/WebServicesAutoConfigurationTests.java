@@ -58,6 +58,14 @@ public class WebServicesAutoConfigurationTests {
 	}
 
 	@Test
+	public void customPathMustNotHaveOnlySlash() {
+		this.contextRunner.withPropertyValues("spring.webservices.path=/")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class).hasMessageContaining(
+								"Failed to bind properties under 'spring.webservices'"));
+	}
+
+	@Test
 	public void customPath() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=/valid").run(
 				(context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));

@@ -21,12 +21,14 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ConfigurationProperties} for Spring Web Services.
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.webservices")
@@ -45,8 +47,8 @@ public class WebServicesProperties {
 
 	public void setPath(String path) {
 		Assert.notNull(path, "Path must not be null");
-		Assert.isTrue(path.isEmpty() || path.startsWith("/"),
-				"Path must start with / or be empty");
+		Assert.isTrue(path.startsWith("/") && StringUtils.hasText(path)
+				&& path.length() > 1, "Path must start with `/`. E.g. `/services`");
 		this.path = path;
 	}
 

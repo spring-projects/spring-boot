@@ -78,6 +78,15 @@ public class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
+	public void customPathMustNotHaveOnlySlash() {
+		this.contextRunner.withPropertyValues("spring.h2.console.enabled:true",
+				"spring.h2.console.path:/")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class).hasMessageContaining(
+								"Failed to bind properties under 'spring.h2.console'"));
+	}
+
+	@Test
 	public void customPath() {
 		this.contextRunner.withPropertyValues("spring.h2.console.enabled:true",
 				"spring.h2.console.path:/custom")
