@@ -2936,14 +2936,6 @@ example] of the previously described configuration.
 
 
 
-[[howto-create-a-deployable-war-file-for-older-containers]]
-=== Create a Deployable War File for Older Servlet Containers
-Older Servlet containers do not have support for the `ServletContextInitializer` bootstrap
-process used in Servlet 3.0. You can still use Spring and Spring Boot in these containers,
-but you are going to need to add a `web.xml` to your application and configure it to load
-an `ApplicationContext` via a `DispatcherServlet`.
-
-
 
 [[howto-convert-an-existing-application-to-spring-boot]]
 === Convert an Existing Application to Spring Boot
@@ -3107,70 +3099,6 @@ rather than the version that was pre-installed with the server. You can do so by
 		</wls:container-descriptor>
 	</wls:weblogic-web-app>
 ----
-
-
-
-[[howto-servlet-2-5]]
-===  Deploying a WAR in an Old (Servlet 2.5) Container
-Spring Boot uses Servlet 3.0 APIs to initialize the `ServletContext` (register `Servlets`
-and so on), so you cannot use the same application in a Servlet 2.5 container.
-It *is*, however, possible to run a Spring Boot application on an older container with some
-special tools. If you include `org.springframework.boot:spring-boot-legacy` as a
-dependency (https://github.com/scratches/spring-boot-legacy[maintained separately] to the
-core of Spring Boot and currently available at 1.1.0.RELEASE), all you need to do
-is create a `web.xml` and declare a context listener to create the application context and
-your filters and servlets. The context listener is a special purpose one for Spring Boot,
-but the rest of it is normal for a Spring application in Servlet 2.5. The following Maven
-example shows how to set up a Spring Boot project to run in a Servlet 2.5 container:
-
-[source,xml,indent=0]
-----
-	<?xml version="1.0" encoding="UTF-8"?>
-	<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-
-		<context-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>demo.Application</param-value>
-		</context-param>
-
-		<listener>
-			<listener-class>org.springframework.boot.legacy.context.web.SpringBootContextLoaderListener</listener-class>
-		</listener>
-
-		<filter>
-			<filter-name>metricsFilter</filter-name>
-			<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-		</filter>
-
-		<filter-mapping>
-			<filter-name>metricsFilter</filter-name>
-			<url-pattern>/*</url-pattern>
-		</filter-mapping>
-
-		<servlet>
-			<servlet-name>appServlet</servlet-name>
-			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-			<init-param>
-				<param-name>contextAttribute</param-name>
-				<param-value>org.springframework.web.context.WebApplicationContext.ROOT</param-value>
-			</init-param>
-			<load-on-startup>1</load-on-startup>
-		</servlet>
-
-		<servlet-mapping>
-			<servlet-name>appServlet</servlet-name>
-			<url-pattern>/</url-pattern>
-		</servlet-mapping>
-
-	</web-app>
-----
-
-In the preceding example, we use a single application context (the one created by the
-context listener) and attach it to the `DispatcherServlet` by using an `init` parameter.
-This is normal in a Spring Boot application (you normally only have one application
-context).
 
 
 

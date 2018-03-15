@@ -61,7 +61,7 @@ Spring Boot supports the following embedded servlet containers:
 |3.1
 |===
 
-You can also deploy Spring Boot applications to any Servlet 3.0+ compatible container.
+You can also deploy Spring Boot applications to any Servlet 3.1+ compatible container.
 
 
 
