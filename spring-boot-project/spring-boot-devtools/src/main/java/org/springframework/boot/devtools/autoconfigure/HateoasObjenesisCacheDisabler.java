@@ -46,7 +46,7 @@ class HateoasObjenesisCacheDisabler implements InitializingBean {
 		disableCaching();
 	}
 
-	private static synchronized void disableCaching() {
+	private static void disableCaching() {
 		if (!cacheDisabled) {
 			cacheDisabled = true;
 			doDisableCaching();

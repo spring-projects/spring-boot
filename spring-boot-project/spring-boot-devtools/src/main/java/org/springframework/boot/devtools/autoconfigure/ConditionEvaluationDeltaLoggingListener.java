@@ -42,7 +42,7 @@ class ConditionEvaluationDeltaLoggingListener
 		logConditionEvaluationDelta(event);
 	}
 
-	private static synchronized void logConditionEvaluationDelta(ApplicationReadyEvent event) {
+	private static void logConditionEvaluationDelta(ApplicationReadyEvent event) {
 		ConditionEvaluationReport report = event.getApplicationContext()
 				.getBean(ConditionEvaluationReport.class);
 		if (previousReport != null) {
