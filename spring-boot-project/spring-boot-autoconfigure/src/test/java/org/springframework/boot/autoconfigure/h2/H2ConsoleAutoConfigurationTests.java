@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,12 @@
 
 package org.springframework.boot.autoconfigure.h2;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,97 +34,75 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class H2ConsoleAutoConfigurationTests {
 
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Before
-	public void setupContext() {
-		this.context.setServletContext(new MockServletContext());
-	}
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(H2ConsoleAutoConfiguration.class));
 
 	@Test
 	public void consoleIsDisabledByDefault() {
-		this.context.register(H2ConsoleAutoConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).isEmpty();
+		this.contextRunner.run((context) -> assertThat(
+				context.getBeansOfType(ServletRegistrationBean.class)).isEmpty());
 	}
 
 	@Test
 	public void propertyCanEnableConsole() {
-		this.context.register(H2ConsoleAutoConfiguration.class);
-		TestPropertyValues.of("spring.h2.console.enabled:true").applyTo(this.context);
-		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		ServletRegistrationBean<?> registrationBean = this.context
-				.getBean(ServletRegistrationBean.class);
-		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
-		assertThat(registrationBean.getInitParameters()).doesNotContainKey("trace");
-		assertThat(registrationBean.getInitParameters())
-				.doesNotContainKey("webAllowOthers");
+		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true").run((context) -> {
+			assertThat(context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+			ServletRegistrationBean<?> registrationBean = context
+					.getBean(ServletRegistrationBean.class);
+			assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
+			assertThat(registrationBean.getInitParameters()).doesNotContainKey("trace");
+			assertThat(registrationBean.getInitParameters())
+					.doesNotContainKey("webAllowOthers");
+		});
 	}
 
 	@Test
 	public void customPathMustBeginWithASlash() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Failed to bind properties under 'spring.h2.console'");
-		this.context.register(H2ConsoleAutoConfiguration.class);
-		TestPropertyValues
-				.of("spring.h2.console.enabled:true", "spring.h2.console.path:custom")
-				.applyTo(this.context);
-		this.context.refresh();
+		this.contextRunner.withPropertyValues("spring.h2.console.enabled:true",
+				"spring.h2.console.path:custom")
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class).hasMessageContaining(
+								"Failed to bind properties under 'spring.h2.console'"));
 	}
 
 	@Test
 	public void customPathWithTrailingSlash() {
-		this.context.register(H2ConsoleAutoConfiguration.class);
-		TestPropertyValues
-				.of("spring.h2.console.enabled:true", "spring.h2.console.path:/custom/")
-				.applyTo(this.context);
-		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		ServletRegistrationBean<?> servletRegistrationBean = this.context
-				.getBean(ServletRegistrationBean.class);
-		assertThat(servletRegistrationBean.getUrlMappings()).contains("/custom/*");
+		this.contextRunner.withPropertyValues("spring.h2.console.enabled:true",
+				"spring.h2.console.path:/custom/")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+					ServletRegistrationBean<?> servletRegistrationBean = context
+							.getBean(ServletRegistrationBean.class);
+					assertThat(servletRegistrationBean.getUrlMappings()).contains("/custom/*");
+				});
 	}
 
 	@Test
 	public void customPath() {
-		this.context.register(H2ConsoleAutoConfiguration.class);
-		TestPropertyValues
-				.of("spring.h2.console.enabled:true", "spring.h2.console.path:/custom")
-				.applyTo(this.context);
-		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		ServletRegistrationBean<?> servletRegistrationBean = this.context
-				.getBean(ServletRegistrationBean.class);
-		assertThat(servletRegistrationBean.getUrlMappings()).contains("/custom/*");
+		this.contextRunner.withPropertyValues("spring.h2.console.enabled:true",
+				"spring.h2.console.path:/custom")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+					ServletRegistrationBean<?> servletRegistrationBean = context
+							.getBean(ServletRegistrationBean.class);
+					assertThat(servletRegistrationBean.getUrlMappings()).contains("/custom/*");
+				});
 	}
 
 	@Test
 	public void customInitParameters() {
-		this.context.register(H2ConsoleAutoConfiguration.class);
-		TestPropertyValues
-				.of("spring.h2.console.enabled:true",
-						"spring.h2.console.settings.trace=true",
-						"spring.h2.console.settings.webAllowOthers=true")
-				.applyTo(this.context);
-		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
-		ServletRegistrationBean<?> registrationBean = this.context
-				.getBean(ServletRegistrationBean.class);
-		assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
-		assertThat(registrationBean.getInitParameters()).containsEntry("trace", "");
-		assertThat(registrationBean.getInitParameters()).containsEntry("webAllowOthers",
-				"");
+		this.contextRunner.withPropertyValues("spring.h2.console.enabled:true",
+				"spring.h2.console.settings.trace=true",
+				"spring.h2.console.settings.webAllowOthers=true")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
+					ServletRegistrationBean<?> registrationBean = context
+							.getBean(ServletRegistrationBean.class);
+					assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
+					assertThat(registrationBean.getInitParameters()).containsEntry("trace", "");
+					assertThat(registrationBean.getInitParameters()).containsEntry("webAllowOthers",
+							"");
+				});
 	}
 
 }
