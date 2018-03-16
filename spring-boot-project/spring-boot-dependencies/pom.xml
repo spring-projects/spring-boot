@@ -2801,6 +2801,7 @@
 							<flattenMode>bom</flattenMode>
 							<pomElements>
 								<pluginManagement>keep</pluginManagement>
+								<repositories>remove</repositories>
 							</pomElements>
 						</configuration>
 					</execution>
