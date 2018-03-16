@@ -26,6 +26,7 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.function.Supplier;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -70,6 +71,8 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private JarFileEntries entries;
 
+	private Supplier<Manifest> manifestSupplier;
+
 	private SoftReference<Manifest> manifest;
 
 	private boolean signed;
@@ -103,12 +106,12 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
 			RandomAccessData data, JarFileType type) throws IOException {
-		this(rootFile, pathFromRoot, data, null, type);
+		this(rootFile, pathFromRoot, data, null, type, null);
 	}
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
-			RandomAccessData data, JarEntryFilter filter, JarFileType type)
-			throws IOException {
+			RandomAccessData data, JarEntryFilter filter, JarFileType type,
+			Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
@@ -117,6 +120,17 @@ public class JarFile extends java.util.jar.JarFile {
 		parser.addVisitor(centralDirectoryVisitor());
 		this.data = parser.parse(data, filter == null);
 		this.type = type;
+		this.manifestSupplier = manifestSupplier != null ? manifestSupplier : () -> {
+			try (InputStream inputStream = getInputStream(MANIFEST_NAME)) {
+				if (inputStream == null) {
+					return null;
+				}
+				return new Manifest(inputStream);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		};
 	}
 
 	private CentralDirectoryVisitor centralDirectoryVisitor() {
@@ -156,18 +170,11 @@ public class JarFile extends java.util.jar.JarFile {
 	public Manifest getManifest() throws IOException {
 		Manifest manifest = (this.manifest == null ? null : this.manifest.get());
 		if (manifest == null) {
-			if (this.type == JarFileType.NESTED_DIRECTORY) {
-				try (JarFile rootJarFile = new JarFile(this.getRootJarFile())) {
-					manifest = rootJarFile.getManifest();
-				}
+			try {
+				manifest = this.manifestSupplier.get();
 			}
-			else {
-				try (InputStream inputStream = getInputStream(MANIFEST_NAME)) {
-					if (inputStream == null) {
-						return null;
-					}
-					manifest = new Manifest(inputStream);
-				}
+			catch (RuntimeException ex) {
+				throw new IOException(ex);
 			}
 			this.manifest = new SoftReference<>(manifest);
 		}
@@ -266,7 +273,7 @@ public class JarFile extends java.util.jar.JarFile {
 		return new JarFile(this.rootFile,
 				this.pathFromRoot + "!/"
 						+ entry.getName().substring(0, name.length() - 1),
-				this.data, filter, JarFileType.NESTED_DIRECTORY);
+				this.data, filter, JarFileType.NESTED_DIRECTORY, this.manifestSupplier);
 	}
 
 	private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
@@ -289,7 +296,9 @@ public class JarFile extends java.util.jar.JarFile {
 	@Override
 	public void close() throws IOException {
 		super.close();
-		this.rootFile.close();
+		if (this.type == JarFileType.DIRECT) {
+			this.rootFile.close();
+		}
 	}
 
 	/**
