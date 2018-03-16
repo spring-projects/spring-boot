@@ -485,4 +485,24 @@ public class JarFileTests {
 		assertThat(temp.delete()).isTrue();
 	}
 
+	@Test
+	public void createUrlFromStringWithContextWhenNotFound() throws Exception {
+		// gh-12483
+		JarURLConnection.setUseFastExceptions(true);
+		try {
+			JarFile.registerUrlProtocolHandler();
+			JarFile nested = this.jarFile
+					.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
+			URL context = nested.getUrl();
+			new URL(context, "jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat")
+					.openConnection().getInputStream().close();
+			this.thrown.expect(FileNotFoundException.class);
+			new URL(context, "jar:" + this.rootJarFile.toURI() + "!/no.dat")
+					.openConnection().getInputStream().close();
+		}
+		finally {
+			JarURLConnection.setUseFastExceptions(false);
+		}
+	}
+
 }
