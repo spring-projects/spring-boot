@@ -103,7 +103,8 @@ public class ErrorProperties {
 	public static class Whitelabel {
 
 		/**
-		 * Whether to enable the default error page displayed in browsers in case of a server error.
+		 * Whether to enable the default error page displayed in browsers in case of a
+		 * server error.
 		 */
 		private boolean enabled = true;
 
@@ -114,6 +115,7 @@ public class ErrorProperties {
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
+
 	}
 
 }

@@ -53,7 +53,7 @@ public class CouchbaseAutoConfigurationTests {
 
 	@Test
 	public void bootstrapHostsIsRequired() {
-		this.contextRunner.run((context) -> assertNoCouchbaseBeans(context));
+		this.contextRunner.run(this::assertNoCouchbaseBeans);
 	}
 
 	@Test
