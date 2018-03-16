@@ -41,10 +41,7 @@ public class EndpointLinksResolver {
 	 * Creates a new {@code EndpointLinksResolver} that will resolve links to the given
 	 * {@code endpoints}.
 	 * @param endpoints the endpoints
-	 * @deprecated since 2.0.1 in favor of
-	 * {@link #EndpointLinksResolver(Collection, String)}
 	 */
-	@Deprecated
 	public EndpointLinksResolver(Collection<? extends ExposableEndpoint<?>> endpoints) {
 		this.endpoints = endpoints;
 	}

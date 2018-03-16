@@ -85,7 +85,7 @@ public class CouchbaseAutoConfigurationTests {
 
 	@Test
 	public void customizeEnvEndpoints() {
-		testCouchbaseEnv(env -> {
+		testCouchbaseEnv((env) -> {
 			assertThat(env.kvEndpoints()).isEqualTo(4);
 			assertThat(env.queryEndpoints()).isEqualTo(5);
 			assertThat(env.viewEndpoints()).isEqualTo(6);
@@ -96,7 +96,7 @@ public class CouchbaseAutoConfigurationTests {
 
 	@Test
 	public void customizeEnvTimeouts() {
-		testCouchbaseEnv(env -> {
+		testCouchbaseEnv((env) -> {
 			assertThat(env.connectTimeout()).isEqualTo(100);
 			assertThat(env.kvTimeout()).isEqualTo(200);
 			assertThat(env.queryTimeout()).isEqualTo(300);
@@ -111,7 +111,7 @@ public class CouchbaseAutoConfigurationTests {
 
 	@Test
 	public void enableSslNoEnabledFlag() {
-		testCouchbaseEnv(env -> {
+		testCouchbaseEnv((env) -> {
 			assertThat(env.sslEnabled()).isTrue();
 			assertThat(env.sslKeystoreFile()).isEqualTo("foo");
 			assertThat(env.sslKeystorePassword()).isEqualTo("secret");
@@ -121,7 +121,7 @@ public class CouchbaseAutoConfigurationTests {
 
 	@Test
 	public void disableSslEvenWithKeyStore() {
-		testCouchbaseEnv(env -> {
+		testCouchbaseEnv((env) -> {
 			assertThat(env.sslEnabled()).isFalse();
 			assertThat(env.sslKeystoreFile()).isNull();
 			assertThat(env.sslKeystorePassword()).isNull();
