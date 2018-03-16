@@ -16,7 +16,12 @@
 
 package org.springframework.boot.loader.data;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 /**
  * {@link RandomAccessData} implementation backed by a {@link RandomAccessFile}.

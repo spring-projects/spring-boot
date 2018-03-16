@@ -40,7 +40,7 @@ public abstract class TestJarCreator {
 
 	public static void createTestJar(File file, boolean unpackNested) throws Exception {
 		try (FileOutputStream fileOutputStream = new FileOutputStream(file);
-			 JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
+				JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
 			writeManifest(jarOutputStream, "j1");
 			writeEntry(jarOutputStream, "1.dat", 1);
 			writeEntry(jarOutputStream, "2.dat", 2);
