@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.data;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.io.RandomAccessFile;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class RandomAccessDataFile implements RandomAccessData {
+public class RandomAccessDataFile implements RandomAccessData, Closeable {
 
 	private final File file;
 
@@ -116,8 +117,9 @@ public class RandomAccessDataFile implements RandomAccessData {
 		return this.length;
 	}
 
+	@Override
 	public void close() throws IOException {
-
+		this.randomAccessFile.close();
 	}
 
 	/**

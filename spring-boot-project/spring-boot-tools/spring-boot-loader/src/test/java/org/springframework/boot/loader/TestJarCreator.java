@@ -39,8 +39,8 @@ public abstract class TestJarCreator {
 	}
 
 	public static void createTestJar(File file, boolean unpackNested) throws Exception {
-		FileOutputStream fileOutputStream = new FileOutputStream(file);
-		try (JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
+		try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+				JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream)) {
 			writeManifest(jarOutputStream, "j1");
 			writeEntry(jarOutputStream, "1.dat", 1);
 			writeEntry(jarOutputStream, "2.dat", 2);
@@ -51,6 +51,7 @@ public abstract class TestJarCreator {
 
 			writeNestedEntry("nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("another-nested.jar", unpackNested, jarOutputStream);
+
 		}
 	}
 
