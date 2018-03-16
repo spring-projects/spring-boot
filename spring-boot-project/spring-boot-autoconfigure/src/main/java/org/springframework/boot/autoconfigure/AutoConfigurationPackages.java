@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public abstract class AutoConfigurationPackages {
 		Set<String> merged = new LinkedHashSet<>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(Arrays.asList(packageNames));
-		return merged.toArray(new String[merged.size()]);
+		return StringUtils.toStringArray(merged);
 	}
 
 	/**
@@ -139,7 +139,7 @@ public abstract class AutoConfigurationPackages {
 	/**
 	 * Wrapper for a package import.
 	 */
-	private final static class PackageImport {
+	private static final class PackageImport {
 
 		private final String packageName;
 

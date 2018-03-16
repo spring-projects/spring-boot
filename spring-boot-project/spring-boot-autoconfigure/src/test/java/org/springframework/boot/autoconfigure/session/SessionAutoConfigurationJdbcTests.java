@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,10 +117,9 @@ public class SessionAutoConfigurationJdbcTests
 
 	@Test
 	public void customTableName() {
-		this.contextRunner
-				.withPropertyValues("spring.session.store-type=jdbc",
-						"spring.session.jdbc.table-name=FOO_BAR",
-						"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc",
+				"spring.session.jdbc.table-name=FOO_BAR",
+				"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
 				.run((context) -> {
 					JdbcOperationsSessionRepository repository = validateSessionRepository(
 							context, JdbcOperationsSessionRepository.class);

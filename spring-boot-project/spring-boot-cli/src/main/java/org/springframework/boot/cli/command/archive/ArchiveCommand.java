@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.jar.Manifest;
 
 import groovy.lang.Grab;
@@ -127,9 +128,11 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 					+ this.type + " and at least one source file must be specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
-			Assert.isTrue(output.getName().toLowerCase().endsWith("." + this.type),
-					"The output '" + output + "' is not a " + this.type.toUpperCase()
-							+ " file.");
+			Assert.isTrue(
+					output.getName().toLowerCase(Locale.ENGLISH)
+							.endsWith("." + this.type),
+					"The output '" + output + "' is not a "
+							+ this.type.toUpperCase(Locale.ENGLISH) + " file.");
 			deleteIfExists(output);
 
 			GroovyCompiler compiler = createCompiler(options);
@@ -183,7 +186,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private void writeJar(File file, Class<?>[] compiledClasses,
 				List<MatchedResource> classpathEntries, List<URL> dependencies)
-						throws FileNotFoundException, IOException, URISyntaxException {
+				throws FileNotFoundException, IOException, URISyntaxException {
 			final List<Library> libraries;
 			try (JarWriter writer = new JarWriter(file)) {
 				addManifest(writer, compiledClasses);

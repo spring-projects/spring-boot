@@ -23,28 +23,20 @@
       ]
     },
     {
+      "name": "management.endpoint.health.show-details",
+      "defaultValue": "never"
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
       "description": "Whether to enable or disable all endpoints by default."
     },
     {
-      "name": "management.endpoints.jmx.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether JMX endpoints are enabled.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.endpoints.jmx.expose",
+      "name": "management.endpoints.jmx.exposure.include",
       "defaultValue": "*"
     },
     {
-      "name": "management.endpoints.web.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether web endpoints are enabled.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.endpoints.web.expose",
+      "name": "management.endpoints.web.exposure.include",
       "defaultValue": [
         "health",
         "info"
@@ -70,13 +62,13 @@
     {
       "name": "management.health.cassandra.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable cassandra health check.",
+      "description": "Whether to enable Cassandra health check.",
       "defaultValue": true
     },
     {
       "name": "management.health.couchbase.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable couchbase health check.",
+      "description": "Whether to enable Couchbase health check.",
       "defaultValue": true
     },
     {
@@ -100,7 +92,7 @@
     {
       "name": "management.health.elasticsearch.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable elasticsearch health check.",
+      "description": "Whether to enable Elasticsearch health check.",
       "defaultValue": true
     },
     {
@@ -146,6 +138,15 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.status.order",
+      "defaultValue": [
+        "DOWN",
+        "OUT_OF_SERVICE",
+        "UP",
+        "UNKNOWN"
+      ]
+    },
+    {
       "name": "management.health.mail.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Mail health check.",
@@ -186,9 +187,15 @@
       "defaultValue": "simple"
     },
     {
-      "name": "management.trace.filter.enabled",
+      "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable the trace servlet filter.",
+      "description": "Whether to enable files metrics.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.binders.integration.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring Integration metrics.",
       "defaultValue": true
     },
     {
@@ -216,22 +223,77 @@
       "defaultValue": true
     },
     {
-      "name": "management.metrics.cache.instrument-cache",
-      "type": "java.lang.Boolean",
-      "description": "Instrument all available caches.",
-      "defaultValue": true
-    },
-    {
       "name": "management.metrics.export.jmx.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether exporting of metrics to JMX is enabled.",
       "defaultValue": true
     },
     {
-      "name": "management.metrics.jdbc.instrument-datasource",
+      "name": "management.metrics.export.ganglia.addressing-mode",
+      "defaultValue": "multicast"
+    },
+    {
+      "name": "management.metrics.export.ganglia.duration-units",
+      "defaultValue": "milliseconds"
+    },
+    {
+      "name": "management.metrics.export.ganglia.rate-units",
+      "defaultValue": "seconds"
+    },
+    {
+      "name": "management.metrics.export.graphite.duration-units",
+      "defaultValue": "milliseconds"
+    },
+    {
+      "name": "management.metrics.export.graphite.protocol",
+      "defaultValue": "pickled"
+    },
+    {
+      "name": "management.metrics.export.graphite.rate-units",
+      "defaultValue": "seconds"
+    },
+    {
+      "name": "management.metrics.export.influx.consistency",
+      "defaultValue": "one"
+    },
+    {
+      "name": "management.metrics.export.prometheus.enabled",
       "type": "java.lang.Boolean",
-      "description": "Instrument all available data sources.",
+      "description": "Whether exporting of metrics to Prometheus is enabled.",
       "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.simple.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.export.simple.mode",
+      "defaultValue": "cumulative"
+    },
+    {
+      "name": "management.metrics.export.statsd.flavor",
+      "defaultValue": "datadog"
+    },
+    {
+      "name": "management.metrics.export.statsd.queue-size",
+      "defaultValue": 2147483647
+    },
+    {
+      "name": "management.trace.http.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable HTTP request-response tracing.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.trace.http.include",
+      "defaultValue": [
+        "request-headers",
+        "response-headers",
+        "cookies",
+        "errors"
+      ]
     },
     {
       "name": "endpoints.actuator.enabled",
@@ -752,7 +814,7 @@
       "description": "Whether to enable JMX export of all endpoints.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "management.endpoints.jmx.enabled",
+        "replacement": "management.endpoints.jmx.exposure.exclude",
         "level": "error"
       }
     },
@@ -780,7 +842,7 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable the endpoint.",
       "deprecation": {
-        "replacement": "management.jolokia.enabled",
+        "replacement": "management.endpoint.jolokia.enabled",
         "level": "error"
       }
     },
@@ -789,7 +851,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "reason": "Endpoint path is no longer customizable.",
+        "replacement": "management.endpoints.web.path-mapping.jolokia",
         "level": "error"
       }
     },
@@ -1050,7 +1112,7 @@
       "description": "Enable the trace servlet filter.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "management.trace.filter.enabled",
+        "replacement": "management.trace.http.enabled",
         "level": "error"
       }
     },
@@ -1059,7 +1121,7 @@
       "type": "java.lang.Boolean",
       "description": "Enable the endpoint.",
       "deprecation": {
-        "replacement": "management.endpoint.trace.enabled",
+        "replacement": "management.endpoint.httptrace.enabled",
         "level": "error"
       }
     },
@@ -1077,7 +1139,7 @@
       "type": "java.lang.String",
       "description": "Endpoint URL path.",
       "deprecation": {
-        "replacement": "management.endpoints.web.path-mapping.trace",
+        "replacement": "management.endpoints.web.path-mapping.httptrace",
         "level": "error"
       }
     },
@@ -1095,7 +1157,7 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Jolokia settings. These are traditionally set using servlet parameters. Refer to\n the documentation of Jolokia for more details.",
       "deprecation": {
-        "replacement": "management.jolokia.config",
+        "replacement": "management.endpoint.jolokia.config",
         "level": "error"
       }
     },
@@ -1472,6 +1534,13 @@
       }
     },
     {
+      "name": "management.trace.include",
+      "deprecation": {
+        "replacement": "management.trace.http.include",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.metrics.export.aggregate.key-pattern",
       "type": "java.lang.String",
       "description": "Pattern that tells the aggregator what to do with the keys from the source\n repository. The keys in the source repository are assumed to be period\n separated, and the pattern is in the same format, e.g. \"d.d.k.d\". Here \"d\"\n means \"discard\" and \"k\" means \"keep\" the key segment in the corresponding\n position in the source.",
@@ -1623,6 +1692,9 @@
           "value": "heapdump"
         },
         {
+          "value": "httptrace"
+        },
+        {
           "value": "info"
         },
         {
@@ -1654,9 +1726,6 @@
         },
         {
           "value": "threaddump"
-        },
-        {
-          "value": "trace"
         }
       ],
       "providers": [
@@ -1728,4 +1797,3 @@
     }
   ]
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import java.net.UnknownHostException;
 import java.util.Collections;
 
 import com.mongodb.DB;
@@ -24,7 +23,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -89,7 +87,7 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoDbFactory.class)
-	public SimpleMongoDbFactory mongoDbFactory(MongoClient mongo) throws Exception {
+	public SimpleMongoDbFactory mongoDbFactory(MongoClient mongo) {
 		String database = this.properties.getMongoClientDatabase();
 		return new SimpleMongoDbFactory(mongo, database);
 	}
@@ -97,15 +95,14 @@ public class MongoDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory,
-			MongoConverter converter) throws UnknownHostException {
+			MongoConverter converter) {
 		return new MongoTemplate(mongoDbFactory, converter);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConverter.class)
 	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory,
-			MongoMappingContext context, BeanFactory beanFactory,
-			MongoCustomConversions conversions) {
+			MongoMappingContext context, MongoCustomConversions conversions) {
 		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
 		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver,
 				context);
@@ -115,8 +112,8 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoMappingContext mongoMappingContext(BeanFactory beanFactory,
-			MongoCustomConversions conversions) throws ClassNotFoundException {
+	public MongoMappingContext mongoMappingContext(MongoCustomConversions conversions)
+			throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
 		context.setInitialEntitySet(new EntityScanner(this.applicationContext)
 				.scan(Document.class, Persistent.class));

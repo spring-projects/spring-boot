@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,20 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySource.StubPropertySource;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.ConcurrentReferenceHashMap;
+import org.springframework.util.ConcurrentReferenceHashMap.ReferenceType;
 
 /**
  * Adapter to convert Spring's {@link MutablePropertySources} to
@@ -41,9 +42,8 @@ class SpringConfigurationPropertySources
 
 	private final Iterable<PropertySource<?>> sources;
 
-	private volatile PropertySourcesKey lastKey;
-
-	private volatile List<ConfigurationPropertySource> adaptedSources;
+	private final Map<PropertySource<?>, ConfigurationPropertySource> cache = new ConcurrentReferenceHashMap<>(
+			16, ReferenceType.SOFT);
 
 	SpringConfigurationPropertySources(Iterable<PropertySource<?>> sources) {
 		Assert.notNull(sources, "Sources must not be null");
@@ -52,107 +52,81 @@ class SpringConfigurationPropertySources
 
 	@Override
 	public Iterator<ConfigurationPropertySource> iterator() {
-		checkForChanges();
-		return this.adaptedSources.iterator();
+		return new SourcesIterator(this.sources.iterator(), this::adapt);
 	}
 
-	private void checkForChanges() {
-		PropertySourcesKey lastKey = this.lastKey;
-		PropertySourcesKey currentKey = new PropertySourcesKey(this.sources);
-		if (!currentKey.equals(lastKey)) {
-			onChange(this.sources);
-			this.lastKey = currentKey;
-		}
-	}
-
-	private void onChange(Iterable<PropertySource<?>> sources) {
-		this.adaptedSources = streamPropertySources(sources)
-				.map(SpringConfigurationPropertySource::from)
-				.collect(Collectors.toList());
-	}
-
-	private Stream<PropertySource<?>> streamPropertySources(
-			Iterable<PropertySource<?>> sources) {
-		return StreamSupport.stream(sources.spliterator(), false).flatMap(this::flatten)
-				.filter(this::isIncluded);
-	}
-
-	private Stream<PropertySource<?>> flatten(PropertySource<?> source) {
-		if (source.getSource() instanceof ConfigurableEnvironment) {
-			return streamPropertySources(
-					((ConfigurableEnvironment) source.getSource()).getPropertySources());
-		}
-		return Stream.of(source);
-	}
-
-	private boolean isIncluded(PropertySource<?> source) {
-		return !(source instanceof StubPropertySource)
-				&& !(source instanceof ConfigurationPropertySourcesPropertySource);
-	}
-
-	private static class PropertySourcesKey {
-
-		private final List<PropertySourceKey> keys = new ArrayList<>();
-
-		PropertySourcesKey(Iterable<PropertySource<?>> sources) {
-			sources.forEach(this::addKey);
-		}
-
-		private void addKey(PropertySource<?> source) {
-			this.keys.add(new PropertySourceKey(source));
-		}
-
-		@Override
-		public int hashCode() {
-			return this.keys.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || getClass() != obj.getClass()) {
-				return false;
-			}
-			return this.keys.equals(((PropertySourcesKey) obj).keys);
-		}
-
-	}
-
-	private static class PropertySourceKey {
-
-		private final String name;
-
-		private final Class<?> type;
-
-		PropertySourceKey(PropertySource<?> source) {
-			this.name = source.getName();
-			this.type = source.getClass();
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
-			result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
+	private ConfigurationPropertySource adapt(PropertySource<?> source) {
+		ConfigurationPropertySource result = this.cache.get(source);
+		// Most PropertySource test quality only using the source name, we need to
+		// check the actual source hasn't also changed.
+		if (result != null && result.getUnderlyingSource() == source) {
 			return result;
 		}
+		result = SpringConfigurationPropertySource.from(source);
+		this.cache.put(source, result);
+		return result;
+	}
+
+	private static class SourcesIterator
+			implements Iterator<ConfigurationPropertySource> {
+
+		private Deque<Iterator<PropertySource<?>>> iterators;
+
+		private ConfigurationPropertySource next;
+
+		private final Function<PropertySource<?>, ConfigurationPropertySource> adapter;
+
+		SourcesIterator(Iterator<PropertySource<?>> iterator,
+				Function<PropertySource<?>, ConfigurationPropertySource> adapter) {
+			this.iterators = new ArrayDeque<>(4);
+			this.iterators.push(iterator);
+			this.adapter = adapter;
+		}
 
 		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
+		public boolean hasNext() {
+			return fetchNext() != null;
+		}
+
+		@Override
+		public ConfigurationPropertySource next() {
+			ConfigurationPropertySource next = fetchNext();
+			this.next = null;
+			if (next == null) {
+				throw new NoSuchElementException();
 			}
-			if (obj == null || getClass() != obj.getClass()) {
-				return false;
+			return next;
+		}
+
+		private ConfigurationPropertySource fetchNext() {
+			if (this.next == null) {
+				if (this.iterators.isEmpty()) {
+					return null;
+				}
+				if (!this.iterators.peek().hasNext()) {
+					this.iterators.pop();
+					return fetchNext();
+				}
+				PropertySource<?> candidate = this.iterators.peek().next();
+				if (candidate.getSource() instanceof ConfigurableEnvironment) {
+					push((ConfigurableEnvironment) candidate.getSource());
+					return fetchNext();
+				}
+				if (isIgnored(candidate)) {
+					return fetchNext();
+				}
+				this.next = this.adapter.apply(candidate);
 			}
-			PropertySourceKey other = (PropertySourceKey) obj;
-			boolean result = true;
-			result = result && ObjectUtils.nullSafeEquals(this.name, other.name);
-			result = result && ObjectUtils.nullSafeEquals(this.type, other.type);
-			return result;
+			return this.next;
+		}
+
+		private void push(ConfigurableEnvironment environment) {
+			this.iterators.push(environment.getPropertySources().iterator());
+		}
+
+		private boolean isIgnored(PropertySource<?> candidate) {
+			return (candidate instanceof StubPropertySource
+					|| candidate instanceof ConfigurationPropertySourcesPropertySource);
 		}
 
 	}

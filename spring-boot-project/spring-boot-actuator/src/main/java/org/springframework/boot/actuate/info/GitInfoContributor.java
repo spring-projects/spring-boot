@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Properties;
 
@@ -32,12 +32,12 @@ import org.springframework.core.env.PropertySource;
  */
 public class GitInfoContributor extends InfoPropertiesInfoContributor<GitProperties> {
 
-	public GitInfoContributor(GitProperties properties, Mode mode) {
-		super(properties, mode);
-	}
-
 	public GitInfoContributor(GitProperties properties) {
 		this(properties, Mode.SIMPLE);
+	}
+
+	public GitInfoContributor(GitProperties properties, Mode mode) {
+		super(properties, mode);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class GitInfoContributor extends InfoPropertiesInfoContributor<GitPropert
 
 	/**
 	 * Post-process the content to expose. By default, well known keys representing dates
-	 * are converted to {@link Date} instances.
+	 * are converted to {@link Instant} instances.
 	 * @param content the content to expose
 	 */
 	@Override
@@ -67,7 +67,7 @@ public class GitInfoContributor extends InfoPropertiesInfoContributor<GitPropert
 		replaceValue(getNestedMap(content, "commit"), "time",
 				getProperties().getCommitTime());
 		replaceValue(getNestedMap(content, "build"), "time",
-				getProperties().getDate("build.time"));
+				getProperties().getInstant("build.time"));
 	}
 
 }

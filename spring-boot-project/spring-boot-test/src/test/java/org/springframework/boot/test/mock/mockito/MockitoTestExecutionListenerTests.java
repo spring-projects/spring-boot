@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +36,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link MockitoTestExecutionListener}.
@@ -73,6 +75,28 @@ public class MockitoTestExecutionListenerTests {
 	public void prepareTestInstanceShouldInjectMockBean() throws Exception {
 		WithMockBean instance = new WithMockBean();
 		this.listener.prepareTestInstance(mockTestContext(instance));
+		verify(this.postProcessor).inject(this.fieldCaptor.capture(), eq(instance),
+				any(MockDefinition.class));
+		assertThat(this.fieldCaptor.getValue().getName()).isEqualTo("mockBean");
+	}
+
+	@Test
+	public void beforeTestMethodShouldDoNothingWhenDirtiesContextAttributeIsNotSet()
+			throws Exception {
+		WithMockBean instance = new WithMockBean();
+		this.listener.beforeTestMethod(mockTestContext(instance));
+		verifyNoMoreInteractions(this.postProcessor);
+	}
+
+	@Test
+	public void beforeTestMethodShouldInjectMockBeanWhenDirtiesContextAttributeIsSet()
+			throws Exception {
+		WithMockBean instance = new WithMockBean();
+		TestContext mockTestContext = mockTestContext(instance);
+		given(mockTestContext.getAttribute(
+				DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))
+						.willReturn(Boolean.TRUE);
+		this.listener.beforeTestMethod(mockTestContext);
 		verify(this.postProcessor).inject(this.fieldCaptor.capture(), eq(instance),
 				(MockDefinition) any());
 		assertThat(this.fieldCaptor.getValue().getName()).isEqualTo("mockBean");

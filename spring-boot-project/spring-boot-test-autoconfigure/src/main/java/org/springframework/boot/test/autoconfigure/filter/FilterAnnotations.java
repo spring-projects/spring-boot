@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 		switch (filterType) {
 		case ANNOTATION:
 			Assert.isAssignable(Annotation.class, filterClass,
-					"An error occurred while processing a ANNOTATION type filter: ");
+					"An error occurred while processing an ANNOTATION type filter: ");
 			return new AnnotationTypeFilter((Class<Annotation>) filterClass);
 		case ASSIGNABLE_TYPE:
 			return new AssignableTypeFilter(filterClass);

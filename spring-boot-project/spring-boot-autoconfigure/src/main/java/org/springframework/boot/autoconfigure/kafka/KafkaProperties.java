@@ -33,7 +33,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
@@ -260,14 +260,13 @@ public class KafkaProperties {
 		private Duration fetchMaxWait;
 
 		/**
-		 * Minimum amount of data, in bytes, the server should return for a fetch request
-		 * in bytes.
+		 * Minimum amount of data, in bytes, the server should return for a fetch request.
 		 */
 		private Integer fetchMinSize;
 
 		/**
-		 * Unique string that identifies the consumer group to which this consumer belongs
-		 * to.
+		 * Unique string that identifies the consumer group to which this consumer
+		 * belongs.
 		 */
 		private String groupId;
 
@@ -815,7 +814,8 @@ public class KafkaProperties {
 		private Duration pollTimeout;
 
 		/**
-		 * Multiplier applied to "pollTimeout" to determine if a consumer is non-responsive.
+		 * Multiplier applied to "pollTimeout" to determine if a consumer is
+		 * non-responsive.
 		 */
 		private Float noPollThreshold;
 
@@ -839,7 +839,7 @@ public class KafkaProperties {
 		 * Time between checks for non-responsive consumers. If a duration suffix is not
 		 * specified, seconds will be used.
 		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration monitorInterval;
 
 		/**
@@ -950,7 +950,7 @@ public class KafkaProperties {
 		private Resource keystoreLocation;
 
 		/**
-		 * Password of the key store file.
+		 * Store password for the key store file.
 		 */
 		private String keystorePassword;
 

@@ -39,13 +39,14 @@ import org.springframework.util.StringUtils;
 public class ManagementServerProperties implements SecurityPrerequisite {
 
 	/**
-	 * Management endpoint HTTP port. Use the same port as the application by default.
+	 * Management endpoint HTTP port (uses the same port as the application by default).
+	 * Configure a different port to use management-specific SSL.
 	 */
 	private Integer port;
 
 	/**
-	 * Network address that to which the management endpoints should bind to. Requires a
-	 * custom management.server.port.
+	 * Network address to which the management endpoints should bind. Requires a custom
+	 * management.server.port.
 	 */
 	private InetAddress address;
 
@@ -112,7 +113,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	public static class Servlet {
 
 		/**
-		 * Management endpoint context-path. For instance, '/management'. Requires a
+		 * Management endpoint context-path (for instance, `/management`). Requires a
 		 * custom management.server.port.
 		 */
 		private String contextPath = "";

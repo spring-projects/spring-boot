@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.test.context.assertj;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.test.context.assertj.ApplicationContextAssert.Scope;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
@@ -36,9 +39,24 @@ public class ApplicationContextAssertTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private StaticApplicationContext context = new StaticApplicationContext();
+	private StaticApplicationContext parent;
+
+	private StaticApplicationContext context;
 
 	private RuntimeException failure = new RuntimeException();
+
+	@Before
+	public void setup() {
+		this.parent = new StaticApplicationContext();
+		this.context = new StaticApplicationContext();
+		this.context.setParent(this.parent);
+	}
+
+	@After
+	public void cleanup() {
+		this.context.close();
+		this.parent.close();
+	}
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
@@ -111,6 +129,22 @@ public class ApplicationContextAssertTests {
 	}
 
 	@Test
+	public void hasSingleBeanWhenInParentShouldFail() {
+		this.parent.registerSingleton("foo", Foo.class);
+		this.context.registerSingleton("bar", Foo.class);
+		this.thrown.expect(AssertionError.class);
+		this.thrown.expectMessage("but found:");
+		assertThat(getAssert(this.context)).hasSingleBean(Foo.class);
+	}
+
+	@Test
+	public void hasSingleBeanWithLimitedScopeWhenInParentShouldPass() {
+		this.parent.registerSingleton("foo", Foo.class);
+		this.context.registerSingleton("bar", Foo.class);
+		assertThat(getAssert(this.context)).hasSingleBean(Foo.class, Scope.NO_ANCESTORS);
+	}
+
+	@Test
 	public void doesNotHaveBeanOfTypeWhenHasNoBeanOfTypeShouldPass() {
 		assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class);
 	}
@@ -130,6 +164,21 @@ public class ApplicationContextAssertTests {
 		this.thrown.expectMessage(String
 				.format("but context failed to start:%n java.lang.RuntimeException"));
 		assertThat(getAssert(this.failure)).doesNotHaveBean(Foo.class);
+	}
+
+	@Test
+	public void doesNotHaveBeanOfTypeWhenInParentShouldFail() {
+		this.thrown.expect(AssertionError.class);
+		this.thrown.expectMessage("but found");
+		this.parent.registerSingleton("foo", Foo.class);
+		assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class);
+	}
+
+	@Test
+	public void doesNotHaveBeanOfTypeWithLimitedScopeWhenInParentShouldPass() {
+		this.parent.registerSingleton("foo", Foo.class);
+		assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class,
+				Scope.NO_ANCESTORS);
 	}
 
 	@Test
@@ -205,6 +254,36 @@ public class ApplicationContextAssertTests {
 	}
 
 	@Test
+	public void getBeanOfTypeWhenInParentShouldReturnBeanAssert() {
+		this.parent.registerSingleton("foo", Foo.class);
+		assertThat(getAssert(this.context)).getBean(Foo.class).isNotNull();
+	}
+
+	@Test
+	public void getBeanOfTypeWhenInParentWithLimitedScopeShouldReturnNullAssert() {
+		this.parent.registerSingleton("foo", Foo.class);
+		assertThat(getAssert(this.context)).getBean(Foo.class, Scope.NO_ANCESTORS)
+				.isNull();
+	}
+
+	@Test
+	public void getBeanOfTypeWhenHasMultipleBeansIncludingParentShouldFail() {
+		this.parent.registerSingleton("foo", Foo.class);
+		this.context.registerSingleton("bar", Foo.class);
+		this.thrown.expect(AssertionError.class);
+		this.thrown.expectMessage("but found");
+		assertThat(getAssert(this.context)).getBean(Foo.class);
+	}
+
+	@Test
+	public void getBeanOfTypeWithLimitedScopeWhenHasMultipleBeansIncludingParentShouldReturnBeanAssert() {
+		this.parent.registerSingleton("foo", Foo.class);
+		this.context.registerSingleton("bar", Foo.class);
+		assertThat(getAssert(this.context)).getBean(Foo.class, Scope.NO_ANCESTORS)
+				.isNotNull();
+	}
+
+	@Test
 	public void getBeanOfNameWhenHasBeanShouldReturnBeanAssert() {
 		this.context.registerSingleton("foo", Foo.class);
 		assertThat(getAssert(this.context)).getBean("foo").isNotNull();
@@ -272,6 +351,22 @@ public class ApplicationContextAssertTests {
 		this.thrown.expectMessage(String
 				.format("but context failed to start:%n java.lang.RuntimeException"));
 		assertThat(getAssert(this.failure)).getBeans(Foo.class);
+	}
+
+	@Test
+	public void getBeansShouldIncludeBeansFromParentScope() {
+		this.parent.registerSingleton("foo", Foo.class);
+		this.context.registerSingleton("bar", Foo.class);
+		assertThat(getAssert(this.context)).getBeans(Foo.class).hasSize(2)
+				.containsKeys("foo", "bar");
+	}
+
+	@Test
+	public void getBeansWithLimitedScopeShouldNotIncludeBeansFromParentScope() {
+		this.parent.registerSingleton("foo", Foo.class);
+		this.context.registerSingleton("bar", Foo.class);
+		assertThat(getAssert(this.context)).getBeans(Foo.class, Scope.NO_ANCESTORS)
+				.hasSize(1).containsKeys("bar");
 	}
 
 	@Test

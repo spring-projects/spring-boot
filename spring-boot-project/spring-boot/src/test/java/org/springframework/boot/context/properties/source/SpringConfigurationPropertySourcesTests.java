@@ -152,12 +152,36 @@ public class SpringConfigurationPropertySourcesTests {
 	@Test
 	public void shouldTrackChanges() {
 		MutablePropertySources sources = new MutablePropertySources();
-		sources.addLast(
-				new MapPropertySource("test1", Collections.singletonMap("a", "b")));
-		assertThat(new SpringConfigurationPropertySources(sources).iterator()).hasSize(1);
-		sources.addLast(
-				new MapPropertySource("test2", Collections.singletonMap("b", "c")));
-		assertThat(new SpringConfigurationPropertySources(sources).iterator()).hasSize(2);
+		SpringConfigurationPropertySources configurationSources = new SpringConfigurationPropertySources(
+				sources);
+		assertThat(configurationSources.iterator()).hasSize(0);
+		MapPropertySource source1 = new MapPropertySource("test1",
+				Collections.singletonMap("a", "b"));
+		sources.addLast(source1);
+		assertThat(configurationSources.iterator()).hasSize(1);
+		MapPropertySource source2 = new MapPropertySource("test2",
+				Collections.singletonMap("b", "c"));
+		sources.addLast(source2);
+		assertThat(configurationSources.iterator()).hasSize(2);
+	}
+
+	@Test
+	public void shouldTrackWhenSourceHasIdenticalName() {
+		MutablePropertySources sources = new MutablePropertySources();
+		SpringConfigurationPropertySources configurationSources = new SpringConfigurationPropertySources(
+				sources);
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("a");
+		MapPropertySource source1 = new MapPropertySource("test",
+				Collections.singletonMap("a", "s1"));
+		sources.addLast(source1);
+		assertThat(configurationSources.iterator().next().getConfigurationProperty(name)
+				.getValue()).isEqualTo("s1");
+		MapPropertySource source2 = new MapPropertySource("test",
+				Collections.singletonMap("a", "s2"));
+		sources.remove("test");
+		sources.addLast(source2);
+		assertThat(configurationSources.iterator().next().getConfigurationProperty(name)
+				.getValue()).isEqualTo("s2");
 	}
 
 }

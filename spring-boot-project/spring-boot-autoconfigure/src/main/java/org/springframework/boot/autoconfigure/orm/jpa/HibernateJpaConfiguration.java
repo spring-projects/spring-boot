@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -106,7 +107,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		this.physicalNamingStrategy = physicalNamingStrategy.getIfAvailable();
 		this.implicitNamingStrategy = implicitNamingStrategy.getIfAvailable();
 		this.hibernatePropertiesCustomizers = hibernatePropertiesCustomizers
-				.getIfAvailable(() -> Collections.EMPTY_LIST);
+				.getIfAvailable(() -> Collections.emptyList());
 	}
 
 	@Override
@@ -116,13 +117,14 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	@Override
 	protected Map<String, Object> getVendorProperties() {
-		String defaultDdlMode = this.defaultDdlAutoProvider
+		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider
 				.getDefaultDdlAuto(getDataSource());
 		return new LinkedHashMap<>(getProperties()
 				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlMode)
 						.implicitNamingStrategy(this.implicitNamingStrategy)
 						.physicalNamingStrategy(this.physicalNamingStrategy)
-						.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
+						.hibernatePropertiesCustomizers(
+								this.hibernatePropertiesCustomizers)));
 	}
 
 	@Override

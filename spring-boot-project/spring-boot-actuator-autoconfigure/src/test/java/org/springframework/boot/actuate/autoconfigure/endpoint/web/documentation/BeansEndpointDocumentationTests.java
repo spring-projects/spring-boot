@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.util.CollectionUtils;
 
@@ -38,7 +37,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,31 +45,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class BeansEndpointDocumentationTests extends AbstractEndpointDocumentationTests {
+public class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void beans() throws Exception {
-		List<FieldDescriptor> beanFields = Arrays
-				.asList(fieldWithPath("aliases").description("Names of any aliases."),
-						fieldWithPath("scope")
-								.description("Scope of the bean."),
+		List<FieldDescriptor> beanFields = Arrays.asList(
+				fieldWithPath("aliases").description("Names of any aliases."),
+				fieldWithPath("scope").description("Scope of the bean."),
 				fieldWithPath("type").description("Fully qualified type of the bean."),
 				fieldWithPath("resource")
 						.description("Resource in which the bean was defined, if any.")
 						.optional(),
 				fieldWithPath("dependencies").description("Names of any dependencies."));
 		ResponseFieldsSnippet responseFields = responseFields(
-				fieldWithPath("contextId").description("ID of the application context."),
-				fieldWithPath("beans.*")
+				fieldWithPath("contexts")
+						.description("Application contexts keyed by id."),
+				parentIdField(),
+				fieldWithPath("contexts.*.beans")
 						.description("Beans in the application context keyed by name."))
-								.andWithPrefix("beans.*.", beanFields)
-								.and(subsectionWithPath("parent")
-										.description("Beans in the parent application "
-												+ "context, if any.")
-										.type(JsonFieldType.OBJECT).optional());
+								.andWithPrefix("contexts.*.beans.*.", beanFields);
 		this.mockMvc.perform(get("/actuator/beans")).andExpect(status().isOk())
 				.andDo(document("beans",
-						preprocessResponse(limit("beans", this::isIndependentBean)),
+						preprocessResponse(limit(this::isIndependentBean, "contexts",
+								getApplicationContext().getId(), "beans")),
 						responseFields));
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationsample.endpoint;
 
 import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.ReadOperation;
 
 /**
  * An endpoint that is enabled unless configured explicitly.
@@ -25,5 +26,14 @@ import org.springframework.boot.configurationsample.Endpoint;
  */
 @Endpoint(id = "enabled")
 public class EnabledEndpoint {
+
+	public String someMethod() {
+		return "not a read operation";
+	}
+
+	@ReadOperation
+	public String retrieve(String parameter, Integer anotherParameter) {
+		return "not a main read operation";
+	}
 
 }

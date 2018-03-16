@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +50,7 @@ public class ReactiveManagementContextFactoryTests {
 		childContext.refresh();
 		assertThat(childContext.getBean(TestConfiguration1.class)).isNotNull();
 		assertThat(childContext.getBean(TestConfiguration2.class)).isNotNull();
-		assertThat(childContext.getBean(ReactiveWebServerAutoConfiguration.class))
+		assertThat(childContext.getBean(ReactiveWebServerFactoryAutoConfiguration.class))
 				.isNotNull();
 
 		childContext.close();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,14 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.util.StringUtils;
 
 /**
  * Adapter class to convert {@link OAuth2ClientProperties} to a
@@ -63,8 +64,7 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 		map.from(properties::getAuthorizationGrantType).as(AuthorizationGrantType::new)
 				.to(builder::authorizationGrantType);
 		map.from(properties::getRedirectUriTemplate).to(builder::redirectUriTemplate);
-		map.from(properties::getScope)
-				.as((scope) -> scope.toArray(new String[scope.size()]))
+		map.from(properties::getScope).as((scope) -> StringUtils.toStringArray(scope))
 				.to(builder::scope);
 		map.from(properties::getClientName).to(builder::clientName);
 		return builder.build();
@@ -107,7 +107,7 @@ final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static CommonOAuth2Provider getCommonProvider(String providerId) {
 		try {
-			return new BinderConversionService(null).convert(providerId,
+			return ApplicationConversionService.getSharedInstance().convert(providerId,
 					CommonOAuth2Provider.class);
 		}
 		catch (ConversionException ex) {

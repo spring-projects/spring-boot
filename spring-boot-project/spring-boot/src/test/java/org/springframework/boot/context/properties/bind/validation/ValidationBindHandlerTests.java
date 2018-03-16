@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,8 +127,8 @@ public class ValidationBindHandlerTests {
 		BindValidationException cause = bindAndExpectValidationError(
 				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
 						Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
-		assertThat(cause.getValidationErrors().getName().toString())
-				.isEqualTo("foo.nested");
+		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo");
+		assertThat(cause.getMessage()).contains("nested.age");
 	}
 
 	@Test
@@ -144,10 +144,25 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldNotValidateWithoutAnnotation() {
+	public void bindShouldValidateWithoutAnnotation() {
 		ExampleNonValidatedBean existingValue = new ExampleNonValidatedBean();
-		this.binder.bind(ConfigurationPropertyName.of("foo"), Bindable
-				.of(ExampleNonValidatedBean.class).withExistingValue(existingValue),
+		bindAndExpectValidationError(
+				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
+						Bindable.of(ExampleNonValidatedBean.class)
+								.withExistingValue(existingValue),
+						this.handler));
+	}
+
+	@Test
+	public void bindShouldNotValidateDepthGreaterThanZero() {
+		// gh-12227
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar", "baz");
+		this.sources.add(source);
+		ExampleValidatedBeanWithGetterException existingValue = new ExampleValidatedBeanWithGetterException();
+		this.binder.bind(ConfigurationPropertyName.of("foo"),
+				Bindable.of(ExampleValidatedBeanWithGetterException.class)
+						.withExistingValue(existingValue),
 				this.handler);
 	}
 
@@ -156,8 +171,6 @@ public class ValidationBindHandlerTests {
 			action.run();
 		}
 		catch (BindException ex) {
-			ex.printStackTrace();
-
 			BindValidationException cause = (BindValidationException) ex.getCause();
 			return cause;
 		}
@@ -244,6 +257,16 @@ public class ValidationBindHandlerTests {
 		public void setAddress(String address) {
 			this.address = address;
 		}
+
+	}
+
+	@Validated
+	public static class ExampleValidatedBeanWithGetterException {
+
+		public int getAge() {
+			throw new RuntimeException();
+		}
+
 	}
 
 }

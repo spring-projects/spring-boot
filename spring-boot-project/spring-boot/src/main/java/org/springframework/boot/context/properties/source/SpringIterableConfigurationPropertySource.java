@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,11 +49,10 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource,
 			PropertyMapper mapper) {
 		super(propertySource, mapper, null);
-		assertEnumerablePropertySource(propertySource);
+		assertEnumerablePropertySource();
 	}
 
-	private void assertEnumerablePropertySource(
-			EnumerablePropertySource<?> propertySource) {
+	private void assertEnumerablePropertySource() {
 		if (getPropertySource() instanceof MapPropertySource) {
 			try {
 				((MapPropertySource) getPropertySource()).getSource().size();
@@ -122,7 +121,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 				mappings.add(mapping);
 			}
 		}
-		result = mappings.toArray(new PropertyMapping[mappings.size()]);
+		result = mappings.toArray(new PropertyMapping[0]);
 		if (cache != null) {
 			cache.setMappings(result);
 		}

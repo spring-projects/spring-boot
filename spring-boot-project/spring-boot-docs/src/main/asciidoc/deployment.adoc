@@ -46,10 +46,10 @@ deploy stand-alone executable jar applications as well as traditional `.war` pac
 applications.
 
 Once you have built your application (by using, for example, `mvn clean package`) and have
-http://docs.cloudfoundry.org/devguide/installcf/install-go-cli.html[installed the `cf`
+https://docs.cloudfoundry.org/cf-cli/install-go-cli.html[installed the `cf`
 command line tool], deploy your application by using the `cf push` command, substituting
 the path to your compiled `.jar`. Be sure to have
-http://docs.cloudfoundry.org/devguide/installcf/whats-new-v6.html#login[logged in with
+https://docs.cloudfoundry.org/cf-cli/getting-started.html#login[logged in with
 your `cf` command line client] before pushing an application. The following line shows
 using the `cf push` command to deploy an application:
 
@@ -61,9 +61,9 @@ using the `cf push` command to deploy an application:
 NOTE: In the preceding example, we substitute `acloudyspringtime` for whatever value you
 give `cf` as the name of your application.
 
-See the http://docs.cloudfoundry.org/devguide/installcf/whats-new-v6.html#push[`cf push`
+See the https://docs.cloudfoundry.org/cf-cli/getting-started.html#push[`cf push`
 documentation] for more options. If there is a Cloud Foundry
-http://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html[`manifest.yml`]
+https://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html[`manifest.yml`]
 file present in the same directory, it is considered.
 
 At this point, `cf` starts uploading your application, producing output similar to the
@@ -152,7 +152,7 @@ information (such as database credentials). See the
 {dc-spring-boot}/cloud/CloudFoundryVcapEnvironmentPostProcessor.html['`CloudFoundryVcapEnvironmentPostProcessor`']
 Javadoc for complete details.
 
-TIP: The http://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project
+TIP: The https://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project
 is a better fit for tasks such as configuring a DataSource. Spring Boot includes
 auto-configuration support and a `spring-boot-starter-cloud-connectors` starter.
 
@@ -199,8 +199,8 @@ deployments is to `git push` the code to production, as shown in the following e
 	-----> Executing: mvn -B -DskipTests=true clean install
 
 	       [INFO] Scanning for projects...
-	       Downloading: http://repo.spring.io/...
-	       Downloaded: http://repo.spring.io/... (818 B at 1.8 KB/sec)
+	       Downloading: https://repo.spring.io/...
+	       Downloaded: https://repo.spring.io/... (818 B at 1.8 KB/sec)
 			....
 	       Downloaded: http://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
 	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/target/...
@@ -261,7 +261,7 @@ simplest option: AWS Elastic Beanstalk.
 
 ==== AWS Elastic Beanstalk
 As described in the official
-http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic
 Beanstalk Java guide], there are two main options to deploy a Java application. You can
 either use the "`Tomcat Platform`" or the "`Java SE platform`".
 
@@ -307,7 +307,7 @@ best to upload the binaries instead. To do so, add lines similar to the followin
 By default an Elastic Beanstalk environment is load balanced. The load balancer has a
 significant cost. To avoid that cost, set the environment type to "`Single instance`", as
 described in
-http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[the
+https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[the
 Amazon documentation]. You can also create single instance environments by using the CLI
 and the following command:
 
@@ -322,8 +322,7 @@ and the following command:
 This is one of the easiest ways to get to AWS, but there are more things to cover, such as
 how to integrate Elastic Beanstalk into any CI / CD tool, use the Elastic Beanstalk Maven
 plugin instead of the CLI, and others. There is a
-https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/
-[blog post] covering these topics more in detail.
+https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog post] covering these topics more in detail.
 
 
 
@@ -348,13 +347,11 @@ the following:
 ----
 
 See the https://boxfuse.com/docs/commandline/run.html[`boxfuse run` documentation] for
-more options. If there is a https://boxfuse.com/docs/commandline/#configuration
-[`boxfuse.conf`] file present in the current directory, it is considered.
+more options. If there is a https://boxfuse.com/docs/commandline/#configuration[`boxfuse.conf`] file present in the current directory, it is considered.
 
 TIP: By default, Boxfuse activates a Spring profile named `boxfuse` on startup. If your
 executable jar or war contains an
-https://boxfuse.com/docs/payloads/springboot.html#configuration
-[`application-boxfuse.properties`] file, Boxfuse bases its configuration on the
+https://boxfuse.com/docs/payloads/springboot.html#configuration[`application-boxfuse.properties`] file, Boxfuse bases its configuration on the
 properties it contains.
 
 At this point, `boxfuse` creates an image for your application, uploads it, and configures
@@ -850,7 +847,7 @@ application.
 
 [[deployment-whats-next]]
 == What to Read Next
-Check out the http://www.cloudfoundry.com/[Cloud Foundry],
+Check out the https://www.cloudfoundry.com/[Cloud Foundry],
 https://www.heroku.com/[Heroku], https://www.openshift.com[OpenShift], and
 https://boxfuse.com[Boxfuse] web sites for more information about the kinds of features
 that a PaaS can offer. These are just four of the most popular Java PaaS providers. Since

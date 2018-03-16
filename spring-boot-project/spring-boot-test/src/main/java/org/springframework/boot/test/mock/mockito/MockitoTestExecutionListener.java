@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 
@@ -37,16 +38,35 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * annotations.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.4.2
  */
 public class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 
 	@Override
+	public final int getOrder() {
+		return 1950;
+	}
+
+	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
+		initMocks(testContext);
+		injectFields(testContext);
+	}
+
+	@Override
+	public void beforeTestMethod(TestContext testContext) throws Exception {
+		if (Boolean.TRUE.equals(testContext.getAttribute(
+				DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))) {
+			initMocks(testContext);
+			reinjectFields(testContext);
+		}
+	}
+
+	private void initMocks(TestContext testContext) {
 		if (hasMockitoAnnotations(testContext)) {
 			MockitoAnnotations.initMocks(testContext.getTestInstance());
 		}
-		injectFields(testContext);
 	}
 
 	private boolean hasMockitoAnnotations(TestContext testContext) {
@@ -56,21 +76,34 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 	}
 
 	private void injectFields(TestContext testContext) {
+		postProcessFields(testContext,
+				(mockitoField, postProcessor) -> postProcessor.inject(mockitoField.field,
+						mockitoField.target, mockitoField.definition));
+	}
+
+	private void reinjectFields(final TestContext testContext) {
+		postProcessFields(testContext, (mockitoField, postProcessor) -> {
+			ReflectionUtils.makeAccessible(mockitoField.field);
+			ReflectionUtils.setField(mockitoField.field, testContext.getTestInstance(),
+					null);
+			postProcessor.inject(mockitoField.field, mockitoField.target,
+					mockitoField.definition);
+		});
+	}
+
+	private void postProcessFields(TestContext testContext,
+			BiConsumer<MockitoField, MockitoPostProcessor> consumer) {
 		DefinitionsParser parser = new DefinitionsParser();
 		parser.parse(testContext.getTestClass());
 		if (!parser.getDefinitions().isEmpty()) {
-			injectFields(testContext, parser);
-		}
-	}
-
-	private void injectFields(TestContext testContext, DefinitionsParser parser) {
-		ApplicationContext applicationContext = testContext.getApplicationContext();
-		MockitoPostProcessor postProcessor = applicationContext
-				.getBean(MockitoPostProcessor.class);
-		for (Definition definition : parser.getDefinitions()) {
-			Field field = parser.getField(definition);
-			if (field != null) {
-				postProcessor.inject(field, testContext.getTestInstance(), definition);
+			MockitoPostProcessor postProcessor = testContext.getApplicationContext()
+					.getBean(MockitoPostProcessor.class);
+			for (Definition definition : parser.getDefinitions()) {
+				Field field = parser.getField(definition);
+				if (field != null) {
+					consumer.accept(new MockitoField(field, testContext.getTestInstance(),
+							definition), postProcessor);
+				}
 			}
 		}
 	}
@@ -94,6 +127,22 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 
 		public boolean hasAnnotations() {
 			return !this.annotations.isEmpty();
+		}
+
+	}
+
+	private static final class MockitoField {
+
+		private final Field field;
+
+		private final Object target;
+
+		private final Definition definition;
+
+		private MockitoField(Field field, Object instance, Definition definition) {
+			this.field = field;
+			this.target = instance;
+			this.definition = definition;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,33 +28,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link SimpleMeterRegistry}.
  *
  * @author Jon Schneider
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.simple")
 public class SimpleProperties {
 
 	/**
-	 * Enable publishing to the backend.
-	 */
-	private boolean enabled;
-
-	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
-	private Duration step = Duration.ofSeconds(10);
+	private Duration step = Duration.ofMinutes(1);
 
 	/**
 	 * Counting mode.
 	 */
-	private CountingMode mode = CountingMode.Cumulative;
-
-	public boolean getEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+	private CountingMode mode = CountingMode.CUMULATIVE;
 
 	public Duration getStep() {
 		return this.step;

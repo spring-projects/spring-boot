@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginProvider;
 import org.springframework.util.Assert;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -76,7 +76,7 @@ public class ValidationErrors implements Iterable<ObjectError> {
 
 	private FieldError convertFieldError(ConfigurationPropertyName name,
 			Set<ConfigurationProperty> boundProperties, FieldError error) {
-		if (error instanceof ObjectProvider<?>) {
+		if (error instanceof OriginProvider) {
 			return error;
 		}
 		return OriginTrackedFieldError.of(error,

@@ -63,14 +63,13 @@ public class CustomHibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void namingStrategyDelegatorTakesPrecedence() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
-								+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
+		this.contextRunner.withPropertyValues(
+				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
+						+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
 				.run((context) -> {
 					JpaProperties bean = context.getBean(JpaProperties.class);
-					Map<String, Object> hibernateProperties = bean.getHibernateProperties(
-							new HibernateSettings().ddlAuto("create-drop"));
+					Map<String, Object> hibernateProperties = bean
+							.getHibernateProperties(new HibernateSettings());
 					assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"))
 							.isNull();
 				});
@@ -88,10 +87,10 @@ public class CustomHibernateJpaAutoConfigurationTests {
 							.getVendorProperties();
 					assertThat(hibernateProperties
 							.get("hibernate.implicit_naming_strategy")).isEqualTo(
-							NamingStrategyConfiguration.implicitNamingStrategy);
+									NamingStrategyConfiguration.implicitNamingStrategy);
 					assertThat(hibernateProperties
 							.get("hibernate.physical_naming_strategy")).isEqualTo(
-							NamingStrategyConfiguration.physicalNamingStrategy);
+									NamingStrategyConfiguration.physicalNamingStrategy);
 				});
 	}
 

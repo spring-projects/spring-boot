@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class SampleSessionApplicationTests {
 	private ConfigurableApplicationContext createContext() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder()
 				.sources(SampleSessionApplication.class)
-				.properties("server.port:0", "server.session.timeout:1")
+				.properties("server.port:0", "server.servlet.session.timeout:1")
 				.initializers(new ServerPortInfoApplicationContextInitializer()).run();
 		return context;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTags;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.HandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +36,13 @@ public class WebMvcTagsTests {
 	private final MockHttpServletRequest request = new MockHttpServletRequest();
 
 	private final MockHttpServletResponse response = new MockHttpServletResponse();
+
+	@Test
+	public void uriTrailingSlashesAreSuppressed() {
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				"//foo/");
+		assertThat(WebMvcTags.uri(this.request, null).getValue()).isEqualTo("/foo");
+	}
 
 	@Test
 	public void uriTagValueIsRedirectionWhenResponseStatusIs3xx() {
@@ -54,7 +62,7 @@ public class WebMvcTagsTests {
 	public void uriTagToleratesCustomResponseStatus() {
 		this.response.setStatus(601);
 		Tag tag = WebMvcTags.uri(this.request, this.response);
-		assertThat(tag.getValue()).isEqualTo("/");
+		assertThat(tag.getValue()).isEqualTo("root");
 	}
 
 }

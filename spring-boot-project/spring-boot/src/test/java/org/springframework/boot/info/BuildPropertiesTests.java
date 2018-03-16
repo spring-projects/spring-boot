@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.info;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -31,14 +34,16 @@ public class BuildPropertiesTests {
 
 	@Test
 	public void basicInfo() {
+		Instant instant = Instant.now();
 		BuildProperties properties = new BuildProperties(createProperties("com.example",
-				"demo", "0.0.1", "2016-03-04T14:36:33+0100"));
+				"demo", "0.0.1", DateTimeFormatter.ISO_INSTANT.format(instant)));
 		assertThat(properties.getGroup()).isEqualTo("com.example");
 		assertThat(properties.getArtifact()).isEqualTo("demo");
 		assertThat(properties.getVersion()).isEqualTo("0.0.1");
-		assertThat(properties.getTime()).isNotNull();
-		assertThat(properties.get("time")).isEqualTo("1457098593000");
-		assertThat(properties.getTime().getTime()).isEqualTo(1457098593000L);
+		assertThat(properties.getTime())
+				.isEqualTo(instant.truncatedTo(ChronoUnit.MILLIS));
+		assertThat(properties.get("time"))
+				.isEqualTo(String.valueOf(instant.toEpochMilli()));
 	}
 
 	@Test

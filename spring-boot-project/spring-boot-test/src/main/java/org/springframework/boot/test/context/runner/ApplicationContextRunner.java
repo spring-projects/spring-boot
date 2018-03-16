@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -60,21 +61,24 @@ public class ApplicationContextRunner extends
 
 	private ApplicationContextRunner(
 			Supplier<ConfigurableApplicationContext> contextFactory,
+			List<ApplicationContextInitializer<ConfigurableApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
-		super(contextFactory, environmentProperties, systemProperties, classLoader,
-				parent, configurations);
+		super(contextFactory, initializers, environmentProperties, systemProperties,
+				classLoader, parent, configurations);
 	}
 
 	@Override
 	protected ApplicationContextRunner newInstance(
 			Supplier<ConfigurableApplicationContext> contextFactory,
+			List<ApplicationContextInitializer<ConfigurableApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
-		return new ApplicationContextRunner(contextFactory, environmentProperties,
-				systemProperties, classLoader, parent, configurations);
+		return new ApplicationContextRunner(contextFactory, initializers,
+				environmentProperties, systemProperties, classLoader, parent,
+				configurations);
 	}
 
 }

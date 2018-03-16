@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.info;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -55,16 +55,16 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	}
 
 	/**
-	 * Return the value of the specified property as a {@link Date} or {@code null} if the
-	 * value is not a valid {@link Long} representation of an epoch time.
+	 * Return the value of the specified property as an {@link Instant} or {@code null} if
+	 * the value is not a valid {@link Long} representation of an epoch time.
 	 * @param key the key of the property
 	 * @return the property value
 	 */
-	public Date getDate(String key) {
+	public Instant getInstant(String key) {
 		String s = get(key);
 		if (s != null) {
 			try {
-				return new Date(Long.parseLong(s));
+				return Instant.ofEpochMilli(Long.parseLong(s));
 			}
 			catch (NumberFormatException ex) {
 				// Not valid epoch time

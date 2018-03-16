@@ -23,13 +23,14 @@ import java.util.Map;
  * properties before it is used by an auto-configured {@code EntityManagerFactory}.
  *
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @FunctionalInterface
 public interface HibernatePropertiesCustomizer {
 
 	/**
 	 * Customize the specified JPA vendor properties.
-	 * @param hibernateProperties the current JPA vendor properties
+	 * @param hibernateProperties the JPA vendor properties to customize
 	 */
 	void customize(Map<String, Object> hibernateProperties);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,16 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 
 import org.junit.Test;
 
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-import org.springframework.boot.actuate.audit.AuditEventsEndpointWebExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,19 +48,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 public class AuditEventsEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+		extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
 	private AuditEventRepository repository;
 
 	@Test
-	public void allAuditEventsAfter() throws Exception {
+	public void allAuditEvents() throws Exception {
 		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find(any(), any(), any())).willReturn(
 				Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
 		this.mockMvc.perform(get("/actuator/auditevents").param("after", queryTimestamp))
 				.andExpect(status().isOk())
-				.andDo(document("auditevents/after", responseFields(
+				.andDo(document("auditevents/all", responseFields(
 						fieldWithPath("events").description("An array of audit events."),
 						fieldWithPath("events.[].timestamp")
 								.description("The timestamp of when the event occurred."),
@@ -74,10 +72,9 @@ public class AuditEventsEndpointDocumentationTests
 
 	@Test
 	public void filteredAuditEvents() throws Exception {
-		ZonedDateTime now = ZonedDateTime.now();
+		OffsetDateTime now = OffsetDateTime.now();
 		String queryTimestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now);
-		Date date = new Date(now.toEpochSecond() * 1000);
-		given(this.repository.find("alice", date, "logout")).willReturn(
+		given(this.repository.find("alice", now.toInstant(), "logout")).willReturn(
 				Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
 		this.mockMvc
 				.perform(get("/actuator/auditevents").param("principal", "alice")
@@ -87,14 +84,14 @@ public class AuditEventsEndpointDocumentationTests
 						requestParameters(
 								parameterWithName("after").description(
 										"Restricts the events to those that occurred "
-												+ "after the given time. Required."),
+												+ "after the given time. Optional."),
 								parameterWithName("principal").description(
 										"Restricts the events to those with the given "
 												+ "principal. Optional."),
-						parameterWithName("type").description(
-								"Restricts the events to those with the given "
-										+ "type. Optional."))));
-		verify(this.repository).find("alice", date, "logout");
+								parameterWithName("type").description(
+										"Restricts the events to those with the given "
+												+ "type. Optional."))));
+		verify(this.repository).find("alice", now.toInstant(), "logout");
 	}
 
 	@Configuration
@@ -104,12 +101,6 @@ public class AuditEventsEndpointDocumentationTests
 		@Bean
 		public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository repository) {
 			return new AuditEventsEndpoint(repository);
-		}
-
-		@Bean
-		public AuditEventsEndpointWebExtension adAuditEventsWebEndpointExtension(
-				AuditEventsEndpoint delegate) {
-			return new AuditEventsEndpointWebExtension(delegate);
 		}
 
 	}

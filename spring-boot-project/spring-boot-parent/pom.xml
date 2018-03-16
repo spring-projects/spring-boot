@@ -190,7 +190,7 @@
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-utils</artifactId>
-				<version>3.0.20</version>
+				<version>3.0.24</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.aether</groupId>
@@ -304,7 +304,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>2.17</version>
+					<version>3.0.0</version>
 					<dependencies>
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
@@ -525,6 +525,25 @@
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>regex-property</id>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>modulename</name>
+							<value>${project.artifactId}</value>
+							<regex>-</regex>
+							<replacement>.</replacement>
+							<failIfNoMatch>true</failIfNoMatch>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
 				<inherited>true</inherited>
 				<executions>
@@ -634,10 +653,17 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
 						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
 						</manifest>
+						<manifestEntries>
+							<Implementation-Title>${project.name}</Implementation-Title>
+							<Automatic-Module-Name>${modulename}</Automatic-Module-Name>
+							<Implementation-Version>${project.version}</Implementation-Version>
+							<Built-By>Spring</Built-By>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
@@ -712,6 +738,13 @@
 								<inherited>true</inherited>
 							</execution>
 						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-lang3</artifactId>
+								<version>3.7</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
@@ -733,11 +766,8 @@
 		<profile>
 			<id>java9</id>
 			<activation>
-				<jdk>9</jdk>
+				<jdk>[9,)</jdk>
 			</activation>
-			<properties>
-				<aspectj.version>1.9.0.RC1</aspectj.version>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -749,6 +779,17 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>java10</id>
+			<activation>
+				<jdk>10</jdk>
+			</activation>
+			<properties>
+				<maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
+				<maven-site-plugin.version>3.7</maven-site-plugin.version>
+				<maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
+			</properties>
 		</profile>
 	</profiles>
 </project>

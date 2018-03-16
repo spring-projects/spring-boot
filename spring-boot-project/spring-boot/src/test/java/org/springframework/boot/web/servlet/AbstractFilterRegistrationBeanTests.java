@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -61,7 +61,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	@Before
 	public void setupMocks() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addFilter(anyString(), (Filter) any()))
+		given(this.servletContext.addFilter(anyString(), any(Filter.class)))
 				.willReturn(this.registration);
 	}
 
@@ -123,7 +123,7 @@ public abstract class AbstractFilterRegistrationBeanTests {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, times(0)).addFilter(eq("mockFilter"),
+		verify(this.servletContext, never()).addFilter(eq("mockFilter"),
 				getExpectedFilter());
 	}
 

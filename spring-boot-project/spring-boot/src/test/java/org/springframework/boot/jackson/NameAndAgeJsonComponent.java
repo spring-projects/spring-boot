@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class NameAndAgeJsonComponent {
 		@Override
 		protected NameAndAge deserializeObject(JsonParser jsonParser,
 				DeserializationContext context, ObjectCodec codec, JsonNode tree)
-						throws IOException {
+				throws IOException {
 			String name = nullSafeValue(tree.get("name"), String.class);
 			Integer age = nullSafeValue(tree.get("age"), Integer.class);
 			return new NameAndAge(name, age);

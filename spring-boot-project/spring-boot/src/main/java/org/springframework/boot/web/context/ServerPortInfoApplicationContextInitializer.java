@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
@@ -38,9 +39,9 @@ import org.springframework.core.env.PropertySource;
  * {@link Value @Value} or obtained via the {@link Environment}.
  * <p>
  * If the {@link WebServerInitializedEvent} has a
- * {@link WebServerInitializedEvent#getServerId() server ID}, it will be used to construct
- * the property name. For example, the "management" actuator context will have the
- * property name {@literal "local.management.port"}.
+ * {@link WebServerApplicationContext#getServerNamespace() server namespace} , it will be
+ * used to construct the property name. For example, the "management" actuator context
+ * will have the property name {@literal "local.management.port"}.
  * <p>
  * Properties are automatically propagated up to any parent context.
  *
@@ -59,9 +60,14 @@ public class ServerPortInfoApplicationContextInitializer
 
 	@Override
 	public void onApplicationEvent(WebServerInitializedEvent event) {
-		String propertyName = "local." + event.getServerId() + ".port";
+		String propertyName = "local." + getName(event.getApplicationContext()) + ".port";
 		setPortProperty(event.getApplicationContext(), propertyName,
 				event.getWebServer().getPort());
+	}
+
+	private String getName(WebServerApplicationContext context) {
+		String name = context.getServerNamespace();
+		return (StringUtils.hasText(name) ? name : "server");
 	}
 
 	private void setPortProperty(ApplicationContext context, String propertyName,

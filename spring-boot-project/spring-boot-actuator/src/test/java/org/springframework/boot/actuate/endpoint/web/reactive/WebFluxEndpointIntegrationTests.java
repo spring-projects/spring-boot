@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,17 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.util.Arrays;
 
 import org.junit.Test;
+import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests;
+import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.WebOperation;
-import org.springframework.boot.endpoint.web.EndpointMapping;
+import org.springframework.boot.actuate.endpoint.web.annotation.AbstractWebEndpointIntegrationTests;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -37,8 +39,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,24 +57,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @see WebFluxEndpointHandlerMapping
  */
-public class WebFluxEndpointIntegrationTests
-		extends AbstractWebEndpointIntegrationTests<ReactiveWebServerApplicationContext> {
+public class WebFluxEndpointIntegrationTests extends
+		AbstractWebEndpointIntegrationTests<AnnotationConfigReactiveWebServerApplicationContext> {
 
 	public WebFluxEndpointIntegrationTests() {
-		super(ReactiveConfiguration.class);
+		super(WebFluxEndpointIntegrationTests::createApplicationContext,
+				WebFluxEndpointIntegrationTests::applyAuthenticatedConfiguration);
+
+	}
+
+	private static AnnotationConfigReactiveWebServerApplicationContext createApplicationContext() {
+		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
+		context.register(ReactiveConfiguration.class);
+		return context;
+	}
+
+	private static void applyAuthenticatedConfiguration(
+			AnnotationConfigReactiveWebServerApplicationContext context) {
+		context.register(AuthenticatedConfiguration.class);
 	}
 
 	@Test
 	public void responseToOptionsRequestIncludesCorsHeaders() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.options().uri("/test")
-						.accept(MediaType.APPLICATION_JSON)
-						.header("Access-Control-Request-Method", "POST")
-						.header("Origin", "http://example.com").exchange().expectStatus()
-						.isOk().expectHeader()
-						.valueEquals("Access-Control-Allow-Origin", "http://example.com")
-						.expectHeader()
-						.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
+		load(TestEndpointConfiguration.class, (client) -> client.options().uri("/test")
+				.accept(MediaType.APPLICATION_JSON)
+				.header("Access-Control-Request-Method", "POST")
+				.header("Origin", "http://example.com").exchange().expectStatus().isOk()
+				.expectHeader()
+				.valueEquals("Access-Control-Allow-Origin", "http://example.com")
+				.expectHeader().valueEquals("Access-Control-Allow-Methods", "GET,POST"));
 	}
 
 	@Test
@@ -82,20 +101,13 @@ public class WebFluxEndpointIntegrationTests
 	}
 
 	@Override
-	protected AnnotationConfigReactiveWebServerApplicationContext createApplicationContext(
-			Class<?>... config) {
-		AnnotationConfigReactiveWebServerApplicationContext context = new AnnotationConfigReactiveWebServerApplicationContext();
-		context.register(config);
-		return context;
-	}
-
-	@Override
-	protected int getPort(ReactiveWebServerApplicationContext context) {
+	protected int getPort(AnnotationConfigReactiveWebServerApplicationContext context) {
 		return context.getBean(ReactiveConfiguration.class).port;
 	}
 
 	@Configuration
 	@EnableWebFlux
+	@ImportAutoConfiguration(ErrorWebFluxAutoConfiguration.class)
 	static class ReactiveConfiguration {
 
 		private int port;
@@ -112,21 +124,44 @@ public class WebFluxEndpointIntegrationTests
 
 		@Bean
 		public WebFluxEndpointHandlerMapping webEndpointHandlerMapping(
-				Environment environment,
-				EndpointDiscoverer<WebOperation> endpointDiscoverer,
+				Environment environment, WebEndpointDiscoverer endpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
 			corsConfiguration.setAllowedOrigins(Arrays.asList("http://example.com"));
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
 			return new WebFluxEndpointHandlerMapping(
 					new EndpointMapping(environment.getProperty("endpointPath")),
-					endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
-					corsConfiguration);
+					endpointDiscoverer.getEndpoints(), endpointMediaTypes,
+					corsConfiguration,
+					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()));
 		}
 
 		@Bean
 		public ApplicationListener<ReactiveWebServerInitializedEvent> serverInitializedListener() {
 			return (event) -> this.port = event.getWebServer().getPort();
+		}
+
+	}
+
+	@Configuration
+	static class AuthenticatedConfiguration {
+
+		@Bean
+		public WebFilter webFilter() {
+			return new WebFilter() {
+
+				@Override
+				public Mono<Void> filter(ServerWebExchange exchange,
+						WebFilterChain chain) {
+					return chain.filter(exchange).subscriberContext(
+							ReactiveSecurityContextHolder.withAuthentication(
+									new UsernamePasswordAuthenticationToken("Alice",
+											"secret",
+											Arrays.asList(new SimpleGrantedAuthority(
+													"ROLE_ACTUATOR")))));
+				}
+
+			};
 		}
 
 	}

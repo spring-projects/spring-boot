@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,89 +16,95 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
+import org.springframework.boot.context.properties.bind.handler.IgnoreTopLevelConverterNotFoundBindHandler;
 import org.springframework.boot.context.properties.bind.handler.NoUnboundElementsBindHandler;
 import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 
 /**
- * Bind {@link ConfigurationProperties} annotated object from a configurable list of
- * {@link PropertySource}.
+ * Internal class by the {@link ConfigurationPropertiesBindingPostProcessor} to handle the
+ * actual {@link ConfigurationProperties} binding.
  *
  * @author Stephane Nicoll
- * @see ConfigurationPropertiesBinderBuilder
+ * @author Phillip Webb
  */
 class ConfigurationPropertiesBinder {
 
-	private final Iterable<PropertySource<?>> propertySources;
+	private final ApplicationContext applicationContext;
 
-	private final ConversionService conversionService;
+	private final PropertySources propertySources;
 
-	private final Validator validator;
+	private final Validator configurationPropertiesValidator;
 
-	private Iterable<ConfigurationPropertySource> configurationSources;
+	private final Validator jsr303Validator;
 
-	ConfigurationPropertiesBinder(Iterable<PropertySource<?>> propertySources,
-			ConversionService conversionService, Validator validator) {
-		Assert.notNull(propertySources, "PropertySources must not be null");
-		this.propertySources = propertySources;
-		this.conversionService = conversionService;
-		this.validator = validator;
-		this.configurationSources = ConfigurationPropertySources.from(propertySources);
+	private volatile Binder binder;
+
+	ConfigurationPropertiesBinder(ApplicationContext applicationContext,
+			String validatorBeanName) {
+		this.applicationContext = applicationContext;
+		this.propertySources = new PropertySourcesDeducer(applicationContext)
+				.getPropertySources();
+		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(
+				applicationContext, validatorBeanName);
+		this.jsr303Validator = ConfigurationPropertiesJsr303Validator
+				.getIfJsr303Present(applicationContext);
 	}
 
-	/**
-	 * Bind the specified {@code target} object using the configuration defined by the
-	 * specified {@code annotation}.
-	 * @param target the target to bind the configuration property sources to
-	 * @param annotation the binding configuration
-	 * @throws ConfigurationPropertiesBindingException if the binding failed
-	 */
-	void bind(Object target, ConfigurationProperties annotation) {
-		Binder binder = new Binder(this.configurationSources,
-				new PropertySourcesPlaceholdersResolver(this.propertySources),
-				this.conversionService);
-		Validator validator = determineValidator(target);
-		BindHandler handler = getBindHandler(annotation, validator);
-		Bindable<?> bindable = Bindable.ofInstance(target);
-		try {
-			binder.bind(annotation.prefix(), bindable, handler);
-		}
-		catch (Exception ex) {
-			String message = "Could not bind properties to '"
-					+ ClassUtils.getShortName(target.getClass()) + "': "
-					+ getAnnotationDetails(annotation);
-			throw new ConfigurationPropertiesBindingException(message, ex);
-		}
+	public void bind(Bindable<?> target) {
+		ConfigurationProperties annotation = target
+				.getAnnotation(ConfigurationProperties.class);
+		Assert.state(annotation != null, "Missing @ConfigurationProperties on " + target);
+		List<Validator> validators = getValidators(target);
+		BindHandler bindHandler = getBindHandler(annotation, validators);
+		getBinder().bind(annotation.prefix(), target, bindHandler);
 	}
 
-	private Validator determineValidator(Object bean) {
-		boolean supportsBean = (this.validator != null
-				&& this.validator.supports(bean.getClass()));
-		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
-			if (supportsBean) {
-				return new ChainingValidator(this.validator, (Validator) bean);
-			}
-			return (Validator) bean;
+	private Validator getConfigurationPropertiesValidator(
+			ApplicationContext applicationContext, String validatorBeanName) {
+		if (applicationContext.containsBean(validatorBeanName)) {
+			return applicationContext.getBean(validatorBeanName, Validator.class);
 		}
-		return (supportsBean ? this.validator : null);
+		return null;
+	}
+
+	private List<Validator> getValidators(Bindable<?> target) {
+		List<Validator> validators = new ArrayList<>(3);
+		if (this.configurationPropertiesValidator != null) {
+			validators.add(this.configurationPropertiesValidator);
+		}
+		if (this.jsr303Validator != null
+				&& target.getAnnotation(Validated.class) != null) {
+			validators.add(this.jsr303Validator);
+		}
+		if (target.getValue() != null && target.getValue().get() instanceof Validator) {
+			validators.add((Validator) target.getValue().get());
+		}
+		return validators;
 	}
 
 	private BindHandler getBindHandler(ConfigurationProperties annotation,
-			Validator validator) {
-		BindHandler handler = BindHandler.DEFAULT;
+			List<Validator> validators) {
+		BindHandler handler = new IgnoreTopLevelConverterNotFoundBindHandler();
 		if (annotation.ignoreInvalidFields()) {
 			handler = new IgnoreErrorsBindHandler(handler);
 		}
@@ -106,55 +112,41 @@ class ConfigurationPropertiesBinder {
 			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
 			handler = new NoUnboundElementsBindHandler(handler, filter);
 		}
-		if (validator != null) {
-			handler = new ValidationBindHandler(handler, validator);
+		if (!validators.isEmpty()) {
+			handler = new ValidationBindHandler(handler,
+					validators.toArray(new Validator[0]));
 		}
 		return handler;
 	}
 
-	private String getAnnotationDetails(ConfigurationProperties annotation) {
-		if (annotation == null) {
-			return "";
+	private Binder getBinder() {
+		if (this.binder == null) {
+			this.binder = new Binder(getConfigurationPropertySources(),
+					getPropertySourcesPlaceholdersResolver(), getConversionService(),
+					getPropertyEditorInitializer());
 		}
-		StringBuilder details = new StringBuilder();
-		details.append("prefix=").append(annotation.prefix());
-		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
-		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
-		return details.toString();
+		return this.binder;
 	}
 
-	/**
-	 * {@link Validator} implementation that wraps {@link Validator} instances and chains
-	 * their execution.
-	 */
-	private static class ChainingValidator implements Validator {
+	private Iterable<ConfigurationPropertySource> getConfigurationPropertySources() {
+		return ConfigurationPropertySources.from(this.propertySources);
+	}
 
-		private final Validator[] validators;
+	private PropertySourcesPlaceholdersResolver getPropertySourcesPlaceholdersResolver() {
+		return new PropertySourcesPlaceholdersResolver(this.propertySources);
+	}
 
-		ChainingValidator(Validator... validators) {
-			Assert.notNull(validators, "Validators must not be null");
-			this.validators = validators;
+	private ConversionService getConversionService() {
+		return new ConversionServiceDeducer(this.applicationContext)
+				.getConversionService();
+	}
+
+	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {
+		if (this.applicationContext instanceof ConfigurableApplicationContext) {
+			return ((ConfigurableApplicationContext) this.applicationContext)
+					.getBeanFactory()::copyRegisteredEditorsTo;
 		}
-
-		@Override
-		public boolean supports(Class<?> clazz) {
-			for (Validator validator : this.validators) {
-				if (validator.supports(clazz)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@Override
-		public void validate(Object target, Errors errors) {
-			for (Validator validator : this.validators) {
-				if (validator.supports(target.getClass())) {
-					validator.validate(target, errors);
-				}
-			}
-		}
-
+		return null;
 	}
 
 }

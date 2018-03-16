@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class MetricsEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void metricNames() throws Exception {
@@ -53,11 +52,10 @@ public class MetricsEndpointDocumentationTests
 	public void metric() throws Exception {
 		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max"))
 				.andExpect(status().isOk())
-				.andDo(document("metrics/metric",
-						responseFields(
-								fieldWithPath("name").description("Name of the metric"),
-								fieldWithPath("measurements")
-										.description("Measurements of the metric"),
+				.andDo(document("metrics/metric", responseFields(
+						fieldWithPath("name").description("Name of the metric"),
+						fieldWithPath("measurements")
+								.description("Measurements of the metric"),
 						fieldWithPath("measurements[].statistic")
 								.description("Statistic of the measurement. ("
 										+ describeEnumValues(Statistic.class) + ")."),
@@ -73,10 +71,8 @@ public class MetricsEndpointDocumentationTests
 
 	@Test
 	public void metricWithTags() throws Exception {
-		this.mockMvc
-				.perform(get("/actuator/metrics/jvm.memory.max")
-						.param("tag", "area:nonheap")
-						.param("tag", "id:Compressed Class Space"))
+		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max")
+				.param("tag", "area:nonheap").param("tag", "id:Compressed Class Space"))
 				.andExpect(status().isOk())
 				.andDo(document("metrics/metric-with-tags",
 						requestParameters(parameterWithName("tag").description(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.HealthEndpointCloudFoundryExtension;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ShowDetails;
 
 /**
  * {@link EndpointExtension} for the {@link HealthEndpoint} that always exposes full
@@ -31,7 +32,7 @@ import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@EndpointExtension(filter = CloudFoundryEndpointFilter.class, endpoint = HealthEndpoint.class)
+@HealthEndpointCloudFoundryExtension
 public class CloudFoundryHealthEndpointWebExtension {
 
 	private final HealthEndpointWebExtension delegate;
@@ -42,7 +43,7 @@ public class CloudFoundryHealthEndpointWebExtension {
 
 	@ReadOperation
 	public WebEndpointResponse<Health> getHealth() {
-		return this.delegate.getHealth(true);
+		return this.delegate.getHealth(null, ShowDetails.ALWAYS);
 	}
 
 }

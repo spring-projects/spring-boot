@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.ConventionTask;
-import org.gradle.api.provider.PropertyState;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -41,12 +39,13 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetail
  * {@code Project}.
  *
  * @author Andy Wilkinson
+ * @since 2.0.0
  */
 public class BuildInfo extends ConventionTask {
 
 	private final BuildInfoProperties properties = new BuildInfoProperties(getProject());
 
-	private PropertyState<File> destinationDir = getProject().property(File.class);
+	private File destinationDir;
 
 	/**
 	 * Generates the {@code build-info.properties} file in the configured
@@ -59,10 +58,12 @@ public class BuildInfo extends ConventionTask {
 					new File(getDestinationDir(), "build-info.properties"))
 							.writeBuildProperties(new ProjectDetails(
 									this.properties.getGroup(),
-									this.properties.getArtifact() == null ? "unspecified"
+									this.properties.getArtifact() == null
+											? "unspecified"
 											: this.properties.getArtifact(),
 									this.properties.getVersion(),
-									this.properties.getName(), coerceToStringValues(
+									this.properties.getName(), this.properties.getTime(),
+									coerceToStringValues(
 											this.properties.getAdditional())));
 		}
 		catch (IOException ex) {
@@ -73,12 +74,11 @@ public class BuildInfo extends ConventionTask {
 	/**
 	 * Returns the directory to which the {@code build-info.properties} file will be
 	 * written. Defaults to the {@link Project#getBuildDir() Project's build directory}.
-	 *
 	 * @return the destination directory
 	 */
 	@OutputDirectory
 	public File getDestinationDir() {
-		return this.destinationDir.isPresent() ? this.destinationDir.get()
+		return this.destinationDir != null ? this.destinationDir
 				: getProject().getBuildDir();
 	}
 
@@ -87,16 +87,7 @@ public class BuildInfo extends ConventionTask {
 	 * @param destinationDir the destination directory
 	 */
 	public void setDestinationDir(File destinationDir) {
-		this.destinationDir.set(destinationDir);
-	}
-
-	/**
-	 * Sets the directory to which the {@code build-info.properties} file will be written
-	 * to the value from the given {@code destinationDirProvider}.
-	 * @param destinationDirProvider the provider of the destination directory
-	 */
-	public void setDestinationDir(Provider<File> destinationDirProvider) {
-		this.destinationDir.set(destinationDirProvider);
+		this.destinationDir = destinationDir;
 	}
 
 	/**

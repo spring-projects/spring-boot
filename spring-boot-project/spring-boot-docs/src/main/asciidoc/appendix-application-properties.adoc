@@ -27,19 +27,21 @@ content into your application. Rather, pick only the properties that you need.
 	# ----------------------------------------
 	# CORE PROPERTIES
 	# ----------------------------------------
+	debug=false # Enable debug logs.
+	trace=false # Enable trace logs.
 
 	# LOGGING
-	logging.config= # Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback
+	logging.config= # Location of the logging configuration file. For instance, `classpath:logback.xml` for Logback.
 	logging.exception-conversion-word=%wEx # Conversion word used when logging exceptions.
-	logging.file= # Log file name. For instance, `myapp.log`
-	logging.file.max-history= # Maximum of archive log files to keep. Only supported with the default logback setup.
-	logging.file.max-size= # Maximum log file size. Only supported with the default logback setup.
-	logging.level.*= # Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`
+	logging.file= # Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.
+	logging.file.max-history=0 # Maximum of archive log files to keep. Only supported with the default logback setup.
+	logging.file.max-size=10MB # Maximum log file size. Only supported with the default logback setup.
+	logging.level.*= # Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.
 	logging.path= # Location of the log file. For instance, `/var/log`.
 	logging.pattern.console= # Appender pattern for output to the console. Supported only with the default Logback setup.
 	logging.pattern.dateformat=yyyy-MM-dd HH:mm:ss.SSS # Appender pattern for log date format. Supported only with the default Logback setup.
 	logging.pattern.file= # Appender pattern for output to a file. Supported only with the default Logback setup.
-	logging.pattern.level= # Appender pattern for log level (default: %5p). Supported only with the default Logback setup.
+	logging.pattern.level=%5p # Appender pattern for log level. Supported only with the default Logback setup.
 	logging.register-shutdown-hook=false # Register a shutdown hook for the logging system when it is initialized.
 
 	# AOP
@@ -47,7 +49,6 @@ content into your application. Rather, pick only the properties that you need.
 	spring.aop.proxy-target-class=true # Whether subclass-based (CGLIB) proxies are to be created (true), as opposed to standard Java interface-based proxies (false).
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
-	spring.application.index= # Application index.
 	spring.application.name= # Application name.
 
 	# ADMIN ({sc-spring-boot-autoconfigure}/admin/SpringApplicationAdminJmxAutoConfiguration.{sc-ext}[SpringApplicationAdminJmxAutoConfiguration])
@@ -59,12 +60,12 @@ content into your application. Rather, pick only the properties that you need.
 
 	# BANNER
 	spring.banner.charset=UTF-8 # Banner file encoding.
-	spring.banner.location=classpath:banner.txt # Banner file location.
+	spring.banner.location=classpath:banner.txt # Banner text resource location.
 	spring.banner.image.location=classpath:banner.gif # Banner image file location (jpg or png can also be used).
-	spring.banner.image.width= # Width of the banner image in chars (default 76)
-	spring.banner.image.height= # Height of the banner image in chars (default based on image height)
-	spring.banner.image.margin= # Left hand image margin in chars (default 2)
-	spring.banner.image.invert= # Whether images should be inverted for dark terminal themes (default false)
+	spring.banner.image.width=76 # Width of the banner image in chars.
+	spring.banner.image.height= # Height of the banner image in chars (default based on image height).
+	spring.banner.image.margin=2 # Left hand image margin in chars.
+	spring.banner.image.invert=false # Whether images should be inverted for dark terminal themes.
 
 	# SPRING CORE
 	spring.beaninfo.ignore=true # Whether to skip search of BeanInfo classes.
@@ -72,7 +73,7 @@ content into your application. Rather, pick only the properties that you need.
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
 	spring.cache.cache-names= # Comma-separated list of cache names to create if supported by the underlying cache manager.
 	spring.cache.caffeine.spec= # The spec to use to create caches. See CaffeineSpec for more details on the spec format.
-	spring.cache.couchbase.expiration=0ms # Entry expiration in milliseconds. By default, the entries never expire.
+	spring.cache.couchbase.expiration=0ms # Entry expiration. By default the entries never expire. Note that this value is ultimately converted to seconds.
 	spring.cache.ehcache.config= # The location of the configuration file to use to initialize EhCache.
 	spring.cache.infinispan.config= # The location of the configuration file to use to initialize Infinispan.
 	spring.cache.jcache.config= # The location of the configuration file to use to initialize the cache manager.
@@ -85,7 +86,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SPRING CONFIG - using environment property only ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
 	spring.config.additional-location= # Config file locations used in addition to the defaults.
-	spring.config.location= # Config file locations.
+	spring.config.location= # Config file locations that replace the defaults.
 	spring.config.name=application # Config file name.
 
 	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
@@ -102,7 +103,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# Email ({sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[MailProperties])
 	spring.mail.default-encoding=UTF-8 # Default MimeMessage encoding.
-	spring.mail.host= # SMTP server host. For instance, `smtp.example.com`
+	spring.mail.host= # SMTP server host. For instance, `smtp.example.com`.
 	spring.mail.jndi-name= # Session JNDI name. When set, takes precedence over other mail settings.
 	spring.mail.password= # Login password of the SMTP server.
 	spring.mail.port= # SMTP server port.
@@ -121,8 +122,8 @@ content into your application. Rather, pick only the properties that you need.
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/context/MessageSourceProperties.{sc-ext}[MessageSourceProperties])
 	spring.messages.always-use-message-format=false # Whether to always apply the MessageFormat rules, parsing even messages without arguments.
-	spring.messages.basename=messages # Comma-separated list of basenames, each following the ResourceBundle convention.
-	spring.messages.cache-duration=-1 # Loaded resource bundle files cache duration. When not set, bundles are cached forever.
+	spring.messages.basename=messages # Comma-separated list of basenames (essentially a fully-qualified classpath location), each following the ResourceBundle convention with relaxed support for slash based locations.
+	spring.messages.cache-duration= # Loaded resource bundle files cache duration. When not set, bundles are cached forever. If a duration suffix is not specified, seconds will be used.
 	spring.messages.encoding=UTF-8 # Message bundles encoding.
 	spring.messages.fallback-to-system-locale=true # Whether to fall back to the system Locale if no files for a specific Locale have been found.
 	spring.messages.use-code-as-default-message=false # Whether to use the message code as the default message instead of throwing a "NoSuchMessageException". Recommended during development only.
@@ -130,12 +131,12 @@ content into your application. Rather, pick only the properties that you need.
 	# OUTPUT
 	spring.output.ansi.enabled=detect # Configures the ANSI output.
 
-	# PID FILE ({sc-spring-boot}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
+	# PID FILE ({sc-spring-boot}/context/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
 	spring.pid.fail-on-write-error= # Fails if ApplicationPidFileWriter is used but it cannot write the PID file.
 	spring.pid.file= # Location of the PID file to write (if ApplicationPidFileWriter is used).
 
 	# PROFILES
-	spring.profiles.active= # Comma-separated list (or list if using YAML) of <<howto-set-active-spring-profiles,active profiles>>.
+	spring.profiles.active= # Comma-separated list of active profiles. Can be overridden by a command line switch.
 	spring.profiles.include= # Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML).
 
 	# QUARTZ SCHEDULER ({sc-spring-boot-autoconfigure}/quartz/QuartzProperties.{sc-ext}[QuartzProperties])
@@ -162,13 +163,12 @@ content into your application. Rather, pick only the properties that you need.
 	server.compression.enabled=false # Whether response compression is enabled.
 	server.compression.excluded-user-agents= # List of user-agents to exclude from compression.
 	server.compression.mime-types=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript # Comma-separated list of MIME types that should be compressed.
-	server.compression.min-response-size=2048 # Minimum response size that is required for compression to be performed.
+	server.compression.min-response-size=2048 # Minimum "Content-Length" value that is required for compression to be performed.
 	server.connection-timeout= # Time that connectors wait for another HTTP request before closing the connection. When not set, the connector's container-specific default is used. Use a value of -1 to indicate no (that is, an infinite) timeout.
-	server.display-name=application # Display name of the application.
 	server.error.include-exception=false # Include the "exception" attribute.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
 	server.error.path=/error # Path of the error controller.
-	server.error.whitelabel.enabled=true # Enable the default error page displayed in browsers in case of a server error.
+	server.error.whitelabel.enabled=true # Whether to enable the default error page displayed in browsers in case of a server error.
 	server.http2.enabled=false # Whether to enable HTTP/2 support, if the current environment supports it.
 	server.jetty.acceptors= # Number of acceptor threads to use.
 	server.jetty.accesslog.append=false # Append to log.
@@ -187,25 +187,26 @@ content into your application. Rather, pick only the properties that you need.
 	server.jetty.selectors= # Number of selector threads to use.
 	server.max-http-header-size=0 # Maximum size, in bytes, of the HTTP message header.
 	server.port=8080 # Server HTTP port.
-	server.server-header= # Value to use for the Server response header (if empty, no header is sent)
+	server.server-header= # Value to use for the Server response header (if empty, no header is sent).
 	server.use-forward-headers= # Whether X-Forwarded-* headers should be applied to the HttpRequest.
-	server.servlet.context-parameters.*= # Servlet context init parameters
+	server.servlet.context-parameters.*= # Servlet context init parameters.
 	server.servlet.context-path= # Context path of the application.
+	server.servlet.application-display-name=application # Display name of the application.
 	server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
 	server.servlet.jsp.init-parameters.*= # Init parameters used to configure the JSP servlet.
 	server.servlet.jsp.registered=true # Whether the JSP servlet is registered.
 	server.servlet.path=/ # Path of the main dispatcher servlet.
-	server.session.cookie.comment= # Comment for the session cookie.
-	server.session.cookie.domain= # Domain for the session cookie.
-	server.session.cookie.http-only= # "HttpOnly" flag for the session cookie.
-	server.session.cookie.max-age= # Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used.
-	server.session.cookie.name= # Session cookie name.
-	server.session.cookie.path= # Path of the session cookie.
-	server.session.cookie.secure= # "Secure" flag for the session cookie.
-	server.session.persistent=false # Whether to persist session data between restarts.
-	server.session.store-dir= # Directory used to store session data.
-	server.session.timeout= # Session timeout. If a duration suffix is not specified, seconds will be used.
-	server.session.tracking-modes= # Session tracking modes (one or more of the following: "cookie", "url", "ssl").
+	server.servlet.session.cookie.comment= # Comment for the session cookie.
+	server.servlet.session.cookie.domain= # Domain for the session cookie.
+	server.servlet.session.cookie.http-only= # "HttpOnly" flag for the session cookie.
+	server.servlet.session.cookie.max-age= # Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used.
+	server.servlet.session.cookie.name= # Session cookie name.
+	server.servlet.session.cookie.path= # Path of the session cookie.
+	server.servlet.session.cookie.secure= # "Secure" flag for the session cookie.
+	server.servlet.session.persistent=false # Whether to persist session data between restarts.
+	server.servlet.session.store-dir= # Directory used to store session data.
+	server.servlet.session.timeout= # Session timeout. If a duration suffix is not specified, seconds will be used.
+	server.servlet.session.tracking-modes= # Session tracking modes (one or more of the following: "cookie", "url", "ssl").
 	server.ssl.ciphers= # Supported SSL ciphers.
 	server.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store.
 	server.ssl.enabled= # Enable SSL support.
@@ -221,7 +222,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.ssl.trust-store-password= # Password used to access the trust store.
 	server.ssl.trust-store-provider= # Provider for the trust store.
 	server.ssl.trust-store-type= # Type of the trust store.
-	server.tomcat.accept-count= # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+	server.tomcat.accept-count=0 # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
 	server.tomcat.accesslog.buffered=true # Whether to buffer output such that it is flushed only periodically.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be absolute or relative to the Tomcat base dir.
 	server.tomcat.accesslog.enabled=false # Enable access log.
@@ -241,8 +242,8 @@ content into your application. Rather, pick only the properties that you need.
 			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
-			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses.
-	server.tomcat.max-connections= # Maximum number of connections that the server accepts and processes at any given time.
+			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # Regular expression matching trusted IP addresses.
+	server.tomcat.max-connections=0 # Maximum number of connections that the server accepts and processes at any given time.
 	server.tomcat.max-http-header-size=0 # Maximum size, in bytes, of the HTTP message header.
 	server.tomcat.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post content.
 	server.tomcat.max-threads=0 # Maximum number of worker threads.
@@ -290,11 +291,11 @@ content into your application. Rather, pick only the properties that you need.
 	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateProperties.{sc-ext}[GroovyTemplateProperties])
 	spring.groovy.template.allow-request-override=false # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
 	spring.groovy.template.allow-session-override=false # Whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.
-	spring.groovy.template.cache= # Whether to enable template caching.
+	spring.groovy.template.cache=false # Whether to enable template caching.
 	spring.groovy.template.charset=UTF-8 # Template encoding.
-	spring.groovy.template.check-template-location=true # Check that the templates location exists.
+	spring.groovy.template.check-template-location=true # Whether to check that the templates location exists.
 	spring.groovy.template.configuration.*= # See https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/view/groovy/GroovyMarkupConfigurer.html[GroovyMarkupConfigurer]
-	spring.groovy.template.content-type=test/html # Content-Type value.
+	spring.groovy.template.content-type=text/html # Content-Type value.
 	spring.groovy.template.enabled=true # Whether to enable MVC view resolution for this technology.
 	spring.groovy.template.expose-request-attributes=false # Whether all request attributes should be added to the model prior to merging with the template.
 	spring.groovy.template.expose-session-attributes=false # Whether all HttpSession attributes should be added to the model prior to merging with the template.
@@ -340,6 +341,19 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jackson.serialization.*= # Jackson on/off features that affect the way Java objects are serialized.
 	spring.jackson.time-zone= #  Time zone used when formatting dates. For instance, "America/Los_Angeles" or "GMT+10".
 
+	# GSON ({sc-spring-boot-autoconfigure}/gson/GsonProperties.{sc-ext}[GsonProperties])
+	spring.gson.date-format= # Format to use when serializing Date objects.
+	spring.gson.disable-html-escaping= # Whether to disable the escaping of HTML characters such as '<', '>', etc.
+	spring.gson.disable-inner-class-serialization= # Whether to exclude inner classes during serialization.
+	spring.gson.enable-complex-map-key-serialization= # Whether to enable serialization of complex map keys (i.e. non-primitives).
+	spring.gson.exclude-fields-without-expose-annotation= # Whether to exclude all fields from consideration for serialization or deserialization that do not have the "Expose" annotation.
+	spring.gson.field-naming-policy= # Naming policy that should be applied to an object's field during serialization and deserialization.
+	spring.gson.generate-non-executable-json= # Whether to generate non executable JSON by prefixing the output with some special text.
+	spring.gson.lenient= # Whether to be lenient about parsing JSON that doesn't conform to RFC 4627.
+	spring.gson.long-serialization-policy= # Serialization policy for Long and long types.
+	spring.gson.pretty-printing= # Whether to output serialized JSON that fits in a page for pretty printing.
+	spring.gson.serialize-nulls= # Whether to serialize null fields.
+
 	# JERSEY ({sc-spring-boot-autoconfigure}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
 	spring.jersey.application-path= # Path that serves as the base URI for the application. If specified, overrides the value of "@ApplicationPath".
 	spring.jersey.filter.order=0 # Jersey filter chain order.
@@ -348,32 +362,33 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jersey.type=servlet # Jersey integration type.
 
 	# SPRING LDAP ({sc-spring-boot-autoconfigure}/ldap/LdapProperties.{sc-ext}[LdapProperties])
-	spring.ldap.urls= # LDAP URLs of the server.
+	spring.ldap.anonymous-read-only=false # Whether read-only operations should use an anonymous environment.
 	spring.ldap.base= # Base suffix from which all operations should originate.
-	spring.ldap.username= # Login username of the server.
-	spring.ldap.password= # Login password of the server.
 	spring.ldap.base-environment.*= # LDAP specification settings.
+	spring.ldap.password= # Login password of the server.
+	spring.ldap.urls= # LDAP URLs of the server.
+	spring.ldap.username= # Login username of the server.
 
 	# EMBEDDED LDAP ({sc-spring-boot-autoconfigure}/ldap/embedded/EmbeddedLdapProperties.{sc-ext}[EmbeddedLdapProperties])
-	spring.ldap.embedded.base-dn= # The base DN
+	spring.ldap.embedded.base-dn= # List of base DNs.
 	spring.ldap.embedded.credential.username= # Embedded LDAP username.
 	spring.ldap.embedded.credential.password= # Embedded LDAP password.
 	spring.ldap.embedded.ldif=classpath:schema.ldif # Schema (LDIF) script resource reference.
-	spring.ldap.embedded.port= # Embedded LDAP port.
+	spring.ldap.embedded.port=0 # Embedded LDAP port.
 	spring.ldap.embedded.validation.enabled=true # Whether to enable LDAP schema validation.
 	spring.ldap.embedded.validation.schema= # Path to the custom schema.
 
 	# MUSTACHE TEMPLATES ({sc-spring-boot-autoconfigure}/mustache/MustacheAutoConfiguration.{sc-ext}[MustacheAutoConfiguration])
-	spring.mustache.allow-request-override= # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
-	spring.mustache.allow-session-override= # Whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.
-	spring.mustache.cache= # Whether to enable template caching.
-	spring.mustache.charset= # Template encoding.
-	spring.mustache.check-template-location= # Whether to check that the templates location exists.
-	spring.mustache.content-type= # Content-Type value.
-	spring.mustache.enabled= # Whether to enable MVC view resolution for this technology.
-	spring.mustache.expose-request-attributes= # Whether all request attributes should be added to the model prior to merging with the template.
-	spring.mustache.expose-session-attributes= # Whether all HttpSession attributes should be added to the model prior to merging with the template.
-	spring.mustache.expose-spring-macro-helpers= # Whether to expose a RequestContext for use by Spring's macro library under the name "springMacroRequestContext".
+	spring.mustache.allow-request-override=false # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
+	spring.mustache.allow-session-override=false # Whether HttpSession attributes are allowed to override (hide) controller generated model attributes of the same name.
+	spring.mustache.cache=false # Whether to enable template caching.
+	spring.mustache.charset=UTF-8 # Template encoding.
+	spring.mustache.check-template-location=true # Whether to check that the templates location exists.
+	spring.mustache.content-type=text/html # Content-Type value.
+	spring.mustache.enabled=true # Whether to enable MVC view resolution for this technology.
+	spring.mustache.expose-request-attributes=false # Whether all request attributes should be added to the model prior to merging with the template.
+	spring.mustache.expose-session-attributes=false # Whether all HttpSession attributes should be added to the model prior to merging with the template.
+	spring.mustache.expose-spring-macro-helpers=true # Whether to expose a RequestContext for use by Spring's macro library, under the name "springMacroRequestContext".
 	spring.mustache.prefix=classpath:/templates/ # Prefix to apply to template names.
 	spring.mustache.request-context-attribute= # Name of the RequestContext attribute for all views.
 	spring.mustache.suffix=.mustache # Suffix to apply to template names.
@@ -381,6 +396,10 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/servlet/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.async.request-timeout= # Amount of time before asynchronous request handling times out.
+	spring.mvc.contentnegotiation.favor-parameter=false # Whether a request parameter ("format" by default) should be used to determine the requested media type.
+	spring.mvc.contentnegotiation.favor-path-extension=false # Whether the path extension in the URL path should be used to determine the requested media type.
+	spring.mvc.contentnegotiation.media-types.*= # Map file extensions to media types for content negotiation. For instance, yml to text/yaml.
+	spring.mvc.contentnegotiation.parameter-name= # Query parameter name to use when "favor-parameter" is enabled.
 	spring.mvc.date-format= # Date format to use. For instance, `dd/MM/yyyy`.
 	spring.mvc.dispatch-trace-request=false # Whether to dispatch TRACE requests to the FrameworkServlet doService method.
 	spring.mvc.dispatch-options-request=true # Whether to dispatch OPTIONS requests to the FrameworkServlet doService method.
@@ -390,9 +409,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.mvc.locale= # Locale to use. By default, this locale is overridden by the "Accept-Language" header.
 	spring.mvc.locale-resolver=accept-header # Define how the locale should be resolved.
 	spring.mvc.log-resolved-exception=false # Whether to enable warn logging of exceptions resolved by a "HandlerExceptionResolver".
-	spring.mvc.media-types.*= # Maps file extensions to media types for content negotiation.
 	spring.mvc.message-codes-resolver-format= # Formatting strategy for message codes. For instance, `PREFIX_ERROR_CODE`.
-	spring.mvc.servlet.load-on-startup=-1 # Load on startup priority of the Spring Web Services servlet.
+	spring.mvc.pathmatch.use-registered-suffix-pattern=false # Whether suffix pattern matching should work only against extensions registered with "spring.mvc.contentnegotiation.media-types.*".
+	spring.mvc.pathmatch.use-suffix-pattern=false # Whether to use suffix pattern match (".*") when matching patterns to requests.
+	spring.mvc.servlet.load-on-startup=-1 # Load on startup priority of the dispatcher servlet.
 	spring.mvc.static-path-pattern=/** # Path pattern used for static resources.
 	spring.mvc.throw-exception-if-no-handler-found=false # Whether a "NoHandlerFoundException" should be thrown if no Handler was found to process a request.
 	spring.mvc.view.prefix= # Spring MVC view prefix.
@@ -426,7 +446,7 @@ content into your application. Rather, pick only the properties that you need.
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
 	spring.session.store-type= # Session store type.
 	spring.session.servlet.filter-order=-2147483598 # Session repository filter order.
-	spring.session.servlet.filter-dispatcher-types=ASYNC,ERROR,REQUEST # Session repository filter dispatcher types.
+	spring.session.servlet.filter-dispatcher-types=async,error,request # Session repository filter dispatcher types.
 
 	# SPRING SESSION HAZELCAST ({sc-spring-boot-autoconfigure}/session/HazelcastSessionProperties.{sc-ext}[HazelcastSessionProperties])
 	spring.session.hazelcast.flush-mode=on-save # Sessions flush mode.
@@ -453,17 +473,17 @@ content into your application. Rather, pick only the properties that you need.
 	spring.thymeleaf.enabled=true # Whether to enable Thymeleaf view resolution for Web frameworks.
 	spring.thymeleaf.enable-spring-el-compiler=false # Enable the SpringEL compiler in SpringEL expressions.
 	spring.thymeleaf.encoding=UTF-8 # Template files encoding.
-	spring.thymeleaf.excluded-view-names= # Comma-separated list of view names that should be excluded from resolution.
-	spring.thymeleaf.mode=HTML5 # Template mode to be applied to templates. See also Thymeleaf's TemplateMode enum.
+	spring.thymeleaf.excluded-view-names= # Comma-separated list of view names (patterns allowed) that should be excluded from resolution.
+	spring.thymeleaf.mode=HTML # Template mode to be applied to templates. See also Thymeleaf's TemplateMode enum.
 	spring.thymeleaf.prefix=classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
 	spring.thymeleaf.reactive.chunked-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be the only ones executed in CHUNKED mode when a max chunk size is set.
 	spring.thymeleaf.reactive.full-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be executed in FULL mode even if a max chunk size is set.
-	spring.thymeleaf.reactive.max-chunk-size= # Maximum size of data buffers used for writing to the response, in bytes.
+	spring.thymeleaf.reactive.max-chunk-size=0 # Maximum size of data buffers used for writing to the response, in bytes.
 	spring.thymeleaf.reactive.media-types= # Media types supported by the view technology.
 	spring.thymeleaf.servlet.content-type=text/html # Content-Type value written to HTTP responses.
 	spring.thymeleaf.suffix=.html # Suffix that gets appended to view names when building a URL.
 	spring.thymeleaf.template-resolver-order= # Order of the template resolver in the chain.
-	spring.thymeleaf.view-names= # Comma-separated list of view names that can be resolved.
+	spring.thymeleaf.view-names= # Comma-separated list of view names (patterns allowed) that can be resolved.
 
 	# SPRING WEBFLUX ({sc-spring-boot-autoconfigure}/web/reactive/WebFluxProperties.{sc-ext}[WebFluxProperties])
 	spring.webflux.date-format= # Date format to use. For instance, `dd/MM/yyyy`.
@@ -481,8 +501,8 @@ content into your application. Rather, pick only the properties that you need.
 	# SECURITY PROPERTIES
 	# ----------------------------------------
 	# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])
-	spring.security.filter.order=0 # Security filter chain order.
-	spring.security.filter.dispatcher-types=ASYNC,ERROR,REQUEST # Security filter chain dispatcher types.
+	spring.security.filter.order=-100 # Security filter chain order.
+	spring.security.filter.dispatcher-types=async,error,request # Security filter chain dispatcher types.
 	spring.security.user.name=user # Default user name.
 	spring.security.user.password= # Password for the default user name.
 	spring.security.user.roles= # Granted roles for the default user name.
@@ -496,17 +516,17 @@ content into your application. Rather, pick only the properties that you need.
 	# ----------------------------------------
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
-	spring.flyway.allow-mixed-migrations= #
 	spring.flyway.baseline-description= #
 	spring.flyway.baseline-on-migrate= #
 	spring.flyway.baseline-version=1 # Version to start migration
 	spring.flyway.check-location=true # Whether to check that migration scripts location exists.
 	spring.flyway.clean-disabled= #
 	spring.flyway.clean-on-validation-error= #
+	spring.flyway.dry-run-output= #
 	spring.flyway.enabled=true # Whether to enable flyway.
 	spring.flyway.encoding= #
+	spring.flyway.error-handlers= #
 	spring.flyway.group= #
-	spring.flyway.ignore-failed-future-migration= #
 	spring.flyway.ignore-future-migrations= #
 	spring.flyway.ignore-missing-migrations= #
 	spring.flyway.init-sqls= # SQL statements to execute to initialize a connection immediately after obtaining it.
@@ -526,8 +546,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.flyway.sql-migration-prefix=V #
 	spring.flyway.sql-migration-separator= #
 	spring.flyway.sql-migration-suffix=.sql #
+	spring.flyway.sql-migration-suffixes= #
 	spring.flyway.table= #
 	spring.flyway.target= #
+	spring.flyway.undo-sql-migration-prefix= #
 	spring.flyway.url= # JDBC url of the database to migrate. If not set, the primary configured data source is used.
 	spring.flyway.user= # Login user of the database to migrate.
 	spring.flyway.validate-on-migrate= #
@@ -550,10 +572,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.couchbase.bootstrap-hosts= # Couchbase nodes (host or IP address) to bootstrap from.
 	spring.couchbase.bucket.name=default # Name of the bucket to connect to.
 	spring.couchbase.bucket.password=  # Password of the bucket.
-	spring.couchbase.env.endpoints.key-value=1 # Number of sockets per node against the Key/value service.
-	spring.couchbase.env.endpoints.query=1 # Number of sockets per node against the Query (N1QL) service.
+	spring.couchbase.env.endpoints.key-value=1 # Number of sockets per node against the key/value service.
+	spring.couchbase.env.endpoints.query=1 # Number of sockets per node against the query (N1QL) service.
 	spring.couchbase.env.endpoints.view=1 # Number of sockets per node against the view service.
-	spring.couchbase.env.ssl.enabled= # Whether to enable SSL support. Enabled automatically if a "keyStore" is provided, unless specified otherwise.
+	spring.couchbase.env.ssl.enabled= # Whether to enable SSL support. Enabled automatically if a "keyStore" is provided unless specified otherwise.
 	spring.couchbase.env.ssl.key-store= # Path to the JVM key store that holds the certificates.
 	spring.couchbase.env.ssl.key-store-password= # Password used to access the key store.
 	spring.couchbase.env.timeouts.connect=5000ms # Bucket connections timeouts.
@@ -570,14 +592,14 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.cassandra.compression=none # Compression supported by the Cassandra binary protocol.
 	spring.data.cassandra.connect-timeout= # Socket option: connection time out.
 	spring.data.cassandra.consistency-level= # Queries consistency level.
-	spring.data.cassandra.contact-points=localhost # Comma-separated list of cluster node addresses.
+	spring.data.cassandra.contact-points=localhost # Cluster node addresses.
 	spring.data.cassandra.fetch-size= # Queries default fetch size.
 	spring.data.cassandra.keyspace-name= # Keyspace name to use.
 	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
-	spring.data.cassandra.pool.heartbeat-interval=30 # Heartbeat interval after which a message is sent on an idle connection to make sure it's still alive. If a duration suffix is not specified, seconds will be used.
-	spring.data.cassandra.pool.idle-timeout=120 # Idle timeout before an idle connection is removed. If a duration suffix is not specified, seconds will be used.
+	spring.data.cassandra.pool.heartbeat-interval=30s # Heartbeat interval after which a message is sent on an idle connection to make sure it's still alive. If a duration suffix is not specified, seconds will be used.
+	spring.data.cassandra.pool.idle-timeout=120s # Idle timeout before an idle connection is removed. If a duration suffix is not specified, seconds will be used.
 	spring.data.cassandra.pool.max-queue-size=256 # Maximum number of requests that get queued if no connection is available.
 	spring.data.cassandra.pool.pool-timeout=5000ms # Pool timeout when trying to acquire a connection from a host's pool.
 	spring.data.cassandra.read-timeout= # Socket option: read time out.
@@ -601,17 +623,17 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.elasticsearch.repositories.enabled=true # Whether to enable Elasticsearch repositories.
 
 	# DATA LDAP
-	spring.data.ldap.repositories.enabled=true # Enable LDAP repositories.
+	spring.data.ldap.repositories.enabled=true # Whether to enable LDAP repositories.
 
 	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
 	spring.data.mongodb.authentication-database= # Authentication database name.
-	spring.data.mongodb.database=test # Database name.
+	spring.data.mongodb.database= # Database name.
 	spring.data.mongodb.field-naming-strategy= # Fully qualified name of the FieldNamingStrategy to use.
 	spring.data.mongodb.grid-fs-database= # GridFS database name.
-	spring.data.mongodb.host=localhost # Mongo server host. Cannot be set with URI.
+	spring.data.mongodb.host= # Mongo server host. Cannot be set with URI.
 	spring.data.mongodb.password= # Login password of the mongo server. Cannot be set with URI.
-	spring.data.mongodb.port=27017 # Mongo server port. Cannot be set with URI.
-	spring.data.mongodb.repositories.type=true # Type of Mongo repositories to enable.
+	spring.data.mongodb.port= # Mongo server port. Cannot be set with URI.
+	spring.data.mongodb.repositories.type=auto # Type of Mongo repositories to enable.
 	spring.data.mongodb.uri=mongodb://localhost/test # Mongo database URI. Cannot be set with host, port and credentials.
 	spring.data.mongodb.username= # Login user of the mongo server. Cannot be set with URI.
 
@@ -629,6 +651,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
 	spring.data.rest.base-path= # Base path to be used by Spring Data REST to expose repository resources.
+	spring.data.rest.default-media-type= # Content type to use as a default when none is specified.
 	spring.data.rest.default-page-size= # Default size of pages.
 	spring.data.rest.detection-strategy=default # Strategy to use to determine which repositories get exposed.
 	spring.data.rest.enable-enum-translation= # Whether to enable enum value translation through the Spring Data REST default resource bundle.
@@ -666,7 +689,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.datasource.initialization-mode=embedded # Initialize the datasource with available DDL and DML scripts.
 	spring.datasource.jmx-enabled=false # Whether to enable JMX support (if provided by the underlying pool).
 	spring.datasource.jndi-name= # JNDI location of the datasource. Class, url, username & password are ignored when set.
-	spring.datasource.name=testdb # Name of the datasource.
+	spring.datasource.name= # Name of the datasource. Default to "testdb" when using an embedded database.
 	spring.datasource.password= # Login password of the database.
 	spring.datasource.platform=all # Platform to use in the DDL or DML scripts (such as schema-${platform}.sql or data-${platform}.sql).
 	spring.datasource.schema= # Schema (DDL) script resource references.
@@ -708,7 +731,7 @@ content into your application. Rather, pick only the properties that you need.
 	# JDBC ({sc-spring-boot-autoconfigure}/jdbc/JdbcProperties.{sc-ext}[JdbcProperties])
 	spring.jdbc.template.fetch-size=-1 # Number of rows that should be fetched from the database when more rows are needed.
 	spring.jdbc.template.max-rows=-1 # Maximum number of rows.
-	spring.jdbc.template.query-timeout= # Query timeout. If a duration suffix is not specified, seconds will be used.
+	spring.jdbc.template.query-timeout= # Query timeout. Default is to use the JDBC driver's default configuration. If a duration suffix is not specified, seconds will be used.
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.data.jpa.repositories.enabled=true # Whether to enable JPA repositories.
@@ -716,8 +739,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jpa.database-platform= # Name of the target database to operate on, auto-detected by default. Can be alternatively set using the "Database" enum.
 	spring.jpa.generate-ddl=false # Whether to initialize the schema on startup.
 	spring.jpa.hibernate.ddl-auto= # DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto" property. Defaults to "create-drop" when using an embedded database and no schema manager was detected. Otherwise, defaults to "none".
-	spring.jpa.hibernate.naming.implicit-strategy= # Hibernate 5 implicit naming strategy fully qualified name.
-	spring.jpa.hibernate.naming.physical-strategy= # Hibernate 5 physical naming strategy fully qualified name.
+	spring.jpa.hibernate.naming.implicit-strategy= # Fully qualified name of the implicit naming strategy.
+	spring.jpa.hibernate.naming.physical-strategy= # Fully qualified name of the physical naming strategy.
 	spring.jpa.hibernate.use-new-id-generator-mappings= # Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE.
 	spring.jpa.mapping-resources= # Mapping resources (equivalent to "mapping-file" entries in persistence.xml).
 	spring.jpa.open-in-view=true # Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.
@@ -740,7 +763,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.atomikos.connectionfactory.min-pool-size=1 # The minimum size of the pool.
 	spring.jta.atomikos.connectionfactory.reap-timeout=0 # The reap timeout, in seconds, for borrowed connections. 0 denotes no limit.
 	spring.jta.atomikos.connectionfactory.unique-resource-name=jmsConnectionFactory # The unique name used to identify the resource during recovery.
+	spring.jta.atomikos.connectionfactory.xa-connection-factory-class-name= # Vendor-specific implementation of XAConnectionFactory.
+	spring.jta.atomikos.connectionfactory.xa-properties= # Vendor-specific XA properties.
 	spring.jta.atomikos.datasource.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool.
+	spring.jta.atomikos.datasource.concurrent-connection-validation= # Whether to use concurrent connection validation.
 	spring.jta.atomikos.datasource.default-isolation-level= # Default isolation level of connections provided by the pool.
 	spring.jta.atomikos.datasource.login-timeout= # Timeout, in seconds, for establishing a database connection.
 	spring.jta.atomikos.datasource.maintenance-interval=60 # The time, in seconds, between runs of the pool's maintenance thread.
@@ -751,18 +777,20 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.atomikos.datasource.reap-timeout=0 # The reap timeout, in seconds, for borrowed connections. 0 denotes no limit.
 	spring.jta.atomikos.datasource.test-query= # SQL query or statement used to validate a connection before returning it.
 	spring.jta.atomikos.datasource.unique-resource-name=dataSource # The unique name used to identify the resource during recovery.
+	spring.jta.atomikos.datasource.xa-data-source-class-name= # Vendor-specific implementation of XAConnectionFactory.
+	spring.jta.atomikos.datasource.xa-properties= # Vendor-specific XA properties.
 	spring.jta.atomikos.properties.allow-sub-transactions=true # Specify whether sub-transactions are allowed.
-	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints, in milliseconds.
-	spring.jta.atomikos.properties.default-jta-timeout=10000 # Default timeout for JTA transactions, in milliseconds.
+	spring.jta.atomikos.properties.checkpoint-interval=500 # Interval between checkpoints, expressed as the number of log writes between two checkpoint.
+	spring.jta.atomikos.properties.default-jta-timeout=10000ms # Default timeout for JTA transactions.
 	spring.jta.atomikos.properties.default-max-wait-time-on-shutdown=9223372036854775807 # How long should normal shutdown (no-force) wait for transactions to complete.
 	spring.jta.atomikos.properties.enable-logging=true # Whether to enable disk logging.
 	spring.jta.atomikos.properties.force-shutdown-on-vm-exit=false # Whether a VM shutdown should trigger forced shutdown of the transaction core.
 	spring.jta.atomikos.properties.log-base-dir= # Directory in which the log files should be stored.
 	spring.jta.atomikos.properties.log-base-name=tmlog # Transactions log file base name.
 	spring.jta.atomikos.properties.max-actives=50 # Maximum number of active transactions.
-	spring.jta.atomikos.properties.max-timeout=30m # Maximum timeout that can be allowed for transactions.
+	spring.jta.atomikos.properties.max-timeout=300000ms # Maximum timeout that can be allowed for transactions.
 	spring.jta.atomikos.properties.recovery.delay=10000ms # Delay between two recovery scans.
-	spring.jta.atomikos.properties.recovery.forget-orphaned-log-entries-delay=86400000 # Delay after which recovery can cleanup pending ('orphaned') log entries.
+	spring.jta.atomikos.properties.recovery.forget-orphaned-log-entries-delay=86400000ms # Delay after which recovery can cleanup pending ('orphaned') log entries.
 	spring.jta.atomikos.properties.recovery.max-retries=5 # Number of retry attempts to commit the transaction before throwing an exception.
 	spring.jta.atomikos.properties.recovery.retry-interval=10000ms # Delay between retry attempts.
 	spring.jta.atomikos.properties.serial-jta-transactions=true # Whether sub-transactions should be joined when possible.
@@ -778,7 +806,11 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.bitronix.connectionfactory.apply-transaction-timeout=false # Whether the transaction timeout should be set on the XAResource when it is enlisted.
 	spring.jta.bitronix.connectionfactory.automatic-enlisting-enabled=true # Whether resources should be enlisted and delisted automatically.
 	spring.jta.bitronix.connectionfactory.cache-producers-consumers=true # Whether producers and consumers should be cached.
+	spring.jta.bitronix.connectionfactory.class-name= # Underlying implementation class name of the XA resource.
 	spring.jta.bitronix.connectionfactory.defer-connection-release=true # Whether the provider can run many transactions on the same connection and supports transaction interleaving.
+	spring.jta.bitronix.connectionfactory.disabled= # Whether this resource is disabled, meaning it's temporarily forbidden to acquire a connection from its pool.
+	spring.jta.bitronix.connectionfactory.driver-properties= # Properties that should be set on the underlying implementation.
+	spring.jta.bitronix.connectionfactory.failed= # Mark this resource producer as failed.
 	spring.jta.bitronix.connectionfactory.ignore-recovery-failures=false # Whether recovery failures should be ignored.
 	spring.jta.bitronix.connectionfactory.max-idle-time=60 # The time, in seconds, after which connections are cleaned up from the pool.
 	spring.jta.bitronix.connectionfactory.max-pool-size=10 # The maximum size of the pool. 0 denotes no limit.
@@ -788,7 +820,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.bitronix.connectionfactory.test-connections=true # Whether connections should be tested when acquired from the pool.
 	spring.jta.bitronix.connectionfactory.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE).
 	spring.jta.bitronix.connectionfactory.unique-name=jmsConnectionFactory # The unique name used to identify the resource during recovery.
-	spring.jta.bitronix.connectionfactory.use-tm-join=true Whether TMJOIN should be used when starting XAResources.
+	spring.jta.bitronix.connectionfactory.use-tm-join=true # Whether TMJOIN should be used when starting XAResources.
 	spring.jta.bitronix.connectionfactory.user= # The user to use to connect to the JMS provider.
 	spring.jta.bitronix.datasource.acquire-increment=1 # Number of connections to create when growing the pool.
 	spring.jta.bitronix.datasource.acquisition-interval=1 # Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired.
@@ -796,9 +828,13 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.bitronix.datasource.allow-local-transactions=true # Whether the transaction manager should allow mixing XA and non-XA transactions.
 	spring.jta.bitronix.datasource.apply-transaction-timeout=false # Whether the transaction timeout should be set on the XAResource when it is enlisted.
 	spring.jta.bitronix.datasource.automatic-enlisting-enabled=true # Whether resources should be enlisted and delisted automatically.
+	spring.jta.bitronix.datasource.class-name= # Underlying implementation class name of the XA resource.
 	spring.jta.bitronix.datasource.cursor-holdability= # The default cursor holdability for connections.
 	spring.jta.bitronix.datasource.defer-connection-release=true # Whether the database can run many transactions on the same connection and supports transaction interleaving.
+	spring.jta.bitronix.datasource.disabled= # Whether this resource is disabled, meaning it's temporarily forbidden to acquire a connection from its pool.
+	spring.jta.bitronix.datasource.driver-properties= # Properties that should be set on the underlying implementation.
 	spring.jta.bitronix.datasource.enable-jdbc4-connection-test= # Whether Connection.isValid() is called when acquiring a connection from the pool.
+	spring.jta.bitronix.datasource.failed= # Mark this resource producer as failed.
 	spring.jta.bitronix.datasource.ignore-recovery-failures=false # Whether recovery failures should be ignored.
 	spring.jta.bitronix.datasource.isolation-level= # The default isolation level for connections.
 	spring.jta.bitronix.datasource.local-auto-commit= # The default auto-commit mode for local transactions.
@@ -811,9 +847,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.bitronix.datasource.test-query= # SQL query or statement used to validate a connection before returning it.
 	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, and always last is Integer.MAX_VALUE).
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery.
-	spring.jta.bitronix.datasource.use-tm-join=true Whether TMJOIN should be used when starting XAResources.
+	spring.jta.bitronix.datasource.use-tm-join=true # Whether TMJOIN should be used when starting XAResources.
 	spring.jta.bitronix.properties.allow-multiple-lrc=false # Whether to allow multiple LRC resources to be enlisted into the same transaction.
-	spring.jta.bitronix.properties.asynchronous2-pc=false # Enable asynchronously execution of two phase commit.
+	spring.jta.bitronix.properties.asynchronous2-pc=false # Whether to enable asynchronously execution of two phase commit.
 	spring.jta.bitronix.properties.background-recovery-interval-seconds=60 # Interval in seconds at which to run the recovery process in the background.
 	spring.jta.bitronix.properties.current-node-only-recovery=true # Whether to recover only the current node.
 	spring.jta.bitronix.properties.debug-zero-resource-transaction=false # Whether to log the creation and commit call stacks of transactions executed without a single enlisted resource.
@@ -851,11 +887,11 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.narayana.xa-resource-orphan-filters= # Comma-separated list of orphan filters.
 
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
-	spring.mongodb.embedded.features=SYNC_DELAY # Comma-separated list of features to enable.
+	spring.mongodb.embedded.features=sync_delay # Comma-separated list of features to enable.
 	spring.mongodb.embedded.storage.database-dir= # Directory used for data storage.
 	spring.mongodb.embedded.storage.oplog-size= # Maximum size of the oplog, in megabytes.
 	spring.mongodb.embedded.storage.repl-set-name= # Name of the replica set.
-	spring.mongodb.embedded.version=2.6.10 # Version of Mongo to use.
+	spring.mongodb.embedded.version=3.2.2 # Version of Mongo to use.
 
 	# REDIS ({sc-spring-boot-autoconfigure}/data/redis/RedisProperties.{sc-ext}[RedisProperties])
 	spring.redis.cluster.max-redirects= # Maximum number of redirects to follow when executing commands across the cluster.
@@ -863,8 +899,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.redis.database=0 # Database index used by the connection factory.
 	spring.redis.url= # Connection URL. Overrides host, port, and password. User is ignored. Example: redis://user:password@example.com:6379
 	spring.redis.host=localhost # Redis server host.
-	spring.redis.jedis.pool.max-active=8 # Max number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
-	spring.redis.jedis.pool.max-idle=8 # Max number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
+	spring.redis.jedis.pool.max-active=8 # Maximum number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
+	spring.redis.jedis.pool.max-idle=8 # Maximum number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.
 	spring.redis.jedis.pool.max-wait=-1ms # Maximum amount of time a connection allocation should block before throwing an exception when the pool is exhausted. Use a negative value to block indefinitely.
 	spring.redis.jedis.pool.min-idle=0 # Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if it is positive.
 	spring.redis.lettuce.pool.max-active=8 # Maximum number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.
@@ -877,7 +913,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.redis.sentinel.master= # Name of the Redis server.
 	spring.redis.sentinel.nodes= # Comma-separated list of "host:port" pairs.
 	spring.redis.ssl=false # Whether to enable SSL support.
-	spring.redis.timeout=0 # Connection timeout.
+	spring.redis.timeout= # Connection timeout.
 
 	# TRANSACTION ({sc-spring-boot-autoconfigure}/transaction/TransactionProperties.{sc-ext}[TransactionProperties])
 	spring.transaction.default-timeout= # Default transaction timeout. If a duration suffix is not specified, seconds will be used.
@@ -895,7 +931,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.activemq.in-memory=true # Whether the default broker URL should be in memory. Ignored if an explicit broker has been specified.
 	spring.activemq.non-blocking-redelivery=false # Whether to stop message delivery before re-delivering messages from a rolled back transaction. This implies that message order is not preserved when this is enabled.
 	spring.activemq.password= # Login password of the broker.
-	spring.activemq.send-timeout=0 # Time to wait on message sends for a response. Set it to 0 to wait forever.
+	spring.activemq.send-timeout=0ms # Time to wait on message sends for a response. Set it to 0 to wait forever.
 	spring.activemq.user= # Login user of the broker.
 	spring.activemq.packages.trust-all= # Whether to trust all packages.
 	spring.activemq.packages.trusted= # Comma-separated list of specific packages to trust (when not trusting all packages).
@@ -949,7 +985,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jms.template.priority= # Priority of a message when sending. Enables QoS (Quality of Service) when set.
 	spring.jms.template.qos-enabled= # Whether to enable explicit QoS (Quality of Service) when sending a message.
 	spring.jms.template.receive-timeout= # Timeout to use for receive calls.
-	spring.jms.template.time-to-live= # Time-to-live of a message when sending. Enable QoS (Quality of Service) when set.
+	spring.jms.template.time-to-live= # Time-to-live of a message when sending. Enables QoS (Quality of Service) when set.
 
 	# APACHE KAFKA ({sc-spring-boot-autoconfigure}/kafka/KafkaProperties.{sc-ext}[KafkaProperties])
 	spring.kafka.admin.client-id= # ID to pass to the server when making requests. Used for server-side logging.
@@ -957,7 +993,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.admin.properties.*= # Additional admin-specific properties used to configure the client.
 	spring.kafka.admin.ssl.key-password= # Password of the private key in the key store file.
 	spring.kafka.admin.ssl.keystore-location= # Location of the key store file.
-	spring.kafka.admin.ssl.keystore-password= # Password of the key store file.
+	spring.kafka.admin.ssl.keystore-password= # Store password for the key store file.
 	spring.kafka.admin.ssl.truststore-location= # Location of the trust store file.
 	spring.kafka.admin.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
@@ -981,7 +1017,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.consumer.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.consumer.value-deserializer= # Deserializer class for values.
 	spring.kafka.jaas.control-flag=required # Control flag for login configuration.
-	spring.kafka.jaas.enabled= # Whether to enable JAAS configuration.
+	spring.kafka.jaas.enabled=false # Whether to enable JAAS configuration.
 	spring.kafka.jaas.login-module=com.sun.security.auth.module.Krb5LoginModule # Login module.
 	spring.kafka.jaas.options= # Additional JAAS options.
 	spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is "COUNT" or "COUNT_TIME".
@@ -1031,28 +1067,28 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.direct.acknowledge-mode= # Acknowledge mode of container.
 	spring.rabbitmq.listener.direct.auto-startup=true # Whether to start the container automatically on startup.
 	spring.rabbitmq.listener.direct.consumers-per-queue= # Number of consumers per queue.
-	spring.rabbitmq.listener.direct.default-requeue-rejected= # Whether rejected deliveries are re-queued by default. Defaults to true.
+	spring.rabbitmq.listener.direct.default-requeue-rejected= # Whether rejected deliveries are re-queued by default.
 	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published.
 	spring.rabbitmq.listener.direct.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.direct.retry.enabled=false # Whether publishing retries are enabled.
-	spring.rabbitmq.listener.direct.retry.initial-interval=1000ms # Interval between the first and second attempt to publish or deliver a message.
-	spring.rabbitmq.listener.direct.retry.max-attempts=3 # Maximum number of attempts to publish or deliver a message.
-	spring.rabbitmq.listener.direct.retry.max-interval=10000ms # Maximum interval between attempts.
+	spring.rabbitmq.listener.direct.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
+	spring.rabbitmq.listener.direct.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
+	spring.rabbitmq.listener.direct.retry.max-interval=10000ms # Maximum duration between attempts.
 	spring.rabbitmq.listener.direct.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.listener.direct.retry.stateless=true # Whether retries are stateless or stateful.
 	spring.rabbitmq.listener.simple.acknowledge-mode= # Acknowledge mode of container.
 	spring.rabbitmq.listener.simple.auto-startup=true # Whether to start the container automatically on startup.
 	spring.rabbitmq.listener.simple.concurrency= # Minimum number of listener invoker threads.
-	spring.rabbitmq.listener.simple.default-requeue-rejected= # Whether to re-queue delivery failures.
+	spring.rabbitmq.listener.simple.default-requeue-rejected= # Whether rejected deliveries are re-queued by default.
 	spring.rabbitmq.listener.simple.idle-event-interval= # How often idle container events should be published.
-	spring.rabbitmq.listener.simple.max-concurrency= # Maximum number of listener invoker.
+	spring.rabbitmq.listener.simple.max-concurrency= # Maximum number of listener invoker threads.
 	spring.rabbitmq.listener.simple.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.simple.retry.enabled=false # Whether publishing retries are enabled.
-	spring.rabbitmq.listener.simple.retry.initial-interval=1000 # Interval, in milliseconds, between the first and second attempt to deliver a message.
+	spring.rabbitmq.listener.simple.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.simple.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
-	spring.rabbitmq.listener.simple.retry.max-interval=10000 # Maximum interval, in milliseconds, between attempts.
-	spring.rabbitmq.listener.simple.retry.multiplier=1.0 # Multiplier to apply to the previous delivery retry interval.
-	spring.rabbitmq.listener.simple.retry.stateless=true # Whether or not retry is stateless or stateful.
+	spring.rabbitmq.listener.simple.retry.max-interval=10000ms #  Maximum duration between attempts.
+	spring.rabbitmq.listener.simple.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
+	spring.rabbitmq.listener.simple.retry.stateless=true # Whether retries are stateless or stateful.
 	spring.rabbitmq.listener.simple.transaction-size= # Number of messages to be processed in a transaction. That is, the number of messages between acks. For best results, it should be less than or equal to the prefetch count.
 	spring.rabbitmq.listener.type=simple # Listener container type.
 	spring.rabbitmq.password=guest # Login to authenticate against the broker.
@@ -1069,14 +1105,14 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.ssl.trust-store-type=JKS # Trust store type.
 	spring.rabbitmq.ssl.algorithm= # SSL algorithm to use. By default, configured by the Rabbit client library.
 	spring.rabbitmq.template.exchange= # Name of the default exchange to use for send operations.
-	spring.rabbitmq.template.mandatory=false # Whether to enable mandatory messages.
-	spring.rabbitmq.template.receive-timeout=0 # Timeout for `receive()` methods.
-	spring.rabbitmq.template.reply-timeout=5000 # Timeout for `sendAndReceive()` methods.
-	spring.rabbitmq.template.retry.enabled=false # Whether to enable retries in the `RabbitTemplate`.
-	spring.rabbitmq.template.retry.initial-interval=1000 # Interval, in milliseconds, between the first and second attempt to publish a message.
-	spring.rabbitmq.template.retry.max-attempts=3 # Maximum number of attempts to publish a message.
-	spring.rabbitmq.template.retry.max-interval=10000 # Maximum number of attempts to publish a message.
-	spring.rabbitmq.template.retry.multiplier=1.0 # Multiplier to apply to the previous publishing retry interval.
+	spring.rabbitmq.template.mandatory= # Whether to enable mandatory messages.
+	spring.rabbitmq.template.receive-timeout= # Timeout for `receive()` operations.
+	spring.rabbitmq.template.reply-timeout= # Timeout for `sendAndReceive()` operations.
+	spring.rabbitmq.template.retry.enabled=false # Whether publishing retries are enabled.
+	spring.rabbitmq.template.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
+	spring.rabbitmq.template.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
+	spring.rabbitmq.template.retry.max-interval=10000ms # Maximum duration between attempts.
+	spring.rabbitmq.template.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.template.routing-key= # Value of a default routing key to use for send operations.
 	spring.rabbitmq.username=guest # Login user to authenticate to the broker.
 	spring.rabbitmq.virtual-host= # Virtual host to use when connecting to the broker.
@@ -1087,10 +1123,10 @@ content into your application. Rather, pick only the properties that you need.
 	# ----------------------------------------
 
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator-autoconfigure}/web/server/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
-	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response. Requires a custom management.server.port.
-	management.server.address= # Network address that to which the management endpoints should bind. Requires a custom management.server.port.
-	management.server.port= # Management endpoint HTTP port. Uses the same port as the application by default. Configure a different port to use management-specific SSL.
-	management.server.servlet.context-path= # Management endpoint context-path. For instance, `/management`. Requires a custom management.server.port.
+	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response.
+	management.server.address= # Network address to which the management endpoints should bind. Requires a custom management.server.port.
+	management.server.port= # Management endpoint HTTP port (uses the same port as the application by default). Configure a different port to use management-specific SSL.
+	management.server.servlet.context-path= # Management endpoint context-path (for instance, `/management`). Requires a custom management.server.port.
 	management.server.ssl.ciphers= # Supported SSL ciphers. Requires a custom management.port.
 	management.server.ssl.client-auth= # Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store. Requires a custom management.server.port.
 	management.server.ssl.enabled= # Whether to enable SSL support. Requires a custom management.server.port.
@@ -1112,20 +1148,18 @@ content into your application. Rather, pick only the properties that you need.
 	management.cloudfoundry.skip-ssl-validation=false # Whether to skip SSL verification for Cloud Foundry actuator endpoint security calls.
 
 	# ENDPOINTS GENERAL CONFIGURATION
-	management.endpoints.enabled-by-default= # Enable or disable all endpoints by default.
+	management.endpoints.enabled-by-default= # Whether to enable or disable all endpoints by default.
 
 	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointProperties.{sc-ext}[JmxEndpointProperties])
-	management.endpoints.jmx.enabled=true # Whether JMX endpoints are enabled.
-	management.endpoints.jmx.expose=* # Endpoint IDs that should be exposed or '*' for all.
-	management.endpoints.jmx.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
-	management.endpoints.jmx.static-names=false # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
+	management.endpoints.jmx.exposure.include=* # Endpoint IDs that should be included or '*' for all.
+	management.endpoints.jmx.exposure.exclude= # Endpoint IDs that should be excluded.
+	management.endpoints.jmx.static-names= # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
 	management.endpoints.jmx.unique-names=false # Whether to ensure that ObjectNames are modified in case of conflict.
 
 	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
-	management.endpoints.web.enabled=true # Whether web endpoints are enabled
-	management.endpoints.web.expose=info,health # Endpoint IDs that should be exposed or '*' for all.
-	management.endpoints.web.exclude= # Endpoint IDs that should be excluded.
+	management.endpoints.web.exposure.include=health,info # Endpoint IDs that should be included or '*' for all.
+	management.endpoints.web.exposure.exclude= # Endpoint IDs that should be excluded.
 	management.endpoints.web.base-path=/actuator # Base path for Web endpoints. Relative to server.servlet.context-path or management.server.servlet.context-path if management.server.port is configured.
 	management.endpoints.web.path-mapping= # Mapping between endpoint IDs and the path that should expose them.
 
@@ -1135,91 +1169,95 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoints.web.cors.allowed-methods= # Comma-separated list of methods to allow. '*' allows all methods. When not set, defaults to GET.
 	management.endpoints.web.cors.allowed-origins= # Comma-separated list of origins to allow. '*' allows all origins. When not set, CORS support is disabled.
 	management.endpoints.web.cors.exposed-headers= # Comma-separated list of headers to include in a response.
-	management.endpoints.web.cors.max-age=1800 # How long the response from a pre-flight request can be cached by clients. If a duration suffix is not specified, seconds will be used.
+	management.endpoints.web.cors.max-age=1800s # How long the response from a pre-flight request can be cached by clients. If a duration suffix is not specified, seconds will be used.
 
 	# AUDIT EVENTS ENDPOINT ({sc-spring-boot-actuator}/audit/AuditEventsEndpoint.{sc-ext}[AuditEventsEndpoint])
 	management.endpoint.auditevents.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.auditevents.enabled= # Whether to enable the auditevents endpoint.
+	management.endpoint.auditevents.enabled=true # Whether to enable the auditevents endpoint.
 
 	# BEANS ENDPOINT ({sc-spring-boot-actuator}/beans/BeansEndpoint.{sc-ext}[BeansEndpoint])
 	management.endpoint.beans.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.beans.enabled= # Whether to enable the beans endpoint.
+	management.endpoint.beans.enabled=true # Whether to enable the beans endpoint.
 
 	# CONDITIONS REPORT ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/condition/ConditionsReportEndpoint.{sc-ext}[ConditionsReportEndpoint])
 	management.endpoint.conditions.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.conditions.enabled= # Whether to enable the conditions endpoint.
+	management.endpoint.conditions.enabled=true # Whether to enable the conditions endpoint.
 
 	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({sc-spring-boot-actuator}/context/properties/ConfigurationPropertiesReportEndpoint.{sc-ext}[ConfigurationPropertiesReportEndpoint], {sc-spring-boot-actuator-autoconfigure}/context/properties/ConfigurationPropertiesReportEndpointProperties.{sc-ext}[ConfigurationPropertiesReportEndpointProperties])
 	management.endpoint.configprops.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.configprops.enabled= # Whether to enable the configprops endpoint.
+	management.endpoint.configprops.enabled=true # Whether to enable the configprops endpoint.
 	management.endpoint.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
 	# ENVIRONMENT ENDPOINT ({sc-spring-boot-actuator}/env/EnvironmentEndpoint.{sc-ext}[EnvironmentEndpoint], {sc-spring-boot-actuator-autoconfigure}/env/EnvironmentEndpointProperties.{sc-ext}[EnvironmentEndpointProperties])
 	management.endpoint.env.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.env.enabled= # Whether to enable the env endpoint.
+	management.endpoint.env.enabled=true # Whether to enable the env endpoint.
 	management.endpoint.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
 	# FLYWAY ENDPOINT ({sc-spring-boot-actuator}/flyway/FlywayEndpoint.{sc-ext}[FlywayEndpoint])
 	management.endpoint.flyway.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.flyway.enabled= # Whether to enable the flyway endpoint.
+	management.endpoint.flyway.enabled=true # Whether to enable the flyway endpoint.
 
 	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint], {sc-spring-boot-actuator-autoconfigure}/health/HealthEndpointProperties.{sc-ext}[HealthEndpointProperties])
 	management.endpoint.health.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.health.enabled= # Whether to enable the health endpoint.
-	management.endpoint.health.show-details=false # Whether to show full health details instead of just the status when exposed over a potentially insecure connection.
+	management.endpoint.health.enabled=true # Whether to enable the health endpoint.
+	management.endpoint.health.roles= # Roles used to determine whether or not a user is authorized to be shown details. When empty, all authenticated users are authorized.
+	management.endpoint.health.show-details=never # When to show full health details.
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
 	management.endpoint.heapdump.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.heapdump.enabled= # Whether to enable the heapdump endpoint.
+	management.endpoint.heapdump.enabled=true # Whether to enable the heapdump endpoint.
+
+	# HTTP TRACE ENDPOINT ({sc-spring-boot-actuator}/trace/http/HttpTraceEndpoint.{sc-ext}[HttpTraceEndpoint])
+	management.endpoint.httptrace.cache.time-to-live=0ms # Maximum time that a response can be cached.
+	management.endpoint.httptrace.enabled=true # Whether to enable the httptrace endpoint.
 
 	# INFO ENDPOINT ({sc-spring-boot-actuator}/info/InfoEndpoint.{sc-ext}[InfoEndpoint])
+	info= # Arbitrary properties to add to the info endpoint.
 	management.endpoint.info.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.info.enabled=true # Whether to enable the info endpoint.
 
+	# JOLOKIA ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
+	management.endpoint.jolokia.config.*= # Jolokia settings. Refer to the documentation of Jolokia for more details.
+	management.endpoint.jolokia.enabled=true # Whether to enable the jolokia endpoint.
+
 	# LIQUIBASE ENDPOINT ({sc-spring-boot-actuator}/liquibase/LiquibaseEndpoint.{sc-ext}[LiquibaseEndpoint])
 	management.endpoint.liquibase.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.liquibase.enabled= # Whether to enable the liquibase endpoint.
+	management.endpoint.liquibase.enabled=true # Whether to enable the liquibase endpoint.
 
 	# LOG FILE ENDPOINT ({sc-spring-boot-actuator}/logging/LogFileWebEndpoint.{sc-ext}[LogFileWebEndpoint], {sc-spring-boot-actuator-autoconfigure}/logging/LogFileWebEndpointProperties.{sc-ext}[LogFileWebEndpointProperties])
 	management.endpoint.logfile.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.logfile.enabled= # Whether to enable the logfile endpoint.
+	management.endpoint.logfile.enabled=true # Whether to enable the logfile endpoint.
 	management.endpoint.logfile.external-file= # External Logfile to be accessed. Can be used if the logfile is written by output redirect and not by the logging system itself.
 
 	# LOGGERS ENDPOINT ({sc-spring-boot-actuator}/logging/LoggersEndpoint.{sc-ext}[LoggersEndpoint])
 	management.endpoint.loggers.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.loggers.enabled= # Whether to enable the loggers endpoint.
+	management.endpoint.loggers.enabled=true # Whether to enable the loggers endpoint.
 
-	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator-autoconfigure}/web/servlet/RequestMappingEndpoint.{sc-ext}[RequestMappingEndpoint])
+	# REQUEST MAPPING ENDPOINT  ({sc-spring-boot-actuator}/web/mappings/MappingsEndpoint.{sc-ext}[MappingsEndpoint])
 	management.endpoint.mappings.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.mappings.enabled= # Whether to enable the mappings endpoint.
+	management.endpoint.mappings.enabled=true # Whether to enable the mappings endpoint.
 
 	# METRICS ENDPOINT ({sc-spring-boot-actuator}/metrics/MetricsEndpoint.{sc-ext}[MetricsEndpoint])
 	management.endpoint.metrics.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.metrics.enabled= # Whether to enable the metrics endpoint.
+	management.endpoint.metrics.enabled=true # Whether to enable the metrics endpoint.
 
 	# PROMETHEUS ENDPOINT ({sc-spring-boot-actuator}/metrics/export/prometheus/PrometheusScrapeEndpoint.{sc-ext}[PrometheusScrapeEndpoint])
 	management.endpoint.prometheus.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.prometheus.enabled= # Whether to enable the metrics endpoint.
+	management.endpoint.prometheus.enabled=true # Whether to enable the prometheus endpoint.
 
 	# SCHEDULED TASKS ENDPOINT ({sc-spring-boot-actuator}/scheduling/ScheduledTasksEndpoint.{sc-ext}[ScheduledTasksEndpoint])
 	management.endpoint.scheduledtasks.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.scheduledtasks.enabled= # Whether to enable the scheduled tasks endpoint.
+	management.endpoint.scheduledtasks.enabled=true # Whether to enable the scheduledtasks endpoint.
 
 	# SESSIONS ENDPOINT ({sc-spring-boot-actuator}/session/SessionsEndpoint.{sc-ext}[SessionsEndpoint])
-	management.endpoint.sessions.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.sessions.enabled= # Whether to enable the sessions endpoint.
+	management.endpoint.sessions.enabled=true # Whether to enable the sessions endpoint.
 
 	# SHUTDOWN ENDPOINT ({sc-spring-boot-actuator}/context/ShutdownEndpoint.{sc-ext}[ShutdownEndpoint])
-	management.endpoint.shutdown.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.shutdown.enabled=false # Whether to enable the shutdown endpoint.
 
 	# THREAD DUMP ENDPOINT ({sc-spring-boot-actuator}/management/ThreadDumpEndpoint.{sc-ext}[ThreadDumpEndpoint])
 	management.endpoint.threaddump.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.threaddump.enabled= # Whether to enable the threaddump endpoint.
-
-	# TRACE ENDPOINT ({sc-spring-boot-actuator}/trace/TraceEndpoint.{sc-ext}[TraceEndpoint])
-	management.endpoint.trace.cache.time-to-live=0ms # Maximum time that a response can be cached.
-	management.endpoint.trace.enabled= # Whether to enable the trace endpoint.
+	management.endpoint.threaddump.enabled=true # Whether to enable the threaddump endpoint.
 
 	# HEALTH INDICATORS
 	management.health.db.enabled=true # Whether to enable database health check.
@@ -1231,7 +1269,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.diskspace.threshold=0 # Minimum disk space, in bytes, that should be available.
 	management.health.elasticsearch.enabled=true # Whether to enable Elasticsearch health check.
 	management.health.elasticsearch.indices= # Comma-separated index names.
-	management.health.elasticsearch.response-timeout=100ms # The time to wait for a response from the cluster.
+	management.health.elasticsearch.response-timeout=100ms # Time to wait for a response from the cluster.
 	management.health.influxdb.enabled=true # Whether to enable InfluxDB health check.
 	management.health.jms.enabled=true # Whether to enable JMS health check.
 	management.health.ldap.enabled=true # Whether to enable LDAP health check.
@@ -1242,7 +1280,11 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.redis.enabled=true # Whether to enable Redis health check.
 	management.health.solr.enabled=true # Whether to enable Solr health check.
 	management.health.status.http-mapping= # Mapping of health statuses to HTTP status codes. By default, registered health statuses map to sensible defaults (for example, UP maps to 200).
-	management.health.status.order=DOWN, OUT_OF_SERVICE, UP, UNKNOWN # Comma-separated list of health statuses in order of severity.
+	management.health.status.order=DOWN,OUT_OF_SERVICE,UP,UNKNOWN # Comma-separated list of health statuses in order of severity.
+
+	# HTTP TRACING ({sc-spring-boot-actuator-autoconfigure}/trace/http/HttpTraceProperties.{sc-ext}[HttpTraceProperties])
+	management.trace.http.enabled=true # Whether to enable HTTP request-response tracing.
+	management.trace.http.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 	# INFO CONTRIBUTORS ({sc-spring-boot-actuator-autoconfigure}/info/InfoContributorProperties.{sc-ext}[InfoContributorProperties])
 	management.info.build.enabled=true # Whether to enable build info.
@@ -1251,95 +1293,121 @@ content into your application. Rather, pick only the properties that you need.
 	management.info.git.enabled=true # Whether to enable git info.
 	management.info.git.mode=simple # Mode to use to expose git information.
 
-	# JOLOKIA ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
-	management.jolokia.config.*= # Jolokia settings. See the Jolokia manual for details.
-	management.jolokia.enabled=false # Whether to enable Jolokia.
-	management.jolokia.path=/jolokia # Path at which Jolokia is available.
-
 	# METRICS
+	management.metrics.binders.files.enabled=true # Whether to enable files metrics.
+	management.metrics.binders.integration.enabled=true # Whether to enable Spring Integration metrics.
 	management.metrics.binders.jvm.enabled=true # Whether to enable JVM metrics.
 	management.metrics.binders.logback.enabled=true # Whether to enable Logback metrics.
 	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
 	management.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.
-	management.metrics.cache.cache-metric-name=cache # Name of the metric for cache usage.
-	management.metrics.cache.instrument-cache=true # Instrument all available caches.
-	management.metrics.export.atlas.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
-	management.metrics.export.atlas.config-refresh-frequency= # Frequency for refreshing config settings from the LWC service.
-	management.metrics.export.atlas.config-time-to-live= # Time to live for subscriptions from the LWC service.
-	management.metrics.export.atlas.config-uri= # URI for the Atlas LWC endpoint to retrieve current subscriptions.
-	management.metrics.export.atlas.connect-timeout= # Connection timeout for requests to the backend.
+	management.metrics.distribution.percentiles-histogram.*= # Whether meter IDs starting-with the specified name should be publish percentile histograms.
+	management.metrics.distribution.percentiles.*= # Specific computed non-aggregable percentiles to ship to the backend for meter IDs starting-with the specified name.
+	management.metrics.distribution.sla.*= # Specific SLA boundaries for meter IDs starting-with the specified name. The longest match wins, the key `all` can also be used to configure all meters.
+	management.metrics.enable.*= # Whether meter IDs starting-with the specified name should be enabled. The longest match wins, the key `all` can also be used to configure all meters.
+	management.metrics.export.atlas.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.atlas.config-refresh-frequency=10s # Frequency for refreshing config settings from the LWC service.
+	management.metrics.export.atlas.config-time-to-live=150s # Time to live for subscriptions from the LWC service.
+	management.metrics.export.atlas.config-uri=http://localhost:7101/lwc/api/v1/expressions/local-dev # URI for the Atlas LWC endpoint to retrieve current subscriptions.
+	management.metrics.export.atlas.connect-timeout=1s # Connection timeout for requests to this backend.
 	management.metrics.export.atlas.enabled=true # Whether exporting of metrics to this backend is enabled.
-	management.metrics.export.atlas.eval-uri= # URI for the Atlas LWC endpoint to evaluate the data for a subscription.
-	management.metrics.export.atlas.lwc-enabled= # Enable streaming to Atlas LWC.
-	management.metrics.export.atlas.meter-time-to-live= # Time to live for meters that do not have any activity. After this period the meter will be considered expired and will not get reported.
-	management.metrics.export.atlas.num-threads= # Number of threads to use with the metrics publishing scheduler.
-	management.metrics.export.atlas.read-timeout= # Read timeout for requests to the backend.
+	management.metrics.export.atlas.eval-uri=http://localhost:7101/lwc/api/v1/evaluate # URI for the Atlas LWC endpoint to evaluate the data for a subscription.
+	management.metrics.export.atlas.lwc-enabled=false # Whether to enable streaming to Atlas LWC.
+	management.metrics.export.atlas.meter-time-to-live=15m # Time to live for meters that do not have any activity. After this period the meter will be considered expired and will not get reported.
+	management.metrics.export.atlas.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.atlas.read-timeout=10s # Read timeout for requests to this backend.
 	management.metrics.export.atlas.step=1m # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.atlas.uri= # URI of the Atlas server.
+	management.metrics.export.atlas.uri=http://localhost:7101/api/v1/publish # URI of the Atlas server.
 	management.metrics.export.datadog.api-key= # Datadog API key.
-	management.metrics.export.datadog.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
-	management.metrics.export.datadog.connect-timeout= # Connection timeout for requests to the backend.
+	management.metrics.export.datadog.application-key= # Datadog application key. Not strictly required, but improves the Datadog experience by sending meter descriptions, types, and base units to Datadog.
+	management.metrics.export.datadog.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.datadog.connect-timeout=1s # Connection timeout for requests to this backend.
+	management.metrics.export.datadog.descriptions=true # Whether to publish descriptions metadata to Datadog. Turn this off to minimize the amount of metadata sent.
 	management.metrics.export.datadog.enabled=true # Whether exporting of metrics to this backend is enabled.
-	management.metrics.export.datadog.host-tag= # Tag that will be mapped to "host" when shipping metrics to Datadog. Can be omitted if host should be omitted on publishing.
-	management.metrics.export.datadog.num-threads= # Number of threads to use with the metrics publishing scheduler.
-	management.metrics.export.datadog.read-timeout= # Read timeout for requests to the backend.
+	management.metrics.export.datadog.host-tag=instance # Tag that will be mapped to "host" when shipping metrics to Datadog.
+	management.metrics.export.datadog.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.datadog.read-timeout=10s # Read timeout for requests to this backend.
 	management.metrics.export.datadog.step=1m # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.datadog.uri= # URI to ship metrics to. If you need to publish metrics to an internal proxy en-route to Datadog, you can define the location of the proxy with this.
-	management.metrics.export.ganglia.addressing-mode= # UDP addressing mode, either unicast or multicast.
-	management.metrics.export.ganglia.duration-units= # Base time unit used to report durations.
+	management.metrics.export.datadog.uri=https://app.datadoghq.com # URI to ship metrics to. If you need to publish metrics to an internal proxy en-route to Datadog, you can define the location of the proxy with this.
+	management.metrics.export.ganglia.addressing-mode=multicast # UDP addressing mode, either unicast or multicast.
+	management.metrics.export.ganglia.duration-units=milliseconds # Base time unit used to report durations.
 	management.metrics.export.ganglia.enabled=true # Whether exporting of metrics to Ganglia is enabled.
-	management.metrics.export.ganglia.host= # Host of the Ganglia server to receive exported metrics.
-	management.metrics.export.ganglia.port= # Port of the Ganglia server to receive exported metrics.
-	management.metrics.export.ganglia.protocol-version= # Ganglia protocol version. Must be either 3.1 or 3.0.
-	management.metrics.export.ganglia.rate-units= # Base time unit used to report rates.
-	management.metrics.export.ganglia.step= # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.ganglia.time-to-live= # Time to live for metrics on Ganglia.
-	management.metrics.export.graphite.duration-units= # Base time unit used to report durations.
+	management.metrics.export.ganglia.host=localhost # Host of the Ganglia server to receive exported metrics.
+	management.metrics.export.ganglia.port=8649 # Port of the Ganglia server to receive exported metrics.
+	management.metrics.export.ganglia.protocol-version=3.1 # Ganglia protocol version. Must be either 3.1 or 3.0.
+	management.metrics.export.ganglia.rate-units=seconds # Base time unit used to report rates.
+	management.metrics.export.ganglia.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.ganglia.time-to-live=1 # Time to live for metrics on Ganglia. Set the multi-cast Time-To-Live to be one greater than the number of hops (routers) between the hosts.
+	management.metrics.export.graphite.duration-units=milliseconds # Base time unit used to report durations.
 	management.metrics.export.graphite.enabled=true # Whether exporting of metrics to Graphite is enabled.
-	management.metrics.export.graphite.host= # Host of the Graphite server to receive exported metrics.
-	management.metrics.export.graphite.port= # Port of the Graphite server to receive exported metrics.
-	management.metrics.export.graphite.protocol= # Protocol to use while shipping data to Graphite.
-	management.metrics.export.graphite.rate-units= # Base time unit used to report rates.
-	management.metrics.export.graphite.step= # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.influx.batch-size= # Number of measurements per request to use for the backend. If more measurements are found, then multiple requests will be made.
-	management.metrics.export.influx.compressed= # Enable GZIP compression of metrics batches published to Influx.
-	management.metrics.export.influx.connect-timeout= # Connection timeout for requests to the backend.
-	management.metrics.export.influx.consistency= # Write consistency for each point.
-	management.metrics.export.influx.db= # Tag that will be mapped to "host" when shipping metrics to Influx. Can be omitted if host should be omitted on publishing.
+	management.metrics.export.graphite.host=localhost # Host of the Graphite server to receive exported metrics.
+	management.metrics.export.graphite.port=2004 # Port of the Graphite server to receive exported metrics.
+	management.metrics.export.graphite.protocol=pickled # Protocol to use while shipping data to Graphite.
+	management.metrics.export.graphite.rate-units=seconds # Base time unit used to report rates.
+	management.metrics.export.graphite.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.graphite.tags-as-prefix= # For the default naming convention, turn the specified tag keys into part of the metric prefix.
+	management.metrics.export.influx.auto-create-db=true # Whether to create the Influx database if it does not exist before attempting to publish metrics to it.
+	management.metrics.export.influx.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.influx.compressed=true # Whether to enable GZIP compression of metrics batches published to Influx.
+	management.metrics.export.influx.connect-timeout=1s # Connection timeout for requests to this backend.
+	management.metrics.export.influx.consistency=one # Write consistency for each point.
+	management.metrics.export.influx.db=mydb # Tag that will be mapped to "host" when shipping metrics to Influx.
 	management.metrics.export.influx.enabled=true # Whether exporting of metrics to this backend is enabled.
-	management.metrics.export.influx.num-threads= # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.influx.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
 	management.metrics.export.influx.password= # Login password of the Influx server.
-	management.metrics.export.influx.read-timeout= # Read timeout for requests to the backend.
+	management.metrics.export.influx.read-timeout=10s # Read timeout for requests to this backend.
 	management.metrics.export.influx.retention-policy= # Retention policy to use (Influx writes to the DEFAULT retention policy if one is not specified).
 	management.metrics.export.influx.step=1m # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.influx.uri= # URI of the Influx server.
+	management.metrics.export.influx.uri=http://localhost:8086 # URI of the Influx server.
 	management.metrics.export.influx.user-name= # Login user of the Influx server.
 	management.metrics.export.jmx.enabled=true # Whether exporting of metrics to JMX is enabled.
-	management.metrics.export.prometheus.descriptions= # Enable publishing descriptions as part of the scrape payload to Prometheus. Turn this off to minimize the amount of data sent on each scrape.
+	management.metrics.export.jmx.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.newrelic.account-id= # New Relic account ID.
+	management.metrics.export.newrelic.api-key= # New Relic API key.
+	management.metrics.export.newrelic.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.newrelic.connect-timeout=1s # Connection timeout for requests to this backend.
+	management.metrics.export.newrelic.enabled=true # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.newrelic.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.newrelic.read-timeout=10s # Read timeout for requests to this backend.
+	management.metrics.export.newrelic.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.newrelic.uri=https://insights-collector.newrelic.com # URI to ship metrics to.
+	management.metrics.export.prometheus.descriptions=true # Whether to enable publishing descriptions as part of the scrape payload to Prometheus. Turn this off to minimize the amount of data sent on each scrape.
 	management.metrics.export.prometheus.enabled=true # Whether exporting of metrics to Prometheus is enabled.
-	management.metrics.export.prometheus.step= # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.simple.enabled=true # Whether exporting of metrics to a simple in-memory store is enabled.
+	management.metrics.export.prometheus.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.signalfx.access-token= # SignalFX access token.
+	management.metrics.export.signalfx.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.signalfx.connect-timeout=1s # Connection timeout for requests to this backend.
+	management.metrics.export.signalfx.enabled=true # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.signalfx.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.signalfx.read-timeout=10s # Read timeout for requests to this backend.
+	management.metrics.export.signalfx.source= # Uniquely identifies the app instance that is publishing metrics to SignalFx. Defaults to the local host name.
+	management.metrics.export.signalfx.step=10s # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.signalfx.uri=https://ingest.signalfx.com # URI to ship metrics to.
+	management.metrics.export.simple.enabled=true # Whether, in the absence of any other exporter, exporting of metrics to an in-memory backend is enabled.
 	management.metrics.export.simple.mode=cumulative # Counting mode.
-	management.metrics.export.simple.step=10s # Step size (i.e. reporting frequency) to use.
-	management.metrics.export.statsd.enabled=true # Export metrics to StatsD.
+	management.metrics.export.simple.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.statsd.enabled=true # Whether exporting of metrics to StatsD is enabled.
 	management.metrics.export.statsd.flavor=datadog # StatsD line protocol to use.
 	management.metrics.export.statsd.host=localhost # Host of the StatsD server to receive exported metrics.
 	management.metrics.export.statsd.max-packet-length=1400 # Total length of a single payload should be kept within your network's MTU.
-	management.metrics.export.statsd.polling-frequency=10s # How often gauges will be polled. When a gauge is polled, its value is recalculated and if the value has changed, it is sent to the StatsD server.
+	management.metrics.export.statsd.polling-frequency=10s # How often gauges will be polled. When a gauge is polled, its value is recalculated and if the value has changed (or publishUnchangedMeters is true), it is sent to the StatsD server.
 	management.metrics.export.statsd.port=8125 # Port of the StatsD server to receive exported metrics.
+	management.metrics.export.statsd.publish-unchanged-meters=true # Whether to send unchanged meters to the StatsD server.
 	management.metrics.export.statsd.queue-size=2147483647 # Maximum size of the queue of items waiting to be sent to the StatsD server.
-	management.metrics.jdbc.datasource-metric-name=data.source # Name of the metric for data source usage.
-	management.metrics.jdbc.instrument-datasource=true # Instrument all available data sources.
+	management.metrics.export.wavefront.api-token= # API token used when publishing metrics directly to the Wavefront API host.
+	management.metrics.export.wavefront.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.wavefront.connect-timeout=1s # Connection timeout for requests to this backend.
+	management.metrics.export.wavefront.enabled=true # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.wavefront.global-prefix= # Global prefix to separate metrics originating from this app's white box instrumentation from those originating from other Wavefront integrations when viewed in the Wavefront UI.
+	management.metrics.export.wavefront.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.wavefront.read-timeout=10s # Read timeout for requests to this backend.
+	management.metrics.export.wavefront.source= # Unique identifier for the app instance that is the source of metrics being published to Wavefront. Defaults to the local host name.
+	management.metrics.export.wavefront.step=10s # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.wavefront.uri=https://longboard.wavefront.com # URI to ship metrics to.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
-	management.metrics.web.client.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
+	management.metrics.web.client.max-uri-tags=100 # Maximum number of unique URI tag values allowed. After the max number of tag values is reached, metrics with additional tag values are denied by filter.
 	management.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
-	management.metrics.web.server.record-request-percentiles=false # Whether instrumented requests record percentiles histogram buckets by default.
 	management.metrics.web.server.requests-metric-name=http.server.requests # Name of the metric for received requests.
-
-	# TRACING ({sc-spring-boot-actuator-autoconfigure}/trace/TraceEndpointProperties.{sc-ext}[TraceEndpointProperties])
-	management.trace.filter.enabled=true # Whether to enable the trace servlet filter.
-	management.trace.include=request-headers,response-headers,cookies,errors # Items to be included in the trace.
 
 
 	# ----------------------------------------
@@ -1351,8 +1419,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.devtools.livereload.port=35729 # Server port.
 	spring.devtools.restart.additional-exclude= # Additional patterns that should be excluded from triggering a full restart.
 	spring.devtools.restart.additional-paths= # Additional paths to watch for changes.
-	spring.devtools.restart.enabled=true # Enable automatic restart.
-	spring.devtools.restart.exclude=META-INF/maven/**,META-INF/resources/**,resources/**,static/**,public/**,templates/**,**/*Test.class,**/*Tests.class,git.properties # Patterns that should be excluded from triggering a full restart.
+	spring.devtools.restart.enabled=true # Whether to enable automatic restart.
+	spring.devtools.restart.exclude=META-INF/maven/**,META-INF/resources/**,resources/**,static/**,public/**,templates/**,**/*Test.class,**/*Tests.class,git.properties,META-INF/build-info.properties # Patterns that should be excluded from triggering a full restart.
 	spring.devtools.restart.log-condition-evaluation-delta=true # Whether to log the condition evaluation delta upon restart.
 	spring.devtools.restart.poll-interval=1s # Amount of time to wait between polling for classpath changes.
 	spring.devtools.restart.quiet-period=400ms # Amount of quiet time required without any classpath changes before a restart is triggered.

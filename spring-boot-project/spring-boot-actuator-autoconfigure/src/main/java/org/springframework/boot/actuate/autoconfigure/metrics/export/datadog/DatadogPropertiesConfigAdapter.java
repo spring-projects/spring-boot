@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
 import io.micrometer.datadog.DatadogConfig;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryPropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link DatadogProperties} to a {@link DatadogConfig}.
@@ -26,9 +26,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistr
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class DatadogPropertiesConfigAdapter
-		extends StepRegistryPropertiesConfigAdapter<DatadogProperties>
-		implements DatadogConfig {
+class DatadogPropertiesConfigAdapter extends
+		StepRegistryPropertiesConfigAdapter<DatadogProperties> implements DatadogConfig {
 
 	DatadogPropertiesConfigAdapter(DatadogProperties properties) {
 		super(properties);
@@ -40,6 +39,12 @@ class DatadogPropertiesConfigAdapter
 	}
 
 	@Override
+	public String applicationKey() {
+		return get(DatadogProperties::getApplicationKey,
+				DatadogConfig.super::applicationKey);
+	}
+
+	@Override
 	public String hostTag() {
 		return get(DatadogProperties::getHostTag, DatadogConfig.super::hostTag);
 	}
@@ -47,6 +52,11 @@ class DatadogPropertiesConfigAdapter
 	@Override
 	public String uri() {
 		return get(DatadogProperties::getUri, DatadogConfig.super::uri);
+	}
+
+	@Override
+	public boolean descriptions() {
+		return get(DatadogProperties::isDescriptions, DatadogConfig.super::descriptions);
 	}
 
 }

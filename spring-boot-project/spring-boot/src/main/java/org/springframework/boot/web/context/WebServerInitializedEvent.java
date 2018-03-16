@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.web.context;
 
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -31,8 +30,8 @@ import org.springframework.context.ApplicationEvent;
 @SuppressWarnings("serial")
 public abstract class WebServerInitializedEvent extends ApplicationEvent {
 
-	protected WebServerInitializedEvent(WebServer source) {
-		super(source);
+	protected WebServerInitializedEvent(WebServer webServer) {
+		super(webServer);
 	}
 
 	/**
@@ -49,7 +48,7 @@ public abstract class WebServerInitializedEvent extends ApplicationEvent {
 	 * context) before acting on the server itself.
 	 * @return the applicationContext that the server was created from
 	 */
-	public abstract ApplicationContext getApplicationContext();
+	public abstract WebServerApplicationContext getApplicationContext();
 
 	/**
 	 * Access the source of the event (an {@link WebServer}).
@@ -59,12 +58,5 @@ public abstract class WebServerInitializedEvent extends ApplicationEvent {
 	public WebServer getSource() {
 		return (WebServer) super.getSource();
 	}
-
-	/**
-	 * Access the {@link WebServer} Id used internally to differentiate application /
-	 * management servers.
-	 * @return the server internal Id
-	 */
-	public abstract String getServerId();
 
 }

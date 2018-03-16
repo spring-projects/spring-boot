@@ -57,6 +57,7 @@
 		<module>spring-boot-sample-jta-narayana</module>
 		<module>spring-boot-sample-jta-jndi</module>
 		<module>spring-boot-sample-junit-jupiter</module>
+		<module>spring-boot-sample-kafka</module>
 		<module>spring-boot-sample-liquibase</module>
 		<module>spring-boot-sample-logback</module>
 		<module>spring-boot-sample-oauth2-client</module>
@@ -248,24 +249,14 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>java9</id>
+			<id>java10</id>
 			<activation>
-				<jdk>9</jdk>
+				<jdk>10</jdk>
 			</activation>
 			<properties>
-				<aspectj.version>1.9.0.RC1</aspectj.version>
+				<maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
+				<maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
 			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>--add-modules java.base,java.xml.bind</argLine>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 	</profiles>
 </project>

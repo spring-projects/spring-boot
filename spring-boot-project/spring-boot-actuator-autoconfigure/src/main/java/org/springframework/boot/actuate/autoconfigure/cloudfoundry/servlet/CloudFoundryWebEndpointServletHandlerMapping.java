@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,30 +25,19 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
-import org.springframework.boot.endpoint.web.EndpointMapping;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
 /**
@@ -59,39 +45,35 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * Cloud Foundry specific URLs over HTTP using Spring MVC.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 class CloudFoundryWebEndpointServletHandlerMapping
 		extends AbstractWebMvcEndpointHandlerMapping {
 
-	private final Method handle = ReflectionUtils.findMethod(OperationHandler.class,
-			"handle", HttpServletRequest.class, Map.class);
-
-	private final Method links = ReflectionUtils.findMethod(
-			CloudFoundryWebEndpointServletHandlerMapping.class, "links",
-			HttpServletRequest.class, HttpServletResponse.class);
-
-	private static final Log logger = LogFactory
-			.getLog(CloudFoundryWebEndpointServletHandlerMapping.class);
-
 	private final CloudFoundrySecurityInterceptor securityInterceptor;
 
-	private final EndpointLinksResolver endpointLinksResolver = new EndpointLinksResolver();
+	private final EndpointLinksResolver linksResolver;
 
 	CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebOperation>> webEndpoints,
+			Collection<ExposableWebEndpoint> endpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
-			CloudFoundrySecurityInterceptor securityInterceptor) {
-		super(endpointMapping, webEndpoints, endpointMediaTypes, corsConfiguration);
+			CloudFoundrySecurityInterceptor securityInterceptor,
+			EndpointLinksResolver linksResolver) {
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
 		this.securityInterceptor = securityInterceptor;
+		this.linksResolver = linksResolver;
 	}
 
 	@Override
-	protected Method getLinks() {
-		return this.links;
+	protected ServletWebOperation wrapServletWebOperation(ExposableWebEndpoint endpoint,
+			WebOperation operation, ServletWebOperation servletWebOperation) {
+		return new SecureServletWebOperation(servletWebOperation,
+				this.securityInterceptor, endpoint.getId());
 	}
 
+	@Override
 	@ResponseBody
-	private Map<String, Map<String, Link>> links(HttpServletRequest request,
+	protected Map<String, Map<String, Link>> links(HttpServletRequest request,
 			HttpServletResponse response) {
 		SecurityResponse securityResponse = this.securityInterceptor.preHandle(request,
 				"");
@@ -100,8 +82,8 @@ class CloudFoundryWebEndpointServletHandlerMapping
 		}
 		AccessLevel accessLevel = (AccessLevel) request
 				.getAttribute(AccessLevel.REQUEST_ATTRIBUTE);
-		Map<String, Link> links = this.endpointLinksResolver.resolveLinks(getEndpoints(),
-				request.getRequestURL().toString());
+		Map<String, Link> links = this.linksResolver
+				.resolveLinks(request.getRequestURL().toString());
 		Map<String, Link> filteredLinks = new LinkedHashMap<>();
 		if (accessLevel == null) {
 			return Collections.singletonMap("_links", filteredLinks);
@@ -120,83 +102,38 @@ class CloudFoundryWebEndpointServletHandlerMapping
 					securityResponse.getMessage());
 		}
 		catch (Exception ex) {
-			logger.debug("Failed to send error response", ex);
+			this.logger.debug("Failed to send error response", ex);
 		}
-	}
-
-	@Override
-	protected void registerMappingForOperation(WebOperation operation) {
-		registerMapping(createRequestMappingInfo(operation),
-				new OperationHandler(operation.getInvoker(), operation.getId(),
-						this.securityInterceptor),
-				this.handle);
 	}
 
 	/**
-	 * Handler which has the handler method and security interceptor.
+	 * {@link ServletWebOperation} wrapper to add security.
 	 */
-	final class OperationHandler {
+	private static class SecureServletWebOperation implements ServletWebOperation {
 
-		private final OperationInvoker operationInvoker;
-
-		private final String endpointId;
+		private final ServletWebOperation delegate;
 
 		private final CloudFoundrySecurityInterceptor securityInterceptor;
 
-		OperationHandler(OperationInvoker operationInvoker, String id,
-				CloudFoundrySecurityInterceptor securityInterceptor) {
-			this.operationInvoker = operationInvoker;
-			this.endpointId = id;
+		private final String endpointId;
+
+		SecureServletWebOperation(ServletWebOperation delegate,
+				CloudFoundrySecurityInterceptor securityInterceptor, String endpointId) {
+			this.delegate = delegate;
 			this.securityInterceptor = securityInterceptor;
+			this.endpointId = endpointId;
 		}
 
-		@SuppressWarnings("unchecked")
-		@ResponseBody
-		public Object handle(HttpServletRequest request,
-				@RequestBody(required = false) Map<String, String> body) {
+		@Override
+		public Object handle(HttpServletRequest request, Map<String, String> body) {
 			SecurityResponse securityResponse = this.securityInterceptor
 					.preHandle(request, this.endpointId);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
-				return failureResponse(securityResponse);
+				return new ResponseEntity<Object>(securityResponse.getMessage(),
+						securityResponse.getStatus());
 			}
-			Map<String, Object> arguments = new HashMap<>((Map<String, String>) request
-					.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
-			HttpMethod httpMethod = HttpMethod.valueOf(request.getMethod());
-			if (body != null && HttpMethod.POST == httpMethod) {
-				arguments.putAll(body);
-			}
-			request.getParameterMap().forEach((name, values) -> arguments.put(name,
-					values.length == 1 ? values[0] : Arrays.asList(values)));
-			try {
-				return handleResult(this.operationInvoker.invoke(arguments), httpMethod);
-			}
-			catch (ParametersMissingException | ParameterMappingException ex) {
-				return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
-			}
+			return this.delegate.handle(request, body);
 		}
-
-		private Object failureResponse(SecurityResponse response) {
-			return handleResult(new WebEndpointResponse<>(response.getMessage(),
-					response.getStatus().value()));
-		}
-
-		private Object handleResult(Object result) {
-			return handleResult(result, null);
-		}
-
-		private Object handleResult(Object result, HttpMethod httpMethod) {
-			if (result == null) {
-				return new ResponseEntity<>(httpMethod == HttpMethod.GET
-						? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT);
-			}
-			if (!(result instanceof WebEndpointResponse)) {
-				return result;
-			}
-			WebEndpointResponse<?> response = (WebEndpointResponse<?>) result;
-			return new ResponseEntity<Object>(response.getBody(),
-					HttpStatus.valueOf(response.getStatus()));
-		}
-
 	}
 
 }

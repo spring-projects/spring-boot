@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ public class DevToolsProperties {
 
 		/**
 		 * Name of a specific file that, when changed, triggers the restart check. If not
-		 * specified, any classpath file change will trigger the restart.
+		 * specified, any classpath file change triggers the restart.
 		 */
 		private String triggerFile;
 
@@ -122,7 +122,7 @@ public class DevToolsProperties {
 				allExclude.addAll(
 						StringUtils.commaDelimitedListToSet(this.additionalExclude));
 			}
-			return allExclude.toArray(new String[allExclude.size()]);
+			return StringUtils.toStringArray(allExclude);
 		}
 
 		public String getExclude() {

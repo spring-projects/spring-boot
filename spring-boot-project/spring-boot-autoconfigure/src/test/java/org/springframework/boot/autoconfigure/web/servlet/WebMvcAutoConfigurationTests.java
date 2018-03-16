@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -70,6 +71,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
@@ -470,7 +472,10 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customMediaTypes() {
-		this.contextRunner.withPropertyValues("spring.mvc.mediaTypes.yaml:text/yaml")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.mvc.contentnegotiation.media-types.yaml:text/yaml",
+						"spring.mvc.contentnegotiation.favor-path-extension:true")
 				.run((context) -> {
 					RequestMappingHandlerAdapter adapter = context
 							.getBean(RequestMappingHandlerAdapter.class);
@@ -738,6 +743,85 @@ public class WebMvcAutoConfigurationTests {
 				.run((context) -> assertCacheControl(context));
 	}
 
+	@Test
+	public void defaultPathMatching() {
+		this.contextRunner.run((context) -> {
+			RequestMappingHandlerMapping handlerMapping = context
+					.getBean(RequestMappingHandlerMapping.class);
+			assertThat(handlerMapping.useSuffixPatternMatch()).isFalse();
+			assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isFalse();
+		});
+	}
+
+	@Test
+	public void useSuffixPatternMatch() {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.pathmatch.use-suffix-pattern:true",
+						"spring.mvc.pathmatch.use-registered-suffix-pattern:true")
+				.run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					assertThat(handlerMapping.useSuffixPatternMatch()).isTrue();
+					assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isTrue();
+				});
+	}
+
+	@Test
+	public void defaultContentNegotiation() {
+		this.contextRunner.run((context) -> {
+			RequestMappingHandlerMapping handlerMapping = context
+					.getBean(RequestMappingHandlerMapping.class);
+			ContentNegotiationManager contentNegotiationManager = handlerMapping
+					.getContentNegotiationManager();
+			assertThat(contentNegotiationManager.getStrategies())
+					.doesNotHaveAnyElementsOfTypes(
+							WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class);
+		});
+	}
+
+	@Test
+	public void pathExtensionContentNegotiation() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.mvc.contentnegotiation.favor-path-extension:true")
+				.run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					ContentNegotiationManager contentNegotiationManager = handlerMapping
+							.getContentNegotiationManager();
+					assertThat(contentNegotiationManager.getStrategies())
+							.hasAtLeastOneElementOfType(
+									WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class);
+				});
+	}
+
+	@Test
+	public void queryParameterContentNegotiation() {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.contentnegotiation.favor-parameter:true")
+				.run((context) -> {
+					RequestMappingHandlerMapping handlerMapping = context
+							.getBean(RequestMappingHandlerMapping.class);
+					ContentNegotiationManager contentNegotiationManager = handlerMapping
+							.getContentNegotiationManager();
+					assertThat(contentNegotiationManager.getStrategies())
+							.hasAtLeastOneElementOfType(
+									ParameterContentNegotiationStrategy.class);
+				});
+	}
+
+	@Test
+	public void customConfigurerAppliedAfterAutoConfig() {
+		this.contextRunner.withUserConfiguration(CustomConfigurer.class)
+				.run((context) -> {
+					ContentNegotiationManager manager = context
+							.getBean(ContentNegotiationManager.class);
+					assertThat(manager.getStrategies()).anyMatch(
+							strategy -> WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class
+									.isAssignableFrom(strategy.getClass()));
+				});
+	}
+
 	private void assertCacheControl(AssertableWebApplicationContext context) {
 		Map<String, Object> handlerMap = getHandlerMap(
 				context.getBean("resourceHandlerMapping", HandlerMapping.class));
@@ -809,7 +893,7 @@ public class WebMvcAutoConfigurationTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-								throws Exception {
+						throws Exception {
 					response.getOutputStream().write("Hello World".getBytes());
 				}
 
@@ -1011,6 +1095,16 @@ public class WebMvcAutoConfigurationTests {
 		public HttpMessageConverter<?> customHttpMessageConverter(
 				ConversionService conversionService) {
 			return mock(HttpMessageConverter.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomConfigurer implements WebMvcConfigurer {
+
+		@Override
+		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+			configurer.favorPathExtension(true);
 		}
 
 	}

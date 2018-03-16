@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -59,6 +60,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.SessionCookieConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -84,8 +86,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
 
-import org.springframework.boot.ApplicationHome;
-import org.springframework.boot.ApplicationTemp;
+import org.springframework.boot.system.ApplicationHome;
+import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
@@ -100,6 +102,7 @@ import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.server.Session.SessionTrackingMode;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -310,7 +313,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		InOrder ordered = inOrder((Object[]) initializers);
 		for (ServletContextInitializer initializer : initializers) {
-			ordered.verify(initializer).onStartup((ServletContext) any());
+			ordered.verify(initializer).onStartup(any(ServletContext.class));
 		}
 	}
 
@@ -713,13 +716,14 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	public void defaultSessionTimeout() {
-		assertThat(getFactory().getSessionTimeout()).isEqualTo(Duration.ofMinutes(30));
+		assertThat(getFactory().getSession().getTimeout())
+				.isEqualTo(Duration.ofMinutes(30));
 	}
 
 	@Test
 	public void persistSession() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setPersistSession(true);
+		factory.getSession().setPersistent(true);
 		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		String s1 = getResponse(getLocalUrl("/session"));
@@ -737,8 +741,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void persistSessionInSpecificSessionStoreDir() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		File sessionStoreDir = this.temporaryFolder.newFolder();
-		factory.setPersistSession(true);
-		factory.setSessionStoreDir(sessionStoreDir);
+		factory.getSession().setPersistent(true);
+		factory.getSession().setStoreDir(sessionStoreDir);
 		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		getResponse(getLocalUrl("/session"));
@@ -759,7 +763,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void getValidSessionStoreWhenSessionStoreIsRelative() {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSessionStoreDir(new File("sessions"));
+		factory.getSession().setStoreDir(new File("sessions"));
 		File dir = factory.getValidSessionStoreDir(false);
 		assertThat(dir.getName()).isEqualTo("sessions");
 		assertThat(dir.getParentFile()).isEqualTo(new ApplicationHome().getDir());
@@ -768,10 +772,48 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSessionStoreDir(this.temporaryFolder.newFile());
+		factory.getSession().setStoreDir(this.temporaryFolder.newFile());
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("points to a file");
 		factory.getValidSessionStoreDir(false);
+	}
+
+	@Test
+	public void sessionCookieConfiguration() {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.getSession().getCookie().setName("testname");
+		factory.getSession().getCookie().setDomain("testdomain");
+		factory.getSession().getCookie().setPath("/testpath");
+		factory.getSession().getCookie().setComment("testcomment");
+		factory.getSession().getCookie().setHttpOnly(true);
+		factory.getSession().getCookie().setSecure(true);
+		factory.getSession().getCookie().setMaxAge(Duration.ofSeconds(60));
+		final AtomicReference<SessionCookieConfig> configReference = new AtomicReference<>();
+		this.webServer = factory.getWebServer(
+				(context) -> configReference.set(context.getSessionCookieConfig()));
+		SessionCookieConfig sessionCookieConfig = configReference.get();
+		assertThat(sessionCookieConfig.getName()).isEqualTo("testname");
+		assertThat(sessionCookieConfig.getDomain()).isEqualTo("testdomain");
+		assertThat(sessionCookieConfig.getPath()).isEqualTo("/testpath");
+		assertThat(sessionCookieConfig.getComment()).isEqualTo("testcomment");
+		assertThat(sessionCookieConfig.isHttpOnly()).isTrue();
+		assertThat(sessionCookieConfig.isSecure()).isTrue();
+		assertThat(sessionCookieConfig.getMaxAge()).isEqualTo(60);
+	}
+
+	@Test
+	public void sslSessionTracking() {
+		AbstractServletWebServerFactory factory = getFactory();
+		Ssl ssl = new Ssl();
+		ssl.setEnabled(true);
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
+		factory.getSession().setTrackingModes(EnumSet.of(SessionTrackingMode.SSL));
+		AtomicReference<ServletContext> contextReference = new AtomicReference<>();
+		this.webServer = factory.getWebServer(contextReference::set);
+		assertThat(contextReference.get().getEffectiveSessionTrackingModes())
+				.isEqualTo(EnumSet.of(javax.servlet.SessionTrackingMode.SSL));
 	}
 
 	@Test
@@ -940,7 +982,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		JspServlet jspServlet = getJspServlet();
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
 				.getField(jspServlet, "options");
-		assertThat(options.getDevelopment()).isEqualTo(false);
+		assertThat(options.getDevelopment()).isFalse();
 	}
 
 	@Test
@@ -967,6 +1009,38 @@ public abstract class AbstractServletWebServerFactoryTests {
 				}));
 		this.thrown.expect(WebServerException.class);
 		factory.getWebServer().start();
+	}
+
+	@Test
+	public void sessionConfiguration() {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.getSession().setTimeout(Duration.ofSeconds(123));
+		factory.getSession().setTrackingModes(
+				EnumSet.of(SessionTrackingMode.COOKIE, SessionTrackingMode.URL));
+		factory.getSession().getCookie().setName("testname");
+		factory.getSession().getCookie().setDomain("testdomain");
+		factory.getSession().getCookie().setPath("/testpath");
+		factory.getSession().getCookie().setComment("testcomment");
+		factory.getSession().getCookie().setHttpOnly(true);
+		factory.getSession().getCookie().setSecure(true);
+		factory.getSession().getCookie().setMaxAge(Duration.ofMinutes(1));
+		AtomicReference<ServletContext> contextReference = new AtomicReference<>();
+		factory.getWebServer(contextReference::set).start();
+		ServletContext servletContext = contextReference.get();
+		assertThat(servletContext.getEffectiveSessionTrackingModes())
+				.isEqualTo(EnumSet.of(javax.servlet.SessionTrackingMode.COOKIE,
+						javax.servlet.SessionTrackingMode.URL));
+		assertThat(servletContext.getSessionCookieConfig().getName())
+				.isEqualTo("testname");
+		assertThat(servletContext.getSessionCookieConfig().getDomain())
+				.isEqualTo("testdomain");
+		assertThat(servletContext.getSessionCookieConfig().getPath())
+				.isEqualTo("/testpath");
+		assertThat(servletContext.getSessionCookieConfig().getComment())
+				.isEqualTo("testcomment");
+		assertThat(servletContext.getSessionCookieConfig().isHttpOnly()).isTrue();
+		assertThat(servletContext.getSessionCookieConfig().isSecure()).isTrue();
+		assertThat(servletContext.getSessionCookieConfig().getMaxAge()).isEqualTo(60);
 	}
 
 	protected abstract void addConnector(int port,
@@ -1016,8 +1090,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 					@Override
 					protected void service(HttpServletRequest req,
-							HttpServletResponse resp)
-									throws IOException {
+							HttpServletResponse resp) throws IOException {
 						resp.setContentType("text/plain");
 						resp.setContentLength(testContent.length());
 						resp.getWriter().write(testContent);
@@ -1071,13 +1144,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected String getResponse(String url,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
-					throws IOException, URISyntaxException {
+			throws IOException, URISyntaxException {
 		return getResponse(url, HttpMethod.GET, requestFactory, headers);
 	}
 
 	protected String getResponse(String url, HttpMethod method,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
-					throws IOException, URISyntaxException {
+			throws IOException, URISyntaxException {
 		try (ClientHttpResponse response = getClientResponse(url, method, requestFactory,
 				headers)) {
 			return StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
@@ -1105,7 +1178,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected ClientHttpResponse getClientResponse(String url, HttpMethod method,
 			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
-					throws IOException, URISyntaxException {
+			throws IOException, URISyntaxException {
 		ClientHttpRequest request = requestFactory.createRequest(new URI(url), method);
 		request.getHeaders().add("Cookie", "JSESSIONID=" + "123");
 		for (String header : headers) {
@@ -1140,7 +1213,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 				new ExampleServlet() {
 
 					@Override
-					public void service(ServletRequest request, ServletResponse response) {
+					public void service(ServletRequest request,
+							ServletResponse response) {
 						throw new RuntimeException("Planned");
 					}
 

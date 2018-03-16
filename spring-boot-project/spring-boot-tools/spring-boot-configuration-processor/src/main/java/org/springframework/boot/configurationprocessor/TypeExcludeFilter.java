@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ class TypeExcludeFilter {
 		add("org.apache.tomcat.jdbc.pool.Validator");
 		add("org.flywaydb.core.api.callback.FlywayCallback");
 		add("org.flywaydb.core.api.resolver.MigrationResolver");
-		add("org.springframework.http.MediaType");
 	}
 
 	private void add(String className) {

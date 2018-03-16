@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	 * Create a new {@link DataSourceHealthIndicator} instance.
 	 */
 	public DataSourceHealthIndicator() {
+		this(null, null);
 	}
 
 	/**
@@ -82,9 +83,10 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator
 	 * @param query the validation query to use (can be {@code null})
 	 */
 	public DataSourceHealthIndicator(DataSource dataSource, String query) {
+		super("DataSource health check failed");
 		this.dataSource = dataSource;
 		this.query = query;
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.jdbcTemplate = (dataSource == null ? null : new JdbcTemplate(dataSource));
 	}
 
 	@Override

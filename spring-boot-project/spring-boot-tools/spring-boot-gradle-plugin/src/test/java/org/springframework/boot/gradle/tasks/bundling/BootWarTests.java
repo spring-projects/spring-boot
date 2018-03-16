@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		getTask().setMainClassName("com.example.Main");
 		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().execute();
-		assertThat(getTask().getArchivePath().exists());
+		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile
 					.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar"))
@@ -69,7 +69,7 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		getTask().providedClasspath(this.temp.newFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().setExcludeDevtools(false);
 		getTask().execute();
-		assertThat(getTask().getArchivePath().exists());
+		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile
 					.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar"))
@@ -87,11 +87,21 @@ public class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		getTask().from(webappFolder);
 		getTask().setMainClassName("com.example.Main");
 		getTask().execute();
-		assertThat(getTask().getArchivePath().exists());
+		assertThat(getTask().getArchivePath()).exists();
 		try (JarFile jarFile = new JarFile(getTask().getArchivePath())) {
 			assertThat(jarFile.getEntry("org/")).isNotNull();
 			assertThat(jarFile.getEntry("org/foo.txt")).isNotNull();
 		}
+	}
+
+	@Test
+	public void libProvidedEntriesAreWrittenAfterLibEntries() throws IOException {
+		getTask().setMainClassName("com.example.Main");
+		getTask().classpath(this.temp.newFile("library.jar"));
+		getTask().providedClasspath(this.temp.newFile("provided-library.jar"));
+		getTask().execute();
+		assertThat(getEntryNames(getTask().getArchivePath())).containsSubsequence(
+				"WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
 	}
 
 }

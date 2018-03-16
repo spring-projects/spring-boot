@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * Provides access to entries from a {@link JarFile}. In order to reduce memory
@@ -41,6 +40,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  * which should consume about 122K.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
@@ -99,12 +99,11 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
 		AsciiBytes name = applyFilter(fileHeader.getName());
 		if (name != null) {
-			add(name, fileHeader, dataOffset);
+			add(name, dataOffset);
 		}
 	}
 
-	private void add(AsciiBytes name, CentralDirectoryFileHeader fileHeader,
-			int dataOffset) {
+	private void add(AsciiBytes name, int dataOffset) {
 		this.hashCodes[this.size] = name.hashCode();
 		this.centralDirectoryOffsets[this.size] = dataOffset;
 		this.positions[this.size] = this.size;
@@ -119,6 +118,10 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		for (int i = 0; i < this.size; i++) {
 			this.positions[positions[i]] = i;
 		}
+	}
+
+	int getSize() {
+		return this.size;
 	}
 
 	private void sort(int left, int right) {
@@ -174,18 +177,16 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		return getEntry(name, JarEntry.class, true);
 	}
 
-	public InputStream getInputStream(String name, ResourceAccess access)
-			throws IOException {
+	public InputStream getInputStream(String name) throws IOException {
 		FileHeader entry = getEntry(name, FileHeader.class, false);
-		return getInputStream(entry, access);
+		return getInputStream(entry);
 	}
 
-	public InputStream getInputStream(FileHeader entry, ResourceAccess access)
-			throws IOException {
+	public InputStream getInputStream(FileHeader entry) throws IOException {
 		if (entry == null) {
 			return null;
 		}
-		InputStream inputStream = getEntryData(entry).getInputStream(access);
+		InputStream inputStream = getEntryData(entry).getInputStream();
 		if (entry.getMethod() == ZipEntry.DEFLATED) {
 			inputStream = new ZipInflaterInputStream(inputStream, (int) entry.getSize());
 		}
@@ -205,8 +206,8 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		// local directory to the central directory. We need to re-read
 		// here to skip them
 		RandomAccessData data = this.jarFile.getData();
-		byte[] localHeader = Bytes.get(
-				data.getSubsection(entry.getLocalHeaderOffset(), LOCAL_FILE_HEADER_SIZE));
+		byte[] localHeader = data.read(entry.getLocalHeaderOffset(),
+				LOCAL_FILE_HEADER_SIZE);
 		long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);
 		long extraLength = Bytes.littleEndianValue(localHeader, 28, 2);
 		return data.getSubsection(entry.getLocalHeaderOffset() + LOCAL_FILE_HEADER_SIZE

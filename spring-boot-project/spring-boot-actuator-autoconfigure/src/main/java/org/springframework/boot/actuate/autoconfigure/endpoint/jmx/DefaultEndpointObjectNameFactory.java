@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
-import java.util.Map;
-
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory;
+import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -50,15 +48,18 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 	}
 
 	@Override
-	public ObjectName generate(EndpointMBean mBean) throws MalformedObjectNameException {
-		String baseObjectName = this.properties.getDomain() + ":type=Endpoint" + ",name="
-				+ StringUtils.capitalize(mBean.getEndpointId());
-		StringBuilder builder = new StringBuilder(baseObjectName);
-		if (this.mBeanServer != null && hasMBean(baseObjectName)) {
-			builder.append(",context=").append(this.contextId);
+	public ObjectName getObjectName(ExposableJmxEndpoint endpoint)
+			throws MalformedObjectNameException {
+		StringBuilder builder = new StringBuilder(this.properties.getDomain());
+		builder.append(":type=Endpoint");
+		builder.append(",name=" + StringUtils.capitalize(endpoint.getId()));
+		String baseName = builder.toString();
+		if (this.mBeanServer != null && hasMBean(baseName)) {
+			builder.append(",context=" + this.contextId);
 		}
 		if (this.properties.isUniqueNames()) {
-			builder.append(",identity=").append(ObjectUtils.getIdentityHexString(mBean));
+			String identity = ObjectUtils.getIdentityHexString(endpoint);
+			builder.append(",identity=" + identity);
 		}
 		builder.append(getStaticNames());
 		return ObjectNameManager.getInstance(builder.toString());
@@ -74,10 +75,8 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 			return "";
 		}
 		StringBuilder builder = new StringBuilder();
-		for (Map.Entry<Object, Object> name : this.properties.getStaticNames()
-				.entrySet()) {
-			builder.append(",").append(name.getKey()).append("=").append(name.getValue());
-		}
+		this.properties.getStaticNames()
+				.forEach((name, value) -> builder.append("," + name + "=" + value));
 		return builder.toString();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,28 +30,20 @@ import org.json.simple.parser.ParseException;
  * @since 1.2.0
  * @see JsonParserFactory
  */
-public class JsonSimpleJsonParser implements JsonParser {
+public class JsonSimpleJsonParser extends AbstractJsonParser {
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
-		try {
-			return (Map<String, Object>) new JSONParser().parse(json);
-		}
-		catch (ParseException ex) {
-			throw new IllegalArgumentException("Cannot parse JSON", ex);
-		}
+		return (Map<String, Object>) tryParse(() -> new JSONParser().parse(json),
+				ParseException.class);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
-		try {
-			return (List<Object>) new JSONParser().parse(json);
-		}
-		catch (ParseException ex) {
-			throw new IllegalArgumentException("Cannot parse JSON", ex);
-		}
+		return (List<Object>) tryParse(() -> new JSONParser().parse(json),
+				ParseException.class);
 	}
 
 }

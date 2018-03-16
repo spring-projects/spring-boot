@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,21 @@
 package org.springframework.boot.autoconfigure.security.reactive;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.web.reactive.result.method.annotation.AuthenticationPrincipalArgumentResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security in a reactive
- * application. This auto-configuration adds {@link EnableWebFluxSecurity} and delegates
- * to Spring Security's content-negotiation mechanism for authentication. In a webapp this
- * configuration also secures all web endpoints.
+ * application.
  *
  * @author Madhura Bhave
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass({ EnableWebFluxSecurity.class,
-		AuthenticationPrincipalArgumentResolver.class })
 @EnableConfigurationProperties(SecurityProperties.class)
-@Import({ WebFluxSecurityConfiguration.class,
-		ReactiveAuthenticationManagerConfiguration.class })
+@Import(WebFluxSecurityConfiguration.class)
 public class ReactiveSecurityAutoConfiguration {
 
 }

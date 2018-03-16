@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,20 +32,15 @@ public class ReactiveWebServerInitializedEvent extends WebServerInitializedEvent
 
 	private final ReactiveWebServerApplicationContext applicationContext;
 
-	public ReactiveWebServerInitializedEvent(WebServer source,
+	public ReactiveWebServerInitializedEvent(WebServer webServer,
 			ReactiveWebServerApplicationContext applicationContext) {
-		super(source);
+		super(webServer);
 		this.applicationContext = applicationContext;
 	}
 
 	@Override
 	public ReactiveWebServerApplicationContext getApplicationContext() {
 		return this.applicationContext;
-	}
-
-	@Override
-	public String getServerId() {
-		return "server";
 	}
 
 }

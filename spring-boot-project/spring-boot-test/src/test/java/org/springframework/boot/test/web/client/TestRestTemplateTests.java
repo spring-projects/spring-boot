@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -83,9 +85,18 @@ public class TestRestTemplateTests {
 	}
 
 	@Test
+	public void doNotReplaceCustomRequestFactory() {
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+				.requestFactory(OkHttp3ClientHttpRequestFactory.class);
+		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
+		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
+				.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+	}
+
+	@Test
 	public void getRootUriRootUriSetViaRestTemplateBuilder() {
 		String rootUri = "http://example.com";
-		RestTemplate delegate = new RestTemplateBuilder().rootUri(rootUri).build();
+		RestTemplateBuilder delegate = new RestTemplateBuilder().rootUri(rootUri);
 		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo(rootUri);
 	}
 
@@ -125,14 +136,17 @@ public class TestRestTemplateTests {
 	@Test
 	public void restOperationsAreAvailable() {
 		RestTemplate delegate = mock(RestTemplate.class);
+		given(delegate.getRequestFactory())
+				.willReturn(new SimpleClientHttpRequestFactory());
 		given(delegate.getUriTemplateHandler())
 				.willReturn(new DefaultUriBuilderFactory());
-		final TestRestTemplate restTemplate = new TestRestTemplate(delegate);
+		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
+		given(builder.build()).willReturn(delegate);
+		final TestRestTemplate restTemplate = new TestRestTemplate(builder);
 		ReflectionUtils.doWithMethods(RestOperations.class, new MethodCallback() {
 
 			@Override
-			public void doWith(Method method)
-					throws IllegalArgumentException {
+			public void doWith(Method method) throws IllegalArgumentException {
 				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class,
 						method.getName(), method.getParameterTypes());
 				assertThat(equivalent).as("Method %s not found", method).isNotNull();
@@ -337,17 +351,16 @@ public class TestRestTemplateTests {
 		request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
 		URI absoluteUri = URI
 				.create("http://localhost:8080/a/b/c.txt?param=%7Bsomething%7D");
-		given(requestFactory.createRequest(eq(absoluteUri), (HttpMethod) any()))
+		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class)))
 				.willReturn(request);
-		RestTemplate delegate = new RestTemplate();
-		TestRestTemplate template = new TestRestTemplate(delegate);
-		delegate.setRequestFactory(requestFactory);
+		TestRestTemplate template = new TestRestTemplate();
+		template.getRestTemplate().setRequestFactory(requestFactory);
 		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(
 				new MockEnvironment());
 		template.setUriTemplateHandler(uriTemplateHandler);
 		callback.doWithTestRestTemplate(template,
 				URI.create("/a/b/c.txt?param=%7Bsomething%7D"));
-		verify(requestFactory).createRequest(eq(absoluteUri), (HttpMethod) any());
+		verify(requestFactory).createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}
 
 	private void assertBasicAuthorizationInterceptorCredentials(

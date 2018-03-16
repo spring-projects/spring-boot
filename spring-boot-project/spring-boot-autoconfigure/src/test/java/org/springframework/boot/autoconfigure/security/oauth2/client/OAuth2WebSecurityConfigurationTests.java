@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -187,9 +187,8 @@ public class OAuth2WebSecurityConfigurationTests {
 		private ClientRegistration getClientRegistration(String id, String userInfoUri) {
 			ClientRegistration.Builder builder = ClientRegistration
 					.withRegistrationId(id);
-			builder.clientName("foo").clientId("foo")
-					.clientAuthenticationMethod(
-							org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC)
+			builder.clientName("foo").clientId("foo").clientAuthenticationMethod(
+					org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 					.scope("read").clientSecret("secret")
 					.redirectUriTemplate("http://redirect-uri.com")

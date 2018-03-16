@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -248,7 +249,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private Collection<String> getBeanNamesForType(ListableBeanFactory beanFactory,
 			String type, ClassLoader classLoader, boolean considerHierarchy)
-					throws LinkageError {
+			throws LinkageError {
 		try {
 			Set<String> result = new LinkedHashSet<>();
 			collectBeanNamesForType(result, beanFactory,
@@ -479,7 +480,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				string.append(StringUtils.collectionToCommaDelimitedString(this.types));
 			}
 			string.append("; SearchStrategy: ");
-			string.append(this.strategy.toString().toLowerCase());
+			string.append(this.strategy.toString().toLowerCase(Locale.ENGLISH));
 			string.append(")");
 			return string.toString();
 		}

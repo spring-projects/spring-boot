@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvokerAdvisor;
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -31,15 +31,15 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @author Phillip Webb
  * @since 2.0.0
  */
 @Configuration
 public class EndpointAutoConfiguration {
 
 	@Bean
-	public ParameterMapper endpointOperationParameterMapper() {
-		return new ConversionServiceParameterMapper();
+	@ConditionalOnMissingBean
+	public ParameterValueMapper endpointOperationParameterMapper() {
+		return new ConversionServiceParameterValueMapper();
 	}
 
 	@Bean

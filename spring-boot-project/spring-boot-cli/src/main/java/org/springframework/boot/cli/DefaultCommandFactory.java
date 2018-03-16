@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.cli.command.CommandFactory;
 import org.springframework.boot.cli.command.archive.JarCommand;
 import org.springframework.boot.cli.command.archive.WarCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
+import org.springframework.boot.cli.command.encodepassword.EncodePasswordCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.init.InitCommand;
 import org.springframework.boot.cli.command.install.InstallCommand;
@@ -42,7 +43,7 @@ public class DefaultCommandFactory implements CommandFactory {
 	private static final List<Command> DEFAULT_COMMANDS;
 
 	static {
-		ArrayList<Command> defaultCommands = new ArrayList<>();
+		List<Command> defaultCommands = new ArrayList<>();
 		defaultCommands.add(new VersionCommand());
 		defaultCommands.add(new RunCommand());
 		defaultCommands.add(new GrabCommand());
@@ -51,6 +52,7 @@ public class DefaultCommandFactory implements CommandFactory {
 		defaultCommands.add(new InstallCommand());
 		defaultCommands.add(new UninstallCommand());
 		defaultCommands.add(new InitCommand());
+		defaultCommands.add(new EncodePasswordCommand());
 		DEFAULT_COMMANDS = Collections.unmodifiableList(defaultCommands);
 	}
 

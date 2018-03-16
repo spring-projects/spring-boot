@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.stream.IntStream;
+import java.util.Locale;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 
@@ -78,7 +78,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 			if (result.length() > 0) {
 				result.append("_");
 			}
-			result.append(name.getElement(i, Form.UNIFORM).toUpperCase());
+			result.append(name.getElement(i, Form.UNIFORM).toUpperCase(Locale.ENGLISH));
 		}
 		return result.toString();
 	}
@@ -95,18 +95,16 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	private Object convertLegacyNameElement(String element) {
-		return element.replace("-", "_").toUpperCase();
+		return element.replace('-', '_').toUpperCase(Locale.ENGLISH);
 	}
 
 	private CharSequence processElementValue(CharSequence value) {
-		String result = value.toString().toLowerCase();
+		String result = value.toString().toLowerCase(Locale.ENGLISH);
 		return (isNumber(result) ? "[" + result + "]" : result);
 	}
 
 	private static boolean isNumber(String string) {
-		IntStream nonDigits = string.chars().filter((c) -> !Character.isDigit(c));
-		boolean hasNonDigit = nonDigits.findFirst().isPresent();
-		return !hasNonDigit;
+		return string.chars().allMatch(Character::isDigit);
 	}
 
 }

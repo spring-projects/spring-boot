@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import java.util.Map;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.BeansException;
@@ -206,6 +209,8 @@ public class ErrorMvcAutoConfiguration {
 	 */
 	private static class SpelView implements View {
 
+		private static final Log logger = LogFactory.getLog(SpelView.class);
+
 		private final NonRecursivePropertyPlaceholderHelper helper;
 
 		private final String template;
@@ -225,14 +230,29 @@ public class ErrorMvcAutoConfiguration {
 		@Override
 		public void render(Map<String, ?> model, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
+			if (response.isCommitted()) {
+				String message = getMessage(model);
+				logger.error(message);
+				return;
+			}
 			if (response.getContentType() == null) {
 				response.setContentType(getContentType());
 			}
-			Map<String, Object> map = new HashMap<>(model);
-			map.put("path", request.getContextPath());
-			PlaceholderResolver resolver = new ExpressionResolver(getExpressions(), map);
+			PlaceholderResolver resolver = new ExpressionResolver(getExpressions(),
+					model);
 			String result = this.helper.replacePlaceholders(this.template, resolver);
 			response.getWriter().append(result);
+		}
+
+		private String getMessage(Map<String, ?> model) {
+			Object path = model.get("path");
+			String message = "Cannot render error page for request [" + path + "]";
+			if (model.get("message") != null) {
+				message += " and exception [" + model.get("message") + "]";
+			}
+			message += " as the response has already been committed.";
+			message += " As a result, the response may have the wrong status code.";
+			return message;
 		}
 
 		private Map<String, Expression> getExpressions() {

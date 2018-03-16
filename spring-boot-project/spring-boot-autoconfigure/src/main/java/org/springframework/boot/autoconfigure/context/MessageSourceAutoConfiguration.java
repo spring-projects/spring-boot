@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,9 @@ public class MessageSourceAutoConfiguration {
 		}
 		messageSource.setFallbackToSystemLocale(properties.isFallbackToSystemLocale());
 		Duration cacheDuration = properties.getCacheDuration();
-		messageSource.setCacheSeconds(
-				cacheDuration == null ? -1 : (int) cacheDuration.getSeconds());
+		if (cacheDuration != null) {
+			messageSource.setCacheMillis(cacheDuration.toMillis());
+		}
 		messageSource.setAlwaysUseMessageFormat(properties.isAlwaysUseMessageFormat());
 		messageSource.setUseCodeAsDefaultMessage(properties.isUseCodeAsDefaultMessage());
 		return messageSource;
@@ -118,9 +119,10 @@ public class MessageSourceAutoConfiguration {
 		}
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {
+			String target = name.replace('.', '/');
 			try {
 				return new PathMatchingResourcePatternResolver(classLoader)
-						.getResources("classpath*:" + name + ".properties");
+						.getResources("classpath*:" + target + ".properties");
 			}
 			catch (Exception ex) {
 				return NO_RESOURCES;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,61 +17,32 @@
 package org.springframework.boot.actuate.endpoint.web;
 
 import org.springframework.boot.actuate.endpoint.Operation;
-import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.core.style.ToStringCreator;
 
 /**
  * An operation on a web endpoint.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.0.0
  */
-public class WebOperation extends Operation {
-
-	private final OperationRequestPredicate requestPredicate;
-
-	private final String id;
-
-	/**
-	 * Creates a new {@code WebEndpointOperation} with the given {@code type}. The
-	 * operation can be performed using the given {@code operationInvoker}. The operation
-	 * can handle requests that match the given {@code requestPredicate}.
-	 * @param type the type of the operation
-	 * @param operationInvoker used to perform the operation
-	 * @param blocking whether or not this is a blocking operation
-	 * @param requestPredicate the predicate for requests that can be handled by the
-	 * @param id the id of the operation, unique within its endpoint operation
-	 */
-	public WebOperation(OperationType type, OperationInvoker operationInvoker,
-			boolean blocking, OperationRequestPredicate requestPredicate, String id) {
-		super(type, operationInvoker, blocking);
-		this.requestPredicate = requestPredicate;
-		this.id = id;
-	}
-
-	/**
-	 * Returns the predicate for requests that can be handled by this operation.
-	 * @return the predicate
-	 */
-	public OperationRequestPredicate getRequestPredicate() {
-		return this.requestPredicate;
-	}
+public interface WebOperation extends Operation {
 
 	/**
 	 * Returns the ID of the operation that uniquely identifies it within its endpoint.
 	 * @return the ID
 	 */
-	public String getId() {
-		return this.id;
-	}
+	String getId();
 
-	@Override
-	public String toString() {
-		return new ToStringCreator(this).append("type", getType())
-				.append("invoker", getInvoker()).append("blocking", isBlocking())
-				.append("requestPredicate", getRequestPredicate()).append("id", getId())
-				.toString();
-	}
+	/**
+	 * Returns if the underlying operation is blocking.
+	 * @return {@code true} if the operation is blocking
+	 */
+	boolean isBlocking();
+
+	/**
+	 * Returns the predicate for requests that can be handled by this operation.
+	 * @return the predicate
+	 */
+	WebOperationRequestPredicate getRequestPredicate();
 
 }

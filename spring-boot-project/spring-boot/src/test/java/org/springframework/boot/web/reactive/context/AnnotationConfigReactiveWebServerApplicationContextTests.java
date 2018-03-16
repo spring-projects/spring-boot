@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AnnotationConfigReactiveWebServerApplicationContext}.
@@ -60,6 +61,17 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
+	public void multipleRegistersAndRefresh() {
+		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
+		this.context.register(WebServerConfiguration.class);
+		this.context.register(HttpHandlerConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(WebServerConfiguration.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(HttpHandlerConfiguration.class))
+				.hasSize(1);
+	}
+
+	@Test
 	public void scanAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.scan(ExampleReactiveWebServerApplicationConfiguration.class
@@ -81,6 +93,16 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		@Bean
 		public ReactiveWebServerFactory webServerFactory() {
 			return new MockReactiveWebServerFactory();
+		}
+
+	}
+
+	@Configuration
+	public static class HttpHandlerConfiguration {
+
+		@Bean
+		public HttpHandler httpHandler() {
+			return mock(HttpHandler.class);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import javax.naming.NamingException;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
+import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
@@ -42,7 +43,8 @@ import org.springframework.util.Assert;
 
 /**
  * {@link WebServer} that can be used to control a Tomcat web server. Usually this class
- * should be created using the {@link TomcatReactiveWebServerFactory} and not directly.
+ * should be created using the {@link TomcatReactiveWebServerFactory} of
+ * {@link TomcatServletWebServerFactory}, but not directly.
  *
  * @author Brian Clozel
  * @author Kristine Jetzke
@@ -91,8 +93,15 @@ public class TomcatWebServer implements WebServer {
 			try {
 				addInstanceIdToEngineName();
 
-				// Remove service connectors so that protocol binding doesn't happen yet
-				removeServiceConnectors();
+				Context context = findContext();
+				context.addLifecycleListener((event) -> {
+					if (context.equals(event.getSource())
+							&& Lifecycle.START_EVENT.equals(event.getType())) {
+						// Remove service connectors so that protocol binding doesn't
+						// happen when the service is started.
+						removeServiceConnectors();
+					}
+				});
 
 				// Start the server to trigger initialization listeners
 				this.tomcat.start();
@@ -100,7 +109,6 @@ public class TomcatWebServer implements WebServer {
 				// We can re-throw failure exception directly in the main thread
 				rethrowDeferredStartupExceptions();
 
-				Context context = findContext();
 				try {
 					ContextBindings.bindClassLoader(context, context.getNamingToken(),
 							getClass().getClassLoader());
@@ -189,7 +197,7 @@ public class TomcatWebServer implements WebServer {
 				addPreviouslyRemovedConnectors();
 				Connector connector = this.tomcat.getConnector();
 				if (connector != null && this.autoStart) {
-					startConnector(connector);
+					startConnector();
 				}
 				checkThatConnectorsHaveStarted();
 				this.started = true;
@@ -263,7 +271,7 @@ public class TomcatWebServer implements WebServer {
 		}
 	}
 
-	private void startConnector(Connector connector) {
+	private void startConnector() {
 		try {
 			for (Container child : this.tomcat.getHost().findChildren()) {
 				if (child instanceof TomcatEmbeddedContext) {

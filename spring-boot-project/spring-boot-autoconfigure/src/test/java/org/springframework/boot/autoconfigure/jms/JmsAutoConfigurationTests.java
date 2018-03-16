@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,21 +130,20 @@ public class JmsAutoConfigurationTests {
 	@Test
 	public void testEnableJmsCreateDefaultContainerFactory() {
 		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
-				.run((context) -> assertThat(context)
-						.getBean("jmsListenerContainerFactory",
-								JmsListenerContainerFactory.class)
+				.run((context) -> assertThat(context).getBean(
+						"jmsListenerContainerFactory", JmsListenerContainerFactory.class)
 						.isExactlyInstanceOf(DefaultJmsListenerContainerFactory.class));
 	}
 
 	@Test
 	public void testJmsListenerContainerFactoryBackOff() {
-		this.contextRunner
-				.withUserConfiguration(TestConfiguration6.class,
-						EnableJmsConfiguration.class)
-				.run((context) -> assertThat(context)
-						.getBean("jmsListenerContainerFactory",
-								JmsListenerContainerFactory.class)
-						.isExactlyInstanceOf(SimpleJmsListenerContainerFactory.class));
+		this.contextRunner.withUserConfiguration(TestConfiguration6.class,
+				EnableJmsConfiguration.class).run(
+						(context) -> assertThat(context)
+								.getBean("jmsListenerContainerFactory",
+										JmsListenerContainerFactory.class)
+								.isExactlyInstanceOf(
+										SimpleJmsListenerContainerFactory.class));
 	}
 
 	@Test
@@ -414,9 +413,8 @@ public class JmsAutoConfigurationTests {
 	@Test
 	public void enableJmsAutomatically() {
 		this.contextRunner.withUserConfiguration(NoEnableJmsConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasBean(
-								JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+				.run((context) -> assertThat(context).hasBean(
+						JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 						.hasBean(
 								JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME));
 	}

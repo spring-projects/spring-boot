@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,16 @@
 
 package org.springframework.boot.web.reactive.context;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
@@ -28,6 +33,7 @@ import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -51,13 +57,13 @@ import org.springframework.util.ObjectUtils;
  * @see AnnotationConfigApplicationContext
  */
 public class AnnotationConfigReactiveWebServerApplicationContext
-		extends ReactiveWebServerApplicationContext {
+		extends ReactiveWebServerApplicationContext implements AnnotationConfigRegistry {
 
 	private final AnnotatedBeanDefinitionReader reader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
-	private Class<?>[] annotatedClasses;
+	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<>();
 
 	private String[] basePackages;
 
@@ -125,8 +131,8 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 
 	/**
 	 * Provide a custom {@link BeanNameGenerator} for use with
-	 * {@link AnnotatedBeanDefinitionReader} and/or {@link ClassPathBeanDefinitionScanner},
-	 * if any.
+	 * {@link AnnotatedBeanDefinitionReader} and/or
+	 * {@link ClassPathBeanDefinitionScanner}, if any.
 	 * <p>
 	 * Default is
 	 * {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
@@ -171,10 +177,11 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */
+	@Override
 	public final void register(Class<?>... annotatedClasses) {
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
-		this.annotatedClasses = annotatedClasses;
+		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
 	}
 
 	/**
@@ -184,6 +191,7 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 	 * @see #register(Class...)
 	 * @see #refresh()
 	 */
+	@Override
 	public final void scan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		this.basePackages = basePackages;
@@ -201,8 +209,8 @@ public class AnnotationConfigReactiveWebServerApplicationContext
 		if (!ObjectUtils.isEmpty(this.basePackages)) {
 			this.scanner.scan(this.basePackages);
 		}
-		if (!ObjectUtils.isEmpty(this.annotatedClasses)) {
-			this.reader.register(this.annotatedClasses);
+		if (!this.annotatedClasses.isEmpty()) {
+			this.reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 		}
 	}
 

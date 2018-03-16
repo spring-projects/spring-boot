@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.jdbc;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -67,7 +68,7 @@ public enum DatabaseDriver {
 	 * MySQL.
 	 */
 	MYSQL("MySQL", "com.mysql.jdbc.Driver",
-			"com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "SELECT 1"),
+			"com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "/* ping */ SELECT 1"),
 
 	/**
 	 * Maria DB.
@@ -133,7 +134,7 @@ public enum DatabaseDriver {
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
-					|| productName.toLowerCase().startsWith("firebird");
+					|| productName.toLowerCase(Locale.ENGLISH).startsWith("firebird");
 		}
 	},
 
@@ -146,7 +147,7 @@ public enum DatabaseDriver {
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
-					|| productName.toLowerCase().startsWith("db2/");
+					|| productName.toLowerCase(Locale.ENGLISH).startsWith("db2/");
 		}
 	},
 
@@ -170,7 +171,7 @@ public enum DatabaseDriver {
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName)
-					|| productName.toLowerCase().contains("as/400");
+					|| productName.toLowerCase(Locale.ENGLISH).contains("as/400");
 		}
 	},
 
@@ -222,7 +223,7 @@ public enum DatabaseDriver {
 	 * @return the identifier
 	 */
 	public String getId() {
-		return name().toLowerCase();
+		return name().toLowerCase(Locale.ENGLISH);
 	}
 
 	protected boolean matchProductName(String productName) {
@@ -230,7 +231,7 @@ public enum DatabaseDriver {
 	}
 
 	protected Collection<String> getUrlPrefixes() {
-		return Collections.singleton(this.name().toLowerCase());
+		return Collections.singleton(this.name().toLowerCase(Locale.ENGLISH));
 	}
 
 	/**
@@ -265,7 +266,8 @@ public enum DatabaseDriver {
 	public static DatabaseDriver fromJdbcUrl(String url) {
 		if (StringUtils.hasLength(url)) {
 			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
-			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase();
+			String urlWithoutPrefix = url.substring("jdbc".length())
+					.toLowerCase(Locale.ENGLISH);
 			for (DatabaseDriver driver : values()) {
 				for (String urlPrefix : driver.getUrlPrefixes()) {
 					String prefix = ":" + urlPrefix + ":";

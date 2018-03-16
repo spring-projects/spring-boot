@@ -1,0 +1,35 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+plugins {
+	id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+	resolutionStrategy {
+		eachDependency {
+			if (it.requested.group == 'org.springframework.boot') {
+				it.useVersion project.bootVersion
+			}
+		}
+	}
+}
+
+repositories {
+	mavenLocal()
+}
+
+// tag::configure-bom[]
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+	imports {
+		mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+	}
+}
+// end::configure-bom[]

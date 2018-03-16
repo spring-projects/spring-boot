@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,7 @@ public class ActiveMQProperties {
 	private boolean nonBlockingRedelivery = false;
 
 	/**
-	 * Time to wait on message sends for a response. Set it to 0 to indicate to wait
-	 * forever.
+	 * Time to wait on message sends for a response. Set it to 0 to wait forever.
 	 */
 	private Duration sendTimeout = Duration.ofMillis(0);
 
@@ -158,7 +157,7 @@ public class ActiveMQProperties {
 		private boolean blockIfFull = true;
 
 		/**
-		 * Blocking period, before throwing an exception if the pool is still full.
+		 * Blocking period before throwing an exception if the pool is still full.
 		 */
 		private Duration blockIfFullTimeout = Duration.ofMillis(-1);
 

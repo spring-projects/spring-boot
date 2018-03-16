@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.env;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -38,12 +39,12 @@ public class OriginTrackedYamlLoaderTests {
 
 	private OriginTrackedYamlLoader loader;
 
-	private Map<String, Object> result;
+	private List<Map<String, Object>> result;
 
 	@Before
 	public void setUp() {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
-		this.loader = new OriginTrackedYamlLoader(resource, null);
+		this.loader = new OriginTrackedYamlLoader(resource);
 	}
 
 	@Test
@@ -91,14 +92,6 @@ public class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
-	public void processWithActiveProfile() {
-		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
-		this.loader = new OriginTrackedYamlLoader(resource, "development");
-		Map<String, Object> result = this.loader.load();
-		assertThat(result.get("name").toString()).isEqualTo("Test Name");
-	}
-
-	@Test
 	public void processListOfMaps() {
 		OriginTrackedValue name = getValue("example.foo[0].name");
 		OriginTrackedValue url = getValue("example.foo[0].url");
@@ -128,7 +121,7 @@ public class OriginTrackedYamlLoaderTests {
 		if (this.result == null) {
 			this.result = this.loader.load();
 		}
-		return (OriginTrackedValue) this.result.get(name);
+		return (OriginTrackedValue) this.result.get(0).get(name);
 	}
 
 	private String getLocation(OriginTrackedValue value) {

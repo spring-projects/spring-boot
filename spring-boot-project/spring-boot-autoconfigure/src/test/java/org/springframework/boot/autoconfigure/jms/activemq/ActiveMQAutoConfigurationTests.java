@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -89,8 +90,9 @@ public class ActiveMQAutoConfigurationTests {
 							.isEqualTo(defaultFactory.getSendTimeout());
 					assertThat(connectionFactory.isTrustAllPackages())
 							.isEqualTo(defaultFactory.isTrustAllPackages());
-					assertThat(connectionFactory.getTrustedPackages()).containsExactly(
-							defaultFactory.getTrustedPackages().toArray(new String[] {}));
+					assertThat(connectionFactory.getTrustedPackages())
+							.containsExactly(StringUtils
+									.toStringArray(defaultFactory.getTrustedPackages()));
 				});
 	}
 
@@ -113,8 +115,7 @@ public class ActiveMQAutoConfigurationTests {
 					assertThat(connectionFactory.getUserName()).isEqualTo("foo");
 					assertThat(connectionFactory.getPassword()).isEqualTo("bar");
 					assertThat(connectionFactory.getCloseTimeout()).isEqualTo(500);
-					assertThat(connectionFactory.isNonBlockingRedelivery())
-							.isEqualTo(true);
+					assertThat(connectionFactory.isNonBlockingRedelivery()).isTrue();
 					assertThat(connectionFactory.getSendTimeout()).isEqualTo(1000);
 					assertThat(connectionFactory.isTrustAllPackages()).isFalse();
 					assertThat(connectionFactory.getTrustedPackages())
@@ -177,23 +178,19 @@ public class ActiveMQAutoConfigurationTests {
 							.hasSize(1);
 					PooledConnectionFactory connectionFactory = context
 							.getBean(PooledConnectionFactory.class);
-					assertThat(connectionFactory.isBlockIfSessionPoolIsFull())
-							.isEqualTo(false);
+					assertThat(connectionFactory.isBlockIfSessionPoolIsFull()).isFalse();
 					assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout())
 							.isEqualTo(64);
-					assertThat(connectionFactory.isCreateConnectionOnStartup())
-							.isEqualTo(false);
+					assertThat(connectionFactory.isCreateConnectionOnStartup()).isFalse();
 					assertThat(connectionFactory.getExpiryTimeout()).isEqualTo(4096);
 					assertThat(connectionFactory.getIdleTimeout()).isEqualTo(512);
 					assertThat(connectionFactory.getMaxConnections()).isEqualTo(256);
 					assertThat(connectionFactory.getMaximumActiveSessionPerConnection())
 							.isEqualTo(1024);
-					assertThat(connectionFactory.isReconnectOnException())
-							.isEqualTo(false);
+					assertThat(connectionFactory.isReconnectOnException()).isFalse();
 					assertThat(connectionFactory.getTimeBetweenExpirationCheckMillis())
 							.isEqualTo(2048);
-					assertThat(connectionFactory.isUseAnonymousProducers())
-							.isEqualTo(false);
+					assertThat(connectionFactory.isUseAnonymousProducers()).isFalse();
 				});
 	}
 

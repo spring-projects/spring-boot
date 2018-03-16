@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 public class ThreadDumpEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+		extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void threadDump() throws Exception {
@@ -123,8 +123,8 @@ public class ThreadDumpEndpointDocumentationTests
 								fieldWithPath("threads.[].lockOwnerName")
 										.description("Name of the thread that owns the "
 												+ "object on which the thread is "
-												+ "blocked.")
-										.optional(),
+												+ "blocked, if any.")
+										.optional().type(JsonFieldType.STRING),
 								fieldWithPath("threads.[].priority")
 										.description("Priority of the thread. Only "
 												+ "available on Java 9 or later.")

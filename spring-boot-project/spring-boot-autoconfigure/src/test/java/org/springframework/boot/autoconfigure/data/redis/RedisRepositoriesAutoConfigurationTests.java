@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,18 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
 
-import org.springframework.boot.autoconfigure.DockerTestContainer;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.alt.redis.CityRedisRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.redis.city.City;
 import org.springframework.boot.autoconfigure.data.redis.city.CityRepository;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
@@ -42,11 +43,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RedisRepositoriesAutoConfigurationTests {
 
 	@ClassRule
-	public static DockerTestContainer<FixedHostPortGenericContainer> genericContainer = new DockerTestContainer<>(() ->
-			new FixedHostPortGenericContainer("redis:latest")
-			.withFixedExposedPort(6379, 6379));
+	public static RedisContainer redis = new RedisContainer();
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	@Before
+	public void setUp() {
+		TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
+				.applyTo(this.context.getEnvironment());
+	}
 
 	@After
 	public void close() {

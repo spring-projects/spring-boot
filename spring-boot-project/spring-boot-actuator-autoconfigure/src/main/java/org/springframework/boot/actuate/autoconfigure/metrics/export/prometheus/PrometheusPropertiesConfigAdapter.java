@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.time.Duration;
 
 import io.micrometer.prometheus.PrometheusConfig;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link PrometheusProperties} to a {@link PrometheusConfig}.
@@ -42,7 +42,7 @@ class PrometheusPropertiesConfigAdapter extends
 
 	@Override
 	public boolean descriptions() {
-		return get(PrometheusProperties::getDescriptions,
+		return get(PrometheusProperties::isDescriptions,
 				PrometheusConfig.super::descriptions);
 	}
 

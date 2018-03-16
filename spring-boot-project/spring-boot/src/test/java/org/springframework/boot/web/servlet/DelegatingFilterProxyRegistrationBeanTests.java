@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 		assertThat(mockFilterInitialized.get()).isNull();
 		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
 				new MockFilterChain());
-		assertThat(mockFilterInitialized.get()).isEqualTo(true);
+		assertThat(mockFilterInitialized.get()).isTrue();
 	}
 
 	@Test

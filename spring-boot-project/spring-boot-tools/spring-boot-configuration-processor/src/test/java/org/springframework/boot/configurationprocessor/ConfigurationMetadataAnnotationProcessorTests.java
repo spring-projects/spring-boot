@@ -62,10 +62,12 @@ import org.springframework.boot.configurationsample.simple.ClassWithNestedProper
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
+import org.springframework.boot.configurationsample.simple.SimpleArrayProperties;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
 import org.springframework.boot.configurationsample.simple.SimplePrefixValueProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
 import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
+import org.springframework.boot.configurationsample.specific.AnnotatedGetter;
 import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
@@ -79,6 +81,8 @@ import org.springframework.boot.configurationsample.specific.InnerClassRootConfi
 import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
+import org.springframework.boot.configurationsample.specific.StaticAccessor;
+import org.springframework.boot.configurationsample.specific.WildcardConfig;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.util.FileCopyUtils;
 
@@ -267,6 +271,24 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				"java.util.Collection<java.lang.Byte>"));
 		assertThat(metadata).has(Metadata.withProperty("collection.doubles",
 				"java.util.List<java.lang.Double>"));
+		assertThat(metadata).has(Metadata.withProperty("collection.names-to-holders",
+				"java.util.Map<java.lang.String,org.springframework.boot.configurationsample.simple.SimpleCollectionProperties.Holder<java.lang.String>>"));
+	}
+
+	@Test
+	public void parseArrayConfig() throws Exception {
+		ConfigurationMetadata metadata = compile(SimpleArrayProperties.class);
+		assertThat(metadata)
+				.has(Metadata.withGroup("array").ofType(SimpleArrayProperties.class));
+		assertThat(metadata)
+				.has(Metadata.withProperty("array.primitive", "java.lang.Integer[]"));
+		assertThat(metadata)
+				.has(Metadata.withProperty("array.simple", "java.lang.String[]"));
+		assertThat(metadata).has(Metadata.withProperty("array.inner",
+				"org.springframework.boot.configurationsample.simple.SimpleArrayProperties$Holder[]"));
+		assertThat(metadata).has(Metadata.withProperty("array.name-to-integer",
+				"java.util.Map<java.lang.String,java.lang.Integer>[]"));
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test
@@ -328,11 +350,33 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(
 						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
-		assertThat(metadata).has(
-				Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
-						.fromSource(
-								org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
+				.withDefaultValue(false)
+				.fromSource(
+						org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
+	}
+
+	@Test
+	public void annotatedGetter() {
+		ConfigurationMetadata metadata = compile(AnnotatedGetter.class);
+		assertThat(metadata)
+				.has(Metadata.withGroup("specific").fromSource(AnnotatedGetter.class));
+		assertThat(metadata).has(Metadata.withProperty("specific.name", String.class)
+				.fromSource(AnnotatedGetter.class));
+	}
+
+	@Test
+	public void staticAccessor() {
+		ConfigurationMetadata metadata = compile(StaticAccessor.class);
+		assertThat(metadata)
+				.has(Metadata.withGroup("specific").fromSource(StaticAccessor.class));
+		assertThat(metadata).has(Metadata.withProperty("specific.counter", Integer.class)
+				.fromSource(StaticAccessor.class).withDefaultValue(42));
+		assertThat(metadata)
+				.doesNotHave(Metadata.withProperty("specific.name", String.class)
+						.fromSource(StaticAccessor.class));
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
@@ -389,18 +433,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(ClassWithNestedProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("nestedChildProps")
 				.fromSource(ClassWithNestedProperties.NestedChildClass.class));
-		assertThat(metadata)
-				.has(Metadata
-						.withProperty("nestedChildProps.child-class-property",
-								Integer.class)
-						.fromSource(ClassWithNestedProperties.NestedChildClass.class)
-						.withDefaultValue(20));
-		assertThat(metadata)
-				.has(Metadata
-						.withProperty("nestedChildProps.parent-class-property",
-								Integer.class)
-						.fromSource(ClassWithNestedProperties.NestedChildClass.class)
-						.withDefaultValue(10));
+		assertThat(metadata).has(Metadata
+				.withProperty("nestedChildProps.child-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class)
+				.withDefaultValue(20));
+		assertThat(metadata).has(Metadata
+				.withProperty("nestedChildProps.parent-class-property", Integer.class)
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class)
+				.withDefaultValue(10));
 	}
 
 	@Test
@@ -468,6 +508,20 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withProperty("generic.foo.bar.biz.name")
 				.ofType("java.lang.String").fromSource(GenericConfig.Bar.Biz.class));
 		assertThat(metadata.getItems()).hasSize(9);
+	}
+
+	@Test
+	public void wildcardTypes() throws IOException {
+		ConfigurationMetadata metadata = compile(WildcardConfig.class);
+		assertThat(metadata)
+				.has(Metadata.withGroup("wildcard").ofType(WildcardConfig.class));
+		assertThat(metadata).has(Metadata.withProperty("wildcard.string-to-number")
+				.ofType("java.util.Map<java.lang.String,? extends java.lang.Number>")
+				.fromSource(WildcardConfig.class));
+		assertThat(metadata).has(Metadata.withProperty("wildcard.integers")
+				.ofType("java.util.List<? super java.lang.Integer>")
+				.fromSource(WildcardConfig.class));
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
@@ -547,8 +601,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.disabled")
 				.fromSource(DisabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("disabled", false));
-		assertThat(metadata).has(cacheTtl("disabled"));
-		assertThat(metadata.getItems()).hasSize(3);
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
@@ -557,8 +610,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled")
 				.fromSource(EnabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("enabled", true));
-		assertThat(metadata).has(cacheTtl("enabled"));
-		assertThat(metadata.getItems()).hasSize(3);
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
@@ -590,8 +642,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.pascal-case")
 				.fromSource(CamelCaseEndpoint.class));
 		assertThat(metadata).has(enabledFlag("PascalCase", "pascal-case", true));
-		assertThat(metadata).has(cacheTtl("pascal-case"));
-		assertThat(metadata.getItems()).hasSize(3);
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
@@ -612,6 +663,25 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(enabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	public void incrementalEndpointBuildChangeCacheFlag() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder,
+				IncrementalEndpoint.class);
+		ConfigurationMetadata metadata = project.fullBuild();
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
+				.fromSource(IncrementalEndpoint.class));
+		assertThat(metadata).has(enabledFlag("incremental", true));
+		assertThat(metadata).has(cacheTtl("incremental"));
+		assertThat(metadata.getItems()).hasSize(3);
+		project.replaceText(IncrementalEndpoint.class, "@Nullable String param",
+				"String param");
+		metadata = project.incrementalBuild(IncrementalEndpoint.class);
+		assertThat(metadata).has(Metadata.withGroup("management.endpoint.incremental")
+				.fromSource(IncrementalEndpoint.class));
+		assertThat(metadata).has(enabledFlag("incremental", true));
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test
@@ -650,7 +720,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
 		return Metadata
 				.withProperty("management.endpoint." + endpointId + ".cache.time-to-live")
-				.ofType(Duration.class).withDefaultValue(0)
+				.ofType(Duration.class).withDefaultValue("0ms")
 				.withDescription("Maximum time that a response can be cached.");
 	}
 
@@ -770,14 +840,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void mergingOfHintWithProvider() throws Exception {
-		writeAdditionalHints(
-				new ItemHint("simple.theName",
-						Collections
-								.emptyList(),
-						Arrays.asList(
-								new ItemHint.ValueProvider("first",
-										Collections.singletonMap("target", "org.foo")),
-								new ItemHint.ValueProvider("second", null))));
+		writeAdditionalHints(new ItemHint("simple.theName", Collections.emptyList(),
+				Arrays.asList(
+						new ItemHint.ValueProvider("first",
+								Collections.singletonMap("target", "org.foo")),
+						new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
 				.fromSource(SimpleProperties.class)

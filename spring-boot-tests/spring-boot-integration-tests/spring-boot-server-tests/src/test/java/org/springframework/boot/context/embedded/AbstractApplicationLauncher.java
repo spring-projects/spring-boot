@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.rules.ExternalResource;
 
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Base {@link ExternalResource} for launching a Spring Boot application as part of a
@@ -74,7 +75,7 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 		arguments.add(System.getProperty("java.home") + "/bin/java");
 		arguments.addAll(getArguments(archive));
 		ProcessBuilder processBuilder = new ProcessBuilder(
-				arguments.toArray(new String[arguments.size()]));
+				StringUtils.toStringArray(arguments));
 		processBuilder.redirectOutput(Redirect.INHERIT);
 		processBuilder.redirectError(Redirect.INHERIT);
 		if (workingDirectory != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		devToolsProperties.put("spring.freemarker.cache", "false");
 		devToolsProperties.put("spring.groovy.template.cache", "false");
 		devToolsProperties.put("spring.mustache.cache", "false");
-		devToolsProperties.put("server.session.persistent", "true");
+		devToolsProperties.put("server.servlet.session.persistent", "true");
 		devToolsProperties.put("spring.h2.console.enabled", "true");
 		devToolsProperties.put("spring.resources.cache.period", "0");
 		devToolsProperties.put("spring.resources.chain.cache", "false");

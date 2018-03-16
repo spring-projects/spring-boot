@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxConsistency;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryPropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link InfluxProperties} to an {@link InfluxConfig}.
@@ -27,9 +27,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistr
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class InfluxPropertiesConfigAdapter
-		extends StepRegistryPropertiesConfigAdapter<InfluxProperties>
-		implements InfluxConfig {
+class InfluxPropertiesConfigAdapter extends
+		StepRegistryPropertiesConfigAdapter<InfluxProperties> implements InfluxConfig {
 
 	InfluxPropertiesConfigAdapter(InfluxProperties properties) {
 		super(properties);
@@ -68,7 +67,12 @@ class InfluxPropertiesConfigAdapter
 
 	@Override
 	public boolean compressed() {
-		return get(InfluxProperties::getCompressed, InfluxConfig.super::compressed);
+		return get(InfluxProperties::isCompressed, InfluxConfig.super::compressed);
+	}
+
+	@Override
+	public boolean autoCreateDb() {
+		return get(InfluxProperties::isAutoCreateDb, InfluxConfig.super::autoCreateDb);
 	}
 
 }

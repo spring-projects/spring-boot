@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,16 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  */
 public class SpringApplicationJsonEnvironmentPostProcessor
 		implements EnvironmentPostProcessor, Ordered {
+
+	/**
+	 * Name of the {@code spring.application.json} property.
+	 */
+	public static final String SPRING_APPLICATION_JSON_PROPERTY = "spring.application.json";
+
+	/**
+	 * Name of the {@code SPRING_APPLICATION_JSON} environment variable.
+	 */
+	public static final String SPRING_APPLICATION_JSON_ENVIRONMENT_VARIABLE = "SPRING_APPLICATION_JSON";
 
 	private static final String SERVLET_ENVIRONMENT_CLASS = "org.springframework.web."
 			+ "context.support.StandardServletEnvironment";
@@ -166,7 +176,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 		private final JsonPropertyValue propertyValue;
 
 		JsonPropertySource(JsonPropertyValue propertyValue, Map<String, Object> source) {
-			super("spring.application.json", source);
+			super(SPRING_APPLICATION_JSON_PROPERTY, source);
 			this.propertyValue = propertyValue;
 		}
 
@@ -179,8 +189,8 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	private static class JsonPropertyValue {
 
-		private static final String[] CANDIDATES = { "spring.application.json",
-				"SPRING_APPLICATION_JSON" };
+		private static final String[] CANDIDATES = { SPRING_APPLICATION_JSON_PROPERTY,
+				SPRING_APPLICATION_JSON_ENVIRONMENT_VARIABLE };
 
 		private final PropertySource<?> propertySource;
 

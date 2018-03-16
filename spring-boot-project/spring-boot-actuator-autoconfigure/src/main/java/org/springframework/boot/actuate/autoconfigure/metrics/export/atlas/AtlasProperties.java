@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.atlas;
 
 import java.time.Duration;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link ConfigurationProperties} for configuring Atlas metrics export.
  *
- * @since 2.0.0
  * @author Jon Schneider
+ * @author Stephane Nicoll
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.atlas")
 public class AtlasProperties extends StepRegistryProperties {
@@ -33,38 +34,38 @@ public class AtlasProperties extends StepRegistryProperties {
 	/**
 	 * URI of the Atlas server.
 	 */
-	private String uri;
+	private String uri = "http://localhost:7101/api/v1/publish";
 
 	/**
 	 * Time to live for meters that do not have any activity. After this period the meter
 	 * will be considered expired and will not get reported.
 	 */
-	private Duration meterTimeToLive;
+	private Duration meterTimeToLive = Duration.ofMinutes(15);
 
 	/**
-	 * Enable streaming to Atlas LWC.
+	 * Whether to enable streaming to Atlas LWC.
 	 */
-	private Boolean lwcEnabled;
+	private boolean lwcEnabled;
 
 	/**
 	 * Frequency for refreshing config settings from the LWC service.
 	 */
-	private Duration configRefreshFrequency;
+	private Duration configRefreshFrequency = Duration.ofSeconds(10);
 
 	/**
 	 * Time to live for subscriptions from the LWC service.
 	 */
-	private Duration configTimeToLive;
+	private Duration configTimeToLive = Duration.ofSeconds(150);
 
 	/**
 	 * URI for the Atlas LWC endpoint to retrieve current subscriptions.
 	 */
-	private String configUri;
+	private String configUri = "http://localhost:7101/lwc/api/v1/expressions/local-dev";
 
 	/**
 	 * URI for the Atlas LWC endpoint to evaluate the data for a subscription.
 	 */
-	private String evalUri;
+	private String evalUri = "http://localhost:7101/lwc/api/v1/evaluate";
 
 	public String getUri() {
 		return this.uri;
@@ -82,11 +83,11 @@ public class AtlasProperties extends StepRegistryProperties {
 		this.meterTimeToLive = meterTimeToLive;
 	}
 
-	public Boolean getLwcEnabled() {
+	public boolean isLwcEnabled() {
 		return this.lwcEnabled;
 	}
 
-	public void setLwcEnabled(Boolean lwcEnabled) {
+	public void setLwcEnabled(boolean lwcEnabled) {
 		this.lwcEnabled = lwcEnabled;
 	}
 
@@ -121,4 +122,5 @@ public class AtlasProperties extends StepRegistryProperties {
 	public void setEvalUri(String evalUri) {
 		this.evalUri = evalUri;
 	}
+
 }

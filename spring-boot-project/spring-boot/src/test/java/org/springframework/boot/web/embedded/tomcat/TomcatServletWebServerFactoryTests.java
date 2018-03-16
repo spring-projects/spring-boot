@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import org.apache.tomcat.JarScanFilter;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
@@ -144,6 +145,17 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
+	public void contextIsAddedToHostBeforeCustomizersAreCalled() {
+		TomcatServletWebServerFactory factory = getFactory();
+		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
+		factory.addContextCustomizers(customizer);
+		this.webServer = factory.getWebServer();
+		ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+		verify(customizer).customize(contextCaptor.capture());
+		assertThat(contextCaptor.getValue().getParent()).isNotNull();
+	}
+
+	@Test
 	public void tomcatConnectorCustomizers() {
 		TomcatServletWebServerFactory factory = getFactory();
 		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
@@ -187,21 +199,21 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void sessionTimeout() {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(Duration.ofSeconds(10));
+		factory.getSession().setTimeout(Duration.ofSeconds(10));
 		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(Duration.ofMinutes(1));
+		factory.getSession().setTimeout(Duration.ofMinutes(1));
 		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void noSessionTimeout() {
 		TomcatServletWebServerFactory factory = getFactory();
-		factory.setSessionTimeout(null);
+		factory.getSession().setTimeout(null);
 		assertTimeout(factory, -1);
 	}
 

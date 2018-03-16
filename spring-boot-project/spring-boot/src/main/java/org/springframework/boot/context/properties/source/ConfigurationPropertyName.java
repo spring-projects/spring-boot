@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ import org.springframework.util.ObjectUtils;
 /**
  * A configuration property name composed of elements separated by dots. User created
  * names may contain the characters "{@code a-z}" "{@code 0-9}") and "{@code -}", they
- * must be lower-case and must start with a letter. The "{@code -}" is used purely for
- * formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered equivalent.
+ * must be lower-case and must start with an alpha-numeric character. The "{@code -}" is
+ * used purely for formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered
+ * equivalent.
  * <p>
  * The "{@code [}" and "{@code ]}" characters may be used to indicate an associative
  * index(i.e. a {@link Map} key or a {@link Collection} index. Indexes names are not
@@ -409,12 +410,7 @@ public final class ConfigurationPropertyName
 	}
 
 	private static boolean isIndexed(CharSequence element) {
-		int length = element.length();
-		return charAt(element, 0) == '[' && charAt(element, length - 1) == ']';
-	}
-
-	private static char charAt(CharSequence element, int index) {
-		return (index < element.length() ? element.charAt(index) : 0);
+		return element.charAt(0) == '[' && element.charAt(element.length() - 1) == ']';
 	}
 
 	/**
@@ -464,8 +460,7 @@ public final class ConfigurationPropertyName
 				elements.add(elementValue);
 			}
 		});
-		return new ConfigurationPropertyName(
-				elements.toArray(new CharSequence[elements.size()]));
+		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
 	}
 
 	/**
@@ -512,8 +507,7 @@ public final class ConfigurationPropertyName
 				elements.add(elementValue);
 			}
 		});
-		return new ConfigurationPropertyName(
-				elements.toArray(new CharSequence[elements.size()]));
+		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
 	}
 
 	private static void process(CharSequence name, char separator,
@@ -680,7 +674,7 @@ public final class ConfigurationPropertyName
 		}
 
 		public static boolean isValidChar(char ch, int index) {
-			return isAlpha(ch) || (index != 0 && (isNumeric(ch) || ch == '-'));
+			return isAlpha(ch) || isNumeric(ch) || (index != 0 && ch == '-');
 		}
 
 		private static boolean isAlpha(char ch) {

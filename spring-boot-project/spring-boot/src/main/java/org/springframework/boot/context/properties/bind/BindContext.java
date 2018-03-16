@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import java.util.stream.Stream;
-
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.core.convert.ConversionService;
 
 /**
  * Context information for use by {@link BindHandler BindHandlers}.
@@ -47,29 +43,10 @@ public interface BindContext {
 	Iterable<ConfigurationPropertySource> getSources();
 
 	/**
-	 * Return a {@link Stream} of the {@link ConfigurationPropertySource sources} being
-	 * used by the {@link Binder}.
-	 * @return the sources
-	 */
-	Stream<ConfigurationPropertySource> streamSources();
-
-	/**
 	 * Return the {@link ConfigurationProperty} actually being bound or {@code null} if
 	 * the property has not yet been determined.
 	 * @return the configuration property (may be {@code null}).
 	 */
 	ConfigurationProperty getConfigurationProperty();
-
-	/**
-	 * Return the {@link PlaceholdersResolver} being used by the binder.
-	 * @return the {@link PlaceholdersResolver} (never {@code null})
-	 */
-	PlaceholdersResolver getPlaceholdersResolver();
-
-	/**
-	 * Return the {@link ConversionService} used by the binder.
-	 * @return the conversion service
-	 */
-	BinderConversionService getConversionService();
 
 }

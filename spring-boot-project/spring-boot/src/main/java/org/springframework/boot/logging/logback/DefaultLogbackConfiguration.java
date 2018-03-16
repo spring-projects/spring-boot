@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -117,7 +116,6 @@ class DefaultLogbackConfiguration {
 		String logPattern = this.patterns.getProperty("logging.pattern.console",
 				CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
-		encoder.setCharset(StandardCharsets.UTF_8);
 		config.start(encoder);
 		appender.setEncoder(encoder);
 		config.appender("CONSOLE", appender);

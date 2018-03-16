@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,7 +188,6 @@ public class ServletContextInitializerBeans
 				// One that we haven't already seen
 				RegistrationBean registration = adapter.createRegistrationBean(beanName,
 						bean.getValue(), beans.size());
-				registration.setName(beanName);
 				registration.setOrder(order);
 				this.initializers.add(type, registration);
 				if (ServletContextInitializerBeans.logger.isDebugEnabled()) {
@@ -217,7 +216,6 @@ public class ServletContextInitializerBeans
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(
 			ListableBeanFactory beanFactory, Class<T> type, Set<?> excludes) {
-		List<Entry<String, T>> beans = new ArrayList<>();
 		Comparator<Entry<String, T>> comparator = (o1,
 				o2) -> AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(),
 						o2.getValue());
@@ -231,6 +229,7 @@ public class ServletContextInitializerBeans
 				}
 			}
 		}
+		List<Entry<String, T>> beans = new ArrayList<>();
 		beans.addAll(map.entrySet());
 		beans.sort(comparator);
 		return beans;
@@ -248,7 +247,7 @@ public class ServletContextInitializerBeans
 
 	/**
 	 * Adapter to convert a given Bean type into a {@link RegistrationBean} (and hence a
-	 * {@link ServletContextInitializer}.
+	 * {@link ServletContextInitializer}).
 	 */
 	private interface RegistrationBeanAdapter<T> {
 
@@ -278,6 +277,7 @@ public class ServletContextInitializerBeans
 			}
 			ServletRegistrationBean<Servlet> bean = new ServletRegistrationBean<>(source,
 					url);
+			bean.setName(name);
 			bean.setMultipartConfig(this.multipartConfig);
 			return bean;
 		}
@@ -293,7 +293,9 @@ public class ServletContextInitializerBeans
 		@Override
 		public RegistrationBean createRegistrationBean(String name, Filter source,
 				int totalNumberOfSourceBeans) {
-			return new FilterRegistrationBean<>(source);
+			FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(source);
+			bean.setName(name);
+			return bean;
 		}
 
 	}

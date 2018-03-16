@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.util.StringUtils;
 final class JavaPluginAction implements PluginApplicationAction {
 
 	private static final String PARAMETERS_COMPILER_ARG = "-parameters";
+
 	private final SinglePublishedArtifact singlePublishedArtifact;
 
 	JavaPluginAction(SinglePublishedArtifact singlePublishedArtifact) {
@@ -63,7 +64,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		disableJarTask(project);
 		configureBuildTask(project);
 		BootJar bootJar = configureBootJarTask(project);
-		configureArtifactPublication(project, bootJar);
+		configureArtifactPublication(bootJar);
 		configureBootRunTask(project);
 		configureUtf8Encoding(project);
 		configureParametersCompilerArg(project);
@@ -97,7 +98,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		return bootJar;
 	}
 
-	private void configureArtifactPublication(Project project, BootJar bootJar) {
+	private void configureArtifactPublication(BootJar bootJar) {
 		ArchivePublishArtifact artifact = new ArchivePublishArtifact(bootJar);
 		this.singlePublishedArtifact.addCandidate(artifact);
 	}
@@ -139,14 +140,11 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(Project project) {
-		project.afterEvaluate((evaluated) -> {
-			evaluated.getTasks().withType(JavaCompile.class,
-					(compile) -> configureAdditionalMetadataLocations(project, compile));
-		});
+		project.afterEvaluate((evaluated) -> evaluated.getTasks()
+				.withType(JavaCompile.class, this::configureAdditionalMetadataLocations));
 	}
 
-	private void configureAdditionalMetadataLocations(Project project,
-			JavaCompile compile) {
+	private void configureAdditionalMetadataLocations(JavaCompile compile) {
 		compile.doFirst((task) -> {
 			if (hasConfigurationProcessorOnClasspath(compile)) {
 				findMatchingSourceSet(compile).ifPresent((sourceSet) -> {
@@ -167,17 +165,16 @@ final class JavaPluginAction implements PluginApplicationAction {
 		Set<File> files = compile.getOptions().getAnnotationProcessorPath() != null
 				? compile.getOptions().getAnnotationProcessorPath().getFiles()
 				: compile.getClasspath().getFiles();
-		return files.stream().map(File::getName)
-				.filter((name) -> name.startsWith("spring-boot-configuration-processor"))
-				.findFirst().isPresent();
+		return files.stream().map(File::getName).anyMatch(
+				(name) -> name.startsWith("spring-boot-configuration-processor"));
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile,
 			SourceSet sourceSet) {
 		String locations = StringUtils
 				.collectionToCommaDelimitedString(sourceSet.getResources().getSrcDirs());
-		compile.getOptions().getCompilerArgs()
-				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
+		compile.getOptions().getCompilerArgs().add(
+				"-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
 						+ locations);
 	}
 

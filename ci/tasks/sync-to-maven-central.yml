@@ -1,0 +1,7 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+- name: artifactory-repo
+run:
+  path: git-repo/ci/scripts/sync-to-maven-central.sh

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.test.web.client;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,12 +46,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
@@ -65,7 +68,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * Apache Http Client 4.3.2 or better is available (recommended) it will be used as the
  * client, and by default configured to ignore cookies and redirects.
  * <p>
- * Note: To prevent injection problems this class internally does not extend
+ * Note: To prevent injection problems this class intentionally does not extend
  * {@link RestTemplate}. If you need access to the underlying {@link RestTemplate} use
  * {@link #getRestTemplate()}.
  * <p>
@@ -94,7 +97,7 @@ public class TestRestTemplate {
 	 * @since 1.4.1
 	 */
 	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-		this(buildRestTemplate(restTemplateBuilder));
+		this(restTemplateBuilder, null, null);
 	}
 
 	/**
@@ -113,18 +116,30 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(String username, String password,
 			HttpClientOption... httpClientOptions) {
-		this(new RestTemplate(), username, password, httpClientOptions);
+		this(new RestTemplateBuilder(), username, password, httpClientOptions);
 	}
 
-	public TestRestTemplate(RestTemplate restTemplate) {
-		this(restTemplate, null, null);
+	/**
+	 * Create a new {@link TestRestTemplate} instance with the specified credentials.
+	 * @param restTemplateBuilder builder used to configure underlying
+	 * {@link RestTemplate}
+	 * @param username the username to use (or {@code null})
+	 * @param password the password (or {@code null})
+	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
+	 * @since 2.0.0
+	 */
+	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username,
+			String password, HttpClientOption... httpClientOptions) {
+		this(restTemplateBuilder == null ? null : restTemplateBuilder.build(), username,
+				password, httpClientOptions);
 	}
 
-	public TestRestTemplate(RestTemplate restTemplate, String username, String password,
+	private TestRestTemplate(RestTemplate restTemplate, String username, String password,
 			HttpClientOption... httpClientOptions) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.httpClientOptions = httpClientOptions;
-		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
+		if (getRequestFactoryClass(restTemplate).isAssignableFrom(
+				HttpComponentsClientHttpRequestFactory.class)) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
@@ -133,10 +148,18 @@ public class TestRestTemplate {
 		this.restTemplate = restTemplate;
 	}
 
-	private static RestTemplate buildRestTemplate(
-			RestTemplateBuilder restTemplateBuilder) {
-		Assert.notNull(restTemplateBuilder, "RestTemplateBuilder must not be null");
-		return restTemplateBuilder.build();
+	private Class<? extends ClientHttpRequestFactory> getRequestFactoryClass(
+			RestTemplate restTemplate) {
+		ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
+		if (InterceptingClientHttpRequestFactory.class
+				.isAssignableFrom(requestFactory.getClass())) {
+			Field requestFactoryField = ReflectionUtils.findField(RestTemplate.class,
+					"requestFactory");
+			ReflectionUtils.makeAccessible(requestFactoryField);
+			requestFactory = (ClientHttpRequestFactory) ReflectionUtils
+					.getField(requestFactoryField, restTemplate);
+		}
+		return requestFactory.getClass();
 	}
 
 	private void addAuthentication(RestTemplate restTemplate, String username,
@@ -500,7 +523,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> postForEntity(String url, Object request,
 			Class<T> responseType, Map<String, ?> urlVariables)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.postForEntity(url, request, responseType, urlVariables);
 	}
 
@@ -743,7 +766,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> exchange(String url, HttpMethod method,
 			HttpEntity<?> requestEntity, Class<T> responseType, Object... urlVariables)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.exchange(url, method, requestEntity, responseType,
 				urlVariables);
 	}
@@ -788,7 +811,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method,
 			HttpEntity<?> requestEntity, Class<T> responseType)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method,
 				requestEntity, responseType);
 	}
@@ -871,7 +894,7 @@ public class TestRestTemplate {
 	 */
 	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method,
 			HttpEntity<?> requestEntity, ParameterizedTypeReference<T> responseType)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method,
 				requestEntity, responseType);
 	}
@@ -939,7 +962,7 @@ public class TestRestTemplate {
 	 */
 	public <T> T execute(String url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor, Object... urlVariables)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.execute(url, method, requestCallback, responseExtractor,
 				urlVariables);
 	}
@@ -963,7 +986,7 @@ public class TestRestTemplate {
 	 */
 	public <T> T execute(String url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor, Map<String, ?> urlVariables)
-					throws RestClientException {
+			throws RestClientException {
 		return this.restTemplate.execute(url, method, requestCallback, responseExtractor,
 				urlVariables);
 	}
@@ -1007,11 +1030,10 @@ public class TestRestTemplate {
 	 * @since 1.4.1
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setMessageConverters(getRestTemplate().getMessageConverters());
-		restTemplate.setInterceptors(getRestTemplate().getInterceptors());
-		restTemplate.setRequestFactory(getRestTemplate().getRequestFactory());
-		restTemplate.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
+		RestTemplate restTemplate = new RestTemplateBuilder()
+				.messageConverters(getRestTemplate().getMessageConverters())
+				.interceptors(getRestTemplate().getInterceptors())
+				.uriTemplateHandler(getRestTemplate().getUriTemplateHandler()).build();
 		TestRestTemplate testRestTemplate = new TestRestTemplate(restTemplate, username,
 				password, this.httpClientOptions);
 		testRestTemplate.getRestTemplate()

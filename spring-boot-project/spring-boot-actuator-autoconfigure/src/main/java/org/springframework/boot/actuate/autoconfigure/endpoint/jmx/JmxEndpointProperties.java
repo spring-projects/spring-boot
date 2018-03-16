@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,15 +33,7 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties("management.endpoints.jmx")
 public class JmxEndpointProperties {
 
-	/**
-	 * Endpoint IDs that should be exposed or '*' for all.
-	 */
-	private Set<String> expose = new LinkedHashSet<>();
-
-	/**
-	 * Endpoint IDs that should be excluded.
-	 */
-	private Set<String> exclude = new LinkedHashSet<>();
+	private final Exposure exposure = new Exposure();
 
 	/**
 	 * Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
@@ -49,7 +41,7 @@ public class JmxEndpointProperties {
 	private String domain = "org.springframework.boot";
 
 	/**
-	 * Ensure that ObjectNames are modified in case of conflict.
+	 * Whether to ensure that ObjectNames are modified in case of conflict.
 	 */
 	private boolean uniqueNames = false;
 
@@ -66,20 +58,8 @@ public class JmxEndpointProperties {
 		}
 	}
 
-	public Set<String> getExpose() {
-		return this.expose;
-	}
-
-	public void setExpose(Set<String> expose) {
-		this.expose = expose;
-	}
-
-	public Set<String> getExclude() {
-		return this.exclude;
-	}
-
-	public void setExclude(Set<String> exclude) {
-		this.exclude = exclude;
+	public Exposure getExposure() {
+		return this.exposure;
 	}
 
 	public String getDomain() {
@@ -100,6 +80,36 @@ public class JmxEndpointProperties {
 
 	public Properties getStaticNames() {
 		return this.staticNames;
+	}
+
+	public static class Exposure {
+
+		/**
+		 * Endpoint IDs that should be included or '*' for all.
+		 */
+		private Set<String> include = new LinkedHashSet<>();
+
+		/**
+		 * Endpoint IDs that should be excluded.
+		 */
+		private Set<String> exclude = new LinkedHashSet<>();
+
+		public Set<String> getInclude() {
+			return this.include;
+		}
+
+		public void setInclude(Set<String> include) {
+			this.include = include;
+		}
+
+		public Set<String> getExclude() {
+			return this.exclude;
+		}
+
+		public void setExclude(Set<String> exclude) {
+			this.exclude = exclude;
+		}
+
 	}
 
 }

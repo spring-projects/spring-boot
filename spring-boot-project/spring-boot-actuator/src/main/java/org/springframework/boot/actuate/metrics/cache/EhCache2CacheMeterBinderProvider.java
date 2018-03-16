@@ -32,9 +32,8 @@ public class EhCache2CacheMeterBinderProvider
 		implements CacheMeterBinderProvider<EhCacheCache> {
 
 	@Override
-	public MeterBinder getMeterBinder(EhCacheCache cache, String name,
-			Iterable<Tag> tags) {
-		return new EhCache2Metrics(cache.getNativeCache(), name, tags);
+	public MeterBinder getMeterBinder(EhCacheCache cache, Iterable<Tag> tags) {
+		return new EhCache2Metrics(cache.getNativeCache(), tags);
 	}
 
 }

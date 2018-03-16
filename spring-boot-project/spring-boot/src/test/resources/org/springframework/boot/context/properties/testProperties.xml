@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean
-		id="org.springframework.boot.context.properties.EnableConfigurationPropertiesTests$TestProperties"
-		class="org.springframework.boot.context.properties.EnableConfigurationPropertiesTests$TestProperties">
+		id="org.springframework.boot.context.properties.ConfigurationPropertiesTests$BasicProperties"
+		class="org.springframework.boot.context.properties.ConfigurationPropertiesTests$BasicProperties">
 		<property name="name" value="bar"/>
 	</bean>
 

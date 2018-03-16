@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class ImageBannerTests {
-
-	private static final String NEW_LINE = System.getProperty("line.separator");
 
 	private static final char HIGH_LUMINANCE_CHARACTER = ' ';
 
@@ -149,7 +147,7 @@ public class ImageBannerTests {
 	public void printBannerShouldPrintMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif");
-		String[] lines = banner.split(NEW_LINE);
+		String[] lines = banner.split(System.lineSeparator());
 		for (int i = 2; i < lines.length - 1; i++) {
 			assertThat(lines[i]).startsWith("  @");
 		}
@@ -159,7 +157,7 @@ public class ImageBannerTests {
 	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif", "spring.banner.image.margin=4");
-		String[] lines = banner.split(NEW_LINE);
+		String[] lines = banner.split(System.lineSeparator());
 		for (int i = 2; i < lines.length - 1; i++) {
 			assertThat(lines[i]).startsWith("    @");
 		}
@@ -169,7 +167,7 @@ public class ImageBannerTests {
 	public void printBannerWhenAnimatesShouldPrintAllFrames() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("animated.gif");
-		String[] lines = banner.split(NEW_LINE);
+		String[] lines = banner.split(System.lineSeparator());
 		int frames = 138;
 		int linesPerFrame = 36;
 		assertThat(banner).contains("\r");
@@ -177,12 +175,12 @@ public class ImageBannerTests {
 	}
 
 	private int getBannerHeight(String banner) {
-		return banner.split(NEW_LINE).length - 3;
+		return banner.split(System.lineSeparator()).length - 3;
 	}
 
 	private int getBannerWidth(String banner) {
 		int width = 0;
-		for (String line : banner.split(NEW_LINE)) {
+		for (String line : banner.split(System.lineSeparator())) {
 			width = Math.max(width, line.length());
 		}
 		return width;

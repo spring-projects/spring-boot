@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,22 @@ public final class Bindable<T> {
 	 */
 	public Annotation[] getAnnotations() {
 		return this.annotations;
+	}
+
+	/**
+	 * Return a single associated annotations that could affect binding.
+	 * @param <A> the annotation type
+	 * @param type annotation type
+	 * @return the associated annotation or {@code null}
+	 */
+	@SuppressWarnings("unchecked")
+	public <A extends Annotation> A getAnnotation(Class<A> type) {
+		for (Annotation annotation : this.annotations) {
+			if (type.isInstance(annotation)) {
+				return (A) annotation;
+			}
+		}
+		return null;
 	}
 
 	@Override

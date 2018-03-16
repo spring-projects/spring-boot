@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -39,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
@@ -55,6 +57,7 @@ import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
@@ -65,6 +68,7 @@ import org.springframework.util.ObjectUtils;
  * @author Stephane Nicoll
  * @author Jacques-Etienne Beaudet
  * @author Eddú Meléndez
+ * @author Dominic Gunn
  * @since 1.1.0
  */
 @Configuration
@@ -95,6 +99,8 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayProperties properties;
 
+		private final DataSourceProperties dataSourceProperties;
+
 		private final ResourceLoader resourceLoader;
 
 		private final DataSource dataSource;
@@ -106,11 +112,13 @@ public class FlywayAutoConfiguration {
 		private List<FlywayCallback> flywayCallbacks;
 
 		public FlywayConfiguration(FlywayProperties properties,
-				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
+				ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
 				ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
 			this.properties = properties;
+			this.dataSourceProperties = dataSourceProperties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
@@ -123,9 +131,14 @@ public class FlywayAutoConfiguration {
 		public Flyway flyway() {
 			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {
-				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
-						this.properties.getPassword(),
-						this.properties.getInitSqls().toArray(new String[0]));
+				String url = getProperty(this.properties::getUrl,
+						this.dataSourceProperties::getUrl);
+				String user = getProperty(this.properties::getUser,
+						this.dataSourceProperties::getUsername);
+				String password = getProperty(this.properties::getPassword,
+						this.dataSourceProperties::getPassword);
+				flyway.setDataSource(url, user, password,
+						StringUtils.toStringArray(this.properties.getInitSqls()));
 			}
 			else if (this.flywayDataSource != null) {
 				flyway.setDataSource(this.flywayDataSource);
@@ -133,8 +146,7 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
-			flyway.setCallbacks(this.flywayCallbacks
-					.toArray(new FlywayCallback[this.flywayCallbacks.size()]));
+			flyway.setCallbacks(this.flywayCallbacks.toArray(new FlywayCallback[0]));
 			String[] locations = new LocationResolver(flyway.getDataSource())
 					.resolveLocations(this.properties.getLocations());
 			checkLocationExists(locations);
@@ -142,14 +154,19 @@ public class FlywayAutoConfiguration {
 			return flyway;
 		}
 
+		private String getProperty(Supplier<String> property,
+				Supplier<String> defaultValue) {
+			String value = property.get();
+			return (value == null ? defaultValue.get() : value);
+		}
+
 		private void checkLocationExists(String... locations) {
 			if (this.properties.isCheckLocation()) {
 				Assert.state(locations.length != 0,
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation(locations);
-				Assert.state(exists,
-						() -> "Cannot find migrations location in: " + Arrays.asList(
-								locations)
+				Assert.state(exists, () -> "Cannot find migrations location in: "
+						+ Arrays.asList(locations)
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}
@@ -224,7 +241,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		public String[] resolveLocations(Collection<String> locations) {
-			return resolveLocations(locations.toArray(new String[locations.size()]));
+			return resolveLocations(StringUtils.toStringArray(locations));
 		}
 
 		public String[] resolveLocations(String[] locations) {
@@ -248,8 +265,7 @@ public class FlywayAutoConfiguration {
 
 		private DatabaseDriver getDatabaseDriver() {
 			try {
-				String url = (String) JdbcUtils.extractDatabaseMetaData(this.dataSource,
-						"getURL");
+				String url = JdbcUtils.extractDatabaseMetaData(this.dataSource, "getURL");
 				return DatabaseDriver.fromJdbcUrl(url);
 			}
 			catch (MetaDataAccessException ex) {

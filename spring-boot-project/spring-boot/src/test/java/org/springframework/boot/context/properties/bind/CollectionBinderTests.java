@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.boot.context.properties.bind.BinderTests.JavaBean;
@@ -306,7 +305,6 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	@Ignore
 	public void bindToCollectionWithNoDefaultConstructor() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c,c");
@@ -354,6 +352,27 @@ public class CollectionBinderTests {
 	}
 
 	@Test
+	public void bindToCollectionShouldUsePropertyEditor() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0]", "java.lang.RuntimeException");
+		source.put("foo[1]", "java.lang.IllegalStateException");
+		this.sources.add(source);
+		assertThat(this.binder.bind("foo", Bindable.listOf(Class.class)).get())
+				.containsExactly(RuntimeException.class, IllegalStateException.class);
+	}
+
+	@Test
+	public void bindToCollectionWhenStringShouldUsePropertyEditor() {
+		// gh-12166
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo", "java.lang.RuntimeException,java.lang.IllegalStateException");
+		this.sources.add(source);
+		assertThat(this.binder.bind("foo", Bindable.listOf(Class.class)).get())
+				.containsExactly(RuntimeException.class, IllegalStateException.class);
+	}
+
+	@Test
 	public void bindToBeanWithNestedCollectionAndNonIterableSourceShouldNotFail() {
 		// gh-10702
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -361,6 +380,16 @@ public class CollectionBinderTests {
 		Bindable<BeanWithNestedCollection> target = Bindable
 				.of(BeanWithNestedCollection.class);
 		this.binder.bind("foo", target);
+	}
+
+	@Test
+	public void bindToBeanWithClonedArray() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.bar[0]", "hello");
+		this.sources.add(source);
+		Bindable<ClonedArrayBean> target = Bindable.of(ClonedArrayBean.class);
+		ClonedArrayBean bean = this.binder.bind("foo", target).get();
+		assertThat(bean.getBar()).contains("hello");
 	}
 
 	public static class ExampleCollectionBean {
@@ -434,6 +463,20 @@ public class CollectionBinderTests {
 		public void setValue(String value) {
 			this.value = value;
 		}
+	}
+
+	public static class ClonedArrayBean {
+
+		private String[] bar;
+
+		public String[] getBar() {
+			return this.bar.clone();
+		}
+
+		public void setBar(String[] bar) {
+			this.bar = bar;
+		}
+
 	}
 
 }

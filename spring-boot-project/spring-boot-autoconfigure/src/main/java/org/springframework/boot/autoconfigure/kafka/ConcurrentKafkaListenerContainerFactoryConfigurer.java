@@ -102,12 +102,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 				.to(container::setAckTime);
 		map.from(properties::getPollTimeout).whenNonNull().as(Duration::toMillis)
 				.to(container::setPollTimeout);
-		map.from(properties::getNoPollThreshold).whenNonNull().to(container::setNoPollThreshold);
+		map.from(properties::getNoPollThreshold).whenNonNull()
+				.to(container::setNoPollThreshold);
 		map.from(properties::getIdleEventInterval).whenNonNull().as(Duration::toMillis)
 				.to(container::setIdleEventInterval);
 		map.from(properties::getMonitorInterval).whenNonNull().as(Duration::getSeconds)
 				.as(Number::intValue).to(container::setMonitorInterval);
-		map.from(properties::getLogContainerConfig).whenNonNull().to(container::setLogContainerConfig);
+		map.from(properties::getLogContainerConfig).whenNonNull()
+				.to(container::setLogContainerConfig);
 	}
 
 }

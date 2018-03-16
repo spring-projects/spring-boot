@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,9 +78,9 @@ public class HttpEncodingAutoConfiguration {
 		}
 
 		@Override
-		public void customize(ConfigurableServletWebServerFactory webServerFactory) {
+		public void customize(ConfigurableServletWebServerFactory factory) {
 			if (this.properties.getMapping() != null) {
-				webServerFactory.setLocaleCharsetMappings(this.properties.getMapping());
+				factory.setLocaleCharsetMappings(this.properties.getMapping());
 			}
 		}
 

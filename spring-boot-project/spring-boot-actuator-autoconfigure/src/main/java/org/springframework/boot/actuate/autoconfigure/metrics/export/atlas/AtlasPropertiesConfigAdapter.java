@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.time.Duration;
 
 import com.netflix.spectator.atlas.AtlasConfig;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link AtlasProperties} to an {@link AtlasConfig}.
@@ -47,7 +47,7 @@ class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperti
 
 	@Override
 	public boolean enabled() {
-		return get(AtlasProperties::getEnabled, AtlasConfig.super::enabled);
+		return get(AtlasProperties::isEnabled, AtlasConfig.super::enabled);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperti
 
 	@Override
 	public boolean lwcEnabled() {
-		return get(AtlasProperties::getLwcEnabled, AtlasConfig.super::lwcEnabled);
+		return get(AtlasProperties::isLwcEnabled, AtlasConfig.super::lwcEnabled);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,9 +214,8 @@ public class ArtemisAutoConfigurationTests {
 	@Test
 	public void embeddedServiceWithCustomArtemisConfiguration() {
 		this.contextRunner.withUserConfiguration(CustomArtemisConfiguration.class)
-				.run((context) -> assertThat(context
-						.getBean(
-								org.apache.activemq.artemis.core.config.Configuration.class)
+				.run((context) -> assertThat(context.getBean(
+						org.apache.activemq.artemis.core.config.Configuration.class)
 						.getName()).isEqualTo("customFooBar"));
 	}
 
@@ -250,19 +249,22 @@ public class ArtemisAutoConfigurationTests {
 					this.contextRunner
 							.withPropertyValues("spring.artemis.embedded.queues=Queue2")
 							.run((second) -> {
-						ArtemisProperties firstProperties = first
-								.getBean(ArtemisProperties.class);
-						ArtemisProperties secondProperties = second
-								.getBean(ArtemisProperties.class);
-						assertThat(firstProperties.getEmbedded().getServerId())
-								.isLessThan(secondProperties.getEmbedded().getServerId());
-						DestinationChecker firstChecker = new DestinationChecker(first);
-						firstChecker.checkQueue("Queue1", true);
-						firstChecker.checkQueue("Queue2", true);
-						DestinationChecker secondChecker = new DestinationChecker(second);
-						secondChecker.checkQueue("Queue2", true);
-						secondChecker.checkQueue("Queue1", true);
-					});
+								ArtemisProperties firstProperties = first
+										.getBean(ArtemisProperties.class);
+								ArtemisProperties secondProperties = second
+										.getBean(ArtemisProperties.class);
+								assertThat(firstProperties.getEmbedded().getServerId())
+										.isLessThan(secondProperties.getEmbedded()
+												.getServerId());
+								DestinationChecker firstChecker = new DestinationChecker(
+										first);
+								firstChecker.checkQueue("Queue1", true);
+								firstChecker.checkQueue("Queue2", true);
+								DestinationChecker secondChecker = new DestinationChecker(
+										second);
+								secondChecker.checkQueue("Queue2", true);
+								secondChecker.checkQueue("Queue1", true);
+							});
 				});
 	}
 
@@ -279,12 +281,13 @@ public class ArtemisAutoConfigurationTests {
 									// Do not start a specific one
 									"spring.artemis.embedded.enabled=false")
 							.run((secondContext) -> {
-						DestinationChecker firstChecker = new DestinationChecker(first);
-						firstChecker.checkQueue("Queue1", true);
-						DestinationChecker secondChecker = new DestinationChecker(
-								secondContext);
-						secondChecker.checkQueue("Queue1", true);
-					});
+								DestinationChecker firstChecker = new DestinationChecker(
+										first);
+								firstChecker.checkQueue("Queue1", true);
+								DestinationChecker secondChecker = new DestinationChecker(
+										secondContext);
+								secondChecker.checkQueue("Queue1", true);
+							});
 				});
 	}
 
@@ -316,7 +319,7 @@ public class ArtemisAutoConfigurationTests {
 		return transportConfigurations[0];
 	}
 
-	private final static class DestinationChecker {
+	private static final class DestinationChecker {
 
 		private final JmsTemplate jmsTemplate;
 

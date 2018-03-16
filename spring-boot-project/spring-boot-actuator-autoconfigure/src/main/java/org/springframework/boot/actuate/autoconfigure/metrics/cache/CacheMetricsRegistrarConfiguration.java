@@ -38,10 +38,9 @@ import org.springframework.util.StringUtils;
  * caches}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
  */
 @Configuration
-@ConditionalOnBean(CacheMeterBinderProvider.class)
+@ConditionalOnBean({ CacheMeterBinderProvider.class, MeterRegistry.class })
 class CacheMetricsRegistrarConfiguration {
 
 	private static final String CACHE_MANAGER_SUFFIX = "cacheManager";
@@ -50,24 +49,19 @@ class CacheMetricsRegistrarConfiguration {
 
 	private final Collection<CacheMeterBinderProvider<?>> binderProviders;
 
-	private final CacheMetricsProperties properties;
-
 	private final Map<String, CacheManager> cacheManagers;
 
 	CacheMetricsRegistrarConfiguration(MeterRegistry registry,
-			CacheMetricsProperties properties,
 			Collection<CacheMeterBinderProvider<?>> binderProviders,
 			Map<String, CacheManager> cacheManagers) {
 		this.registry = registry;
 		this.binderProviders = binderProviders;
-		this.properties = properties;
 		this.cacheManagers = cacheManagers;
 	}
 
 	@Bean
 	public CacheMetricsRegistrar cacheMetricsRegistrar() {
-		return new CacheMetricsRegistrar(this.registry,
-				this.properties.getCacheMetricName(), this.binderProviders);
+		return new CacheMetricsRegistrar(this.registry, this.binderProviders);
 	}
 
 	@PostConstruct

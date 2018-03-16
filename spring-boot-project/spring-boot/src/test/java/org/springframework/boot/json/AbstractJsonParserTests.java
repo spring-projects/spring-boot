@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Jean de Klerk
+ * @author Stephane Nicoll
  */
 public abstract class AbstractJsonParserTests {
 
@@ -54,6 +55,20 @@ public abstract class AbstractJsonParserTests {
 		assertThat(map).hasSize(2);
 		assertThat(map.get("foo")).isEqualTo("bar");
 		assertThat(map.get("spam")).isEqualTo(1.23d);
+	}
+
+	@Test
+	public void stringContainingNumber() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"123\"}");
+		assertThat(map).hasSize(1);
+		assertThat(map.get("foo")).isEqualTo("123");
+	}
+
+	@Test
+	public void stringContainingComma() {
+		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar1,bar2\"}");
+		assertThat(map).hasSize(1);
+		assertThat(map.get("foo")).isEqualTo("bar1,bar2");
 	}
 
 	@Test

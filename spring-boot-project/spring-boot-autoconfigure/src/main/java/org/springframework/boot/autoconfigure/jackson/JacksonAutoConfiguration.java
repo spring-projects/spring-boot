@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class JacksonAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
+	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	static class JacksonObjectMapperConfiguration {
 
 		@Bean
@@ -169,7 +169,7 @@ public class JacksonAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
+	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	static class JacksonObjectMapperBuilderConfiguration {
 
 		private final ApplicationContext applicationContext;
@@ -198,7 +198,7 @@ public class JacksonAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
+	@ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
 	@EnableConfigurationProperties(JacksonProperties.class)
 	static class Jackson2ObjectMapperBuilderCustomizerConfiguration {
 
@@ -337,8 +337,7 @@ public class JacksonAutoConfiguration {
 			private void configureModules(Jackson2ObjectMapperBuilder builder) {
 				Collection<Module> moduleBeans = getBeans(this.applicationContext,
 						Module.class);
-				builder.modulesToInstall(
-						moduleBeans.toArray(new Module[moduleBeans.size()]));
+				builder.modulesToInstall(moduleBeans.toArray(new Module[0]));
 			}
 
 			private void configureLocale(Jackson2ObjectMapperBuilder builder) {

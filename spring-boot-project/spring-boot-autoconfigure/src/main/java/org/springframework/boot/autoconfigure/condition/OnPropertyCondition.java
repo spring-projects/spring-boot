@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ class OnPropertyCondition extends SpringBootCondition {
 					ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
 							.found("different value in property",
 									"different value in properties")
-					.items(Style.QUOTE, nonMatchingProperties));
+							.items(Style.QUOTE, nonMatchingProperties));
 		}
 		return ConditionOutcome.match(ConditionMessage
 				.forCondition(ConditionalOnProperty.class, spec).because("matched"));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Convenient builder for JPA EntityManagerFactory instances. Collects common
@@ -141,7 +143,7 @@ public class EntityManagerFactoryBuilder {
 			for (Class<?> type : basePackageClasses) {
 				packages.add(ClassUtils.getPackageName(type));
 			}
-			this.packagesToScan = packages.toArray(new String[0]);
+			this.packagesToScan = StringUtils.toStringArray(packages);
 			return this;
 		}
 
@@ -220,7 +222,7 @@ public class EntityManagerFactoryBuilder {
 			entityManagerFactoryBean.getJpaPropertyMap()
 					.putAll(EntityManagerFactoryBuilder.this.jpaProperties);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
-			if (this.mappingResources != null) {
+			if (!ObjectUtils.isEmpty(this.mappingResources)) {
 				entityManagerFactoryBean.setMappingResources(this.mappingResources);
 			}
 			URL rootLocation = EntityManagerFactoryBuilder.this.persistenceUnitRootLocation;

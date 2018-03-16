@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -90,8 +91,8 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (this.properties == null) {
 			return true; // better safe than sorry
 		}
-		String defaultDdlAuto = (EmbeddedDatabaseConnection.isEmbedded(dataSource)
-				? "create-drop" : "none");
+		Supplier<String> defaultDdlAuto = () -> EmbeddedDatabaseConnection
+				.isEmbedded(dataSource) ? "create-drop" : "none";
 		Map<String, Object> hibernate = this.properties
 				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlAuto));
 		if (hibernate.containsKey("hibernate.hbm2ddl.auto")) {

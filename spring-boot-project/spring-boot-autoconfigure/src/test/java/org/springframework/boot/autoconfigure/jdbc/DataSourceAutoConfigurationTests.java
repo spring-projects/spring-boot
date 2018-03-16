@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -137,7 +138,7 @@ public class DataSourceAutoConfigurationTests {
 	public void commonsDbcp2ValidatesConnectionByDefault() {
 		assertDataSource(org.apache.commons.dbcp2.BasicDataSource.class,
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"), (dataSource) -> {
-					assertThat(dataSource.getTestOnBorrow()).isEqualTo(true);
+					assertThat(dataSource.getTestOnBorrow()).isTrue();
 					assertThat(dataSource.getValidationQuery()).isNull(); // Use
 																			// Connection#isValid()
 				});
@@ -226,7 +227,7 @@ public class DataSourceAutoConfigurationTests {
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType,
 			List<String> hiddenPackages, Consumer<T> consumer) {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
-				hiddenPackages.toArray(new String[hiddenPackages.size()]));
+				StringUtils.toStringArray(hiddenPackages));
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			DataSource bean = context.getBean(DataSource.class);
 			assertThat(bean).isInstanceOf(expectedType);

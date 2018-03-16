@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.Environment;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -37,14 +39,15 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link FailureAnalyzers}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class FailureAnalyzersTests {
 
-	private static BeanFactoryAwareFailureAnalyzer failureAnalyzer;
+	private static AwareFailureAnalyzer failureAnalyzer;
 
 	@Before
 	public void configureMock() {
-		failureAnalyzer = mock(BeanFactoryAwareFailureAnalyzer.class);
+		failureAnalyzer = mock(AwareFailureAnalyzer.class);
 	}
 
 	@Test
@@ -59,6 +62,13 @@ public class FailureAnalyzersTests {
 		RuntimeException failure = new RuntimeException();
 		analyzeAndReport("basic.factories", failure);
 		verify(failureAnalyzer).setBeanFactory(any(BeanFactory.class));
+	}
+
+	@Test
+	public void environmentIsInjectedIntoEnvironmentAwareFailureAnalyzers() {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport("basic.factories", failure);
+		verify(failureAnalyzer).setEnvironment(any(Environment.class));
 	}
 
 	@Test
@@ -113,12 +123,18 @@ public class FailureAnalyzersTests {
 
 	}
 
-	interface BeanFactoryAwareFailureAnalyzer extends BeanFactoryAware, FailureAnalyzer {
+	interface AwareFailureAnalyzer
+			extends BeanFactoryAware, EnvironmentAware, FailureAnalyzer {
 
 	}
 
-	static class StandardBeanFactoryAwareFailureAnalyzer extends BasicFailureAnalyzer
-			implements BeanFactoryAwareFailureAnalyzer {
+	static class StandardAwareFailureAnalyzer extends BasicFailureAnalyzer
+			implements AwareFailureAnalyzer {
+
+		@Override
+		public void setEnvironment(Environment environment) {
+			failureAnalyzer.setEnvironment(environment);
+		}
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

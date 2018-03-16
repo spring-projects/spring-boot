@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,6 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
-
 /**
  * Utilities for dealing with bytes from ZIP files.
  *
@@ -29,43 +23,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  */
 final class Bytes {
 
-	private static final byte[] EMPTY_BYTES = new byte[] {};
-
 	private Bytes() {
-	}
-
-	public static byte[] get(RandomAccessData data) throws IOException {
-		try (InputStream inputStream = data.getInputStream(ResourceAccess.ONCE)) {
-			return get(inputStream, data.getSize());
-		}
-	}
-
-	public static byte[] get(InputStream inputStream, long length) throws IOException {
-		if (length == 0) {
-			return EMPTY_BYTES;
-		}
-		byte[] bytes = new byte[(int) length];
-		if (!fill(inputStream, bytes)) {
-			throw new IOException("Unable to read bytes");
-		}
-		return bytes;
-	}
-
-	public static boolean fill(InputStream inputStream, byte[] bytes) throws IOException {
-		return fill(inputStream, bytes, 0, bytes.length);
-	}
-
-	private static boolean fill(InputStream inputStream, byte[] bytes, int offset,
-			int length) throws IOException {
-		while (length > 0) {
-			int read = inputStream.read(bytes, offset, length);
-			if (read == -1) {
-				return false;
-			}
-			offset += read;
-			length = -read;
-		}
-		return true;
 	}
 
 	public static long littleEndianValue(byte[] bytes, int offset, int length) {

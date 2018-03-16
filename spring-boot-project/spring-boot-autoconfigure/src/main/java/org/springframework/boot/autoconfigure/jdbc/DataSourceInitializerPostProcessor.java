@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,9 @@ import org.springframework.core.Ordered;
  */
 class DataSourceInitializerPostProcessor implements BeanPostProcessor, Ordered {
 
-	private int order = Ordered.HIGHEST_PRECEDENCE;
-
 	@Override
 	public int getOrder() {
-		return this.order;
+		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
 	@Autowired
