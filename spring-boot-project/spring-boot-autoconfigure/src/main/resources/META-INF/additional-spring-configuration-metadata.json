@@ -30,16 +30,6 @@
       }
     },
     {
-      "name": "server.error.include-stacktrace",
-      "defaultValue": "never"
-    },
-    {
-      "name": "server.error.whitelabel.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable the default error page displayed in browsers in case of a server error.",
-      "defaultValue": true
-    },
-    {
       "name": "server.port",
       "defaultValue": 8080
     },
