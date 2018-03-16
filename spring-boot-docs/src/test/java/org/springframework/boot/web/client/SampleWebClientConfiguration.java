@@ -37,11 +37,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @SpringBootConfiguration
 @ImportAutoConfiguration({ EmbeddedServletContainerAutoConfiguration.class,
-		ServerPropertiesAutoConfiguration.class,
-		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-		JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+		ServerPropertiesAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+		WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class })
 class SampleWebClientConfiguration {
-
 
 	@RestController
 	private static class ExampleController {
