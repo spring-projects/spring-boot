@@ -158,6 +158,7 @@ public class BasicErrorControllerIntegrationTests {
 		load();
 		RequestEntity request = RequestEntity
 				.post(URI.create(createUrl("/bodyValidation")))
+				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON).body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
@@ -165,6 +166,19 @@ public class BasicErrorControllerIntegrationTests {
 		assertThat(resp).contains("errors=[{");
 		assertThat(resp).contains("codes=[");
 		assertThat(resp).contains(MethodArgumentNotValidException.class.getName());
+	}
+
+	@Test
+	public void testRequestBodyValidationForText() throws Exception {
+		load();
+		RequestEntity<Void> request = RequestEntity.post(URI.create(createUrl("/")))
+				.accept(MediaType.TEXT_PLAIN).build();
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(request,
+				String.class);
+		String resp = entity.getBody().toString();
+		assertThat(resp).contains("status");
+		assertThat(resp).contains("error");
+		assertThat(resp).contains(IllegalStateException.class.getName());
 	}
 
 	@Test
