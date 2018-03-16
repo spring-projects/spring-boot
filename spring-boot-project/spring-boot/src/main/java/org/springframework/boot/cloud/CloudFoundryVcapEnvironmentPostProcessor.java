@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -197,9 +196,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	@SuppressWarnings("unchecked")
 	private void flatten(Properties properties, Map<String, Object> input, String path) {
-		for (Entry<String, Object> entry : input.entrySet()) {
-			String key = getFullKey(path, entry.getKey());
-			Object value = entry.getValue();
+		input.forEach((entryKey, value) -> {
+			String key = getFullKey(path, entryKey);
 			if (value instanceof Map) {
 				// Need a compound key
 				flatten(properties, (Map<String, Object>) value, key);
@@ -227,7 +225,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			else {
 				properties.put(key, value == null ? "" : value);
 			}
-		}
+		});
 	}
 
 	private String getFullKey(String path, String key) {
