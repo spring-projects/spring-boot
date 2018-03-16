@@ -66,12 +66,12 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 				.getPropertySources().get("systemEnvironment");
 		Map<String, Object> originalMap = (Map<String, Object>) original.getSource();
 		Map<String, Object> replacedMap = replaced.getSource();
-		for (Map.Entry<String, Object> entry : originalMap.entrySet()) {
-			Object actual = replacedMap.get(entry.getKey());
-			assertThat(actual).isEqualTo(entry.getValue());
-			assertThat(replaced.getOrigin(entry.getKey()))
+		originalMap.forEach((key, value) -> {
+			Object actual = replacedMap.get(key);
+			assertThat(actual).isEqualTo(value);
+			assertThat(replaced.getOrigin(key))
 					.isInstanceOf(SystemEnvironmentOrigin.class);
-		}
+		});
 	}
 
 	@Test

@@ -69,10 +69,8 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	private void save(Map<String, PersistentSession> sessionData,
 			ObjectOutputStream stream) throws IOException {
 		Map<String, Serializable> session = new LinkedHashMap<>();
-		for (Map.Entry<String, PersistentSession> entry : sessionData.entrySet()) {
-			session.put(entry.getKey(),
-					new SerializablePersistentSession(entry.getValue()));
-		}
+		sessionData.forEach((key, value) ->
+				session.put(key, new SerializablePersistentSession(value)));
 		stream.writeObject(session);
 	}
 
@@ -104,13 +102,12 @@ class FileSessionPersistence implements SessionPersistenceManager {
 		Map<String, SerializablePersistentSession> session = readSession(stream);
 		long time = System.currentTimeMillis();
 		Map<String, PersistentSession> result = new LinkedHashMap<>();
-		for (Map.Entry<String, SerializablePersistentSession> entry : session
-				.entrySet()) {
-			PersistentSession entrySession = entry.getValue().getPersistentSession();
+		session.forEach((key, value) -> {
+			PersistentSession entrySession = value.getPersistentSession();
 			if (entrySession.getExpiration().getTime() > time) {
-				result.put(entry.getKey(), entrySession);
+				result.put(key, entrySession);
 			}
-		}
+		});
 		return result;
 	}
 

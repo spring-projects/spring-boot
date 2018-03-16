@@ -384,12 +384,12 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		}
 
 		public void restore() {
-			for (Map.Entry<String, Scope> entry : this.scopes.entrySet()) {
+			this.scopes.forEach((key, value) -> {
 				if (logger.isInfoEnabled()) {
-					logger.info("Restoring user defined scope " + entry.getKey());
+					logger.info("Restoring user defined scope " + key);
 				}
-				this.beanFactory.registerScope(entry.getKey(), entry.getValue());
-			}
+				this.beanFactory.registerScope(key, value);
+			});
 		}
 
 	}

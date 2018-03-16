@@ -126,10 +126,8 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	private void flatten(String prefix, Map<String, Object> result,
 			Map<String, Object> map) {
-		prefix = (prefix == null ? "" : prefix + ".");
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			extract(prefix + entry.getKey(), result, entry.getValue());
-		}
+		String namePrefix = (prefix == null ? "" : prefix + ".");
+		map.forEach((key, value) -> extract(namePrefix + key, result, value));
 	}
 
 	@SuppressWarnings("unchecked")
