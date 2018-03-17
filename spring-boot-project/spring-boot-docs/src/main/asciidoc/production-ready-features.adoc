@@ -1417,7 +1417,7 @@ port to use can be provided using:
 [source,properties,indent=0]
 ----
 	management.metrics.export.ganglia.host=ganglia.example.com
-	management.metrics.export.ganglia.post=9649
+	management.metrics.export.ganglia.port=9649
 ----
 
 
@@ -1431,7 +1431,7 @@ to use can be provided using:
 [source,properties,indent=0]
 ----
 	management.metrics.export.graphite.host=graphite.example.com
-	management.metrics.export.graphite.post=9004
+	management.metrics.export.graphite.port=9004
 ----
 
 
