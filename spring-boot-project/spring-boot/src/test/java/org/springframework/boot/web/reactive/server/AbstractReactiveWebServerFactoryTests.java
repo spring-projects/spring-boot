@@ -137,11 +137,9 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
-		return new ReactorClientHttpConnector(
-				(options) -> options.sslSupport((sslContextBuilder) -> {
-					sslContextBuilder.sslProvider(SslProvider.JDK)
-							.trustManager(InsecureTrustManagerFactory.INSTANCE);
-				}));
+		return new ReactorClientHttpConnector((options) -> options.sslSupport(
+				(sslContextBuilder) -> sslContextBuilder.sslProvider(SslProvider.JDK)
+						.trustManager(InsecureTrustManagerFactory.INSTANCE)));
 	}
 
 	@Test
@@ -174,12 +172,10 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		KeyManagerFactory clientKeyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		clientKeyManagerFactory.init(clientKeyStore, "password".toCharArray());
-		return new ReactorClientHttpConnector(
-				(options) -> options.sslSupport((sslContextBuilder) -> {
-					sslContextBuilder.sslProvider(SslProvider.JDK)
-							.trustManager(InsecureTrustManagerFactory.INSTANCE)
-							.keyManager(clientKeyManagerFactory);
-				}));
+		return new ReactorClientHttpConnector((options) -> options.sslSupport(
+				(sslContextBuilder) -> sslContextBuilder.sslProvider(SslProvider.JDK)
+						.trustManager(InsecureTrustManagerFactory.INSTANCE)
+						.keyManager(clientKeyManagerFactory)));
 	}
 
 	protected void testClientAuthSuccess(Ssl sslConfiguration,

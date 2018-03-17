@@ -83,13 +83,10 @@ public class IntegrationAutoConfigurationTests {
 
 	@Test
 	public void parentContext() {
-		this.contextRunner.run((context) -> {
-			this.contextRunner.withParent(context)
-					.withPropertyValues("spring.jmx.default_domain=org.foo")
-					.run((child) -> {
-						assertThat(child).hasSingleBean(HeaderChannelRegistry.class);
-					});
-		});
+		this.contextRunner.run((context) -> this.contextRunner.withParent(context)
+				.withPropertyValues("spring.jmx.default_domain=org.foo")
+				.run((child) -> assertThat(child)
+						.hasSingleBean(HeaderChannelRegistry.class)));
 	}
 
 	@Test
