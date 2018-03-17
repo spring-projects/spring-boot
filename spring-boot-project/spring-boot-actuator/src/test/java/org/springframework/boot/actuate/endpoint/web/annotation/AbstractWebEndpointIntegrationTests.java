@@ -168,7 +168,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	public void readOperationWithMappingFailureProducesBadRequestResponse() {
 		load(QueryEndpointConfiguration.class, (client) -> {
 			WebTestClient.BodyContentSpec body = client.get().uri("/query?two=two")
-					.exchange().expectStatus().isBadRequest().expectBody();
+					.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+					.isBadRequest().expectBody();
 			validateErrorBody(body, HttpStatus.BAD_REQUEST, "/endpoints/query",
 					"Missing parameters: one");
 		});
@@ -290,7 +291,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	public void readOperationWithMissingRequiredParametersReturnsBadRequestResponse() {
 		load(RequiredParameterEndpointConfiguration.class, (client) -> {
 			WebTestClient.BodyContentSpec body = client.get().uri("/requiredparameters")
-					.exchange().expectStatus().isBadRequest().expectBody();
+					.accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+					.isBadRequest().expectBody();
 			validateErrorBody(body, HttpStatus.BAD_REQUEST,
 					"/endpoints/requiredparameters", "Missing parameters: foo");
 		});
