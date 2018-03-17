@@ -816,8 +816,8 @@ public class WebMvcAutoConfigurationTests {
 				.run((context) -> {
 					ContentNegotiationManager manager = context
 							.getBean(ContentNegotiationManager.class);
-					assertThat(manager.getStrategies()).anyMatch(
-							(strategy) -> WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class
+					assertThat(manager.getStrategies()).anyMatch((
+							strategy) -> WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class
 									.isAssignableFrom(strategy.getClass()));
 				});
 	}
