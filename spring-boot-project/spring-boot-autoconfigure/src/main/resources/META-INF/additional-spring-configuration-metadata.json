@@ -30,6 +30,10 @@
       }
     },
     {
+      "name": "server.error.include-stacktrace",
+      "defaultValue": "never"
+    },
+    {
       "name": "server.port",
       "defaultValue": 8080
     },
