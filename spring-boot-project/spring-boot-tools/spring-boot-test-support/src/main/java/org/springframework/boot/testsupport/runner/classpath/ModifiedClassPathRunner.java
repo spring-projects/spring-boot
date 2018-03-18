@@ -98,7 +98,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	private URL[] extractUrls(ClassLoader classLoader) throws Exception {
 		List<URL> extractedUrls = new ArrayList<>();
 		doExtractUrls(classLoader).forEach((URL url) -> {
-			if (isSurefireBooterJar(url)) {
+			if (isManifestOnlyJar(url)) {
 				extractedUrls.addAll(extractUrlsFromManifestClassPath(url));
 			}
 			else {
@@ -125,8 +125,16 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		}
 	}
 
+	private boolean isManifestOnlyJar(URL url) {
+		return isSurefireBooterJar(url) || isShortenedIntelliJJar(url);
+	}
+
 	private boolean isSurefireBooterJar(URL url) {
 		return url.getPath().contains("surefirebooter");
+	}
+
+	private boolean isShortenedIntelliJJar(URL url) {
+		return url.getPath().endsWith("classpath.jar");
 	}
 
 	private List<URL> extractUrlsFromManifestClassPath(URL booterJar) {
