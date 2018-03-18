@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -63,6 +64,9 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
+
+	private static final Pattern INTELLIJ_CLASSPATH_JAR_PATTERN = Pattern.compile(
+			".*classpath(\\d+)?.jar");
 
 	public ModifiedClassPathRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
@@ -102,7 +106,7 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	private URL[] extractUrls(URLClassLoader classLoader) throws Exception {
 		List<URL> extractedUrls = new ArrayList<URL>();
 		for (URL url : classLoader.getURLs()) {
-			if (isSurefireBooterJar(url)) {
+			if (isManifestOnlyJar(url)) {
 				extractedUrls.addAll(extractUrlsFromManifestClassPath(url));
 			}
 			else {
@@ -112,8 +116,28 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		return extractedUrls.toArray(new URL[extractedUrls.size()]);
 	}
 
+	private boolean isManifestOnlyJar(URL url) {
+		return isSurefireBooterJar(url) || isShortenedIntelliJJar(url);
+	}
+
 	private boolean isSurefireBooterJar(URL url) {
 		return url.getPath().contains("surefirebooter");
+	}
+
+	private boolean isShortenedIntelliJJar(URL url) {
+		String urlPath = url.getPath();
+		boolean isCandidate = INTELLIJ_CLASSPATH_JAR_PATTERN.matcher(urlPath).matches();
+		if (isCandidate) {
+			try {
+				Attributes attributes = getManifestMainAttributesFromUrl(url);
+				String createdBy = attributes.getValue("Created-By");
+				return createdBy != null && createdBy.contains("IntelliJ");
+			}
+			catch (Exception ex) {
+				return false;
+			}
+		}
+		return false;
 	}
 
 	private List<URL> extractUrlsFromManifestClassPath(URL booterJar) throws Exception {
@@ -125,10 +149,15 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 	}
 
 	private String[] getClassPath(URL booterJar) throws Exception {
-		JarFile jarFile = new JarFile(new File(booterJar.toURI()));
+		Attributes attributes = getManifestMainAttributesFromUrl(booterJar);
+		return StringUtils.delimitedListToStringArray(attributes
+				.getValue(Attributes.Name.CLASS_PATH), " ");
+	}
+
+	private Attributes getManifestMainAttributesFromUrl(URL url) throws Exception {
+		JarFile jarFile = new JarFile(new File(url.toURI()));
 		try {
-			return StringUtils.delimitedListToStringArray(jarFile.getManifest()
-					.getMainAttributes().getValue(Attributes.Name.CLASS_PATH), " ");
+			return jarFile.getManifest().getMainAttributes();
 		}
 		finally {
 			jarFile.close();
