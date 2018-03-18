@@ -91,7 +91,19 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			return additional;
 		}
 		existingMap.putAll(additional);
-		return existingMap;
+		return copyIfPossible(existingMap);
+	}
+
+	private Map<Object, Object> copyIfPossible(Map<Object, Object> map) {
+		try {
+			Map<Object, Object> result = CollectionFactory.createMap(map.getClass(),
+					map.size());
+			result.putAll(map);
+			return result;
+		}
+		catch (Exception ex) {
+			return map;
+		}
 	}
 
 	private class EntryBinder {

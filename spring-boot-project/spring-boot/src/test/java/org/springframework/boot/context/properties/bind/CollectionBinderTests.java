@@ -172,7 +172,6 @@ public class CollectionBinderTests {
 		List<Integer> result = this.binder
 				.bind("foo", INTEGER_LIST.withExistingValue(existing)).get();
 		assertThat(result).isExactlyInstanceOf(LinkedList.class);
-		assertThat(result).isSameAs(existing);
 		assertThat(result).containsExactly(1);
 	}
 
@@ -309,7 +308,20 @@ public class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c,c");
 		this.sources.add(source);
-		ExampleCustomBean result = this.binder.bind("foo", ExampleCustomBean.class).get();
+		ExampleCustomNoDefaultConstructorBean result = this.binder
+				.bind("foo", ExampleCustomNoDefaultConstructorBean.class).get();
+		assertThat(result.getItems()).hasSize(4);
+		assertThat(result.getItems()).containsExactly("a", "b", "c", "c");
+	}
+
+	@Test
+	public void bindToCollectionWithDefaultConstructor() {
+		// gh-12322
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items", "a,b,c,c");
+		this.sources.add(source);
+		ExampleCustomWithDefaultConstructorBean result = this.binder
+				.bind("foo", ExampleCustomWithDefaultConstructorBean.class).get();
 		assertThat(result.getItems()).hasSize(4);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "c");
 	}
@@ -415,30 +427,45 @@ public class CollectionBinderTests {
 		}
 	}
 
-	public static class ExampleCustomBean {
+	public static class ExampleCustomNoDefaultConstructorBean {
 
-		private MyCustomList items = new MyCustomList(Collections.singletonList("foo"));
+		private MyCustomNoDefaultConstructorList items = new MyCustomNoDefaultConstructorList(
+				Collections.singletonList("foo"));
 
-		public MyCustomList getItems() {
+		public MyCustomNoDefaultConstructorList getItems() {
 			return this.items;
 		}
 
-		public void setItems(MyCustomList items) {
+		public void setItems(MyCustomNoDefaultConstructorList items) {
 			this.items = items;
 		}
+
 	}
 
-	public static class MyCustomList extends ArrayList<String> {
+	public static class MyCustomNoDefaultConstructorList extends ArrayList<String> {
 
-		private List<String> items;
-
-		public MyCustomList(List<String> items) {
-			this.items = items;
+		public MyCustomNoDefaultConstructorList(List<String> items) {
+			addAll(items);
 		}
 
-		public List<String> getItems() {
+	}
+
+	public static class ExampleCustomWithDefaultConstructorBean {
+
+		private MyCustomWithDefaultConstructorList items = new MyCustomWithDefaultConstructorList();
+
+		public MyCustomWithDefaultConstructorList getItems() {
 			return this.items;
 		}
+
+		public void setItems(MyCustomWithDefaultConstructorList items) {
+			this.items.clear();
+			this.items.addAll(items);
+		}
+
+	}
+
+	public static class MyCustomWithDefaultConstructorList extends ArrayList<String> {
 
 	}
 

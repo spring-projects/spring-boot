@@ -65,18 +65,27 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 		try {
 			existingCollection.clear();
 			existingCollection.addAll(additional);
-			return existingCollection;
+			return copyIfPossible(existingCollection);
 		}
 		catch (UnsupportedOperationException ex) {
 			return createNewCollection(additional);
 		}
 	}
 
-	private Collection<Object> createNewCollection(Collection<Object> additional) {
-		Collection<Object> merged = CollectionFactory
-				.createCollection(additional.getClass(), additional.size());
-		merged.addAll(additional);
-		return merged;
+	private Collection<Object> copyIfPossible(Collection<Object> collection) {
+		try {
+			return createNewCollection(collection);
+		}
+		catch (Exception ex) {
+			return collection;
+		}
+	}
+
+	private Collection<Object> createNewCollection(Collection<Object> collection) {
+		Collection<Object> result = CollectionFactory
+				.createCollection(collection.getClass(), collection.size());
+		result.addAll(collection);
+		return result;
 	}
 
 }

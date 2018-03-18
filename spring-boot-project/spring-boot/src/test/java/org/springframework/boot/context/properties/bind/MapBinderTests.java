@@ -261,7 +261,6 @@ public class MapBinderTests {
 				.withExistingValue(existing);
 		Map<String, Integer> result = this.binder.bind("foo", target).get();
 		assertThat(result).isExactlyInstanceOf(HashMap.class);
-		assertThat(result).isSameAs(existing);
 		assertThat(result).hasSize(2);
 		assertThat(result).containsEntry("bar", 1);
 		assertThat(result).containsEntry("baz", 1001);
@@ -595,6 +594,27 @@ public class MapBinderTests {
 		assertThat(map).containsExactly(entry("bar", RuntimeException.class));
 	}
 
+	@Test
+	public void bindToMapWithNoDefaultConstructor() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items.a", "b");
+		this.sources.add(source);
+		ExampleCustomNoDefaultConstructorBean result = this.binder
+				.bind("foo", ExampleCustomNoDefaultConstructorBean.class).get();
+		assertThat(result.getItems()).containsOnly(entry("foo", "bar"), entry("a", "b"));
+	}
+
+	@Test
+	public void bindToMapWithDefaultConstructor() {
+		// gh-12322
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.items.a", "b");
+		this.sources.add(source);
+		ExampleCustomWithDefaultConstructorBean result = this.binder
+				.bind("foo", ExampleCustomWithDefaultConstructorBean.class).get();
+		assertThat(result.getItems()).containsExactly(entry("a", "b"));
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
 			ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
@@ -654,6 +674,49 @@ public class MapBinderTests {
 			return StringUtils.commaDelimitedListToSet(s).stream()
 					.collect(Collectors.toMap((k) -> k, (k) -> ""));
 		}
+
+	}
+
+	public static class ExampleCustomNoDefaultConstructorBean {
+
+		private MyCustomNoDefaultConstructorList items = new MyCustomNoDefaultConstructorList(
+				Collections.singletonMap("foo", "bar"));
+
+		public MyCustomNoDefaultConstructorList getItems() {
+			return this.items;
+		}
+
+		public void setItems(MyCustomNoDefaultConstructorList items) {
+			this.items = items;
+		}
+
+	}
+
+	public static class MyCustomNoDefaultConstructorList extends HashMap<String, String> {
+
+		public MyCustomNoDefaultConstructorList(Map<String, String> items) {
+			putAll(items);
+		}
+
+	}
+
+	public static class ExampleCustomWithDefaultConstructorBean {
+
+		private MyCustomWithDefaultConstructorList items = new MyCustomWithDefaultConstructorList();
+
+		public MyCustomWithDefaultConstructorList getItems() {
+			return this.items;
+		}
+
+		public void setItems(MyCustomWithDefaultConstructorList items) {
+			this.items.clear();
+			this.items.putAll(items);
+		}
+
+	}
+
+	public static class MyCustomWithDefaultConstructorList
+			extends HashMap<String, String> {
 
 	}
 
