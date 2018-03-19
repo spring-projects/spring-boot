@@ -232,8 +232,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private void addLocaleMappings(TomcatEmbeddedContext context) {
-		getLocaleCharsetMappings().forEach((locale, charset) ->
-				context.addLocaleEncodingMappingParameter(locale.toString(), charset.toString()));
+		getLocaleCharsetMappings()
+				.forEach((locale, charset) -> context.addLocaleEncodingMappingParameter(
+						locale.toString(), charset.toString()));
 	}
 
 	private void configureTldSkipPatterns(TomcatEmbeddedContext context) {

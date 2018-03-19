@@ -79,7 +79,7 @@ public class ServletContextInitializerBeans
 		addServletContextInitializerBeans(beanFactory);
 		addAdaptableBeans(beanFactory);
 		List<ServletContextInitializer> sortedInitializers = new ArrayList<>();
-		this.initializers.values().forEach(contextInitializers -> {
+		this.initializers.values().forEach((contextInitializers) -> {
 			AnnotationAwareOrderComparator.sort(contextInitializers);
 			sortedInitializers.addAll(contextInitializers);
 		});

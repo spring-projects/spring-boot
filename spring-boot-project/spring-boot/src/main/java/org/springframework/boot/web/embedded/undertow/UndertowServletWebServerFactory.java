@@ -328,8 +328,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private void addLocaleMappings(DeploymentInfo deployment) {
-		getLocaleCharsetMappings().forEach((locale, charset) ->
-				deployment.addLocaleCharsetMapping(locale.toString(), charset.toString()));
+		getLocaleCharsetMappings().forEach((locale, charset) -> deployment
+				.addLocaleCharsetMapping(locale.toString(), charset.toString()));
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(

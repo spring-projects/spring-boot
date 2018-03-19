@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,8 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	private void save(Map<String, PersistentSession> sessionData,
 			ObjectOutputStream stream) throws IOException {
 		Map<String, Serializable> session = new LinkedHashMap<>();
-		sessionData.forEach((key, value) ->
-				session.put(key, new SerializablePersistentSession(value)));
+		sessionData.forEach((key, value) -> session.put(key,
+				new SerializablePersistentSession(value)));
 		stream.writeObject(session);
 	}
 
