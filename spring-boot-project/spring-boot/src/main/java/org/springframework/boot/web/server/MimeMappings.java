@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -244,9 +244,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	public MimeMappings(Map<String, String> mappings) {
 		Assert.notNull(mappings, "Mappings must not be null");
 		this.map = new LinkedHashMap<>();
-		for (Map.Entry<String, String> entry : mappings.entrySet()) {
-			add(entry.getKey(), entry.getValue());
-		}
+		mappings.forEach(this::add);
 	}
 
 	/**

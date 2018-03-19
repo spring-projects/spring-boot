@@ -30,8 +30,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
@@ -234,12 +232,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private void addLocaleMappings(TomcatEmbeddedContext context) {
-		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
-			Locale locale = entry.getKey();
-			Charset charset = entry.getValue();
-			context.addLocaleEncodingMappingParameter(locale.toString(),
-					charset.toString());
-		}
+		getLocaleCharsetMappings()
+				.forEach((locale, charset) -> context.addLocaleEncodingMappingParameter(
+						locale.toString(), charset.toString()));
 	}
 
 	private void configureTldSkipPatterns(TomcatEmbeddedContext context) {
@@ -267,10 +262,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		jspServlet.setName("jsp");
 		jspServlet.setServletClass(getJsp().getClassName());
 		jspServlet.addInitParameter("fork", "false");
-		for (Entry<String, String> initParameter : getJsp().getInitParameters()
-				.entrySet()) {
-			jspServlet.addInitParameter(initParameter.getKey(), initParameter.getValue());
-		}
+		getJsp().getInitParameters().forEach(jspServlet::addInitParameter);
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
 		context.addServletMappingDecoded("*.jsp", "jsp");
