@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,7 @@ public interface IterableConfigurationPropertySource
 
 	/**
 	 * Return an iterator for the {@link ConfigurationPropertyName names} managed by this
-	 * source. If it is not possible to determine the names an empty iterator may be
-	 * returned.
+	 * source.
 	 * @return an iterator (never {@code null})
 	 */
 	@Override
@@ -54,8 +53,7 @@ public interface IterableConfigurationPropertySource
 
 	/**
 	 * Returns a sequential {@code Stream} for the {@link ConfigurationPropertyName names}
-	 * managed by this source. If it is not possible to determine the names an
-	 * {@link Stream#empty() empty stream} may be returned.
+	 * managed by this source.
 	 * @return a stream of names (never {@code null})
 	 */
 	Stream<ConfigurationPropertyName> stream();
