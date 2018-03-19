@@ -89,7 +89,7 @@ public class BasicErrorController extends AbstractErrorController {
 		Map<String, Object> body = getErrorAttributes(request,
 				isIncludeStackTrace(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
-		return new ResponseEntity<Map<String, Object>>(body, status);
+		return new ResponseEntity<>(body, status);
 	}
 
 	@RequestMapping(produces = "text/html")
@@ -111,7 +111,7 @@ public class BasicErrorController extends AbstractErrorController {
 		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
 			padding = Math.max(padding, entry.getKey().length());
 		}
-		StringBuffer body = new StringBuffer();
+		StringBuilder body = new StringBuilder();
 		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
 			body.append(String.format("%-" + padding + "s : %s%n", entry.getKey(),
 					entry.getValue()));
