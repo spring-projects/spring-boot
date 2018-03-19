@@ -112,13 +112,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
 				beanFactoryMetadata);
 		Map<String, ConfigurationPropertiesBeanDescriptor> beanDescriptors = new HashMap<>();
-		for (Map.Entry<String, Object> entry : beans.entrySet()) {
-			String beanName = entry.getKey();
-			Object bean = entry.getValue();
+		beans.forEach((beanName, bean) -> {
 			String prefix = extractPrefix(context, beanFactoryMetadata, beanName);
 			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(
 					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
-		}
+		});
 		return new ContextConfigurationProperties(beanDescriptors,
 				context.getParent() == null ? null : context.getParent().getId());
 	}
@@ -229,10 +227,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> sanitize(String prefix, Map<String, Object> map) {
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			String key = entry.getKey();
+		map.forEach((key, value) -> {
 			String qualifiedKey = (prefix.isEmpty() ? prefix : prefix + ".") + key;
-			Object value = entry.getValue();
 			if (value instanceof Map) {
 				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));
 			}
@@ -244,7 +240,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				value = this.sanitizer.sanitize(qualifiedKey, value);
 				map.put(key, value);
 			}
-		}
+		});
 		return map;
 	}
 

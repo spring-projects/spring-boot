@@ -244,9 +244,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	public MimeMappings(Map<String, String> mappings) {
 		Assert.notNull(mappings, "Mappings must not be null");
 		this.map = new LinkedHashMap<>();
-		for (Map.Entry<String, String> entry : mappings.entrySet()) {
-			add(entry.getKey(), entry.getValue());
-		}
+		mappings.forEach(this::add);
 	}
 
 	/**
