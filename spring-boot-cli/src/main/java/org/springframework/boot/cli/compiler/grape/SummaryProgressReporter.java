@@ -23,7 +23,6 @@ import org.eclipse.aether.AbstractRepositoryListener;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositoryEvent;
 import org.eclipse.aether.transfer.AbstractTransferListener;
-import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
 
 /**
@@ -53,14 +52,12 @@ final class SummaryProgressReporter implements ProgressReporter {
 		session.setTransferListener(new AbstractTransferListener() {
 
 			@Override
-			public void transferStarted(TransferEvent event)
-					throws TransferCancelledException {
+			public void transferStarted(TransferEvent event) {
 				reportProgress();
 			}
 
 			@Override
-			public void transferProgressed(TransferEvent event)
-					throws TransferCancelledException {
+			public void transferProgressed(TransferEvent event) {
 				reportProgress();
 			}
 
@@ -95,7 +92,7 @@ final class SummaryProgressReporter implements ProgressReporter {
 	public void finished() {
 		if (this.started && !this.finished) {
 			this.finished = true;
-			System.out.println("");
+			this.out.println();
 		}
 	}
 
