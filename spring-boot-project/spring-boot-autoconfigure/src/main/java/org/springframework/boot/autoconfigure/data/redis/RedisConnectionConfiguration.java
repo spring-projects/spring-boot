@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Alen Turkovic
  */
 abstract class RedisConnectionConfiguration {
 
@@ -81,6 +82,7 @@ abstract class RedisConnectionConfiguration {
 			if (this.properties.getPassword() != null) {
 				config.setPassword(RedisPassword.of(this.properties.getPassword()));
 			}
+			config.setDatabase(this.properties.getDatabase());
 			return config;
 		}
 		return null;
