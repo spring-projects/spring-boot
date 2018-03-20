@@ -33,7 +33,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
- * {@link EndpointFilter} that will filter endpoints based on {@code expose} and
+ * {@link EndpointFilter} that will filter endpoints based on {@code include} and
  * {@code exclude} properties.
  *
  * @param <E> The endpoint type
@@ -58,7 +58,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 		Assert.hasText(prefix, "Prefix must not be empty");
 		Binder binder = Binder.get(environment);
 		this.endpointType = endpointType;
-		this.include = bind(binder, prefix + ".expose");
+		this.include = bind(binder, prefix + ".include");
 		this.exclude = bind(binder, prefix + ".exclude");
 		this.exposeDefaults = asSet(Arrays.asList(exposeDefaults));
 	}
