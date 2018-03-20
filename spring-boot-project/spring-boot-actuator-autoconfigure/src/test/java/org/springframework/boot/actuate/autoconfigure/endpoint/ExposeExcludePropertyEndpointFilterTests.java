@@ -123,7 +123,7 @@ public class ExposeExcludePropertyEndpointFilterTests {
 	@Test
 	public void matchWhenDiscovererDoesNotMatchShouldMatch() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("foo.expose", "bar");
+		environment.setProperty("foo.include", "bar");
 		environment.setProperty("foo.exclude", "");
 		this.filter = new ExposeExcludePropertyEndpointFilter<>(
 				DifferentTestExposableWebEndpoint.class, environment, "foo");
@@ -146,9 +146,9 @@ public class ExposeExcludePropertyEndpointFilterTests {
 		assertThat(match("buz")).isFalse();
 	}
 
-	private void setupFilter(String expose, String exclude) {
+	private void setupFilter(String include, String exclude) {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("foo.expose", expose);
+		environment.setProperty("foo.include", include);
 		environment.setProperty("foo.exclude", exclude);
 		this.filter = new ExposeExcludePropertyEndpointFilter<>(
 				TestExposableWebEndpoint.class, environment, "foo", "def");
