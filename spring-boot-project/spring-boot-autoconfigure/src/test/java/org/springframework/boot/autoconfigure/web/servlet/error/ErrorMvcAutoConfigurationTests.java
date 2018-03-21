@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ErrorMvcAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Yunkun Huang
  */
 public class ErrorMvcAutoConfigurationTests {
 
@@ -61,7 +62,21 @@ public class ErrorMvcAutoConfigurationTests {
 		});
 	}
 
-	protected DispatcherServletWebRequest createCommittedWebRequest(Exception ex) {
+	@Test
+	public void testSpELViewWithResponseUnCommitted() {
+		this.contextRunner.run((context) -> {
+			View errorView = context.getBean("error", View.class);
+			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
+			DispatcherServletWebRequest webRequest = createUnCommittedWebRequest(
+					new IllegalStateException("Exception message"));
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
+					webRequest.getRequest(), webRequest.getResponse());
+			assertThat(((MockHttpServletResponse) webRequest.getResponse()).getContentAsString())
+					.contains("<div>Exception message</div>");
+		});
+	}
+
+	private DispatcherServletWebRequest createCommittedWebRequest(Exception ex) {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/path");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		DispatcherServletWebRequest webRequest = new DispatcherServletWebRequest(request,
@@ -73,6 +88,19 @@ public class ErrorMvcAutoConfigurationTests {
 		response.setCommitted(true);
 		response.setOutputStreamAccessAllowed(false);
 		response.setWriterAccessAllowed(false);
+		return webRequest;
+	}
+
+	private DispatcherServletWebRequest createUnCommittedWebRequest(Exception ex) {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/path");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		DispatcherServletWebRequest webRequest = new DispatcherServletWebRequest(request,
+				response);
+		webRequest.setAttribute("javax.servlet.error.exception", ex,
+				RequestAttributes.SCOPE_REQUEST);
+		response.setCommitted(false);
+		response.setOutputStreamAccessAllowed(true);
+		response.setWriterAccessAllowed(true);
 		return webRequest;
 	}
 
