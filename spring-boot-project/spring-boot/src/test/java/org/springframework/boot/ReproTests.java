@@ -170,7 +170,6 @@ public class ReproTests {
 				.isEqualTo(expectedActiveProfiles);
 		assertThat(context.getEnvironment().getProperty("version")).as("version mismatch")
 				.isEqualTo(expectedVersion);
-		context.close();
 	}
 
 	@Configuration
