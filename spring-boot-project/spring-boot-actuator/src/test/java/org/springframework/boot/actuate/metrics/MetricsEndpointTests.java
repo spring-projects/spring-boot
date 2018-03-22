@@ -61,6 +61,15 @@ public class MetricsEndpointTests {
 	}
 
 	@Test
+	public void listNamesInSortedOrder() {
+		this.registry.counter("com.example.baz");
+		this.registry.counter("com.example.bar");
+		this.registry.counter("com.example.foo");
+		MetricsEndpoint.ListNamesResponse result = this.endpoint.listNames();
+		assertThat(result.getNames()).containsExactly("com.example.bar", "com.example.baz", "com.example.foo");
+	}
+
+	@Test
 	public void listNamesRecursesOverCompositeRegistries() {
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
 		SimpleMeterRegistry reg1 = new SimpleMeterRegistry();
