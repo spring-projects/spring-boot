@@ -28,8 +28,9 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Anton Telechev
  * @author Phillip Webb
+ * @since 2.0.1
  */
-abstract class AbstractJsonParser implements JsonParser {
+public abstract class AbstractJsonParser implements JsonParser {
 
 	protected final Map<String, Object> parseMap(String json,
 			Function<String, Map<String, Object>> parser) {
