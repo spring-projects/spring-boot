@@ -21,10 +21,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -58,7 +58,7 @@ public class MetricsEndpoint {
 
 	@ReadOperation
 	public ListNamesResponse listNames() {
-		Set<String> names = new LinkedHashSet<>();
+		Set<String> names = new TreeSet<>();
 		collectNames(names, this.registry);
 		return new ListNamesResponse(names);
 	}
