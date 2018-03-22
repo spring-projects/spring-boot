@@ -66,6 +66,7 @@ import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
@@ -354,6 +355,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void configureSession(Context context) {
 		long sessionTimeout = getSessionTimeoutInMinutes();
 		context.setSessionTimeout((int) sessionTimeout);
+		configureSessionCookie(context);
 		if (getSession().isPersistent()) {
 			Manager manager = context.getManager();
 			if (manager == null) {
@@ -374,6 +376,14 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		File dir = getValidSessionStoreDir();
 		File file = new File(dir, "SESSIONS.ser");
 		((StandardManager) manager).setPathname(file.getAbsolutePath());
+	}
+
+	private void configureSessionCookie(Context context) {
+		final Session.Cookie cookie = getSession().getCookie();
+
+		if (cookie.getHttpOnly() != null) {
+			context.setUseHttpOnly(cookie.getHttpOnly());
+		}
 	}
 
 	private long getSessionTimeoutInMinutes() {

@@ -211,6 +211,17 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
+	public void sessionCookieHttpOnly() {
+		TomcatServletWebServerFactory factory = getFactory();
+		factory.getSession().getCookie().setHttpOnly(false);
+
+		Tomcat tomcat = getTomcat(factory);
+		Context context = (Context) tomcat.getHost().findChildren()[0];
+
+		assertThat(context.getUseHttpOnly()).isEqualTo(false);
+	}
+
+	@Test
 	public void noSessionTimeout() {
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.getSession().setTimeout(null);
