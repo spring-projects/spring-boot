@@ -41,8 +41,9 @@ import org.springframework.util.StringUtils;
  *
  * @param <T> the type of {@link Filter} to register
  * @author Phillip Webb
+ * @since 2.0.1
  */
-abstract class AbstractFilterRegistrationBean<T extends Filter>
+public abstract class AbstractFilterRegistrationBean<T extends Filter>
 		extends DynamicRegistrationBean<Dynamic> {
 
 	/**

@@ -30,9 +30,9 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
  */
 @Configuration
 @ConditionalOnNotWebApplication
-public class FreeMarkerNonWebConfiguration extends AbstractFreeMarkerConfiguration {
+class FreeMarkerNonWebConfiguration extends AbstractFreeMarkerConfiguration {
 
-	public FreeMarkerNonWebConfiguration(FreeMarkerProperties properties) {
+	FreeMarkerNonWebConfiguration(FreeMarkerProperties properties) {
 		super(properties);
 	}
 
