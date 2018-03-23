@@ -1,5 +1,7 @@
+:code-examples: ../java/org/springframework/boot
+
 [[howto]]
-= '`How-to`' guides
+= "`How-to`" Guides
 
 [partintro]
 --

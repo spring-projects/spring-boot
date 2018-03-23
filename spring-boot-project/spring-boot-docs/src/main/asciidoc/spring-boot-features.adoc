@@ -1,5 +1,8 @@
+:code-examples: ../java/org/springframework/boot
+:test-examples: ../../test/java/org/springframework/boot
+
 [[boot-features]]
-= Spring Boot features
+= Spring Boot Features
 
 [partintro]
 --

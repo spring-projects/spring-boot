@@ -1,7 +1,8 @@
 = Spring Boot Reference Guide
 Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson; Marcel Overdijk; Christian Dupuis; Sébastien Deleuze; Michael Simons; Vedran Pavić; Jay Bryant; Madhura Bhave
 :doctype: book
-:toc:
+:docinfo: shared
+:toc: left
 :toclevels: 4
 :source-highlighter: prettify
 :numbered:

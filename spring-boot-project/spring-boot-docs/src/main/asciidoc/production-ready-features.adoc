@@ -1,5 +1,7 @@
+:code-examples: ../java/org/springframework/boot
+
 [[production-ready]]
-= Spring Boot Actuator: Production-ready features
+= Spring Boot Actuator: Production-ready Features
 
 [partintro]
 --

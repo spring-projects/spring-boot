@@ -13,6 +13,14 @@
 	<description>Spring Boot Docs</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
+		<asciidoctorj.pdf.version>1.5.0-alpha.16</asciidoctorj.pdf.version>
+		<asciidoctorj.epub.version>1.5.0-alpha.7</asciidoctorj.epub.version>
+    <asciidoctorj.version>1.5.6</asciidoctorj.version>
+    <jruby.version>1.7.26</jruby.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -1218,167 +1226,94 @@
 							</dependency>
 						</dependencies>
 					</plugin>
+					<!-- Plugin I got from Asciidoctor -->
 					<plugin>
-						<groupId>org.asciidoctor</groupId>
-						<artifactId>asciidoctor-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>generate-docbook</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>process-asciidoc</goal>
-								</goals>
-								<configuration>
-									<sourceDocumentName>index.adoc</sourceDocumentName>
-									<backend>docbook5</backend>
-									<doctype>book</doctype>
-									<attributes>
-										<docinfo>true</docinfo>
-										<jooq-version>${jooq.version}</jooq-version>
-										<spring-framework-version>${spring-framework.version}</spring-framework-version>
-										<spring-boot-version>${revision}</spring-boot-version>
-										<spring-boot-docs-version>${revision}</spring-boot-docs-version>
-										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
-										<spring-docs-version>${spring-framework.version}</spring-docs-version>
-										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
-										<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
-										<github-tag>${github-tag}</github-tag>
-									</attributes>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>com.agilejava.docbkx</groupId>
-						<artifactId>docbkx-maven-plugin</artifactId>
-						<version>2.0.17</version>
-						<configuration>
-							<sourceDirectory>${basedir}/target/generated-docs</sourceDirectory>
-							<includes>index.xml</includes>
-							<xincludeSupported>true</xincludeSupported>
-							<chunkedOutput>false</chunkedOutput>
-							<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
-							<useExtensions>1</useExtensions>
-							<highlightSource>1</highlightSource>
-							<highlightXslthlConfig>${basedir}/src/main/docbook/xsl/xslthl-config.xml</highlightXslthlConfig>
-						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>net.sf.xslthl</groupId>
-								<artifactId>xslthl</artifactId>
-								<version>2.1.0</version>
-							</dependency>
-							<dependency>
-								<groupId>net.sf.docbook</groupId>
-								<artifactId>docbook-xml</artifactId>
-								<version>5.0-all</version>
-								<classifier>resources</classifier>
-								<type>zip</type>
-								<scope>runtime</scope>
-							</dependency>
-						</dependencies>
-						<executions>
-							<execution>
-								<id>html-single</id>
-								<goals>
-									<goal>generate-html</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
-									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/htmlsingle">
-											<fileset dir="${basedir}/target/docbook/htmlsingle">
-												<include name="**/*.html" />
-											</fileset>
-										</copy>
-										<copy todir="${basedir}/target/contents/reference/htmlsingle">
-											<fileset dir="${basedir}/src/main/docbook">
-												<include name="**/*.css" />
-												<include name="**/*.png" />
-												<include name="**/*.gif" />
-												<include name="**/*.jpg" />
-											</fileset>
-										</copy>
-									</postProcess>
-								</configuration>
-							</execution>
-							<execution>
-								<id>html</id>
-								<goals>
-									<goal>generate-html</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl</htmlCustomization>
-									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
-									<chunkedOutput>true</chunkedOutput>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/html">
-											<fileset dir="${basedir}/target/docbook/html">
-												<include name="**/*.html" />
-											</fileset>
-										</copy>
-										<copy todir="${basedir}/target/contents/reference/html">
-											<fileset dir="${basedir}/src/main/docbook">
-												<include name="**/*.css" />
-												<include name="**/*.png" />
-												<include name="**/*.gif" />
-												<include name="**/*.jpg" />
-											</fileset>
-										</copy>
-									</postProcess>
-								</configuration>
-							</execution>
-							<execution>
-								<id>pdf</id>
-								<goals>
-									<goal>generate-pdf</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
-									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference">
-											<fileset dir="${basedir}/target/docbook">
-												<include name="**/*.pdf" />
-											</fileset>
-										</copy>
-										<move file="${basedir}/target/contents/reference/pdf/index.pdf"
-											tofile="${basedir}/target/contents/reference/pdf/spring-boot-reference.pdf" />
-									</postProcess>
-								</configuration>
-							</execution>
-							<execution>
-								<id>epub</id>
-								<goals>
-									<goal>generate-epub3</goal>
-								</goals>
-								<phase>prepare-package</phase>
-								<configuration>
-									<epub3Customization>${basedir}/src/main/docbook/xsl/epub.xsl</epub3Customization>
-									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
-									<preProcess>
-										<copy todir="${basedir}/target/docbook/epub/images">
-											<fileset dir="${basedir}/src/main/docbook/images">
-												<include name="*.png" />
-											</fileset>
-										</copy>
-									</preProcess>
-									<postProcess>
-										<copy todir="${basedir}/target/contents/reference/epub">
-											<fileset dir="${basedir}/target/docbook">
-												<include name="**/*.epub" />
-											</fileset>
-										</copy>
-										<move file="${basedir}/target/contents/reference/epub/index.epub"
-											tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
-									</postProcess>
-								</configuration>
-							</execution>
-						</executions>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctor-maven-plugin</artifactId>
+							<version>${asciidoctor.maven.plugin.version}</version>
+							<dependencies>
+									<!-- Comment this section to use the default jruby artifact provided by the plugin -->
+									<dependency>
+											<groupId>org.jruby</groupId>
+											<artifactId>jruby-complete</artifactId>
+											<version>${jruby.version}</version>
+									</dependency>
+									<!-- Comment this section to use the default AsciidoctorJ artifact provided by the plugin -->
+									<dependency>
+											<groupId>org.asciidoctor</groupId>
+											<artifactId>asciidoctorj</artifactId>
+											<version>${asciidoctorj.version}</version>
+									</dependency>
+									<dependency>
+										<groupId>org.asciidoctor</groupId>
+										<artifactId>asciidoctorj-pdf</artifactId>
+										<version>${asciidoctorj.pdf.version}</version>
+									</dependency>
+									<dependency>
+										<groupId>org.asciidoctor</groupId>
+										<artifactId>asciidoctorj-epub3</artifactId>
+										<version>${asciidoctorj.epub.version}</version>
+									</dependency>
+							</dependencies>
+							<configuration>
+								<sourceDirectory>./src/main/asciidoc</sourceDirectory>
+							</configuration>
+							<executions>
+									<execution>
+											<id>asciidoc-to-html</id>
+											<phase>generate-resources</phase>
+											<goals>
+													<goal>process-asciidoc</goal>
+											</goals>
+											<configuration>
+												<backend>html5</backend>
+												<sourceHighlighter>coderay</sourceHighlighter>
+												<attributes>
+													<linkcss>true</linkcss>
+													<imagesdir>./images</imagesdir>
+													<toc>left</toc>
+													<icons>font</icons>
+													<sectanchors>true</sectanchors>
+													<!-- set the idprefix to blank -->
+													<idprefix/>
+													<idseparator>-</idseparator>
+													<docinfo1>true</docinfo1>
+													<stylesdir>stylesheets/</stylesdir>
+													<stylesheet>spring.css</stylesheet>
+												</attributes>
+											</configuration>
+									</execution>
+									<execution>
+										<id>generate-pdf-doc</id>
+										<phase>generate-resources</phase>
+										<goals>
+											<goal>process-asciidoc</goal>
+										</goals>
+										<configuration>
+											<backend>pdf</backend>
+											<sourceHighlighter>coderay</sourceHighlighter>
+											<attributes>
+												<icons>font</icons>
+												<pagenums/>
+												<toc/>
+												<idprefix/>
+												<idseparator>-</idseparator>
+											</attributes>
+										</configuration>
+									</execution>
+									<execution>
+										<id>generate-spine-epub</id>
+										<phase>generate-resources</phase>
+										<goals>
+											<goal>process-asciidoc</goal>
+										</goals>
+										<configuration>
+											<backend>epub3</backend>
+											<sourceHighlighter>coderay</sourceHighlighter>
+											<sourceDocumentName>index.adoc</sourceDocumentName>
+										</configuration>
+									</execution>
+							</executions>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -1407,6 +1342,44 @@
 							</dependency>
 						</dependencies>
 						<executions>
+							<execution>
+								<id>copy-docs</id>
+								<phase>prepare-package</phase>
+								<configuration>
+									<target name="Copy and rename doc files">
+										<!-- Copy the PDF file -->
+										<copy file="${project.build.directory}/generated-docs/index.pdf" tofile="${project.build.directory}/contents/reference/pdf/spring-boot-reference.pdf" />
+										<!-- Copy the Epub file -->
+										<copy file="${project.build.directory}/generated-docs/index.epub" tofile="${project.build.directory}/contents/reference/epub/spring-boot-reference.epub" />
+										<!-- Copy the HTML that uses a single file -->
+										<copy file="${project.build.directory}/generated-docs/index.html" tofile="${project.build.directory}/contents/reference/htmlsingle/index.html" />
+										<copy file="${project.build.directory}/generated-docs/stylesheets/spring.css" tofile="${project.build.directory}/contents/reference/htmlsingle/stylesheets/spring.css" />
+										<copy todir="${project.build.directory}/contents/reference/htmlsingle/tocbot-3.0.2" overwrite="true" flatten="true">
+											<fileset dir="${project.build.directory}/generated-docs/tocbot-3.0.2" includes="*.*" >
+												<include name="*.*" />
+											</fileset>
+										</copy>
+										<!-- Copy the HTML that uses multiple files -->
+										<copy todir="${project.build.directory}/contents/reference/html" overwrite="true" flatten="true">
+											<fileset dir="${project.build.directory}/generated-docs" includes="*.html" >
+												<include name="*.html" />
+												<exclude name="index.html" />
+												<exclude name="index-multi.html" />
+											</fileset>
+										</copy>
+										<copy file="${project.build.directory}/generated-docs/index-multi.html" tofile="${project.build.directory}/contents/reference/html/index.html" />
+										<copy file="${project.build.directory}/generated-docs/stylesheets/spring.css" tofile="${project.build.directory}/contents/reference/html/stylesheets/spring.css" />
+										<copy todir="${project.build.directory}/contents/reference/html/tocbot-3.0.2" overwrite="true" flatten="true">
+											<fileset dir="${project.build.directory}/generated-docs/tocbot-3.0.2" includes="*.*" >
+												<include name="*.*" />
+											</fileset>
+										</copy>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
 							<execution>
 								<id>package-and-attach-docs-zip</id>
 								<phase>package</phase>
