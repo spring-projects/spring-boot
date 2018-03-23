@@ -56,7 +56,7 @@ public class RestDocsAutoConfiguration {
 	static class RestDocsMockMvcAutoConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(MockMvcRestDocumentationConfigurer.class)
+		@ConditionalOnMissingBean
 		public MockMvcRestDocumentationConfigurer restDocsMockMvcConfigurer(
 				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizerProvider,
 				RestDocumentationContextProvider contextProvider) {
@@ -88,7 +88,7 @@ public class RestDocsAutoConfiguration {
 	static class RestDocsRestAssuredAutoConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(RequestSpecification.class)
+		@ConditionalOnMissingBean
 		public RequestSpecification restDocsRestAssuredConfigurer(
 				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizerProvider,
 				RestDocumentationContextProvider contextProvider) {
@@ -117,7 +117,7 @@ public class RestDocsAutoConfiguration {
 	static class RestDocsWebTestClientAutoConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(WebTestClientRestDocumentationConfigurer.class)
+		@ConditionalOnMissingBean
 		public WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
 				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizerProvider,
 				RestDocumentationContextProvider contextProvider) {

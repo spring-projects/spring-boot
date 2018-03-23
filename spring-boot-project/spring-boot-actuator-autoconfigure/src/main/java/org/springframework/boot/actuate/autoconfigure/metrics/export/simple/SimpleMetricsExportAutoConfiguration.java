@@ -56,7 +56,7 @@ public class SimpleMetricsExportAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(SimpleConfig.class)
+	@ConditionalOnMissingBean
 	public SimpleConfig simpleConfig(SimpleProperties simpleProperties) {
 		return new SimplePropertiesConfigAdapter(simpleProperties);
 	}

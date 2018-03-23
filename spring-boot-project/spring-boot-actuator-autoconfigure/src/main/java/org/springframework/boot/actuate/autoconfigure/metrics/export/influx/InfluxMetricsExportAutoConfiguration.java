@@ -51,7 +51,7 @@ import org.springframework.context.annotation.Configuration;
 public class InfluxMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(InfluxConfig.class)
+	@ConditionalOnMissingBean
 	public InfluxConfig influxConfig(InfluxProperties influxProperties) {
 		return new InfluxPropertiesConfigAdapter(influxProperties);
 	}

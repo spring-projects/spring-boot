@@ -37,7 +37,7 @@ class MustacheServletWebConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(MustacheViewResolver.class)
+	@ConditionalOnMissingBean
 	public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
 		this.mustache.applyToMvcViewResolver(resolver);

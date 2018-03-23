@@ -52,7 +52,7 @@ import org.springframework.context.annotation.Configuration;
 public class AtlasMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(AtlasConfig.class)
+	@ConditionalOnMissingBean
 	public AtlasConfig atlasConfig(AtlasProperties atlasProperties) {
 		return new AtlasPropertiesConfigAdapter(atlasProperties);
 	}

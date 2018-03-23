@@ -34,7 +34,7 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
 		EvaluationContextExtensionSupport.class })
 public class SecurityDataConfiguration {
 
-	@ConditionalOnMissingBean(SecurityEvaluationContextExtension.class)
+	@ConditionalOnMissingBean
 	@Bean
 	public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
 		return new SecurityEvaluationContextExtension();
