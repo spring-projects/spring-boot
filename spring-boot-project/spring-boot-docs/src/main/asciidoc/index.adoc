@@ -61,7 +61,6 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-data: https://projects.spring.io/spring-data/
 :spring-data-rest-javadoc: https://docs.spring.io/spring-data/rest/docs/current/api/org/springframework/data/rest
 :gradle-userguide: https://www.gradle.org/docs/current/userguide
-:propdeps-plugin: https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
 :ant-manual: http://ant.apache.org/manual
 :code-examples: ../java/org/springframework/boot/docs
 :test-examples: ../../test/java/org/springframework/boot/docs
