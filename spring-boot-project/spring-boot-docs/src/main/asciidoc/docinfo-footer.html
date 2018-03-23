@@ -1,0 +1,51 @@
+<script type="text/javascript" src="tocbot-3.0.2/tocbot.js"></script>
+<script type="text/javascript" >
+
+    // Tocbot dynamic TOC, works with tocbot 3.0.2
+    // Source: https://github.com/asciidoctor/asciidoctor/issues/699#issuecomment-321066006
+
+    var oldtoc = document.getElementById('toctitle').nextElementSibling;
+    var newtoc = document.createElement('div');
+    newtoc.setAttribute('id', 'tocbot');
+    newtoc.setAttribute('class', 'js-toc');
+    oldtoc.parentNode.replaceChild(newtoc, oldtoc);
+    tocbot.init({ contentSelector: '#content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        smoothScroll: false });
+    var handleTocRefresh = function() {
+        tocbot.refresh();
+    }
+    var handleTocOnResize = function() {
+        var width = window.innerWidth
+                    || document.documentElement.clientWidth
+                    || document.body.clientWidth;
+        if (width < 768) {
+            tocbot.refresh({ contentSelector: '#content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 6,
+                activeLinkClass: 'ignoreactive',
+                throttleTimeout: 1000,
+                smoothScroll: false });
+        }
+        else {
+            tocbot.refresh({ contentSelector: '#content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                smoothScroll: false });
+        }
+    };
+    window.addEventListener('resize', handleTocOnResize);
+    window.addEventListener('tocRefresh', handleTocRefresh);
+    handleTocOnResize();
+
+    if (!window.location.pathname.endsWith("index.html")) {
+        var link = document.createElement("a");
+        link.setAttribute("href", "index.html");
+        link.innerHTML = "<i class=\"fa fa-chevron-left\"></i>&nbsp;&nbsp;Back to index";
+        var p = document.createElement("p");
+        p.setAttribute("id", "backToIndex");
+        p.appendChild(link);
+        var toc = document.getElementById('toc')
+        toc.insertBefore(p, toctitle);
+  }
+
+</script>
