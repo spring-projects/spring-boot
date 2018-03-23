@@ -731,13 +731,12 @@ an optional dependency, for example with Maven you would add:
 	</dependency>
 ----
 
-With Gradle, you can use the https://github.com/spring-gradle-plugins/propdeps-plugin[propdeps-plugin]
-and specify:
+With Gradle you would add:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
-		optional "org.springframework.boot:spring-boot-configuration-processor"
+		compileOnly "org.springframework.boot:spring-boot-configuration-processor"
 	}
 
 	compileJava.dependsOn(processResources)

@@ -772,17 +772,15 @@ devtools support, simply add the module dependency to your build:
 [source,groovy,indent=0,subs="attributes"]
 ----
 	dependencies {
-		compile("org.springframework.boot:spring-boot-devtools")
+		compileOnly("org.springframework.boot:spring-boot-devtools")
 	}
 ----
 
 NOTE: Developer tools are automatically disabled when running a fully packaged
 application. If your application is launched using `java -jar` or if it's started using a
 special classloader, then it is considered a "`production application`". Flagging the
-dependency as optional is a best practice that prevents devtools from being transitively
-applied to other modules using your project. Gradle does not support `optional`
-dependencies out-of-the-box so you may want to have a look to the
-{propdeps-plugin}[`propdeps-plugin`] in the meantime.
+dependency as optional in Maven or using `compileOnly` in Gradle is a best practice that
+prevents devtools from being transitively applied to other modules using your project.
 
 TIP: repackaged archives do not contain devtools by default. If you want to use
 <<using-boot-devtools-remote,certain remote devtools feature>>, you'll need to disable the
