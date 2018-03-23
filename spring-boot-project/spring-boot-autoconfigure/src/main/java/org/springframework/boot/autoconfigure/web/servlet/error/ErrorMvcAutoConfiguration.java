@@ -170,7 +170,7 @@ public class ErrorMvcAutoConfiguration {
 		// If the user adds @EnableWebMvc then the bean name view resolver from
 		// WebMvcAutoConfiguration disappears, so add it back in to avoid disappointment.
 		@Bean
-		@ConditionalOnMissingBean(BeanNameViewResolver.class)
+		@ConditionalOnMissingBean
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);

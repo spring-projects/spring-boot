@@ -37,7 +37,7 @@ class MustacheReactiveWebConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(MustacheViewResolver.class)
+	@ConditionalOnMissingBean
 	public MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
 		resolver.setPrefix(this.mustache.getPrefix());

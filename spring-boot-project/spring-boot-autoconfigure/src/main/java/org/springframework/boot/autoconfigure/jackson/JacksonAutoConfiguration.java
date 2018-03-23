@@ -98,7 +98,7 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		@Primary
-		@ConditionalOnMissingBean(ObjectMapper.class)
+		@ConditionalOnMissingBean
 		public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
 			return builder.createXmlMapper(false).build();
 		}
@@ -161,7 +161,7 @@ public class JacksonAutoConfiguration {
 	static class ParameterNamesModuleConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(ParameterNamesModule.class)
+		@ConditionalOnMissingBean
 		public ParameterNamesModule parameterNamesModule() {
 			return new ParameterNamesModule(JsonCreator.Mode.DEFAULT);
 		}
@@ -179,7 +179,7 @@ public class JacksonAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)
+		@ConditionalOnMissingBean
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(
 				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();

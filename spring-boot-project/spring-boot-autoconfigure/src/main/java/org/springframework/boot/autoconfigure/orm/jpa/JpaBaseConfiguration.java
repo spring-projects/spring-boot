@@ -94,7 +94,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(PlatformTransactionManager.class)
+	@ConditionalOnMissingBean
 	public PlatformTransactionManager transactionManager() {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
 		if (this.transactionManagerCustomizers != null) {

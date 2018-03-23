@@ -46,7 +46,7 @@ public class TomcatMetricsAutoConfiguration {
 	private volatile Context context;
 
 	@Bean
-	@ConditionalOnMissingBean(TomcatMetrics.class)
+	@ConditionalOnMissingBean
 	public TomcatMetrics tomcatMetrics(ApplicationContext applicationContext) {
 		return new TomcatMetrics(this.context == null ? null : this.context.getManager(),
 				Collections.emptyList());

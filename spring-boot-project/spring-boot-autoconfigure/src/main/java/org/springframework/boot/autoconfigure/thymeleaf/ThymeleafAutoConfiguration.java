@@ -147,7 +147,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(SpringTemplateEngine.class)
+		@ConditionalOnMissingBean
 		public SpringTemplateEngine templateEngine() {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());

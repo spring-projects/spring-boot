@@ -53,7 +53,7 @@ import org.springframework.context.annotation.Configuration;
 public class StatsdMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(StatsdConfig.class)
+	@ConditionalOnMissingBean
 	public StatsdConfig statsdConfig(StatsdProperties statsdProperties) {
 		return new StatsdPropertiesConfigAdapter(statsdProperties);
 	}

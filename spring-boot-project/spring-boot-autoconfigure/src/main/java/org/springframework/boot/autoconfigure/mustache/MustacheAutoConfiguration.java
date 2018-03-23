@@ -77,7 +77,7 @@ public class MustacheAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(Mustache.Compiler.class)
+	@ConditionalOnMissingBean
 	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader) {
 		return Mustache.compiler().withLoader(mustacheTemplateLoader)
 				.withCollector(collector());

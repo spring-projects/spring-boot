@@ -49,7 +49,7 @@ import org.springframework.data.cassandra.core.cql.session.DefaultReactiveSessio
 public class CassandraReactiveDataAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(ReactiveSession.class)
+	@ConditionalOnMissingBean
 	public ReactiveSession reactiveCassandraSession(Session session) {
 		return new DefaultBridgedReactiveSession(session);
 	}

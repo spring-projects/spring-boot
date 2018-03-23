@@ -37,7 +37,7 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 public class PersistenceExceptionTranslationAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(PersistenceExceptionTranslationPostProcessor.class)
+	@ConditionalOnMissingBean
 	@ConditionalOnProperty(prefix = "spring.dao.exceptiontranslation", name = "enabled", matchIfMissing = true)
 	public static PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor(
 			Environment environment) {

@@ -115,7 +115,7 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnClass(name = { "ch.qos.logback.classic.LoggerContext",
 				"org.slf4j.LoggerFactory" })
 		@Conditional(LogbackLoggingCondition.class)
-		@ConditionalOnMissingBean(LogbackMetrics.class)
+		@ConditionalOnMissingBean
 		@ConditionalOnProperty(value = "management.metrics.binders.logback.enabled", matchIfMissing = true)
 		public LogbackMetrics logbackMetrics() {
 			return new LogbackMetrics();

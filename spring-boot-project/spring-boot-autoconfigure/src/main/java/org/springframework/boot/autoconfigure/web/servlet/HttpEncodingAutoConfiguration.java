@@ -54,7 +54,7 @@ public class HttpEncodingAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(CharacterEncodingFilter.class)
+	@ConditionalOnMissingBean
 	public CharacterEncodingFilter characterEncodingFilter() {
 		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
 		filter.setEncoding(this.properties.getCharset().name());
