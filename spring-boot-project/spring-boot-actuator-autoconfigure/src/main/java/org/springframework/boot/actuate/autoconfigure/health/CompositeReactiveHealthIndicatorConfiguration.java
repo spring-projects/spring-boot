@@ -43,10 +43,7 @@ public abstract class CompositeReactiveHealthIndicatorConfiguration<H extends Re
 		}
 		CompositeReactiveHealthIndicator composite = new CompositeReactiveHealthIndicator(
 				this.healthAggregator);
-		for (Map.Entry<String, S> entry : beans.entrySet()) {
-			composite.addHealthIndicator(entry.getKey(),
-					createHealthIndicator(entry.getValue()));
-		}
+		beans.forEach((key, value) -> composite.addHealthIndicator(key, createHealthIndicator(value)));
 		return composite;
 	}
 

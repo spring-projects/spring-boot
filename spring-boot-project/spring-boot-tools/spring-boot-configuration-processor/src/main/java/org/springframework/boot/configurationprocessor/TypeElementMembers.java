@@ -78,13 +78,11 @@ class TypeElementMembers {
 			processField(field);
 		}
 		try {
-			Map<String, Object> fieldValues = this.fieldValuesParser
-					.getFieldValues(element);
-			for (Map.Entry<String, Object> entry : fieldValues.entrySet()) {
-				if (!this.fieldValues.containsKey(entry.getKey())) {
-					this.fieldValues.put(entry.getKey(), entry.getValue());
+			this.fieldValuesParser.getFieldValues(element).forEach((key, value) -> {
+				if (!this.fieldValues.containsKey(key)) {
+					this.fieldValues.put(key, value);
 				}
-			}
+			});
 		}
 		catch (Exception ex) {
 			// continue

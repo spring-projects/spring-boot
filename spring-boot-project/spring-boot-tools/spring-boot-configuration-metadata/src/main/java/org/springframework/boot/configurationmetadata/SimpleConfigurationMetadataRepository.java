@@ -93,17 +93,9 @@ public class SimpleConfigurationMetadataRepository
 			}
 			else {
 				// Merge properties
-				for (Map.Entry<String, ConfigurationMetadataProperty> entry : group
-						.getProperties().entrySet()) {
-					putIfAbsent(existingGroup.getProperties(), entry.getKey(),
-							entry.getValue());
-				}
+				group.getProperties().forEach((key, value) -> putIfAbsent(existingGroup.getProperties(), key, value));
 				// Merge sources
-				for (Map.Entry<String, ConfigurationMetadataSource> entry : group
-						.getSources().entrySet()) {
-					putIfAbsent(existingGroup.getSources(), entry.getKey(),
-							entry.getValue());
-				}
+				group.getSources().forEach((key, value) -> putIfAbsent(existingGroup.getSources(), key, value));
 			}
 		}
 

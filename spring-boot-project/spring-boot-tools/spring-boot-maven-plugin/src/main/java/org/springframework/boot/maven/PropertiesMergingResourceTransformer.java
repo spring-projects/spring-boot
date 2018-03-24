@@ -19,7 +19,6 @@ package org.springframework.boot.maven;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -64,13 +63,13 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 		Properties properties = new Properties();
 		properties.load(is);
 		is.close();
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			String name = (String) entry.getKey();
-			String value = (String) entry.getValue();
+		properties.forEach((key, valueObject) -> {
+			String name = (String) key;
+			String value = (String) valueObject;
 			String existing = this.data.getProperty(name);
 			this.data.setProperty(name,
 					existing == null ? value : existing + "," + value);
-		}
+		});
 	}
 
 	@Override

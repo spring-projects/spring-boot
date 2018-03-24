@@ -30,7 +30,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.analyzer.AbstractInjectionFailureAnalyzer;
@@ -124,10 +123,8 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 	private void collectReportedConditionOutcomes(NoSuchBeanDefinitionException cause,
 			List<AutoConfigurationResult> results) {
-		for (Map.Entry<String, ConditionAndOutcomes> entry : this.report
-				.getConditionAndOutcomesBySource().entrySet()) {
-			Source source = new Source(entry.getKey());
-			ConditionAndOutcomes conditionAndOutcomes = entry.getValue();
+		this.report.getConditionAndOutcomesBySource().forEach((key, conditionAndOutcomes) -> {
+			Source source = new Source(key);
 			if (!conditionAndOutcomes.isFullMatch()) {
 				BeanMethods methods = new BeanMethods(source, cause);
 				for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
@@ -139,7 +136,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 					}
 				}
 			}
-		}
+		});
 	}
 
 	private void collectExcludedAutoConfiguration(NoSuchBeanDefinitionException cause,

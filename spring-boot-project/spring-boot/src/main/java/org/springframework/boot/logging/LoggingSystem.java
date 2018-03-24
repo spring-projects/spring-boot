@@ -156,12 +156,10 @@ public abstract class LoggingSystem {
 			}
 			return get(classLoader, loggingSystem);
 		}
-		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
-			if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
-				return get(classLoader, entry.getValue());
-			}
-		}
-		throw new IllegalStateException("No suitable logging system located");
+		return SYSTEMS.entrySet().stream().
+				filter((entry) -> ClassUtils.isPresent(entry.getKey(), classLoader)).
+				map(entry -> get(classLoader, entry.getValue())).
+				findFirst().orElseThrow(() -> new IllegalStateException("No suitable logging system located"));
 	}
 
 	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {

@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -112,12 +111,11 @@ public final class ConditionEvaluationReport {
 	 */
 	public Map<String, ConditionAndOutcomes> getConditionAndOutcomesBySource() {
 		if (!this.addedAncestorOutcomes) {
-			for (Map.Entry<String, ConditionAndOutcomes> entry : this.outcomes
-					.entrySet()) {
-				if (!entry.getValue().isFullMatch()) {
-					addNoMatchOutcomeToAncestors(entry.getKey());
+			this.outcomes.forEach((key, value) -> {
+				if (!value.isFullMatch()) {
+					addNoMatchOutcomeToAncestors(key);
 				}
-			}
+			});
 			this.addedAncestorOutcomes = true;
 		}
 		return Collections.unmodifiableMap(this.outcomes);
@@ -125,13 +123,13 @@ public final class ConditionEvaluationReport {
 
 	private void addNoMatchOutcomeToAncestors(String source) {
 		String prefix = source + "$";
-		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
-			if (entry.getKey().startsWith(prefix)) {
+		this.outcomes.forEach((key, value) -> {
+			if (key.startsWith(prefix)) {
 				ConditionOutcome outcome = ConditionOutcome.noMatch(ConditionMessage
 						.forCondition("Ancestor " + source).because("did not match"));
-				entry.getValue().add(ANCESTOR_CONDITION, outcome);
+				value.add(ANCESTOR_CONDITION, outcome);
 			}
-		}
+		});
 	}
 
 	/**
@@ -190,16 +188,15 @@ public final class ConditionEvaluationReport {
 
 	public ConditionEvaluationReport getDelta(ConditionEvaluationReport previousReport) {
 		ConditionEvaluationReport delta = new ConditionEvaluationReport();
-		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
-			ConditionAndOutcomes previous = previousReport.outcomes.get(entry.getKey());
+		this.outcomes.forEach((key, value) -> {
+			ConditionAndOutcomes previous = previousReport.outcomes.get(key);
 			if (previous == null
-					|| previous.isFullMatch() != entry.getValue().isFullMatch()) {
-				entry.getValue()
-						.forEach((conditionAndOutcome) -> delta.recordConditionEvaluation(
-								entry.getKey(), conditionAndOutcome.getCondition(),
+					|| previous.isFullMatch() != value.isFullMatch()) {
+				value.forEach((conditionAndOutcome) -> delta.recordConditionEvaluation(
+								key, conditionAndOutcome.getCondition(),
 								conditionAndOutcome.getOutcome()));
 			}
-		}
+		});
 		List<String> newExclusions = new ArrayList<>(this.exclusions);
 		newExclusions.removeAll(previousReport.getExclusions());
 		delta.recordExclusions(newExclusions);

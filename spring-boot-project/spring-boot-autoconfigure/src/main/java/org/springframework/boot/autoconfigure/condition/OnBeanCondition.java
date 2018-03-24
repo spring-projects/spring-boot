@@ -166,18 +166,18 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	private void appendMessageForMatches(StringBuilder reason,
 			Map<String, Collection<String>> matches, String description) {
 		if (!matches.isEmpty()) {
-			for (Map.Entry<String, Collection<String>> match : matches.entrySet()) {
+			matches.forEach((key, value) -> {
 				if (reason.length() > 0) {
 					reason.append(" and ");
 				}
 				reason.append("found beans ");
 				reason.append(description);
 				reason.append(" '");
-				reason.append(match.getKey());
+				reason.append(key);
 				reason.append("' ");
 				reason.append(
-						StringUtils.collectionToDelimitedString(match.getValue(), ", "));
-			}
+						StringUtils.collectionToDelimitedString(value, ", "));
+			});
 		}
 	}
 
