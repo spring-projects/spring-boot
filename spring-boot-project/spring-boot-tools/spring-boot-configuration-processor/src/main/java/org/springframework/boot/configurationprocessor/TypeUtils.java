@@ -62,9 +62,7 @@ class TypeUtils {
 
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
-		for (Map.Entry<TypeKind, Class<?>> entry : PRIMITIVE_WRAPPERS.entrySet()) {
-			primitives.put(entry.getValue().getName(), entry.getKey());
-		}
+		PRIMITIVE_WRAPPERS.forEach((key, value) -> primitives.put(value.getName(), key));
 		WRAPPER_TO_PRIMITIVE = primitives;
 	}
 

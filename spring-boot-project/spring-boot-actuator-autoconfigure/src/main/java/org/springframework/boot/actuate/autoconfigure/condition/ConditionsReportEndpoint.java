@@ -123,15 +123,14 @@ public class ConditionsReportEndpoint {
 			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
 			this.unconditionalClasses = report.getUnconditionalClasses();
-			for (Map.Entry<String, ConditionAndOutcomes> entry : report
-					.getConditionAndOutcomesBySource().entrySet()) {
-				if (entry.getValue().isFullMatch()) {
-					add(this.positiveMatches, entry.getKey(), entry.getValue());
+			report.getConditionAndOutcomesBySource().forEach((key, value) -> {
+				if (value.isFullMatch()) {
+					add(this.positiveMatches, key, value);
 				}
 				else {
-					add(this.negativeMatches, entry.getKey(), entry.getValue());
+					add(this.negativeMatches, key, value);
 				}
-			}
+			});
 			this.parentId = context.getParent() == null ? null
 					: context.getParent().getId();
 		}

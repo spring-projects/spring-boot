@@ -84,11 +84,11 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 			return null;
 		}
 		Map<String, DataSource> dataSources = new LinkedHashMap<>();
-		for (Map.Entry<String, DataSource> entry : candidates.entrySet()) {
-			if (!(entry.getValue() instanceof AbstractRoutingDataSource)) {
-				dataSources.put(entry.getKey(), entry.getValue());
+		candidates.forEach((key, value) -> {
+			if (!(value instanceof AbstractRoutingDataSource)) {
+				dataSources.put(key, value);
 			}
-		}
+		});
 		return dataSources;
 	}
 

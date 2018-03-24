@@ -20,7 +20,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -423,14 +422,7 @@ class ProjectGenerationRequest {
 
 	private static void filter(Map<String, ProjectType> projects, String tag,
 			String tagValue) {
-		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet()
-				.iterator(); it.hasNext();) {
-			Map.Entry<String, ProjectType> entry = it.next();
-			String value = entry.getValue().getTags().get(tag);
-			if (!tagValue.equals(value)) {
-				it.remove();
-			}
-		}
+		projects.entrySet().removeIf((entry) -> !tagValue.equals(entry.getValue().getTags().get(tag)));
 	}
 
 }

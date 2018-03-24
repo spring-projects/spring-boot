@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jersey;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
@@ -181,9 +180,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	private void addInitParameters(DynamicRegistrationBean<?> registration) {
-		for (Entry<String, String> entry : this.jersey.getInit().entrySet()) {
-			registration.addInitParameter(entry.getKey(), entry.getValue());
-		}
+		this.jersey.getInit().forEach(registration::addInitParameter);
 	}
 
 	private static String findApplicationPath(ApplicationPath annotation) {
