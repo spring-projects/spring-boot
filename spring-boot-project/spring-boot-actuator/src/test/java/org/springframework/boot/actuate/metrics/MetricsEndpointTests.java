@@ -74,6 +74,16 @@ public class MetricsEndpointTests {
 	}
 
 	@Test
+	public void listNamesProducesSortedMeterNames() {
+		this.registry.counter("com.example.foo");
+		this.registry.counter("com.example.bar");
+		this.registry.counter("com.acme");
+		MetricsEndpoint.ListNamesResponse result = this.endpoint.listNames();
+		assertThat(result.getNames()).containsExactly("com.acme", "com.example.bar",
+				"com.example.foo");
+	}
+
+	@Test
 	public void metricValuesAreTheSumOfAllTimeSeriesMatchingTags() {
 		this.registry.counter("cache", "result", "hit", "host", "1").increment(2);
 		this.registry.counter("cache", "result", "miss", "host", "1").increment(2);
