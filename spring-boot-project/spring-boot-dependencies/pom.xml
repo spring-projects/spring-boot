@@ -163,7 +163,7 @@
 		<spring-retry.version>1.2.2.RELEASE</spring-retry.version>
 		<spring-security.version>5.0.3.RELEASE</spring-security.version>
 		<spring-session-bom.version>Apple-SR1</spring-session-bom.version>
-		<spring-ws.version>3.0.0.RELEASE</spring-ws.version>
+		<spring-ws.version>3.0.1.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
