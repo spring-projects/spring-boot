@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,14 +50,14 @@ class SpringBootBanner implements Banner {
 		}
 		String version = SpringBootVersion.getVersion();
 		version = (version == null ? "" : " (v" + version + ")");
-		String padding = "";
+		StringBuilder padding = new StringBuilder();
 		while (padding.length() < STRAP_LINE_SIZE
 				- (version.length() + SPRING_BOOT.length())) {
-			padding += " ";
+			padding.append(" ");
 		}
 
 		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT,
-				AnsiColor.DEFAULT, padding, AnsiStyle.FAINT, version));
+				AnsiColor.DEFAULT, padding.toString(), AnsiStyle.FAINT, version));
 		printStream.println();
 	}
 
