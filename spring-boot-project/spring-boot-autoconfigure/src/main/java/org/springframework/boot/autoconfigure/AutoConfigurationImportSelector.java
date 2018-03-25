@@ -129,8 +129,9 @@ public class AutoConfigurationImportSelector
 		AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(name, true));
 		Assert.notNull(attributes,
-				"No auto-configuration attributes found. Is " + metadata.getClassName()
-						+ " annotated with " + ClassUtils.getShortName(name) + "?");
+				() -> "No auto-configuration attributes found. Is "
+						+ metadata.getClassName() + " annotated with "
+						+ ClassUtils.getShortName(name) + "?");
 		return attributes;
 	}
 

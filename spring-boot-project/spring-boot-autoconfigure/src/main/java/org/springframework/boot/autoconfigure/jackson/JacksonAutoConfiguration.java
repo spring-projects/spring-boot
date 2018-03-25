@@ -323,8 +323,8 @@ public class JacksonAutoConfiguration {
 				// that may be added by Jackson in the future)
 				Field field = ReflectionUtils.findField(PropertyNamingStrategy.class,
 						fieldName, PropertyNamingStrategy.class);
-				Assert.notNull(field, "Constant named '" + fieldName + "' not found on "
-						+ PropertyNamingStrategy.class.getName());
+				Assert.notNull(field, () -> "Constant named '" + fieldName
+						+ "' not found on " + PropertyNamingStrategy.class.getName());
 				try {
 					builder.propertyNamingStrategy(
 							(PropertyNamingStrategy) field.get(null));

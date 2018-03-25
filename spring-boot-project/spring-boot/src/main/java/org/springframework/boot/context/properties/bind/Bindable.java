@@ -153,7 +153,7 @@ public final class Bindable<T> {
 		Assert.isTrue(
 				existingValue == null || this.type.isArray()
 						|| this.boxedType.resolve().isInstance(existingValue),
-				"ExistingValue must be an instance of " + this.type);
+				() -> "ExistingValue must be an instance of " + this.type);
 		Supplier<T> value = (existingValue == null ? null : () -> existingValue);
 		return new Bindable<>(this.type, this.boxedType, value, NO_ANNOTATIONS);
 	}
