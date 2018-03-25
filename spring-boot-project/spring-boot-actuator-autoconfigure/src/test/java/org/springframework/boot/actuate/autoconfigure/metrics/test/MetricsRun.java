@@ -105,7 +105,7 @@ public final class MetricsRun {
 			Class<?>[] exportAutoConfigurations) {
 		for (Class<?> configuration : exportAutoConfigurations) {
 			Assert.state(EXPORT_AUTO_CONFIGURATIONS.contains(configuration),
-					"Unknown export auto-configuration " + configuration.getName());
+					() -> "Unknown export auto-configuration " + configuration.getName());
 		}
 		return contextRunner
 				.withPropertyValues("management.metrics.use-global-registry=false")

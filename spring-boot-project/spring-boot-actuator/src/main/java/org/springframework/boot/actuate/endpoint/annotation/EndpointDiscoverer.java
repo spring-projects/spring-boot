@@ -432,7 +432,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			this.enabledByDefault = (Boolean) attributes.get("enableByDefault");
 			this.filter = getFilter(this.bean.getClass());
 			Assert.state(StringUtils.hasText(this.id),
-					"No @Endpoint id attribute specified for "
+					() -> "No @Endpoint id attribute specified for "
 							+ bean.getClass().getName());
 		}
 

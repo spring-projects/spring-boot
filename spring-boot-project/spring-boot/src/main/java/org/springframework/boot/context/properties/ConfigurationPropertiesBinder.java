@@ -73,7 +73,8 @@ class ConfigurationPropertiesBinder {
 	public void bind(Bindable<?> target) {
 		ConfigurationProperties annotation = target
 				.getAnnotation(ConfigurationProperties.class);
-		Assert.state(annotation != null, "Missing @ConfigurationProperties on " + target);
+		Assert.state(annotation != null,
+				() -> "Missing @ConfigurationProperties on " + target);
 		List<Validator> validators = getValidators(target);
 		BindHandler bindHandler = getBindHandler(annotation, validators);
 		getBinder().bind(annotation.prefix(), target, bindHandler);
