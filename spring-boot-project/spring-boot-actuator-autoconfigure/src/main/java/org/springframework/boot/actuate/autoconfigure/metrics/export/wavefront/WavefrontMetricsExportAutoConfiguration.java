@@ -51,7 +51,7 @@ import org.springframework.context.annotation.Configuration;
 public class WavefrontMetricsExportAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(WavefrontConfig.class)
+	@ConditionalOnMissingBean
 	public WavefrontConfig wavefrontConfig(WavefrontProperties props) {
 		return new WavefrontPropertiesConfigAdapter(props);
 	}

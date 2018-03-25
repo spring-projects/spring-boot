@@ -59,7 +59,7 @@ public class RedisAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(StringRedisTemplate.class)
+	@ConditionalOnMissingBean
 	public StringRedisTemplate stringRedisTemplate(
 			RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
 		StringRedisTemplate template = new StringRedisTemplate();

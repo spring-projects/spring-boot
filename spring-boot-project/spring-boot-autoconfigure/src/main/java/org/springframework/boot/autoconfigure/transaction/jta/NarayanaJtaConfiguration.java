@@ -139,7 +139,7 @@ public class NarayanaJtaConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(XADataSourceWrapper.class)
+	@ConditionalOnMissingBean
 	public XADataSourceWrapper xaDataSourceWrapper(
 			NarayanaRecoveryManagerBean narayanaRecoveryManagerBean,
 			NarayanaProperties narayanaProperties) {

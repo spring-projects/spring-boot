@@ -97,7 +97,7 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(MBeanServer.class)
+	@ConditionalOnMissingBean
 	public MBeanServer mbeanServer() {
 		SpecificPlatform platform = SpecificPlatform.get();
 		if (platform != null) {

@@ -50,7 +50,7 @@ public class SendGridAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(SendGrid.class)
+	@ConditionalOnMissingBean
 	public SendGrid sendGrid() {
 		if (this.properties.isProxyConfigured()) {
 			HttpHost proxy = new HttpHost(this.properties.getProxy().getHost(),
