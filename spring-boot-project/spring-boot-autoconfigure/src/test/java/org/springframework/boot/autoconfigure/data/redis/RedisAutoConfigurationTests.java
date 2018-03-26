@@ -197,7 +197,7 @@ public class RedisAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.redis.database:1",
 						"spring.redis.sentinel.master:mymaster",
-						"spring.redis.sentinel.nodes:127.0.0.1:26379,  127.0.0.1:26380")
+						"spring.redis.sentinel.nodes:127.0.0.1:26379, 127.0.0.1:26380")
 				.run((context) -> {
 					LettuceConnectionFactory connectionFactory = context
 							.getBean(LettuceConnectionFactory.class);
