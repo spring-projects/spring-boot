@@ -5447,8 +5447,8 @@ You can also configure the Spring Kafka `JsonDeserializer` as follows:
 [source,properties,indent=0]
 ----
 spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
-spring.kafka.consumer.properties.spring.json.value.default.type=org.foo.Invoice
-spring.kafka.consumer.properties.spring.json.trusted.packages=org.foo,org.bar
+spring.kafka.consumer.properties.spring.json.value.default.type=com.example.Invoice
+spring.kafka.consumer.properties.spring.json.trusted.packages=com.example,org.acme
 ----
 
 Similarly, you can disable the `JsonSerializer` default behavior of sending type
@@ -7671,7 +7671,7 @@ annotated].
 [[boot-features-kotlin-api-runapplication]]
 ==== runApplication
 Spring Boot provides an idiomatic way to run an application with
-`runApplication<FooApplication>(*args)` as shown in the following example:
+`runApplication<MyApplication>(*args)` as shown in the following example:
 
 [source,kotlin,indent=0]
 ----
@@ -7679,20 +7679,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class FooApplication
+class MyApplication
 
 fun main(args: Array<String>) {
-	runApplication<FooApplication>(*args)
+	runApplication<MyApplication>(*args)
 }
 ----
 
 This is a drop-in replacement for
-`SpringApplication.run(FooApplication::class.java, *args)`. It also allows customization
+`SpringApplication.run(MyApplication::class.java, *args)`. It also allows customization
 of the application as shown in the following example:
 
 [source,kotlin,indent=0]
 ----
-runApplication<FooApplication>(*args) {
+runApplication<MyApplication>(*args) {
 	setBannerMode(OFF)
 }
 ----
@@ -7741,17 +7741,17 @@ constructors are {github-issues}8762[not yet supported].
 @ConfigurationProperties("example.kotlin")
 class KotlinExampleProperties {
 
-	lateinit var foo1: String
+	lateinit var name: String
 
-	lateinit var foo2: String
+	lateinit var description: String
 
-	val bar = Bar()
+	val myService = MyService()
 
-	class Bar {
+	class MyService {
 
-		lateinit var bar1: String
+		lateinit var apiToken: String
 
-		lateinit var bar2: String
+		lateinit var uri: URI
 
 	}
 
