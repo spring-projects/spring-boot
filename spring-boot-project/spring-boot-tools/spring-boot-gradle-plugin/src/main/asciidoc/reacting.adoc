@@ -24,7 +24,7 @@ plugin:
    the `bootJar` task.
 6. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
 7. Configures any `JavaCompile` tasks to use the `-parameters` compiler argument.
-
+8. Configures any `KotlinCompile` tasks to use the `-java-parameters` compiler argument.
 
 
 [[reacting-to-other-plugins-kotlin]]

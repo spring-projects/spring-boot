@@ -294,6 +294,7 @@
 						<jvmTarget>${java.version}</jvmTarget>
 						<apiVersion>1.1</apiVersion>
 						<languageVersion>1.1</languageVersion>
+						<javaParameters>true</javaParameters>
 					</configuration>
 				</plugin>
 				<plugin>
