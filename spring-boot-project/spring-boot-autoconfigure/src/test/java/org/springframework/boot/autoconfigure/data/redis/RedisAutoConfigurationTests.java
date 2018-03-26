@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Marco Aust
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Alen Turkovic
  */
 public class RedisAutoConfigurationTests {
 
@@ -189,6 +190,20 @@ public class RedisAutoConfigurationTests {
 				.run((context) -> assertThat(context
 						.getBean(LettuceConnectionFactory.class).isRedisSentinelAware())
 								.isTrue());
+	}
+
+	@Test
+	public void testRedisConfigurationWithSentinelAndDatabase() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.database:1",
+						"spring.redis.sentinel.master:mymaster",
+						"spring.redis.sentinel.nodes:127.0.0.1:26379, 127.0.0.1:26380")
+				.run((context) -> {
+					LettuceConnectionFactory connectionFactory = context
+							.getBean(LettuceConnectionFactory.class);
+					assertThat(connectionFactory.getDatabase()).isEqualTo(1);
+					assertThat(connectionFactory.isRedisSentinelAware()).isTrue();
+				});
 	}
 
 	@Test
