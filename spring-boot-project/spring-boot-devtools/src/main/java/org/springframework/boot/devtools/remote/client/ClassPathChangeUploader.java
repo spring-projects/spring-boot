@@ -111,8 +111,9 @@ public class ClassPathChangeUploader
 					headers.setContentLength(bytes.length);
 					FileCopyUtils.copy(bytes, request.getBody());
 					ClientHttpResponse response = request.execute();
-					Assert.state(response.getStatusCode() == HttpStatus.OK,
-							"Unexpected " + response.getStatusCode()
+					HttpStatus statusCode = response.getStatusCode();
+					Assert.state(statusCode == HttpStatus.OK,
+							() -> "Unexpected " + statusCode
 									+ " response uploading class files");
 					logUpload(classLoaderFiles);
 					return;
