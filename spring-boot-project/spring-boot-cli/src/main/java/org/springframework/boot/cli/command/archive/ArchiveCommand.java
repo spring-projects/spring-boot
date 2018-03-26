@@ -124,8 +124,9 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		protected ExitStatus run(OptionSet options) throws Exception {
 			List<?> nonOptionArguments = new ArrayList<Object>(
 					options.nonOptionArguments());
-			Assert.isTrue(nonOptionArguments.size() >= 2, () -> "The name of the resulting "
-					+ this.type + " and at least one source file must be specified");
+			Assert.isTrue(nonOptionArguments.size() >= 2, () -> "The name of the "
+					+ "resulting" + this.type + " and at least one source file must be "
+					+ "specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
 			Assert.isTrue(
