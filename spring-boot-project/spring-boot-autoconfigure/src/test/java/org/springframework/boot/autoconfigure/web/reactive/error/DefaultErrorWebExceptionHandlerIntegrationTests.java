@@ -269,7 +269,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	public void whilelabelDisabled() {
+	public void whitelabelDisabled() {
 		this.contextRunner.withPropertyValues("server.error.whitelabel.enabled=false",
 				"spring.mustache.prefix=classpath:/unknown/").run((context) -> {
 					WebTestClient client = WebTestClient.bindToApplicationContext(context)
