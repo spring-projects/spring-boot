@@ -43,7 +43,7 @@ import org.springframework.core.Ordered;
 public class GsonAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(GsonBuilder.class)
+	@ConditionalOnMissingBean
 	public GsonBuilder gsonBuilder(List<GsonBuilderCustomizer> customizers) {
 		GsonBuilder builder = new GsonBuilder();
 		customizers.forEach((c) -> c.customize(builder));
@@ -51,7 +51,7 @@ public class GsonAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(Gson.class)
+	@ConditionalOnMissingBean
 	public Gson gson(GsonBuilder gsonBuilder) {
 		return gsonBuilder.create();
 	}
