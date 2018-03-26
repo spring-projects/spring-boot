@@ -3610,7 +3610,7 @@ http://www.h2database.com/html/quickstart.html#h2_console[browser-based console]
 Spring Boot can auto-configure for you. The console is auto-configured when the following
 conditions are met:
 
-* You are developing a web application.
+* You are developing a servlet-based web application.
 * `com.h2database:h2` is on the classpath.
 * You are using <<using-spring-boot.adoc#using-boot-devtools,Spring Boot's developer
 tools>>.
