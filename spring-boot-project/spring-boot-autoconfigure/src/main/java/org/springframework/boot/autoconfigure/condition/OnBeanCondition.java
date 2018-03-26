@@ -503,8 +503,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		@Override
 		protected void validate(BeanTypeDeductionException ex) {
-			Assert.isTrue(getTypes().size() == 1, annotationName() + " annotations must "
-					+ "specify only one type (got " + getTypes() + ")");
+			Assert.isTrue(getTypes().size() == 1, () -> annotationName()
+					+ " annotations must specify only one type (got " + getTypes() + ")");
 		}
 
 	}
