@@ -7745,7 +7745,7 @@ class KotlinExampleProperties {
 
 	lateinit var foo2: String
 
-	lateinit val bar = Bar()
+	val bar = Bar()
 
 	class Bar {
 
