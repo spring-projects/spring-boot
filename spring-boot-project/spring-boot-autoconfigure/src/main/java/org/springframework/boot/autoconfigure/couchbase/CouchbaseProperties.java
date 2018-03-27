@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,6 +28,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Yulin Qin
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.couchbase")
@@ -126,6 +128,16 @@ public class CouchbaseProperties {
 		 */
 		private int view = 1;
 
+		/**
+		 * Dynamic query service configuration.
+		 */
+		private Queryservice queryservice = new Queryservice();
+
+		/**
+		 * Dynamic view service configuration.
+		 */
+		private Viewservice viewservice = new Viewservice();
+
 		public int getKeyValue() {
 			return this.keyValue;
 		}
@@ -134,23 +146,99 @@ public class CouchbaseProperties {
 			this.keyValue = keyValue;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.queryservice")
 		public int getQuery() {
 			return this.query;
 		}
 
+		@Deprecated
 		public void setQuery(int query) {
 			this.query = query;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.viewservice")
 		public int getView() {
 			return this.view;
 		}
 
+		@Deprecated
 		public void setView(int view) {
 			this.view = view;
 		}
 
+		public Queryservice getQueryservice() {
+			return this.queryservice;
+		}
+
+		public void setQueryservice(Queryservice queryservice) {
+			this.queryservice = queryservice;
+		}
+
+		public Viewservice getViewservice() {
+			return this.viewservice;
+		}
+
+		public void setViewservice(Viewservice viewservice) {
+			this.viewservice = viewservice;
+		}
+
+		public static class Queryservice {
+			/**
+			 * Minimum Number of sockets per node against the query (N1QL) service.
+			 */
+			private int minEndpoints = 1;
+			/**
+			 * Maximum Number of sockets per node against the query (N1QL) service.
+			 */
+			private int maxEndpoints = 1;
+
+			public int getMinEndpoints() {
+				return this.minEndpoints;
+			}
+
+			public void setMinEndpoints(int minEndpoints) {
+				this.minEndpoints = minEndpoints;
+			}
+
+			public int getMaxEndpoints() {
+				return this.maxEndpoints;
+			}
+
+			public void setMaxEndpoints(int maxEndpoints) {
+				this.maxEndpoints = maxEndpoints;
+			}
+		}
+
+		public static class Viewservice {
+			/**
+			 * Minimum Number of sockets per node against the view service.
+			 */
+			private int minEndpoints = 1;
+			/**
+			 * Maximum Number of sockets per node against the view service.
+			 */
+			private int maxEndpoints = 1;
+
+			public int getMinEndpoints() {
+				return this.minEndpoints;
+			}
+
+			public void setMinEndpoints(int minEndpoints) {
+				this.minEndpoints = minEndpoints;
+			}
+
+			public int getMaxEndpoints() {
+				return this.maxEndpoints;
+			}
+
+			public void setMaxEndpoints(int maxEndpoints) {
+				this.maxEndpoints = maxEndpoints;
+			}
+		}
 	}
+
 
 	public static class Ssl {
 
