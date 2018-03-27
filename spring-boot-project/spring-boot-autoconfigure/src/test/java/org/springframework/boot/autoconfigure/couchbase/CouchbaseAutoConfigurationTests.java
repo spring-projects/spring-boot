@@ -43,6 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Yulin Qin
  */
 public class CouchbaseAutoConfigurationTests {
 
@@ -84,14 +85,37 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeEnvEndpoints() {
+	public void customizeEnvEndpointsIfBothStaticAndDynamicAreSetThenStaticEndpointsTakePriorityForBackwardsCompatibility() {
 		testCouchbaseEnv((env) -> {
-			assertThat(env.kvEndpoints()).isEqualTo(4);
-			assertThat(env.queryEndpoints()).isEqualTo(5);
-			assertThat(env.viewEndpoints()).isEqualTo(6);
+			assertThat(env.kvServiceConfig().minEndpoints()).isEqualTo(4);
+			assertThat(env.kvServiceConfig().maxEndpoints()).isEqualTo(4);
+			assertThat(env.queryServiceConfig().minEndpoints()).isEqualTo(5);
+			assertThat(env.queryServiceConfig().maxEndpoints()).isEqualTo(5);
+			assertThat(env.viewServiceConfig().minEndpoints()).isEqualTo(6);
+			assertThat(env.viewServiceConfig().maxEndpoints()).isEqualTo(6);
 		}, "spring.couchbase.env.endpoints.keyValue=4",
+				"spring.couchbase.env.endpoints.min-query=2",
+				"spring.couchbase.env.endpoints.max-query=3",
 				"spring.couchbase.env.endpoints.query=5",
+				"spring.couchbase.env.endpoints.min-view=2",
+				"spring.couchbase.env.endpoints.max-view=3",
 				"spring.couchbase.env.endpoints.view=6");
+	}
+
+	@Test
+	public void customizeEnvEndpointsIfOnlyDynamicEndpointsAreSet() {
+		testCouchbaseEnv((env) -> {
+					assertThat(env.kvServiceConfig().minEndpoints()).isEqualTo(4);
+					assertThat(env.kvServiceConfig().maxEndpoints()).isEqualTo(4);
+					assertThat(env.queryServiceConfig().minEndpoints()).isEqualTo(2);
+					assertThat(env.queryServiceConfig().maxEndpoints()).isEqualTo(3);
+					assertThat(env.viewServiceConfig().minEndpoints()).isEqualTo(2);
+					assertThat(env.viewServiceConfig().maxEndpoints()).isEqualTo(3);
+				}, "spring.couchbase.env.endpoints.keyValue=4",
+				"spring.couchbase.env.endpoints.min-query=2",
+				"spring.couchbase.env.endpoints.max-query=3",
+				"spring.couchbase.env.endpoints.min-view=2",
+				"spring.couchbase.env.endpoints.max-view=3");
 	}
 
 	@Test

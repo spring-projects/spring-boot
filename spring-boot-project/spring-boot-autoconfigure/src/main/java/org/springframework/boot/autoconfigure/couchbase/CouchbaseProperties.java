@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Yulin Qin
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.couchbase")
@@ -122,9 +123,30 @@ public class CouchbaseProperties {
 		private int query = 1;
 
 		/**
+		 * Minimum Number of sockets per node against the query (N1QL) service.
+		 */
+		private int minQuery = 1;
+
+		/**
+		 * Maximum Number of sockets per node against the query (N1QL) service.
+		 */
+		private int maxQuery = 1;
+
+		/**
 		 * Number of sockets per node against the view service.
 		 */
 		private int view = 1;
+
+		/**
+		 * Minimum Number of sockets per node against the view service.
+		 */
+		private int minView = 1;
+
+		/**
+		 * Maximum Number of sockets per node against the view service.
+		 */
+		private int maxView = 1;
+
 
 		public int getKeyValue() {
 			return this.keyValue;
@@ -142,6 +164,22 @@ public class CouchbaseProperties {
 			this.query = query;
 		}
 
+		public int getMinQuery() {
+			return this.minQuery;
+		}
+
+		public void setMinQuery(int minQuery) {
+			this.minQuery = minQuery;
+		}
+
+		public int getMaxQuery() {
+			return this.maxQuery;
+		}
+
+		public void setMaxQuery(int maxQuery) {
+			this.maxQuery = maxQuery;
+		}
+
 		public int getView() {
 			return this.view;
 		}
@@ -150,6 +188,21 @@ public class CouchbaseProperties {
 			this.view = view;
 		}
 
+		public int getMinView() {
+			return this.minView;
+		}
+
+		public void setMinView(int minView) {
+			this.minView = minView;
+		}
+
+		public int getMaxView() {
+			return this.maxView;
+		}
+
+		public void setMaxView(int maxView) {
+			this.maxView = maxView;
+		}
 	}
 
 	public static class Ssl {
