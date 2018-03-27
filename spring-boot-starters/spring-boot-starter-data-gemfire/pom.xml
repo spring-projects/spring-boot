@@ -37,7 +37,7 @@
 	<repositories>
 		<repository>
 			<id>repo.spring.io</id>
-			<url>http://repo.spring.io/libs-release</url>
+			<url>https://repo.spring.io/libs-release</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>

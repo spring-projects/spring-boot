@@ -216,8 +216,8 @@ Maven, there is no "`super parent`" to import to share some configuration.
 ----
 	repositories {
 ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
 endif::[]
 ifeval::["{spring-boot-repo}" == "release"]
 		jcenter()
@@ -248,8 +248,8 @@ ifeval::["{spring-boot-repo}" != "release"]
 	buildscript {
 		repositories {
 			jcenter()
-			maven { url 'http://repo.spring.io/snapshot' }
-			maven { url 'http://repo.spring.io/milestone' }
+			maven { url 'https://repo.spring.io/snapshot' }
+			maven { url 'https://repo.spring.io/milestone' }
 		}
 		dependencies {
 			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
@@ -263,8 +263,8 @@ endif::[]
 	repositories {
 		jcenter()
 ifeval::["{spring-boot-repo}" != "release"]
-		maven { url 'http://repo.spring.io/snapshot' }
-		maven { url 'http://repo.spring.io/milestone' }
+		maven { url 'https://repo.spring.io/snapshot' }
+		maven { url 'https://repo.spring.io/milestone' }
 endif::[]
 	}
 

@@ -172,22 +172,22 @@ ifeval::["{spring-boot-repo}" != "release"]
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 				<snapshots><enabled>true</enabled></snapshots>
 			</repository>
 			<repository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</repository>
 		</repositories>
 		<pluginRepositories>
 			<pluginRepository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 			</pluginRepository>
 			<pluginRepository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</pluginRepository>
 		</pluginRepositories>
 endif::[]
@@ -234,8 +234,8 @@ ifeval::["{spring-boot-repo}" != "release"]
 	buildscript {
 		repositories {
 			jcenter()
-			maven { url 'http://repo.spring.io/snapshot' }
-			maven { url 'http://repo.spring.io/milestone' }
+			maven { url 'https://repo.spring.io/snapshot' }
+			maven { url 'https://repo.spring.io/milestone' }
 		}
 		dependencies {
 			classpath 'org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}'
@@ -254,8 +254,8 @@ endif::[]
 	repositories {
 		jcenter()
 ifeval::["{spring-boot-repo}" != "release"]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
 endif::[]
 	}
 
@@ -282,10 +282,10 @@ way to get a Spring application off the ground.
 ==== Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
-* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* https://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
 
-Cutting edge http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions]
+Cutting edge https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions]
 are also available.
 
 Once downloaded, follow the {github-raw}/spring-boot-cli/src/main/content/INSTALL.txt[INSTALL.txt]
@@ -519,22 +519,22 @@ ifeval::["{spring-boot-repo}" != "release"]
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 				<snapshots><enabled>true</enabled></snapshots>
 			</repository>
 			<repository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</repository>
 		</repositories>
 		<pluginRepositories>
 			<pluginRepository>
 				<id>spring-snapshots</id>
-				<url>http://repo.spring.io/snapshot</url>
+				<url>https://repo.spring.io/snapshot</url>
 			</pluginRepository>
 			<pluginRepository>
 				<id>spring-milestones</id>
-				<url>http://repo.spring.io/milestone</url>
+				<url>https://repo.spring.io/milestone</url>
 			</pluginRepository>
 		</pluginRepositories>
 endif::[]
