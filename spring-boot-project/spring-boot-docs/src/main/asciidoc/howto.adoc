@@ -1930,10 +1930,9 @@ as shown in the following example:
 
 [[howto-use-traditional-persistence-xml]]
 === Use a Traditional `persistence.xml` File
-Spring does not require the use of XML to configure the JPA provider, and Spring Boot
-assumes you want to take advantage of that feature. If you prefer to use
-`persistence.xml`, you need to define your own `@Bean` of type
-`LocalEntityManagerFactoryBean` (with an ID of '`entityManagerFactory`') and set the
+Spring Boot will not search for or use a `META-INF/persistence.xml` by default. If you
+prefer to use a traditional `persistence.xml`, you need to define your own `@Bean` of
+type `LocalEntityManagerFactoryBean` (with an ID of '`entityManagerFactory`') and set the
 persistence unit name there.
 
 See
