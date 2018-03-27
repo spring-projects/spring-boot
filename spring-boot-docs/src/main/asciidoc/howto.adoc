@@ -2029,10 +2029,10 @@ If you are using Spring Data, you need to configure `@EnableJpaRepositories` acc
 
 [[howto-use-traditional-persistence-xml]]
 === Use a traditional persistence.xml
-Spring doesn't require the use of XML to configure the JPA provider, and Spring Boot
-assumes you want to take advantage of that feature. If you prefer to use `persistence.xml`
-then you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with
-id '`entityManagerFactory`', and set the persistence unit name there.
+Spring Boot will not search for or use a `META-INF/persistence.xml` by default. If you
+prefer to use a traditional `persistence.xml`, you need to define your own `@Bean` of type
+`LocalEntityManagerFactoryBean` (with id '`entityManagerFactory`', and set the persistence
+unit name there.
 
 See
 {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]
