@@ -468,8 +468,21 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		if (hasAnnotation(field, nestedConfigurationPropertyAnnotation())) {
 			return true;
 		}
+		if (isCyclePresent(returnType, element)) {
+			return false;
+		}
 		return (isParentTheSame(returnType, element))
 				&& returnType.getKind() != ElementKind.ENUM;
+	}
+
+	private boolean isCyclePresent(Element returnType, Element element) {
+		if (!(element.getEnclosingElement() instanceof TypeElement)) {
+			return false;
+		}
+		if (element.getEnclosingElement().equals(returnType)) {
+			return true;
+		}
+		return isCyclePresent(returnType, element.getEnclosingElement());
 	}
 
 	private boolean isParentTheSame(Element returnType, TypeElement element) {

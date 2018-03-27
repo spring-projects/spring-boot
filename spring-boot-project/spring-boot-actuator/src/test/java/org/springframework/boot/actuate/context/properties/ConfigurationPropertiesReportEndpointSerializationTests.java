@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
@@ -115,7 +114,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	}
 
 	@Test
-	@Ignore("gh-11037")
 	public void testCycle() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(CycleConfig.class);
@@ -516,7 +514,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		@Bean
 		// gh-11037
-		// @ConfigurationProperties(prefix = "cycle")
+		@ConfigurationProperties(prefix = "cycle")
 		public Cycle cycle() {
 			return new Cycle();
 		}
