@@ -1,0 +1,25 @@
+buildscript {
+	dependencies {
+		classpath files(pluginClasspath.split(','))
+	}
+}
+
+plugins {
+	id 'org.jetbrains.kotlin.jvm' version '1.2.10'
+}
+
+apply plugin: 'org.springframework.boot'
+
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+
+tasks.withType(KotlinCompile) {
+	kotlinOptions.javaParameters = false
+}
+
+task('kotlinCompileTasksJavaParameters') {
+	doFirst {
+		tasks.withType(KotlinCompile) {
+			println "$name java parameters: ${kotlinOptions.javaParameters}"
+		}
+	}
+}
