@@ -3733,6 +3733,7 @@ following jOOQ Types:
 * `ConnectionProvider`
 * `TransactionProvider`
 * `RecordMapperProvider`
+* `RecordUnmapperProvider`
 * `RecordListenerProvider`
 * `ExecuteListenerProvider`
 * `VisitListenerProvider`

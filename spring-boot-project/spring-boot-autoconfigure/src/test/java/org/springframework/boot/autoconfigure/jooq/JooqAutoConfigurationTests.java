@@ -27,6 +27,8 @@ import org.jooq.RecordListenerProvider;
 import org.jooq.RecordMapper;
 import org.jooq.RecordMapperProvider;
 import org.jooq.RecordType;
+import org.jooq.RecordUnmapper;
+import org.jooq.RecordUnmapperProvider;
 import org.jooq.SQLDialect;
 import org.jooq.TransactionalRunnable;
 import org.jooq.VisitListener;
@@ -134,18 +136,21 @@ public class JooqAutoConfigurationTests {
 	public void customProvidersArePickedUp() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class,
 				TxManagerConfiguration.class, TestRecordMapperProvider.class,
-				TestRecordListenerProvider.class, TestExecuteListenerProvider.class,
-				TestVisitListenerProvider.class).run((context) -> {
-					DSLContext dsl = context.getBean(DSLContext.class);
-					assertThat(dsl.configuration().recordMapperProvider().getClass())
-							.isEqualTo(TestRecordMapperProvider.class);
-					assertThat(dsl.configuration().recordListenerProviders().length)
-							.isEqualTo(1);
-					assertThat(dsl.configuration().executeListenerProviders().length)
-							.isEqualTo(2);
-					assertThat(dsl.configuration().visitListenerProviders().length)
-							.isEqualTo(1);
-				});
+				TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,
+				TestExecuteListenerProvider.class, TestVisitListenerProvider.class
+		).run((context) -> {
+			DSLContext dsl = context.getBean(DSLContext.class);
+			assertThat(dsl.configuration().recordMapperProvider().getClass())
+					.isEqualTo(TestRecordMapperProvider.class);
+			assertThat(dsl.configuration().recordUnmapperProvider().getClass())
+					.isEqualTo(TestRecordUnmapperProvider.class);
+			assertThat(dsl.configuration().recordListenerProviders().length)
+					.isEqualTo(1);
+			assertThat(dsl.configuration().executeListenerProviders().length)
+					.isEqualTo(2);
+			assertThat(dsl.configuration().visitListenerProviders().length)
+					.isEqualTo(1);
+		});
 	}
 
 	@Test
@@ -225,6 +230,16 @@ public class JooqAutoConfigurationTests {
 		@Override
 		public <R extends Record, E> RecordMapper<R, E> provide(RecordType<R> recordType,
 				Class<? extends E> aClass) {
+			return null;
+		}
+
+	}
+
+	protected static class TestRecordUnmapperProvider implements RecordUnmapperProvider {
+
+		@Override
+		public <E, R extends Record> RecordUnmapper<E, R> provide(
+				Class<? extends E> aClass, RecordType<R> recordType) {
 			return null;
 		}
 

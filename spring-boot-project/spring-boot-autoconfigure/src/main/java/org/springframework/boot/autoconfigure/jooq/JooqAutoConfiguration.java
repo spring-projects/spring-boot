@@ -23,6 +23,7 @@ import org.jooq.DSLContext;
 import org.jooq.ExecuteListenerProvider;
 import org.jooq.RecordListenerProvider;
 import org.jooq.RecordMapperProvider;
+import org.jooq.RecordUnmapperProvider;
 import org.jooq.TransactionProvider;
 import org.jooq.VisitListenerProvider;
 import org.jooq.conf.Settings;
@@ -94,6 +95,8 @@ public class JooqAutoConfiguration {
 
 		private final RecordMapperProvider recordMapperProvider;
 
+		private final RecordUnmapperProvider recordUnmapperProvider;
+
 		private final Settings settings;
 
 		private final RecordListenerProvider[] recordListenerProviders;
@@ -106,6 +109,7 @@ public class JooqAutoConfiguration {
 				ConnectionProvider connectionProvider, DataSource dataSource,
 				ObjectProvider<TransactionProvider> transactionProvider,
 				ObjectProvider<RecordMapperProvider> recordMapperProvider,
+				ObjectProvider<RecordUnmapperProvider> recordUnmapperProvider,
 				ObjectProvider<Settings> settings,
 				ObjectProvider<RecordListenerProvider[]> recordListenerProviders,
 				ExecuteListenerProvider[] executeListenerProviders,
@@ -115,6 +119,7 @@ public class JooqAutoConfiguration {
 			this.dataSource = dataSource;
 			this.transactionProvider = transactionProvider.getIfAvailable();
 			this.recordMapperProvider = recordMapperProvider.getIfAvailable();
+			this.recordUnmapperProvider = recordUnmapperProvider.getIfAvailable();
 			this.settings = settings.getIfAvailable();
 			this.recordListenerProviders = recordListenerProviders.getIfAvailable();
 			this.executeListenerProviders = executeListenerProviders;
@@ -137,6 +142,9 @@ public class JooqAutoConfiguration {
 			}
 			if (this.recordMapperProvider != null) {
 				configuration.set(this.recordMapperProvider);
+			}
+			if (this.recordUnmapperProvider != null) {
+				configuration.set(this.recordUnmapperProvider);
 			}
 			if (this.settings != null) {
 				configuration.set(this.settings);
