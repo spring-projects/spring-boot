@@ -708,6 +708,32 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void failureInReadyEventListenerCloseApplicationContext() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ExitCodeListener exitCodeListener = new ExitCodeListener();
+		application.addListeners(exitCodeListener);
+		@SuppressWarnings("unchecked")
+		ApplicationListener<SpringApplicationEvent> listener = mock(
+				ApplicationListener.class);
+		application.addListeners(listener);
+		ExitStatusException failure = new ExitStatusException();
+		willThrow(failure).given(listener)
+				.onApplicationEvent(isA(ApplicationReadyEvent.class));
+		try {
+			application.run();
+			fail("Run should have failed with a RuntimeException");
+		}
+		catch (RuntimeException ex) {
+			verify(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
+			verify(listener, never())
+					.onApplicationEvent(isA(ApplicationFailedEvent.class));
+			assertThat(exitCodeListener.getExitCode()).isEqualTo(11);
+			assertThat(this.output.toString()).contains("Application run failed");
+		}
+	}
+
+	@Test
 	public void loadSources() {
 		Class<?>[] sources = { ExampleConfig.class, TestCommandLineRunner.class };
 		TestSpringApplication application = new TestSpringApplication(sources);
@@ -1427,14 +1453,14 @@ public class SpringApplicationTests {
 
 	private static class ExitCodeListener implements ApplicationListener<ExitCodeEvent> {
 
-		private int exitCode;
+		private Integer exitCode;
 
 		@Override
 		public void onApplicationEvent(ExitCodeEvent event) {
 			this.exitCode = event.getExitCode();
 		}
 
-		public int getExitCode() {
+		public Integer getExitCode() {
 			return this.exitCode;
 		}
 
