@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -213,9 +212,6 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 						+ servletRegistrationName + "'");
 			}
 			registration.setInitParameters(this.jersey.getInit());
-			registration.setInitParameter(
-					CommonProperties.METAINF_SERVICES_LOOKUP_DISABLE,
-					Boolean.TRUE.toString());
 		}
 	}
 
