@@ -6534,9 +6534,9 @@ example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 A list of the auto-configuration that is enabled by `@WebFluxTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
-NOTE: `@WebFluxTest` cannot be used for testing routes registered via the functional
-web framework. For testing `RouterFunction` beans in the context, consider using
-`@SpringBootTest`.
+NOTE: `@WebFluxTest` cannot detect routes registered via the functional web framework. For
+testing `RouterFunction` beans in the context, consider importing your `RouterFunction`
+yourself via `@Import` or using `@SpringBootTest`.
 
 TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run
 <<boot-features-testing-spring-boot-applications-testing-with-running-server,
