@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.graphite;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.graphite.GraphiteConfig;
+import io.micrometer.graphite.GraphiteHierarchicalNameMapper;
 import io.micrometer.graphite.GraphiteMeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
@@ -66,8 +67,8 @@ public class GraphiteMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HierarchicalNameMapper hierarchicalNameMapper() {
-		return HierarchicalNameMapper.DEFAULT;
+	public HierarchicalNameMapper hierarchicalNameMapper(GraphiteConfig graphiteConfig) {
+		return new GraphiteHierarchicalNameMapper(graphiteConfig.tagsAsPrefix());
 	}
 
 }
