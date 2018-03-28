@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -79,8 +80,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	private final Method linksMethod = ReflectionUtils.findMethod(getClass(), "links",
 			HttpServletRequest.class, HttpServletResponse.class);
 
-	private final Method handleMethod = ReflectionUtils.findMethod(OperationHandler.class,
+	private final Method handleWriteMethod = ReflectionUtils.findMethod(WriteOperationHandler.class,
 			"handle", HttpServletRequest.class, Map.class);
+
+	private final Method handleReadMethod = ReflectionUtils.findMethod(ReadOperationHandler.class,
+			"handle", HttpServletRequest.class);
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
@@ -130,8 +134,16 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		OperationInvoker invoker = operation::invoke;
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint,
 				operation, new ServletWebOperationAdapter(invoker));
-		registerMapping(createRequestMappingInfo(operation),
-				new OperationHandler(servletWebOperation), this.handleMethod);
+		if (operation.getType() == OperationType.WRITE) {
+			registerMapping(createRequestMappingInfo(operation),
+					new WriteOperationHandler(servletWebOperation),
+					this.handleWriteMethod);
+		}
+		else {
+			registerMapping(createRequestMappingInfo(operation),
+					new ReadOperationHandler(servletWebOperation),
+					this.handleReadMethod);
+		}
 	}
 
 	/**
@@ -226,7 +238,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	 * Adapter class to convert an {@link OperationInvoker} into a
 	 * {@link ServletWebOperation}.
 	 */
-	private class ServletWebOperationAdapter implements ServletWebOperation {
+	private static class ServletWebOperationAdapter implements ServletWebOperation {
 
 		private final OperationInvoker invoker;
 
@@ -285,11 +297,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 	/**
 	 * Handler for a {@link ServletWebOperation}.
 	 */
-	private final class OperationHandler {
+	private static final class WriteOperationHandler {
 
 		private final ServletWebOperation operation;
 
-		OperationHandler(ServletWebOperation operation) {
+		WriteOperationHandler(ServletWebOperation operation) {
 			this.operation = operation;
 		}
 
@@ -297,6 +309,24 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 		public Object handle(HttpServletRequest request,
 				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
+		}
+
+	}
+
+	/**
+	 * Handler for a {@link ServletWebOperation}.
+	 */
+	private static final class ReadOperationHandler {
+
+		private final ServletWebOperation operation;
+
+		ReadOperationHandler(ServletWebOperation operation) {
+			this.operation = operation;
+		}
+
+		@ResponseBody
+		public Object handle(HttpServletRequest request) {
+			return this.operation.handle(request, null);
 		}
 
 	}
