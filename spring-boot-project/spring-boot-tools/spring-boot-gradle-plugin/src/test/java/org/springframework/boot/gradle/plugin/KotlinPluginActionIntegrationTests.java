@@ -65,4 +65,5 @@ public class KotlinPluginActionIntegrationTests {
 				.contains("compileKotlin java parameters: false")
 				.contains("compileTestKotlin java parameters: false");
 	}
+
 }

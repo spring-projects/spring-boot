@@ -532,10 +532,12 @@ JSON request body. When exposed via JMX, the parameters are mapped to the parame
 the MBean's operations. Parameters are required by default. They can be made optional
 by annotating them with `@org.springframework.lang.Nullable`.
 
-NOTE: To allow the input to be mapped to the operation method's parameters, java code
-implementing an endpoint should be compiled with `-parameters`, and kotlin code should
-be compiled with `-java-parameters`. This will happen automatically if you are using
-Spring Boot's Gradle plugin or if you are using Maven and `spring-boot-starter-parent`.
+NOTE: To allow the input to be mapped to the operation method's parameters, Java code
+implementing an endpoint should be compiled with `-parameters`, and Kotlin code
+implementing an endpoint should be compiled with `-java-parameters`. This will happen
+automatically if you are using Spring Boot's Gradle plugin or if you are using Maven and
+`spring-boot-starter-parent`.
+
 
 
 [[production-ready-endpoints-custom-input-conversion]]
