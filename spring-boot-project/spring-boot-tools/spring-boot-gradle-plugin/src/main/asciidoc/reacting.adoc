@@ -36,6 +36,7 @@ plugin:
 1. Aligns the Kotlin version used in Spring Boot's dependency management with the version
    of the plugin. This is achieved by setting the `kotlin.version` property with a value
    that matches the version of the Kotlin plugin.
+2. Configures any `KotlinCompile` tasks to use the `-java-parameters` compiler argument.
 
 
 

@@ -52,4 +52,18 @@ public class KotlinPluginActionIntegrationTests {
 				.containsPattern("org.jetbrains.kotlin:kotlin-stdlib-jdk8:* -> 1.2.10");
 	}
 
+	@Test
+	public void kotlinCompileTasksUseJavaParametersFlagByDefault() {
+		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
+				.contains("compileKotlin java parameters: true")
+				.contains("compileTestKotlin java parameters: true");
+	}
+
+	@Test
+	public void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
+		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
+				.contains("compileKotlin java parameters: false")
+				.contains("compileTestKotlin java parameters: false");
+	}
+
 }

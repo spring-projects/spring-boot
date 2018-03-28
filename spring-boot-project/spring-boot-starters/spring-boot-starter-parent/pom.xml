@@ -51,6 +51,7 @@
 					<version>${kotlin.version}</version>
 					<configuration>
 						<jvmTarget>${java.version}</jvmTarget>
+						<javaParameters>true</javaParameters>
 					</configuration>
 					<executions>
 						<execution>
