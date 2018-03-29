@@ -5436,7 +5436,7 @@ properties that are not directly supported, use the following properties:
 	spring.kafka.properties.prop.one=first
 	spring.kafka.admin.properties.prop.two=second
 	spring.kafka.consumer.properties.prop.three=third
-	spring,kafka.producer.properties.prop.four=fourth
+	spring.kafka.producer.properties.prop.four=fourth
 ----
 
 This sets the common `prop.one` Kafka property to `first` (applies to producers,
