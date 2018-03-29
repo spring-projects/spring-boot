@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
 
@@ -59,15 +58,7 @@ public class JmxMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config,
-			HierarchicalNameMapper nameMapper, Clock clock) {
-		return new JmxMeterRegistry(config, clock, nameMapper);
+	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
+		return new JmxMeterRegistry(config, clock);
 	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HierarchicalNameMapper hierarchicalNameMapper() {
-		return HierarchicalNameMapper.DEFAULT;
-	}
-
 }

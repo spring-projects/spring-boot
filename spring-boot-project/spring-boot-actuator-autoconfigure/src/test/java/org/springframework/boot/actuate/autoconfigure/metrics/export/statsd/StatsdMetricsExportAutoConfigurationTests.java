@@ -19,9 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 import java.util.Map;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.Meter.Id;
-import io.micrometer.core.instrument.config.NamingConvention;
-import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
 import io.micrometer.statsd.StatsdMetrics;
@@ -57,12 +54,11 @@ public class StatsdMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguresItsConfigMeterRegistryNameMapperAndMetrics() {
+	public void autoConfiguresItsConfigMeterRegistryAndMetrics() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(StatsdMeterRegistry.class)
 						.hasSingleBean(StatsdConfig.class)
-						.hasSingleBean(HierarchicalNameMapper.class)
 						.hasSingleBean(StatsdMetrics.class));
 	}
 
@@ -72,8 +68,7 @@ public class StatsdMetricsExportAutoConfigurationTests {
 				.withPropertyValues("management.metrics.export.statsd.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(StatsdMeterRegistry.class)
-						.doesNotHaveBean(StatsdConfig.class)
-						.doesNotHaveBean(HierarchicalNameMapper.class));
+						.doesNotHaveBean(StatsdConfig.class));
 	}
 
 	@Test
@@ -81,8 +76,7 @@ public class StatsdMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(StatsdMeterRegistry.class)
-						.hasSingleBean(StatsdConfig.class).hasBean("customConfig")
-						.hasSingleBean(HierarchicalNameMapper.class));
+						.hasSingleBean(StatsdConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
@@ -90,17 +84,7 @@ public class StatsdMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(StatsdMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(StatsdConfig.class)
-						.hasSingleBean(HierarchicalNameMapper.class));
-	}
-
-	@Test
-	public void allowsCustomHierarchicalNameMapperToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomNameMapperConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(StatsdMeterRegistry.class)
-						.hasSingleBean(StatsdConfig.class).hasBean("customNameMapper")
-						.hasSingleBean(HierarchicalNameMapper.class));
+						.hasBean("customRegistry").hasSingleBean(StatsdConfig.class));
 	}
 
 	@Test
@@ -144,14 +128,7 @@ public class StatsdMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public StatsdConfig customConfig() {
-			return new StatsdConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return k -> null;
 		}
 
 	}
@@ -163,24 +140,6 @@ public class StatsdMetricsExportAutoConfigurationTests {
 		@Bean
 		public StatsdMeterRegistry customRegistry(StatsdConfig config, Clock clock) {
 			return new StatsdMeterRegistry(config, clock);
-		}
-
-	}
-
-	@Configuration
-	@Import(BaseConfiguration.class)
-	static class CustomNameMapperConfiguration {
-
-		@Bean
-		public HierarchicalNameMapper customNameMapper() {
-			return new HierarchicalNameMapper() {
-
-				@Override
-				public String toHierarchicalName(Id id, NamingConvention convention) {
-					return "test";
-				}
-
-			};
 		}
 
 	}
