@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -82,7 +84,7 @@ public class AutoConfigurationSorterTests {
 
 	@Before
 	public void setup() {
-		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(),
+		this.sorter = new AutoConfigurationSorter(new SkipCycleMetadataReaderFactory(),
 				this.autoConfigurationMetadata);
 	}
 
@@ -140,6 +142,8 @@ public class AutoConfigurationSorterTests {
 
 	@Test
 	public void byAutoConfigureAfterWithCycle() {
+		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(),
+				this.autoConfigurationMetadata);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("AutoConfigure cycle detected");
 		this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D));
@@ -147,13 +151,34 @@ public class AutoConfigurationSorterTests {
 
 	@Test
 	public void usesAnnotationPropertiesWhenPossible() throws Exception {
-		MetadataReaderFactory readerFactory = mock(MetadataReaderFactory.class);
+		MetadataReaderFactory readerFactory = new SkipCycleMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A2, B, C, W2, X);
 		this.sorter = new AutoConfigurationSorter(readerFactory,
 				this.autoConfigurationMetadata);
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
+	}
+
+	@Test
+	public void useAnnotationWithNoDirectLink() throws Exception {
+		MetadataReaderFactory readerFactory = new SkipCycleMetadataReaderFactory();
+		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, E);
+		this.sorter = new AutoConfigurationSorter(readerFactory,
+				this.autoConfigurationMetadata);
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, E));
+		assertThat(actual).containsExactly(E, A);
+	}
+
+	@Test
+	public void useAnnotationWithNoDirectLinkAndCycle() throws Exception {
+		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
+		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, D);
+		this.sorter = new AutoConfigurationSorter(readerFactory,
+				this.autoConfigurationMetadata);
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("AutoConfigure cycle detected");
+		this.sorter.getInPriorityOrder(Arrays.asList(D, B));
 	}
 
 	private AutoConfigurationMetadata getAutoConfigurationMetadata(String... classNames)
@@ -260,6 +285,19 @@ public class AutoConfigurationSorterTests {
 
 	@AutoConfigureBefore(AutoConfigureY.class)
 	public static class AutoConfigureZ {
+
+	}
+
+	private static class SkipCycleMetadataReaderFactory
+			extends CachingMetadataReaderFactory {
+
+		@Override
+		public MetadataReader getMetadataReader(String className) throws IOException {
+			if (className.equals(D)) {
+				throw new IOException();
+			}
+			return super.getMetadataReader(className);
+		}
 
 	}
 
