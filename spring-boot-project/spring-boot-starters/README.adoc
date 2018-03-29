@@ -154,6 +154,9 @@ do as they were designed before this was clarified.
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
+| https://github.com/savantly-net/sprout-platform[Sprout Platform]
+| https://github.com/savantly-net/sprout-platform/tree/master/spring/sprout-spring-boot-starter
+
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
 
