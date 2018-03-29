@@ -40,7 +40,6 @@ public final class WebMvcTags {
 
 	private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
 
-
 	private WebMvcTags() {
 	}
 
@@ -110,10 +109,9 @@ public final class WebMvcTags {
 	}
 
 	private static String getPathInfo(HttpServletRequest request) {
-		String uri = StringUtils.hasText(request.getPathInfo()) ?
-				request.getPathInfo() : "/";
-		return uri.replaceAll("//+", "/")
-				.replaceAll("/$", "");
+		String pathInfo = request.getPathInfo();
+		String uri = (StringUtils.hasText(pathInfo) ? pathInfo : "/");
+		return uri.replaceAll("//+", "/").replaceAll("/$", "");
 	}
 
 	/**

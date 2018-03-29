@@ -67,8 +67,8 @@ import org.springframework.util.StringUtils;
  */
 public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
-	private static final Pattern INTELLIJ_CLASSPATH_JAR_PATTERN = Pattern.compile(
-			".*classpath(\\d+)?.jar");
+	private static final Pattern INTELLIJ_CLASSPATH_JAR_PATTERN = Pattern
+			.compile(".*classpath(\\d+)?.jar");
 
 	public ModifiedClassPathRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
@@ -147,7 +147,6 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 				return createdBy != null && createdBy.contains("IntelliJ");
 			}
 			catch (Exception ex) {
-				return false;
 			}
 		}
 		return false;
@@ -168,8 +167,8 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private String[] getClassPath(URL booterJar) throws Exception {
 		Attributes attributes = getManifestMainAttributesFromUrl(booterJar);
-		return StringUtils.delimitedListToStringArray(attributes
-				.getValue(Attributes.Name.CLASS_PATH), " ");
+		return StringUtils.delimitedListToStringArray(
+				attributes.getValue(Attributes.Name.CLASS_PATH), " ");
 	}
 
 	private Attributes getManifestMainAttributesFromUrl(URL url) throws Exception {

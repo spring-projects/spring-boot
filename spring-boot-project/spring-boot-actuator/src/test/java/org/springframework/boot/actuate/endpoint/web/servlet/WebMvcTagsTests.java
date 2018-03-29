@@ -79,4 +79,5 @@ public class WebMvcTagsTests {
 		Tag tag = WebMvcTags.uri(null, null);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
+
 }

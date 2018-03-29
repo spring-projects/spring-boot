@@ -122,6 +122,7 @@ public class IntegrationAutoConfiguration {
 		@Configuration
 		@EnableIntegrationManagement(defaultCountsEnabled = "true")
 		protected static class EnableIntegrationManagementConfiguration {
+
 		}
 
 	}

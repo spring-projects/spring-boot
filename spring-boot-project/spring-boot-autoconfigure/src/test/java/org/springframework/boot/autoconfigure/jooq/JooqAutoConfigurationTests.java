@@ -137,20 +137,20 @@ public class JooqAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class,
 				TxManagerConfiguration.class, TestRecordMapperProvider.class,
 				TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,
-				TestExecuteListenerProvider.class, TestVisitListenerProvider.class
-		).run((context) -> {
-			DSLContext dsl = context.getBean(DSLContext.class);
-			assertThat(dsl.configuration().recordMapperProvider().getClass())
-					.isEqualTo(TestRecordMapperProvider.class);
-			assertThat(dsl.configuration().recordUnmapperProvider().getClass())
-					.isEqualTo(TestRecordUnmapperProvider.class);
-			assertThat(dsl.configuration().recordListenerProviders().length)
-					.isEqualTo(1);
-			assertThat(dsl.configuration().executeListenerProviders().length)
-					.isEqualTo(2);
-			assertThat(dsl.configuration().visitListenerProviders().length)
-					.isEqualTo(1);
-		});
+				TestExecuteListenerProvider.class, TestVisitListenerProvider.class)
+				.run((context) -> {
+					DSLContext dsl = context.getBean(DSLContext.class);
+					assertThat(dsl.configuration().recordMapperProvider().getClass())
+							.isEqualTo(TestRecordMapperProvider.class);
+					assertThat(dsl.configuration().recordUnmapperProvider().getClass())
+							.isEqualTo(TestRecordUnmapperProvider.class);
+					assertThat(dsl.configuration().recordListenerProviders().length)
+							.isEqualTo(1);
+					assertThat(dsl.configuration().executeListenerProviders().length)
+							.isEqualTo(2);
+					assertThat(dsl.configuration().visitListenerProviders().length)
+							.isEqualTo(1);
+				});
 	}
 
 	@Test
