@@ -347,12 +347,14 @@ jobs:
       ARTIFACTORY_SERVER: ((artifactory-server))
       ARTIFACTORY_USERNAME: ((artifactory-username))
       ARTIFACTORY_PASSWORD: ((artifactory-password))
+      BINTRAY_SUBJECT: ((bintray-subject))
+      BINTRAY_REPO: ((bintray-repo))
 - name: sync-to-maven-central
   serial: true
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
-    trigger: false
+    trigger: true
   - get: artifactory-repo
     trigger: false
     passed: [promote-release]

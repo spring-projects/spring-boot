@@ -39,10 +39,30 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 		--max-time 2700 \
 		-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
 		-H "Content-type:application/json" \
-		-d "{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\"}" \
+		-d "{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\", \"async\":\"true\"}" \
 		-f \
 		-X \
-		POST "${ARTIFACTORY_SERVER}/api/build/distribute/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to publish" >&2; exit 1; }
+		POST "${ARTIFACTORY_SERVER}/api/build/distribute/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to distribute" >&2; exit 1; }
+
+	echo "Waiting for artifacts to be published"
+	ARTIFACTS_PUBLISHED=false
+	WAIT_TIME=5
+	COUNTER=0
+	while [ $ARTIFACTS_PUBLISHED == "false" ] && [ $COUNTER -lt 24 ]; do
+		 result=$(curl https://api.bintray.com/packages/${BINTRAY_SUBJECT}/${BINTRAY_REPO}/$groupId )
+		 versions=$( echo $result | jq -r '.versions' )
+		 exists=$(echo $versions | grep $version)
+		 if [ $? -eq 0 ]; then
+			ARTIFACTS_PUBLISHED=true
+		 fi
+		 COUNTER=$(( $COUNTER + 1))
+		 echo $COUNTER
+		 sleep WAIT_TIME
+	done
+	if [ $ARTIFACTS_PUBLISHED == "false" ]; then
+		echo "Failed to publish"
+		exit 1
+	fi
 fi
 
 
