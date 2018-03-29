@@ -2146,6 +2146,11 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz-jobs</artifactId>
+				<version>${quartz.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.reactivestreams</groupId>
 				<artifactId>reactive-streams</artifactId>
 				<version>${reactive-streams.version}</version>
