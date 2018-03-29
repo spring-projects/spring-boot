@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link WebMvcTags}.
  *
  * @author Andy Wilkinson
+ * @author Brian Clozel
  */
 public class WebMvcTagsTests {
 
@@ -39,9 +40,17 @@ public class WebMvcTagsTests {
 
 	@Test
 	public void uriTrailingSlashesAreSuppressed() {
+		this.request.setPathInfo("//spring/");
+		assertThat(WebMvcTags.uri(this.request, null).getValue()).isEqualTo("/spring");
+	}
+
+	@Test
+	public void uriTagValueIsBestMatchingPatternWhenAvailable() {
 		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
-				"//foo/");
-		assertThat(WebMvcTags.uri(this.request, null).getValue()).isEqualTo("/foo");
+				"/spring");
+		this.response.setStatus(301);
+		Tag tag = WebMvcTags.uri(this.request, this.response);
+		assertThat(tag.getValue()).isEqualTo("/spring");
 	}
 
 	@Test
@@ -65,4 +74,9 @@ public class WebMvcTagsTests {
 		assertThat(tag.getValue()).isEqualTo("root");
 	}
 
+	@Test
+	public void uriTagIsUnknownWhenRequestIsNull() {
+		Tag tag = WebMvcTags.uri(null, null);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
 }
