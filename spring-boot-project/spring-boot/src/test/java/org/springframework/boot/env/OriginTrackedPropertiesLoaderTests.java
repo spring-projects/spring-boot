@@ -81,7 +81,7 @@ public class OriginTrackedPropertiesLoaderTests {
 	@Test
 	public void getUnicodeProperty() {
 		OriginTrackedValue value = this.properties.get("test-unicode");
-		assertThat(getValue(value)).isEqualTo("properties&test");
+		assertThat(getValue(value)).isEqualTo("properties&testäö☃");
 		assertThat(getLocation(value)).isEqualTo("12:14");
 	}
 
