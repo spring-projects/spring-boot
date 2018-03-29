@@ -29,7 +29,9 @@ final class AsciiBytes {
 
 	private static final String EMPTY_STRING = "";
 
-	private static final int[] EXCESS = { 0x0, 0x1080, 0x96, 0x1c82080 };
+	private static final int[] INITIAL_BYTE_BITMASK = { 0x7F, 0x1F, 0x0F, 0x07 };
+
+	private static final int SUBSEQUENT_BYTE_BITMASK = 0x3F;
 
 	private final byte[] bytes;
 
@@ -142,13 +144,10 @@ final class AsciiBytes {
 		int totalLen = (nameLen + (suffix == 0 ? 0 : 1));
 		for (int i = this.offset; i < this.offset + this.length; i++) {
 			int b = this.bytes[i];
-			if (b < 0) {
-				b = b & 0x7F;
-				int limit = getRemainingUtfBytes(b);
-				for (int j = 0; j < limit; j++) {
-					b = (b << 6) + (this.bytes[++i] & 0xFF);
-				}
-				b -= EXCESS[limit];
+			int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
+			b &= INITIAL_BYTE_BITMASK[remainingUtfBytes];
+			for (int j = 0; j < remainingUtfBytes; j++) {
+				b = (b << 6) + (this.bytes[++i] & SUBSEQUENT_BYTE_BITMASK);
 			}
 			char c = getChar(name, suffix, charIndex++);
 			if (b <= 0xFFFF) {
@@ -185,13 +184,10 @@ final class AsciiBytes {
 		if (hash == 0 && this.bytes.length > 0) {
 			for (int i = this.offset; i < this.offset + this.length; i++) {
 				int b = this.bytes[i];
-				if (b < 0) {
-					b = b & 0x7F;
-					int limit = getRemainingUtfBytes(b);
-					for (int j = 0; j < limit; j++) {
-						b = (b << 6) + (this.bytes[++i] & 0xFF);
-					}
-					b -= EXCESS[limit];
+				int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
+				b &= INITIAL_BYTE_BITMASK[remainingUtfBytes];
+				for (int j = 0; j < remainingUtfBytes; j++) {
+					b = (b << 6) + (this.bytes[++i] & SUBSEQUENT_BYTE_BITMASK);
 				}
 				if (b <= 0xFFFF) {
 					hash = 31 * hash + b;
@@ -206,8 +202,16 @@ final class AsciiBytes {
 		return hash;
 	}
 
-	private int getRemainingUtfBytes(int b) {
-		return (b < 96 ? 1 : (b < 112 ? 2 : 3));
+	private int getNumberOfUtfBytes(int b) {
+		if ((b & 0x80) == 0) {
+			return 1;
+		}
+		int numberOfUtfBytes = 0;
+		while ((b & 0x80) != 0) {
+			b <<= 1;
+			numberOfUtfBytes++;
+		}
+		return numberOfUtfBytes;
 	}
 
 	@Override

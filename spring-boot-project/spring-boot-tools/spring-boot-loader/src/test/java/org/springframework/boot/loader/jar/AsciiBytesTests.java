@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,6 +182,18 @@ public class AsciiBytesTests {
 	@Test
 	public void matchesSameAsStringWithEmoji() {
 		matchesSameAsString("\ud83d\udca9");
+	}
+
+	@Test
+	public void hashCodeFromInstanceMatchesHashCodeFromString() {
+		String name = "fonts/宋体/simsun.ttf";
+		assertThat(new AsciiBytes(name).hashCode()).isEqualTo(AsciiBytes.hashCode(name));
+	}
+
+	@Test
+	public void instanceCreatedFromCharSequenceMatchesSameCharSequence() {
+		String name = "fonts/宋体/simsun.ttf";
+		assertThat(new AsciiBytes(name).matches(name, NO_SUFFIX)).isTrue();
 	}
 
 	private void matchesSameAsString(String input) {
