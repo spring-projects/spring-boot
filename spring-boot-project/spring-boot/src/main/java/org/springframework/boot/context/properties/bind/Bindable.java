@@ -66,6 +66,10 @@ public final class Bindable<T> {
 		return this.type;
 	}
 
+	/**
+	 * Return the boxed type of the item to bind.
+	 * @return the boxed type for the item being bound
+	 */
 	public ResolvableType getBoxedType() {
 		return this.boxedType;
 	}
@@ -149,6 +153,11 @@ public final class Bindable<T> {
 				(annotations == null ? NO_ANNOTATIONS : annotations));
 	}
 
+	/**
+	 * Create an updated {@link Bindable} instance with an existing value.
+	 * @param existingValue the existing value
+	 * @return an updated {@link Bindable}
+	 */
 	public Bindable<T> withExistingValue(T existingValue) {
 		Assert.isTrue(
 				existingValue == null || this.type.isArray()
@@ -158,6 +167,11 @@ public final class Bindable<T> {
 		return new Bindable<>(this.type, this.boxedType, value, NO_ANNOTATIONS);
 	}
 
+	/**
+	 * Create an updated {@link Bindable} instance with a value supplier.
+	 * @param suppliedValue the supplier for the value
+	 * @return an updated {@link Bindable}
+	 */
 	public Bindable<T> withSuppliedValue(Supplier<T> suppliedValue) {
 		return new Bindable<>(this.type, this.boxedType, suppliedValue, NO_ANNOTATIONS);
 	}
