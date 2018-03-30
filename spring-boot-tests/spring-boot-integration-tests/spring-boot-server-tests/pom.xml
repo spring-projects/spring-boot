@@ -56,9 +56,6 @@
 						<maven.home>${maven.home}</maven.home>
 						<repository>${repository}</repository>
 					</systemPropertyVariables>
-					<useSystemClassLoader>false</useSystemClassLoader>
-					<forkCount>0</forkCount>
-					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
 		</plugins>
