@@ -18,13 +18,16 @@ package org.springframework.boot.context.embedded;
 
 import java.io.File;
 import java.io.FileReader;
-import java.lang.ProcessBuilder.Redirect;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.rules.ExternalResource;
 
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -76,12 +79,12 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 		arguments.addAll(getArguments(archive));
 		ProcessBuilder processBuilder = new ProcessBuilder(
 				StringUtils.toStringArray(arguments));
-		processBuilder.redirectOutput(Redirect.INHERIT);
-		processBuilder.redirectError(Redirect.INHERIT);
 		if (workingDirectory != null) {
 			processBuilder.directory(workingDirectory);
 		}
 		Process process = processBuilder.start();
+		new ConsoleCopy(process.getInputStream(), System.out).start();
+		new ConsoleCopy(process.getErrorStream(), System.err).start();
 		this.httpPort = awaitServerPort(process, serverPortFile);
 		return process;
 	}
@@ -100,6 +103,28 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 		}
 		return Integer
 				.parseInt(FileCopyUtils.copyToString(new FileReader(serverPortFile)));
+	}
+
+	private static class ConsoleCopy extends Thread {
+
+		private final InputStream input;
+
+		private final PrintStream output;
+
+		ConsoleCopy(InputStream input, PrintStream output) {
+			this.input = input;
+			this.output = output;
+		}
+
+		@Override
+		public void run() {
+			try {
+				StreamUtils.copy(this.input, this.output);
+			}
+			catch (IOException ex) {
+			}
+		}
+
 	}
 
 }
