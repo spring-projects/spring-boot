@@ -1202,7 +1202,7 @@ Spring Boot has dedicated support for expressing durations. If you expose a
 available:
 
 * A regular `long` representation (using milliseconds as the default unit unless a
-`@DefaultUnit` has been specified)
+`@DurationUnit` has been specified)
 * The standard ISO-8601 format
 {java-javadoc}/java/time/Duration.html#parse-java.lang.CharSequence-[used by
 `java.util.Duration`]
@@ -1229,11 +1229,11 @@ You can also use any of the supported unit. These are:
 * `h` for hours
 * `d` for days
 
-The default unit is milliseconds and can be overridden using `@DefaultUnit` as illustrated
+The default unit is milliseconds and can be overridden using `@DurationUnit` as illustrated
 in the sample above.
 
 TIP: If you are upgrading from a previous version that is simply using `Long` to express
-the duration, make sure to define the unit (using `@DefaultUnit`) if it isn't
+the duration, make sure to define the unit (using `@DurationUnit`) if it isn't
 milliseconds alongside the switch to `Duration`. Doing so gives a transparent upgrade path
 while supporting a much richer format.
 
