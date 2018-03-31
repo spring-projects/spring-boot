@@ -126,7 +126,8 @@ org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.reactive.WebSocketReactiveAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration,\
-org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
+org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration,\
+org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAutoConfiguration
 
 # Failure analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
