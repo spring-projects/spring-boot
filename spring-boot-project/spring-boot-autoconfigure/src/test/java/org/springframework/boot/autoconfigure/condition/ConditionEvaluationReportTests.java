@@ -30,6 +30,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -241,6 +242,37 @@ public class ConditionEvaluationReportTests {
 		assertThat(sourceOutcomes.get(positiveConfig).isFullMatch()).isFalse();
 	}
 
+	@Test
+	public void reportWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(WebMvcAutoConfiguration.class,
+				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
+				org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration.class);
+		context.refresh();
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(context.getBeanFactory());
+		assertThat(report.getConditionAndOutcomesBySource())
+				.containsKeys("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration",
+						"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
+						"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
+	}
+
+	@Test
+	public void reportMessageWhenSameShortNamePresentMoreThanOnceShouldUseFullyQualifiedName() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(WebMvcAutoConfiguration.class,
+				org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration.class,
+				org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration.class);
+		context.refresh();
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(context.getBeanFactory());
+		String reportMessage = new ConditionEvaluationReportMessage(report).toString();
+		assertThat(reportMessage)
+				.contains("WebMvcAutoConfiguration", "org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
+						"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
+		assertThat(reportMessage).doesNotContain("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
+	}
+
 	private int getNumberOfOutcomes(ConditionAndOutcomes outcomes) {
 		Iterator<ConditionAndOutcome> iterator = outcomes.iterator();
 		int numberOfOutcomesAdded = 0;
@@ -264,12 +296,12 @@ public class ConditionEvaluationReportTests {
 	}
 
 	@Configuration
-	@Conditional({ ConditionEvaluationReportTests.MatchParseCondition.class,
-			ConditionEvaluationReportTests.NoMatchBeanCondition.class })
+	@Conditional({ConditionEvaluationReportTests.MatchParseCondition.class,
+			ConditionEvaluationReportTests.NoMatchBeanCondition.class})
 	public static class NegativeOuterConfig {
 
 		@Configuration
-		@Conditional({ ConditionEvaluationReportTests.MatchParseCondition.class })
+		@Conditional({ConditionEvaluationReportTests.MatchParseCondition.class})
 		public static class PositiveInnerConfig {
 
 			@Bean
