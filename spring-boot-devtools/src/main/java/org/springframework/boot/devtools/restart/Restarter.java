@@ -415,7 +415,7 @@ public class Restarter {
 			}
 		}
 		catch (Exception ex) {
-			// Ignore
+			this.logger.debug("Unable to clear field " + type + " " + fieldName, ex);
 		}
 	}
 
