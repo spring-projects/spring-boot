@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -341,16 +341,47 @@ public class Restarter {
 	private void cleanupKnownCaches() throws Exception {
 		// Whilst not strictly necessary it helps to cleanup soft reference caches
 		// early rather than waiting for memory limits to be reached
-		clear(ResolvableType.class, "cache");
-		clear("org.springframework.core.SerializableTypeWrapper", "cache");
+		clearResolvableTypeCache();
+		clearCachedIntrospectionResultsCache();
+		clearReflectionUtilsCache();
+		clearAnnotationUtilsCache();
+		clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+	}
+
+	private void clearResolvableTypeCache() throws Exception {
+		try {
+			ResolvableType.clearCache();
+		}
+		catch (Throwable ex) {
+			clear(ResolvableType.class, "cache");
+			clear("org.springframework.core.SerializableTypeWrapper", "cache");
+		}
+	}
+
+	private void clearCachedIntrospectionResultsCache() throws Exception {
 		clear(CachedIntrospectionResults.class, "acceptedClassLoaders");
 		clear(CachedIntrospectionResults.class, "strongClassCache");
 		clear(CachedIntrospectionResults.class, "softClassCache");
-		clear(ReflectionUtils.class, "declaredFieldsCache");
-		clear(ReflectionUtils.class, "declaredMethodsCache");
-		clear(AnnotationUtils.class, "findAnnotationCache");
-		clear(AnnotationUtils.class, "annotatedInterfaceCache");
-		clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+	}
+
+	private void clearReflectionUtilsCache() throws Exception {
+		try {
+			ReflectionUtils.clearCache();
+		}
+		catch (Throwable ex) {
+			clear(ReflectionUtils.class, "declaredFieldsCache");
+			clear(ReflectionUtils.class, "declaredMethodsCache");
+		}
+	}
+
+	private void clearAnnotationUtilsCache() throws Exception {
+		try {
+			AnnotationUtils.clearCache();
+		}
+		catch (Throwable ex) {
+			clear(AnnotationUtils.class, "findAnnotationCache");
+			clear(AnnotationUtils.class, "annotatedInterfaceCache");
+		}
 	}
 
 	private void clear(String className, String fieldName) {
@@ -363,22 +394,28 @@ public class Restarter {
 	}
 
 	private void clear(Class<?> type, String fieldName) throws Exception {
-		Field field = type.getDeclaredField(fieldName);
-		field.setAccessible(true);
-		Object instance = field.get(null);
-		if (instance instanceof Set) {
-			((Set<?>) instance).clear();
-		}
-		if (instance instanceof Map) {
-			Map<?, ?> map = ((Map<?, ?>) instance);
-			for (Iterator<?> iterator = map.keySet().iterator(); iterator.hasNext();) {
-				Object value = iterator.next();
-				if (value instanceof Class && ((Class<?>) value)
-						.getClassLoader() instanceof RestartClassLoader) {
-					iterator.remove();
-				}
-
+		try {
+			Field field = type.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			Object instance = field.get(null);
+			if (instance instanceof Set) {
+				((Set<?>) instance).clear();
 			}
+			if (instance instanceof Map) {
+				Map<?, ?> map = ((Map<?, ?>) instance);
+				for (Iterator<?> iterator = map.keySet().iterator(); iterator
+						.hasNext();) {
+					Object value = iterator.next();
+					if (value instanceof Class && ((Class<?>) value)
+							.getClassLoader() instanceof RestartClassLoader) {
+						iterator.remove();
+					}
+
+				}
+			}
+		}
+		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
