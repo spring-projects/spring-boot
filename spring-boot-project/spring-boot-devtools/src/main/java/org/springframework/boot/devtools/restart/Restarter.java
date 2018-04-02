@@ -330,17 +330,28 @@ public class Restarter {
 	private void cleanupKnownCaches() throws Exception {
 		// Whilst not strictly necessary it helps to cleanup soft reference caches
 		// early rather than waiting for memory limits to be reached
-		clear(ResolvableType.class, "cache");
-		clear("org.springframework.core.SerializableTypeWrapper", "cache");
+		ResolvableType.clearCache();
+		cleanCachedIntrospectionResultsCache();
+		ReflectionUtils.clearCache();
+		clearAnnotationUtilsCache();
+		if (!JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.NINE)) {
+			clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+		}
+	}
+
+	private void cleanCachedIntrospectionResultsCache() throws Exception {
 		clear(CachedIntrospectionResults.class, "acceptedClassLoaders");
 		clear(CachedIntrospectionResults.class, "strongClassCache");
 		clear(CachedIntrospectionResults.class, "softClassCache");
-		clear(ReflectionUtils.class, "declaredFieldsCache");
-		clear(ReflectionUtils.class, "declaredMethodsCache");
-		clear(AnnotationUtils.class, "findAnnotationCache");
-		clear(AnnotationUtils.class, "annotatedInterfaceCache");
-		if (!JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.NINE)) {
-			clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
+	}
+
+	private void clearAnnotationUtilsCache() throws Exception {
+		try {
+			AnnotationUtils.clearCache();
+		}
+		catch (Throwable ex) {
+			clear(AnnotationUtils.class, "findAnnotationCache");
+			clear(AnnotationUtils.class, "annotatedInterfaceCache");
 		}
 	}
 
@@ -354,14 +365,19 @@ public class Restarter {
 	}
 
 	private void clear(Class<?> type, String fieldName) throws Exception {
-		Field field = type.getDeclaredField(fieldName);
-		field.setAccessible(true);
-		Object instance = field.get(null);
-		if (instance instanceof Set) {
-			((Set<?>) instance).clear();
+		try {
+			Field field = type.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			Object instance = field.get(null);
+			if (instance instanceof Set) {
+				((Set<?>) instance).clear();
+			}
+			if (instance instanceof Map) {
+				((Map<?, ?>) instance).keySet().removeIf(this::isFromRestartClassLoader);
+			}
 		}
-		if (instance instanceof Map) {
-			((Map<?, ?>) instance).keySet().removeIf(this::isFromRestartClassLoader);
+		catch (Exception ex) {
+			this.logger.debug("Unable to clear field " + type + " " + fieldName, ex);
 		}
 	}
 
