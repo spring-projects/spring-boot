@@ -84,8 +84,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
 		}
 		if (packagesToScan.isEmpty()) {
-			return Collections
-					.singleton(ClassUtils.getPackageName(metadata.getClassName()));
+			packagesToScan.add(ClassUtils.getPackageName(metadata.getClassName()));
 		}
 		return packagesToScan;
 	}
