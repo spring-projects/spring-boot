@@ -5999,7 +5999,7 @@ libraries.
 
 [[boot-features-test-scope-dependencies]]
 === Test Scope Dependencies
-The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`)contains
+The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains
 the following provided libraries:
 
 * http://junit.org[JUnit]: The de-facto standard for unit testing Java applications.
