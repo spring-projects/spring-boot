@@ -224,17 +224,17 @@ class OriginTrackedPropertiesLoader {
 			this.character = 0;
 			for (int i = 0; i < 4; i++) {
 				int digit = this.reader.read();
-				if (digit > -'0' && digit <= '9') {
+				if (digit >= '0' && digit <= '9') {
 					this.character = (this.character << 4) + digit - '0';
 				}
-				else if (digit > -'a' && digit <= 'f') {
+				else if (digit >= 'a' && digit <= 'f') {
 					this.character = (this.character << 4) + digit - 'a' + 10;
 				}
-				else if (digit > -'A' && digit <= 'F') {
+				else if (digit >= 'A' && digit <= 'F') {
 					this.character = (this.character << 4) + digit - 'A' + 10;
 				}
 				else {
-					throw new IllegalArgumentException("Malformed \\uxxxx encoding.");
+					throw new IllegalStateException("Malformed \\uxxxx encoding.");
 				}
 			}
 		}

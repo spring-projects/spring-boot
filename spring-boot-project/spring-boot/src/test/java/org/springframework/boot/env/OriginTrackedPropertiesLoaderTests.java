@@ -20,7 +20,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
@@ -36,6 +38,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 public class OriginTrackedPropertiesLoaderTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private ClassPathResource resource;
 
@@ -83,6 +88,15 @@ public class OriginTrackedPropertiesLoaderTests {
 		OriginTrackedValue value = this.properties.get("test-unicode");
 		assertThat(getValue(value)).isEqualTo("properties&test");
 		assertThat(getLocation(value)).isEqualTo("12:14");
+	}
+
+	@Test
+	public void getMalformedUnicodeProperty() throws Exception {
+		// gh-2716
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Malformed \\uxxxx encoding");
+		new OriginTrackedPropertiesLoader(new ClassPathResource(
+				"test-properties-malformed-unicode.properties", getClass())).load();
 	}
 
 	@Test
