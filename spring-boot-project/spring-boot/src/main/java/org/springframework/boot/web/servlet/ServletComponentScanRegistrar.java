@@ -17,7 +17,6 @@
 package org.springframework.boot.web.servlet;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
