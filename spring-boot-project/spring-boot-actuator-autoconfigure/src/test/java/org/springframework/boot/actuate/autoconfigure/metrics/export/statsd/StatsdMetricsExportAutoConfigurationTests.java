@@ -160,7 +160,7 @@ public class StatsdMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public StatsdMeterRegistry customRegistry(StatsdConfig config, Clock clock) {
 			return new StatsdMeterRegistry(config, clock);
 		}
