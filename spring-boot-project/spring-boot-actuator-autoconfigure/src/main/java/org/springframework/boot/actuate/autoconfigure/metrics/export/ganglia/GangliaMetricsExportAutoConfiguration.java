@@ -62,4 +62,5 @@ public class GangliaMetricsExportAutoConfiguration {
 			Clock clock) {
 		return new GangliaMeterRegistry(gangliaConfig, clock);
 	}
+
 }

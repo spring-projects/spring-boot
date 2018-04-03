@@ -1435,11 +1435,12 @@ to use can be provided using:
 	management.metrics.export.graphite.port=9004
 ----
 
-Micrometer provides a default `HierarchicalNameMapper` that governs
-how a dimensional meter id is mapped to flat hierarchical names.
+Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional
+meter id is mapped to flat hierarchical names.
 
-TIP: To take control over this behaviour, define your `GraphiteMeterRegistry` and supply your
-own `HierarchicalNameMapper`.
+TIP: To take control over this behaviour, define your `GraphiteMeterRegistry` and supply
+your own `HierarchicalNameMapper`. An auto-configured `GraphiteConfig` and `Clock` beans
+are provided unless you define your own:
 
 [source,java]
 ----
@@ -1448,6 +1449,8 @@ public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock 
 	return new GraphiteMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
 }
 ----
+
+
 
 [[production-ready-metrics-export-influx]]
 ==== Influx
@@ -1470,7 +1473,8 @@ view metrics locally. Micrometer provides a default `HierarchicalNameMapper` tha
 how a dimensional meter id is mapped to flat hierarchical names.
 
 TIP: To take control over this behaviour, define your `JmxMeterRegistry` and supply your
-own `HierarchicalNameMapper`.
+own `HierarchicalNameMapper`. An auto-configured `JmxConfig` and `Clock` beans are
+provided unless you define your own:
 
 [source,java]
 ----
@@ -1479,6 +1483,8 @@ public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
 	return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
 }
 ----
+
+
 
 [[production-ready-metrics-export-newrelic]]
 ==== New Relic

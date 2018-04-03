@@ -61,4 +61,5 @@ public class JmxMetricsExportAutoConfiguration {
 	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
 		return new JmxMeterRegistry(config, clock);
 	}
+
 }
