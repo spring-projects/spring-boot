@@ -1924,8 +1924,8 @@ PID file, as shown in the following example:
 [indent=0]
 ----
 	org.springframework.context.ApplicationListener=\
-	org.springframework.boot.system.ApplicationPidFileWriter,\
-	org.springframework.boot.system.EmbeddedServerPortFileWriter
+	org.springframework.boot.context.ApplicationPidFileWriter,\
+	org.springframework.boot.web.context.WebServerPortFileWriter
 ----
 
 
