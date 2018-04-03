@@ -134,6 +134,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 				}
 			}
 			catch (Exception ex) {
+				stopSilently();
 				throw new EmbeddedServletContainerException(
 						"Unable to start embedded Tomcat", ex);
 			}

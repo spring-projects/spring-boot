@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -491,7 +492,18 @@ public class TomcatEmbeddedServletContainerFactoryTests
 
 	@Test
 	public void faultyFilterCausesStartFailure() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		final AtomicReference<Tomcat> tomcatReference = new AtomicReference<Tomcat>();
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory(
+				0) {
+
+			@Override
+			protected TomcatEmbeddedServletContainer getTomcatEmbeddedServletContainer(
+					Tomcat tomcat) {
+				tomcatReference.set(tomcat);
+				return super.getTomcatEmbeddedServletContainer(tomcat);
+			}
+
+		};
 		factory.addInitializers(new ServletContextInitializer() {
 
 			@Override
@@ -518,7 +530,13 @@ public class TomcatEmbeddedServletContainerFactoryTests
 
 		});
 		this.thrown.expect(EmbeddedServletContainerException.class);
-		factory.getEmbeddedServletContainer().start();
+		try {
+			factory.getEmbeddedServletContainer();
+		}
+		finally {
+			assertThat(tomcatReference.get().getServer().getState())
+					.isEqualTo(LifecycleState.STOPPED);
+		}
 	}
 
 	@Override
