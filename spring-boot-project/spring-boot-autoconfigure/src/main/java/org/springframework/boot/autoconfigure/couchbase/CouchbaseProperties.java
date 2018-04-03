@@ -123,30 +123,19 @@ public class CouchbaseProperties {
 		private int query = 1;
 
 		/**
-		 * Minimum Number of sockets per node against the query (N1QL) service.
-		 */
-		private int minQuery = 1;
-
-		/**
-		 * Maximum Number of sockets per node against the query (N1QL) service.
-		 */
-		private int maxQuery = 1;
-
-		/**
 		 * Number of sockets per node against the view service.
 		 */
 		private int view = 1;
 
 		/**
-		 * Minimum Number of sockets per node against the view service.
+		 * Dynamic query service configuration.
 		 */
-		private int minView = 1;
+		private Queryservice queryservice = new Queryservice();
 
 		/**
-		 * Maximum Number of sockets per node against the view service.
+		 * Dynamic view service configuration.
 		 */
-		private int maxView = 1;
-
+		private Viewservice viewservice = new Viewservice();
 
 		public int getKeyValue() {
 			return this.keyValue;
@@ -164,22 +153,6 @@ public class CouchbaseProperties {
 			this.query = query;
 		}
 
-		public int getMinQuery() {
-			return this.minQuery;
-		}
-
-		public void setMinQuery(int minQuery) {
-			this.minQuery = minQuery;
-		}
-
-		public int getMaxQuery() {
-			return this.maxQuery;
-		}
-
-		public void setMaxQuery(int maxQuery) {
-			this.maxQuery = maxQuery;
-		}
-
 		public int getView() {
 			return this.view;
 		}
@@ -188,22 +161,77 @@ public class CouchbaseProperties {
 			this.view = view;
 		}
 
-		public int getMinView() {
-			return this.minView;
+		public Queryservice getQueryservice() {
+			return this.queryservice;
 		}
 
-		public void setMinView(int minView) {
-			this.minView = minView;
+		public void setQueryservice(Queryservice queryservice) {
+			this.queryservice = queryservice;
 		}
 
-		public int getMaxView() {
-			return this.maxView;
+		public Viewservice getViewservice() {
+			return this.viewservice;
 		}
 
-		public void setMaxView(int maxView) {
-			this.maxView = maxView;
+		public void setViewservice(Viewservice viewservice) {
+			this.viewservice = viewservice;
+		}
+
+		public static class Queryservice {
+			/**
+			 * Minimum Number of sockets per node against the query (N1QL) service.
+			 */
+			private int minEndpoints = 1;
+			/**
+			 * Maximum Number of sockets per node against the query (N1QL) service.
+			 */
+			private int maxEndpoints = 1;
+
+			public int getMinEndpoints() {
+				return this.minEndpoints;
+			}
+
+			public void setMinEndpoints(int minEndpoints) {
+				this.minEndpoints = minEndpoints;
+			}
+
+			public int getMaxEndpoints() {
+				return this.maxEndpoints;
+			}
+
+			public void setMaxEndpoints(int maxEndpoints) {
+				this.maxEndpoints = maxEndpoints;
+			}
+		}
+
+		public static class Viewservice {
+			/**
+			 * Minimum Number of sockets per node against the view service.
+			 */
+			private int minEndpoints = 1;
+			/**
+			 * Maximum Number of sockets per node against the view service.
+			 */
+			private int maxEndpoints = 1;
+
+			public int getMinEndpoints() {
+				return this.minEndpoints;
+			}
+
+			public void setMinEndpoints(int minEndpoints) {
+				this.minEndpoints = minEndpoints;
+			}
+
+			public int getMaxEndpoints() {
+				return this.maxEndpoints;
+			}
+
+			public void setMaxEndpoints(int maxEndpoints) {
+				this.maxEndpoints = maxEndpoints;
+			}
 		}
 	}
+
 
 	public static class Ssl {
 

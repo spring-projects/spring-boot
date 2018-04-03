@@ -110,12 +110,12 @@ public class CouchbaseAutoConfiguration {
 			if (timeouts.getKeyValue() != null) {
 				builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
 			}
-			int minQuery = endpoints.getQuery() != 1 ? endpoints.getQuery() : endpoints.getMinQuery();
-			int maxQuery = endpoints.getQuery() != 1 ? endpoints.getQuery() : endpoints.getMaxQuery();
+			int minQuery = endpoints.getQuery() != 1 ? endpoints.getQuery() : endpoints.getQueryservice().getMinEndpoints();
+			int maxQuery = endpoints.getQuery() != 1 ? endpoints.getQuery() : endpoints.getQueryservice().getMaxEndpoints();
 			builder = builder.queryServiceConfig(QueryServiceConfig.create(minQuery, maxQuery));
 			if (timeouts.getQuery() != null) {
-				int minView = endpoints.getView() != 1 ? endpoints.getView() : endpoints.getMinView();
-				int maxView = endpoints.getView() != 1 ? endpoints.getView() : endpoints.getMaxView();
+				int minView = endpoints.getView() != 1 ? endpoints.getView() : endpoints.getViewservice().getMinEndpoints();
+				int maxView = endpoints.getView() != 1 ? endpoints.getView() : endpoints.getViewservice().getMaxEndpoints();
 				builder = builder.queryTimeout(timeouts.getQuery().toMillis())
 						.viewServiceConfig(ViewServiceConfig.create(minView, maxView));
 			}
