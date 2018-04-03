@@ -154,7 +154,7 @@ public class DatadogMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public DatadogMeterRegistry customRegistry(DatadogConfig config, Clock clock) {
 			return new DatadogMeterRegistry(config, clock);
 		}
