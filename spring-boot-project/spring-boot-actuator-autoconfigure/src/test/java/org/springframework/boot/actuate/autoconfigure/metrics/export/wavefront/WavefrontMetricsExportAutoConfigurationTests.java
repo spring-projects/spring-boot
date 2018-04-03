@@ -146,7 +146,7 @@ public class WavefrontMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public WavefrontMeterRegistry customRegistry(WavefrontConfig config,
 				Clock clock) {
 			return new WavefrontMeterRegistry(config, clock);

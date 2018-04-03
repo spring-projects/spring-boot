@@ -172,7 +172,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public NewRelicMeterRegistry customRegistry(NewRelicConfig config, Clock clock) {
 			return new NewRelicMeterRegistry(config, clock);
 		}

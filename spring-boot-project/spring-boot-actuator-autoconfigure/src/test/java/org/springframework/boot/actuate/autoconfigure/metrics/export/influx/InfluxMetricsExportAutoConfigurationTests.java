@@ -142,7 +142,7 @@ public class InfluxMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public InfluxMeterRegistry customRegistry(InfluxConfig config, Clock clock) {
 			return new InfluxMeterRegistry(config, clock);
 		}

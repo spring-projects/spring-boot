@@ -158,7 +158,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public JmxMeterRegistry customRegistry(JmxConfig config, Clock clock) {
 			return new JmxMeterRegistry(config, clock);
 		}

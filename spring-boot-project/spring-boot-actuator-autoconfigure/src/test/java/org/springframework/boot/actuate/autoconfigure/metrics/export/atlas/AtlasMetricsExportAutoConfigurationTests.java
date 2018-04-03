@@ -142,7 +142,7 @@ public class AtlasMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public AtlasMeterRegistry customRegistry(AtlasConfig config, Clock clock) {
 			return new AtlasMeterRegistry(config, clock);
 		}
