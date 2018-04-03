@@ -7160,14 +7160,14 @@ which auto-configures one for you.
 
 
 [[boot-features-environment-test-utilities]]
-==== EnvironmentTestUtils
-`EnvironmentTestUtils` lets you quickly add properties to a
+==== TestPropertyValues
+`TestPropertyValues` lets you quickly add properties to a
 `ConfigurableEnvironment` or `ConfigurableApplicationContext`. You can call it with
 `key=value` strings, as follows:
 
 [source,java,indent=0]
 ----
-	EnvironmentTestUtils.addEnvironment(env, "org=Spring", "name=Boot");
+	TestPropertyValues.of("org=Spring", "name=Boot").applyTo(env);
 ----
 
 
