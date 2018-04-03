@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +107,37 @@ public class ServletComponentScanRegistrarTests {
 				"com.example.bar", "com.example.baz");
 	}
 
+	@Test
+	public void withNoBasePackagesScanningUsesBasePackageOfAnnotatedClass() {
+		this.context = new AnnotationConfigApplicationContext(NoBasePackages.class);
+		ServletComponentRegisteringPostProcessor postProcessor = this.context
+				.getBean(ServletComponentRegisteringPostProcessor.class);
+		assertThat(postProcessor.getPackagesToScan())
+				.containsExactly("org.springframework.boot.web.servlet");
+	}
+
+	@Test
+	public void noBasePackageAndBasePackageAreCombinedCorrectly() {
+		this.context = new AnnotationConfigApplicationContext(NoBasePackages.class,
+				BasePackages.class);
+		ServletComponentRegisteringPostProcessor postProcessor = this.context
+				.getBean(ServletComponentRegisteringPostProcessor.class);
+		assertThat(postProcessor.getPackagesToScan()).containsExactlyInAnyOrder(
+				"org.springframework.boot.web.servlet", "com.example.foo",
+				"com.example.bar");
+	}
+
+	@Test
+	public void basePackageAndNoBasePackageAreCombinedCorrectly() {
+		this.context = new AnnotationConfigApplicationContext(BasePackages.class,
+				NoBasePackages.class);
+		ServletComponentRegisteringPostProcessor postProcessor = this.context
+				.getBean(ServletComponentRegisteringPostProcessor.class);
+		assertThat(postProcessor.getPackagesToScan()).containsExactlyInAnyOrder(
+				"org.springframework.boot.web.servlet", "com.example.foo",
+				"com.example.bar");
+	}
+
 	@Configuration
 	@ServletComponentScan({ "com.example.foo", "com.example.bar" })
 	static class ValuePackages {
@@ -134,6 +165,12 @@ public class ServletComponentScanRegistrarTests {
 	@Configuration
 	@ServletComponentScan(value = "com.example.foo", basePackages = "com.example.bar")
 	static class ValueAndBasePackages {
+
+	}
+
+	@Configuration
+	@ServletComponentScan
+	static class NoBasePackages {
 
 	}
 
