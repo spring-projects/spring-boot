@@ -77,7 +77,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
 		this.propertySource = propertySource;
-		this.mapper = mapper;
+		this.mapper = (mapper instanceof DelegatingPropertyMapper ? mapper
+				: new DelegatingPropertyMapper(mapper));
 		this.containsDescendantOf = (containsDescendantOf != null ? containsDescendantOf
 				: (n) -> ConfigurationPropertyState.UNKNOWN);
 	}
