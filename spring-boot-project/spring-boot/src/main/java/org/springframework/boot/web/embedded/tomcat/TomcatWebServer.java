@@ -122,6 +122,7 @@ public class TomcatWebServer implements WebServer {
 				startDaemonAwaitThread();
 			}
 			catch (Exception ex) {
+				stopSilently();
 				throw new WebServerException("Unable to start embedded Tomcat", ex);
 			}
 		}
