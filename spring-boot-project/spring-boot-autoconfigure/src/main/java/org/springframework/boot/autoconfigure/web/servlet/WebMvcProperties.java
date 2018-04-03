@@ -207,7 +207,7 @@ public class WebMvcProperties {
 	public static class Async {
 
 		/**
-		 * Amount of time before asynchronous request handling times out. If this value is
+		 * Amount of time, in milliseconds, before asynchronous request handling times out. If this value is
 		 * not set, the default timeout of the underlying implementation is used, e.g. 10
 		 * seconds on Tomcat with Servlet 3.
 		 */
