@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.ganglia.GangliaConfig;
 import io.micrometer.ganglia.GangliaMeterRegistry;
 
@@ -60,14 +59,8 @@ public class GangliaMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public GangliaMeterRegistry gangliaMeterRegistry(GangliaConfig gangliaConfig,
-			HierarchicalNameMapper nameMapper, Clock clock) {
-		return new GangliaMeterRegistry(gangliaConfig, clock, nameMapper);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HierarchicalNameMapper hierarchicalNameMapper() {
-		return HierarchicalNameMapper.DEFAULT;
+			Clock clock) {
+		return new GangliaMeterRegistry(gangliaConfig, clock);
 	}
 
 }

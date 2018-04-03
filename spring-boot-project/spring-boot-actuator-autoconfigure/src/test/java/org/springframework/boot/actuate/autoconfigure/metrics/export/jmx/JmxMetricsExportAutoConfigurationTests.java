@@ -19,9 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
 import java.util.Map;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.Meter.Id;
-import io.micrometer.core.instrument.config.NamingConvention;
-import io.micrometer.core.instrument.util.HierarchicalNameMapper;
 import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
 import org.junit.Test;
@@ -56,12 +53,11 @@ public class JmxMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfiguresItsConfigMeterRegistryAndNameMapper() {
+	public void autoConfiguresItsConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(JmxMeterRegistry.class)
-						.hasSingleBean(JmxConfig.class)
-						.hasSingleBean(HierarchicalNameMapper.class));
+						.hasSingleBean(JmxConfig.class));
 	}
 
 	@Test
@@ -70,8 +66,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 				.withPropertyValues("management.metrics.export.jmx.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(JmxMeterRegistry.class)
-						.doesNotHaveBean(JmxConfig.class)
-						.doesNotHaveBean(HierarchicalNameMapper.class));
+						.doesNotHaveBean(JmxConfig.class));
 	}
 
 	@Test
@@ -79,8 +74,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(JmxMeterRegistry.class)
-						.hasSingleBean(JmxConfig.class).hasBean("customConfig")
-						.hasSingleBean(HierarchicalNameMapper.class));
+						.hasSingleBean(JmxConfig.class).hasBean("customConfig"));
 	}
 
 	@Test
@@ -88,17 +82,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(JmxMeterRegistry.class).hasBean("customRegistry")
-						.hasSingleBean(JmxConfig.class)
-						.hasSingleBean(HierarchicalNameMapper.class));
-	}
-
-	@Test
-	public void allowsCustomHierarchicalNameMapperToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomNameMapperConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(JmxMeterRegistry.class)
-						.hasSingleBean(JmxConfig.class).hasBean("customNameMapper")
-						.hasSingleBean(HierarchicalNameMapper.class));
+						.hasSingleBean(JmxConfig.class));
 	}
 
 	@Test
@@ -142,14 +126,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public JmxConfig customConfig() {
-			return new JmxConfig() {
-
-				@Override
-				public String get(String k) {
-					return null;
-				}
-
-			};
+			return k -> null;
 		}
 
 	}
@@ -161,24 +138,6 @@ public class JmxMetricsExportAutoConfigurationTests {
 		@Bean
 		public JmxMeterRegistry customRegistry(JmxConfig config, Clock clock) {
 			return new JmxMeterRegistry(config, clock);
-		}
-
-	}
-
-	@Configuration
-	@Import(BaseConfiguration.class)
-	static class CustomNameMapperConfiguration {
-
-		@Bean
-		public HierarchicalNameMapper customNameMapper() {
-			return new HierarchicalNameMapper() {
-
-				@Override
-				public String toHierarchicalName(Id id, NamingConvention convention) {
-					return "test";
-				}
-
-			};
 		}
 
 	}
