@@ -357,7 +357,16 @@ public class JettyEmbeddedServletContainerFactoryTests
 
 		});
 		this.thrown.expect(EmbeddedServletContainerException.class);
-		factory.getEmbeddedServletContainer().start();
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		try {
+			jettyContainer.start();
+		}
+		finally {
+			QueuedThreadPool threadPool = (QueuedThreadPool) jettyContainer.getServer()
+					.getThreadPool();
+			assertThat(threadPool.isRunning()).isFalse();
+		}
 	}
 
 	@Test
