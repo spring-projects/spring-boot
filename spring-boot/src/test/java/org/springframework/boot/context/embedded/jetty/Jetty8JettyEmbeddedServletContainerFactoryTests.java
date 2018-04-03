@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,23 +70,28 @@ public class Jetty8JettyEmbeddedServletContainerFactoryTests {
 
 				});
 		jetty.start();
-		int port = jetty.getPort();
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(new ResponseErrorHandler() {
+		try {
+			int port = jetty.getPort();
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.setErrorHandler(new ResponseErrorHandler() {
 
-			@Override
-			public boolean hasError(ClientHttpResponse response) throws IOException {
-				return false;
-			}
+				@Override
+				public boolean hasError(ClientHttpResponse response) throws IOException {
+					return false;
+				}
 
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
+				@Override
+				public void handleError(ClientHttpResponse response) throws IOException {
+				}
 
-		});
-		ResponseEntity<String> response = restTemplate
-				.getForEntity("http://localhost:" + port, String.class);
-		assertThat(response.getBody()).isEqualTo("An error occurred");
+			});
+			ResponseEntity<String> response = restTemplate
+					.getForEntity("http://localhost:" + port, String.class);
+			assertThat(response.getBody()).isEqualTo("An error occurred");
+		}
+		finally {
+			jetty.stop();
+		}
 	}
 
 	private static final class TestServlet extends HttpServlet {
