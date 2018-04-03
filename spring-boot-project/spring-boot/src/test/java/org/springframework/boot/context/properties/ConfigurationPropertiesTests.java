@@ -462,6 +462,18 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void loadWhenDotsInSystemEnvironmentPropertiesShouldBind() {
+		this.context.getEnvironment().getPropertySources()
+				.addLast(new SystemEnvironmentPropertySource(
+						StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+						Collections.singletonMap("com.example.bar", "baz")));
+		load(SimplePrefixedProperties.class);
+		SimplePrefixedProperties bean = this.context
+				.getBean(SimplePrefixedProperties.class);
+		assertThat(bean.getBar()).isEqualTo("baz");
+	}
+
+	@Test
 	public void loadWhenOverridingPropertiesShouldBind() {
 		MutablePropertySources sources = this.context.getEnvironment()
 				.getPropertySources();
