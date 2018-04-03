@@ -142,7 +142,7 @@ public class GangliaMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public GangliaMeterRegistry customRegistry(GangliaConfig config, Clock clock) {
 			return new GangliaMeterRegistry(config, clock);
 		}

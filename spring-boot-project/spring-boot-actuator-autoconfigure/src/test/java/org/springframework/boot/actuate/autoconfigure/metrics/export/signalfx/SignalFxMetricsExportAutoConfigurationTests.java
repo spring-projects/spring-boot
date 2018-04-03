@@ -164,7 +164,7 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
-		@Bean(destroyMethod = "stop")
+		@Bean
 		public SignalFxMeterRegistry customRegistry(SignalFxConfig config, Clock clock) {
 			return new SignalFxMeterRegistry(config, clock);
 		}
