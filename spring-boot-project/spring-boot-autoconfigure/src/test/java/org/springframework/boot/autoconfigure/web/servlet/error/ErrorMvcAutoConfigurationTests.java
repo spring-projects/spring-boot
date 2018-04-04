@@ -45,12 +45,26 @@ public class ErrorMvcAutoConfigurationTests {
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
-	public void testDefaultViewWithResponseAlreadyCommitted() {
+	public void renderContainsViewWithExceptionDetails() throws Exception {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
-			DispatcherServletWebRequest webRequest = createCommittedWebRequest(
-					new IllegalStateException("Exception message"));
+			DispatcherServletWebRequest webRequest = createWebRequest(
+					new IllegalStateException("Exception message"), false);
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
+					webRequest.getRequest(), webRequest.getResponse());
+			assertThat(((MockHttpServletResponse) webRequest.getResponse())
+					.getContentAsString()).contains("<div>Exception message</div>");
+		});
+	}
+
+	@Test
+	public void renderWhenAlreadyCommittedLogsMessage() {
+		this.contextRunner.run((context) -> {
+			View errorView = context.getBean("error", View.class);
+			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
+			DispatcherServletWebRequest webRequest = createWebRequest(
+					new IllegalStateException("Exception message"), true);
 			errorView.render(errorAttributes.getErrorAttributes(webRequest, true),
 					webRequest.getRequest(), webRequest.getResponse());
 			assertThat(this.outputCapture.toString())
@@ -61,7 +75,8 @@ public class ErrorMvcAutoConfigurationTests {
 		});
 	}
 
-	protected DispatcherServletWebRequest createCommittedWebRequest(Exception ex) {
+	private DispatcherServletWebRequest createWebRequest(Exception ex,
+			boolean committed) {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/path");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		DispatcherServletWebRequest webRequest = new DispatcherServletWebRequest(request,
@@ -70,9 +85,9 @@ public class ErrorMvcAutoConfigurationTests {
 				RequestAttributes.SCOPE_REQUEST);
 		webRequest.setAttribute("javax.servlet.error.request_uri", "/path",
 				RequestAttributes.SCOPE_REQUEST);
-		response.setCommitted(true);
-		response.setOutputStreamAccessAllowed(false);
-		response.setWriterAccessAllowed(false);
+		response.setCommitted(committed);
+		response.setOutputStreamAccessAllowed(!committed);
+		response.setWriterAccessAllowed(!committed);
 		return webRequest;
 	}
 
