@@ -12,7 +12,7 @@
 	<description>Spring Boot WebSphere Liberty Profile Deployment Test</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
-		<wlp.version>16.0.0.4</wlp.version>
+		<wlp.version>18.0.0.1</wlp.version>
 		<cargo.container.id>liberty</cargo.container.id>
 		<cargo.container.url>https://repo.maven.apache.org/maven2/com/ibm/websphere/appserver/runtime/wlp-webProfile7/${wlp.version}/wlp-webProfile7-${wlp.version}.zip</cargo.container.url>
 	</properties>
@@ -42,54 +42,46 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<profiles>
-		<profile>
-			<id>jdk8</id>
-			<activation>
-				<jdk>1.8</jdk>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>build-helper-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>reserve-network-port</id>
-								<goals>
-									<goal>reserve-network-port</goal>
-								</goals>
-								<phase>process-resources</phase>
-								<configuration>
-									<portNames>
-										<portName>appserver.port</portName>
-									</portNames>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.cargo</groupId>
-						<artifactId>cargo-maven2-plugin</artifactId>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>reserve-network-port</id>
+						<goals>
+							<goal>reserve-network-port</goal>
+						</goals>
+						<phase>process-resources</phase>
 						<configuration>
-							<configuration>
-								<properties>
-									<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
-								</properties>
-							</configuration>
+							<portNames>
+								<portName>appserver.port</portName>
+							</portNames>
 						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<systemPropertyVariables>
-								<port>${appserver.port}</port>
-							</systemPropertyVariables>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<configuration>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
+						</properties>
+					</configuration>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<port>${appserver.port}</port>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
