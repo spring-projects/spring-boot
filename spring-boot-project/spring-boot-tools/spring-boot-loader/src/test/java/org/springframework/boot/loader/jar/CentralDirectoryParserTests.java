@@ -81,6 +81,7 @@ public class CentralDirectoryParserTests {
 		assertThat(headers.next().getName().toString()).isEqualTo("special/\u00EB.dat");
 		assertThat(headers.next().getName().toString()).isEqualTo("nested.jar");
 		assertThat(headers.next().getName().toString()).isEqualTo("another-nested.jar");
+		assertThat(headers.next().getName().toString()).isEqualTo("space nested.jar");
 		assertThat(headers.hasNext()).isFalse();
 	}
 
