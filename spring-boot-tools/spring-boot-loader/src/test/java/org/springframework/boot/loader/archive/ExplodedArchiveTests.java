@@ -108,7 +108,7 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getEntries() throws Exception {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size()).isEqualTo(10);
+		assertThat(entries.size()).isEqualTo(11);
 	}
 
 	@Test

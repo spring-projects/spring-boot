@@ -258,10 +258,10 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		int separator;
 		int index = 0;
 		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
-			String entryName = spec.substring(index, separator);
-			JarEntry jarEntry = jarFile.getJarEntry(entryName);
+			JarEntryName entryName = JarEntryName.get(spec.substring(index, separator));
+			JarEntry jarEntry = jarFile.getJarEntry(entryName.toString());
 			if (jarEntry == null) {
-				return JarURLConnection.notFound(jarFile, JarEntryName.get(entryName));
+				return JarURLConnection.notFound(jarFile, entryName);
 			}
 			jarFile = jarFile.getNestedJarFile(jarEntry);
 			index += separator + SEPARATOR.length();

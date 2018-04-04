@@ -52,6 +52,7 @@ public abstract class TestJarCreator {
 
 			writeNestedEntry("nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("another-nested.jar", unpackNested, jarOutputStream);
+			writeNestedEntry("space nested.jar", unpackNested, jarOutputStream);
 		}
 		finally {
 			jarOutputStream.close();
