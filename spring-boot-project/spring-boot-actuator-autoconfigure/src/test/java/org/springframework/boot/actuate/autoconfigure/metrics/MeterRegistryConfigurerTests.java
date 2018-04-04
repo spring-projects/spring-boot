@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link MeterRegistryConfigurer}.
@@ -73,13 +72,13 @@ public class MeterRegistryConfigurerTests {
 	}
 
 	@Test
-	public void configureWhenCompositeShouldSkip() {
-		this.binders.add(this.mockBinder);
+	public void configureWhenCompositeShouldApplyCustomizer() {
 		this.customizers.add(this.mockCustomizer);
 		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
 				this.filters, this.customizers, false);
-		configurer.configure(new CompositeMeterRegistry());
-		verifyZeroInteractions(this.mockBinder, this.mockCustomizer);
+		CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		configurer.configure(composite);
+		verify(this.mockCustomizer).customize(composite);
 	}
 
 	@Test
