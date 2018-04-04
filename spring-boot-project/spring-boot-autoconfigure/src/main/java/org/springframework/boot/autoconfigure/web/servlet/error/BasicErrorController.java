@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -82,16 +83,6 @@ public class BasicErrorController extends AbstractErrorController {
 		return this.errorProperties.getPath();
 	}
 
-	@RequestMapping(produces = { "application/xml", "text/xml", "application/json",
-			"application/*+xml", "application/*+json" })
-	public ResponseEntity<Map<String, Object>> errorStructured(
-			HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.ALL));
-		HttpStatus status = getStatus(request);
-		return new ResponseEntity<>(body, status);
-	}
-
 	@RequestMapping(produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -104,20 +95,12 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	@RequestMapping
-	public ResponseEntity<String> errorText(HttpServletRequest request) {
-		Map<String, Object> attributes = getErrorAttributes(request,
-				isIncludeStackTrace(request, MediaType.TEXT_PLAIN));
-		int padding = 0;
-		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-			padding = Math.max(padding, entry.getKey().length());
-		}
-		StringBuilder body = new StringBuilder();
-		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-			body.append(String.format("%-" + padding + "s : %s%n", entry.getKey(),
-					entry.getValue()));
-		}
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
+		Map<String, Object> body = getErrorAttributes(request,
+				isIncludeStackTrace(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
-		return new ResponseEntity<>(body.toString(), status);
+		return new ResponseEntity<>(body, status);
 	}
 
 	/**
