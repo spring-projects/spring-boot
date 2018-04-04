@@ -17,6 +17,7 @@
 package org.springframework.boot.web.support;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -311,11 +313,15 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 		@Override
 		public void flushBuffer() throws IOException {
+			sendErrorIfNecessary();
+			super.flushBuffer();
+		}
+
+		private void sendErrorIfNecessary() throws IOException {
 			if (this.hasErrorToSend && !isCommitted()) {
 				((HttpServletResponse) getResponse()).sendError(this.status,
 						this.message);
 			}
-			super.flushBuffer();
 		}
 
 		public String getMessage() {
@@ -324,6 +330,19 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 		public boolean hasErrorToSend() {
 			return this.hasErrorToSend;
+		}
+
+		@Override
+		public PrintWriter getWriter() throws IOException {
+			sendErrorIfNecessary();
+			return super.getWriter();
+
+		}
+
+		@Override
+		public ServletOutputStream getOutputStream() throws IOException {
+			sendErrorIfNecessary();
+			return super.getOutputStream();
 		}
 
 	}

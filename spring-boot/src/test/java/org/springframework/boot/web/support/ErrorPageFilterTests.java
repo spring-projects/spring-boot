@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -519,6 +519,22 @@ public class ErrorPageFilterTests {
 				.isEqualTo("/test/path");
 		assertThat(this.response.isCommitted()).isTrue();
 		assertThat(this.response.getForwardedUrl()).isEqualTo("/500");
+	}
+
+	@Test
+	public void whenErrorIsSentAndWriterIsFlushedErrorIsSentToTheClient()
+			throws Exception {
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				((HttpServletResponse) response).sendError(400);
+				response.getWriter().flush();
+				super.doFilter(request, response);
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.response.getStatus()).isEqualTo(400);
 	}
 
 	private void setUpAsyncDispatch() throws Exception {
