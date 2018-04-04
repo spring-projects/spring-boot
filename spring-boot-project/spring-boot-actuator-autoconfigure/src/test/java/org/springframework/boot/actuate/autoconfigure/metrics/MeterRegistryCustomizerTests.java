@@ -67,12 +67,12 @@ public class MeterRegistryCustomizerTests {
 		this.contextRunner
 				.withUserConfiguration(MeterRegistryCustomizerConfiguration.class)
 				.run((context) -> {
-					MeterRegistry prometheus = context.getBean(PrometheusMeterRegistry.class);
+					MeterRegistry prometheus = context
+							.getBean(PrometheusMeterRegistry.class);
 					prometheus.get("jvm.memory.used").tags("job", "myjob").gauge();
-
 					MeterRegistry atlas = context.getBean(AtlasMeterRegistry.class);
-					assertThat(atlas.find("jvm.memory.used").tags("job", "myjob")
-							.gauge()).isNull();
+					assertThat(atlas.find("jvm.memory.used").tags("job", "myjob").gauge())
+							.isNull();
 				});
 	}
 

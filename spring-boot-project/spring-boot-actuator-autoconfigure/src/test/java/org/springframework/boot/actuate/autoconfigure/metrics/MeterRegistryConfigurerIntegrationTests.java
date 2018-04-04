@@ -25,21 +25,26 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
+/**
+ * Integration tests for {@link MeterRegistryConfigurer}.
+ *
+ * @author Jon Schneider
+ */
 public class MeterRegistryConfigurerIntegrationTests {
+
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.limitedTo(AtlasMetricsExportAutoConfiguration.class,
 					PrometheusMetricsExportAutoConfiguration.class));
 
 	@Test
 	public void binderMetricsAreSearchableFromTheComposite() {
-		this.contextRunner
-				.run((context) -> {
-					CompositeMeterRegistry composite = context.getBean(CompositeMeterRegistry.class);
-					composite.get("jvm.memory.used").gauge();
-
-					for (MeterRegistry registry : context.getBeansOfType(MeterRegistry.class).values()) {
-						registry.get("jvm.memory.used").gauge();
-					}
-				});
+		this.contextRunner.run((context) -> {
+			CompositeMeterRegistry composite = context
+					.getBean(CompositeMeterRegistry.class);
+			composite.get("jvm.memory.used").gauge();
+			context.getBeansOfType(MeterRegistry.class)
+					.forEach((name, registry) -> registry.get("jvm.memory.used").gauge());
+		});
 	}
+
 }
