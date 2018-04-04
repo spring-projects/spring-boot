@@ -45,6 +45,7 @@ public class HotelRepositoryIntegrationTests {
 
 	@Autowired
 	CityRepository cityRepository;
+
 	@Autowired
 	HotelRepository repository;
 
