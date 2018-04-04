@@ -521,6 +521,22 @@ public class ErrorPageFilterTests {
 		assertThat(this.response.getForwardedUrl()).isEqualTo("/500");
 	}
 
+	@Test
+	public void whenErrorIsSentAndWriterIsFlushedErrorIsSentToTheClient()
+			throws Exception {
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				((HttpServletResponse) response).sendError(400);
+				response.getWriter().flush();
+				super.doFilter(request, response);
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.response.getStatus()).isEqualTo(400);
+	}
+
 	private void setUpAsyncDispatch() throws Exception {
 		this.request.setAsyncSupported(true);
 		this.request.setAsyncStarted(true);
