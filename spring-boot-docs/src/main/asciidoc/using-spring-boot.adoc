@@ -417,14 +417,16 @@ and use a reversed domain name (for example, `com.example.project`).
 [[using-boot-locating-the-main-class]]
 === Locating the main application class
 We generally recommend that you locate your main application class in a root package
-above other classes. The `@EnableAutoConfiguration` annotation is often placed on your
-main class, and it implicitly defines a base "`search package`" for certain items. For
-example, if you are writing a JPA application, the package of the
-`@EnableAutoConfiguration` annotated class will be used to search for `@Entity` items.
+above other classes. The <<using-boot-using-springbootapplication-annotation,
+`@SpringBootApplication` annotation>> is often placed on your main class, and it
+implicitly defines a base "`search package`" for certain items. For example, if you are
+writing a JPA application, the package of the `@SpringBootApplication` annotated class
+will be used to search for `@Entity` items. Using a root package also allows component
+scan to apply only on your project.
 
-Using a root package also allows the `@ComponentScan` annotation to be used without
-needing to specify a `basePackage` attribute. You can also use the
-`@SpringBootApplication` annotation if your main class is in the root package.
+TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration`
+and `@ComponentScan` annotations that it imports defines that behaviour so you can also
+use that instead.
 
 Here is a typical layout:
 
@@ -447,20 +449,16 @@ Here is a typical layout:
 ----
 
 The `Application.java` file would declare the `main` method, along with the basic
-`@Configuration`.
+`@SpringBootApplication`.
 
 [source,java,indent=0]
 ----
 	package com.example.myproject;
 
 	import org.springframework.boot.SpringApplication;
-	import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-	import org.springframework.context.annotation.ComponentScan;
-	import org.springframework.context.annotation.Configuration;
+	import org.springframework.boot.autoconfigure.SpringBootApplication
 
-	@Configuration
-	@EnableAutoConfiguration
-	@ComponentScan
+	@SpringBootApplication
 	public class Application {
 
 		public static void main(String[] args) {
@@ -512,8 +510,9 @@ connection beans, then we will auto-configure an in-memory database.
 You need to opt-in to auto-configuration by adding the `@EnableAutoConfiguration` or
 `@SpringBootApplication` annotations to one of your `@Configuration` classes.
 
-TIP: You should only ever add one `@EnableAutoConfiguration` annotation. We generally
-recommend that you add it to your primary `@Configuration` class.
+TIP: You should only ever add one `@SpringBootApplication` or `@EnableAutoConfiguration`
+annotation. We generally recommend that you add one or the other to your primary
+`@Configuration` class only.
 
 
 
@@ -614,10 +613,16 @@ as `final`, indicating that it cannot be subsequently changed.
 
 [[using-boot-using-springbootapplication-annotation]]
 == Using the @SpringBootApplication annotation
-Many Spring Boot developers always have their main class annotated with `@Configuration`,
-`@EnableAutoConfiguration` and `@ComponentScan`. Since these annotations are so frequently
-used together (especially if you follow the <<using-boot-structuring-your-code, best practices>>
-above), Spring Boot provides a convenient `@SpringBootApplication` alternative.
+Many Spring Boot developers like their apps to use auto-configuration, component scan and
+be able to define extra configuration on their "application class". A single
+`@SpringBootApplication` annotation can be used to enable those tree features, that is:
+
+* `@EnableAutoConfiguration`: enable <<using-boot-auto-configuration,Spring Boot's
+auto-configuration mechanism>>
+* `@ComponentScan`: enable `@Component` scan on the package where the application is
+located (see <<using-boot-structuring-your-code,the best practices>>)
+* `@Configuration`: allow to register extra beans in the context or import additional
+configuration classes
 
 The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
 `@EnableAutoConfiguration` and `@ComponentScan` with their default attributes:
@@ -642,6 +647,39 @@ The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
 
 NOTE: `@SpringBootApplication` also provides aliases to customize the attributes of
 `@EnableAutoConfiguration` and `@ComponentScan`.
+
+
+[NOTE]
+====
+None of these features are mandatory and you may chose to replace this single annotation
+by any of the features that it enables. For instance, you may not want to use component
+scan in your application:
+
+[source,java,indent=0]
+----
+	package com.example.myproject;
+
+	import org.springframework.boot.SpringApplication;
+	import org.springframework.context.annotation.ComponentScan
+	import org.springframework.context.annotation.Configuration;
+	import org.springframework.context.annotation.Import;
+
+	@Configuration
+	@EnableAutoConfiguration
+	@Import({ MyConfig.class, MyAnotherConfig.class })
+	public class Application {
+
+		public static void main(String[] args) {
+				SpringApplication.run(Application.class, args);
+		}
+
+	}
+----
+
+In this example, `Application` is just like any other Spring Boot application except that
+`@Component`-annotated classes are not detected automatically and the user-defined beans
+are imported explicitly (see `@Import`).
+====
 
 
 
