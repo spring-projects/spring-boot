@@ -69,7 +69,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
@@ -83,6 +83,7 @@ import org.springframework.web.util.HtmlUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Yunkun Huang
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -295,25 +296,19 @@ public class ErrorMvcAutoConfiguration {
 	private static class ExpressionResolver implements PlaceholderResolver {
 
 		private final Map<String, Expression> expressions;
-
 		private final EvaluationContext context;
+		private final Map map;
 
 		ExpressionResolver(Map<String, Expression> expressions, Map<String, ?> map) {
 			this.expressions = expressions;
-			this.context = getContext(map);
-		}
-
-		private EvaluationContext getContext(Map<String, ?> map) {
-			StandardEvaluationContext context = new StandardEvaluationContext();
-			context.addPropertyAccessor(new MapAccessor());
-			context.setRootObject(map);
-			return context;
+			this.map = map;
+			this.context = new SimpleEvaluationContext(Collections.singletonList(new MapAccessor()), null);
 		}
 
 		@Override
 		public String resolvePlaceholder(String placeholderName) {
 			Expression expression = this.expressions.get(placeholderName);
-			return escape(expression == null ? null : expression.getValue(this.context));
+			return escape(expression == null ? null : expression.getValue(this.context, this.map));
 		}
 
 		private String escape(Object value) {
