@@ -1135,11 +1135,11 @@ In the preceding example, the following properties names can all be used:
 |===
 | Property | Note
 
-|`acme.myProject.person.firstName`
-|Standard camel case syntax.
-
 |`acme.my-project.person.first-name`
 |Kebab case, which is recommended for use in `.properties` and `.yml` files.
+
+|`acme.myProject.person.firstName`
+|Standard camel case syntax.
 
 |`acme.my_project.person.first_name`
 |Underscore notation, which is an alternative format for use in `.properties` and `.yml`
