@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -212,8 +212,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	/**
-	 * {@link PropertyMapper} that delegates to other {@link PropertyMapper}s.
-	 * It also swallows exceptions when the mapping fails.
+	 * {@link PropertyMapper} that delegates to other {@link PropertyMapper}s and also
+	 * swallows exceptions when the mapping fails.
 	 */
 	private static class DelegatingPropertyMapper implements PropertyMapper {
 
@@ -226,27 +226,22 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		@Override
 		public PropertyMapping[] map(
 				ConfigurationPropertyName configurationPropertyName) {
-			List<PropertyMapping> mappings = new ArrayList<>();
-			for (PropertyMapper mapper : this.mappers) {
-				try {
-					mappings.addAll(Arrays.asList(mapper.map(configurationPropertyName)));
-				}
-				catch (Exception ex) {
-
-				}
-			}
-			return mappings.toArray(new PropertyMapping[] {});
+			return callMappers((mapper) -> mapper.map(configurationPropertyName));
 		}
 
 		@Override
 		public PropertyMapping[] map(String propertySourceName) {
+			return callMappers((mapper) -> mapper.map(propertySourceName));
+		}
+
+		private PropertyMapping[] callMappers(
+				Function<PropertyMapper, PropertyMapping[]> function) {
 			List<PropertyMapping> mappings = new ArrayList<>();
 			for (PropertyMapper mapper : this.mappers) {
 				try {
-					mappings.addAll(Arrays.asList(mapper.map(propertySourceName)));
+					mappings.addAll(Arrays.asList(function.apply(mapper)));
 				}
 				catch (Exception ex) {
-
 				}
 			}
 			return mappings.toArray(new PropertyMapping[] {});

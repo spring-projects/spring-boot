@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,19 +74,17 @@ public final class WebFluxTags {
 	 */
 	public static Tag uri(ServerWebExchange exchange) {
 		if (exchange != null) {
-			PathPattern pathPattern = exchange.getAttribute(
-					HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+			PathPattern pathPattern = exchange
+					.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 			if (pathPattern != null) {
 				return Tag.of("uri", pathPattern.getPatternString());
 			}
-			else {
-				HttpStatus status = exchange.getResponse().getStatusCode();
-				if (status != null && status.is3xxRedirection()) {
-					return URI_REDIRECTION;
-				}
-				if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
-					return URI_NOT_FOUND;
-				}
+			HttpStatus status = exchange.getResponse().getStatusCode();
+			if (status != null && status.is3xxRedirection()) {
+				return URI_REDIRECTION;
+			}
+			if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
+				return URI_NOT_FOUND;
 			}
 			String path = exchange.getRequest().getPath().value();
 			return Tag.of("uri", path.isEmpty() ? "root" : path);

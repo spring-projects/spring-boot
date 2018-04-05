@@ -46,8 +46,8 @@ import static org.mockito.Mockito.verify;
 public class WebTestClientAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					WebTestClientAutoConfiguration.class));
+			.withConfiguration(
+					AutoConfigurations.of(WebTestClientAutoConfiguration.class));
 
 	@Test
 	public void shouldNotBeConfiguredWithoutWebHandler() {
@@ -63,8 +63,8 @@ public class WebTestClientAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(WebTestClient.class);
 					assertThat(context).hasSingleBean(CodecCustomizer.class);
-					verify(context.getBean(CodecCustomizer.class)).customize(
-							any(CodecConfigurer.class));
+					verify(context.getBean(CodecCustomizer.class))
+							.customize(any(CodecConfigurer.class));
 				});
 	}
 

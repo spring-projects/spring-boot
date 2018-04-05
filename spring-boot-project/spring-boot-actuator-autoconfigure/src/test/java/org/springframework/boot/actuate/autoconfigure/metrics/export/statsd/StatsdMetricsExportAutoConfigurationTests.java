@@ -128,7 +128,7 @@ public class StatsdMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public StatsdConfig customConfig() {
-			return k -> null;
+			return (key) -> null;
 		}
 
 	}

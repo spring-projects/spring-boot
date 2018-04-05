@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WebFluxTags}.
+ *
  * @author Brian Clozel
  */
 public class WebFluxTagsTests {
@@ -40,14 +41,13 @@ public class WebFluxTagsTests {
 
 	@Before
 	public void setup() {
-		this.exchange = MockServerWebExchange
-				.from(MockServerHttpRequest.get(""));
+		this.exchange = MockServerWebExchange.from(MockServerHttpRequest.get(""));
 	}
 
 	@Test
 	public void uriTagValueIsBestMatchingPatternWhenAvailable() {
-		this.exchange.getAttributes().put(
-				HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse("/spring"));
+		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				this.parser.parse("/spring"));
 		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = WebFluxTags.uri(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("/spring");

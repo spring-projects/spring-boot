@@ -39,14 +39,14 @@ public class WebMvcEndpointChildContextConfigurationTests {
 	public void contextShouldConfigureRequestContextFilter() {
 		this.contextRunner
 				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
-				.run(context -> assertThat(context).hasSingleBean(OrderedRequestContextFilter.class));
+				.run((context) -> assertThat(context)
+						.hasSingleBean(OrderedRequestContextFilter.class));
 	}
 
 	@Test
 	public void contextShouldNotConfigureRequestContextFilterWhenPresent() {
-		this.contextRunner
-				.withUserConfiguration(ExistingConfig.class, WebMvcEndpointChildContextConfiguration.class)
-				.run(context -> {
+		this.contextRunner.withUserConfiguration(ExistingConfig.class,
+				WebMvcEndpointChildContextConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(RequestContextFilter.class);
 					assertThat(context).hasBean("testRequestContextFilter");
 				});
@@ -54,12 +54,11 @@ public class WebMvcEndpointChildContextConfigurationTests {
 
 	@Test
 	public void contextShouldNotConfigureRequestContextFilterWhenRequestContextListenerPresent() {
-		this.contextRunner
-				.withUserConfiguration(RequestContextListenerConfig.class,
-						WebMvcEndpointChildContextConfiguration.class)
-				.run(context -> {
+		this.contextRunner.withUserConfiguration(RequestContextListenerConfig.class,
+				WebMvcEndpointChildContextConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(RequestContextListener.class);
-					assertThat(context).doesNotHaveBean(OrderedRequestContextFilter.class);
+					assertThat(context)
+							.doesNotHaveBean(OrderedRequestContextFilter.class);
 				});
 	}
 
