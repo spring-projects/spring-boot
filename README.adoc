@@ -215,14 +215,14 @@ makes that really easy as well.
 Spring Boot Loader provides the secret sauce that allows you to build a single jar file
 that can be launched using `java -jar`. Generally you will not need to use
 `spring-boot-loader` directly, but instead work with the
-link:spring-boot-tools/spring-boot-gradle-plugin[Gradle] or
-link:spring-boot-tools/spring-boot-maven-plugin[Maven] plugin.
+link:spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin[Gradle] or
+link:spring-boot-project/spring-boot-tools/spring-boot-maven-plugin[Maven] plugin.
 
 
 
 == Samples
 Groovy samples for use with the command line application are available in
-link:spring-boot-cli/samples[spring-boot-cli/samples]. To run the CLI samples type
+link:spring-boot-project/spring-boot-cli/samples[spring-boot-cli/samples]. To run the CLI samples type
 `spring run <sample>.groovy` from samples directory.
 
 Java samples are available in link:spring-boot-samples[spring-boot-samples] and should
