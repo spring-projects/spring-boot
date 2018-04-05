@@ -36,7 +36,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -282,10 +281,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private void processSimpleTypes(String prefix, TypeElement element,
 			ExecutableElement source, TypeElementMembers members,
 			Map<String, Object> fieldValues) {
-		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
-				.entrySet()) {
-			String name = entry.getKey();
-			ExecutableElement getter = entry.getValue();
+		members.getPublicGetters().forEach((name, getter) -> {
 			TypeMirror returnType = getter.getReturnType();
 			ExecutableElement setter = members.getPublicSetter(name, returnType);
 			VariableElement field = members.getFields().get(name);
@@ -305,7 +301,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						dataType, sourceType, null, description, defaultValue,
 						(deprecated ? getItemDeprecation(getter) : null)));
 			}
-		}
+		});
 	}
 
 	private ItemDeprecation getItemDeprecation(ExecutableElement getter) {
@@ -325,11 +321,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private void processSimpleLombokTypes(String prefix, TypeElement element,
 			ExecutableElement source, TypeElementMembers members,
 			Map<String, Object> fieldValues) {
-		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
-			String name = entry.getKey();
-			VariableElement field = entry.getValue();
+		members.getFields().forEach((name, field) -> {
 			if (!isLombokField(field, element)) {
-				continue;
+				return;
 			}
 			TypeMirror returnType = field.asType();
 			Element returnTypeElement = this.processingEnv.getTypeUtils()
@@ -348,32 +342,27 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						dataType, sourceType, null, description, defaultValue,
 						(deprecated ? new ItemDeprecation() : null)));
 			}
-		}
+		});
 	}
 
 	private void processNestedTypes(String prefix, TypeElement element,
 			ExecutableElement source, TypeElementMembers members) {
-		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
-				.entrySet()) {
-			String name = entry.getKey();
-			ExecutableElement getter = entry.getValue();
+		members.getPublicGetters().forEach((name, getter) -> {
 			VariableElement field = members.getFields().get(name);
 			processNestedType(prefix, element, source, name, getter, field,
 					getter.getReturnType());
-		}
+		});
 	}
 
 	private void processNestedLombokTypes(String prefix, TypeElement element,
 			ExecutableElement source, TypeElementMembers members) {
-		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
-			String name = entry.getKey();
-			VariableElement field = entry.getValue();
+		members.getFields().forEach((name, field) -> {
 			if (isLombokField(field, element)) {
 				ExecutableElement getter = members.getPublicGetter(name, field.asType());
 				processNestedType(prefix, element, source, name, getter, field,
 						field.asType());
 			}
-		}
+		});
 	}
 
 	private boolean isLombokField(VariableElement field, TypeElement element) {
@@ -544,11 +533,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
 		Map<String, Object> values = new LinkedHashMap<>();
-		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
-				.getElementValues().entrySet()) {
-			values.put(entry.getKey().getSimpleName().toString(),
-					entry.getValue().getValue());
-		}
+		annotation.getElementValues().forEach((key, value) ->
+				values.put(key.getSimpleName().toString(), value.getValue()));
 		return values;
 	}
 

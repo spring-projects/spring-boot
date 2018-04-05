@@ -63,13 +63,13 @@ public class DevToolsSettings {
 
 	private Map<String, Pattern> getPatterns(Map<?, ?> properties, String prefix) {
 		Map<String, Pattern> patterns = new LinkedHashMap<>();
-		for (Map.Entry<?, ?> entry : properties.entrySet()) {
-			String name = String.valueOf(entry.getKey());
+		properties.forEach((key, value) -> {
+			String name = String.valueOf(key);
 			if (name.startsWith(prefix)) {
-				Pattern pattern = Pattern.compile((String) entry.getValue());
+				Pattern pattern = Pattern.compile((String) value);
 				patterns.put(name, pattern);
 			}
-		}
+		});
 		return patterns;
 	}
 

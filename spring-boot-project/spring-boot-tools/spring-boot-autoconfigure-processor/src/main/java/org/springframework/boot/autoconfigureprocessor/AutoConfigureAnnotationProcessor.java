@@ -18,13 +18,13 @@ package org.springframework.boot.autoconfigureprocessor;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -34,7 +34,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -158,23 +157,19 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	@SuppressWarnings("unchecked")
 	private List<Object> getValues(AnnotationMirror annotation) {
-		List<Object> result = new ArrayList<>();
-		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
-				.getElementValues().entrySet()) {
+		return annotation .getElementValues().entrySet().stream().filter(entry -> {
 			String attributeName = entry.getKey().getSimpleName().toString();
-			if ("name".equals(attributeName) || "value".equals(attributeName)) {
-				Object value = entry.getValue().getValue();
-				if (value instanceof List) {
-					for (AnnotationValue annotationValue : (List<AnnotationValue>) value) {
-						result.add(processValue(annotationValue.getValue()));
-					}
-				}
-				else {
-					result.add(processValue(value));
-				}
+			return "name".equals(attributeName) || "value".equals(attributeName);
+		}).map((entry) -> {
+			Object value = entry.getValue().getValue();
+			if (value instanceof List) {
+				return ((List<AnnotationValue>) value).stream().
+						map(annotationValue -> processValue(annotationValue.getValue())).collect(Collectors.toList());
 			}
-		}
-		return result;
+			else {
+				return Collections.singletonList(processValue(value));
+			}
+		}).flatMap(List::stream).collect(Collectors.toList());
 	}
 
 	private Object processValue(Object value) {

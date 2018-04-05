@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.util.Assert;
@@ -82,18 +83,12 @@ final class SessionStoreMappings {
 
 	static StoreType getType(WebApplicationType webApplicationType,
 			String configurationClassName) {
-		for (Map.Entry<StoreType, Map<WebApplicationType, Class<?>>> storeEntry : MAPPINGS
-				.entrySet()) {
-			for (Map.Entry<WebApplicationType, Class<?>> entry : storeEntry.getValue()
-					.entrySet()) {
-				if (entry.getKey() == webApplicationType
-						&& entry.getValue().getName().equals(configurationClassName)) {
-					return storeEntry.getKey();
-				}
-			}
-		}
-		throw new IllegalStateException(
-				"Unknown configuration class " + configurationClassName);
+		return MAPPINGS.entrySet().stream().map(entry ->
+				entry.getValue().entrySet().stream().filter(webAppEntry ->  webAppEntry.getKey() == webApplicationType
+						&& webAppEntry.getValue().getName().equals(configurationClassName)).
+						map(webAppEntry -> entry.getKey()).findFirst().orElse(null)).filter(Objects::nonNull).
+				findFirst().orElseThrow(() ->
+					new IllegalStateException("Unknown configuration class " + configurationClassName));
 	}
 
 }

@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.webservices;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -83,9 +82,7 @@ public class WebServicesAutoConfiguration {
 				servlet, urlMapping);
 		WebServicesProperties.Servlet servletProperties = this.properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
-		for (Map.Entry<String, String> entry : servletProperties.getInit().entrySet()) {
-			registration.addInitParameter(entry.getKey(), entry.getValue());
-		}
+		servletProperties.getInit().forEach(registration::addInitParameter);
 		return registration;
 	}
 

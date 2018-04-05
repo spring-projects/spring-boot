@@ -74,9 +74,9 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 			AnnotationAttributes attributes) {
 		List<String> candidates = new ArrayList<>();
 		Map<Class<?>, List<Annotation>> annotations = getAnnotations(metadata);
-		for (Map.Entry<Class<?>, List<Annotation>> entry : annotations.entrySet()) {
-			collectCandidateConfigurations(entry.getKey(), entry.getValue(), candidates);
-		}
+		annotations.forEach((key, value) -> {
+			collectCandidateConfigurations(key, value, candidates);
+		});
 		return candidates;
 	}
 

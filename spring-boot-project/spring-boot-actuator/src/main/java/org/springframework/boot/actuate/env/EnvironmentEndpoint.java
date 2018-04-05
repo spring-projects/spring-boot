@@ -120,13 +120,10 @@ public class EnvironmentEndpoint {
 
 	private PropertySummaryDescriptor getPropertySummaryDescriptor(
 			Map<String, PropertyValueDescriptor> descriptors) {
-		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
-			if (entry.getValue() != null) {
-				return new PropertySummaryDescriptor(entry.getKey(),
-						entry.getValue().getValue());
-			}
-		}
-		return null;
+		return descriptors.entrySet().stream().
+				filter((entry) -> entry.getValue() != null).
+				map((entry) -> new PropertySummaryDescriptor(entry.getKey(), entry.getValue().getValue())).
+				findFirst().orElse(null);
 	}
 
 	private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(

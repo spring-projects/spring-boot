@@ -44,10 +44,7 @@ public abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndi
 		}
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
 				this.healthAggregator);
-		for (Map.Entry<String, S> entry : beans.entrySet()) {
-			composite.addHealthIndicator(entry.getKey(),
-					createHealthIndicator(entry.getValue()));
-		}
+		beans.forEach((key, value) -> composite.addHealthIndicator(key, createHealthIndicator(value)));
 		return composite;
 	}
 

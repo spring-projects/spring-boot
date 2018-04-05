@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.Servlet;
@@ -236,9 +235,7 @@ public class WebMvcAutoConfiguration {
 			}
 			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentnegotiation()
 					.getMediaTypes();
-			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
-				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
-			}
+			mediaTypes.forEach(configurer::mediaType);
 		}
 
 		@Bean

@@ -19,7 +19,6 @@ package org.springframework.boot.cli.compiler;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.codehaus.groovy.ast.ASTNode;
@@ -68,14 +67,8 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 				for (ImportNode importNode : module.getStarImports()) {
 					visitAnnotatedNode(importNode, annotationNodes);
 				}
-				for (Map.Entry<String, ImportNode> entry : module.getStaticImports()
-						.entrySet()) {
-					visitAnnotatedNode(entry.getValue(), annotationNodes);
-				}
-				for (Map.Entry<String, ImportNode> entry : module.getStaticStarImports()
-						.entrySet()) {
-					visitAnnotatedNode(entry.getValue(), annotationNodes);
-				}
+				module.getStaticImports().forEach((key, value) -> visitAnnotatedNode(value, annotationNodes));
+				module.getStaticStarImports().forEach((key, value) -> visitAnnotatedNode(value, annotationNodes));
 				for (ClassNode classNode : module.getClasses()) {
 					visitAnnotatedNode(classNode, annotationNodes);
 					classNode.visitContents(classVisitor);
