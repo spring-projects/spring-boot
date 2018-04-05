@@ -276,9 +276,9 @@ public class PropertiesMeterFilterTests {
 		assertThat(filter.configure(timer, DistributionStatisticConfig.DEFAULT)
 				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
 		assertThat(filter.configure(summary, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isEmpty();
+				.getSlaBoundaries()).isNullOrEmpty();
 		assertThat(filter.configure(counter, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isEmpty();
+				.getSlaBoundaries()).isNullOrEmpty();
 	}
 
 	@Test
@@ -293,7 +293,7 @@ public class PropertiesMeterFilterTests {
 		assertThat(filter.configure(summary, DistributionStatisticConfig.DEFAULT)
 				.getSlaBoundaries()).containsExactly(1, 2, 3);
 		assertThat(filter.configure(counter, DistributionStatisticConfig.DEFAULT)
-				.getSlaBoundaries()).isEmpty();
+				.getSlaBoundaries()).isNullOrEmpty();
 	}
 
 	private Id createMeterId(String name) {
