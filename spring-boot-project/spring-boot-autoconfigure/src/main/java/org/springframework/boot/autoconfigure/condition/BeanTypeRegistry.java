@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,13 +113,11 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 */
 	Set<String> getNamesForType(Class<?> type) {
 		updateTypesIfNecessary();
-		Set<String> matches = new LinkedHashSet<>();
-		for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
-			if (entry.getValue() != null && type.isAssignableFrom(entry.getValue())) {
-				matches.add(entry.getKey());
-			}
-		}
-		return matches;
+		return this.beanTypes.entrySet().stream()
+				.filter((entry) -> entry.getValue() != null
+						&& type.isAssignableFrom(entry.getValue()))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	/**
@@ -132,14 +131,11 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 */
 	Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
 		updateTypesIfNecessary();
-		Set<String> matches = new LinkedHashSet<>();
-		for (Map.Entry<String, Class<?>> entry : this.beanTypes.entrySet()) {
-			if (entry.getValue() != null && AnnotationUtils
-					.findAnnotation(entry.getValue(), annotation) != null) {
-				matches.add(entry.getKey());
-			}
-		}
-		return matches;
+		return this.beanTypes.entrySet().stream()
+				.filter((entry) -> entry.getValue() != null && AnnotationUtils
+						.findAnnotation(entry.getValue(), annotation) != null)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	@Override

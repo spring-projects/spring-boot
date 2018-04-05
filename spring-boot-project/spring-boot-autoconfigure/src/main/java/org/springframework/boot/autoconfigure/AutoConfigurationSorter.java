@@ -140,15 +140,14 @@ class AutoConfigurationSorter {
 		}
 
 		public Set<String> getClassesRequestedAfter(String className) {
-			Set<String> rtn = new LinkedHashSet<>();
-			rtn.addAll(get(className).getAfter());
-			for (Map.Entry<String, AutoConfigurationClass> entry : this.classes
-					.entrySet()) {
-				if (entry.getValue().getBefore().contains(className)) {
-					rtn.add(entry.getKey());
+			Set<String> classesRequestedAfter = new LinkedHashSet<>();
+			classesRequestedAfter.addAll(get(className).getAfter());
+			this.classes.forEach((name, autoConfigurationClass) -> {
+				if (autoConfigurationClass.getBefore().contains(className)) {
+					classesRequestedAfter.add(name);
 				}
-			}
-			return rtn;
+			});
+			return classesRequestedAfter;
 		}
 
 	}

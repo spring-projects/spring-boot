@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Mappings between {@link StoreType} and {@code @Configuration}.
@@ -31,69 +32,70 @@ import org.springframework.util.Assert;
  */
 final class SessionStoreMappings {
 
-	private static final Map<StoreType, Map<WebApplicationType, Class<?>>> MAPPINGS;
+	private static final Map<StoreType, Configurations> MAPPINGS;
 
 	static {
-		Map<StoreType, Map<WebApplicationType, Class<?>>> mappings = new EnumMap<>(
-				StoreType.class);
-		mappings.put(StoreType.REDIS, createMapping(RedisSessionConfiguration.class,
+		Map<StoreType, Configurations> mappings = new EnumMap<>(StoreType.class);
+		mappings.put(StoreType.REDIS, new Configurations(RedisSessionConfiguration.class,
 				RedisReactiveSessionConfiguration.class));
-		mappings.put(StoreType.MONGODB, createMapping(MongoSessionConfiguration.class,
-				MongoReactiveSessionConfiguration.class));
-		mappings.put(StoreType.JDBC, createMapping(JdbcSessionConfiguration.class));
+		mappings.put(StoreType.MONGODB,
+				new Configurations(MongoSessionConfiguration.class,
+						MongoReactiveSessionConfiguration.class));
+		mappings.put(StoreType.JDBC,
+				new Configurations(JdbcSessionConfiguration.class, null));
 		mappings.put(StoreType.HAZELCAST,
-				createMapping(HazelcastSessionConfiguration.class));
-		mappings.put(StoreType.NONE, createMapping(NoOpSessionConfiguration.class,
+				new Configurations(HazelcastSessionConfiguration.class, null));
+		mappings.put(StoreType.NONE, new Configurations(NoOpSessionConfiguration.class,
 				NoOpReactiveSessionConfiguration.class));
 		MAPPINGS = Collections.unmodifiableMap(mappings);
-	}
-
-	static Map<WebApplicationType, Class<?>> createMapping(
-			Class<?> servletConfiguration) {
-		return createMapping(servletConfiguration, null);
-	}
-
-	static Map<WebApplicationType, Class<?>> createMapping(Class<?> servletConfiguration,
-			Class<?> reactiveConfiguration) {
-		Map<WebApplicationType, Class<?>> mapping = new EnumMap<>(
-				WebApplicationType.class);
-		mapping.put(WebApplicationType.SERVLET, servletConfiguration);
-		if (reactiveConfiguration != null) {
-			mapping.put(WebApplicationType.REACTIVE, reactiveConfiguration);
-		}
-		return mapping;
 	}
 
 	private SessionStoreMappings() {
 	}
 
-	static String getConfigurationClass(WebApplicationType webApplicationType,
+	public static String getConfigurationClass(WebApplicationType webApplicationType,
 			StoreType sessionStoreType) {
-		Map<WebApplicationType, Class<?>> configurationClasses = MAPPINGS
-				.get(sessionStoreType);
-		Assert.state(configurationClasses != null,
+		Configurations configurations = MAPPINGS.get(sessionStoreType);
+		Assert.state(configurations != null,
 				() -> "Unknown session store type " + sessionStoreType);
-		Class<?> configurationClass = configurationClasses.get(webApplicationType);
-		if (configurationClass == null) {
-			return null;
-		}
-		return configurationClass.getName();
+		return configurations.getConfiguration(webApplicationType);
 	}
 
-	static StoreType getType(WebApplicationType webApplicationType,
-			String configurationClassName) {
-		for (Map.Entry<StoreType, Map<WebApplicationType, Class<?>>> storeEntry : MAPPINGS
-				.entrySet()) {
-			for (Map.Entry<WebApplicationType, Class<?>> entry : storeEntry.getValue()
-					.entrySet()) {
-				if (entry.getKey() == webApplicationType
-						&& entry.getValue().getName().equals(configurationClassName)) {
-					return storeEntry.getKey();
-				}
-			}
+	public static StoreType getType(WebApplicationType webApplicationType,
+			String configurationClass) {
+		return MAPPINGS.entrySet().stream()
+				.filter((entry) -> ObjectUtils.nullSafeEquals(configurationClass,
+						entry.getValue().getConfiguration(webApplicationType)))
+				.map(Map.Entry::getKey).findFirst()
+				.orElseThrow(() -> new IllegalStateException(
+						"Unknown configuration class " + configurationClass));
+	}
+
+	private static class Configurations {
+
+		private final Class<?> servletConfiguration;
+
+		private final Class<?> reactiveConfiguration;
+
+		Configurations(Class<?> servletConfiguration, Class<?> reactiveConfiguration) {
+			this.servletConfiguration = servletConfiguration;
+			this.reactiveConfiguration = reactiveConfiguration;
 		}
-		throw new IllegalStateException(
-				"Unknown configuration class " + configurationClassName);
+
+		public String getConfiguration(WebApplicationType webApplicationType) {
+			switch (webApplicationType) {
+			case SERVLET:
+				return getName(this.servletConfiguration);
+			case REACTIVE:
+				return getName(this.reactiveConfiguration);
+			}
+			return null;
+		}
+
+		private String getName(Class<?> configuration) {
+			return (configuration == null ? null : configuration.getName());
+		}
+
 	}
 
 }

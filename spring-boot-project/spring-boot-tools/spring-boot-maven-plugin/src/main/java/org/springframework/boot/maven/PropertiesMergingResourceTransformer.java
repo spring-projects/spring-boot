@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.maven;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -59,18 +58,17 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 	}
 
 	@Override
-	public void processResource(String resource, InputStream is,
+	public void processResource(String resource, InputStream inputStream,
 			List<Relocator> relocators) throws IOException {
 		Properties properties = new Properties();
-		properties.load(is);
-		is.close();
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			String name = (String) entry.getKey();
-			String value = (String) entry.getValue();
-			String existing = this.data.getProperty(name);
-			this.data.setProperty(name,
-					existing == null ? value : existing + "," + value);
-		}
+		properties.load(inputStream);
+		inputStream.close();
+		properties.forEach((name, value) -> process((String) name, (String) value));
+	}
+
+	private void process(String name, String value) {
+		String existing = this.data.getProperty(name);
+		this.data.setProperty(name, (existing == null ? value : existing + "," + value));
 	}
 
 	@Override
