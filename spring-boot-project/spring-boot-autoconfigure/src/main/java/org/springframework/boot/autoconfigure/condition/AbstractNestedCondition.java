@@ -159,8 +159,9 @@ public abstract class AbstractNestedCondition extends SpringBootCondition
 
 		public List<ConditionOutcome> getMatchOutcomes() {
 			List<ConditionOutcome> outcomes = new ArrayList<>();
-			this.memberConditions.forEach((metadata, conditions) ->
-					outcomes.add(new MemberOutcomes(this.context, metadata, conditions).getUltimateOutcome()));
+			this.memberConditions.forEach((metadata, conditions) -> outcomes
+					.add(new MemberOutcomes(this.context, metadata, conditions)
+							.getUltimateOutcome()));
 			return Collections.unmodifiableList(outcomes);
 		}
 

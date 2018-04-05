@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.analyzer.AbstractInjectionFailureAnalyzer;
@@ -123,20 +124,26 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 	private void collectReportedConditionOutcomes(NoSuchBeanDefinitionException cause,
 			List<AutoConfigurationResult> results) {
-		this.report.getConditionAndOutcomesBySource().forEach((key, conditionAndOutcomes) -> {
-			Source source = new Source(key);
-			if (!conditionAndOutcomes.isFullMatch()) {
-				BeanMethods methods = new BeanMethods(source, cause);
-				for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-					if (!conditionAndOutcome.getOutcome().isMatch()) {
-						for (MethodMetadata method : methods) {
-							results.add(new AutoConfigurationResult(method,
-									conditionAndOutcome.getOutcome(), source.isMethod()));
-						}
-					}
+		this.report.getConditionAndOutcomesBySource().forEach(
+				(source, sourceOutcomes) -> collectReportedConditionOutcomes(cause,
+						new Source(source), sourceOutcomes, results));
+	}
+
+	private void collectReportedConditionOutcomes(NoSuchBeanDefinitionException cause,
+			Source source, ConditionAndOutcomes sourceOutcomes,
+			List<AutoConfigurationResult> results) {
+		if (sourceOutcomes.isFullMatch()) {
+			return;
+		}
+		BeanMethods methods = new BeanMethods(source, cause);
+		for (ConditionAndOutcome conditionAndOutcome : sourceOutcomes) {
+			if (!conditionAndOutcome.getOutcome().isMatch()) {
+				for (MethodMetadata method : methods) {
+					results.add(new AutoConfigurationResult(method,
+							conditionAndOutcome.getOutcome(), source.isMethod()));
 				}
 			}
-		});
+		}
 	}
 
 	private void collectExcludedAutoConfiguration(NoSuchBeanDefinitionException cause,

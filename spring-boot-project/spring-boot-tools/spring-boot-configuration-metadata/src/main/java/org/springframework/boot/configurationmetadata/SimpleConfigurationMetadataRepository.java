@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,9 +93,11 @@ public class SimpleConfigurationMetadataRepository
 			}
 			else {
 				// Merge properties
-				group.getProperties().forEach((key, value) -> putIfAbsent(existingGroup.getProperties(), key, value));
+				group.getProperties().forEach((name, value) -> putIfAbsent(
+						existingGroup.getProperties(), name, value));
 				// Merge sources
-				group.getSources().forEach((key, value) -> putIfAbsent(existingGroup.getSources(), key, value));
+				group.getSources().forEach((name,
+						value) -> putIfAbsent(existingGroup.getSources(), name, value));
 			}
 		}
 

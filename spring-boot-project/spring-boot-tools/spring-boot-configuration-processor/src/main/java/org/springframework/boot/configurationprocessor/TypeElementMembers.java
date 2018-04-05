@@ -78,9 +78,9 @@ class TypeElementMembers {
 			processField(field);
 		}
 		try {
-			this.fieldValuesParser.getFieldValues(element).forEach((key, value) -> {
-				if (!this.fieldValues.containsKey(key)) {
-					this.fieldValues.put(key, value);
+			this.fieldValuesParser.getFieldValues(element).forEach((name, value) -> {
+				if (!this.fieldValues.containsKey(name)) {
+					this.fieldValues.put(name, value);
 				}
 			});
 		}

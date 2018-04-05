@@ -175,8 +175,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				reason.append(" '");
 				reason.append(key);
 				reason.append("' ");
-				reason.append(
-						StringUtils.collectionToDelimitedString(value, ", "));
+				reason.append(StringUtils.collectionToDelimitedString(value, ", "));
 			});
 		}
 	}

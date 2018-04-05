@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,9 +111,9 @@ public final class ConditionEvaluationReport {
 	 */
 	public Map<String, ConditionAndOutcomes> getConditionAndOutcomesBySource() {
 		if (!this.addedAncestorOutcomes) {
-			this.outcomes.forEach((key, value) -> {
-				if (!value.isFullMatch()) {
-					addNoMatchOutcomeToAncestors(key);
+			this.outcomes.forEach((source, sourceOutcomes) -> {
+				if (!sourceOutcomes.isFullMatch()) {
+					addNoMatchOutcomeToAncestors(source);
 				}
 			});
 			this.addedAncestorOutcomes = true;
@@ -123,11 +123,11 @@ public final class ConditionEvaluationReport {
 
 	private void addNoMatchOutcomeToAncestors(String source) {
 		String prefix = source + "$";
-		this.outcomes.forEach((key, value) -> {
-			if (key.startsWith(prefix)) {
+		this.outcomes.forEach((candidateSource, sourceOutcomes) -> {
+			if (candidateSource.startsWith(prefix)) {
 				ConditionOutcome outcome = ConditionOutcome.noMatch(ConditionMessage
 						.forCondition("Ancestor " + source).because("did not match"));
-				value.add(ANCESTOR_CONDITION, outcome);
+				sourceOutcomes.add(ANCESTOR_CONDITION, outcome);
 			}
 		});
 	}
@@ -188,12 +188,13 @@ public final class ConditionEvaluationReport {
 
 	public ConditionEvaluationReport getDelta(ConditionEvaluationReport previousReport) {
 		ConditionEvaluationReport delta = new ConditionEvaluationReport();
-		this.outcomes.forEach((key, value) -> {
-			ConditionAndOutcomes previous = previousReport.outcomes.get(key);
+		this.outcomes.forEach((source, sourceOutcomes) -> {
+			ConditionAndOutcomes previous = previousReport.outcomes.get(source);
 			if (previous == null
-					|| previous.isFullMatch() != value.isFullMatch()) {
-				value.forEach((conditionAndOutcome) -> delta.recordConditionEvaluation(
-								key, conditionAndOutcome.getCondition(),
+					|| previous.isFullMatch() != sourceOutcomes.isFullMatch()) {
+				sourceOutcomes.forEach(
+						(conditionAndOutcome) -> delta.recordConditionEvaluation(source,
+								conditionAndOutcome.getCondition(),
 								conditionAndOutcome.getOutcome()));
 			}
 		});

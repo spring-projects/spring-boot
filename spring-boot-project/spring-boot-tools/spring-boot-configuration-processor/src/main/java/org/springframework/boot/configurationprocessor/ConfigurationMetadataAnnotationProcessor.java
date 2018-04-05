@@ -533,8 +533,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
 		Map<String, Object> values = new LinkedHashMap<>();
-		annotation.getElementValues().forEach((key, value) ->
-				values.put(key.getSimpleName().toString(), value.getValue()));
+		annotation.getElementValues().forEach((name, value) -> values
+				.put(name.getSimpleName().toString(), value.getValue()));
 		return values;
 	}
 

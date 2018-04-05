@@ -78,7 +78,8 @@ public final class BuildPropertiesWriter {
 					DateTimeFormatter.ISO_INSTANT.format(project.getTime()));
 		}
 		if (project.getAdditionalProperties() != null) {
-			project.getAdditionalProperties().forEach((key, value) -> properties.put("build." + key, value));
+			project.getAdditionalProperties()
+					.forEach((name, value) -> properties.put("build." + name, value));
 		}
 		return properties;
 	}
@@ -114,9 +115,9 @@ public final class BuildPropertiesWriter {
 		private static void validateAdditionalProperties(
 				Map<String, String> additionalProperties) {
 			if (additionalProperties != null) {
-				additionalProperties.forEach((key, value) -> {
+				additionalProperties.forEach((name, value) -> {
 					if (value == null) {
-						throw new NullAdditionalPropertyValueException(key);
+						throw new NullAdditionalPropertyValueException(name);
 					}
 				});
 			}

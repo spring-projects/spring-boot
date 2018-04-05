@@ -113,9 +113,11 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 */
 	Set<String> getNamesForType(Class<?> type) {
 		updateTypesIfNecessary();
-		return this.beanTypes.entrySet().stream().filter((entry) -> entry.getValue() != null &&
-				type.isAssignableFrom(entry.getValue())).
-				map(Map.Entry::getKey).collect(Collectors.toCollection(LinkedHashSet::new));
+		return this.beanTypes.entrySet().stream()
+				.filter((entry) -> entry.getValue() != null
+						&& type.isAssignableFrom(entry.getValue()))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	/**
@@ -129,9 +131,11 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	 */
 	Set<String> getNamesForAnnotation(Class<? extends Annotation> annotation) {
 		updateTypesIfNecessary();
-		return this.beanTypes.entrySet().stream().filter((entry) -> entry.getValue() != null &&
-					AnnotationUtils.findAnnotation(entry.getValue(), annotation) != null).
-				map(Map.Entry::getKey).collect(Collectors.toCollection(LinkedHashSet::new));
+		return this.beanTypes.entrySet().stream()
+				.filter((entry) -> entry.getValue() != null && AnnotationUtils
+						.findAnnotation(entry.getValue(), annotation) != null)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	@Override

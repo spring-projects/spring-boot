@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,10 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 				for (ImportNode importNode : module.getStarImports()) {
 					visitAnnotatedNode(importNode, annotationNodes);
 				}
-				module.getStaticImports().forEach((key, value) -> visitAnnotatedNode(value, annotationNodes));
-				module.getStaticStarImports().forEach((key, value) -> visitAnnotatedNode(value, annotationNodes));
+				module.getStaticImports().forEach((name,
+						importNode) -> visitAnnotatedNode(importNode, annotationNodes));
+				module.getStaticStarImports().forEach((name,
+						importNode) -> visitAnnotatedNode(importNode, annotationNodes));
 				for (ClassNode classNode : module.getClasses()) {
 					visitAnnotatedNode(classNode, annotationNodes);
 					classNode.visitContents(classVisitor);

@@ -123,29 +123,21 @@ public class ConditionsReportEndpoint {
 			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
 			this.unconditionalClasses = report.getUnconditionalClasses();
-			report.getConditionAndOutcomesBySource().forEach((key, value) -> {
-				if (value.isFullMatch()) {
-					add(this.positiveMatches, key, value);
-				}
-				else {
-					add(this.negativeMatches, key, value);
-				}
-			});
+			report.getConditionAndOutcomesBySource().forEach(
+					(source, conditionAndOutcomes) -> add(source, conditionAndOutcomes));
 			this.parentId = context.getParent() == null ? null
 					: context.getParent().getId();
 		}
 
-		private void add(Map<String, MessageAndConditions> map, String source,
-				ConditionAndOutcomes conditionAndOutcomes) {
+		private void add(String source, ConditionAndOutcomes conditionAndOutcomes) {
 			String name = ClassUtils.getShortName(source);
-			map.put(name, new MessageAndConditions(conditionAndOutcomes));
-		}
-
-		private void add(MultiValueMap<String, MessageAndCondition> map, String source,
-				ConditionAndOutcomes conditionAndOutcomes) {
-			String name = ClassUtils.getShortName(source);
-			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-				map.add(name, new MessageAndCondition(conditionAndOutcome));
+			if (conditionAndOutcomes.isFullMatch()) {
+				conditionAndOutcomes.forEach((conditionAndOutcome) -> this.positiveMatches
+						.add(name, new MessageAndCondition(conditionAndOutcome)));
+			}
+			else {
+				this.negativeMatches.put(name,
+						new MessageAndConditions(conditionAndOutcomes));
 			}
 		}
 

@@ -57,10 +57,13 @@ final class CacheConfigurations {
 	}
 
 	public static CacheType getType(String configurationClassName) {
-		return MAPPINGS.entrySet().stream().filter((entry) ->
-					entry.getValue().getName().equals(configurationClassName)).
-				map(Map.Entry::getKey).findFirst().
-				orElseThrow(() -> new IllegalStateException("Unknown configuration class " + configurationClassName));
+		for (Map.Entry<CacheType, Class<?>> entry : MAPPINGS.entrySet()) {
+			if (entry.getValue().getName().equals(configurationClassName)) {
+				return entry.getKey();
+			}
+		}
+		throw new IllegalStateException(
+				"Unknown configuration class " + configurationClassName);
 	}
 
 }
