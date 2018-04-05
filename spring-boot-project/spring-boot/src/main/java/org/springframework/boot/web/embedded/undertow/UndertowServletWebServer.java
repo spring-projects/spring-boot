@@ -266,7 +266,10 @@ public class UndertowServletWebServer implements WebServer {
 		List<Port> ports = new ArrayList<>();
 		for (Object listener : extractListeners()) {
 			try {
-				ports.add(getPortFromListener(listener));
+				Port port = getPortFromListener(listener);
+				if (port.getNumber() != 0) {
+					ports.add(port);
+				}
 			}
 			catch (Exception ex) {
 				// Continue

@@ -933,7 +933,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		doWithBlockedPort((port) -> {
 			try {
 				AbstractServletWebServerFactory factory = getFactory();
-				factory.setPort(SocketUtils.findAvailableTcpPort(40000));
 				addConnector(port, factory);
 				AbstractServletWebServerFactoryTests.this.webServer = factory
 						.getWebServer();
