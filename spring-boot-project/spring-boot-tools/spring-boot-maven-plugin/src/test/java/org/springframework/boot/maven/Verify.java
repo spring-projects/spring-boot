@@ -141,7 +141,7 @@ public final class Verify {
 
 		private ZipEntry getEntryStartingWith(String entryName) {
 			return this.content.entrySet().stream()
-					.filter(entry -> entry.getKey().startsWith(entryName))
+					.filter((entry) -> entry.getKey().startsWith(entryName))
 					.map(Map.Entry::getValue).findFirst()
 					.orElseThrow(() -> new IllegalStateException(
 							"Unable to find entry starting with " + entryName));

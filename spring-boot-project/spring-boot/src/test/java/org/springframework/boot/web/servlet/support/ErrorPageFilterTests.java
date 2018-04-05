@@ -247,9 +247,8 @@ public class ErrorPageFilterTests {
 
 	@Test
 	public void statusCode() throws Exception {
-		this.chain = new TestFilterChain((request, response, chain) -> {
-			assertThat(response.getStatus()).isEqualTo(200);
-		});
+		this.chain = new TestFilterChain((request, response,
+				chain) -> assertThat(response.getStatus()).isEqualTo(200));
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus())
 				.isEqualTo(200);

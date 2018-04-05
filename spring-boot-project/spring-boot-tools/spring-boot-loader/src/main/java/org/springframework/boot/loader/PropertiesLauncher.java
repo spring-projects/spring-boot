@@ -460,7 +460,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
 		String root = cleanupPath(handleUrl(path));
-		List<Archive> lib = new ArrayList<Archive>();
+		List<Archive> lib = new ArrayList<>();
 		File file = new File(root);
 		if (!"/".equals(root)) {
 			if (!isAbsolutePath(root)) {

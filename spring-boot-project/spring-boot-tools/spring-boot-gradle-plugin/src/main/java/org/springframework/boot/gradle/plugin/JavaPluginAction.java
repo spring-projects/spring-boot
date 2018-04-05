@@ -147,9 +147,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
 		compile.doFirst((task) -> {
 			if (hasConfigurationProcessorOnClasspath(compile)) {
-				findMatchingSourceSet(compile).ifPresent((sourceSet) -> {
-					configureAdditionalMetadataLocations(compile, sourceSet);
-				});
+				findMatchingSourceSet(compile).ifPresent(
+						(sourceSet) -> configureAdditionalMetadataLocations(compile,
+								sourceSet));
 			}
 		});
 	}
