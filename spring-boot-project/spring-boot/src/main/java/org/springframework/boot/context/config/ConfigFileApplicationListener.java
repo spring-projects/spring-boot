@@ -539,12 +539,12 @@ public class ConfigFileApplicationListener
 
 		private List<Document> loadDocuments(PropertySourceLoader loader, String name,
 				Resource resource) throws IOException {
-			loader.load(name, resource);
 			DocumentsCacheKey cacheKey = new DocumentsCacheKey(loader, resource);
 			List<Document> documents = this.loadDocumentsCache.get(cacheKey);
 			if (documents == null) {
 				List<PropertySource<?>> loaded = loader.load(name, resource);
 				documents = asDocuments(loaded);
+				this.loadDocumentsCache.put(cacheKey, documents);
 			}
 			return documents;
 		}
