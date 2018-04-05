@@ -55,7 +55,9 @@ class ConfigurationPropertiesBinder {
 
 	private final Validator configurationPropertiesValidator;
 
-	private Validator jsr303Validator;
+	private final boolean jsr303Present;
+
+	private volatile Validator jsr303Validator;
 
 	private volatile Binder binder;
 
@@ -66,7 +68,8 @@ class ConfigurationPropertiesBinder {
 				.getPropertySources();
 		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(
 				applicationContext, validatorBeanName);
-
+		this.jsr303Present = ConfigurationPropertiesJsr303Validator
+				.isJsr303Present(applicationContext);
 	}
 
 	public void bind(Bindable<?> target) {
@@ -92,17 +95,21 @@ class ConfigurationPropertiesBinder {
 		if (this.configurationPropertiesValidator != null) {
 			validators.add(this.configurationPropertiesValidator);
 		}
-
-		if (target.getAnnotation(Validated.class) != null) {
-			this.jsr303Validator = ConfigurationPropertiesJsr303Validator.getIfJsr303Present(this.applicationContext);
-			if (this.jsr303Validator != null) {
-				validators.add(this.jsr303Validator);
-			}
+		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
+			validators.add(getJsr303Validator());
 		}
 		if (target.getValue() != null && target.getValue().get() instanceof Validator) {
 			validators.add((Validator) target.getValue().get());
 		}
 		return validators;
+	}
+
+	private Validator getJsr303Validator() {
+		if (this.jsr303Validator == null) {
+			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(
+					this.applicationContext);
+		}
+		return this.jsr303Validator;
 	}
 
 	private BindHandler getBindHandler(ConfigurationProperties annotation,
