@@ -16,8 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jms.artemis;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.activemq.artemis.api.core.SimpleString;
 import org.apache.activemq.artemis.core.config.Configuration;
+import org.apache.activemq.artemis.core.config.CoreAddressConfiguration;
 import org.apache.activemq.artemis.core.server.JournalType;
+import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,4 +74,22 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 		assertThat(configuration.getClusterPassword()).isEqualTo("password");
 	}
 
+	@Test
+	public void hasDlqExpiryQueueAddressSettingsConfigured() {
+		ArtemisProperties properties = new ArtemisProperties();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
+			.createConfiguration();
+		Map<String, AddressSettings> addressesSettings = configuration.getAddressesSettings();
+		assertThat((CharSequence) addressesSettings.get("#").getDeadLetterAddress()).isEqualTo(SimpleString.toSimpleString("DLQ"));
+		assertThat((CharSequence) addressesSettings.get("#").getExpiryAddress()).isEqualTo(SimpleString.toSimpleString("ExpiryQueue"));
+	}
+
+	@Test
+	public void hasDlqExpiryQueueConfigured() {
+		ArtemisProperties properties = new ArtemisProperties();
+		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
+			.createConfiguration();
+		List<CoreAddressConfiguration> addressConfigurations = configuration.getAddressConfigurations();
+		assertThat(addressConfigurations).hasSize(2);
+	}
 }

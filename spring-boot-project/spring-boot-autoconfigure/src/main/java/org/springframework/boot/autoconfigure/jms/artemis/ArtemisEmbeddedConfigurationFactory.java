@@ -18,11 +18,16 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 
 import java.io.File;
 
+import org.apache.activemq.artemis.api.core.RoutingType;
+import org.apache.activemq.artemis.api.core.SimpleString;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.core.config.Configuration;
+import org.apache.activemq.artemis.core.config.CoreAddressConfiguration;
+import org.apache.activemq.artemis.core.config.CoreQueueConfiguration;
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.apache.activemq.artemis.core.server.JournalType;
+import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -65,6 +70,26 @@ class ArtemisEmbeddedConfigurationFactory {
 					+ this.properties.getClusterPassword());
 		}
 		configuration.setClusterPassword(this.properties.getClusterPassword());
+		configuration.addAddressesSetting("#",
+			new AddressSettings()
+				.setDeadLetterAddress(SimpleString.toSimpleString("DLQ"))
+				.setExpiryAddress(SimpleString.toSimpleString("ExpiryQueue")));
+		configuration.addAddressConfiguration(
+			new CoreAddressConfiguration()
+				.setName("DLQ")
+				.addRoutingType(RoutingType.ANYCAST)
+				.addQueueConfiguration(
+					new CoreQueueConfiguration()
+						.setName("DLQ")
+						.setRoutingType(RoutingType.ANYCAST)));
+		configuration.addAddressConfiguration(
+			new CoreAddressConfiguration()
+				.setName("ExpiryQueue")
+				.addRoutingType(RoutingType.ANYCAST)
+				.addQueueConfiguration(
+					new CoreQueueConfiguration()
+						.setName("ExpiryQueue")
+						.setRoutingType(RoutingType.ANYCAST)));
 		return configuration;
 	}
 
