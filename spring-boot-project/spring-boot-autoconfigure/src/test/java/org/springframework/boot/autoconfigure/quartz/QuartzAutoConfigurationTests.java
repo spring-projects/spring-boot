@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,6 +44,7 @@ import org.quartz.simpl.SimpleThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -207,6 +209,12 @@ public class QuartzAutoConfigurationTests {
 		assertThat(scheduler.getSchedulerName()).isEqualTo("fooScheduler");
 	}
 
+	@Test
+	public void dataSourceWithQuartzDataSourceQualifierUsedWhenMultiplePresent() {
+		load(MultipleDataSourceConfiguration.class,
+				"spring.quartz.job-store-type=jdbc");
+	}
+
 	private void load(String... environment) {
 		load(new Class<?>[0], environment);
 	}
@@ -341,6 +349,25 @@ public class QuartzAutoConfigurationTests {
 		public SchedulerFactoryBeanCustomizer customizer() {
 			return (schedulerFactoryBean) -> schedulerFactoryBean
 					.setSchedulerName("fooScheduler");
+		}
+
+	}
+
+	@Configuration
+	protected static class MultipleDataSourceConfiguration extends BaseQuartzConfiguration {
+
+		@Bean
+		@Primary
+		public DataSource applicationDataSource() {
+			return new HikariDataSource();
+		}
+
+
+		@QuartzDataSource
+		@Bean
+		public DataSource quartzDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:quartztest")
+					.username("sa").build();
 		}
 
 	}

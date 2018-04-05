@@ -135,10 +135,12 @@ public class QuartzAutoConfiguration {
 		@Bean
 		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(
 				QuartzProperties properties, DataSource dataSource,
+				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
 				ObjectProvider<PlatformTransactionManager> transactionManager) {
 			return (schedulerFactoryBean) -> {
 				if (properties.getJobStoreType() == JobStoreType.JDBC) {
-					schedulerFactoryBean.setDataSource(dataSource);
+					DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
+					schedulerFactoryBean.setDataSource(dataSourceToUse);
 					PlatformTransactionManager txManager = transactionManager
 							.getIfUnique();
 					if (txManager != null) {
@@ -148,12 +150,20 @@ public class QuartzAutoConfiguration {
 			};
 		}
 
+		private DataSource getDataSource(DataSource dataSource,
+				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource) {
+			DataSource dataSourceIfAvailable = quartzDataSource.getIfAvailable();
+			return (dataSourceIfAvailable != null ? dataSourceIfAvailable : dataSource);
+		}
+
 		@Bean
 		@ConditionalOnMissingBean
 		public QuartzDataSourceInitializer quartzDataSourceInitializer(
-				DataSource dataSource, ResourceLoader resourceLoader,
+				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
+				ResourceLoader resourceLoader,
 				QuartzProperties properties) {
-			return new QuartzDataSourceInitializer(dataSource, resourceLoader,
+			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
+			return new QuartzDataSourceInitializer(dataSourceToUse, resourceLoader,
 					properties);
 		}
 
