@@ -23,12 +23,14 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -43,6 +45,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HibernateMetricsAutoConfiguration}.
@@ -86,7 +91,8 @@ public class HibernateMetricsAutoConfigurationTests {
 	public void entityManagerFactoryInstrumentationCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.hibernate=false")
 				.run((context) -> {
-					context.getBean(DataSource.class).getConnection().getMetaData();
+					context.getBean(EntityManagerFactory.class)
+							.unwrap(SessionFactory.class);
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					assertThat(registry.find("hibernate.statements").meter()).isNull();
 				});
@@ -98,14 +104,29 @@ public class HibernateMetricsAutoConfigurationTests {
 				.withUserConfiguration(TwoEntityManagerFactoriesConfiguration.class)
 				.run((context) -> {
 					context.getBean("firstEntityManagerFactory",
-							EntityManagerFactory.class).getMetamodel();
+							EntityManagerFactory.class).unwrap(SessionFactory.class);
 					context.getBean("secondOne", EntityManagerFactory.class)
-							.getMetamodel();
+							.unwrap(SessionFactory.class);
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					registry.get("hibernate.statements")
 							.tags("entityManagerFactory", "first").meter();
 					registry.get("hibernate.statements")
 							.tags("entityManagerFactory", "secondOne").meter();
+				});
+	}
+
+	@Test
+	public void entityManagerFactoryInstrumentationIsDisabledIfNotHibernateSessionFactory() {
+		this.contextRunner
+				.withUserConfiguration(
+						NonHibernateEntityManagerFactoryConfiguration.class)
+				.run((context) -> {
+					// ensure EntityManagerFactory is not an Hibernate SessionFactory
+					assertThatThrownBy(() -> context.getBean(EntityManagerFactory.class)
+							.unwrap(SessionFactory.class))
+									.isInstanceOf(PersistenceException.class);
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					assertThat(registry.find("hibernate.statements").meter()).isNull();
 				});
 	}
 
@@ -155,4 +176,16 @@ public class HibernateMetricsAutoConfigurationTests {
 		}
 	}
 
+	@Configuration
+	static class NonHibernateEntityManagerFactoryConfiguration {
+
+		@Bean
+		public EntityManagerFactory entityManagerFactory() {
+			EntityManagerFactory mockedFactory = mock(EntityManagerFactory.class);
+			// enforces JPA contract
+			given(mockedFactory.unwrap(ArgumentMatchers.<Class<SessionFactory>>any()))
+					.willThrow(PersistenceException.class);
+			return mockedFactory;
+		}
+	}
 }
