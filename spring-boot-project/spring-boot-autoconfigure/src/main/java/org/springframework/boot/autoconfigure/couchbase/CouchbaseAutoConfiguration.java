@@ -128,15 +128,18 @@ public class CouchbaseAutoConfiguration {
 					builder.sslKeystorePassword(ssl.getKeyStorePassword());
 				}
 			}
+			builder = builder.bootstrapHttpDirectPort(properties.getBootstrapHttpDirectPort());
+			builder = builder.bootstrapCarrierDirectPort(properties.getBootstrapCarrierDirectPort());
 			return builder;
 		}
 
 	}
 
 	/**
-	 * Determine if Couchbase should be configured. This happens if either the
-	 * user-configuration defines a {@code CouchbaseConfigurer} or if at least the
-	 * "bootstrapHosts" property is specified.
+	 * Determine if Couchbase should be configured. This happens if either:
+	 *  - user-configuration defines a {@code CouchbaseConfigurer}
+	 *  - "bootstrapHosts" property is specified
+	 *  - CouchbaseMock is available
 	 * <p>
 	 * The reason why we check for the presence of {@code CouchbaseConfigurer} is that it
 	 * might use {@link CouchbaseProperties} for its internal customization.
@@ -149,6 +152,11 @@ public class CouchbaseAutoConfiguration {
 
 		@Conditional(OnBootstrapHostsCondition.class)
 		static class BootstrapHostsProperty {
+
+		}
+
+		@ConditionalOnBean(type = "com.couchbase.mock.CouchbaseMock")
+		static class CouchbaseMockAvailable {
 
 		}
 

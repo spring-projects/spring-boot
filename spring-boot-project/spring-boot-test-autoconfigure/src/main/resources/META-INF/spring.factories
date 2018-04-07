@@ -41,6 +41,15 @@ org.springframework.boot.test.autoconfigure.data.redis.AutoConfigureDataRedis=\
 org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
+# AutoConfigureDataCouchbase auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.couchbase.AutoConfigureDataCouchbase=\
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration,\
+org.springframework.boot.autoconfigure.couchbase.embedded.EmbeddedCouchbaseAutoConfiguration
+
 # AutoConfigureJdbc auto-configuration imports
 org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc=\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
