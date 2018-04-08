@@ -60,6 +60,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/run-profiles.html}Specify active profiles}}
 
+  * {{{./examples/run-with-env.html}Specify Environment variables}}
+
   * {{{./examples/build-info.html}Generate build information}}
 
   * {{{./examples/custom-layout.html}Custom layout}}

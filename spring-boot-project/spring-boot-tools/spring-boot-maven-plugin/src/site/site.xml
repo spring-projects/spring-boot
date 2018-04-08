@@ -15,6 +15,7 @@
 			<item name="Random port for integration tests" href="examples/it-random-port.html"/>
 			<item name="Skip integration tests" href="examples/it-skip.html"/>
 			<item name="Specify active profiles" href="examples/run-profiles.html"/>
+			<item name="Specify environment variables" href="examples/run-with-env.html"/>
 			<item name="Generate build information" href="examples/build-info.html"/>
 			<item name="Custom layout" href="examples/custom-layout.html"/>
 		</menu>

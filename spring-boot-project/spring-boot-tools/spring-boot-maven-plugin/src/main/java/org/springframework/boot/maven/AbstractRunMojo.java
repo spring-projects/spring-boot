@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +49,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @author Stephane Nicoll
  * @author David Liu
  * @author Daniel Young
+ * @author Dmytro Nosan
  * @see RunMojo
  * @see StartMojo
  */
@@ -114,6 +116,15 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter
 	private Map<String, String> systemPropertyVariables;
+
+	/**
+	 * List of Environment variables that should be associated with the forked process used to run the
+	 * application.
+	 * <p>NOTE: the use of Environment variables means that processes will be started by forking a
+	 * new JVM.
+	 */
+	@Parameter(property = "spring-boot.run.environmentVariables")
+	private Map<String, String> environmentVariables;
 
 	/**
 	 * Arguments that should be passed to the application. On command line use commas to
@@ -203,7 +214,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @see #logDisabledFork()
 	 */
 	protected boolean enableForkByDefault() {
-		return hasAgent() || hasJvmArgs() || hasWorkingDirectorySet();
+		return hasAgent() || hasJvmArgs() || hasEnvVariables() || hasWorkingDirectorySet();
 	}
 
 	private boolean hasAgent() {
@@ -215,6 +226,11 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				(this.systemPropertyVariables != null
 						&& !this.systemPropertyVariables.isEmpty());
 	}
+
+	private boolean hasEnvVariables() {
+		return (this.environmentVariables != null && !this.environmentVariables.isEmpty());
+	}
+
 
 	private boolean hasWorkingDirectorySet() {
 		return this.workingDirectory != null;
@@ -257,22 +273,27 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void doRunWithForkedJvm(String startClassName)
 			throws MojoExecutionException, MojoFailureException {
 		List<String> args = new ArrayList<>();
+		Map<String, String> envVariables = new LinkedHashMap<>();
 		addAgents(args);
 		addJvmArgs(args);
 		addClasspath(args);
 		args.add(startClassName);
 		addArgs(args);
-		runWithForkedJvm(this.workingDirectory, args);
+		addEnvironmentVariables(envVariables);
+		runWithForkedJvm(this.workingDirectory, args, envVariables);
 	}
+
 
 	/**
 	 * Run with a forked VM, using the specified command line arguments.
 	 * @param workingDirectory the working directory of the forked JVM
 	 * @param args the arguments (JVM arguments and application arguments)
+	 * @param environmentVariables the environment variables;
 	 * @throws MojoExecutionException in case of MOJO execution errors
 	 * @throws MojoFailureException in case of MOJO failures
 	 */
-	protected abstract void runWithForkedJvm(File workingDirectory, List<String> args)
+	protected abstract void runWithForkedJvm(File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables)
 			throws MojoExecutionException, MojoFailureException;
 
 	/**
@@ -295,10 +316,27 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		return runArguments;
 	}
 
+
+	/**
+	 * Resolve the environment variables to use.
+	 *
+	 * @return a {@link EnvVariables} defining the environment variables
+	 */
+	protected EnvVariables resolveEnvVariables() {
+		return new EnvVariables(this.environmentVariables);
+	}
+
+
 	private void addArgs(List<String> args) {
 		RunArguments applicationArguments = resolveApplicationArguments();
 		Collections.addAll(args, applicationArguments.asArray());
 		logArguments("Application argument(s): ", this.arguments);
+	}
+
+	private void addEnvironmentVariables(Map<String, String> environmentVariables) {
+		EnvVariables envVariables = resolveEnvVariables();
+		environmentVariables.putAll(envVariables.asMap());
+		logArguments("Environment variable(s): ", envVariables.asArray());
 	}
 
 	/**
