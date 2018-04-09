@@ -31,6 +31,7 @@ interpolated*.xml
 lib/
 manifest.yml
 overridedb.*
+out/
 settings.xml
 target
 transaction-logs
