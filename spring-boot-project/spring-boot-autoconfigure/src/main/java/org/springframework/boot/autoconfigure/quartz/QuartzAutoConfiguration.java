@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,7 +139,8 @@ public class QuartzAutoConfiguration {
 				ObjectProvider<PlatformTransactionManager> transactionManager) {
 			return (schedulerFactoryBean) -> {
 				if (properties.getJobStoreType() == JobStoreType.JDBC) {
-					DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
+					DataSource dataSourceToUse = getDataSource(dataSource,
+							quartzDataSource);
 					schedulerFactoryBean.setDataSource(dataSourceToUse);
 					PlatformTransactionManager txManager = transactionManager
 							.getIfUnique();
@@ -159,9 +160,9 @@ public class QuartzAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public QuartzDataSourceInitializer quartzDataSourceInitializer(
-				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
-				ResourceLoader resourceLoader,
-				QuartzProperties properties) {
+				DataSource dataSource,
+				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
+				ResourceLoader resourceLoader, QuartzProperties properties) {
 			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
 			return new QuartzDataSourceInitializer(dataSourceToUse, resourceLoader,
 					properties);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -211,8 +211,7 @@ public class QuartzAutoConfigurationTests {
 
 	@Test
 	public void dataSourceWithQuartzDataSourceQualifierUsedWhenMultiplePresent() {
-		load(MultipleDataSourceConfiguration.class,
-				"spring.quartz.job-store-type=jdbc");
+		load(MultipleDataSourceConfiguration.class, "spring.quartz.job-store-type=jdbc");
 	}
 
 	private void load(String... environment) {
@@ -354,14 +353,14 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class MultipleDataSourceConfiguration extends BaseQuartzConfiguration {
+	protected static class MultipleDataSourceConfiguration
+			extends BaseQuartzConfiguration {
 
 		@Bean
 		@Primary
 		public DataSource applicationDataSource() {
 			return new HikariDataSource();
 		}
-
 
 		@QuartzDataSource
 		@Bean

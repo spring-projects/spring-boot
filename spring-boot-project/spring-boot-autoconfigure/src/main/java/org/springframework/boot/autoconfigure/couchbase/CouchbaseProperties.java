@@ -209,7 +209,6 @@ public class CouchbaseProperties {
 
 	}
 
-
 	public static class Ssl {
 
 		/**

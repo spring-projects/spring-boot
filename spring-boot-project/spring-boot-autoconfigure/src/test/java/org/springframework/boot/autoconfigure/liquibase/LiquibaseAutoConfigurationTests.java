@@ -250,8 +250,7 @@ public class LiquibaseAutoConfigurationTests {
 
 	@Test
 	public void liquibaseDataSourceWithoutDataSourceAutoConfiguration() {
-		this.contextRunner
-				.withUserConfiguration(LiquibaseDataSourceConfiguration.class)
+		this.contextRunner.withUserConfiguration(LiquibaseDataSourceConfiguration.class)
 				.run((context) -> {
 					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
 					assertThat(liquibase.getDataSource())

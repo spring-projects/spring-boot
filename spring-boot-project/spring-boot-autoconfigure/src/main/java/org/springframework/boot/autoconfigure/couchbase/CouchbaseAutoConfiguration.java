@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import java.util.function.BiFunction;
+
 import com.couchbase.client.core.env.KeyValueServiceConfig;
 import com.couchbase.client.core.env.QueryServiceConfig;
 import com.couchbase.client.core.env.ViewServiceConfig;
@@ -31,6 +33,8 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Endpoints;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Endpoints.CouchbaseService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -106,21 +110,15 @@ public class CouchbaseAutoConfiguration {
 			if (timeouts.getConnect() != null) {
 				builder = builder.connectTimeout(timeouts.getConnect().toMillis());
 			}
-			builder = builder.keyValueServiceConfig(KeyValueServiceConfig.create(
-					endpoints.getKeyValue()));
+			builder = builder.keyValueServiceConfig(
+					KeyValueServiceConfig.create(endpoints.getKeyValue()));
 			if (timeouts.getKeyValue() != null) {
 				builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
 			}
-			CouchbaseServiceConfig queryConfig = determineCouchbaseServiceConfig(
-					endpoints.getQueryservice(), endpoints.getQuery());
-			builder = builder.queryServiceConfig(QueryServiceConfig.create(
-					queryConfig.minEndpoints, queryConfig.maxEndpoints));
 			if (timeouts.getQuery() != null) {
-				CouchbaseServiceConfig viewConfig = determineCouchbaseServiceConfig(
-						endpoints.getViewservice(), endpoints.getView());
-				builder = builder.queryTimeout(timeouts.getQuery().toMillis())
-						.viewServiceConfig(ViewServiceConfig.create(
-								viewConfig.minEndpoints, viewConfig.maxEndpoints));
+				builder = builder.queryTimeout(timeouts.getQuery().toMillis());
+				builder = builder.queryServiceConfig(getQueryServiceConfig(endpoints));
+				builder = builder.viewServiceConfig(getViewServiceConfig(endpoints));
 			}
 			if (timeouts.getSocketConnect() != null) {
 				builder = builder.socketConnectTimeout(
@@ -131,37 +129,37 @@ public class CouchbaseAutoConfiguration {
 			}
 			CouchbaseProperties.Ssl ssl = properties.getEnv().getSsl();
 			if (ssl.getEnabled()) {
-				builder.sslEnabled(true);
+				builder = builder.sslEnabled(true);
 				if (ssl.getKeyStore() != null) {
-					builder.sslKeystoreFile(ssl.getKeyStore());
+					builder = builder.sslKeystoreFile(ssl.getKeyStore());
 				}
 				if (ssl.getKeyStorePassword() != null) {
-					builder.sslKeystorePassword(ssl.getKeyStorePassword());
+					builder = builder.sslKeystorePassword(ssl.getKeyStorePassword());
 				}
 			}
 			return builder;
 		}
 
-		private CouchbaseServiceConfig determineCouchbaseServiceConfig(
-				CouchbaseProperties.Endpoints.CouchbaseService couchbaseService,
-				Integer fallback) {
-			if (couchbaseService.getMinEndpoints() != 1
-					|| couchbaseService.getMaxEndpoints() != 1) {
-				return new CouchbaseServiceConfig(couchbaseService.getMinEndpoints(),
-						couchbaseService.getMaxEndpoints());
-			}
-			int endpoints = (fallback != null ? fallback : 1);
-			return new CouchbaseServiceConfig(endpoints, endpoints);
+		@SuppressWarnings("deprecation")
+		private QueryServiceConfig getQueryServiceConfig(Endpoints endpoints) {
+			return getServiceConfig(endpoints.getQueryservice(), endpoints.getQuery(),
+					QueryServiceConfig::create);
 		}
 
-		private static class CouchbaseServiceConfig {
-			private int minEndpoints;
-			private int maxEndpoints;
+		@SuppressWarnings("deprecation")
+		private ViewServiceConfig getViewServiceConfig(Endpoints endpoints) {
+			return getServiceConfig(endpoints.getViewservice(), endpoints.getView(),
+					ViewServiceConfig::create);
+		}
 
-			CouchbaseServiceConfig(int minEndpoints, int maxEndpoints) {
-				this.minEndpoints = minEndpoints;
-				this.maxEndpoints = maxEndpoints;
+		private <T> T getServiceConfig(CouchbaseService service, Integer fallback,
+				BiFunction<Integer, Integer, T> factory) {
+			if (service.getMinEndpoints() != 1 || service.getMaxEndpoints() != 1) {
+				return factory.apply(service.getMinEndpoints(),
+						service.getMaxEndpoints());
 			}
+			int endpoints = (fallback != null ? fallback : 1);
+			return factory.apply(endpoints, endpoints);
 		}
 
 	}
