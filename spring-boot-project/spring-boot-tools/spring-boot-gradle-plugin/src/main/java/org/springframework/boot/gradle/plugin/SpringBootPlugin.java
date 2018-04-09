@@ -42,6 +42,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootWar;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Danny Hyun
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
