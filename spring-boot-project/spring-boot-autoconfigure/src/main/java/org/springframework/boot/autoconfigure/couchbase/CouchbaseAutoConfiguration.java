@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import com.couchbase.client.core.env.KeyValueServiceConfig;
+import com.couchbase.client.core.env.QueryServiceConfig;
+import com.couchbase.client.core.env.ViewServiceConfig;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
@@ -40,6 +43,7 @@ import org.springframework.context.annotation.Primary;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Yulin Qin
  * @since 1.4.0
  */
 @Configuration
@@ -102,14 +106,18 @@ public class CouchbaseAutoConfiguration {
 			if (timeouts.getConnect() != null) {
 				builder = builder.connectTimeout(timeouts.getConnect().toMillis());
 			}
-			builder = builder.kvEndpoints(endpoints.getKeyValue());
+			builder = builder.keyValueServiceConfig(KeyValueServiceConfig.create(endpoints.getKeyValue()));
 			if (timeouts.getKeyValue() != null) {
 				builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
 			}
-			builder = builder.queryEndpoints(endpoints.getQuery());
+			int minQuery = endpoints.getQuery() != 1 ? endpoints.getQuery() : endpoints.getQueryservice().getMinEndpoints();
+			int maxQuery = endpoints.getQuery() != 1 ? endpoints.getQuery() : endpoints.getQueryservice().getMaxEndpoints();
+			builder = builder.queryServiceConfig(QueryServiceConfig.create(minQuery, maxQuery));
 			if (timeouts.getQuery() != null) {
+				int minView = endpoints.getView() != 1 ? endpoints.getView() : endpoints.getViewservice().getMinEndpoints();
+				int maxView = endpoints.getView() != 1 ? endpoints.getView() : endpoints.getViewservice().getMaxEndpoints();
 				builder = builder.queryTimeout(timeouts.getQuery().toMillis())
-						.viewEndpoints(endpoints.getView());
+						.viewServiceConfig(ViewServiceConfig.create(minView, maxView));
 			}
 			if (timeouts.getSocketConnect() != null) {
 				builder = builder.socketConnectTimeout(
