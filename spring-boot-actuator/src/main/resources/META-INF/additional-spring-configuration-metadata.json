@@ -20,7 +20,8 @@
       "key",
       "token",
       ".*credentials.*",
-      "vcap_services"
+      "vcap_services",
+      "sun.java.command"
     ]
   },
   {
@@ -44,7 +45,8 @@
       "key",
       "token",
       ".*credentials.*",
-      "vcap_services"
+      "vcap_services",
+      "sun.java.command"
     ]
   },
   {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,10 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		assertThat(systemProperties.get("mySecret")).isEqualTo("******");
 		assertThat(systemProperties.get("myCredentials")).isEqualTo("******");
 		assertThat(systemProperties.get("VCAP_SERVICES")).isEqualTo("******");
+		Object command = systemProperties.get("sun.java.command");
+		if (command != null) {
+			assertThat(command).isEqualTo("******");
+		}
 		clearSystemProperties("dbPassword", "apiKey", "mySecret", "myCredentials");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ class Sanitizer {
 	private Pattern[] keysToSanitize;
 
 	Sanitizer() {
-		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services");
+		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services",
+				"sun.java.command");
 	}
 
 	Sanitizer(String... keysToSanitize) {
