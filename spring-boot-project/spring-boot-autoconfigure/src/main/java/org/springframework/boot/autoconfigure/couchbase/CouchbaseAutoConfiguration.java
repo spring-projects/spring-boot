@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import com.couchbase.client.core.env.KeyValueServiceConfig;
+import com.couchbase.client.core.env.QueryServiceConfig;
+import com.couchbase.client.core.env.ViewServiceConfig;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
@@ -40,6 +43,7 @@ import org.springframework.context.annotation.Primary;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Yulin Qin
  * @since 1.4.0
  */
 @Configuration
@@ -102,14 +106,21 @@ public class CouchbaseAutoConfiguration {
 			if (timeouts.getConnect() != null) {
 				builder = builder.connectTimeout(timeouts.getConnect().toMillis());
 			}
-			builder = builder.kvEndpoints(endpoints.getKeyValue());
+			builder = builder.keyValueServiceConfig(KeyValueServiceConfig.create(
+					endpoints.getKeyValue()));
 			if (timeouts.getKeyValue() != null) {
 				builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
 			}
-			builder = builder.queryEndpoints(endpoints.getQuery());
+			CouchbaseServiceConfig queryConfig = determineCouchbaseServiceConfig(
+					endpoints.getQueryservice(), endpoints.getQuery());
+			builder = builder.queryServiceConfig(QueryServiceConfig.create(
+					queryConfig.minEndpoints, queryConfig.maxEndpoints));
 			if (timeouts.getQuery() != null) {
+				CouchbaseServiceConfig viewConfig = determineCouchbaseServiceConfig(
+						endpoints.getViewservice(), endpoints.getView());
 				builder = builder.queryTimeout(timeouts.getQuery().toMillis())
-						.viewEndpoints(endpoints.getView());
+						.viewServiceConfig(ViewServiceConfig.create(
+								viewConfig.minEndpoints, viewConfig.maxEndpoints));
 			}
 			if (timeouts.getSocketConnect() != null) {
 				builder = builder.socketConnectTimeout(
@@ -129,6 +140,28 @@ public class CouchbaseAutoConfiguration {
 				}
 			}
 			return builder;
+		}
+
+		private CouchbaseServiceConfig determineCouchbaseServiceConfig(
+				CouchbaseProperties.Endpoints.CouchbaseService couchbaseService,
+				Integer fallback) {
+			if (couchbaseService.getMinEndpoints() != 1
+					|| couchbaseService.getMaxEndpoints() != 1) {
+				return new CouchbaseServiceConfig(couchbaseService.getMinEndpoints(),
+						couchbaseService.getMaxEndpoints());
+			}
+			int endpoints = (fallback != null ? fallback : 1);
+			return new CouchbaseServiceConfig(endpoints, endpoints);
+		}
+
+		private static class CouchbaseServiceConfig {
+			private int minEndpoints;
+			private int maxEndpoints;
+
+			CouchbaseServiceConfig(int minEndpoints, int maxEndpoints) {
+				this.minEndpoints = minEndpoints;
+				this.maxEndpoints = maxEndpoints;
+			}
 		}
 
 	}
