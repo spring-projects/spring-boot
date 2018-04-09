@@ -80,7 +80,7 @@ public class LiquibaseAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(SpringLiquibase.class)
-	@EnableConfigurationProperties(LiquibaseProperties.class)
+	@EnableConfigurationProperties({ DataSourceProperties.class, LiquibaseProperties.class })
 	@Import(LiquibaseJpaDependencyConfiguration.class)
 	public static class LiquibaseConfiguration {
 

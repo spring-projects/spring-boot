@@ -106,6 +106,16 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	public void flywayDataSourceWithoutDataSourceAutoConfiguration() {
+		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					assertThat(context.getBean(Flyway.class).getDataSource())
+							.isEqualTo(context.getBean("flywayDataSource"));
+				});
+	}
+
+	@Test
 	public void schemaManagementProviderDetectsDataSource() {
 		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class,
 				EmbeddedDataSourceConfiguration.class).run((context) -> {

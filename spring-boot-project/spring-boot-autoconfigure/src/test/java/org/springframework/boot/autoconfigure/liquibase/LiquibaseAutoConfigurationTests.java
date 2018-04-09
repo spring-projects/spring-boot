@@ -248,6 +248,17 @@ public class LiquibaseAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void liquibaseDataSourceWithoutDataSourceAutoConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(LiquibaseDataSourceConfiguration.class)
+				.run((context) -> {
+					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+					assertThat(liquibase.getDataSource())
+							.isEqualTo(context.getBean("liquibaseDataSource"));
+				});
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(
 			Consumer<SpringLiquibase> consumer) {
 		return (context) -> {
