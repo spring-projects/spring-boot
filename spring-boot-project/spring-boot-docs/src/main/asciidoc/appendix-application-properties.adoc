@@ -573,8 +573,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.couchbase.bucket.name=default # Name of the bucket to connect to.
 	spring.couchbase.bucket.password=  # Password of the bucket.
 	spring.couchbase.env.endpoints.key-value=1 # Number of sockets per node against the key/value service.
-	spring.couchbase.env.endpoints.query=1 # Number of sockets per node against the query (N1QL) service.
-	spring.couchbase.env.endpoints.view=1 # Number of sockets per node against the view service.
+	spring.couchbase.env.endpoints.queryservice.min-endpoints=1 # Minimum number of sockets per node.
+	spring.couchbase.env.endpoints.queryservice.max-endpoints=1 # Maximum number of sockets per node.
+	spring.couchbase.env.endpoints.viewservice.min-endpoints=1 # Minimum number of sockets per node.
+	spring.couchbase.env.endpoints.viewservice.max-endpoints=1 # Maximum number of sockets per node.
 	spring.couchbase.env.ssl.enabled= # Whether to enable SSL support. Enabled automatically if a "keyStore" is provided unless specified otherwise.
 	spring.couchbase.env.ssl.key-store= # Path to the JVM key store that holds the certificates.
 	spring.couchbase.env.ssl.key-store-password= # Password used to access the key store.

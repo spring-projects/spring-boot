@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,78 +119,73 @@ public class CouchbaseProperties {
 		private int keyValue = 1;
 
 		/**
+		 * Query (N1QL) service configuration.
+		 */
+		private final CouchbaseService queryservice = new CouchbaseService();
+
+		/**
+		 * View service configuration.
+		 */
+		private final CouchbaseService viewservice = new CouchbaseService();
+
+		/**
 		 * Number of sockets per node against the query (N1QL) service.
 		 */
-		private int query = 1;
+		private Integer query;
 
 		/**
 		 * Number of sockets per node against the view service.
 		 */
-		private int view = 1;
-
-		/**
-		 * Dynamic query service configuration.
-		 */
-		private Queryservice queryservice = new Queryservice();
-
-		/**
-		 * Dynamic view service configuration.
-		 */
-		private Viewservice viewservice = new Viewservice();
+		private Integer view;
 
 		public int getKeyValue() {
 			return this.keyValue;
 		}
 
+		@Deprecated
 		public void setKeyValue(int keyValue) {
 			this.keyValue = keyValue;
 		}
 
 		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.queryservice")
-		public int getQuery() {
+		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.queryservice.max-endpoints")
+		public Integer getQuery() {
 			return this.query;
 		}
 
 		@Deprecated
-		public void setQuery(int query) {
+		public void setQuery(Integer query) {
 			this.query = query;
 		}
 
+		public CouchbaseService getQueryservice() {
+			return this.queryservice;
+		}
+
 		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.viewservice")
-		public int getView() {
+		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.viewservice.max-endpoints")
+		public Integer getView() {
 			return this.view;
 		}
 
 		@Deprecated
-		public void setView(int view) {
+		public void setView(Integer view) {
 			this.view = view;
 		}
 
-		public Queryservice getQueryservice() {
-			return this.queryservice;
-		}
-
-		public void setQueryservice(Queryservice queryservice) {
-			this.queryservice = queryservice;
-		}
-
-		public Viewservice getViewservice() {
+		public CouchbaseService getViewservice() {
 			return this.viewservice;
 		}
 
-		public void setViewservice(Viewservice viewservice) {
-			this.viewservice = viewservice;
-		}
+		public static class CouchbaseService {
 
-		public static class Queryservice {
 			/**
-			 * Minimum Number of sockets per node against the query (N1QL) service.
+			 * Minimum number of sockets per node.
 			 */
 			private int minEndpoints = 1;
+
 			/**
-			 * Maximum Number of sockets per node against the query (N1QL) service.
+			 * Maximum number of sockets per node.
 			 */
 			private int maxEndpoints = 1;
 
@@ -209,34 +204,9 @@ public class CouchbaseProperties {
 			public void setMaxEndpoints(int maxEndpoints) {
 				this.maxEndpoints = maxEndpoints;
 			}
+
 		}
 
-		public static class Viewservice {
-			/**
-			 * Minimum Number of sockets per node against the view service.
-			 */
-			private int minEndpoints = 1;
-			/**
-			 * Maximum Number of sockets per node against the view service.
-			 */
-			private int maxEndpoints = 1;
-
-			public int getMinEndpoints() {
-				return this.minEndpoints;
-			}
-
-			public void setMinEndpoints(int minEndpoints) {
-				this.minEndpoints = minEndpoints;
-			}
-
-			public int getMaxEndpoints() {
-				return this.maxEndpoints;
-			}
-
-			public void setMaxEndpoints(int maxEndpoints) {
-				this.maxEndpoints = maxEndpoints;
-			}
-		}
 	}
 
 
