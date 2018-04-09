@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -145,18 +146,24 @@ public class CouchbaseProperties {
 			this.keyValue = keyValue;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.queryservice")
 		public int getQuery() {
 			return this.query;
 		}
 
+		@Deprecated
 		public void setQuery(int query) {
 			this.query = query;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "spring.couchbase.env.endpoints.viewservice")
 		public int getView() {
 			return this.view;
 		}
 
+		@Deprecated
 		public void setView(int view) {
 			this.view = view;
 		}
