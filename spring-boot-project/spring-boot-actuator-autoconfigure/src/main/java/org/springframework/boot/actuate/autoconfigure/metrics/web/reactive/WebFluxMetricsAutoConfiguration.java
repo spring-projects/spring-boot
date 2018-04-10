@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring
- * Webflux MVC annotation-based programming model request mappings.
+ * WebFlux MVC annotation-based programming model request mappings.
  *
  * @author Jon Schneider
  * @since 2.0.0

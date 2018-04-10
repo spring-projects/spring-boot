@@ -85,7 +85,7 @@ public class MeterRegistryCustomizerTests {
 		}
 
 		@Bean
-		public MeterRegistryCustomizer<PrometheusMeterRegistry> prometehusOnlyCommonTags() {
+		public MeterRegistryCustomizer<PrometheusMeterRegistry> prometheusOnlyCommonTags() {
 			return (registry) -> registry.config().commonTags("job", "myjob");
 		}
 
