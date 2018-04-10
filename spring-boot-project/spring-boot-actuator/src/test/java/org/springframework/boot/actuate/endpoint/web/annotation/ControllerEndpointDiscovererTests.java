@@ -31,7 +31,9 @@ import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -41,74 +43,77 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ControllerEndpointDiscoverer}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class ControllerEndpointDiscovererTests {
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
+
 	@Test
 	public void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
-		load(EmptyConfiguration.class,
-				(discoverer) -> assertThat(discoverer.getEndpoints()).isEmpty());
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run(
+				assertDiscoverer((discoverer) ->
+						assertThat(discoverer.getEndpoints()).isEmpty()));
 	}
 
 	@Test
 	public void getEndpointsShouldIncludeControllerEndpoints() {
-		load(TestControllerEndpoint.class, (discoverer) -> {
-			Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
-			assertThat(endpoints).hasSize(1);
-			ExposableControllerEndpoint endpoint = endpoints.iterator().next();
-			assertThat(endpoint.getId()).isEqualTo("testcontroller");
-			assertThat(endpoint.getController())
-					.isInstanceOf(TestControllerEndpoint.class);
-			assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
-		});
+		this.contextRunner.withUserConfiguration(TestControllerEndpoint.class)
+				.run(assertDiscoverer((discoverer) -> {
+					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					assertThat(endpoints).hasSize(1);
+					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
+					assertThat(endpoint.getId()).isEqualTo("testcontroller");
+					assertThat(endpoint.getController())
+							.isInstanceOf(TestControllerEndpoint.class);
+					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
+				}));
 	}
 
 	@Test
 	public void getEndpointsShouldIncludeRestControllerEndpoints() {
-		load(TestRestControllerEndpoint.class, (discoverer) -> {
-			Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
-			assertThat(endpoints).hasSize(1);
-			ExposableControllerEndpoint endpoint = endpoints.iterator().next();
-			assertThat(endpoint.getId()).isEqualTo("testrestcontroller");
-			assertThat(endpoint.getController())
-					.isInstanceOf(TestRestControllerEndpoint.class);
-		});
+		this.contextRunner.withUserConfiguration(TestRestControllerEndpoint.class)
+				.run(assertDiscoverer((discoverer) -> {
+					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					assertThat(endpoints).hasSize(1);
+					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
+					assertThat(endpoint.getId()).isEqualTo("testrestcontroller");
+					assertThat(endpoint.getController())
+							.isInstanceOf(TestRestControllerEndpoint.class);
+				}));
 	}
 
 	@Test
 	public void getEndpointsShouldNotDiscoverRegularEndpoints() {
-		load(WithRegularEndpointConfiguration.class, (discoverer) -> {
-			Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
-			List<String> ids = endpoints.stream().map(ExposableEndpoint::getId)
-					.collect(Collectors.toList());
-			assertThat(ids).containsOnly("testcontroller", "testrestcontroller");
-		});
+		this.contextRunner.withUserConfiguration(WithRegularEndpointConfiguration.class)
+				.run(assertDiscoverer((discoverer) -> {
+					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					List<String> ids = endpoints.stream().map(ExposableEndpoint::getId)
+							.collect(Collectors.toList());
+					assertThat(ids).containsOnly("testcontroller", "testrestcontroller");
+				}));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
-		load(TestControllerWithOperation.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("ControllerEndpoints must not declare operations");
-			discoverer.getEndpoints();
-		});
+		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
+				.run(assertDiscoverer((discoverer) -> {
+					this.thrown.expect(IllegalStateException.class);
+					this.thrown.expectMessage("ControllerEndpoints must not declare operations");
+					discoverer.getEndpoints();
+				}));
 	}
 
-	private void load(Class<?> configuration,
+	private ContextConsumer<AssertableApplicationContext> assertDiscoverer(
 			Consumer<ControllerEndpointDiscoverer> consumer) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration);
-		try {
+		return (context) -> {
 			ControllerEndpointDiscoverer discoverer = new ControllerEndpointDiscoverer(
 					context, PathMapper.useEndpointId(), Collections.emptyList());
 			consumer.accept(discoverer);
-		}
-		finally {
-			context.close();
-		}
+		};
 	}
 
 	@Configuration
