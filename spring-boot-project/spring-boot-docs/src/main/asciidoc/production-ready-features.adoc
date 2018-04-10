@@ -1763,8 +1763,8 @@ is required. A `CacheMetricsRegistrar` bean is made available to make that proce
 
 [[production-ready-metrics-jdbc]]
 ==== DataSource Metrics
-Auto-configuration enables the instrumentation of all available `DataSource` objects with a
-metric named `jdbc`. Data source instrumentation results in gauges representing the
+Auto-configuration enables the instrumentation of all available `DataSource` objects with
+a metric named `jdbc`. Data source instrumentation results in gauges representing the
 currently active, maximum allowed, and minimum allowed connections in the pool. Each of
 these gauges has a name that is prefixed by `jdbc`.
 
