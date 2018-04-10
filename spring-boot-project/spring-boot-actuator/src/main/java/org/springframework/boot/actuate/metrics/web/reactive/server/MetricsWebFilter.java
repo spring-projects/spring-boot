@@ -30,7 +30,7 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
 /**
- * Intercepts incoming HTTP requests modeled with the Webflux annotation-based programming
+ * Intercepts incoming HTTP requests modeled with the WebFlux annotation-based programming
  * model.
  *
  * @author Jon Schneider

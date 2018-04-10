@@ -551,7 +551,7 @@ JMX or an HTTP request is converted to the required types using an instance of
 
 [[production-ready-endpoints-custom-web]]
 ==== Custom Web Endpoints
-Operations on a `@Endpoint`, `@WebEndpoint`, or `@WebEndpointExtension` are automatically
+Operations on an `@Endpoint`, `@WebEndpoint`, or `@WebEndpointExtension` are automatically
 exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
 
 
@@ -673,7 +673,7 @@ possible.
 ==== Controller endpoints
 `@ControllerEndpoint` and `@RestControllerEndpoint` can be used to implement an endpoint
 that is only exposed by Spring MVC or Spring WebFlux. Methods are mapped using the
-standard annotations Spring MVC and Spring WebFlux annotations such as `@RequestMapping`
+standard annotations for Spring MVC and Spring WebFlux such as `@RequestMapping`
 and `@GetMapping`, with the endpoint's ID being used as a prefix for the path. Controller
 endpoints provide deeper integration with Spring's web frameworks but at the expense of
 portability. The `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever
@@ -1763,7 +1763,7 @@ is required. A `CacheMetricsRegistrar` bean is made available to make that proce
 
 [[production-ready-metrics-jdbc]]
 ==== DataSource Metrics
-Auto-configuration enables the instrumentation of all available DataSource` objects with a
+Auto-configuration enables the instrumentation of all available `DataSource` objects with a
 metric named `jdbc`. Data source instrumentation results in gauges representing the
 currently active, maximum allowed, and minimum allowed connections in the pool. Each of
 these gauges has a name that is prefixed by `jdbc`.
