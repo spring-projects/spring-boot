@@ -66,11 +66,24 @@ public class CachesEndpointTests {
 	public void namedCacheIsCleared() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
 			Cache firstCache = context.getBean("firstCache", Cache.class);
-			firstCache.put("key", "vale");
+			firstCache.put("key", "value");
 			Cache secondCache = context.getBean("secondCache", Cache.class);
 			secondCache.put("key", "value");
 			context.getBean(CachesEndpoint.class).clearCaches(null, "first");
 			assertThat(firstCache.get("key", String.class)).isNull();
+			assertThat(secondCache.get("key", String.class)).isEqualTo("value");
+		});
+	}
+
+	@Test
+	public void unknwonCache() {
+		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
+			Cache firstCache = context.getBean("firstCache", Cache.class);
+			firstCache.put("key", "value");
+			Cache secondCache = context.getBean("secondCache", Cache.class);
+			secondCache.put("key", "value");
+			context.getBean(CachesEndpoint.class).clearCaches(null, "UNKNWON");
+			assertThat(firstCache.get("key", String.class)).isEqualTo("value");
 			assertThat(secondCache.get("key", String.class)).isEqualTo("value");
 		});
 	}

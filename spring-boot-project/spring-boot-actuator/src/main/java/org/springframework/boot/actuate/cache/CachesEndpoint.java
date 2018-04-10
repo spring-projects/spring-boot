@@ -25,6 +25,7 @@ import java.util.Map;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
@@ -33,7 +34,7 @@ import org.springframework.lang.Nullable;
  * {@link Endpoint} to expose cache operations.
  *
  * @author Johannes Edmeuer
- * @since 2.0.0
+ * @since 2.0.2
  */
 @Endpoint(id = "caches")
 public class CachesEndpoint {
@@ -69,7 +70,10 @@ public class CachesEndpoint {
 			cacheManager.getCacheNames().forEach(cn -> cacheManager.getCache(cn).clear());
 		}
 		else {
-			cacheManager.getCache(cacheName).clear();
+			Cache cache = cacheManager.getCache(cacheName);
+			if (cache != null) {
+				cache.clear();
+			}
 		}
 	}
 
