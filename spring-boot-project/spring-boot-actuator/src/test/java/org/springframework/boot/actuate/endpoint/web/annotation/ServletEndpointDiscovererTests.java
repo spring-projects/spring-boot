@@ -40,11 +40,14 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,6 +74,20 @@ public class ServletEndpointDiscovererTests {
 	@Test
 	public void getEndpointsShouldIncludeServletEndpoints() {
 		this.contextRunner.withUserConfiguration(TestServletEndpoint.class)
+				.run(assertDiscoverer((discoverer) -> {
+					Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
+					assertThat(endpoints).hasSize(1);
+					ExposableServletEndpoint endpoint = endpoints.iterator().next();
+					assertThat(endpoint.getId()).isEqualTo("testservlet");
+					assertThat(endpoint.getEndpointServlet()).isNotNull();
+					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
+				}));
+	}
+
+	@Test
+	public void getEndpointsShouldDiscoverProxyServletEndpoints() {
+		this.contextRunner.withUserConfiguration(TestProxyServletEndpoint.class)
+				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run(assertDiscoverer((discoverer) -> {
 					Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
 					assertThat(endpoints).hasSize(1);
@@ -155,6 +172,17 @@ public class ServletEndpointDiscovererTests {
 
 	@ServletEndpoint(id = "testservlet")
 	static class TestServletEndpoint implements Supplier<EndpointServlet> {
+
+		@Override
+		public EndpointServlet get() {
+			return new EndpointServlet(TestServlet.class);
+		}
+
+	}
+
+	@ServletEndpoint(id = "testservlet")
+	@Validated
+	static class TestProxyServletEndpoint implements Supplier<EndpointServlet> {
 
 		@Override
 		public EndpointServlet get() {

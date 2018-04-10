@@ -31,11 +31,14 @@ import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,6 +77,22 @@ public class ControllerEndpointDiscovererTests {
 	}
 
 	@Test
+	public void getEndpointsShouldDiscoverProxyControllerEndpoints() {
+		this.contextRunner.withUserConfiguration(TestProxyControllerEndpoint.class)
+				.withConfiguration(AutoConfigurations.of(
+						ValidationAutoConfiguration.class))
+				.run(assertDiscoverer((discoverer) -> {
+					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					assertThat(endpoints).hasSize(1);
+					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
+					assertThat(endpoint.getId()).isEqualTo("testcontroller");
+					assertThat(endpoint.getController())
+							.isInstanceOf(TestProxyControllerEndpoint.class);
+					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
+				}));
+	}
+
+	@Test
 	public void getEndpointsShouldIncludeRestControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestRestControllerEndpoint.class)
 				.run(assertDiscoverer((discoverer) -> {
@@ -83,6 +102,22 @@ public class ControllerEndpointDiscovererTests {
 					assertThat(endpoint.getId()).isEqualTo("testrestcontroller");
 					assertThat(endpoint.getController())
 							.isInstanceOf(TestRestControllerEndpoint.class);
+				}));
+	}
+
+	@Test
+	public void getEndpointsShouldDiscoverProxyRestControllerEndpoints() {
+		this.contextRunner.withUserConfiguration(TestProxyRestControllerEndpoint.class)
+				.withConfiguration(AutoConfigurations.of(
+						ValidationAutoConfiguration.class))
+				.run(assertDiscoverer((discoverer) -> {
+					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					assertThat(endpoints).hasSize(1);
+					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
+					assertThat(endpoint.getId()).isEqualTo("testrestcontroller");
+					assertThat(endpoint.getController())
+							.isInstanceOf(TestProxyRestControllerEndpoint.class);
+					assertThat(endpoint).isInstanceOf(DiscoveredEndpoint.class);
 				}));
 	}
 
@@ -133,8 +168,20 @@ public class ControllerEndpointDiscovererTests {
 
 	}
 
+	@ControllerEndpoint(id = "testcontroller")
+	@Validated
+	static class TestProxyControllerEndpoint {
+
+	}
+
 	@RestControllerEndpoint(id = "testrestcontroller")
 	static class TestRestControllerEndpoint {
+
+	}
+
+	@RestControllerEndpoint(id = "testrestcontroller")
+	@Validated
+	static class TestProxyRestControllerEndpoint {
 
 	}
 
