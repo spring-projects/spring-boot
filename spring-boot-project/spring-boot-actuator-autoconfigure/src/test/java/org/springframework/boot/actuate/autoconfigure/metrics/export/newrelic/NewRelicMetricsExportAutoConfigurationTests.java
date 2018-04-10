@@ -80,9 +80,7 @@ public class NewRelicMetricsExportAutoConfigurationTests {
 	@Test
 	public void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.newrelic.enabled=false",
-						"management.metrics.export.newrelic.api-key=abcde",
-						"management.metrics.export.newrelic.account-id=12345")
+				.withPropertyValues("management.metrics.export.newrelic.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(NewRelicMeterRegistry.class)
 						.doesNotHaveBean(NewRelicConfig.class));
