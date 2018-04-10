@@ -116,15 +116,14 @@ public class SampleSecureWebFluxCustomSecurityTests {
 
 		@Bean
 		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
+			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info"))
 					.permitAll()
 					.matchers(EndpointRequest.toAnyEndpoint()
 							.excluding(MappingsEndpoint.class))
 					.hasRole("ACTUATOR")
 					.matchers(PathRequest.toStaticResources().atCommonLocations())
 					.permitAll().pathMatchers("/login").permitAll().anyExchange()
-					.authenticated().and().httpBasic();
-			return http.build();
+					.authenticated().and().httpBasic().and().build();
 		}
 
 	}
