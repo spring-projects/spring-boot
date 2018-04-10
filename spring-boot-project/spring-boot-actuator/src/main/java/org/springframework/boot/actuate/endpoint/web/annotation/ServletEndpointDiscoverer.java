@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EndpointDiscoverer} for {@link ExposableServletEndpoint servlet endpoints}.
@@ -60,7 +61,7 @@ public class ServletEndpointDiscoverer
 
 	@Override
 	protected boolean isEndpointExposed(Object endpointBean) {
-		Class<?> type = endpointBean.getClass();
+		Class<?> type = ClassUtils.getUserClass(endpointBean.getClass());
 		return AnnotatedElementUtils.isAnnotated(type, ServletEndpoint.class);
 	}
 
