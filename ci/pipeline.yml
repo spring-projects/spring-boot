@@ -21,6 +21,12 @@ resources:
     password: ((github-password))
     branch: ((branch))
     ignore_paths: ["ci/images/*"]
+- name: ci-images-git-repo
+  type: git
+  source:
+    uri: ((github-repo))
+    branch: ((branch))
+    paths: ["ci/images/*"]
 - name: spring-boot-ci-image
   type: docker-image
   source:
@@ -60,6 +66,19 @@ resources:
     from: ((email-from))
     to: ((email-to))
 jobs:
+- name: build-spring-boot-ci-images
+  plan:
+  - get: ci-images-git-repo
+    trigger: true
+  - put: spring-boot-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/spring-boot-ci-image
+  - put: spring-boot-jdk9-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/spring-boot-jdk9-ci-image
+  - put: spring-boot-jdk10-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/spring-boot-jdk10-ci-image
 - name: build
   serial: true
   public: true
@@ -306,3 +325,5 @@ groups:
   jobs: ["build", "jdk9-build", "jdk10-build"]
 - name: "Release"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
+- name: "CI Images"
+  jobs: ["build-spring-boot-ci-images"]
