@@ -50,6 +50,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/exclude-dependency.html}Exclude a dependency}}
 
+  * {{{./examples/include-dependency.html}Include a dependency}}
+
   * {{{./examples/run-debug.html}Debug the application}}
 
   * {{{./examples/it-random-port.html}Random port for integration tests}}
