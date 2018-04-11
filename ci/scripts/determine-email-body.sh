@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-mkdir email-details
-
 PREV_SHA=$(git rev-parse HEAD^1)
 PREV_STATUSES=$(curl https://api.github.com/repos/spring-projects/spring-boot/commits/$PREV_SHA/statuses)
 PREV_STATES=echo $PREV_STATUSES | jq -r '.[]  | select(.context == "build") | .state'
