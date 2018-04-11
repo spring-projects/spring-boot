@@ -1,0 +1,8 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+outputs:
+- name: email-details
+run:
+  path: git-repo/ci/scripts/determine-email-body.sh
