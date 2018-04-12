@@ -149,6 +149,9 @@ jobs:
         file: git-repo/ci/tasks/determine-email-body.yml
         params:
           STATE: failure
+          BUILD_PIPELINE_NAME: ((pipeline-name))
+          BUILD_JOB_NAME: build
+          CONCOURSE_URL: ((concourse-url))
       - put: email-notification
         params:
           subject: email-details/subject
@@ -159,6 +162,9 @@ jobs:
       file: git-repo/ci/tasks/determine-email-body.yml
       params:
         STATE: success
+        BUILD_PIPELINE_NAME: ((pipeline-name))
+        BUILD_JOB_NAME: build
+        CONCOURSE_URL: ((concourse-url))
   - put: repo-status-build
     params: { state: "success", commit: "git-repo" }
   - put: email-notification
