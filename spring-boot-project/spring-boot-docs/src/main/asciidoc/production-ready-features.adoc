@@ -1684,14 +1684,12 @@ To customize the tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 [[production-ready-metrics-web-flux]]
 ==== Spring WebFlux Metrics
 Auto-configuration enables the instrumentation of all requests handled by WebFlux
-controllers. You can also use a helper class, `RouterFunctionMetrics`, to instrument
-applications that use WebFlux's functional programming model.
+controllers and functional handlers.
 
 By default, metrics are generated with the name `http.server.requests`. You can customize
 the name by setting the `management.metrics.web.server.requests-metric-name` property.
 
-By default, WebFlux-related metrics for the annotation-based programming model are tagged
-with the following information:
+By default, WebFlux-related metrics are tagged with the following information:
 
 * `method`, the request's method (for example, `GET` or `POST`).
 * `uri`,  the request's URI template prior to variable substitution, if possible (for
@@ -1701,17 +1699,6 @@ example, `/api/person/{id}`).
 request.
 
 To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
-
-By default, metrics for the functional programming model are tagged with the following
-information:
-
-* `method`, the request's method (for example, `GET` or `POST`).
-* `uri`,  the request's URI template prior to variable substitution, if possible (for
-example, `/api/person/{id}`).
-* `status`, the response's HTTP status code (for example, `200` or `500`).
-
-To customize the tags, use the `defaultTags` method on your `RouterFunctionMetrics`
-instance.
 
 
 
