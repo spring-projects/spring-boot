@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.quartz;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import javax.sql.DataSource;
 
@@ -36,7 +35,6 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.calendar.MonthlyCalendar;
 import org.quartz.impl.calendar.WeeklyCalendar;
 import org.quartz.simpl.RAMJobStore;
-import org.quartz.simpl.SimpleThreadPool;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -54,12 +52,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
-import org.springframework.scheduling.quartz.LocalTaskExecutorThreadPool;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link QuartzAutoConfiguration}.
@@ -144,53 +143,15 @@ public class QuartzAutoConfigurationTests {
 
 	@Test
 	public void withTaskExecutor() {
-		this.contextRunner.withUserConfiguration(QuartzExecutorConfiguration.class)
+		this.contextRunner.withUserConfiguration(MockExecutorConfiguration.class)
+				.withPropertyValues(
+						"spring.quartz.properties.org.quartz.threadPool.threadCount=50")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
 					Scheduler scheduler = context.getBean(Scheduler.class);
-					assertThat(scheduler.getMetaData().getThreadPoolClass())
-							.isEqualTo(LocalTaskExecutorThreadPool.class);
-				});
-	}
-
-	@Test
-	public void withMultipleTaskExecutors() {
-		this.contextRunner
-				.withUserConfiguration(QuartzMultipleExecutorsConfiguration.class)
-				.run((context) -> {
-					assertThat(context.getBeansOfType(Executor.class)).hasSize(2);
-					assertThat(context).hasSingleBean(Scheduler.class);
-					Scheduler scheduler = context.getBean(Scheduler.class);
-					assertThat(scheduler.getMetaData().getThreadPoolClass())
-							.isEqualTo(SimpleThreadPool.class);
-				});
-	}
-
-	@Test
-	public void withMultipleTaskExecutorsWithPrimary() {
-		this.contextRunner
-				.withUserConfiguration(
-						QuartzMultipleExecutorsWithPrimaryConfiguration.class)
-				.run((context) -> {
-					assertThat(context.getBeansOfType(Executor.class)).hasSize(2);
-					assertThat(context).hasSingleBean(Scheduler.class);
-					Scheduler scheduler = context.getBean(Scheduler.class);
-					assertThat(scheduler.getMetaData().getThreadPoolClass())
-							.isEqualTo(LocalTaskExecutorThreadPool.class);
-				});
-	}
-
-	@Test
-	public void withMultipleTaskExecutorsWithCustomizer() {
-		this.contextRunner
-				.withUserConfiguration(
-						QuartzMultipleExecutorsWithCustomizerConfiguration.class)
-				.run((context) -> {
-					assertThat(context.getBeansOfType(Executor.class)).hasSize(3);
-					assertThat(context).hasSingleBean(Scheduler.class);
-					Scheduler scheduler = context.getBean(Scheduler.class);
-					assertThat(scheduler.getMetaData().getThreadPoolClass())
-							.isEqualTo(LocalTaskExecutorThreadPool.class);
+					assertThat(scheduler.getMetaData().getThreadPoolSize()).isEqualTo(50);
+					Executor executor = context.getBean(Executor.class);
+					verifyZeroInteractions(executor);
 				});
 	}
 
@@ -304,51 +265,11 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class QuartzExecutorConfiguration extends BaseQuartzConfiguration {
+	protected static class MockExecutorConfiguration extends BaseQuartzConfiguration {
 
 		@Bean
 		public Executor executor() {
-			return Executors.newSingleThreadExecutor();
-		}
-
-	}
-
-	@Configuration
-	protected static class QuartzMultipleExecutorsConfiguration
-			extends QuartzExecutorConfiguration {
-
-		@Bean
-		public Executor anotherExecutor() {
-			return Executors.newSingleThreadExecutor();
-		}
-
-	}
-
-	@Configuration
-	protected static class QuartzMultipleExecutorsWithPrimaryConfiguration
-			extends QuartzExecutorConfiguration {
-
-		@Bean
-		@Primary
-		public Executor primaryExecutor() {
-			return Executors.newSingleThreadExecutor();
-		}
-
-	}
-
-	@Configuration
-	protected static class QuartzMultipleExecutorsWithCustomizerConfiguration
-			extends QuartzMultipleExecutorsConfiguration {
-
-		@Bean
-		public Executor yetAnotherExecutor() {
-			return Executors.newSingleThreadExecutor();
-		}
-
-		@Bean
-		public SchedulerFactoryBeanCustomizer customizer() {
-			return (schedulerFactoryBean) -> schedulerFactoryBean
-					.setTaskExecutor(yetAnotherExecutor());
+			return mock(Executor.class);
 		}
 
 	}
