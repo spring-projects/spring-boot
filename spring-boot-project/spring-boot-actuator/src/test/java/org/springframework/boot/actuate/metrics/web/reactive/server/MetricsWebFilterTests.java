@@ -74,6 +74,22 @@ public class MetricsWebFilterTests {
 		assertMetricsContainsTag("status", "500");
 	}
 
+	@Test
+	public void filterAddsTagsToRegistryForExceptionsAndCommittedResponse() {
+		MockServerWebExchange exchange = createExchange("/projects/spring-boot",
+				"/projects/{project}");
+		this.webFilter.filter(exchange,
+				serverWebExchange -> {
+					exchange.getResponse().setStatusCodeValue(500);
+					return exchange.getResponse().setComplete()
+							.then(Mono.error(new IllegalStateException("test error")));
+				})
+				.onErrorResume(t -> Mono.empty())
+				.block();
+		assertMetricsContainsTag("uri", "/projects/{project}");
+		assertMetricsContainsTag("status", "500");
+	}
+
 	private MockServerWebExchange createExchange(String path, String pathPattern) {
 		PathPatternParser parser = new PathPatternParser();
 		MockServerWebExchange exchange = MockServerWebExchange
