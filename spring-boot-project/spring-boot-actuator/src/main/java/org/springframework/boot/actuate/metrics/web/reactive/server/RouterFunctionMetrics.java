@@ -36,7 +36,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
  *
  * @author Jon Schneider
  * @since 2.0.0
+ * @deprecated in favor of the auto-configured {@link MetricsWebFilter}
  */
+@Deprecated
 public class RouterFunctionMetrics {
 
 	private final MeterRegistry registry;
