@@ -25,15 +25,16 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
 /**
- * Intercepts incoming HTTP requests modeled with the WebFlux annotation-based programming
- * model.
+ * Intercepts incoming HTTP requests handled by Spring WebFlux handlers.
  *
  * @author Jon Schneider
+ * @author Brian Clozel
  * @since 2.0.0
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
@@ -59,8 +60,10 @@ public class MetricsWebFilter implements WebFilter {
 
 	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {
 		long start = System.nanoTime();
+		ServerHttpResponse response = exchange.getResponse();
 		return call.doOnSuccess((done) -> success(exchange, start))
-				.doOnError((cause) -> error(exchange, start, cause));
+				.doOnError((cause) -> response
+						.beforeCommit(() -> error(exchange, start, cause)));
 	}
 
 	private void success(ServerWebExchange exchange, long start) {
@@ -69,10 +72,11 @@ public class MetricsWebFilter implements WebFilter {
 				TimeUnit.NANOSECONDS);
 	}
 
-	private void error(ServerWebExchange exchange, long start, Throwable cause) {
+	private Mono<Void>  error(ServerWebExchange exchange, long start, Throwable cause) {
 		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
 		this.registry.timer(this.metricName, tags).record(System.nanoTime() - start,
 				TimeUnit.NANOSECONDS);
+		return Mono.empty();
 	}
 
 }
