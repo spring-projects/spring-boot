@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.quartz;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
@@ -64,8 +63,6 @@ public class QuartzAutoConfiguration {
 
 	private final List<SchedulerFactoryBeanCustomizer> customizers;
 
-	private final Executor taskExecutor;
-
 	private final JobDetail[] jobDetails;
 
 	private final Map<String, Calendar> calendars;
@@ -76,12 +73,11 @@ public class QuartzAutoConfiguration {
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
 			ObjectProvider<List<SchedulerFactoryBeanCustomizer>> customizers,
-			ObjectProvider<Executor> taskExecutor, ObjectProvider<JobDetail[]> jobDetails,
+			ObjectProvider<JobDetail[]> jobDetails,
 			ObjectProvider<Map<String, Calendar>> calendars,
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
 		this.customizers = customizers.getIfAvailable();
-		this.taskExecutor = taskExecutor.getIfUnique();
 		this.jobDetails = jobDetails.getIfAvailable();
 		this.calendars = calendars.getIfAvailable();
 		this.triggers = triggers.getIfAvailable();
@@ -97,9 +93,6 @@ public class QuartzAutoConfiguration {
 		if (!this.properties.getProperties().isEmpty()) {
 			schedulerFactoryBean
 					.setQuartzProperties(asProperties(this.properties.getProperties()));
-		}
-		if (this.taskExecutor != null) {
-			schedulerFactoryBean.setTaskExecutor(this.taskExecutor);
 		}
 		if (this.jobDetails != null && this.jobDetails.length > 0) {
 			schedulerFactoryBean.setJobDetails(this.jobDetails);

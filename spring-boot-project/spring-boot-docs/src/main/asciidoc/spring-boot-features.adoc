@@ -5876,6 +5876,10 @@ Quartz Scheduler configuration can be customized by using Quartz configuration p
 ()`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans, which allow
 programmatic `SchedulerFactoryBean` customization.
 
+NOTE: In particular, an `Executor` bean is not associated with the scheduler as Quartz
+offers a way to configure the scheduler via `spring.quartz.properties`. If you need
+to customize the task executor, consider implementing `SchedulerFactoryBeanCustomizer`.
+
 Jobs can define setters to inject data map properties. Regular beans can also be injected
 in a similar manner, as shown in the following example:
 
