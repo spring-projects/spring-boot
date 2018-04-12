@@ -5549,7 +5549,7 @@ The following code shows a typical example:
 
 		private final WebClient webClient;
 
-		public MyBean(WebClient.Builder webClientBuilder) {
+		public MyService(WebClient.Builder webClientBuilder) {
 			this.webClient = webClientBuilder.baseUrl("http://example.org").build();
 		}
 
