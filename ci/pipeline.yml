@@ -261,7 +261,7 @@ jobs:
       - put: repo-status-jdk9-build
         params: { state: "failure", commit: "git-repo" }
       - task: determine-email-body
-        image: spring-boot-ci-image
+        image: spring-boot-jdk9-ci-image
         file: git-repo/ci/tasks/determine-email-body.yml
         params:
           STATE: failure
@@ -274,7 +274,7 @@ jobs:
           body: email-details/body
   - do:
     - task: determine-email-body
-      image: spring-boot-ci-image
+      image: spring-boot-jdk9-ci-image
       file: git-repo/ci/tasks/determine-email-body.yml
       params:
         STATE: success
@@ -320,7 +320,7 @@ jobs:
       - put: repo-status-jdk10-build
         params: { state: "failure", commit: "git-repo" }
       - task: determine-email-body
-        image: spring-boot-ci-image
+        image: spring-boot-jdk10-ci-image
         file: git-repo/ci/tasks/determine-email-body.yml
         params:
           STATE: failure
@@ -333,7 +333,7 @@ jobs:
           body: email-details/body
   - do:
     - task: determine-email-body
-      image: spring-boot-ci-image
+      image: spring-boot-jdk10-ci-image
       file: git-repo/ci/tasks/determine-email-body.yml
       params:
         STATE: success

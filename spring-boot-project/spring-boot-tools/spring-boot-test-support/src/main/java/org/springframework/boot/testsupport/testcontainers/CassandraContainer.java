@@ -44,7 +44,7 @@ public class CassandraContainer extends Container {
 	private static class WaitStrategy extends HostPortWaitStrategy {
 
 		@Override
-		protected void waitUntilReady() {
+		public void waitUntilReady(GenericContainer container) {
 			super.waitUntilReady();
 
 			try {
@@ -59,7 +59,7 @@ public class CassandraContainer extends Container {
 		private Callable<Boolean> checkConnection() {
 			return () -> {
 				try (Cluster cluster = Cluster.builder()
-						.withPort(this.container.getMappedPort(PORT))
+						.withPort(container.getMappedPort(PORT))
 						.addContactPoint("localhost").build()) {
 					cluster.connect();
 					return true;
