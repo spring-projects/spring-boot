@@ -516,9 +516,6 @@ includes Tomcat by including `spring-boot-starter-tomcat`, but you can use
 `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`,
 `spring-boot-starter-jetty`, or `spring-boot-starter-undertow` instead.
 
-NOTE: Many starters support only Spring MVC, so they transitively bring
-`spring-boot-starter-web` into your application classpath.
-
 If you need to use a different HTTP server, you need to exclude the default dependencies
 and include the one you need. Spring Boot provides separate starters for
 HTTP servers to help make this process as easy as possible.
@@ -566,6 +563,19 @@ WebFlux:
 NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` class, so
 you may need to keep a dependency on Netty even when you need to include a different HTTP
 server.
+
+
+
+[[howto-use-another-web-server]]
+=== Disabling the Web Server
+If your classpath contains the necessary bits to start a web server, Spring Boot will
+automatically start it. To disable this behaviour configure the `WebApplicationType` in
+your `application.properties`, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.main.web-application-type=none
+----
 
 
 
