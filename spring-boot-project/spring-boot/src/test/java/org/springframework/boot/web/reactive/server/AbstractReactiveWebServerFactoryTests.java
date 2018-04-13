@@ -34,7 +34,6 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.assertj.core.api.Assumptions;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +44,6 @@ import reactor.ipc.netty.http.client.HttpClientOptions;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.testsupport.rule.OutputCapture;
-import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -154,8 +152,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslWantsClientAuthenticationSucceedsWithoutClientCertificate()
-			throws Exception {
+	public void sslWantsClientAuthenticationSucceedsWithoutClientCertificate() {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.WANT);
 		ssl.setKeyStore("classpath:test.jks");
@@ -205,11 +202,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	public void sslNeedsClientAuthenticationFailsWithoutClientCertificate()
-			throws Exception {
-		// Ignored for Undertow, see https://github.com/reactor/reactor-netty/issues/257
-		Assumptions.assumeThat(getFactory())
-				.isNotInstanceOf(UndertowReactiveWebServerFactory.class);
+	public void sslNeedsClientAuthenticationFailsWithoutClientCertificate() {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
 		ssl.setKeyStore("classpath:test.jks");

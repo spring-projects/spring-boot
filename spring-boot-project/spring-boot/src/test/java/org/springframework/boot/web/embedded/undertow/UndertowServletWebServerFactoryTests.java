@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
 import io.undertow.Undertow.Builder;
@@ -213,7 +214,7 @@ public class UndertowServletWebServerFactoryTests
 				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
 	}
 
-	@Test(expected = SSLHandshakeException.class)
+	@Test(expected = SSLException.class)
 	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
 				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
@@ -231,7 +232,7 @@ public class UndertowServletWebServerFactoryTests
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
 
-	@Test(expected = SSLHandshakeException.class)
+	@Test(expected = SSLException.class)
 	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
