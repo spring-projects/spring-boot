@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ public interface BootArchive extends Task {
 
 	/**
 	 * Returns the name of the main class of the application.
-	 *
 	 * @return the main class name
 	 */
 	@Input
@@ -45,7 +44,6 @@ public interface BootArchive extends Task {
 
 	/**
 	 * Sets the name of the main class of the application.
-	 *
 	 * @param mainClassName the name of the main class of the application
 	 */
 	void setMainClassName(String mainClassName);
@@ -53,7 +51,6 @@ public interface BootArchive extends Task {
 	/**
 	 * Adds Ant-style patterns that identify files that must be unpacked from the archive
 	 * when it is launched.
-	 *
 	 * @param patterns the patterns
 	 */
 	void requiresUnpack(String... patterns);
@@ -61,7 +58,6 @@ public interface BootArchive extends Task {
 	/**
 	 * Adds a spec that identifies files that must be unpacked from the archive when it is
 	 * launched.
-	 *
 	 * @param spec the spec
 	 */
 	void requiresUnpack(Spec<FileTreeElement> spec);
@@ -69,7 +65,6 @@ public interface BootArchive extends Task {
 	/**
 	 * Returns the {@link LaunchScriptConfiguration} that will control the script that is
 	 * prepended to the archive.
-	 *
 	 * @return the launch script configuration, or {@code null} if the launch script has
 	 * not been configured.
 	 */
@@ -85,14 +80,12 @@ public interface BootArchive extends Task {
 	/**
 	 * Configures the archive to have a prepended launch script, customizing its
 	 * configuration using the given {@code action}.
-	 *
 	 * @param action the action to apply
 	 */
 	void launchScript(Action<LaunchScriptConfiguration> action);
 
 	/**
 	 * Returns the classpath that will be included in the archive.
-	 *
 	 * @return the classpath
 	 */
 	@Optional
@@ -102,7 +95,6 @@ public interface BootArchive extends Task {
 	/**
 	 * Adds files to the classpath to include in the archive. The given {@code classpath}
 	 * are evaluated as per {@link Project#files(Object...)}.
-	 *
 	 * @param classpath the additions to the classpath
 	 */
 	void classpath(Object... classpath);
@@ -110,7 +102,6 @@ public interface BootArchive extends Task {
 	/**
 	 * Returns {@code true} if the Devtools jar should be excluded, otherwise
 	 * {@code false}.
-	 *
 	 * @return {@code true} if the Devtools jar should be excluded, or {@code false} if
 	 * not
 	 */
@@ -119,7 +110,6 @@ public interface BootArchive extends Task {
 
 	/**
 	 * Sets whether or not the Devtools jar should be excluded.
-	 *
 	 * @param excludeDevtools {@code true} if the Devtools jar should be excluded, or
 	 * {@code false} if not
 	 */

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.jta.atomikos;
 
-import javax.jms.JMSException;
-
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +48,7 @@ public class AtomikosConnectionFactoryBeanTests {
 			extends AtomikosConnectionFactoryBean {
 
 		@Override
-		public synchronized void init() throws JMSException {
+		public synchronized void init() {
 		}
 
 		@Override

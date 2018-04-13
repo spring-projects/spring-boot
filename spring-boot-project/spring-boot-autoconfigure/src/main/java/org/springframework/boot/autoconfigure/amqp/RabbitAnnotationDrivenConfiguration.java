@@ -97,6 +97,7 @@ class RabbitAnnotationDrivenConfiguration {
 		return factory;
 	}
 
+	@Configuration
 	@EnableRabbit
 	@ConditionalOnMissingBean(name = RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableRabbitConfiguration {

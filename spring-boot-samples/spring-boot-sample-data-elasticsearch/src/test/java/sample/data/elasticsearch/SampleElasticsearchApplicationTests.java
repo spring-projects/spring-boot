@@ -45,7 +45,7 @@ public class SampleElasticsearchApplicationTests {
 	public static SkipOnWindows skipOnWindows = new SkipOnWindows();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		try {
 			new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
 		}
@@ -73,7 +73,7 @@ public class SampleElasticsearchApplicationTests {
 	static class SkipOnWindows implements TestRule {
 
 		@Override
-		public Statement apply(final Statement base, Description description) {
+		public Statement apply(Statement base, Description description) {
 			return new Statement() {
 
 				@Override

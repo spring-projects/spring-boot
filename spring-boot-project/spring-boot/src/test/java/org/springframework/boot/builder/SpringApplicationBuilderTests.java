@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void profileAndProperties() throws Exception {
+	public void profileAndProperties() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.profiles("foo").properties("foo=bar");
@@ -76,7 +76,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void propertiesAsMap() throws Exception {
+	public void propertiesAsMap() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.properties(Collections.singletonMap("bar", "foo"));
@@ -85,7 +85,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void propertiesAsProperties() throws Exception {
+	public void propertiesAsProperties() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.properties(StringUtils.splitArrayElementsIntoProperties(
@@ -95,7 +95,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void propertiesWithRepeatSeparator() throws Exception {
+	public void propertiesWithRepeatSeparator() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.properties("one=c:\\logging.file", "two=a:b", "three:c:\\logging.file",
@@ -109,7 +109,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void specificApplicationContextClass() throws Exception {
+	public void specificApplicationContextClass() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class)
 				.contextClass(StaticApplicationContext.class);
@@ -118,7 +118,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentContextCreationThatIsRunDirectly() throws Exception {
+	public void parentContextCreationThatIsRunDirectly() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class);
 		application.parent(ExampleConfig.class);
@@ -134,7 +134,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentContextCreationThatIsBuiltThenRun() throws Exception {
+	public void parentContextCreationThatIsBuiltThenRun() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class);
 		application.parent(ExampleConfig.class);
@@ -150,7 +150,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentContextCreationWithChildShutdown() throws Exception {
+	public void parentContextCreationWithChildShutdown() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class)
 						.registerShutdownHook(true);
@@ -163,7 +163,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void contextWithClassLoader() throws Exception {
+	public void contextWithClassLoader() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).contextClass(SpyApplicationContext.class);
 		ClassLoader classLoader = new URLClassLoader(new URL[0],
@@ -175,7 +175,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentContextWithClassLoader() throws Exception {
+	public void parentContextWithClassLoader() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ChildConfig.class).contextClass(SpyApplicationContext.class);
 		ClassLoader classLoader = new URLClassLoader(new URL[0],
@@ -188,7 +188,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentFirstCreation() throws Exception {
+	public void parentFirstCreation() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).child(ChildConfig.class);
 		application.contextClass(SpyApplicationContext.class);
@@ -200,7 +200,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentFirstCreationWithProfileAndDefaultArgs() throws Exception {
+	public void parentFirstCreationWithProfileAndDefaultArgs() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).profiles("node").properties("transport=redis")
 						.child(ChildConfig.class).web(WebApplicationType.NONE);
@@ -217,7 +217,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentFirstWithDifferentProfile() throws Exception {
+	public void parentFirstWithDifferentProfile() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).profiles("node").properties("transport=redis")
 						.child(ChildConfig.class).profiles("admin")
@@ -230,7 +230,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentWithDifferentProfile() throws Exception {
+	public void parentWithDifferentProfile() {
 		SpringApplicationBuilder shared = new SpringApplicationBuilder(
 				ExampleConfig.class).profiles("node").properties("transport=redis");
 		SpringApplicationBuilder application = shared.child(ChildConfig.class)
@@ -246,7 +246,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentFirstWithDifferentProfileAndExplicitEnvironment() throws Exception {
+	public void parentFirstWithDifferentProfileAndExplicitEnvironment() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).environment(new StandardEnvironment())
 						.profiles("node").properties("transport=redis")
@@ -262,7 +262,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void parentContextIdentical() throws Exception {
+	public void parentContextIdentical() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class);
 		application.parent(ExampleConfig.class);
@@ -273,7 +273,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void initializersCreatedOnce() throws Exception {
+	public void initializersCreatedOnce() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).web(WebApplicationType.NONE);
 		this.context = application.run();
@@ -281,7 +281,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void initializersCreatedOnceForChild() throws Exception {
+	public void initializersCreatedOnceForChild() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).child(ChildConfig.class)
 						.web(WebApplicationType.NONE);
@@ -290,7 +290,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void initializersIncludeDefaults() throws Exception {
+	public void initializersIncludeDefaults() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).web(WebApplicationType.NONE).initializers(
 						(ConfigurableApplicationContext applicationContext) -> {
@@ -300,7 +300,7 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void sourcesWithBoundSources() throws Exception {
+	public void sourcesWithBoundSources() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.web(WebApplicationType.NONE).sources(ExampleConfig.class)
 				.properties("spring.main.sources=" + ChildConfig.class.getName());

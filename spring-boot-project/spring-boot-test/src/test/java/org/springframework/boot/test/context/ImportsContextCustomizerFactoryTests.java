@@ -68,7 +68,7 @@ public class ImportsContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void contextCustomizerEqualsAndHashCode() throws Exception {
+	public void contextCustomizerEqualsAndHashCode() {
 		ContextCustomizer customizer1 = this.factory
 				.createContextCustomizer(TestWithImport.class, null);
 		ContextCustomizer customizer2 = this.factory
@@ -85,15 +85,14 @@ public class ImportsContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException()
-			throws Exception {
+	public void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Test classes cannot include @Bean methods");
 		this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null);
 	}
 
 	@Test
-	public void contextCustomizerImportsBeans() throws Exception {
+	public void contextCustomizerImportsBeans() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(TestWithImport.class, null);
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();

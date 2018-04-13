@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.time.Duration;
 
 import io.micrometer.prometheus.PrometheusConfig;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link PrometheusProperties} to a {@link PrometheusConfig}.
@@ -28,14 +28,11 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class PrometheusPropertiesConfigAdapter
-		extends PropertiesConfigAdapter<PrometheusProperties, PrometheusConfig>
-		implements PrometheusConfig {
-
-	private static final PrometheusConfig DEFAULTS = (key) -> null;
+class PrometheusPropertiesConfigAdapter extends
+		PropertiesConfigAdapter<PrometheusProperties> implements PrometheusConfig {
 
 	PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
@@ -45,12 +42,13 @@ class PrometheusPropertiesConfigAdapter
 
 	@Override
 	public boolean descriptions() {
-		return get(PrometheusProperties::getDescriptions, PrometheusConfig::descriptions);
+		return get(PrometheusProperties::isDescriptions,
+				PrometheusConfig.super::descriptions);
 	}
 
 	@Override
 	public Duration step() {
-		return get(PrometheusProperties::getStep, PrometheusConfig::step);
+		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
 	}
 
 }

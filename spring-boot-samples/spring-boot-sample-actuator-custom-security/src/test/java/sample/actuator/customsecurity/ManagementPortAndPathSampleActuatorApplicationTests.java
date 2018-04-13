@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"management.server.port=0", "management.server.context-path=/management" })
+		"management.server.port=0",
+		"management.server.servlet.context-path=/management" })
 public class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@LocalServerPort
@@ -48,7 +49,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	private int managementPort = 9011;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -56,7 +57,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testSecureActuator() throws Exception {
+	public void testSecureActuator() {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/management/actuator/env",
 				String.class);
@@ -64,7 +65,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testInsecureActuator() throws Exception {
+	public void testInsecureActuator() {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/management/actuator/health",
 				String.class);
@@ -73,7 +74,7 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMissing() throws Exception {
+	public void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
 				.getForEntity("http://localhost:" + this.managementPort
 						+ "/management/actuator/missing", String.class);

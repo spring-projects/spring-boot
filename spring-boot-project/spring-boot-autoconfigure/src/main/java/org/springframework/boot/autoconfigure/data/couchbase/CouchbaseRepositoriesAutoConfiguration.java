@@ -22,7 +22,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.ConditionalOnRepositoryType;
+import org.springframework.boot.autoconfigure.data.RepositoryType;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
@@ -40,7 +41,7 @@ import org.springframework.data.couchbase.repository.support.CouchbaseRepository
 @Configuration
 @ConditionalOnClass({ Bucket.class, CouchbaseRepository.class })
 @ConditionalOnBean(RepositoryOperationsMapping.class)
-@ConditionalOnProperty(prefix = "spring.data.couchbase.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnRepositoryType(store = "couchbase", type = RepositoryType.IMPERATIVE)
 @ConditionalOnMissingBean(CouchbaseRepositoryFactoryBean.class)
 @Import(CouchbaseRepositoriesRegistrar.class)
 public class CouchbaseRepositoriesAutoConfiguration {

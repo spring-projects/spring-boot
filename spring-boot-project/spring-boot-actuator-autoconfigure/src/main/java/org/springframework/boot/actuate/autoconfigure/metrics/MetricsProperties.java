@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * {@link ConfigurationProperties} for configuring Micrometer-based metrics.
@@ -24,10 +28,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jon Schneider
  * @since 2.0.0
  */
-@ConfigurationProperties("spring.metrics")
+@ConfigurationProperties("management.metrics")
 public class MetricsProperties {
-
-	private Web web = new Web();
 
 	/**
 	 * Whether auto-configured MeterRegistry implementations should be bound to the global
@@ -35,6 +37,16 @@ public class MetricsProperties {
 	 * independence.
 	 */
 	private boolean useGlobalRegistry = true;
+
+	/**
+	 * Whether meter IDs starting-with the specified name should be enabled. The longest
+	 * match wins, the key `all` can also be used to configure all meters.
+	 */
+	private Map<String, Boolean> enable = new LinkedHashMap<>();
+
+	private final Web web = new Web();
+
+	private final Distribution distribution = new Distribution();
 
 	public boolean isUseGlobalRegistry() {
 		return this.useGlobalRegistry;
@@ -44,52 +56,50 @@ public class MetricsProperties {
 		this.useGlobalRegistry = useGlobalRegistry;
 	}
 
+	public Map<String, Boolean> getEnable() {
+		return this.enable;
+	}
+
+	public void setEnable(Map<String, Boolean> enable) {
+		Assert.notNull(enable, "enable must not be null");
+		this.enable = enable;
+	}
+
 	public Web getWeb() {
 		return this.web;
 	}
 
+	public Distribution getDistribution() {
+		return this.distribution;
+	}
+
 	public static class Web {
 
-		private Client client = new Client();
+		private final Client client = new Client();
 
-		private Server server = new Server();
+		private final Server server = new Server();
 
 		public Client getClient() {
 			return this.client;
-		}
-
-		public void setClient(Client client) {
-			this.client = client;
 		}
 
 		public Server getServer() {
 			return this.server;
 		}
 
-		public void setServer(Server server) {
-			this.server = server;
-		}
-
 		public static class Client {
-
-			/**
-			 * Whether instrumented requests record percentiles histogram buckets by
-			 * default.
-			 */
-			private boolean recordRequestPercentiles;
 
 			/**
 			 * Name of the metric for sent requests.
 			 */
 			private String requestsMetricName = "http.client.requests";
 
-			public boolean isRecordRequestPercentiles() {
-				return this.recordRequestPercentiles;
-			}
-
-			public void setRecordRequestPercentiles(boolean recordRequestPercentiles) {
-				this.recordRequestPercentiles = recordRequestPercentiles;
-			}
+			/**
+			 * Maximum number of unique URI tag values allowed. After the max number of
+			 * tag values is reached, metrics with additional tag values are denied by
+			 * filter.
+			 */
+			private int maxUriTags = 100;
 
 			public String getRequestsMetricName() {
 				return this.requestsMetricName;
@@ -97,6 +107,14 @@ public class MetricsProperties {
 
 			public void setRequestsMetricName(String requestsMetricName) {
 				this.requestsMetricName = requestsMetricName;
+			}
+
+			public int getMaxUriTags() {
+				return this.maxUriTags;
+			}
+
+			public void setMaxUriTags(int maxUriTags) {
+				this.maxUriTags = maxUriTags;
 			}
 
 		}
@@ -112,13 +130,6 @@ public class MetricsProperties {
 			private boolean autoTimeRequests = true;
 
 			/**
-			 * Whether or not instrumented requests record percentiles histogram buckets
-			 * by default. Can be overridden by adding '@Timed' to a request endpoint and
-			 * setting 'percentiles' to true.
-			 */
-			private boolean recordRequestPercentiles;
-
-			/**
 			 * Name of the metric for received requests.
 			 */
 			private String requestsMetricName = "http.server.requests";
@@ -131,14 +142,6 @@ public class MetricsProperties {
 				this.autoTimeRequests = autoTimeRequests;
 			}
 
-			public boolean isRecordRequestPercentiles() {
-				return this.recordRequestPercentiles;
-			}
-
-			public void setRecordRequestPercentiles(boolean recordRequestPercentiles) {
-				this.recordRequestPercentiles = recordRequestPercentiles;
-			}
-
 			public String getRequestsMetricName() {
 				return this.requestsMetricName;
 			}
@@ -147,6 +150,61 @@ public class MetricsProperties {
 				this.requestsMetricName = requestsMetricName;
 			}
 
+		}
+
+	}
+
+	public static class Distribution {
+
+		/**
+		 * Whether meter IDs starting-with the specified name should be publish percentile
+		 * histograms. Monitoring systems that support aggregable percentile calculation
+		 * based on a histogram be set to true. For other systems, this has no effect. The
+		 * longest match wins, the key `all` can also be used to configure all meters.
+		 */
+		private Map<String, Boolean> percentilesHistogram = new LinkedHashMap<>();
+
+		/**
+		 * Specific computed non-aggregable percentiles to ship to the backend for meter
+		 * IDs starting-with the specified name. The longest match wins, the key `all` can
+		 * also be used to configure all meters.
+		 */
+		private Map<String, double[]> percentiles = new LinkedHashMap<>();
+
+		/**
+		 * Specific SLA boundaries for meter IDs starting-with the specified name. The
+		 * longest match wins, the key `all` can also be used to configure all meters.
+		 * Counters will be published for each specified boundary. Values can be specified
+		 * as a long or as a Duration value (for timer meters, defaulting to ms if no unit
+		 * specified).
+		 */
+		private Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
+
+		public Map<String, Boolean> getPercentilesHistogram() {
+			return this.percentilesHistogram;
+		}
+
+		public void setPercentilesHistogram(Map<String, Boolean> percentilesHistogram) {
+			Assert.notNull(percentilesHistogram, "PercentilesHistogram must not be null");
+			this.percentilesHistogram = percentilesHistogram;
+		}
+
+		public Map<String, double[]> getPercentiles() {
+			return this.percentiles;
+		}
+
+		public void setPercentiles(Map<String, double[]> percentiles) {
+			Assert.notNull(percentiles, "Percentiles must not be null");
+			this.percentiles = percentiles;
+		}
+
+		public Map<String, ServiceLevelAgreementBoundary[]> getSla() {
+			return this.sla;
+		}
+
+		public void setSla(Map<String, ServiceLevelAgreementBoundary[]> sla) {
+			Assert.notNull(sla, "SLA must not be null");
+			this.sla = sla;
 		}
 
 	}

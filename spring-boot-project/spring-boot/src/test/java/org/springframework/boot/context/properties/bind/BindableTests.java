@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -42,33 +43,33 @@ public class BindableTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void ofClassWhenTypeIsNullShouldThrowException() throws Exception {
+	public void ofClassWhenTypeIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
 		Bindable.of((Class<?>) null);
 	}
 
 	@Test
-	public void ofTypeWhenTypeIsNullShouldThrowException() throws Exception {
+	public void ofTypeWhenTypeIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
 		Bindable.of((ResolvableType) null);
 	}
 
 	@Test
-	public void ofClassShouldSetType() throws Exception {
+	public void ofClassShouldSetType() {
 		assertThat(Bindable.of(String.class).getType())
 				.isEqualTo(ResolvableType.forClass(String.class));
 	}
 
 	@Test
-	public void ofTypeShouldSetType() throws Exception {
+	public void ofTypeShouldSetType() {
 		ResolvableType type = ResolvableType.forClass(String.class);
 		assertThat(Bindable.of(type).getType()).isEqualTo(type);
 	}
 
 	@Test
-	public void ofInstanceShouldSetTypeAndExistingValue() throws Exception {
+	public void ofInstanceShouldSetTypeAndExistingValue() {
 		String instance = "foo";
 		ResolvableType type = ResolvableType.forClass(String.class);
 		assertThat(Bindable.ofInstance(instance).getType()).isEqualTo(type);
@@ -76,20 +77,19 @@ public class BindableTests {
 	}
 
 	@Test
-	public void ofClassWithExistingValueShouldSetTypeAndExistingValue() throws Exception {
+	public void ofClassWithExistingValueShouldSetTypeAndExistingValue() {
 		assertThat(Bindable.of(String.class).withExistingValue("foo").getValue().get())
 				.isEqualTo("foo");
 	}
 
 	@Test
-	public void ofTypeWithExistingValueShouldSetTypeAndExistingValue() throws Exception {
+	public void ofTypeWithExistingValueShouldSetTypeAndExistingValue() {
 		assertThat(Bindable.of(ResolvableType.forClass(String.class))
 				.withExistingValue("foo").getValue().get()).isEqualTo("foo");
 	}
 
 	@Test
-	public void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException()
-			throws Exception {
+	public void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage(
 				"ExistingValue must be an instance of " + String.class.getName());
@@ -97,8 +97,7 @@ public class BindableTests {
 	}
 
 	@Test
-	public void ofTypeWhenPrimitiveWithExistingValueWrapperShouldNotThrowException()
-			throws Exception {
+	public void ofTypeWhenPrimitiveWithExistingValueWrapperShouldNotThrowException() {
 		Bindable<Integer> bindable = Bindable
 				.<Integer>of(ResolvableType.forClass(int.class)).withExistingValue(123);
 		assertThat(bindable.getType().resolve()).isEqualTo(int.class);
@@ -106,14 +105,14 @@ public class BindableTests {
 	}
 
 	@Test
-	public void getBoxedTypeWhenNotBoxedShouldReturnType() throws Exception {
+	public void getBoxedTypeWhenNotBoxedShouldReturnType() {
 		Bindable<String> bindable = Bindable.of(String.class);
 		assertThat(bindable.getBoxedType())
 				.isEqualTo(ResolvableType.forClass(String.class));
 	}
 
 	@Test
-	public void getBoxedTypeWhenPrimitiveShouldReturnBoxedType() throws Exception {
+	public void getBoxedTypeWhenPrimitiveShouldReturnBoxedType() {
 		Bindable<Integer> bindable = Bindable.of(int.class);
 		assertThat(bindable.getType()).isEqualTo(ResolvableType.forClass(int.class));
 		assertThat(bindable.getBoxedType())
@@ -121,7 +120,7 @@ public class BindableTests {
 	}
 
 	@Test
-	public void getBoxedTypeWhenPrimitiveArrayShouldReturnBoxedType() throws Exception {
+	public void getBoxedTypeWhenPrimitiveArrayShouldReturnBoxedType() {
 		Bindable<int[]> bindable = Bindable.of(int[].class);
 		assertThat(bindable.getType().getComponentType())
 				.isEqualTo(ResolvableType.forClass(int.class));
@@ -131,19 +130,33 @@ public class BindableTests {
 	}
 
 	@Test
-	public void getAnnotationsShouldReturnEmptyArray() throws Exception {
+	public void getAnnotationsShouldReturnEmptyArray() {
 		assertThat(Bindable.of(String.class).getAnnotations()).isEmpty();
 	}
 
 	@Test
-	public void withAnnotationsShouldSetAnnotations() throws Exception {
+	public void withAnnotationsShouldSetAnnotations() {
 		Annotation annotation = mock(Annotation.class);
 		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotations())
 				.containsExactly(annotation);
 	}
 
 	@Test
-	public void toStringShouldShowDetails() throws Exception {
+	public void getAnnotationWhenMatchShouldReturnAnnotation() {
+		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
+		assertThat(Bindable.of(String.class).withAnnotations(annotation)
+				.getAnnotation(Test.class)).isSameAs(annotation);
+	}
+
+	@Test
+	public void getAnnotationWhenNoMatchShouldReturnNull() {
+		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
+		assertThat(Bindable.of(String.class).withAnnotations(annotation)
+				.getAnnotation(Bean.class)).isNull();
+	}
+
+	@Test
+	public void toStringShouldShowDetails() {
 		Annotation annotation = AnnotationUtils
 				.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo")
@@ -156,7 +169,7 @@ public class BindableTests {
 	}
 
 	@Test
-	public void equalsAndHashCode() throws Exception {
+	public void equalsAndHashCode() {
 		Annotation annotation = AnnotationUtils
 				.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -54,10 +55,10 @@ public class HealthEndpointAutoConfigurationTests {
 				.run((context) -> {
 					ReactiveHealthIndicator indicator = context.getBean(
 							"reactiveHealthIndicator", ReactiveHealthIndicator.class);
-					verify(indicator, times(0)).health();
+					verify(indicator, never()).health();
 					Health health = context.getBean(HealthEndpoint.class).health();
 					assertThat(health.getStatus()).isEqualTo(Status.UP);
-					assertThat(health.getDetails()).isEmpty();
+					assertThat(health.getDetails()).isNotEmpty();
 					verify(indicator, times(1)).health();
 				});
 	}
@@ -65,12 +66,12 @@ public class HealthEndpointAutoConfigurationTests {
 	@Test
 	public void healthEndpointAdaptReactiveHealthIndicator() {
 		this.contextRunner
-				.withPropertyValues("management.endpoint.health.show-details=true")
+				.withPropertyValues("management.endpoint.health.show-details=always")
 				.withUserConfiguration(ReactiveHealthIndicatorConfiguration.class)
 				.run((context) -> {
 					ReactiveHealthIndicator indicator = context.getBean(
 							"reactiveHealthIndicator", ReactiveHealthIndicator.class);
-					verify(indicator, times(0)).health();
+					verify(indicator, never()).health();
 					Health health = context.getBean(HealthEndpoint.class).health();
 					assertThat(health.getStatus()).isEqualTo(Status.UP);
 					assertThat(health.getDetails()).containsOnlyKeys("reactive");
@@ -81,7 +82,7 @@ public class HealthEndpointAutoConfigurationTests {
 	@Test
 	public void healthEndpointMergeRegularAndReactive() {
 		this.contextRunner
-				.withPropertyValues("management.endpoint.health.show-details=true")
+				.withPropertyValues("management.endpoint.health.show-details=always")
 				.withUserConfiguration(HealthIndicatorConfiguration.class,
 						ReactiveHealthIndicatorConfiguration.class)
 				.run((context) -> {
@@ -89,8 +90,8 @@ public class HealthEndpointAutoConfigurationTests {
 							HealthIndicator.class);
 					ReactiveHealthIndicator reactiveHealthIndicator = context.getBean(
 							"reactiveHealthIndicator", ReactiveHealthIndicator.class);
-					verify(indicator, times(0)).health();
-					verify(reactiveHealthIndicator, times(0)).health();
+					verify(indicator, never()).health();
+					verify(reactiveHealthIndicator, never()).health();
 					Health health = context.getBean(HealthEndpoint.class).health();
 					assertThat(health.getStatus()).isEqualTo(Status.UP);
 					assertThat(health.getDetails()).containsOnlyKeys("simple",

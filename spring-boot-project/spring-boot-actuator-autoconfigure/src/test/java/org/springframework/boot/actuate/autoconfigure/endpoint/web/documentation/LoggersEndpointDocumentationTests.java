@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class LoggersEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+public class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final List<FieldDescriptor> levelFields = Arrays.asList(
 			fieldWithPath("configuredLevel")
@@ -68,10 +67,9 @@ public class LoggersEndpointDocumentationTests
 				new LoggerConfiguration("ROOT", LogLevel.INFO, LogLevel.INFO),
 				new LoggerConfiguration("com.example", LogLevel.DEBUG, LogLevel.DEBUG)));
 		this.mockMvc.perform(get("/actuator/loggers")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("loggers/all",
-						responseFields(
-								fieldWithPath("levels").description(
-										"Levels support by the logging system."),
+				.andDo(MockMvcRestDocumentation.document("loggers/all", responseFields(
+						fieldWithPath("levels")
+								.description("Levels support by the logging system."),
 						fieldWithPath("loggers").description("Loggers keyed by name."))
 								.andWithPrefix("loggers.*.", levelFields)));
 	}
@@ -91,13 +89,12 @@ public class LoggersEndpointDocumentationTests
 				.perform(post("/actuator/loggers/com.example")
 						.content("{\"configuredLevel\":\"debug\"}")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation
-						.document("loggers/set",
+				.andExpect(status().isNoContent()).andDo(
+						MockMvcRestDocumentation.document("loggers/set",
 								requestFields(fieldWithPath("configuredLevel")
 										.description("Level for the logger. May be"
 												+ " omitted to clear the level.")
-								.optional())));
+										.optional())));
 		verify(this.loggingSystem).setLogLevel("com.example", LogLevel.DEBUG);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -110,8 +111,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
-		loggerContext.getTurboFilterList().remove(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
+		loggerContext.getTurboFilterList().remove(FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
 			getLogger(LogbackLoggingSystem.class.getName()).warn(
@@ -127,10 +128,12 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		stopAndReset(context);
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
 		Environment environment = initializationContext.getEnvironment();
-		context.putProperty("LOG_LEVEL_PATTERN", environment.resolvePlaceholders(
-				"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
-		context.putProperty("LOG_DATEFORMAT_PATTERN", environment.resolvePlaceholders(
-				"${logging.pattern.dateformat:${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}"));
+		context.putProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN,
+				environment.resolvePlaceholders(
+						"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
+		context.putProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN,
+				environment.resolvePlaceholders(
+						"${logging.pattern.dateformat:${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}"));
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
 		context.setPackagingDataEnabled(true);

@@ -49,7 +49,7 @@ public class MockBeanOnScopedProxyTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testMocking() throws Exception {
+	public void testMocking() {
 		given(this.caller.getService().greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
 	}

@@ -30,7 +30,7 @@ public class FilteredIterableConfigurationPropertiesSourceTests
 		extends FilteredConfigurationPropertiesSourceTests {
 
 	@Test
-	public void iteratorShouldFilterNames() throws Exception {
+	public void iteratorShouldFilterNames() {
 		MockConfigurationPropertySource source = (MockConfigurationPropertySource) createTestSource();
 		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		assertThat(filtered.iterator()).extracting(ConfigurationPropertyName::toString)
@@ -44,7 +44,7 @@ public class FilteredIterableConfigurationPropertiesSourceTests
 	}
 
 	@Test
-	public void containsDescendantOfShouldUseContents() throws Exception {
+	public void containsDescendantOfShouldUseContents() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar.baz", "1");
 		source.put("foo.bar[0]", "1");

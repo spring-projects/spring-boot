@@ -44,7 +44,7 @@ public class SampleIntegrationParentApplicationTests {
 	private static ConfigurableApplicationContext context;
 
 	@BeforeClass
-	public static void start() throws Exception {
+	public static void start() {
 		context = SpringApplication.run(SampleParentContextApplication.class);
 	}
 
@@ -61,7 +61,7 @@ public class SampleIntegrationParentApplicationTests {
 		awaitOutputContaining("Hello World");
 	}
 
-	private void awaitOutputContaining(final String requiredContents) throws Exception {
+	private void awaitOutputContaining(String requiredContents) throws Exception {
 		long endTime = System.currentTimeMillis() + 30000;
 		String output = null;
 		while (System.currentTimeMillis() < endTime) {

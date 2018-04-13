@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,21 +22,13 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @SpringBootApplication
 @EnableConfigurationProperties(ServiceProperties.class)
 public class SampleActuatorApplication {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(SampleActuatorApplication.class, args);
-	}
-
-	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
-				.username("user").password("password").roles("USER").build());
 	}
 
 	@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.test.autoconfigure.filter;
-
-import java.io.IOException;
 
 import org.junit.Test;
 
@@ -47,23 +45,21 @@ public class TypeExcludeFiltersContextCustomizerFactoryTests {
 	private ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void getContextCustomizerWhenHasNoAnnotationShouldReturnNull()
-			throws Exception {
+	public void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(NoAnnotation.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasAnnotationShouldReturnCustomizer()
-			throws Exception {
+	public void getContextCustomizerWhenHasAnnotationShouldReturnCustomizer() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(WithExcludeFilters.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void hashCodeAndEquals() throws Exception {
+	public void hashCodeAndEquals() {
 		ContextCustomizer customizer1 = this.factory
 				.createContextCustomizer(WithExcludeFilters.class, null);
 		ContextCustomizer customizer2 = this.factory
@@ -117,7 +113,7 @@ public class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 		@Override
 		public boolean match(MetadataReader metadataReader,
-				MetadataReaderFactory metadataReaderFactory) throws IOException {
+				MetadataReaderFactory metadataReaderFactory) {
 			return metadataReader.getClassMetadata().getClassName()
 					.equals(getClass().getName());
 		}
@@ -129,7 +125,7 @@ public class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 		@Override
 		public boolean equals(Object obj) {
-			return obj.getClass().equals(getClass());
+			return obj.getClass() == getClass();
 		}
 
 	}

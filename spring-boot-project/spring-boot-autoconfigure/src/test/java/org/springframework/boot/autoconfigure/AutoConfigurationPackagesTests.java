@@ -52,7 +52,7 @@ public class AutoConfigurationPackagesTests {
 	}
 
 	@Test
-	public void getWithoutSet() throws Exception {
+	public void getWithoutSet() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				EmptyConfig.class);
 		this.thrown.expect(IllegalStateException.class);

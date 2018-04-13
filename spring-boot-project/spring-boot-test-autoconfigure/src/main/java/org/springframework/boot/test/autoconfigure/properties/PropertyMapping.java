@@ -49,9 +49,9 @@ import org.springframework.test.context.TestPropertySource;
  * @see AnnotationsPropertySource
  * @see TestPropertySource
  */
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
+@Documented
 public @interface PropertyMapping {
 
 	/**

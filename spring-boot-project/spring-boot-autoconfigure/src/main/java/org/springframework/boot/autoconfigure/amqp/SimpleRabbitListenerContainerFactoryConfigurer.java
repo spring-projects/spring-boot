@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.boot.context.properties.PropertyMapper;
 
 /**
  * Configure {@link SimpleRabbitListenerContainerFactoryConfigurer} with sensible
@@ -33,18 +34,15 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer extends
 	@Override
 	public void configure(SimpleRabbitListenerContainerFactory factory,
 			ConnectionFactory connectionFactory) {
+		PropertyMapper map = PropertyMapper.get();
 		RabbitProperties.SimpleContainer config = getRabbitProperties().getListener()
 				.getSimple();
 		configure(factory, connectionFactory, config);
-		if (config.getConcurrency() != null) {
-			factory.setConcurrentConsumers(config.getConcurrency());
-		}
-		if (config.getMaxConcurrency() != null) {
-			factory.setMaxConcurrentConsumers(config.getMaxConcurrency());
-		}
-		if (config.getTransactionSize() != null) {
-			factory.setTxSize(config.getTransactionSize());
-		}
+		map.from(config::getConcurrency).whenNonNull()
+				.to(factory::setConcurrentConsumers);
+		map.from(config::getMaxConcurrency).whenNonNull()
+				.to(factory::setMaxConcurrentConsumers);
+		map.from(config::getTransactionSize).whenNonNull().to(factory::setTxSize);
 	}
 
 }

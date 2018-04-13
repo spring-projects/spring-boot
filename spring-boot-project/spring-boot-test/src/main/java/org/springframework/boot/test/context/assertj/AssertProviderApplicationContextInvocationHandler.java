@@ -24,9 +24,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -98,7 +97,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 					+ this.applicationContextType.getName() + "[startupFailure="
 					+ this.startupFailure.getClass().getName() + "]";
 		}
-		ToStringBuilder builder = new ToStringBuilder(this.applicationContext)
+		ToStringCreator builder = new ToStringCreator(this.applicationContext)
 				.append("id", this.applicationContext.getId())
 				.append("applicationName", this.applicationContext.getApplicationName())
 				.append("beanDefinitionCount",

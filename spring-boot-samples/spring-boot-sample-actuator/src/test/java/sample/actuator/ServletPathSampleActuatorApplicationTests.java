@@ -45,7 +45,7 @@ public class ServletPathSampleActuatorApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testErrorPath() throws Exception {
+	public void testErrorPath() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
@@ -58,7 +58,7 @@ public class ServletPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHealth() throws Exception {
+	public void testHealth() {
 		ResponseEntity<String> entity = this.restTemplate
 				.withBasicAuth("user", getPassword())
 				.getForEntity("/spring/actuator/health", String.class);
@@ -67,7 +67,7 @@ public class ServletPathSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHomeIsSecure() throws Exception {
+	public void testHomeIsSecure() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/spring/",
 				Map.class);

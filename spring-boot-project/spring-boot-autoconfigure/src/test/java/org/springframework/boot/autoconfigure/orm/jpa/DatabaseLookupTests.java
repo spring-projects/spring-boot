@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 public class DatabaseLookupTests {
 
 	@Test
-	public void getDatabaseWhenDataSourceIsNullShouldReturnDefault() throws Exception {
+	public void getDatabaseWhenDataSourceIsNullShouldReturnDefault() {
 		assertThat(DatabaseLookup.getDatabase(null)).isEqualTo(Database.DEFAULT);
 	}
 

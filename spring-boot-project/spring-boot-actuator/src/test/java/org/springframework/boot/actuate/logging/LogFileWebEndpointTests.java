@@ -57,12 +57,12 @@ public class LogFileWebEndpointTests {
 	}
 
 	@Test
-	public void nullResponseWithoutLogFile() throws Exception {
+	public void nullResponseWithoutLogFile() {
 		assertThat(this.endpoint.logFile()).isNull();
 	}
 
 	@Test
-	public void nullResponseWithMissingLogFile() throws Exception {
+	public void nullResponseWithMissingLogFile() {
 		this.environment.setProperty("logging.file", "no_test.log");
 		assertThat(this.endpoint.logFile()).isNull();
 	}

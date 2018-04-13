@@ -31,7 +31,7 @@ public final class AuthorizationExceptionMatcher {
 	private AuthorizationExceptionMatcher() {
 	}
 
-	public static Matcher<?> withReason(final Reason reason) {
+	public static Matcher<?> withReason(Reason reason) {
 		return new CustomMatcher<Object>(
 				"CloudFoundryAuthorizationException with " + reason + " reason") {
 

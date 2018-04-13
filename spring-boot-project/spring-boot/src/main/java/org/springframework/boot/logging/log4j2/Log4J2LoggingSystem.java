@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,8 +119,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
 		}
 		supportedConfigLocations.add("log4j2.xml");
-		return supportedConfigLocations
-				.toArray(new String[supportedConfigLocations.size()]);
+		return StringUtils.toStringArray(supportedConfigLocations);
 	}
 
 	protected boolean isClassAvailable(String className) {

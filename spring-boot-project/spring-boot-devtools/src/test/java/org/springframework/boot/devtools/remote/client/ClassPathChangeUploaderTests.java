@@ -73,28 +73,28 @@ public class ClassPathChangeUploaderTests {
 	}
 
 	@Test
-	public void urlMustNotBeNull() throws Exception {
+	public void urlMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URL must not be empty");
 		new ClassPathChangeUploader(null, this.requestFactory);
 	}
 
 	@Test
-	public void urlMustNotBeEmpty() throws Exception {
+	public void urlMustNotBeEmpty() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URL must not be empty");
 		new ClassPathChangeUploader("", this.requestFactory);
 	}
 
 	@Test
-	public void requestFactoryMustNotBeNull() throws Exception {
+	public void requestFactoryMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RequestFactory must not be null");
 		new ClassPathChangeUploader("http://localhost:8080", null);
 	}
 
 	@Test
-	public void urlMustNotBeMalformed() throws Exception {
+	public void urlMustNotBeMalformed() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Malformed URL 'htttttp:///ttest'");
 		new ClassPathChangeUploader("htttttp:///ttest", this.requestFactory);

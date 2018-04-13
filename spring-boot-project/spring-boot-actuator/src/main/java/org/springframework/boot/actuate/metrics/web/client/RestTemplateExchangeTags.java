@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public final class RestTemplateExchangeTags {
 	 * @return the uri tag
 	 */
 	public static Tag uri(HttpRequest request) {
-		return Tag.of("uri", stripUri(request.getURI().toString()));
+		return Tag.of("uri", ensureLeadingSlash(stripUri(request.getURI().toString())));
 	}
 
 	/**
@@ -65,11 +65,15 @@ public final class RestTemplateExchangeTags {
 	 */
 	public static Tag uri(String uriTemplate) {
 		String uri = StringUtils.hasText(uriTemplate) ? uriTemplate : "none";
-		return Tag.of("uri", stripUri(uri));
+		return Tag.of("uri", ensureLeadingSlash(stripUri(uri)));
 	}
 
 	private static String stripUri(String uri) {
 		return uri.replaceAll("^https?://[^/]+/", "");
+	}
+
+	private static String ensureLeadingSlash(String url) {
+		return (url == null || url.startsWith("/") ? url : "/" + url);
 	}
 
 	/**

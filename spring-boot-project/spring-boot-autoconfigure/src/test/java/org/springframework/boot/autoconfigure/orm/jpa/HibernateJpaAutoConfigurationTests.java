@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -132,10 +131,9 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void testLiquibasePlusValidation() {
-		contextRunner()
-				.withPropertyValues("spring.datasource.initialization-mode:never",
-						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
-						"spring.jpa.hibernate.ddl-auto:validate")
+		contextRunner().withPropertyValues("spring.datasource.initialization-mode:never",
+				"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+				"spring.jpa.hibernate.ddl-auto:validate")
 				.withConfiguration(
 						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasNotFailed());
@@ -225,11 +223,10 @@ public class HibernateJpaAutoConfigurationTests
 
 	@Test
 	public void providerDisablesAutoCommitIsNotConfiguredIfPropertyIsSet() {
-		contextRunner()
-				.withPropertyValues(
-						"spring.datasource.type:" + HikariDataSource.class.getName(),
-						"spring.datasource.hikari.auto-commit:false",
-						"spring.jpa.properties.hibernate.connection.provider_disables_autocommit=false")
+		contextRunner().withPropertyValues(
+				"spring.datasource.type:" + HikariDataSource.class.getName(),
+				"spring.datasource.hikari.auto-commit:false",
+				"spring.jpa.properties.hibernate.connection.provider_disables_autocommit=false")
 				.run((context) -> {
 					Map<String, Object> jpaProperties = context
 							.getBean(LocalContainerEntityManagerFactoryBean.class)
@@ -319,7 +316,7 @@ public class HibernateJpaAutoConfigurationTests
 		}
 
 		@Override
-		public int getCurrentStatus() throws SystemException {
+		public int getCurrentStatus() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -337,7 +334,7 @@ public class HibernateJpaAutoConfigurationTests
 		@Override
 		public Enumeration<URL> getResources(String name) throws IOException {
 			if (HIDDEN_RESOURCES.contains(name)) {
-				return new Vector<URL>().elements();
+				return Collections.emptyEnumeration();
 			}
 			return super.getResources(name);
 		}

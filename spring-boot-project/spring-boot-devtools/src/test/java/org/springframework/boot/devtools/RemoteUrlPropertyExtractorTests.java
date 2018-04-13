@@ -47,14 +47,14 @@ public class RemoteUrlPropertyExtractorTests {
 	}
 
 	@Test
-	public void missingUrl() throws Exception {
+	public void missingUrl() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("No remote URL specified");
 		doTest();
 	}
 
 	@Test
-	public void malformedUrl() throws Exception {
+	public void malformedUrl() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Malformed URL '::://wibble'");
 		doTest("::://wibble");
@@ -62,14 +62,14 @@ public class RemoteUrlPropertyExtractorTests {
 	}
 
 	@Test
-	public void multipleUrls() throws Exception {
+	public void multipleUrls() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Multiple URLs specified");
 		doTest("http://localhost:8080", "http://localhost:9090");
 	}
 
 	@Test
-	public void validUrl() throws Exception {
+	public void validUrl() {
 		ApplicationContext context = doTest("http://localhost:8080");
 		assertThat(context.getEnvironment().getProperty("remoteUrl"))
 				.isEqualTo("http://localhost:8080");
@@ -78,7 +78,7 @@ public class RemoteUrlPropertyExtractorTests {
 	}
 
 	@Test
-	public void cleanValidUrl() throws Exception {
+	public void cleanValidUrl() {
 		ApplicationContext context = doTest("http://localhost:8080/");
 		assertThat(context.getEnvironment().getProperty("remoteUrl"))
 				.isEqualTo("http://localhost:8080");

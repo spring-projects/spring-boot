@@ -50,7 +50,7 @@ public class DiskSpaceHealthIndicatorTests {
 	private HealthIndicator healthIndicator;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		given(this.fileMock.exists()).willReturn(true);
 		given(this.fileMock.canRead()).willReturn(true);
@@ -59,7 +59,7 @@ public class DiskSpaceHealthIndicatorTests {
 	}
 
 	@Test
-	public void diskSpaceIsUp() throws Exception {
+	public void diskSpaceIsUp() {
 		given(this.fileMock.getUsableSpace()).willReturn(THRESHOLD_BYTES + 10);
 		given(this.fileMock.getTotalSpace()).willReturn(THRESHOLD_BYTES * 10);
 		Health health = this.healthIndicator.health();
@@ -70,7 +70,7 @@ public class DiskSpaceHealthIndicatorTests {
 	}
 
 	@Test
-	public void diskSpaceIsDown() throws Exception {
+	public void diskSpaceIsDown() {
 		given(this.fileMock.getUsableSpace()).willReturn(THRESHOLD_BYTES - 10);
 		given(this.fileMock.getTotalSpace()).willReturn(THRESHOLD_BYTES * 10);
 		Health health = this.healthIndicator.health();

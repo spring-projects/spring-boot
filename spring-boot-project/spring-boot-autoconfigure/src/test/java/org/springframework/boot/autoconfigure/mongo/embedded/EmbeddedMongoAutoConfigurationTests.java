@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.File;
-import java.net.UnknownHostException;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
@@ -190,8 +189,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 	static class MongoClientConfiguration {
 
 		@Bean
-		public MongoClient mongoClient(@Value("${local.mongo.port}") int port)
-				throws UnknownHostException {
+		public MongoClient mongoClient(@Value("${local.mongo.port}") int port) {
 			return new MongoClient("localhost", port);
 		}
 

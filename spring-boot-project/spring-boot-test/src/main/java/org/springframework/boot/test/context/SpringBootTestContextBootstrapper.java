@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link TestContextBootstrapper} for Spring Boot. Provides support for
@@ -137,7 +138,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		if (configAttributes.getClasses() != null) {
 			combined.addAll(Arrays.asList(configAttributes.getClasses()));
 		}
-		configAttributes.setClasses(combined.toArray(new Class<?>[combined.size()]));
+		configAttributes.setClasses(ClassUtils.toClassArray(combined));
 	}
 
 	@Override
@@ -153,8 +154,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		List<String> propertySourceProperties = getAndProcessPropertySourceProperties(
 				mergedConfig);
 		mergedConfig = createModifiedConfig(mergedConfig, classes,
-				propertySourceProperties
-						.toArray(new String[propertySourceProperties.size()]));
+				StringUtils.toStringArray(propertySourceProperties));
 		WebEnvironment webEnvironment = getWebEnvironment(mergedConfig.getTestClass());
 		if (webEnvironment != null && isWebEnvironmentSupported(mergedConfig)) {
 			WebApplicationType webApplicationType = getWebApplicationType(mergedConfig);

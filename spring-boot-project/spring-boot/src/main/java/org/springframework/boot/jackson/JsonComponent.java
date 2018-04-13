@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -67,6 +68,7 @@ public @interface JsonComponent {
 	 * a Spring bean in case of an autodetected component.
 	 * @return the component name
 	 */
+	@AliasFor(annotation = Component.class)
 	String value() default "";
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,16 +29,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class WebEndpointPropertiesTests {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Test
-	public void defaultBasePathShouldBeApplication() throws Exception {
+	public void defaultBasePathShouldBeApplication() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		assertThat(properties.getBasePath()).isEqualTo("/actuator");
 	}
 
 	@Test
-	public void basePathShouldBeCleaned() throws Exception {
+	public void basePathShouldBeCleaned() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("/");
+		assertThat(properties.getBasePath()).isEqualTo("");
+		properties.setBasePath("/actuator/");
+		assertThat(properties.getBasePath()).isEqualTo("/actuator");
+	}
+
+	@Test
+	public void basePathMustStartWithSlash() {
+		WebEndpointProperties properties = new WebEndpointProperties();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Base path must start with '/' or be empty");
+		properties.setBasePath("admin");
+	}
+
+	@Test
+	public void basePathCanBeEmpty() {
+		WebEndpointProperties properties = new WebEndpointProperties();
+		properties.setBasePath("");
 		assertThat(properties.getBasePath()).isEqualTo("");
 	}
 

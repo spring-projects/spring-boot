@@ -45,7 +45,7 @@ public class NoUnboundElementsBindHandlerTests {
 	private Binder binder;
 
 	@Test
-	public void bindWhenNotUsingNoUnboundElementsHandlerShouldBind() throws Exception {
+	public void bindWhenNotUsingNoUnboundElementsHandlerShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.baz", "bar");
@@ -58,7 +58,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBind() throws Exception {
+	public void bindWhenUsingNoUnboundElementsHandlerShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		this.sources.add(source);
@@ -69,7 +69,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerThrowException() throws Exception {
+	public void bindWhenUsingNoUnboundElementsHandlerThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.baz", "bar");
@@ -87,8 +87,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfPrefixDifferent()
-			throws Exception {
+	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfPrefixDifferent() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("other.baz", "bar");
@@ -100,8 +99,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundSystemProperties()
-			throws Exception {
+	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundSystemProperties() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.other", "baz");

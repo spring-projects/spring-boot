@@ -38,7 +38,7 @@ public class ExampleController2 {
 	}
 
 	@GetMapping("/two/{id}")
-	public Mono<String> one(@PathVariable ExampleId id) {
+	public Mono<String> two(@PathVariable ExampleId id) {
 		return Mono.just(id.getId() + "two");
 	}
 

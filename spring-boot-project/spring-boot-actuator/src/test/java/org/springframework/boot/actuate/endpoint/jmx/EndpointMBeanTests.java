@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,430 +16,136 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Consumer;
-
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
+import javax.management.InvalidAttributeValueException;
 import javax.management.MBeanException;
 import javax.management.MBeanInfo;
-import javax.management.MBeanOperationInfo;
-import javax.management.MBeanParameterInfo;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
-import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxAnnotationEndpointDiscoverer;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.lang.Nullable;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link EndpointMBean}.
  *
+ * @author Phillip Webb
  * @author Stephane Nicoll
  */
 public class EndpointMBeanTests {
 
-	private final JmxEndpointMBeanFactory jmxEndpointMBeanFactory = new JmxEndpointMBeanFactory(
-			new TestJmxOperationResponseMapper());
+	private static final Object[] NO_PARAMS = {};
 
-	private MBeanServer server;
+	private static final String[] NO_SIGNATURE = {};
 
-	private EndpointMBeanRegistrar endpointMBeanRegistrar;
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-	private EndpointObjectNameFactory objectNameFactory = (endpoint) -> new ObjectName(
-			String.format("org.springframework.boot.test:type=Endpoint,name=%s",
-					UUID.randomUUID().toString()));
+	private TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
+			new TestJmxOperation());
 
-	@Before
-	public void createMBeanServer() {
-		this.server = MBeanServerFactory.createMBeanServer();
-		this.endpointMBeanRegistrar = new EndpointMBeanRegistrar(this.server,
-				this.objectNameFactory);
-	}
+	private TestJmxOperationResponseMapper responseMapper = new TestJmxOperationResponseMapper();
 
-	@After
-	public void disposeMBeanServer() {
-		if (this.server != null) {
-			MBeanServerFactory.releaseMBeanServer(this.server);
-		}
+	@Test
+	public void createWhenResponseMapperIsNullShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("ResponseMapper must not be null");
+		new EndpointMBean(null, mock(ExposableJmxEndpoint.class));
 	}
 
 	@Test
-	public void invokeSimpleEndpoint() {
-		load(FooEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "foo");
-			try {
-				// getAll
-				Object allResponse = this.server.invoke(objectName, "getAll",
-						new Object[0], new String[0]);
-				assertThat(allResponse).isEqualTo("[ONE, TWO]");
-
-				// getOne
-				Object oneResponse = this.server.invoke(objectName, "getOne",
-						new Object[] { "one" }, new String[] { String.class.getName() });
-				assertThat(oneResponse).isEqualTo("ONE");
-
-				// update
-				Object updateResponse = this.server.invoke(objectName, "update",
-						new Object[] { "one", "1" },
-						new String[] { String.class.getName(), String.class.getName() });
-				assertThat(updateResponse).isNull();
-
-				// getOne validation after update
-				Object updatedOneResponse = this.server.invoke(objectName, "getOne",
-						new Object[] { "one" }, new String[] { String.class.getName() });
-				assertThat(updatedOneResponse).isEqualTo("1");
-
-				// deleteOne
-				Object deleteResponse = this.server.invoke(objectName, "deleteOne",
-						new Object[] { "one" }, new String[] { String.class.getName() });
-				assertThat(deleteResponse).isNull();
-
-				// getOne validation after delete
-				updatedOneResponse = this.server.invoke(objectName, "getOne",
-						new Object[] { "one" }, new String[] { String.class.getName() });
-				assertThat(updatedOneResponse).isNull();
-			}
-			catch (Exception ex) {
-				throw new AssertionError("Failed to invoke method on FooEndpoint", ex);
-			}
-		});
+	public void createWhenEndpointIsNullShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Endpoint must not be null");
+		new EndpointMBean(mock(JmxOperationResponseMapper.class), null);
 	}
 
 	@Test
-	public void jmxTypesAreProperlyMapped() {
-		load(FooEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "foo");
-			try {
-				MBeanInfo mBeanInfo = this.server.getMBeanInfo(objectName);
-				Map<String, MBeanOperationInfo> operations = mapOperations(mBeanInfo);
-				assertThat(operations).containsOnlyKeys("getAll", "getOne", "update",
-						"deleteOne");
-				assertOperation(operations.get("getAll"), String.class,
-						MBeanOperationInfo.INFO, new Class<?>[0]);
-				assertOperation(operations.get("getOne"), String.class,
-						MBeanOperationInfo.INFO, new Class<?>[] { String.class });
-				assertOperation(operations.get("update"), Void.TYPE,
-						MBeanOperationInfo.ACTION,
-						new Class<?>[] { String.class, String.class });
-				assertOperation(operations.get("deleteOne"), Void.TYPE,
-						MBeanOperationInfo.ACTION, new Class<?>[] { String.class });
-			}
-			catch (Exception ex) {
-				throw new AssertionError("Failed to retrieve MBeanInfo of FooEndpoint",
-						ex);
-			}
-		});
-	}
-
-	private void assertOperation(MBeanOperationInfo operation, Class<?> returnType,
-			int impact, Class<?>[] types) {
-		assertThat(operation.getReturnType()).isEqualTo(returnType.getName());
-		assertThat(operation.getImpact()).isEqualTo(impact);
-		MBeanParameterInfo[] signature = operation.getSignature();
-		assertThat(signature).hasSize(types.length);
-		for (int i = 0; i < types.length; i++) {
-			assertThat(signature[i].getType()).isEqualTo(types[0].getName());
-		}
+	public void getMBeanInfoShouldReturnMBeanInfo() {
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
+		MBeanInfo info = bean.getMBeanInfo();
+		assertThat(info.getDescription()).isEqualTo("MBean operations for endpoint test");
 	}
 
 	@Test
-	public void invokeReactiveOperation() {
-		load(ReactiveEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "reactive");
-			try {
-				Object allResponse = this.server.invoke(objectName, "getInfo",
-						new Object[0], new String[0]);
-				assertThat(allResponse).isInstanceOf(String.class);
-				assertThat(allResponse).isEqualTo("HELLO WORLD");
-			}
-			catch (Exception ex) {
-				throw new AssertionError("Failed to invoke getInfo method", ex);
-			}
-		});
-
+	public void invokeShouldInvokeJmxOperation()
+			throws MBeanException, ReflectionException {
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
+		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+		assertThat(result).isEqualTo("result");
 	}
 
 	@Test
-	public void invokeUnknownOperation() {
-		load(FooEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "foo");
-			try {
-				this.server.invoke(objectName, "doesNotExist", new Object[0],
-						new String[0]);
-				throw new AssertionError(
-						"Should have failed to invoke unknown operation");
-			}
-			catch (ReflectionException ex) {
-				assertThat(ex.getCause()).isInstanceOf(IllegalArgumentException.class);
-				assertThat(ex.getCause().getMessage()).contains("doesNotExist", "foo");
-			}
-			catch (MBeanException | InstanceNotFoundException ex) {
-				throw new IllegalStateException(ex);
-			}
-
-		});
+	public void invokeWhenActionNameIsNotAnOperationShouldThrowException()
+			throws MBeanException, ReflectionException {
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
+		this.thrown.expect(ReflectionException.class);
+		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
+		this.thrown.expectMessage("no operation named missingOperation");
+		bean.invoke("missingOperation", NO_PARAMS, NO_SIGNATURE);
 	}
 
 	@Test
-	public void dynamicMBeanCannotReadAttribute() {
-		load(FooEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "foo");
-			try {
-				this.server.getAttribute(objectName, "foo");
-				throw new AssertionError("Should have failed to read attribute foo");
-			}
-			catch (Exception ex) {
-				assertThat(ex).isInstanceOf(AttributeNotFoundException.class);
-			}
-		});
+	public void invokeWhenMonoResultShouldBlockOnMono()
+			throws MBeanException, ReflectionException {
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
+				new TestJmxOperation((arguments) -> Mono.just("monoResult")));
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
+		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+		assertThat(result).isEqualTo("monoResult");
 	}
 
 	@Test
-	public void dynamicMBeanCannotWriteAttribute() {
-		load(FooEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "foo");
-			try {
-				this.server.setAttribute(objectName, new Attribute("foo", "bar"));
-				throw new AssertionError("Should have failed to write attribute foo");
-			}
-			catch (Exception ex) {
-				assertThat(ex).isInstanceOf(AttributeNotFoundException.class);
-			}
-		});
+	public void invokeShouldCallResponseMapper()
+			throws MBeanException, ReflectionException {
+		TestJmxOperationResponseMapper responseMapper = spy(this.responseMapper);
+		EndpointMBean bean = new EndpointMBean(responseMapper, this.endpoint);
+		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+		verify(responseMapper).mapResponseType(String.class);
+		verify(responseMapper).mapResponse("result");
 	}
 
 	@Test
-	public void dynamicMBeanCannotReadAttributes() {
-		load(FooEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "foo");
-			try {
-				AttributeList attributes = this.server.getAttributes(objectName,
-						new String[] { "foo", "bar" });
-				assertThat(attributes).isNotNull();
-				assertThat(attributes).isEmpty();
-			}
-			catch (Exception ex) {
-				throw new AssertionError("Failed to invoke getAttributes", ex);
-			}
-		});
+	public void getAttributeShouldThrowException()
+			throws AttributeNotFoundException, MBeanException, ReflectionException {
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
+		this.thrown.expect(AttributeNotFoundException.class);
+		this.thrown.expectMessage("EndpointMBeans do not support attributes");
+		bean.getAttribute("test");
 	}
 
 	@Test
-	public void dynamicMBeanCannotWriteAttributes() {
-		load(FooEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "foo");
-			try {
-				AttributeList attributes = new AttributeList();
-				attributes.add(new Attribute("foo", 1));
-				attributes.add(new Attribute("bar", 42));
-				AttributeList attributesSet = this.server.setAttributes(objectName,
-						attributes);
-				assertThat(attributesSet).isNotNull();
-				assertThat(attributesSet).isEmpty();
-			}
-			catch (Exception ex) {
-				throw new AssertionError("Failed to invoke setAttributes", ex);
-			}
-		});
+	public void setAttributeShouldThrowException() throws AttributeNotFoundException,
+			InvalidAttributeValueException, MBeanException, ReflectionException {
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
+		this.thrown.expect(AttributeNotFoundException.class);
+		this.thrown.expectMessage("EndpointMBeans do not support attributes");
+		bean.setAttribute(new Attribute("test", "test"));
 	}
 
 	@Test
-	public void invokeWithParameterMappingExceptionMapsToIllegalArgumentException()
-			throws Exception {
-		load(FooEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "foo");
-			try {
-				this.server.invoke(objectName, "getOne", new Object[] { "wrong" },
-						new String[] { String.class.getName() });
-			}
-			catch (Exception ex) {
-				assertThat(ex.getCause())
-						.isExactlyInstanceOf(IllegalArgumentException.class);
-				assertThat(ex.getCause().getMessage()).isEqualTo(
-						String.format("Failed to map wrong of type " + "%s to type %s",
-								String.class, FooName.class));
-			}
-		});
+	public void getAttributesShouldReturnEmptyAttributeList() {
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
+		AttributeList attributes = bean.getAttributes(new String[] { "test" });
+		assertThat(attributes).isEmpty();
 	}
 
 	@Test
-	public void invokeWithMissingRequiredParameterExceptionMapsToIllegalArgumentException()
-			throws Exception {
-		load(RequiredParametersEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "requiredparameters");
-			try {
-				this.server.invoke(objectName, "read", new Object[] {},
-						new String[] { String.class.getName() });
-			}
-			catch (Exception ex) {
-				assertThat(ex.getCause())
-						.isExactlyInstanceOf(IllegalArgumentException.class);
-				assertThat(ex.getCause().getMessage())
-						.isEqualTo("Failed to invoke operation because the following "
-								+ "required parameters were missing: foo,baz");
-			}
-		});
-	}
-
-	@Test
-	public void invokeWithMissingNullableParameter() throws Exception {
-		load(RequiredParametersEndpoint.class, (discoverer) -> {
-			ObjectName objectName = registerEndpoint(discoverer, "requiredparameters");
-			try {
-				this.server.invoke(objectName, "read",
-						new Object[] { null, "hello", "world" },
-						new String[] { String.class.getName() });
-			}
-			catch (Exception ex) {
-				throw new AssertionError("Nullable parameter should not be required.");
-			}
-		});
-	}
-
-	private ObjectName registerEndpoint(JmxAnnotationEndpointDiscoverer discoverer,
-			String endpointId) {
-		Collection<EndpointMBean> mBeans = this.jmxEndpointMBeanFactory
-				.createMBeans(discoverer.discoverEndpoints());
-		assertThat(mBeans).hasSize(1);
-		EndpointMBean endpointMBean = mBeans.iterator().next();
-		assertThat(endpointMBean.getEndpointId()).isEqualTo(endpointId);
-		return this.endpointMBeanRegistrar.registerEndpointMBean(endpointMBean);
-	}
-
-	private Map<String, MBeanOperationInfo> mapOperations(MBeanInfo info) {
-		Map<String, MBeanOperationInfo> operations = new HashMap<>();
-		for (MBeanOperationInfo mBeanOperationInfo : info.getOperations()) {
-			operations.put(mBeanOperationInfo.getName(), mBeanOperationInfo);
-		}
-		return operations;
-	}
-
-	private void load(Class<?> configuration,
-			Consumer<JmxAnnotationEndpointDiscoverer> consumer) {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration)) {
-			ConversionServiceParameterMapper parameterMapper = new ConversionServiceParameterMapper(
-					DefaultConversionService.getSharedInstance());
-			JmxAnnotationEndpointDiscoverer discoverer = new JmxAnnotationEndpointDiscoverer(
-					context, parameterMapper, null, null);
-			consumer.accept(discoverer);
-		}
-	}
-
-	@Endpoint(id = "foo")
-	static class FooEndpoint {
-
-		private final Map<FooName, Foo> all = new LinkedHashMap<>();
-
-		FooEndpoint() {
-			this.all.put(FooName.ONE, new Foo("one"));
-			this.all.put(FooName.TWO, new Foo("two"));
-		}
-
-		@ReadOperation
-		public Collection<Foo> getAll() {
-			return this.all.values();
-		}
-
-		@ReadOperation
-		public Foo getOne(FooName name) {
-			return this.all.get(name);
-		}
-
-		@WriteOperation
-		public void update(FooName name, String value) {
-			this.all.put(name, new Foo(value));
-		}
-
-		@DeleteOperation
-		public void deleteOne(FooName name) {
-			this.all.remove(name);
-		}
-
-	}
-
-	@Endpoint(id = "requiredparameters")
-	static class RequiredParametersEndpoint {
-
-		@ReadOperation
-		public String read(@Nullable String bar, String foo, String baz) {
-			return foo;
-		}
-
-	}
-
-	@Endpoint(id = "reactive")
-	static class ReactiveEndpoint {
-
-		@ReadOperation
-		public Mono<String> getInfo() {
-			return Mono.defer(() -> Mono.just("Hello World"));
-		}
-
-	}
-
-	enum FooName {
-
-		ONE, TWO, THREE
-
-	}
-
-	static class Foo {
-
-		private final String name;
-
-		Foo(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		@Override
-		public String toString() {
-			return this.name;
-		}
-
-	}
-
-	private static class TestJmxOperationResponseMapper
-			implements JmxOperationResponseMapper {
-
-		@Override
-		public Object mapResponse(Object response) {
-			return (response != null ? response.toString().toUpperCase() : null);
-		}
-
-		@Override
-		public Class<?> mapResponseType(Class<?> responseType) {
-			if (responseType == Void.TYPE) {
-				return Void.TYPE;
-			}
-			return String.class;
-		}
+	public void setAttributesShouldReturnEmptyAttributeList() {
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
+		AttributeList sourceAttributes = new AttributeList();
+		sourceAttributes.add(new Attribute("test", "test"));
+		AttributeList attributes = bean.setAttributes(sourceAttributes);
+		assertThat(attributes).isEmpty();
 	}
 
 }

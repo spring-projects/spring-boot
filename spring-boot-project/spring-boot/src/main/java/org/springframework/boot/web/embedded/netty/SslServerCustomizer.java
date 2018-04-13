@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContextBuilder;
 import reactor.ipc.netty.http.server.HttpServerOptions;
 
@@ -57,6 +58,12 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		}
 		if (this.ssl.getCiphers() != null) {
 			sslBuilder = sslBuilder.ciphers(Arrays.asList(this.ssl.getCiphers()));
+		}
+		if (this.ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
+			sslBuilder = sslBuilder.clientAuth(ClientAuth.REQUIRE);
+		}
+		else if (this.ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
+			sslBuilder = sslBuilder.clientAuth(ClientAuth.OPTIONAL);
 		}
 		try {
 			builder.sslContext(sslBuilder.build());
@@ -128,4 +135,5 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		store.load(url.openStream(), password == null ? null : password.toCharArray());
 		return store;
 	}
+
 }

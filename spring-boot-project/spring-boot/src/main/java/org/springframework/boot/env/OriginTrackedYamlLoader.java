@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.env;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -41,11 +40,10 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.boot.origin.TextResourceOrigin.Location;
-import org.springframework.boot.yaml.SpringProfileDocumentMatcher;
 import org.springframework.core.io.Resource;
 
 /**
- * Class to load {@code .yml} files into a map of {@code String} ->
+ * Class to load {@code .yml} files into a map of {@code String} to
  * {@link OriginTrackedValue}.
  *
  * @author Madhura Bhave
@@ -55,16 +53,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	private final Resource resource;
 
-	OriginTrackedYamlLoader(Resource resource, String profile) {
+	OriginTrackedYamlLoader(Resource resource) {
 		this.resource = resource;
-		if (profile == null) {
-			setMatchDefault(true);
-			setDocumentMatchers(new OriginTrackedSpringProfileDocumentMatcher());
-		}
-		else {
-			setMatchDefault(false);
-			setDocumentMatchers(new OriginTrackedSpringProfileDocumentMatcher(profile));
-		}
 		setResources(resource);
 	}
 
@@ -77,9 +67,9 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		return new Yaml(constructor, representer, dumperOptions, resolver);
 	}
 
-	public Map<String, Object> load() {
-		final Map<String, Object> result = new LinkedHashMap<>();
-		process((properties, map) -> result.putAll(getFlattenedMap(map)));
+	public List<Map<String, Object>> load() {
+		final List<Map<String, Object>> result = new ArrayList<>();
+		process((properties, map) -> result.add(getFlattenedMap(map)));
 		return result;
 	}
 
@@ -160,34 +150,6 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 				return;
 			}
 			super.addImplicitResolver(tag, regexp, first);
-		}
-
-	}
-
-	/**
-	 * {@link SpringProfileDocumentMatcher} that deals with {@link OriginTrackedValue
-	 * OriginTrackedValues}.
-	 */
-	private static class OriginTrackedSpringProfileDocumentMatcher
-			extends SpringProfileDocumentMatcher {
-
-		OriginTrackedSpringProfileDocumentMatcher(String... profiles) {
-			super(profiles);
-		}
-
-		@Override
-		protected List<String> extractSpringProfiles(Properties properties) {
-			Properties springProperties = new Properties();
-			for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-				if (String.valueOf(entry.getKey()).startsWith("spring.")) {
-					Object value = entry.getValue();
-					if (value instanceof OriginTrackedValue) {
-						value = ((OriginTrackedValue) value).getValue();
-					}
-					springProperties.put(entry.getKey(), value);
-				}
-			}
-			return super.extractSpringProfiles(springProperties);
 		}
 
 	}

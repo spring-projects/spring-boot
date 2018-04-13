@@ -48,7 +48,7 @@ public class MockBeanOnContextHierarchyIntegrationTests {
 	private ChildConfig childConfig;
 
 	@Test
-	public void testMocking() throws Exception {
+	public void testMocking() {
 		ApplicationContext context = this.childConfig.getContext();
 		ApplicationContext parentContext = context.getParent();
 		assertThat(parentContext.getBeanNamesForType(ExampleService.class)).hasSize(1);

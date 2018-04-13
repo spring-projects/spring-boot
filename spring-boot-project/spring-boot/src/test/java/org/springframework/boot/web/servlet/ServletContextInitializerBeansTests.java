@@ -16,13 +16,10 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.io.IOException;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
@@ -87,7 +84,7 @@ public class ServletContextInitializerBeansTests {
 	static class TestServlet extends HttpServlet implements ServletContextInitializer {
 
 		@Override
-		public void onStartup(ServletContext servletContext) throws ServletException {
+		public void onStartup(ServletContext servletContext) {
 
 		}
 
@@ -96,18 +93,18 @@ public class ServletContextInitializerBeansTests {
 	static class TestFilter implements Filter, ServletContextInitializer {
 
 		@Override
-		public void onStartup(ServletContext servletContext) throws ServletException {
+		public void onStartup(ServletContext servletContext) {
 
 		}
 
 		@Override
-		public void init(FilterConfig filterConfig) throws ServletException {
+		public void init(FilterConfig filterConfig) {
 
 		}
 
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) throws IOException, ServletException {
+				FilterChain chain) {
 
 		}
 

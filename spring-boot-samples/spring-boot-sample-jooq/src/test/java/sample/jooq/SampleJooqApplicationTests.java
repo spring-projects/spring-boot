@@ -34,7 +34,7 @@ public class SampleJooqApplicationTests {
 	public OutputCapture out = new OutputCapture();
 
 	@Test
-	public void outputResults() throws Exception {
+	public void outputResults() {
 		SampleJooqApplication.main(NO_ARGS);
 		assertThat(this.out.toString()).contains("jOOQ Fetch 1 Greg Turnquest");
 		assertThat(this.out.toString()).contains("jOOQ Fetch 2 Craig Walls");

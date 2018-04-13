@@ -4,7 +4,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath files(pluginClasspath.split(','))
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:{version}'
 	}
 }
 

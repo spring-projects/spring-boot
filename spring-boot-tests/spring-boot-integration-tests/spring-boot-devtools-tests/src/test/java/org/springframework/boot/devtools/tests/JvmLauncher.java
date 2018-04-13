@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.springframework.util.StringUtils;
+
 /**
  * JUnit {@link TestRule} that launched a JVM and redirects its output to a test
  * method-specific location.
@@ -50,7 +52,7 @@ class JvmLauncher implements TestRule {
 		command.addAll(Arrays.asList(args));
 		File standardOut = new File(this.outputDirectory, name + ".out");
 		File standardError = new File(this.outputDirectory, name + ".err");
-		Process process = new ProcessBuilder(command.toArray(new String[command.size()]))
+		Process process = new ProcessBuilder(StringUtils.toStringArray(command))
 				.redirectError(standardError).redirectOutput(standardOut).start();
 		return new LaunchedJvm(process, standardOut, standardError);
 	}

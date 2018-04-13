@@ -67,7 +67,7 @@ public class JobLauncherCommandLineRunnerTests {
 	private Step step;
 
 	@Before
-	public void init() throws Exception {
+	public void init() {
 		this.context.register(BatchConfiguration.class);
 		this.context.refresh();
 		JobRepository jobRepository = this.context.getBean(JobRepository.class);
@@ -167,17 +167,17 @@ public class JobLauncherCommandLineRunnerTests {
 		}
 
 		@Override
-		public JobRepository getJobRepository() throws Exception {
+		public JobRepository getJobRepository() {
 			return this.jobRepository;
 		}
 
 		@Override
-		public PlatformTransactionManager getTransactionManager() throws Exception {
+		public PlatformTransactionManager getTransactionManager() {
 			return this.transactionManager;
 		}
 
 		@Override
-		public JobLauncher getJobLauncher() throws Exception {
+		public JobLauncher getJobLauncher() {
 			SimpleJobLauncher launcher = new SimpleJobLauncher();
 			launcher.setJobRepository(this.jobRepository);
 			launcher.setTaskExecutor(new SyncTaskExecutor());

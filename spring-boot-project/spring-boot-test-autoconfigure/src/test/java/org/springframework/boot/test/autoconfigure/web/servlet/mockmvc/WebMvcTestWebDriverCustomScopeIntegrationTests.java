@@ -53,12 +53,12 @@ public class WebMvcTestWebDriverCustomScopeIntegrationTests {
 	private WebDriver webDriver;
 
 	@Test
-	public void shouldAutoConfigureWebClient() throws Exception {
+	public void shouldAutoConfigureWebClient() {
 		WebMvcTestWebDriverCustomScopeIntegrationTests.previousWebDriver = this.webDriver;
 	}
 
 	@Test
-	public void shouldBeTheSameWebClient() throws Exception {
+	public void shouldBeTheSameWebClient() {
 		assertThat(previousWebDriver).isNotNull().isSameAs(this.webDriver);
 	}
 
@@ -92,7 +92,7 @@ public class WebMvcTestWebDriverCustomScopeIntegrationTests {
 		}
 
 		@Override
-		public WebDriver getObject() throws Exception {
+		public WebDriver getObject() {
 			return this.driver;
 		}
 

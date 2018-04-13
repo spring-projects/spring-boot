@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class OnInitializedRestarterConditionTests {
 	}
 
 	@Test
-	public void noInstance() throws Exception {
+	public void noInstance() {
 		Restarter.clearInstance();
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class);
@@ -57,7 +57,7 @@ public class OnInitializedRestarterConditionTests {
 	}
 
 	@Test
-	public void noInitialization() throws Exception {
+	public void noInitialization() {
 		Restarter.initialize(new String[0], false, RestartInitializer.NONE);
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class);
@@ -78,7 +78,7 @@ public class OnInitializedRestarterConditionTests {
 
 		public static void main(String... args) {
 			RestartInitializer initializer = mock(RestartInitializer.class);
-			given(initializer.getInitialUrls((Thread) any())).willReturn(new URL[0]);
+			given(initializer.getInitialUrls(any(Thread.class))).willReturn(new URL[0]);
 			Restarter.initialize(new String[0], false, initializer);
 			ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 					Config.class);

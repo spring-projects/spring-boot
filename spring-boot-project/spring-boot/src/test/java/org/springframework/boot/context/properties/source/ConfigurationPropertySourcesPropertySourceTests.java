@@ -37,14 +37,14 @@ public class ConfigurationPropertySourcesPropertySourceTests {
 			"test", this.configurationSources);
 
 	@Test
-	public void getPropertyShouldReturnValue() throws Exception {
+	public void getPropertyShouldReturnValue() {
 		this.configurationSources
 				.add(new MockConfigurationPropertySource("foo.bar", "baz"));
 		assertThat(this.propertySource.getProperty("foo.bar")).isEqualTo("baz");
 	}
 
 	@Test
-	public void getPropertyWhenNameIsNotValidShouldReturnNull() throws Exception {
+	public void getPropertyWhenNameIsNotValidShouldReturnNull() {
 		this.configurationSources
 				.add(new MockConfigurationPropertySource("foo.bar", "baz"));
 		assertThat(this.propertySource.getProperty("FOO.B-A-R")).isNull();
@@ -53,7 +53,7 @@ public class ConfigurationPropertySourcesPropertySourceTests {
 	}
 
 	@Test
-	public void getPropertyWhenMultipleShouldReturnFirst() throws Exception {
+	public void getPropertyWhenMultipleShouldReturnFirst() {
 		this.configurationSources
 				.add(new MockConfigurationPropertySource("foo.bar", "baz"));
 		this.configurationSources
@@ -62,14 +62,14 @@ public class ConfigurationPropertySourcesPropertySourceTests {
 	}
 
 	@Test
-	public void getPropertyWhenNoneShouldReturnFirst() throws Exception {
+	public void getPropertyWhenNoneShouldReturnFirst() {
 		this.configurationSources
 				.add(new MockConfigurationPropertySource("foo.bar", "baz"));
 		assertThat(this.propertySource.getProperty("foo.foo")).isNull();
 	}
 
 	@Test
-	public void getPropertyOriginShouldReturnOrigin() throws Exception {
+	public void getPropertyOriginShouldReturnOrigin() {
 		this.configurationSources
 				.add(new MockConfigurationPropertySource("foo.bar", "baz", "line1"));
 		assertThat(this.propertySource.getOrigin("foo.bar").toString())
@@ -77,19 +77,19 @@ public class ConfigurationPropertySourcesPropertySourceTests {
 	}
 
 	@Test
-	public void getPropertyOriginWhenMissingShouldReturnNull() throws Exception {
+	public void getPropertyOriginWhenMissingShouldReturnNull() {
 		this.configurationSources
 				.add(new MockConfigurationPropertySource("foo.bar", "baz", "line1"));
 		assertThat(this.propertySource.getOrigin("foo.foo")).isNull();
 	}
 
 	@Test
-	public void getNameShouldReturnName() throws Exception {
+	public void getNameShouldReturnName() {
 		assertThat(this.propertySource.getName()).isEqualTo("test");
 	}
 
 	@Test
-	public void getSourceShouldReturnSource() throws Exception {
+	public void getSourceShouldReturnSource() {
 		assertThat(this.propertySource.getSource()).isSameAs(this.configurationSources);
 	}
 

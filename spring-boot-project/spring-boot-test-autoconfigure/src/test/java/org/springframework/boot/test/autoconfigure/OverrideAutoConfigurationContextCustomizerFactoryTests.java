@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,38 +25,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link OverrideAutoConfigurationContextCustomizerFactory}.
  *
- * @author pwebb
+ * @author Phillip Webb
  */
 public class OverrideAutoConfigurationContextCustomizerFactoryTests {
 
 	private OverrideAutoConfigurationContextCustomizerFactory factory = new OverrideAutoConfigurationContextCustomizerFactory();
 
 	@Test
-	public void getContextCustomizerWhenHasNoAnnotationShouldReturnNull()
-			throws Exception {
+	public void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(NoAnnotation.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasAnnotationEnabledTrueShouldReturnNull()
-			throws Exception {
+	public void getContextCustomizerWhenHasAnnotationEnabledTrueShouldReturnNull() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(WithAnnotationEnabledTrue.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasAnnotationEnabledFalseShouldReturnCustomizer()
-			throws Exception {
+	public void getContextCustomizerWhenHasAnnotationEnabledFalseShouldReturnCustomizer() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void hashCodeAndEquals() throws Exception {
+	public void hashCodeAndEquals() {
 		ContextCustomizer customizer1 = this.factory
 				.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
 		ContextCustomizer customizer2 = this.factory

@@ -78,7 +78,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void hashCodeAndEqualsShouldBeBasedOnPropertyValues() throws Exception {
+	public void hashCodeAndEqualsShouldBeBasedOnPropertyValues() {
 		ContextCustomizer customizer1 = this.factory
 				.createContextCustomizer(TypeMapping.class, null);
 		ContextCustomizer customizer2 = this.factory
@@ -91,7 +91,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void prepareContextShouldAddPropertySource() throws Exception {
+	public void prepareContextShouldAddPropertySource() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(AttributeMapping.class, null);
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -100,7 +100,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void propertyMappingShouldNotBeUsedWithComponent() throws Exception {
+	public void propertyMappingShouldNotBeUsedWithComponent() {
 		ContextCustomizer customizer = this.factory
 				.createContextCustomizer(AttributeMapping.class, null);
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();

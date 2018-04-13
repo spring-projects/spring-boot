@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,12 @@ import java.nio.charset.StandardCharsets;
  * @author Andy Wilkinson
  */
 final class AsciiBytes {
+
+	private static final String EMPTY_STRING = "";
+
+	private static final int[] INITIAL_BYTE_BITMASK = { 0x7F, 0x1F, 0x0F, 0x07 };
+
+	private static final int SUBSEQUENT_BYTE_BITMASK = 0x3F;
 
 	private final byte[] bytes;
 
@@ -118,36 +124,58 @@ final class AsciiBytes {
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);
 	}
 
-	public AsciiBytes append(String string) {
-		if (string == null || string.isEmpty()) {
-			return this;
-		}
-		return append(string.getBytes(StandardCharsets.UTF_8));
-	}
-
-	public AsciiBytes append(AsciiBytes asciiBytes) {
-		if (asciiBytes == null || asciiBytes.length() == 0) {
-			return this;
-		}
-		return append(asciiBytes.bytes);
-	}
-
-	public AsciiBytes append(byte[] bytes) {
-		if (bytes == null || bytes.length == 0) {
-			return this;
-		}
-		byte[] combined = new byte[this.length + bytes.length];
-		System.arraycopy(this.bytes, this.offset, combined, 0, this.length);
-		System.arraycopy(bytes, 0, combined, this.length, bytes.length);
-		return new AsciiBytes(combined);
-	}
-
 	@Override
 	public String toString() {
 		if (this.string == null) {
-			this.string = new String(this.bytes, this.offset, this.length, StandardCharsets.UTF_8);
+			if (this.length == 0) {
+				this.string = EMPTY_STRING;
+			}
+			else {
+				this.string = new String(this.bytes, this.offset, this.length,
+						StandardCharsets.UTF_8);
+			}
 		}
 		return this.string;
+	}
+
+	public boolean matches(CharSequence name, char suffix) {
+		int charIndex = 0;
+		int nameLen = name.length();
+		int totalLen = (nameLen + (suffix == 0 ? 0 : 1));
+		for (int i = this.offset; i < this.offset + this.length; i++) {
+			int b = this.bytes[i];
+			int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
+			b &= INITIAL_BYTE_BITMASK[remainingUtfBytes];
+			for (int j = 0; j < remainingUtfBytes; j++) {
+				b = (b << 6) + (this.bytes[++i] & SUBSEQUENT_BYTE_BITMASK);
+			}
+			char c = getChar(name, suffix, charIndex++);
+			if (b <= 0xFFFF) {
+				if (c != b) {
+					return false;
+				}
+			}
+			else {
+				if (c != ((b >> 0xA) + 0xD7C0)) {
+					return false;
+				}
+				c = getChar(name, suffix, charIndex++);
+				if (c != ((b & 0x3FF) + 0xDC00)) {
+					return false;
+				}
+			}
+		}
+		return charIndex == totalLen;
+	}
+
+	private char getChar(CharSequence name, char suffix, int index) {
+		if (index < name.length()) {
+			return name.charAt(index);
+		}
+		if (index == name.length()) {
+			return suffix;
+		}
+		return 0;
 	}
 
 	@Override
@@ -156,26 +184,10 @@ final class AsciiBytes {
 		if (hash == 0 && this.bytes.length > 0) {
 			for (int i = this.offset; i < this.offset + this.length; i++) {
 				int b = this.bytes[i];
-				if (b < 0) {
-					b = b & 0x7F;
-					int limit;
-					int excess = 0x80;
-					if (b < 96) {
-						limit = 1;
-						excess += 0x40 << 6;
-					}
-					else if (b < 112) {
-						limit = 2;
-						excess += (0x60 << 12) + (0x80 << 6);
-					}
-					else {
-						limit = 3;
-						excess += (0x70 << 18) + (0x80 << 12) + (0x80 << 6);
-					}
-					for (int j = 0; j < limit; j++) {
-						b = (b << 6) + (this.bytes[++i] & 0xFF);
-					}
-					b -= excess;
+				int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
+				b &= INITIAL_BYTE_BITMASK[remainingUtfBytes];
+				for (int j = 0; j < remainingUtfBytes; j++) {
+					b = (b << 6) + (this.bytes[++i] & SUBSEQUENT_BYTE_BITMASK);
 				}
 				if (b <= 0xFFFF) {
 					hash = 31 * hash + b;
@@ -190,6 +202,18 @@ final class AsciiBytes {
 		return hash;
 	}
 
+	private int getNumberOfUtfBytes(int b) {
+		if ((b & 0x80) == 0) {
+			return 1;
+		}
+		int numberOfUtfBytes = 0;
+		while ((b & 0x80) != 0) {
+			b <<= 1;
+			numberOfUtfBytes++;
+		}
+		return numberOfUtfBytes;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -198,7 +222,7 @@ final class AsciiBytes {
 		if (this == obj) {
 			return true;
 		}
-		if (obj.getClass().equals(AsciiBytes.class)) {
+		if (obj.getClass() == AsciiBytes.class) {
 			AsciiBytes other = (AsciiBytes) obj;
 			if (this.length == other.length) {
 				for (int i = 0; i < this.length; i++) {
@@ -216,16 +240,17 @@ final class AsciiBytes {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	public static int hashCode(String string) {
-		// We're compatible with String's hashCode().
-		return string.hashCode();
+	public static int hashCode(CharSequence charSequence) {
+		// We're compatible with String's hashCode()
+		if (charSequence instanceof StringSequence) {
+			// ... but save making an unnecessary String for StringSequence
+			return charSequence.hashCode();
+		}
+		return charSequence.toString().hashCode();
 	}
 
-	public static int hashCode(int hash, String string) {
-		for (int i = 0; i < string.length(); i++) {
-			hash = 31 * hash + string.charAt(i);
-		}
-		return hash;
+	public static int hashCode(int hash, char suffix) {
+		return (suffix == 0 ? hash : (31 * hash + suffix));
 	}
 
 }

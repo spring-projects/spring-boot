@@ -42,7 +42,7 @@ public class RestartScopeInitializerTests {
 	private static AtomicInteger refreshCount;
 
 	@Test
-	public void restartScope() throws Exception {
+	public void restartScope() {
 		createCount = new AtomicInteger();
 		refreshCount = new AtomicInteger();
 		ConfigurableApplicationContext context = runApplication();

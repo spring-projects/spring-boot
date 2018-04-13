@@ -34,7 +34,7 @@ public class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
 	}
 
 	@Test
-	public void mapFromStringShouldReturnBestGuess() throws Exception {
+	public void mapFromStringShouldReturnBestGuess() {
 		assertThat(namesFromString("server")).containsExactly("server");
 		assertThat(namesFromString("server.port")).containsExactly("server.port");
 		assertThat(namesFromString("host[0]")).containsExactly("host[0]");
@@ -50,7 +50,7 @@ public class DefaultPropertyMapperTests extends AbstractPropertyMapperTests {
 	}
 
 	@Test
-	public void mapFromConfigurationShouldReturnBestGuess() throws Exception {
+	public void mapFromConfigurationShouldReturnBestGuess() {
 		assertThat(namesFromConfiguration("server")).containsExactly("server");
 		assertThat(namesFromConfiguration("server.port")).containsExactly("server.port");
 		assertThat(namesFromConfiguration("host[0]")).containsExactly("host[0]");

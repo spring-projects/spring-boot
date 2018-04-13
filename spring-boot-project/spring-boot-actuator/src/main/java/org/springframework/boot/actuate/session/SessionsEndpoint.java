@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.session;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +61,9 @@ public class SessionsEndpoint {
 	@ReadOperation
 	public SessionDescriptor getSession(@Selector String sessionId) {
 		Session session = this.sessionRepository.findById(sessionId);
+		if (session == null) {
+			return null;
+		}
 		return new SessionDescriptor(session);
 	}
 
@@ -98,9 +102,9 @@ public class SessionsEndpoint {
 
 		private final Set<String> attributeNames;
 
-		private final long creationTime;
+		private final Instant creationTime;
 
-		private final long lastAccessedTime;
+		private final Instant lastAccessedTime;
 
 		private final long maxInactiveInterval;
 
@@ -109,8 +113,8 @@ public class SessionsEndpoint {
 		public SessionDescriptor(Session session) {
 			this.id = session.getId();
 			this.attributeNames = session.getAttributeNames();
-			this.creationTime = session.getCreationTime().toEpochMilli();
-			this.lastAccessedTime = session.getLastAccessedTime().toEpochMilli();
+			this.creationTime = session.getCreationTime();
+			this.lastAccessedTime = session.getLastAccessedTime();
 			this.maxInactiveInterval = session.getMaxInactiveInterval().getSeconds();
 			this.expired = session.isExpired();
 		}
@@ -123,11 +127,11 @@ public class SessionsEndpoint {
 			return this.attributeNames;
 		}
 
-		public long getCreationTime() {
+		public Instant getCreationTime() {
 			return this.creationTime;
 		}
 
-		public long getLastAccessedTime() {
+		public Instant getLastAccessedTime() {
 			return this.lastAccessedTime;
 		}
 

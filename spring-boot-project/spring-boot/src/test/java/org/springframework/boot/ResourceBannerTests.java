@@ -48,7 +48,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderVersions() throws Exception {
+	public void renderVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
 		String banner = printBanner(resource, "10.2", "2.0", null);
@@ -56,7 +56,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithoutVersions() throws Exception {
+	public void renderWithoutVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
 		String banner = printBanner(resource, null, null, null);
@@ -64,7 +64,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderFormattedVersions() throws Exception {
+	public void renderFormattedVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
 						.getBytes());
@@ -73,7 +73,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithoutFormattedVersions() throws Exception {
+	public void renderWithoutFormattedVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
 						.getBytes());
@@ -82,7 +82,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithColors() throws Exception {
+	public void renderWithColors() {
 		Resource resource = new ByteArrayResource(
 				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
@@ -91,7 +91,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithColorsButDisabled() throws Exception {
+	public void renderWithColorsButDisabled() {
 		Resource resource = new ByteArrayResource(
 				"${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
@@ -100,7 +100,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithTitle() throws Exception {
+	public void renderWithTitle() {
 		Resource resource = new ByteArrayResource(
 				"banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, "title");
@@ -108,7 +108,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithoutTitle() throws Exception {
+	public void renderWithoutTitle() {
 		Resource resource = new ByteArrayResource(
 				"banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, null);

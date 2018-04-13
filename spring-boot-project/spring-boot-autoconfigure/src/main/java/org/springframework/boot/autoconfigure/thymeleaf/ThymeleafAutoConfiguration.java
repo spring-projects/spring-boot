@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -48,15 +47,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties.Reactive;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
@@ -147,7 +147,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(SpringTemplateEngine.class)
+		@ConditionalOnMissingBean
 		public SpringTemplateEngine templateEngine() {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
@@ -263,25 +263,32 @@ public class ThymeleafAutoConfiguration {
 				ISpringWebFluxTemplateEngine templateEngine) {
 			ThymeleafReactiveViewResolver resolver = new ThymeleafReactiveViewResolver();
 			resolver.setTemplateEngine(templateEngine);
-			resolver.setDefaultCharset(this.properties.getEncoding());
-			List<MediaType> mediaTypes = this.properties.getReactive().getMediaTypes();
-			if (mediaTypes != null) {
-				resolver.setSupportedMediaTypes(mediaTypes);
-			}
-			resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
-			resolver.setViewNames(this.properties.getViewNames());
-			if (this.properties.getReactive().getMaxChunkSize() > 0) {
-				resolver.setResponseMaxChunkSizeBytes(
-						this.properties.getReactive().getMaxChunkSize());
-			}
-			resolver.setFullModeViewNames(
-					this.properties.getReactive().getFullModeViewNames());
-			resolver.setChunkedModeViewNames(
-					this.properties.getReactive().getChunkedModeViewNames());
+			mapProperties(this.properties, resolver);
+			mapReactiveProperties(this.properties.getReactive(), resolver);
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
 			return resolver;
+		}
+
+		private void mapProperties(ThymeleafProperties properties,
+				ThymeleafReactiveViewResolver resolver) {
+			PropertyMapper map = PropertyMapper.get();
+			map.from(properties::getEncoding).to(resolver::setDefaultCharset);
+			resolver.setExcludedViewNames(properties.getExcludedViewNames());
+			resolver.setViewNames(properties.getViewNames());
+		}
+
+		private void mapReactiveProperties(Reactive properties,
+				ThymeleafReactiveViewResolver resolver) {
+			PropertyMapper map = PropertyMapper.get();
+			map.from(properties::getMediaTypes).whenNonNull()
+					.to(resolver::setSupportedMediaTypes);
+			map.from(properties::getMaxChunkSize).when((size) -> size > 0)
+					.to(resolver::setResponseMaxChunkSizeBytes);
+			map.from(properties::getFullModeViewNames).to(resolver::setFullModeViewNames);
+			map.from(properties::getChunkedModeViewNames)
+					.to(resolver::setChunkedModeViewNames);
 		}
 
 	}

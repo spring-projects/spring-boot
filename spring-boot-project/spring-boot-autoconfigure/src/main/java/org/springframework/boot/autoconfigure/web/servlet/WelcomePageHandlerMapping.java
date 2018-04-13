@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +36,8 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 /**
  * An {@link AbstractUrlHandlerMapping} for an application's welcome page. Supports both
- * static and templated files. If both a static and templated index page is available, the
- * static page is preferred.
+ * static and templated files. If both a static and templated index page are available,
+ * the static page is preferred.
  *
  * @author Andy Wilkinson
  * @author Bruce Brouwer
@@ -44,6 +45,9 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
 final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 
 	private static final Log logger = LogFactory.getLog(WelcomePageHandlerMapping.class);
+
+	private static final List<MediaType> MEDIA_TYPES_ALL = Collections
+			.singletonList(MediaType.ALL);
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext, Optional<Resource> welcomePage,
@@ -66,11 +70,11 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 				applicationContext) != null;
 	}
 
-	private void setRootViewName(final String viewName) {
+	private void setRootViewName(String viewName) {
 		ParameterizableViewController controller = new ParameterizableViewController();
 		controller.setViewName(viewName);
 		setRootHandler(controller);
-		setOrder(0);
+		setOrder(2);
 	}
 
 	@Override
@@ -85,8 +89,10 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 
 	private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
 		String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
-		return MediaType.parseMediaTypes(
-				StringUtils.hasText(acceptHeader) ? acceptHeader : "*/*");
+		if (StringUtils.hasText(acceptHeader)) {
+			return MediaType.parseMediaTypes(acceptHeader);
+		}
+		return MEDIA_TYPES_ALL;
 	}
 
 }

@@ -12,7 +12,8 @@ repositories {
 }
 
 dependencies {
-	compile name: 'spring-boot-configuration-processor-1.2.3'
+	def configurationName = GradleVersion.current().compareTo(GradleVersion.version("4.6")) >= 0 ? 'annotationProcessor': 'compile'
+	add(configurationName, [name: 'spring-boot-configuration-processor-1.2.3'])
 }
 
 compileJava {

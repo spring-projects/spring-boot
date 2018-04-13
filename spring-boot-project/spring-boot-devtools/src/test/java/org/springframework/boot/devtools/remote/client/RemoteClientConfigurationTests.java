@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,25 +85,25 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	public void warnIfRestartDisabled() throws Exception {
+	public void warnIfRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
 		assertThat(this.output.toString()).contains("Remote restart is disabled");
 	}
 
 	@Test
-	public void warnIfNotHttps() throws Exception {
+	public void warnIfNotHttps() {
 		configure("http://localhost", true);
 		assertThat(this.output.toString()).contains("is insecure");
 	}
 
 	@Test
-	public void doesntWarnIfUsingHttps() throws Exception {
+	public void doesntWarnIfUsingHttps() {
 		configure("https://localhost", true);
 		assertThat(this.output.toString()).doesNotContain("is insecure");
 	}
 
 	@Test
-	public void failIfNoSecret() throws Exception {
+	public void failIfNoSecret() {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("required to secure your connection");
 		configure("http://localhost", false);
@@ -124,14 +124,14 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	public void liveReloadDisabled() throws Exception {
+	public void liveReloadDisabled() {
 		configure("spring.devtools.livereload.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(OptionalLiveReloadServer.class);
 	}
 
 	@Test
-	public void remoteRestartDisabled() throws Exception {
+	public void remoteRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(ClassPathFileSystemWatcher.class);
@@ -178,8 +178,8 @@ public class RemoteClientConfigurationTests {
 
 		public Dispatcher dispatcher() throws IOException {
 			Dispatcher dispatcher = mock(Dispatcher.class);
-			ServerHttpRequest anyRequest = (ServerHttpRequest) any();
-			ServerHttpResponse anyResponse = (ServerHttpResponse) any();
+			ServerHttpRequest anyRequest = any(ServerHttpRequest.class);
+			ServerHttpResponse anyResponse = any(ServerHttpResponse.class);
 			given(dispatcher.handle(anyRequest, anyResponse)).willReturn(true);
 			return dispatcher;
 		}

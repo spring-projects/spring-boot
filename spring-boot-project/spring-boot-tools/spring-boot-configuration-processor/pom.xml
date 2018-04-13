@@ -14,15 +14,15 @@
 		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>
 	<dependencies>
- 		<!-- Compile (should stick to the bare minimum) -->
- 		<dependency>
-			<groupId>com.vaadin.external.google</groupId>
-			<artifactId>android-json</artifactId>
-		</dependency>
-		<!-- Test -->
+ 		<!-- Test -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -40,6 +40,24 @@
 					<!-- Ensure own annotation processor doesn't kick in -->
 					<proc>none</proc>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-json-shade-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${basedir}/src/json-shade/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

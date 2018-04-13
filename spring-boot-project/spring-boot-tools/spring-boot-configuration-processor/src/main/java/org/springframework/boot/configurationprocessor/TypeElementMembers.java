@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -77,13 +78,11 @@ class TypeElementMembers {
 			processField(field);
 		}
 		try {
-			Map<String, Object> fieldValues = this.fieldValuesParser
-					.getFieldValues(element);
-			for (Map.Entry<String, Object> entry : fieldValues.entrySet()) {
-				if (!this.fieldValues.containsKey(entry.getKey())) {
-					this.fieldValues.put(entry.getKey(), entry.getValue());
+			this.fieldValuesParser.getFieldValues(element).forEach((name, value) -> {
+				if (!this.fieldValues.containsKey(name)) {
+					this.fieldValues.put(name, value);
 				}
-			}
+			});
 		}
 		catch (Exception ex) {
 			// continue
@@ -97,7 +96,7 @@ class TypeElementMembers {
 	}
 
 	private void processMethod(ExecutableElement method) {
-		if (method.getModifiers().contains(Modifier.PUBLIC)) {
+		if (isPublic(method)) {
 			String name = method.getSimpleName().toString();
 			if (isGetter(method) && !this.publicGetters.containsKey(name)) {
 				this.publicGetters.put(getAccessorName(name), method);
@@ -116,6 +115,13 @@ class TypeElementMembers {
 				}
 			}
 		}
+	}
+
+	private boolean isPublic(ExecutableElement method) {
+		Set<Modifier> modifiers = method.getModifiers();
+		return modifiers.contains(Modifier.PUBLIC)
+				&& !modifiers.contains(Modifier.ABSTRACT)
+				&& !modifiers.contains(Modifier.STATIC);
 	}
 
 	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates,

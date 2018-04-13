@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,13 +140,11 @@ public final class Verify {
 		}
 
 		private ZipEntry getEntryStartingWith(String entryName) {
-			for (Map.Entry<String, ZipEntry> entry : this.content.entrySet()) {
-				if (entry.getKey().startsWith(entryName)) {
-					return entry.getValue();
-				}
-			}
-			throw new IllegalStateException(
-					"Unable to find entry starting with " + entryName);
+			return this.content.entrySet().stream()
+					.filter((entry) -> entry.getKey().startsWith(entryName))
+					.map(Map.Entry::getValue).findFirst()
+					.orElseThrow(() -> new IllegalStateException(
+							"Unable to find entry starting with " + entryName));
 		}
 
 		public boolean hasEntry(String entry) {
@@ -167,7 +165,7 @@ public final class Verify {
 
 	}
 
-	private static abstract class AbstractArchiveVerification {
+	private abstract static class AbstractArchiveVerification {
 
 		private final File file;
 

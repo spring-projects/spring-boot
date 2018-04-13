@@ -49,7 +49,7 @@ public class SpyBeanOnContextHierarchyIntegrationTests {
 	private ChildConfig childConfig;
 
 	@Test
-	public void testSpying() throws Exception {
+	public void testSpying() {
 		ApplicationContext context = this.childConfig.getContext();
 		ApplicationContext parentContext = context.getParent();
 		assertThat(parentContext.getBeanNamesForType(ExampleService.class)).hasSize(1);

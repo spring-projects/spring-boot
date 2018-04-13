@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class InfoEndpointDocumentationTests extends AbstractEndpointDocumentationTests {
+public class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void info() throws Exception {
@@ -53,13 +53,13 @@ public class InfoEndpointDocumentationTests extends AbstractEndpointDocumentatio
 						responseFields(beneathPath("git"),
 								fieldWithPath("branch")
 										.description("Name of the Git branch, if any."),
-						fieldWithPath("commit")
-								.description("Details of the Git commit, if any."),
-						fieldWithPath("commit.time")
-								.description("Timestamp of the commit, if any.")
-								.type(JsonFieldType.VARIES),
-						fieldWithPath("commit.id")
-								.description("ID of the commit, if any.")),
+								fieldWithPath("commit").description(
+										"Details of the Git commit, if any."),
+								fieldWithPath("commit.time")
+										.description("Timestamp of the commit, if any.")
+										.type(JsonFieldType.VARIES),
+								fieldWithPath("commit.id")
+										.description("ID of the commit, if any.")),
 						responseFields(beneathPath("build"),
 								fieldWithPath("artifact")
 										.description(
@@ -76,9 +76,8 @@ public class InfoEndpointDocumentationTests extends AbstractEndpointDocumentatio
 										.description(
 												"Version of the application, if any.")
 										.optional(),
-								fieldWithPath("time")
-										.description(
-												"Timestamp of when the application was built, if any.")
+								fieldWithPath("time").description(
+										"Timestamp of when the application was built, if any.")
 										.type(JsonFieldType.VARIES).optional())));
 	}
 

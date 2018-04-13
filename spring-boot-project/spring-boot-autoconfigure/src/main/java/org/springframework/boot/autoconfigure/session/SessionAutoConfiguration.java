@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 
@@ -48,6 +49,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -104,17 +106,16 @@ public class SessionAutoConfiguration {
 	/**
 	 * {@link ImportSelector} base class to add {@link StoreType} configuration classes.
 	 */
-	static abstract class SessionConfigurationImportSelector implements ImportSelector {
+	abstract static class SessionConfigurationImportSelector implements ImportSelector {
 
-		protected final String[] selectImports(AnnotationMetadata importingClassMetadata,
-				WebApplicationType webApplicationType) {
+		protected final String[] selectImports(WebApplicationType webApplicationType) {
 			List<String> imports = new ArrayList<>();
 			StoreType[] types = StoreType.values();
 			for (int i = 0; i < types.length; i++) {
 				imports.add(SessionStoreMappings.getConfigurationClass(webApplicationType,
 						types[i]));
 			}
-			return imports.toArray(new String[imports.size()]);
+			return StringUtils.toStringArray(imports);
 		}
 
 	}
@@ -128,8 +129,7 @@ public class SessionAutoConfiguration {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return super.selectImports(importingClassMetadata,
-					WebApplicationType.REACTIVE);
+			return super.selectImports(WebApplicationType.REACTIVE);
 		}
 
 	}
@@ -143,8 +143,7 @@ public class SessionAutoConfiguration {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return super.selectImports(importingClassMetadata,
-					WebApplicationType.SERVLET);
+			return super.selectImports(WebApplicationType.SERVLET);
 		}
 
 	}
@@ -153,7 +152,7 @@ public class SessionAutoConfiguration {
 	 * Base class for beans used to validate that only one supported implementation is
 	 * available in the classpath when the store-type property is not set.
 	 */
-	static class AbstractSessionRepositoryImplementationValidator {
+	abstract static class AbstractSessionRepositoryImplementationValidator {
 
 		private final List<String> candidates;
 
@@ -233,7 +232,7 @@ public class SessionAutoConfiguration {
 	/**
 	 * Base class for validating that a (reactive) session repository bean exists.
 	 */
-	static class AbstractSessionRepositoryValidator {
+	abstract static class AbstractSessionRepositoryValidator {
 
 		private final SessionProperties sessionProperties;
 
@@ -249,13 +248,13 @@ public class SessionAutoConfiguration {
 		public void checkSessionRepository() {
 			StoreType storeType = this.sessionProperties.getStoreType();
 			if (storeType != StoreType.NONE
-					&& this.sessionRepositoryProvider.getIfAvailable() == null) {
-				if (storeType != null) {
-					throw new SessionRepositoryUnavailableException("No session "
-							+ "repository could be auto-configured, check your "
-							+ "configuration (session store type is '"
-							+ storeType.name().toLowerCase() + "')", storeType);
-				}
+					&& this.sessionRepositoryProvider.getIfAvailable() == null
+					&& storeType != null) {
+				throw new SessionRepositoryUnavailableException(
+						"No session repository could be auto-configured, check your "
+								+ "configuration (session store type is '"
+								+ storeType.name().toLowerCase(Locale.ENGLISH) + "')",
+						storeType);
 			}
 		}
 
@@ -276,7 +275,7 @@ public class SessionAutoConfiguration {
 	}
 
 	/**
-	 * Bean used to validate that a {@link SessionRepository} exists and provide a
+	 * Bean used to validate that a {@link ReactiveSessionRepository} exists and provide a
 	 * meaningful message if that's not the case.
 	 */
 	static class ReactiveSessionRepositoryValidator

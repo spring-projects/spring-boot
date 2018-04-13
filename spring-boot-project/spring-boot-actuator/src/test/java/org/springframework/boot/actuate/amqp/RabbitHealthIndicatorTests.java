@@ -63,14 +63,14 @@ public class RabbitHealthIndicatorTests {
 	}
 
 	@Test
-	public void createWhenRabbitTemplateIsNullShouldThrowException() throws Exception {
+	public void createWhenRabbitTemplateIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RabbitTemplate must not be null");
 		new RabbitHealthIndicator(null);
 	}
 
 	@Test
-	public void healthWhenConnectionSucceedsShouldReturnUpWithVersion() throws Exception {
+	public void healthWhenConnectionSucceedsShouldReturnUpWithVersion() {
 		Connection connection = mock(Connection.class);
 		given(this.channel.getConnection()).willReturn(connection);
 		given(connection.getServerProperties())
@@ -81,7 +81,7 @@ public class RabbitHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthWhenConnectionFailsShouldReturnDown() throws Exception {
+	public void healthWhenConnectionFailsShouldReturnDown() {
 		given(this.channel.getConnection()).willThrow(new RuntimeException());
 		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);

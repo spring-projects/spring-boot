@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.rest;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy.RepositoryDetectionStrategies;
 import org.springframework.http.MediaType;
@@ -83,8 +84,8 @@ public class RepositoryRestProperties {
 	private Boolean returnBodyOnUpdate;
 
 	/**
-	 * Whether to enable enum value translation through Spring Data REST default resource
-	 * bundle. Will use the fully qualified enum name as key.
+	 * Whether to enable enum value translation through the Spring Data REST default
+	 * resource bundle.
 	 */
 	private Boolean enableEnumTranslation;
 
@@ -176,40 +177,19 @@ public class RepositoryRestProperties {
 		this.enableEnumTranslation = enableEnumTranslation;
 	}
 
-	public void applyTo(RepositoryRestConfiguration configuration) {
-		if (this.basePath != null) {
-			configuration.setBasePath(this.basePath);
-		}
-		if (this.defaultPageSize != null) {
-			configuration.setDefaultPageSize(this.defaultPageSize);
-		}
-		if (this.maxPageSize != null) {
-			configuration.setMaxPageSize(this.maxPageSize);
-		}
-		if (this.pageParamName != null) {
-			configuration.setPageParamName(this.pageParamName);
-		}
-		if (this.limitParamName != null) {
-			configuration.setLimitParamName(this.limitParamName);
-		}
-		if (this.sortParamName != null) {
-			configuration.setSortParamName(this.sortParamName);
-		}
-		if (this.detectionStrategy != null) {
-			configuration.setRepositoryDetectionStrategy(this.detectionStrategy);
-		}
-		if (this.defaultMediaType != null) {
-			configuration.setDefaultMediaType(this.defaultMediaType);
-		}
-		if (this.returnBodyOnCreate != null) {
-			configuration.setReturnBodyOnCreate(this.returnBodyOnCreate);
-		}
-		if (this.returnBodyOnUpdate != null) {
-			configuration.setReturnBodyOnUpdate(this.returnBodyOnUpdate);
-		}
-		if (this.enableEnumTranslation != null) {
-			configuration.setEnableEnumTranslation(this.enableEnumTranslation);
-		}
+	public void applyTo(RepositoryRestConfiguration rest) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(this::getBasePath).to(rest::setBasePath);
+		map.from(this::getDefaultPageSize).to(rest::setDefaultPageSize);
+		map.from(this::getMaxPageSize).to(rest::setMaxPageSize);
+		map.from(this::getPageParamName).to(rest::setPageParamName);
+		map.from(this::getLimitParamName).to(rest::setLimitParamName);
+		map.from(this::getSortParamName).to(rest::setSortParamName);
+		map.from(this::getDetectionStrategy).to(rest::setRepositoryDetectionStrategy);
+		map.from(this::getDefaultMediaType).to(rest::setDefaultMediaType);
+		map.from(this::getReturnBodyOnCreate).to(rest::setReturnBodyOnCreate);
+		map.from(this::getReturnBodyOnUpdate).to(rest::setReturnBodyOnUpdate);
+		map.from(this::getEnableEnumTranslation).to(rest::setEnableEnumTranslation);
 	}
 
 }

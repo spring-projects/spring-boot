@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertySourcesTests {
 
 	@Test
-	public void attachShouldAddAdapterAtBeginning() throws Exception {
+	public void attachShouldAddAdapterAtBeginning() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MutablePropertySources sources = environment.getPropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("system",
@@ -57,13 +57,25 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void getWhenNotAttachedShouldReturnAdapted() throws Exception {
+	public void attachShouldReAttachInMergedSetup() {
+		ConfigurableEnvironment parent = new StandardEnvironment();
+		ConfigurationPropertySources.attach(parent);
+		ConfigurableEnvironment child = new StandardEnvironment();
+		child.merge(parent);
+		child.getPropertySources().addLast(new MapPropertySource("config",
+				Collections.singletonMap("my.example_property", "1234")));
+		ConfigurationPropertySources.attach(child);
+		assertThat(child.getProperty("my.example-property")).isEqualTo("1234");
+	}
+
+	@Test
+	public void getWhenNotAttachedShouldReturnAdapted() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		assertThat(ConfigurationPropertySources.get(environment)).isNotEmpty();
 	}
 
 	@Test
-	public void getWhenAttachedShouldReturnAttached() throws Exception {
+	public void getWhenAttachedShouldReturnAttached() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MutablePropertySources sources = environment.getPropertySources();
 		sources.addFirst(
@@ -74,7 +86,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void environmentPropertyExpansionShouldWorkWhenAttached() throws Exception {
+	public void environmentPropertyExpansionShouldWorkWhenAttached() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("fooBar", "Spring ${barBaz} ${bar-baz}");
@@ -86,8 +98,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void fromPropertySourceShouldReturnSpringConfigurationPropertySource()
-			throws Exception {
+	public void fromPropertySourceShouldReturnSpringConfigurationPropertySource() {
 		PropertySource<?> source = new MapPropertySource("foo",
 				Collections.singletonMap("foo", "bar"));
 		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySources
@@ -97,7 +108,7 @@ public class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	public void fromPropertySourceShouldFlattenPropertySources() throws Exception {
+	public void fromPropertySourceShouldFlattenPropertySources() {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(
 				new MapPropertySource("foo", Collections.singletonMap("foo", "bar")));

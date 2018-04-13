@@ -53,7 +53,7 @@ public class AetherGrapeEngineTests {
 			RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
 		repositoryConfigurations.add(new RepositoryConfiguration("central",
-				URI.create("http://repo1.maven.org/maven2"), false));
+				URI.create("https://repo.maven.apache.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		DependencyResolutionContext dependencyResolutionContext = new DependencyResolutionContext();
 		dependencyResolutionContext.addDependencyManagement(

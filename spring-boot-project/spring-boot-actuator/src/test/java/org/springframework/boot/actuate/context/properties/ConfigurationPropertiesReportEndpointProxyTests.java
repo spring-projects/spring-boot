@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -48,14 +48,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertiesReportEndpointProxyTests {
 
 	@Test
-	public void testWithProxyClass() throws Exception {
+	public void testWithProxyClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(Config.class, SqlExecutor.class);
 		contextRunner.run((context) -> {
-			ConfigurationPropertiesDescriptor report = context
+			ApplicationConfigurationProperties applicationProperties = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class)
 					.configurationProperties();
-			assertThat(report.getBeans().values().stream()
+			assertThat(applicationProperties.getContexts().get(context.getId()).getBeans()
+					.values().stream()
 					.map(ConfigurationPropertiesBeanDescriptor::getPrefix)
 					.filter("executor.sql"::equals).findFirst()).isNotEmpty();
 		});
@@ -90,7 +91,7 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 
 	}
 
-	public static abstract class AbstractExecutor implements Executor {
+	public abstract static class AbstractExecutor implements Executor {
 
 	}
 

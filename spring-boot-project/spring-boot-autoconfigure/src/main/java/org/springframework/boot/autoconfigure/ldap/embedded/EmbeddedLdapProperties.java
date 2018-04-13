@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure.ldap.embedded;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.io.Resource;
 
 /**
@@ -40,9 +44,10 @@ public class EmbeddedLdapProperties {
 	private Credential credential = new Credential();
 
 	/**
-	 * The base DN.
+	 * List of base DNs.
 	 */
-	private String baseDn;
+	@Delimiter(Delimiter.NONE)
+	private List<String> baseDn = new ArrayList<>();
 
 	/**
 	 * Schema (LDIF) script resource reference.
@@ -70,11 +75,11 @@ public class EmbeddedLdapProperties {
 		this.credential = credential;
 	}
 
-	public String getBaseDn() {
+	public List<String> getBaseDn() {
 		return this.baseDn;
 	}
 
-	public void setBaseDn(String baseDn) {
+	public void setBaseDn(List<String> baseDn) {
 		this.baseDn = baseDn;
 	}
 

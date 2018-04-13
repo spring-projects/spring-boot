@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.liquibase;
 
-import java.util.Map;
-
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
@@ -28,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,9 +45,8 @@ public class LiquibaseEndpointAutoConfiguration {
 	@ConditionalOnBean(SpringLiquibase.class)
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public LiquibaseEndpoint liquibaseEndpoint(
-			Map<String, SpringLiquibase> liquibaseBeans) {
-		return new LiquibaseEndpoint(liquibaseBeans);
+	public LiquibaseEndpoint liquibaseEndpoint(ApplicationContext context) {
+		return new LiquibaseEndpoint(context);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ public class BootJar extends Jar implements BootArchive {
 	public BootJar() {
 		CopySpec bootInf = getRootSpec().addChildBeforeSpec(getMainSpec())
 				.into("BOOT-INF");
-		bootInf.into("lib", classpathFiles(File::isFile));
 		bootInf.into("classes", classpathFiles(File::isDirectory));
+		bootInf.into("lib", classpathFiles(File::isFile));
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
@@ -136,7 +136,6 @@ public class BootJar extends Jar implements BootArchive {
 	 * <p>
 	 * By default, any file in {@code BOOT-INF/lib/} is stored and all other files are
 	 * deflated.
-	 *
 	 * @param details the details
 	 * @return the compression to use
 	 */

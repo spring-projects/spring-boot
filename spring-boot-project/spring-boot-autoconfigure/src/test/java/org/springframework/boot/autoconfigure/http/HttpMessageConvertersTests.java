@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mock;
 public class HttpMessageConvertersTests {
 
 	@Test
-	public void containsDefaults() throws Exception {
+	public void containsDefaults() {
 		HttpMessageConverters converters = new HttpMessageConverters();
 		List<Class<?>> converterClasses = new ArrayList<>();
 		for (HttpMessageConverter<?> converter : converters) {
@@ -108,7 +108,7 @@ public class HttpMessageConvertersTests {
 	}
 
 	@Test
-	public void postProcessConverters() throws Exception {
+	public void postProcessConverters() {
 		HttpMessageConverters converters = new HttpMessageConverters() {
 
 			@Override
@@ -135,7 +135,7 @@ public class HttpMessageConvertersTests {
 	}
 
 	@Test
-	public void postProcessPartConverters() throws Exception {
+	public void postProcessPartConverters() {
 		HttpMessageConverters converters = new HttpMessageConverters() {
 
 			@Override

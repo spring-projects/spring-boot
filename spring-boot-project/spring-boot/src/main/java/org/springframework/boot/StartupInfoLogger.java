@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.system.ApplicationHome;
+import org.springframework.boot.system.ApplicationPid;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -99,7 +101,7 @@ class StartupInfoLogger {
 				: "application");
 	}
 
-	private String getVersion(final Class<?> source) {
+	private String getVersion(Class<?> source) {
 		return getValue(" v", () -> source.getPackage().getImplementationVersion(), "");
 	}
 
@@ -108,7 +110,7 @@ class StartupInfoLogger {
 	}
 
 	private String getPid() {
-		return getValue(" with PID ", () -> System.getProperty("PID"));
+		return getValue(" with PID ", () -> new ApplicationPid().toString());
 	}
 
 	private String getContext() {

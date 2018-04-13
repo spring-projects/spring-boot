@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+import org.springframework.boot.logging.LoggingSystemProperties;
+
 /**
  * Simple 'Java Logging' {@link Formatter}.
  *
@@ -33,7 +35,7 @@ public class SimpleFormatter extends Formatter {
 
 	private final String format = getOrUseDefault("LOG_FORMAT", DEFAULT_FORMAT);
 
-	private final String pid = getOrUseDefault("PID", "????");
+	private final String pid = getOrUseDefault(LoggingSystemProperties.PID_KEY, "????");
 
 	private final Date date = new Date();
 

@@ -42,8 +42,7 @@ public class ThreadDumpEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("management.endpoint.threaddump.enabled:false")
 				.run((context) -> assertThat(context)

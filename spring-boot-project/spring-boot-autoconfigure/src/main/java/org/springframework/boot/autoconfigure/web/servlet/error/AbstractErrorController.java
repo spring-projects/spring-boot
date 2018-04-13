@@ -76,10 +76,7 @@ public abstract class AbstractErrorController implements ErrorController {
 
 	protected boolean getTraceParameter(HttpServletRequest request) {
 		String parameter = request.getParameter("trace");
-		if (parameter == null) {
-			return false;
-		}
-		return !"false".equals(parameter.toLowerCase());
+		return !"false".equalsIgnoreCase(parameter);
 	}
 
 	protected HttpStatus getStatus(HttpServletRequest request) {

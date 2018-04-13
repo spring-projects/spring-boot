@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
+import org.springframework.boot.loader.jar.JarURLConnection.JarEntryName;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -134,6 +135,21 @@ public class JarURLConnectionTests {
 	}
 
 	@Test
+	public void connectionToEntryWithSpaceNestedEntry() throws Exception {
+		URL url = new URL("jar:file:" + getRelativePath() + "!/space nested.jar!/3.dat");
+		assertThat(JarURLConnection.get(url, this.jarFile).getInputStream())
+				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
+	public void connectionToEntryWithEncodedSpaceNestedEntry() throws Exception {
+		URL url = new URL(
+				"jar:file:" + getRelativePath() + "!/space%20nested.jar!/3.dat");
+		assertThat(JarURLConnection.get(url, this.jarFile).getInputStream())
+				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
 	public void getContentLengthReturnsLengthOfUnderlyingEntry() throws Exception {
 		URL url = new URL(new URL("jar", null, -1,
 				"file:" + getAbsolutePath() + "!/nested.jar!/", new Handler()), "/3.dat");
@@ -153,6 +169,31 @@ public class JarURLConnectionTests {
 		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
 		assertThat(connection.getLastModified())
 				.isEqualTo(connection.getJarEntry().getTime());
+	}
+
+	@Test
+	public void jarEntryBasicName() {
+		assertThat(new JarEntryName(new StringSequence("a/b/C.class")).toString())
+				.isEqualTo("a/b/C.class");
+	}
+
+	@Test
+	public void jarEntryNameWithSingleByteEncodedCharacters() {
+		assertThat(new JarEntryName(new StringSequence("%61/%62/%43.class")).toString())
+				.isEqualTo("a/b/C.class");
+	}
+
+	@Test
+	public void jarEntryNameWithDoubleByteEncodedCharacters() {
+		assertThat(new JarEntryName(new StringSequence("%c3%a1/b/C.class")).toString())
+				.isEqualTo("\u00e1/b/C.class");
+	}
+
+	@Test
+	public void jarEntryNameWithMixtureOfEncodedAndUnencodedDoubleByteCharacters() {
+		assertThat(
+				new JarEntryName(new StringSequence("%c3%a1/b/\u00c7.class")).toString())
+						.isEqualTo("\u00e1/b/\u00c7.class");
 	}
 
 	private String getAbsolutePath() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,19 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerFactoryCustomizer;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.servlet.DefaultServletWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.embedded.JettyWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.servlet.TomcatServletWebServerFactoryCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -42,6 +46,7 @@ import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerF
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**
@@ -60,9 +65,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 class ServletManagementChildContextConfiguration {
 
 	@Bean
-	public ServletManagementServerFactoryCustomizer serverFactoryCustomizer(
+	public ServletManagementWebServerFactoryCustomizer servletManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
-		return new ServletManagementServerFactoryCustomizer(beanFactory);
+		return new ServletManagementWebServerFactoryCustomizer(beanFactory);
 	}
 
 	@Bean
@@ -78,22 +83,26 @@ class ServletManagementChildContextConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
-	@ConditionalOnBean(name = "springSecurityFilterChain", search = SearchStrategy.ANCESTORS)
+	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN, search = SearchStrategy.ANCESTORS)
 	class ServletManagementContextSecurityConfiguration {
 
 		@Bean
 		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
-			return parent.getBean("springSecurityFilterChain", Filter.class);
+			return parent.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		}
 
 	}
 
-	static class ServletManagementServerFactoryCustomizer extends
-			ManagementServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+	static class ServletManagementWebServerFactoryCustomizer extends
+			ManagementWebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
 
-		ServletManagementServerFactoryCustomizer(ListableBeanFactory beanFactory) {
-			super(beanFactory, DefaultServletWebServerFactoryCustomizer.class);
+		ServletManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
+			super(beanFactory, ServletWebServerFactoryCustomizer.class,
+					TomcatServletWebServerFactoryCustomizer.class,
+					TomcatWebServerFactoryCustomizer.class,
+					JettyWebServerFactoryCustomizer.class,
+					UndertowWebServerFactoryCustomizer.class);
 		}
 
 		@Override
@@ -102,12 +111,13 @@ class ServletManagementChildContextConfiguration {
 				ServerProperties serverProperties) {
 			super.customize(webServerFactory, managementServerProperties,
 					serverProperties);
-			webServerFactory.setContextPath(managementServerProperties.getContextPath());
+			webServerFactory.setContextPath(
+					managementServerProperties.getServlet().getContextPath());
 		}
 
 	}
 
-	static abstract class AccessLogCustomizer implements Ordered {
+	abstract static class AccessLogCustomizer implements Ordered {
 
 		protected String customizePrefix(String prefix) {
 			return "management_" + prefix;
@@ -124,17 +134,16 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
 		@Override
-		public void customize(TomcatServletWebServerFactory serverFactory) {
-			AccessLogValve accessLogValve = findAccessLogValve(serverFactory);
+		public void customize(TomcatServletWebServerFactory factory) {
+			AccessLogValve accessLogValve = findAccessLogValve(factory);
 			if (accessLogValve == null) {
 				return;
 			}
 			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
 		}
 
-		private AccessLogValve findAccessLogValve(
-				TomcatServletWebServerFactory serverFactory) {
-			for (Valve engineValve : serverFactory.getEngineValves()) {
+		private AccessLogValve findAccessLogValve(TomcatServletWebServerFactory factory) {
+			for (Valve engineValve : factory.getEngineValves()) {
 				if (engineValve instanceof AccessLogValve) {
 					return (AccessLogValve) engineValve;
 				}
@@ -148,9 +157,8 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
 		@Override
-		public void customize(UndertowServletWebServerFactory serverFactory) {
-			serverFactory.setAccessLogPrefix(
-					customizePrefix(serverFactory.getAccessLogPrefix()));
+		public void customize(UndertowServletWebServerFactory factory) {
+			factory.setAccessLogPrefix(customizePrefix(factory.getAccessLogPrefix()));
 		}
 
 	}

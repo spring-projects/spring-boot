@@ -49,7 +49,7 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	}
 
 	@Test
-	public void shouldBeInSpringFactories() throws Exception {
+	public void shouldBeInSpringFactories() {
 		List<AutoConfigurationImportListener> factories = SpringFactoriesLoader
 				.loadFactories(AutoConfigurationImportListener.class, null);
 		assertThat(factories).hasAtLeastOneElementOfType(
@@ -57,7 +57,7 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldRecordCandidates() throws Exception {
+	public void onAutoConfigurationImportEventShouldRecordCandidates() {
 		List<String> candidateConfigurations = Collections.singletonList("Test");
 		Set<String> exclusions = Collections.emptySet();
 		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,
@@ -70,7 +70,7 @@ public class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	}
 
 	@Test
-	public void onAutoConfigurationImportEventShouldRecordExclusions() throws Exception {
+	public void onAutoConfigurationImportEventShouldRecordExclusions() {
 		List<String> candidateConfigurations = Collections.emptyList();
 		Set<String> exclusions = Collections.singleton("Test");
 		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this,

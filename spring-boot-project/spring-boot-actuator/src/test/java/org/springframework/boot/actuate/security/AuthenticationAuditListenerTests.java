@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class AuthenticationAuditListenerTests {
 		this.listener.onApplicationEvent(new InteractiveAuthenticationSuccessEvent(
 				new UsernamePasswordAuthenticationToken("user", "password"), getClass()));
 		// No need to audit this one (it shadows a regular AuthenticationSuccessEvent)
-		verify(this.publisher, never()).publishEvent((ApplicationEvent) any());
+		verify(this.publisher, never()).publishEvent(any(ApplicationEvent.class));
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class AuthenticationAuditListenerTests {
 	}
 
 	@Test
-	public void testDetailsAreIncludedInAuditEvent() throws Exception {
+	public void testDetailsAreIncludedInAuditEvent() {
 		Object details = new Object();
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 				"user", "password");

@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-jta-narayana</artifactId>
 	<name>Spring Boot Narayana JTA Starter</name>
-	<description>Spring Boot Narayana JTA Starter</description>
+	<description>Starter for JTA transactions using Narayana</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>

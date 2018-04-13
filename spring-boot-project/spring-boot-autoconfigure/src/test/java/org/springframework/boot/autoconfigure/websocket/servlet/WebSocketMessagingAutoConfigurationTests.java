@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,11 +57,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.RestTemplateXhrTransport;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -139,7 +139,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 				.getField(compositeDefaultConverter, "converters");
 	}
 
-	private Object performStompSubscription(final String topic) throws Throwable {
+	private Object performStompSubscription(String topic) throws Throwable {
 		TestPropertyValues
 				.of("server.port:0", "spring.jackson.serialization.indent-output:true")
 				.applyTo(this.context);
@@ -213,7 +213,7 @@ public class WebSocketMessagingAutoConfigurationTests {
 			WebSocketMessagingAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class })
 	static class WebSocketMessagingConfiguration
-			extends AbstractWebSocketMessageBrokerConfigurer {
+			implements WebSocketMessageBrokerConfigurer {
 
 		@Override
 		public void registerStompEndpoints(StompEndpointRegistry registry) {

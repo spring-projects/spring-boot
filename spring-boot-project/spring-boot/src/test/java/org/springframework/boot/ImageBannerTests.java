@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ImageBannerTests {
 
-	private static final String NEW_LINE = System.getProperty("line.separator");
-
 	private static final char HIGH_LUMINANCE_CHARACTER = ' ';
 
 	private static final char LOW_LUMINANCE_CHARACTER = '@';
 
-	private static final String INVERT_TRUE = "banner.image.invert=true";
+	private static final String INVERT_TRUE = "spring.banner.image.invert=true";
 
 	@Before
 	public void setup() {
@@ -117,62 +115,72 @@ public class ImageBannerTests {
 	}
 
 	@Test
-	public void printBannerShouldRenderGradient() throws Exception {
+	public void printBannerShouldRenderGradient() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner("gradient.gif", "banner.image.width=10",
-				"banner.image.margin=0");
+		String banner = printBanner("gradient.gif", "spring.banner.image.width=10",
+				"spring.banner.image.margin=0");
 		assertThat(banner).contains("@#8&o:*.  ");
 	}
 
 	@Test
-	public void printBannerShouldCalculateHeight() throws Exception {
-		String banner = printBanner("large.gif", "banner.image.width=20");
+	public void printBannerShouldCalculateHeight() {
+		String banner = printBanner("large.gif", "spring.banner.image.width=20");
 		assertThat(getBannerHeight(banner)).isEqualTo(10);
 	}
 
 	@Test
-	public void printBannerWhenHasHeightPropertyShouldSetHeight() throws Exception {
-		String banner = printBanner("large.gif", "banner.image.width=20",
-				"banner.image.height=30");
+	public void printBannerWhenHasHeightPropertyShouldSetHeight() {
+		String banner = printBanner("large.gif", "spring.banner.image.width=20",
+				"spring.banner.image.height=30");
 		assertThat(getBannerHeight(banner)).isEqualTo(30);
 	}
 
 	@Test
-	public void printBannerShouldCapWidthAndCalculateHeight() throws Exception {
+	public void printBannerShouldCapWidthAndCalculateHeight() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner("large.gif", "banner.image.margin=0");
+		String banner = printBanner("large.gif", "spring.banner.image.margin=0");
 		assertThat(getBannerWidth(banner)).isEqualTo(76);
 		assertThat(getBannerHeight(banner)).isEqualTo(37);
 	}
 
 	@Test
-	public void printBannerShouldPrintMargin() throws Exception {
+	public void printBannerShouldPrintMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner("large.gif");
-		String[] lines = banner.split(NEW_LINE);
+		String[] lines = banner.split(System.lineSeparator());
 		for (int i = 2; i < lines.length - 1; i++) {
 			assertThat(lines[i]).startsWith("  @");
 		}
 	}
 
 	@Test
-	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin()
-			throws Exception {
+	public void printBannerWhenHasMarginPropertyShouldPrintSizedMargin() {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
-		String banner = printBanner("large.gif", "banner.image.margin=4");
-		String[] lines = banner.split(NEW_LINE);
+		String banner = printBanner("large.gif", "spring.banner.image.margin=4");
+		String[] lines = banner.split(System.lineSeparator());
 		for (int i = 2; i < lines.length - 1; i++) {
 			assertThat(lines[i]).startsWith("    @");
 		}
 	}
 
+	@Test
+	public void printBannerWhenAnimatesShouldPrintAllFrames() {
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner("animated.gif");
+		String[] lines = banner.split(System.lineSeparator());
+		int frames = 138;
+		int linesPerFrame = 36;
+		assertThat(banner).contains("\r");
+		assertThat(lines.length).isEqualTo(frames * linesPerFrame - 1);
+	}
+
 	private int getBannerHeight(String banner) {
-		return banner.split(NEW_LINE).length - 3;
+		return banner.split(System.lineSeparator()).length - 3;
 	}
 
 	private int getBannerWidth(String banner) {
 		int width = 0;
-		for (String line : banner.split(NEW_LINE)) {
+		for (String line : banner.split(System.lineSeparator())) {
 			width = Math.max(width, line.length());
 		}
 		return width;

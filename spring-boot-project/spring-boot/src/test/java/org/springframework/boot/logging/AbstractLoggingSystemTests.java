@@ -53,8 +53,8 @@ public abstract class AbstractLoggingSystemTests {
 
 	@After
 	public void clear() {
-		System.clearProperty("LOG_FILE");
-		System.clearProperty("PID");
+		System.clearProperty(LoggingSystemProperties.LOG_FILE);
+		System.clearProperty(LoggingSystemProperties.PID_KEY);
 	}
 
 	protected final String[] getSpringConfigLocations(AbstractLoggingSystem system) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose application health information.
@@ -32,25 +33,18 @@ public class HealthEndpoint {
 
 	private final HealthIndicator healthIndicator;
 
-	private final boolean showDetails;
-
 	/**
 	 * Create a new {@link HealthEndpoint} instance.
 	 * @param healthIndicator the health indicator
-	 * @param showDetails if full details should be returned instead of just the status
 	 */
-	public HealthEndpoint(HealthIndicator healthIndicator, boolean showDetails) {
+	public HealthEndpoint(HealthIndicator healthIndicator) {
+		Assert.notNull(healthIndicator, "HealthIndicator must not be null");
 		this.healthIndicator = healthIndicator;
-		this.showDetails = showDetails;
 	}
 
 	@ReadOperation
 	public Health health() {
-		Health health = this.healthIndicator.health();
-		if (this.showDetails) {
-			return health;
-		}
-		return Health.status(health.getStatus()).build();
+		return this.healthIndicator.health();
 	}
 
 }

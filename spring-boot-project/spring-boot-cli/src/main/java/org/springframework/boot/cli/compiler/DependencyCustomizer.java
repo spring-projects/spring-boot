@@ -88,7 +88,7 @@ public class DependencyCustomizer {
 	 * @param classNames the class names to test
 	 * @return a nested {@link DependencyCustomizer}
 	 */
-	public DependencyCustomizer ifAnyMissingClasses(final String... classNames) {
+	public DependencyCustomizer ifAnyMissingClasses(String... classNames) {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {
@@ -111,7 +111,7 @@ public class DependencyCustomizer {
 	 * @param classNames the class names to test
 	 * @return a nested {@link DependencyCustomizer}
 	 */
-	public DependencyCustomizer ifAllMissingClasses(final String... classNames) {
+	public DependencyCustomizer ifAllMissingClasses(String... classNames) {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {
@@ -135,7 +135,7 @@ public class DependencyCustomizer {
 	 * @param paths the paths to test
 	 * @return a nested {@link DependencyCustomizer}
 	 */
-	public DependencyCustomizer ifAllResourcesPresent(final String... paths) {
+	public DependencyCustomizer ifAllResourcesPresent(String... paths) {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {
@@ -161,7 +161,7 @@ public class DependencyCustomizer {
 	 * @param paths the paths to test
 	 * @return a nested {@link DependencyCustomizer}
 	 */
-	public DependencyCustomizer ifAnyResourcesPresent(final String... paths) {
+	public DependencyCustomizer ifAnyResourcesPresent(String... paths) {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {

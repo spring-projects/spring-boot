@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import info.ganglia.gmetric4j.gmetric.GMetric;
 import io.micrometer.ganglia.GangliaConfig;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link GangliaProperties} to a {@link GangliaConfig}.
@@ -30,14 +30,11 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class GangliaPropertiesConfigAdapter
-		extends PropertiesConfigAdapter<GangliaProperties, GangliaConfig>
+class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProperties>
 		implements GangliaConfig {
 
-	private static final GangliaConfig DEFAULTS = (k) -> null;
-
 	GangliaPropertiesConfigAdapter(GangliaProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
@@ -47,47 +44,50 @@ class GangliaPropertiesConfigAdapter
 
 	@Override
 	public boolean enabled() {
-		return get(GangliaProperties::getEnabled, GangliaConfig::enabled);
+		return get(GangliaProperties::isEnabled, GangliaConfig.super::enabled);
 	}
 
 	@Override
 	public Duration step() {
-		return get(GangliaProperties::getStep, GangliaConfig::step);
+		return get(GangliaProperties::getStep, GangliaConfig.super::step);
 	}
 
 	@Override
 	public TimeUnit rateUnits() {
-		return get(GangliaProperties::getRateUnits, GangliaConfig::rateUnits);
+		return get(GangliaProperties::getRateUnits, GangliaConfig.super::rateUnits);
 	}
 
 	@Override
 	public TimeUnit durationUnits() {
-		return get(GangliaProperties::getDurationUnits, GangliaConfig::durationUnits);
+		return get(GangliaProperties::getDurationUnits,
+				GangliaConfig.super::durationUnits);
 	}
 
 	@Override
 	public String protocolVersion() {
-		return get(GangliaProperties::getProtocolVersion, GangliaConfig::protocolVersion);
+		return get(GangliaProperties::getProtocolVersion,
+				GangliaConfig.super::protocolVersion);
 	}
 
 	@Override
 	public GMetric.UDPAddressingMode addressingMode() {
-		return get(GangliaProperties::getAddressingMode, GangliaConfig::addressingMode);
+		return get(GangliaProperties::getAddressingMode,
+				GangliaConfig.super::addressingMode);
 	}
 
 	@Override
 	public int ttl() {
-		return get(GangliaProperties::getTimeToLive, GangliaConfig::ttl);
+		return get(GangliaProperties::getTimeToLive, GangliaConfig.super::ttl);
 	}
 
 	@Override
 	public String host() {
-		return get(GangliaProperties::getHost, GangliaConfig::host);
+		return get(GangliaProperties::getHost, GangliaConfig.super::host);
 	}
 
 	@Override
 	public int port() {
-		return get(GangliaProperties::getPort, GangliaConfig::port);
+		return get(GangliaProperties::getPort, GangliaConfig.super::port);
 	}
 
 }

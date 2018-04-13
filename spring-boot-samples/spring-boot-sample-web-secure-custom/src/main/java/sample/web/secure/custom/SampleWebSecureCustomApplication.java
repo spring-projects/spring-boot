@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,9 @@ import java.util.Map;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,7 +52,7 @@ public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 		registry.addViewController("/login").setViewName("login");
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		new SpringApplicationBuilder(SampleWebSecureCustomApplication.class).run(args);
 	}
 
@@ -67,12 +64,6 @@ public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest()
 					.fullyAuthenticated().and().formLogin().loginPage("/login")
 					.failureUrl("/login?error").permitAll().and().logout().permitAll();
-		}
-
-		@Bean
-		public InMemoryUserDetailsManager InMemoryUserDetailsManager() {
-			return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
-					.username("user").password("user").roles("USER").build());
 		}
 
 	}

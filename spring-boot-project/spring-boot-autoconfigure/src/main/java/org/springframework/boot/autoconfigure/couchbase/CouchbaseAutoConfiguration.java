@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import java.util.function.BiFunction;
+
+import com.couchbase.client.core.env.KeyValueServiceConfig;
+import com.couchbase.client.core.env.QueryServiceConfig;
+import com.couchbase.client.core.env.ViewServiceConfig;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.CouchbaseBucket;
@@ -28,6 +33,8 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Endpoints;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Endpoints.CouchbaseService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -40,6 +47,7 @@ import org.springframework.context.annotation.Primary;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Yulin Qin
  * @since 1.4.0
  */
 @Configuration
@@ -102,14 +110,15 @@ public class CouchbaseAutoConfiguration {
 			if (timeouts.getConnect() != null) {
 				builder = builder.connectTimeout(timeouts.getConnect().toMillis());
 			}
-			builder = builder.kvEndpoints(endpoints.getKeyValue());
+			builder = builder.keyValueServiceConfig(
+					KeyValueServiceConfig.create(endpoints.getKeyValue()));
 			if (timeouts.getKeyValue() != null) {
 				builder = builder.kvTimeout(timeouts.getKeyValue().toMillis());
 			}
-			builder = builder.queryEndpoints(endpoints.getQuery());
 			if (timeouts.getQuery() != null) {
-				builder = builder.queryTimeout(timeouts.getQuery().toMillis())
-						.viewEndpoints(endpoints.getView());
+				builder = builder.queryTimeout(timeouts.getQuery().toMillis());
+				builder = builder.queryServiceConfig(getQueryServiceConfig(endpoints));
+				builder = builder.viewServiceConfig(getViewServiceConfig(endpoints));
 			}
 			if (timeouts.getSocketConnect() != null) {
 				builder = builder.socketConnectTimeout(
@@ -120,15 +129,37 @@ public class CouchbaseAutoConfiguration {
 			}
 			CouchbaseProperties.Ssl ssl = properties.getEnv().getSsl();
 			if (ssl.getEnabled()) {
-				builder.sslEnabled(true);
+				builder = builder.sslEnabled(true);
 				if (ssl.getKeyStore() != null) {
-					builder.sslKeystoreFile(ssl.getKeyStore());
+					builder = builder.sslKeystoreFile(ssl.getKeyStore());
 				}
 				if (ssl.getKeyStorePassword() != null) {
-					builder.sslKeystorePassword(ssl.getKeyStorePassword());
+					builder = builder.sslKeystorePassword(ssl.getKeyStorePassword());
 				}
 			}
 			return builder;
+		}
+
+		@SuppressWarnings("deprecation")
+		private QueryServiceConfig getQueryServiceConfig(Endpoints endpoints) {
+			return getServiceConfig(endpoints.getQueryservice(), endpoints.getQuery(),
+					QueryServiceConfig::create);
+		}
+
+		@SuppressWarnings("deprecation")
+		private ViewServiceConfig getViewServiceConfig(Endpoints endpoints) {
+			return getServiceConfig(endpoints.getViewservice(), endpoints.getView(),
+					ViewServiceConfig::create);
+		}
+
+		private <T> T getServiceConfig(CouchbaseService service, Integer fallback,
+				BiFunction<Integer, Integer, T> factory) {
+			if (service.getMinEndpoints() != 1 || service.getMaxEndpoints() != 1) {
+				return factory.apply(service.getMinEndpoints(),
+						service.getMaxEndpoints());
+			}
+			int endpoints = (fallback != null ? fallback : 1);
+			return factory.apply(endpoints, endpoints);
 		}
 
 	}

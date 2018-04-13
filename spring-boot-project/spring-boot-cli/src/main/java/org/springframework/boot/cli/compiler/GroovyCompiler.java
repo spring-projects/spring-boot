@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.util.ClassUtils;
 
 /**
  * Compiler for Groovy sources. Primarily a simple Facade for
@@ -85,7 +86,7 @@ public class GroovyCompiler {
 	 * Create a new {@link GroovyCompiler} instance.
 	 * @param configuration the compiler configuration
 	 */
-	public GroovyCompiler(final GroovyCompilerConfiguration configuration) {
+	public GroovyCompiler(GroovyCompilerConfiguration configuration) {
 
 		this.configuration = configuration;
 		this.loader = createLoader(configuration);
@@ -220,7 +221,7 @@ public class GroovyCompiler {
 			classes.add(0, mainClass);
 		}
 
-		return classes.toArray(new Class<?>[classes.size()]);
+		return ClassUtils.toClassArray(classes);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -234,8 +235,7 @@ public class GroovyCompiler {
 		try {
 			Field field = CompilationUnit.class.getDeclaredField("phaseOperations");
 			field.setAccessible(true);
-			LinkedList[] phaseOperations = (LinkedList[]) field.get(compilationUnit);
-			return phaseOperations;
+			return (LinkedList[]) field.get(compilationUnit);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(
@@ -257,7 +257,7 @@ public class GroovyCompiler {
 		});
 	}
 
-	private int getIndexOfASTTransformationVisitor(LinkedList<?> conversionOperations) {
+	private int getIndexOfASTTransformationVisitor(List<?> conversionOperations) {
 		for (int index = 0; index < conversionOperations.size(); index++) {
 			if (conversionOperations.get(index).getClass().getName()
 					.startsWith(ASTTransformationVisitor.class.getName())) {
@@ -280,8 +280,7 @@ public class GroovyCompiler {
 		public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
 				throws CompilationFailedException {
 
-			ImportCustomizer importCustomizer = new SmartImportCustomizer(source, context,
-					classNode);
+			ImportCustomizer importCustomizer = new SmartImportCustomizer(source);
 			ClassNode mainClassNode = MainClass.get(source.getAST().getClasses());
 
 			// Additional auto configuration

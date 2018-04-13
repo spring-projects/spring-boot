@@ -45,13 +45,13 @@ public class ImportAutoConfigurationTests {
 	}
 
 	@Test
-	public void classesAsAnAlias() throws Exception {
+	public void classesAsAnAlias() {
 		assertThat(getImportedConfigBeans(AnotherConfigUsingClasses.class))
 				.containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD");
 	}
 
 	@Test
-	public void excluding() throws Exception {
+	public void excluding() {
 		assertThat(getImportedConfigBeans(ExcludingConfig.class))
 				.containsExactly("ConfigA", "ConfigB", "ConfigD");
 	}

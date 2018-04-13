@@ -22,4 +22,5 @@
 	<suppress files="Ansi.*\.java" checks="JavadocStyle" />
 	<suppress files="LogLevel\.java" checks="JavadocVariable" />
 	<suppress files="HelpMojo\.java" checks=".*"/>
+	<suppress files="[\\/]org.springframework.boot.configurationprocessor.json[\\/].*\.java$" checks=".*"/>
 </suppressions>

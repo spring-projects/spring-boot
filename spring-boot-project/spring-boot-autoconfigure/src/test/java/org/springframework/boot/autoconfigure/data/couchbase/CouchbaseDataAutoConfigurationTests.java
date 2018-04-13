@@ -116,7 +116,7 @@ public class CouchbaseDataAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() throws Exception {
+	public void entityScanShouldSetInitialEntitySet() {
 		load(EntityScanConfig.class);
 		CouchbaseMappingContext mappingContext = this.context
 				.getBean(CouchbaseMappingContext.class);

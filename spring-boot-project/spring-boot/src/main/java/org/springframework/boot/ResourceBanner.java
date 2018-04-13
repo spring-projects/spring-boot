@@ -62,7 +62,7 @@ public class ResourceBanner implements Banner {
 			PrintStream out) {
 		try {
 			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
-					environment.getProperty("banner.charset", Charset.class,
+					environment.getProperty("spring.banner.charset", Charset.class,
 							StandardCharsets.UTF_8));
 
 			for (PropertyResolver resolver : getPropertyResolvers(environment,

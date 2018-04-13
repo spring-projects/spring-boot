@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
-import java.io.IOException;
 import java.util.Map;
 
 import com.hazelcast.config.Config;
@@ -50,7 +49,7 @@ public class HazelcastAutoConfigurationServerTests {
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
-	public void defaultConfigFile() throws IOException {
+	public void defaultConfigFile() {
 		// hazelcast.xml present in root classpath
 		this.contextRunner.run((context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
@@ -60,7 +59,7 @@ public class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
-	public void systemProperty() throws IOException {
+	public void systemProperty() {
 		this.contextRunner
 				.withSystemProperties(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY
 						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml")
@@ -71,7 +70,7 @@ public class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
-	public void explicitConfigFile() throws IOException {
+	public void explicitConfigFile() {
 		this.contextRunner.withPropertyValues(
 				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/"
 						+ "hazelcast-specific.xml")
@@ -85,7 +84,7 @@ public class HazelcastAutoConfigurationServerTests {
 	}
 
 	@Test
-	public void explicitConfigUrl() throws IOException {
+	public void explicitConfigUrl() {
 		this.contextRunner
 				.withPropertyValues("spring.hazelcast.config=hazelcast-default.xml")
 				.run((context) -> {

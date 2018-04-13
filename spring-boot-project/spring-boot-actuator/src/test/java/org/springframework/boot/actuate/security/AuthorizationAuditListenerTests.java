@@ -73,7 +73,7 @@ public class AuthorizationAuditListenerTests {
 	}
 
 	@Test
-	public void testDetailsAreIncludedInAuditEvent() throws Exception {
+	public void testDetailsAreIncludedInAuditEvent() {
 		Object details = new Object();
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 				"user", "password");

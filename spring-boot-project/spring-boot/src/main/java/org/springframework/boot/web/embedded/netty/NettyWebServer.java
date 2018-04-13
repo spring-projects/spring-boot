@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.netty;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.time.Duration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +31,7 @@ import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
+import org.springframework.util.Assert;
 
 /**
  * {@link WebServer} that can be used to control a Reactor Netty web server. Usually this
@@ -45,27 +47,32 @@ public class NettyWebServer implements WebServer {
 
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
+	private final HttpServer httpServer;
+
 	private final ReactorHttpHandlerAdapter handlerAdapter;
 
-	private final HttpServer reactorServer;
+	private final Duration lifecycleTimeout;
 
 	private BlockingNettyContext nettyContext;
 
-	public NettyWebServer(HttpServer reactorServer,
-			ReactorHttpHandlerAdapter handlerAdapter) {
-		this.reactorServer = reactorServer;
+	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
+			Duration lifecycleTimeout) {
+		Assert.notNull(httpServer, "HttpServer must not be null");
+		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
+		this.httpServer = httpServer;
 		this.handlerAdapter = handlerAdapter;
+		this.lifecycleTimeout = lifecycleTimeout;
 	}
 
 	@Override
 	public void start() throws WebServerException {
 		if (this.nettyContext == null) {
 			try {
-				this.nettyContext = this.reactorServer.start(this.handlerAdapter);
+				this.nettyContext = startHttpServer();
 			}
 			catch (Exception ex) {
 				if (findBindException(ex) != null) {
-					SocketAddress address = this.reactorServer.options().getAddress();
+					SocketAddress address = this.httpServer.options().getAddress();
 					if (address instanceof InetSocketAddress) {
 						throw new PortInUseException(
 								((InetSocketAddress) address).getPort());
@@ -76,6 +83,13 @@ public class NettyWebServer implements WebServer {
 			NettyWebServer.logger.info("Netty started on port(s): " + getPort());
 			startDaemonAwaitThread(this.nettyContext);
 		}
+	}
+
+	private BlockingNettyContext startHttpServer() {
+		if (this.lifecycleTimeout != null) {
+			return this.httpServer.start(this.handlerAdapter, this.lifecycleTimeout);
+		}
+		return this.httpServer.start(this.handlerAdapter);
 	}
 
 	private BindException findBindException(Exception ex) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,13 +147,12 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(Class<?> source) {
-		if (isGroovyPresent()) {
+		if (isGroovyPresent()
+				&& GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
-			if (GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
-				GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source,
-						GroovyBeanDefinitionSource.class);
-				load(loader);
-			}
+			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source,
+					GroovyBeanDefinitionSource.class);
+			load(loader);
 		}
 		if (isComponent(source)) {
 			this.annotatedReader.register(source);
@@ -243,7 +242,7 @@ class BeanDefinitionLoader {
 			// a file list of the package content. We double check here that it's not
 			// actually a package.
 			String path = ((ClassPathResource) resource).getPath();
-			if (path.indexOf(".") == -1) {
+			if (path.indexOf('.') == -1) {
 				try {
 					return Package.getPackage(path) == null;
 				}

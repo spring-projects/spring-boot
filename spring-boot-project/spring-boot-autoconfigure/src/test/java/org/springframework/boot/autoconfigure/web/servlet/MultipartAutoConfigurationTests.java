@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,7 @@ public class MultipartAutoConfigurationTests {
 	}
 
 	@Test
-	public void webServerWithAutomatedMultipartTomcatConfiguration() throws Exception {
+	public void webServerWithAutomatedMultipartTomcatConfiguration() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				WebServerWithEverythingTomcat.class, BaseConfiguration.class);
 		new RestTemplate().getForObject(
@@ -177,7 +177,7 @@ public class MultipartAutoConfigurationTests {
 	}
 
 	@Test
-	public void webServerWithCustomMultipartResolver() throws Exception {
+	public void webServerWithCustomMultipartResolver() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				WebServerWithCustomMultipartResolver.class, BaseConfiguration.class);
 		MultipartResolver multipartResolver = this.context
@@ -202,11 +202,9 @@ public class MultipartAutoConfigurationTests {
 
 	private void verify404() throws Exception {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		ClientHttpRequest request = requestFactory
-				.createRequest(
-						new URI("http://localhost:"
-								+ this.context.getWebServer().getPort() + "/"),
-						HttpMethod.GET);
+		ClientHttpRequest request = requestFactory.createRequest(new URI(
+				"http://localhost:" + this.context.getWebServer().getPort() + "/"),
+				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}

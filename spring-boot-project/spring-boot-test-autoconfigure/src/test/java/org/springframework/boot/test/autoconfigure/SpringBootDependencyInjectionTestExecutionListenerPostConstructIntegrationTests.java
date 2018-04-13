@@ -51,7 +51,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerPostConstructInte
 	}
 
 	@Test
-	public void postConstructShouldBeInvokedOnlyOnce() throws Exception {
+	public void postConstructShouldBeInvokedOnlyOnce() {
 		// gh-6874
 		assertThat(this.calls).hasSize(1);
 	}

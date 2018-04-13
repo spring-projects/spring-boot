@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,18 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
+import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import org.junit.After;
-import org.junit.Rule;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -39,10 +42,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CassandraDataAutoConfigurationIntegrationTests {
 
-	@Rule
-	public final CassandraTestServer cassandra = new CassandraTestServer();
+	@ClassRule
+	public static CassandraContainer cassandra = new CassandraContainer();
 
 	private AnnotationConfigApplicationContext context;
+
+	@Before
+	public void setUp() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.data.cassandra.port=" + cassandra.getMappedPort())
+				.applyTo(this.context.getEnvironment());
+	}
 
 	@After
 	public void close() {
@@ -53,7 +63,6 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 
 	@Test
 	public void hasDefaultSchemaActionSet() {
-		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
 		this.context.register(CassandraAutoConfiguration.class,
@@ -68,7 +77,6 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	@Test
 	public void hasRecreateSchemaActionSet() {
 		createTestKeyspaceIfNotExists();
-		this.context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();
 		AutoConfigurationPackages.register(this.context, cityPackage);
 		TestPropertyValues
@@ -84,7 +92,9 @@ public class CassandraDataAutoConfigurationIntegrationTests {
 	}
 
 	private void createTestKeyspaceIfNotExists() {
-		try (Session session = this.cassandra.getCluster().connect()) {
+		Cluster cluster = Cluster.builder().withPort(cassandra.getMappedPort())
+				.addContactPoint("localhost").build();
+		try (Session session = cluster.connect()) {
 			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
 					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
 		}

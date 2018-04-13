@@ -53,7 +53,7 @@ public class SampleCassandraApplicationTests {
 	public static SkipOnWindows skipOnWindows = new SkipOnWindows();
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		String output = SampleCassandraApplicationTests.outputCapture.toString();
 		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
@@ -61,7 +61,7 @@ public class SampleCassandraApplicationTests {
 	static class SkipOnWindows implements TestRule {
 
 		@Override
-		public Statement apply(final Statement base, Description description) {
+		public Statement apply(Statement base, Description description) {
 			return new Statement() {
 
 				@Override

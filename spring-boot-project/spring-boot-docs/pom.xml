@@ -238,12 +238,27 @@
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-new-relic</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-signalfx</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-statsd</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-wavefront</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -465,6 +480,16 @@
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>javax-websocket-server-impl</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-alpn-conscrypt-server</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.http2</groupId>
+			<artifactId>http2-server</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -738,21 +763,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-facebook</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-linkedin</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-twitter</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-cassandra</artifactId>
 			<optional>true</optional>
@@ -818,6 +828,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-webtestclient</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-data</artifactId>
 			<optional>true</optional>
@@ -825,11 +840,6 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.social</groupId>
-			<artifactId>spring-social-config</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -873,6 +883,11 @@
 			<artifactId>spring-boot-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -912,15 +927,16 @@
 									<dependencySourceIncludes>
 										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
 									</dependencySourceIncludes>
+									<sourceFileExcludes>org/springframework/boot/docs/**/*.java</sourceFileExcludes>
 									<attach>false</attach>
 									<quiet>true</quiet>
 									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>
 									<links>
-										<link>http://docs.oracle.com/javase/8/docs/api/</link>
-										<link>http://docs.oracle.com/javaee/7/api/</link>
-										<link>http://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
-										<link>http://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
-										<link>http://tomcat.apache.org/tomcat-8.5-doc/api/</link>
+										<link>https://docs.oracle.com/javase/8/docs/api/</link>
+										<link>https://docs.oracle.com/javaee/7/api/</link>
+										<link>https://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
+										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
+										<link>https://tomcat.apache.org/tomcat-8.5-doc/api/</link>
 										<link>http://download.eclipse.org/jetty/stable-9/apidocs/</link>
 										<link>http://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
 									</links>
@@ -1281,8 +1297,15 @@
 								</goals>
 								<phase>prepare-package</phase>
 								<configuration>
-									<epubCustomization>${basedir}/src/main/docbook/xsl/epub.xsl</epubCustomization>
+									<epub3Customization>${basedir}/src/main/docbook/xsl/epub.xsl</epub3Customization>
 									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
+									<preProcess>
+										<copy todir="${basedir}/target/docbook/epub/images">
+											<fileset dir="${basedir}/src/main/docbook/images">
+												<include name="*.png" />
+											</fileset>
+										</copy>
+									</preProcess>
 									<postProcess>
 										<copy todir="${basedir}/target/contents/reference/epub">
 											<fileset dir="${basedir}/target/docbook">

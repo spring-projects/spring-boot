@@ -33,12 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MimeMappingsTests {
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void defaultsCannotBeModified() throws Exception {
+	public void defaultsCannotBeModified() {
 		MimeMappings.DEFAULT.add("foo", "foo/bar");
 	}
 
 	@Test
-	public void createFromExisting() throws Exception {
+	public void createFromExisting() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
@@ -48,7 +48,7 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void createFromMap() throws Exception {
+	public void createFromMap() {
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
@@ -58,7 +58,7 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void iterate() throws Exception {
+	public void iterate() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
@@ -73,7 +73,7 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void getAll() throws Exception {
+	public void getAll() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
@@ -86,20 +86,20 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void addNew() throws Exception {
+	public void addNew() {
 		MimeMappings mappings = new MimeMappings();
 		assertThat(mappings.add("foo", "bar")).isNull();
 	}
 
 	@Test
-	public void addReplacesExisting() throws Exception {
+	public void addReplacesExisting() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.add("foo", "baz")).isEqualTo("bar");
 	}
 
 	@Test
-	public void remove() throws Exception {
+	public void remove() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.remove("foo")).isEqualTo("bar");
@@ -107,20 +107,20 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void get() throws Exception {
+	public void get() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.get("foo")).isEqualTo("bar");
 	}
 
 	@Test
-	public void getMissing() throws Exception {
+	public void getMissing() {
 		MimeMappings mappings = new MimeMappings();
 		assertThat(mappings.get("foo")).isNull();
 	}
 
 	@Test
-	public void makeUnmodifiable() throws Exception {
+	public void makeUnmodifiable() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		MimeMappings unmodifiable = MimeMappings.unmodifiableMappings(mappings);

@@ -10,8 +10,13 @@
 			<xsl:apply-templates select="@*|node()" />
 		</xsl:copy>
 	</xsl:template>
+	<xsl:template
+		match="/m:project/m:build/m:pluginManagement/m:plugins/m:plugin/m:dependencies/m:dependency/m:version/text()[. = '${revision}']">
+		<xsl:value-of select="/m:project/m:version/text()" />
+	</xsl:template>
 	<xsl:template match="/m:project/m:properties/m:main.basedir" />
 	<xsl:template match="/m:project/m:groupId" />
 	<xsl:template match="/m:project/m:version" />
 	<xsl:template match="/m:project/m:build/m:plugins" />
+	<xsl:template match="/m:project/m:licenses" />
 </xsl:stylesheet>

@@ -77,10 +77,8 @@ public class InfinispanCacheConfiguration {
 		EmbeddedCacheManager cacheManager = createEmbeddedCacheManager();
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
-			for (String cacheName : cacheNames) {
-				cacheManager.defineConfiguration(cacheName,
-						getDefaultCacheConfiguration());
-			}
+			cacheNames.forEach((cacheName) -> cacheManager.defineConfiguration(cacheName,
+					getDefaultCacheConfiguration()));
 		}
 		return cacheManager;
 	}

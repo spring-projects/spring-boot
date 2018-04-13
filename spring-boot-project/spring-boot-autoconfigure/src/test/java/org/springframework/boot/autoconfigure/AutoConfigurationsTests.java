@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AutoConfigurationsTests {
 
 	@Test
-	public void ofShouldCreateOrderedConfigurations() throws Exception {
+	public void ofShouldCreateOrderedConfigurations() {
 		Configurations configurations = AutoConfigurations.of(AutoConfigureA.class,
 				AutoConfigureB.class);
 		assertThat(Configurations.getClasses(configurations))

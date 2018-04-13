@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -36,6 +37,7 @@ import org.springframework.core.annotation.Order;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD })
+@Documented
 public @interface AutoConfigureOrder {
 
 	int DEFAULT_ORDER = 0;

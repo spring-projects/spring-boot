@@ -31,26 +31,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TextResourceOriginTests {
 
 	@Test
-	public void createWithNullResourceShouldSetNullResource() throws Exception {
+	public void createWithNullResourceShouldSetNullResource() {
 		TextResourceOrigin origin = new TextResourceOrigin(null, null);
 		assertThat(origin.getResource()).isNull();
 	}
 
 	@Test
-	public void createWithNullLocationShouldSetNullLocation() throws Exception {
+	public void createWithNullLocationShouldSetNullLocation() {
 		TextResourceOrigin origin = new TextResourceOrigin(null, null);
 		assertThat(origin.getLocation()).isNull();
 	}
 
 	@Test
-	public void getResourceShouldReturnResource() throws Exception {
+	public void getResourceShouldReturnResource() {
 		ClassPathResource resource = new ClassPathResource("foo.txt");
 		TextResourceOrigin origin = new TextResourceOrigin(resource, null);
 		assertThat(origin.getResource()).isEqualTo(resource);
 	}
 
 	@Test
-	public void getLocationShouldReturnLocation() throws Exception {
+	public void getLocationShouldReturnLocation() {
 		Location location = new Location(1, 2);
 		TextResourceOrigin origin = new TextResourceOrigin(null, location);
 		assertThat(origin.getLocation()).isEqualTo(location);
@@ -58,25 +58,25 @@ public class TextResourceOriginTests {
 	}
 
 	@Test
-	public void getLocationLineShouldReturnLine() throws Exception {
+	public void getLocationLineShouldReturnLine() {
 		Location location = new Location(1, 2);
 		assertThat(location.getLine()).isEqualTo(1);
 	}
 
 	@Test
-	public void getLocationColumnShouldReturnColumn() throws Exception {
+	public void getLocationColumnShouldReturnColumn() {
 		Location location = new Location(1, 2);
 		assertThat(location.getColumn()).isEqualTo(2);
 	}
 
 	@Test
-	public void locationToStringShouldReturnNiceString() throws Exception {
+	public void locationToStringShouldReturnNiceString() {
 		Location location = new Location(1, 2);
 		assertThat(location.toString()).isEqualTo("2:3");
 	}
 
 	@Test
-	public void toStringShouldReturnNiceString() throws Exception {
+	public void toStringShouldReturnNiceString() {
 		ClassPathResource resource = new ClassPathResource("foo.txt");
 		Location location = new Location(1, 2);
 		TextResourceOrigin origin = new TextResourceOrigin(resource, location);
@@ -84,21 +84,21 @@ public class TextResourceOriginTests {
 	}
 
 	@Test
-	public void toStringWhenResourceIsNullShouldReturnNiceString() throws Exception {
+	public void toStringWhenResourceIsNullShouldReturnNiceString() {
 		Location location = new Location(1, 2);
 		TextResourceOrigin origin = new TextResourceOrigin(null, location);
 		assertThat(origin.toString()).isEqualTo("unknown resource [?]:2:3");
 	}
 
 	@Test
-	public void toStringWhenLocationIsNullShouldReturnNiceString() throws Exception {
+	public void toStringWhenLocationIsNullShouldReturnNiceString() {
 		ClassPathResource resource = new ClassPathResource("foo.txt");
 		TextResourceOrigin origin = new TextResourceOrigin(resource, null);
 		assertThat(origin.toString()).isEqualTo("class path resource [foo.txt]");
 	}
 
 	@Test
-	public void locationEqualsAndHashCodeShouldUseLineAndColumn() throws Exception {
+	public void locationEqualsAndHashCodeShouldUseLineAndColumn() {
 		Location location1 = new Location(1, 2);
 		Location location2 = new Location(1, 2);
 		Location location3 = new Location(2, 2);
@@ -111,7 +111,7 @@ public class TextResourceOriginTests {
 	}
 
 	@Test
-	public void equalsAndHashCodeShouldResourceAndLocation() throws Exception {
+	public void equalsAndHashCodeShouldResourceAndLocation() {
 		TextResourceOrigin origin1 = new TextResourceOrigin(
 				new ClassPathResource("foo.txt"), new Location(1, 2));
 		TextResourceOrigin origin2 = new TextResourceOrigin(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,14 @@ public class ManagingDependenciesDocumentationTests {
 		assertThat(this.gradleBuild
 				.script("src/main/gradle/managing-dependencies/custom-version.gradle")
 				.build("slf4jVersion").getOutput()).contains("1.7.20");
+	}
+
+	@Test
+	public void dependencyManagementInIsolation() {
+		assertThat(this.gradleBuild
+				.script("src/main/gradle/managing-dependencies/configure-bom.gradle")
+				.build("dependencyManagement").getOutput())
+						.contains("org.springframework.boot:spring-boot-starter ");
 	}
 
 }

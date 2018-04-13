@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Supplier;
+
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 
@@ -27,19 +31,33 @@ import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
  */
 public class HibernateSettings {
 
-	private String ddlAuto;
+	private Supplier<String> ddlAuto;
 
 	private ImplicitNamingStrategy implicitNamingStrategy;
 
 	private PhysicalNamingStrategy physicalNamingStrategy;
 
-	public HibernateSettings ddlAuto(String ddlAuto) {
+	private Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
+
+	public HibernateSettings ddlAuto(Supplier<String> ddlAuto) {
 		this.ddlAuto = ddlAuto;
 		return this;
 	}
 
+	/**
+	 * Specify the default ddl auto value to use.
+	 * @param ddlAuto the default ddl auto if none is provided
+	 * @return this instance
+	 * @see #ddlAuto(Supplier)
+	 * @deprecated as of 2.0.1 in favour of {@link #ddlAuto(Supplier)}
+	 */
+	@Deprecated
+	public HibernateSettings ddlAuto(String ddlAuto) {
+		return ddlAuto(() -> ddlAuto);
+	}
+
 	public String getDdlAuto() {
-		return this.ddlAuto;
+		return (this.ddlAuto != null ? this.ddlAuto.get() : null);
 	}
 
 	public HibernateSettings implicitNamingStrategy(
@@ -60,6 +78,17 @@ public class HibernateSettings {
 
 	public PhysicalNamingStrategy getPhysicalNamingStrategy() {
 		return this.physicalNamingStrategy;
+	}
+
+	public HibernateSettings hibernatePropertiesCustomizers(
+			Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
+		this.hibernatePropertiesCustomizers = new ArrayList<>(
+				hibernatePropertiesCustomizers);
+		return this;
+	}
+
+	public Collection<HibernatePropertiesCustomizer> getHibernatePropertiesCustomizers() {
+		return this.hibernatePropertiesCustomizers;
 	}
 
 }

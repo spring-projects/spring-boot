@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AliasFor;
 
 /**
  * {@link Configuration @Configuration} that can be used to define additional beans or
@@ -47,6 +48,7 @@ public @interface TestConfiguration {
 	 * Configuration class. See {@link Configuration#value()} for details.
 	 * @return the specified bean name, if any
 	 */
+	@AliasFor(annotation = Configuration.class)
 	String value() default "";
 
 }

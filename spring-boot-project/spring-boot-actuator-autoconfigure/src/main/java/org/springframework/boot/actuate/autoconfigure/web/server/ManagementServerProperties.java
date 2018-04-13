@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,24 +39,21 @@ import org.springframework.util.StringUtils;
 public class ManagementServerProperties implements SecurityPrerequisite {
 
 	/**
-	 * Management endpoint HTTP port. Use the same port as the application by default.
+	 * Management endpoint HTTP port (uses the same port as the application by default).
+	 * Configure a different port to use management-specific SSL.
 	 */
 	private Integer port;
 
-	@NestedConfigurationProperty
-	private Ssl ssl;
-
 	/**
-	 * Network address that to which the management endpoints should bind to. Requires a
-	 * custom management.server.port.
+	 * Network address to which the management endpoints should bind. Requires a custom
+	 * management.server.port.
 	 */
 	private InetAddress address;
 
-	/**
-	 * Management endpoint context-path. For instance, '/actuator'. Requires a custom
-	 * management.server.port.
-	 */
-	private String contextPath = "";
+	private final Servlet servlet = new Servlet();
+
+	@NestedConfigurationProperty
+	private Ssl ssl;
 
 	/**
 	 * Add the "X-Application-Context" HTTP header in each response.
@@ -82,14 +79,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		this.port = port;
 	}
 
-	public Ssl getSsl() {
-		return this.ssl;
-	}
-
-	public void setSsl(Ssl ssl) {
-		this.ssl = ssl;
-	}
-
 	public InetAddress getAddress() {
 		return this.address;
 	}
@@ -98,25 +87,16 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		this.address = address;
 	}
 
-	/**
-	 * Return the context path with no trailing slash (i.e. the '/' root context is
-	 * represented as the empty string).
-	 * @return the context path (no trailing slash)
-	 */
-	public String getContextPath() {
-		return this.contextPath;
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
-	public void setContextPath(String contextPath) {
-		Assert.notNull(contextPath, "ContextPath must not be null");
-		this.contextPath = cleanContextPath(contextPath);
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
 	}
 
-	private String cleanContextPath(String contextPath) {
-		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
-			return contextPath.substring(0, contextPath.length() - 1);
-		}
-		return contextPath;
+	public Servlet getServlet() {
+		return this.servlet;
 	}
 
 	public boolean getAddApplicationContextHeader() {
@@ -125,6 +105,40 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 
 	public void setAddApplicationContextHeader(boolean addApplicationContextHeader) {
 		this.addApplicationContextHeader = addApplicationContextHeader;
+	}
+
+	/**
+	 * Servlet properties.
+	 */
+	public static class Servlet {
+
+		/**
+		 * Management endpoint context-path (for instance, `/management`). Requires a
+		 * custom management.server.port.
+		 */
+		private String contextPath = "";
+
+		/**
+		 * Return the context path with no trailing slash (i.e. the '/' root context is
+		 * represented as the empty string).
+		 * @return the context path (no trailing slash)
+		 */
+		public String getContextPath() {
+			return this.contextPath;
+		}
+
+		public void setContextPath(String contextPath) {
+			Assert.notNull(contextPath, "ContextPath must not be null");
+			this.contextPath = cleanContextPath(contextPath);
+		}
+
+		private String cleanContextPath(String contextPath) {
+			if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+				return contextPath.substring(0, contextPath.length() - 1);
+			}
+			return contextPath;
+		}
+
 	}
 
 }

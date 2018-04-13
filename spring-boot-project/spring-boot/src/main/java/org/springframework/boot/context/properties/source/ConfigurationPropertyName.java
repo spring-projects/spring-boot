@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ import org.springframework.util.ObjectUtils;
 /**
  * A configuration property name composed of elements separated by dots. User created
  * names may contain the characters "{@code a-z}" "{@code 0-9}") and "{@code -}", they
- * must be lower-case and must start with a letter. The "{@code -}" is used purely for
- * formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered equivalent.
+ * must be lower-case and must start with an alpha-numeric character. The "{@code -}" is
+ * used purely for formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered
+ * equivalent.
  * <p>
  * The "{@code [}" and "{@code ]}" characters may be used to indicate an associative
  * index(i.e. a {@link Map} key or a {@link Collection} index. Indexes names are not
@@ -355,7 +356,7 @@ public final class ConfigurationPropertyName
 		if (obj == this) {
 			return true;
 		}
-		if (obj == null || !obj.getClass().equals(getClass())) {
+		if (obj == null || obj.getClass() != getClass()) {
 			return false;
 		}
 		ConfigurationPropertyName other = (ConfigurationPropertyName) obj;
@@ -409,9 +410,7 @@ public final class ConfigurationPropertyName
 	}
 
 	private static boolean isIndexed(CharSequence element) {
-		int length = element.length();
-		return length > 2 && element.charAt(0) == '['
-				&& element.charAt(length - 1) == ']';
+		return element.charAt(0) == '[' && element.charAt(element.length() - 1) == ']';
 	}
 
 	/**
@@ -461,8 +460,7 @@ public final class ConfigurationPropertyName
 				elements.add(elementValue);
 			}
 		});
-		return new ConfigurationPropertyName(
-				elements.toArray(new CharSequence[elements.size()]));
+		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
 	}
 
 	/**
@@ -496,7 +494,7 @@ public final class ConfigurationPropertyName
 		if (name.length() == 0) {
 			return EMPTY;
 		}
-		List<CharSequence> elements = new ArrayList<>(10);
+		List<CharSequence> elements = new ArrayList<>();
 		process(name, separator, (elementValue, start, end, indexed) -> {
 			elementValue = elementValueProcessor.apply(elementValue);
 			if (!isIndexed(elementValue)) {
@@ -509,8 +507,7 @@ public final class ConfigurationPropertyName
 				elements.add(elementValue);
 			}
 		});
-		return new ConfigurationPropertyName(
-				elements.toArray(new CharSequence[elements.size()]));
+		return new ConfigurationPropertyName(elements.toArray(new CharSequence[0]));
 	}
 
 	private static void process(CharSequence name, char separator,
@@ -656,10 +653,16 @@ public final class ConfigurationPropertyName
 		}
 
 		public static boolean isValidElement(CharSequence elementValue) {
-			return getInvalidChars(elementValue).isEmpty();
+			for (int i = 0; i < elementValue.length(); i++) {
+				char ch = elementValue.charAt(i);
+				if (!isValidChar(ch, i)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
-		private static List<Character> getInvalidChars(CharSequence elementValue) {
+		public static List<Character> getInvalidChars(CharSequence elementValue) {
 			List<Character> chars = new ArrayList<>();
 			for (int i = 0; i < elementValue.length(); i++) {
 				char ch = elementValue.charAt(i);
@@ -671,12 +674,15 @@ public final class ConfigurationPropertyName
 		}
 
 		public static boolean isValidChar(char ch, int index) {
-			boolean isAlpha = ch >= 'a' && ch <= 'z';
-			boolean isNumeric = ch >= '0' && ch <= '9';
-			if (index == 0) {
-				return isAlpha;
-			}
-			return isAlpha || isNumeric || ch == '-';
+			return isAlpha(ch) || isNumeric(ch) || (index != 0 && ch == '-');
+		}
+
+		private static boolean isAlpha(char ch) {
+			return ch >= 'a' && ch <= 'z';
+		}
+
+		private static boolean isNumeric(char ch) {
+			return ch >= '0' && ch <= '9';
 		}
 
 	}

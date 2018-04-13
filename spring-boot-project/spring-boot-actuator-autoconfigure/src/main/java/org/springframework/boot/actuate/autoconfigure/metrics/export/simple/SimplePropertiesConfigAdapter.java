@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
 import java.time.Duration;
 
+import io.micrometer.core.instrument.simple.CountingMode;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link SimpleProperties} to a {@link SimpleConfig}.
@@ -28,12 +29,11 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.PropertiesC
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class SimplePropertiesConfigAdapter extends
-		PropertiesConfigAdapter<SimpleProperties, SimpleConfig> implements SimpleConfig {
-	private static final SimpleConfig DEFAULTS = (key) -> null;
+public class SimplePropertiesConfigAdapter
+		extends PropertiesConfigAdapter<SimpleProperties> implements SimpleConfig {
 
 	public SimplePropertiesConfigAdapter(SimpleProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
@@ -42,12 +42,13 @@ public class SimplePropertiesConfigAdapter extends
 	}
 
 	@Override
-	public boolean enabled() {
-		return get(SimpleProperties::getEnabled, SimpleConfig::enabled);
+	public Duration step() {
+		return get(SimpleProperties::getStep, SimpleConfig.super::step);
 	}
 
 	@Override
-	public Duration step() {
-		return get(SimpleProperties::getStep, SimpleConfig::step);
+	public CountingMode mode() {
+		return get(SimpleProperties::getMode, SimpleConfig.super::mode);
 	}
+
 }

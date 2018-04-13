@@ -42,7 +42,7 @@ public class SampleWebJspApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testJspWithEl() throws Exception {
+	public void testJspWithEl() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("/resources/text.txt");

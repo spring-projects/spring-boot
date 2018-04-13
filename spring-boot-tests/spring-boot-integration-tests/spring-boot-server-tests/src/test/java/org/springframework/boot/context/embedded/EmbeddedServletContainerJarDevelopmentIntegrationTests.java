@@ -50,15 +50,14 @@ public class EmbeddedServletContainerJarDevelopmentIntegrationTests
 	}
 
 	@Test
-	public void metaInfResourceFromDependencyIsAvailableViaHttp() throws Exception {
+	public void metaInfResourceFromDependencyIsAvailableViaHttp() {
 		ResponseEntity<String> entity = this.rest
 				.getForEntity("/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
-	public void metaInfResourceFromDependencyIsAvailableViaServletContext()
-			throws Exception {
+	public void metaInfResourceFromDependencyIsAvailableViaServletContext() {
 		ResponseEntity<String> entity = this.rest.getForEntity(
 				"/servletContext?/nested-meta-inf-resource.txt", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

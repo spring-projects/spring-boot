@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,17 @@ public class WelcomePageHandlerMappingTests {
 					AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
+	public void isOrderedAtLowPriority() {
+		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
+				.run((context) -> {
+					WelcomePageHandlerMapping handler = context
+							.getBean(WelcomePageHandlerMapping.class);
+					assertThat(handler.getOrder())
+							.isEqualTo(2);
+				});
+	}
+
+	@Test
 	public void handlesRequestForStaticPageThatAcceptsTextHtml() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
@@ -75,7 +86,8 @@ public class WelcomePageHandlerMappingTests {
 	public void handlesRequestForStaticPageThatAcceptsAll() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
-						.perform(get("/").accept("*/*")).andExpect(status().isOk())
+						.perform(get("/").accept(MediaType.ALL))
+						.andExpect(status().isOk())
 						.andExpect(forwardedUrl("index.html")));
 	}
 
@@ -96,7 +108,7 @@ public class WelcomePageHandlerMappingTests {
 	}
 
 	@Test
-	public void handlesRequestWithEmptyAcceptHeader() throws Exception {
+	public void handlesRequestWithEmptyAcceptHeader() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 				.run((context) -> MockMvcBuilders.webAppContextSetup(context).build()
 						.perform(get("/").header(HttpHeaders.ACCEPT, ""))
@@ -204,7 +216,7 @@ public class WelcomePageHandlerMappingTests {
 					@Override
 					protected void renderMergedOutputModel(Map<String, Object> model,
 							HttpServletRequest request, HttpServletResponse response)
-									throws Exception {
+							throws Exception {
 						response.getWriter().print(name + " template");
 					}
 

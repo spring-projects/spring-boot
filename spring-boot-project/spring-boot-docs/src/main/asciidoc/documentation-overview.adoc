@@ -33,10 +33,10 @@ If you have trouble with Spring Boot, we would like to help.
 * Try the <<howto.adoc#howto, How-to documents>>. They provide solutions to the most
 common questions.
 * Learn the Spring basics. Spring Boot builds on many other Spring projects. Check the
-http://spring.io[spring.io] web-site for a wealth of reference documentation. If you are
-starting out with Spring, try one of the http://spring.io/guides[guides].
-* Ask a question. We monitor http://stackoverflow.com[stackoverflow.com] for questions
-tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`].
+https://spring.io[spring.io] web-site for a wealth of reference documentation. If you are
+starting out with Spring, try one of the https://spring.io/guides[guides].
+* Ask a question. We monitor https://stackoverflow.com[stackoverflow.com] for questions
+tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
 * Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues.
 
 NOTE: All of Spring Boot is open source, including the documentation. If you find

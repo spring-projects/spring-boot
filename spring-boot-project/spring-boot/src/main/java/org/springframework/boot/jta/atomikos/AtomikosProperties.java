@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,11 @@ public class AtomikosProperties {
 	private boolean forceShutdownOnVmExit;
 
 	/**
+	 * How long should normal shutdown (no-force) wait for transactions to complete.
+	 */
+	private long defaultMaxWaitTimeOnShutdown = Long.MAX_VALUE;
+
+	/**
 	 * Transactions log file base name.
 	 */
 	private String logBaseName = "tmlog";
@@ -94,8 +99,9 @@ public class AtomikosProperties {
 	private String logBaseDir;
 
 	/**
-	 * Interval between checkpoints. A checkpoint reduces the log file size at the expense
-	 * of adding some overhead in the runtime.
+	 * Interval between checkpoints, expressed as the number of log writes between two
+	 * checkpoint. A checkpoint reduces the log file size at the expense of adding some
+	 * overhead in the runtime.
 	 */
 	private long checkpointInterval = 500;
 
@@ -205,7 +211,7 @@ public class AtomikosProperties {
 	 * different but related subtransactions. This setting has no effect on resource
 	 * access within one and the same transaction. If you don't use subtransactions then
 	 * this setting can be ignored.
-	 * @param serialJtaTransactions if serial JTA transaction are supported
+	 * @param serialJtaTransactions if serial JTA transactions are supported
 	 */
 	public void setSerialJtaTransactions(boolean serialJtaTransactions) {
 		this.serialJtaTransactions = serialJtaTransactions;
@@ -234,6 +240,19 @@ public class AtomikosProperties {
 
 	public boolean isForceShutdownOnVmExit() {
 		return this.forceShutdownOnVmExit;
+	}
+
+	/**
+	 * Specifies how long should a normal shutdown (no-force) wait for transactions to
+	 * complete. Defaults to {@literal Long.MAX_VALUE}.
+	 * @param defaultMaxWaitTimeOnShutdown the default max wait time on shutdown
+	 */
+	public void setDefaultMaxWaitTimeOnShutdown(long defaultMaxWaitTimeOnShutdown) {
+		this.defaultMaxWaitTimeOnShutdown = defaultMaxWaitTimeOnShutdown;
+	}
+
+	public long getDefaultMaxWaitTimeOnShutdown() {
+		return this.defaultMaxWaitTimeOnShutdown;
 	}
 
 	/**
@@ -316,6 +335,8 @@ public class AtomikosProperties {
 		set(properties, "serial_jta_transactions", isSerialJtaTransactions());
 		set(properties, "allow_subtransactions", isAllowSubTransactions());
 		set(properties, "force_shutdown_on_vm_exit", isForceShutdownOnVmExit());
+		set(properties, "default_max_wait_time_on_shutdown",
+				getDefaultMaxWaitTimeOnShutdown());
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());

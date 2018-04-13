@@ -58,7 +58,7 @@ public @interface SpringBootApplication {
 	 * Exclude specific auto-configuration classes such that they will never be applied.
 	 * @return the classes to exclude
 	 */
-	@AliasFor(annotation = EnableAutoConfiguration.class, attribute = "exclude")
+	@AliasFor(annotation = EnableAutoConfiguration.class)
 	Class<?>[] exclude() default {};
 
 	/**
@@ -67,7 +67,7 @@ public @interface SpringBootApplication {
 	 * @return the class names to exclude
 	 * @since 1.3.0
 	 */
-	@AliasFor(annotation = EnableAutoConfiguration.class, attribute = "excludeName")
+	@AliasFor(annotation = EnableAutoConfiguration.class)
 	String[] excludeName() default {};
 
 	/**

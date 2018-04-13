@@ -226,8 +226,7 @@ public class LiveReloadServerTests {
 		}
 
 		@Override
-		protected void handleTextMessage(WebSocketSession session, TextMessage message)
-				throws Exception {
+		protected void handleTextMessage(WebSocketSession session, TextMessage message) {
 			if (message.getPayload().contains("hello")) {
 				this.helloLatch.countDown();
 			}
@@ -235,14 +234,12 @@ public class LiveReloadServerTests {
 		}
 
 		@Override
-		protected void handlePongMessage(WebSocketSession session, PongMessage message)
-				throws Exception {
+		protected void handlePongMessage(WebSocketSession session, PongMessage message) {
 			this.pongCount++;
 		}
 
 		@Override
-		public void afterConnectionClosed(WebSocketSession session, CloseStatus status)
-				throws Exception {
+		public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
 			this.closeStatus = status;
 		}
 

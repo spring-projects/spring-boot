@@ -48,7 +48,7 @@ public class MongoHealthIndicatorTests {
 	}
 
 	@Test
-	public void mongoIsUp() throws Exception {
+	public void mongoIsUp() {
 		Document commandResult = mock(Document.class);
 		given(commandResult.getString("version")).willReturn("2.6.4");
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
@@ -62,7 +62,7 @@ public class MongoHealthIndicatorTests {
 	}
 
 	@Test
-	public void mongoIsDown() throws Exception {
+	public void mongoIsDown() {
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
 		given(mongoTemplate.executeCommand("{ buildInfo: 1 }"))
 				.willThrow(new MongoException("Connection failed"));

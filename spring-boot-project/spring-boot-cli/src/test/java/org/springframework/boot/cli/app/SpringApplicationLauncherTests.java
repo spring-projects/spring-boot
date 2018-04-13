@@ -41,7 +41,7 @@ public class SpringApplicationLauncherTests {
 	}
 
 	@Test
-	public void defaultLaunch() throws Exception {
+	public void defaultLaunch() {
 		assertThat(launch()).contains("org.springframework.boot.SpringApplication");
 	}
 

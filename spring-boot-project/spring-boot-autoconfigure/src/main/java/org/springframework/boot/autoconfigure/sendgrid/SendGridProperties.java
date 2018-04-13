@@ -42,7 +42,7 @@ public class SendGridProperties {
 		return this.apiKey;
 	}
 
-	public void setApiKey(final String apiKey) {
+	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class MockRestarter implements TestRule {
 	private Restarter mock = mock(Restarter.class);
 
 	@Override
-	public Statement apply(final Statement base, Description description) {
+	public Statement apply(Statement base, Description description) {
 		return new Statement() {
 
 			@Override
@@ -60,10 +60,10 @@ public class MockRestarter implements TestRule {
 	private void setup() {
 		Restarter.setInstance(this.mock);
 		given(this.mock.getInitialUrls()).willReturn(new URL[] {});
-		given(this.mock.getOrAddAttribute(anyString(), (ObjectFactory) any()))
+		given(this.mock.getOrAddAttribute(anyString(), any(ObjectFactory.class)))
 				.willAnswer((invocation) -> {
-					String name = (String) invocation.getArguments()[0];
-					ObjectFactory factory = (ObjectFactory) invocation.getArguments()[1];
+					String name = invocation.getArgument(0);
+					ObjectFactory factory = invocation.getArgument(1);
 					Object attribute = MockRestarter.this.attributes.get(name);
 					if (attribute == null) {
 						attribute = factory.getObject();

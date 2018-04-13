@@ -41,7 +41,7 @@ public class AutoConfigureTestDatabaseWithNoDatabaseIntegrationTests {
 	private ApplicationContext context;
 
 	@Test
-	public void testContextLoads() throws Exception {
+	public void testContextLoads() {
 		// gh-6897
 		assertThat(this.context).isNotNull();
 		assertThat(this.context.getBeanNamesForType(DataSource.class)).isNotEmpty();

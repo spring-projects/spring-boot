@@ -31,13 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CloudPlatformTests {
 
 	@Test
-	public void getActiveWhenEnvironmentIsNullShouldReturnNull() throws Exception {
+	public void getActiveWhenEnvironmentIsNullShouldReturnNull() {
 		CloudPlatform platform = CloudPlatform.getActive(null);
 		assertThat(platform).isNull();
 	}
 
 	@Test
-	public void getActiveWhenNotInCloudShouldReturnNull() throws Exception {
+	public void getActiveWhenNotInCloudShouldReturnNull() {
 		Environment environment = new MockEnvironment();
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();
@@ -45,8 +45,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry()
-			throws Exception {
+	public void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry() {
 		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION",
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
@@ -55,7 +54,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() throws Exception {
+	public void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() {
 		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES",
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
@@ -64,7 +63,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasDynoShouldReturnHeroku() throws Exception {
+	public void getActiveWhenHasDynoShouldReturnHeroku() {
 		Environment environment = new MockEnvironment().withProperty("DYNO", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.HEROKU);
@@ -72,7 +71,7 @@ public class CloudPlatformTests {
 	}
 
 	@Test
-	public void getActiveWhenHasHcLandscapeShouldReturnSap() throws Exception {
+	public void getActiveWhenHasHcLandscapeShouldReturnSap() {
 		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE",
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);

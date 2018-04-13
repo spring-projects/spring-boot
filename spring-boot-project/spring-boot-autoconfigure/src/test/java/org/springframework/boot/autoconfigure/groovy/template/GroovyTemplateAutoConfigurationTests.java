@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void disableViewResolution() throws Exception {
+	public void disableViewResolution() {
 		TestPropertyValues.of("spring.groovy.template.enabled:false")
 				.applyTo(this.context);
 		registerAndRefreshContext();
@@ -171,11 +171,11 @@ public class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConfiguration() throws Exception {
+	public void customConfiguration() {
 		registerAndRefreshContext(
 				"spring.groovy.template.configuration.auto-indent:true");
 		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent())
-				.isEqualTo(true);
+				.isTrue();
 	}
 
 	private void registerAndRefreshContext(String... env) {

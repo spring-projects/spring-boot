@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,14 +39,14 @@ public class AnnotationsPropertySourceTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() throws Exception {
+	public void createWhenSourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Property source must not be null");
 		new AnnotationsPropertySource(null);
 	}
 
 	@Test
-	public void propertiesWhenHasNoAnnotationShouldBeEmpty() throws Exception {
+	public void propertiesWhenHasNoAnnotationShouldBeEmpty() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				NoAnnotation.class);
 		assertThat(source.getPropertyNames()).isEmpty();
@@ -54,16 +54,14 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenHasTypeLevelAnnotationShouldUseAttributeName()
-			throws Exception {
+	public void propertiesWhenHasTypeLevelAnnotationShouldUseAttributeName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasTypeLevelWithPrefixShouldUsePrefixedName()
-			throws Exception {
+	public void propertiesWhenHasTypeLevelWithPrefixShouldUsePrefixedName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				TypeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test.value");
@@ -71,8 +69,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenHasAttributeLevelWithPrefixShouldUsePrefixedName()
-			throws Exception {
+	public void propertiesWhenHasAttributeLevelWithPrefixShouldUsePrefixedName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				AttributeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test");
@@ -80,8 +77,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenHasTypeAndAttributeLevelWithPrefixShouldUsePrefixedName()
-			throws Exception {
+	public void propertiesWhenHasTypeAndAttributeLevelWithPrefixShouldUsePrefixedName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				TypeAndAttributeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test.example");
@@ -89,8 +85,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenNotMappedAtTypeLevelShouldIgnoreAttributes()
-			throws Exception {
+	public void propertiesWhenNotMappedAtTypeLevelShouldIgnoreAttributes() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				NotMappedAtTypeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
@@ -98,8 +93,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenNotMappedAtAttributeLevelShouldIgnoreAttributes()
-			throws Exception {
+	public void propertiesWhenNotMappedAtAttributeLevelShouldIgnoreAttributes() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				NotMappedAtAttributeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
@@ -107,7 +101,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenContainsArraysShouldExpandNames() throws Exception {
+	public void propertiesWhenContainsArraysShouldExpandNames() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(Arrays.class);
 		assertThat(source.getPropertyNames()).contains("strings[0]", "strings[1]",
 				"classes[0]", "classes[1]", "ints[0]", "ints[1]", "longs[0]", "longs[1]",
@@ -130,14 +124,14 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenHasCamelCaseShouldConvertToKebabCase() throws Exception {
+	public void propertiesWhenHasCamelCaseShouldConvertToKebabCase() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				CamelCaseToKebabCase.class);
 		assertThat(source.getPropertyNames()).contains("camel-case-to-kebab-case");
 	}
 
 	@Test
-	public void propertiesFromMetaAnnotationsAreMapped() throws Exception {
+	public void propertiesFromMetaAnnotationsAreMapped() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				PropertiesFromSingleMetaAnnotation.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
@@ -145,8 +139,7 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping()
-			throws Exception {
+	public void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				PropertiesFromMultipleMetaAnnotations.class);
 		assertThat(source.getPropertyNames()).containsExactly("value", "test.value",
@@ -186,14 +179,14 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void enumValueMapped() throws Exception {
+	public void enumValueMapped() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				EnumValueMapped.class);
 		assertThat(source.getProperty("testenum.value")).isEqualTo(EnumItem.TWO);
 	}
 
 	@Test
-	public void enumValueNotMapped() throws Exception {
+	public void enumValueNotMapped() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				EnumValueNotMapped.class);
 		assertThat(source.containsProperty("testenum.value")).isFalse();
@@ -361,7 +354,7 @@ public class AnnotationsPropertySourceTests {
 	@AliasedAttributeAnnotation
 	static @interface AttributeWithAliasAnnotation {
 
-		@AliasFor(annotation = AliasedAttributeAnnotation.class, attribute = "value")
+		@AliasFor(annotation = AliasedAttributeAnnotation.class)
 		String value() default "foo";
 
 		String someOtherAttribute() default "shouldNotBeMapped";

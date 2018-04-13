@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.web.servlet.support;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +57,7 @@ import org.springframework.web.util.NestedServletException;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private static final Log logger = LogFactory.getLog(ErrorPageFilter.class);
@@ -86,7 +88,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain chain)
-						throws ServletException, IOException {
+				throws ServletException, IOException {
 			ErrorPageFilter.this.doFilter(request, response, chain);
 		}
 
@@ -134,7 +136,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private void handleErrorStatus(HttpServletRequest request,
 			HttpServletResponse response, int status, String message)
-					throws ServletException, IOException {
+			throws ServletException, IOException {
 		if (response.isCommitted()) {
 			handleCommittedResponse(request, null);
 			return;
@@ -151,7 +153,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private void handleException(HttpServletRequest request, HttpServletResponse response,
 			ErrorWrapperResponse wrapped, Throwable ex)
-					throws IOException, ServletException {
+			throws IOException, ServletException {
 		Class<?> type = ex.getClass();
 		String errorPath = getErrorPath(type);
 		if (errorPath == null) {
@@ -168,7 +170,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private void forwardToErrorPage(String path, HttpServletRequest request,
 			HttpServletResponse response, Throwable ex)
-					throws ServletException, IOException {
+			throws ServletException, IOException {
 		if (logger.isErrorEnabled()) {
 			String message = "Forwarding to error page from request "
 					+ getDescription(request) + " due to exception [" + ex.getMessage()
@@ -179,7 +181,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		request.setAttribute(ERROR_EXCEPTION, ex);
 		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass());
 		response.reset();
-		response.sendError(500, ex.getMessage());
+		response.setStatus(500);
 		request.getRequestDispatcher(path).forward(request, response);
 		request.removeAttribute(ERROR_EXCEPTION);
 		request.removeAttribute(ERROR_EXCEPTION_TYPE);
@@ -311,11 +313,15 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 		@Override
 		public void flushBuffer() throws IOException {
+			sendErrorIfNecessary();
+			super.flushBuffer();
+		}
+
+		private void sendErrorIfNecessary() throws IOException {
 			if (this.hasErrorToSend && !isCommitted()) {
 				((HttpServletResponse) getResponse()).sendError(this.status,
 						this.message);
 			}
-			super.flushBuffer();
 		}
 
 		public String getMessage() {
@@ -324,6 +330,19 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 		public boolean hasErrorToSend() {
 			return this.hasErrorToSend;
+		}
+
+		@Override
+		public PrintWriter getWriter() throws IOException {
+			sendErrorIfNecessary();
+			return super.getWriter();
+
+		}
+
+		@Override
+		public ServletOutputStream getOutputStream() throws IOException {
+			sendErrorIfNecessary();
+			return super.getOutputStream();
 		}
 
 	}

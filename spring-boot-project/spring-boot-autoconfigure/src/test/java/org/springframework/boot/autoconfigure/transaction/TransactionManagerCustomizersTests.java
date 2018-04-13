@@ -35,13 +35,13 @@ import static org.mockito.Mockito.mock;
 public class TransactionManagerCustomizersTests {
 
 	@Test
-	public void customizeWithNullCustomizersShouldDoNothing() throws Exception {
+	public void customizeWithNullCustomizersShouldDoNothing() {
 		new TransactionManagerCustomizers(null)
 				.customize(mock(PlatformTransactionManager.class));
 	}
 
 	@Test
-	public void customizeShouldCheckGeneric() throws Exception {
+	public void customizeShouldCheckGeneric() {
 		List<TestCustomizer<?>> list = new ArrayList<>();
 		list.add(new TestCustomizer<>());
 		list.add(new TestJtaCustomizer());

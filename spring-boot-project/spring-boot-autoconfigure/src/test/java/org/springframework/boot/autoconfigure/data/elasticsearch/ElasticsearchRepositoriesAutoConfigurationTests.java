@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 import org.elasticsearch.client.Client;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -28,6 +29,8 @@ import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
@@ -40,6 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@RunWith(ModifiedClassPathRunner.class)
+@ClassPathOverrides("org.apache.logging.log4j:log4j-core:2.10.0")
 public class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -50,7 +55,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
+	public void testDefaultRepositoryConfiguration() {
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
 			load(TestConfiguration.class, node);
 			assertThat(this.context.getBean(CityRepository.class)).isNotNull();
@@ -60,7 +65,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() throws Exception {
+	public void testNoRepositoryConfiguration() {
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
 			load(EmptyConfiguration.class, node);
 			assertThat(this.context.getBean(Client.class)).isNotNull();

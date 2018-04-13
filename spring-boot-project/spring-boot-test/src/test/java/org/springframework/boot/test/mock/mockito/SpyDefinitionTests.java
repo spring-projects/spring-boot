@@ -45,14 +45,14 @@ public class SpyDefinitionTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void classToSpyMustNotBeNull() throws Exception {
+	public void classToSpyMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TypeToSpy must not be null");
 		new SpyDefinition(null, null, null, true, null);
 	}
 
 	@Test
-	public void createWithDefaults() throws Exception {
+	public void createWithDefaults() {
 		SpyDefinition definition = new SpyDefinition(null, REAL_SERVICE_TYPE, null, true,
 				null);
 		assertThat(definition.getName()).isNull();
@@ -63,7 +63,7 @@ public class SpyDefinitionTests {
 	}
 
 	@Test
-	public void createExplicit() throws Exception {
+	public void createExplicit() {
 		QualifierDefinition qualifier = mock(QualifierDefinition.class);
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, false, qualifier);
@@ -75,7 +75,7 @@ public class SpyDefinitionTests {
 	}
 
 	@Test
-	public void createSpy() throws Exception {
+	public void createSpy() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
 		RealExampleService spy = definition.createSpy(new RealExampleService("hello"));
@@ -88,7 +88,7 @@ public class SpyDefinitionTests {
 	}
 
 	@Test
-	public void createSpyWhenNullInstanceShouldThrowException() throws Exception {
+	public void createSpyWhenNullInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
 		this.thrown.expect(IllegalArgumentException.class);
@@ -97,7 +97,7 @@ public class SpyDefinitionTests {
 	}
 
 	@Test
-	public void createSpyWhenWrongInstanceShouldThrowException() throws Exception {
+	public void createSpyWhenWrongInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
 		this.thrown.expect(IllegalArgumentException.class);
@@ -106,7 +106,7 @@ public class SpyDefinitionTests {
 	}
 
 	@Test
-	public void createSpyTwice() throws Exception {
+	public void createSpyTwice() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
 		Object instance = new RealExampleService("hello");

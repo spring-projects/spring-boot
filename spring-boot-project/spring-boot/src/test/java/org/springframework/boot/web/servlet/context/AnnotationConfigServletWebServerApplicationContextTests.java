@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,9 @@
 
 package org.springframework.boot.web.servlet.context;
 
-import java.io.IOException;
-
 import javax.servlet.GenericServlet;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -53,7 +50,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@Test
-	public void createFromScan() throws Exception {
+	public void createFromScan() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ExampleServletWebServerApplicationConfiguration.class.getPackage()
 						.getName());
@@ -61,7 +58,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void sessionScopeAvailable() throws Exception {
+	public void sessionScopeAvailable() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ExampleServletWebServerApplicationConfiguration.class,
 				SessionScopedComponent.class);
@@ -69,7 +66,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void sessionScopeAvailableToServlet() throws Exception {
+	public void sessionScopeAvailableToServlet() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ExampleServletWebServerApplicationConfiguration.class,
 				ExampleServletWithAutowired.class, SessionScopedComponent.class);
@@ -78,14 +75,14 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void createFromConfigClass() throws Exception {
+	public void createFromConfigClass() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ExampleServletWebServerApplicationConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void registerAndRefresh() throws Exception {
+	public void registerAndRefresh() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(ExampleServletWebServerApplicationConfiguration.class);
 		this.context.refresh();
@@ -93,7 +90,17 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void scanAndRefresh() throws Exception {
+	public void multipleRegistersAndRefresh() {
+		this.context = new AnnotationConfigServletWebServerApplicationContext();
+		this.context.register(WebServerConfiguration.class);
+		this.context.register(ServletContextAwareConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(Servlet.class)).hasSize(1);
+		assertThat(this.context.getBeansOfType(ServletWebServerFactory.class)).hasSize(1);
+	}
+
+	@Test
+	public void scanAndRefresh() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.scan(ExampleServletWebServerApplicationConfiguration.class
 				.getPackage().getName());
@@ -102,7 +109,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void createAndInitializeCyclic() throws Exception {
+	public void createAndInitializeCyclic() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletContextAwareEmbeddedConfiguration.class);
 		verifyContext();
@@ -113,7 +120,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void createAndInitializeWithParent() throws Exception {
+	public void createAndInitializeWithParent() {
 		AnnotationConfigServletWebServerApplicationContext parent = new AnnotationConfigServletWebServerApplicationContext(
 				WebServerConfiguration.class);
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
@@ -141,8 +148,7 @@ public class AnnotationConfigServletWebServerApplicationContextTests {
 		private SessionScopedComponent component;
 
 		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
+		public void service(ServletRequest req, ServletResponse res) {
 			assertThat(this.component).isNotNull();
 		}
 

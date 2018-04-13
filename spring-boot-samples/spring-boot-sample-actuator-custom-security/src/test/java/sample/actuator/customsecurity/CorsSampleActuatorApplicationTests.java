@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,17 +53,16 @@ public class CorsSampleActuatorApplicationTests {
 	private ApplicationContext applicationContext;
 
 	@Before
-	public void setUp() throws Exception {
-		RestTemplate restTemplate = new RestTemplate();
+	public void setUp() {
+		RestTemplateBuilder builder = new RestTemplateBuilder();
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 				this.applicationContext.getEnvironment(), "http");
-		restTemplate.setUriTemplateHandler(handler);
-		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-		this.testRestTemplate = new TestRestTemplate(restTemplate);
+		builder = builder.uriTemplateHandler(handler);
+		this.testRestTemplate = new TestRestTemplate(builder);
 	}
 
 	@Test
-	public void endpointShouldReturnUnauthorized() throws Exception {
+	public void endpointShouldReturnUnauthorized() {
 		ResponseEntity<?> entity = this.testRestTemplate.getForEntity("/actuator/env",
 				Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

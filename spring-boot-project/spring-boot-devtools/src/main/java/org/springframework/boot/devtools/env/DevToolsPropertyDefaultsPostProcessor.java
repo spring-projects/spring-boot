@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.springframework.core.env.PropertySource;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostProcessor {
 
-	private static final Map<String, Object> properties;
+	private static final Map<String, Object> PROPERTIES;
 
 	static {
 		Map<String, Object> devToolsProperties = new HashMap<>();
@@ -50,7 +50,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		devToolsProperties.put("spring.freemarker.cache", "false");
 		devToolsProperties.put("spring.groovy.template.cache", "false");
 		devToolsProperties.put("spring.mustache.cache", "false");
-		devToolsProperties.put("server.session.persistent", "true");
+		devToolsProperties.put("server.servlet.session.persistent", "true");
 		devToolsProperties.put("spring.h2.console.enabled", "true");
 		devToolsProperties.put("spring.resources.cache.period", "0");
 		devToolsProperties.put("spring.resources.chain.cache", "false");
@@ -58,7 +58,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		devToolsProperties.put("spring.mvc.log-resolved-exception", "true");
 		devToolsProperties.put("server.servlet.jsp.init-parameters.development", "true");
 		devToolsProperties.put("spring.reactor.stacktrace-mode.enabled", "true");
-		properties = Collections.unmodifiableMap(devToolsProperties);
+		PROPERTIES = Collections.unmodifiableMap(devToolsProperties);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 			SpringApplication application) {
 		if (isLocalApplication(environment) && canAddProperties(environment)) {
 			PropertySource<?> propertySource = new MapPropertySource("refresh",
-					properties);
+					PROPERTIES);
 			environment.getPropertySources().addLast(propertySource);
 		}
 	}

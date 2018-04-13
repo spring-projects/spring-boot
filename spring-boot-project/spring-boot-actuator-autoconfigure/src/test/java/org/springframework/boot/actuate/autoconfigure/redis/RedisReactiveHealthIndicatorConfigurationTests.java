@@ -41,7 +41,7 @@ public class RedisReactiveHealthIndicatorConfigurationTests {
 					HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runShouldCreateIndicator() throws Exception {
+	public void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(RedisReactiveHealthIndicatorConfiguration.class)
 				.doesNotHaveBean(RedisHealthIndicator.class)
@@ -49,7 +49,7 @@ public class RedisReactiveHealthIndicatorConfigurationTests {
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() throws Exception {
+	public void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.redis.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(RedisReactiveHealthIndicator.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class ExitCodeGeneratorsTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void addAllWhenGeneratorsIsNullShouldThrowException() throws Exception {
+	public void addAllWhenGeneratorsIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Generators must not be null");
 		List<ExitCodeGenerator> generators = null;
@@ -46,19 +46,19 @@ public class ExitCodeGeneratorsTests {
 	}
 
 	@Test
-	public void addWhenGeneratorIsNullShouldThrowException() throws Exception {
+	public void addWhenGeneratorIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Generator must not be null");
 		new ExitCodeGenerators().add(null);
 	}
 
 	@Test
-	public void getExitCodeWhenNoGeneratorsShouldReturnZero() throws Exception {
+	public void getExitCodeWhenNoGeneratorsShouldReturnZero() {
 		assertThat(new ExitCodeGenerators().getExitCode()).isEqualTo(0);
 	}
 
 	@Test
-	public void getExitCodeWhenGeneratorThrowsShouldReturnOne() throws Exception {
+	public void getExitCodeWhenGeneratorThrowsShouldReturnOne() {
 		ExitCodeGenerator generator = mock(ExitCodeGenerator.class);
 		given(generator.getExitCode()).willThrow(new IllegalStateException());
 		ExitCodeGenerators generators = new ExitCodeGenerators();
@@ -67,7 +67,7 @@ public class ExitCodeGeneratorsTests {
 	}
 
 	@Test
-	public void getExitCodeWhenAllNegativeShouldReturnLowestValue() throws Exception {
+	public void getExitCodeWhenAllNegativeShouldReturnLowestValue() {
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		generators.add(mockGenerator(-1));
 		generators.add(mockGenerator(-3));
@@ -76,7 +76,7 @@ public class ExitCodeGeneratorsTests {
 	}
 
 	@Test
-	public void getExitCodeWhenAllPositiveShouldReturnHighestValue() throws Exception {
+	public void getExitCodeWhenAllPositiveShouldReturnHighestValue() {
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		generators.add(mockGenerator(1));
 		generators.add(mockGenerator(3));
@@ -85,8 +85,7 @@ public class ExitCodeGeneratorsTests {
 	}
 
 	@Test
-	public void getExitCodeWhenUsingExitCodeExceptionMapperShouldCallMapper()
-			throws Exception {
+	public void getExitCodeWhenUsingExitCodeExceptionMapperShouldCallMapper() {
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		Exception e = new IOException();
 		generators.add(e, mockMapper(IllegalStateException.class, 1));
@@ -101,8 +100,7 @@ public class ExitCodeGeneratorsTests {
 		return generator;
 	}
 
-	private ExitCodeExceptionMapper mockMapper(final Class<?> exceptionType,
-			final int exitCode) {
+	private ExitCodeExceptionMapper mockMapper(Class<?> exceptionType, int exitCode) {
 		return (exception) -> {
 			if (exceptionType.isInstance(exception)) {
 				return exitCode;

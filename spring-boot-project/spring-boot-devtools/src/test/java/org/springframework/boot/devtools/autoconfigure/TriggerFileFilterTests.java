@@ -39,7 +39,7 @@ public class TriggerFileFilterTests {
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
-	public void nameMustNotBeNull() throws Exception {
+	public void nameMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Name must not be null");
 		new TriggerFileFilter(null);

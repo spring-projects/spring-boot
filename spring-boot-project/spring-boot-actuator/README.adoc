@@ -4,7 +4,7 @@ Spring Boot Actuator includes a number of additional features to help you monito
 manage your application when it's pushed to production. You can choose to manage and
 monitor your application using HTTP or JMX endpoints. Auditing, health and metrics
 gathering can be automatically applied to your application. The
-http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready[user guide]
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready[user guide]
 covers the features in more detail.
 
 == Enabling the Actuator
@@ -34,8 +34,8 @@ For Gradle, use the following declaration:
 == Features
 * **Endpoints** Actuator endpoints allow you to monitor and interact with your
   application. Spring Boot includes a number of built-in endpoints and you can also add
-  your own. For example the `status` endpoint provides basic application health
-  information. Run up a basic application and look at `/status`.
+  your own. For example the `health` endpoint provides basic application health
+  information. Run up a basic application and look at `/actuator/health`.
 * **Metrics** Spring Boot Actuator provides dimensional metrics by integrating with
   https://micrometer.io[Micrometer].
 * **Audit** Spring Boot Actuator has a flexible audit framework that will publish events

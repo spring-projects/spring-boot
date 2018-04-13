@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ package org.springframework.boot.context.properties.bind;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 
+import org.springframework.boot.context.properties.bind.Binder.Context;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyState;
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
@@ -40,7 +43,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
 			.mapOf(String.class, String.class);
 
-	MapBinder(BindContext context) {
+	MapBinder(Context context) {
 		super(context);
 	}
 
@@ -52,11 +55,18 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
-		Map<Object, Object> map = CollectionFactory.createMap(
-				(target.getValue() == null ? target.getType().resolve() : Map.class), 0);
+		Map<Object, Object> map = CollectionFactory.createMap((target.getValue() == null
+				? target.getType().resolve(Object.class) : Map.class), 0);
 		Bindable<?> resolvedTarget = resolveTarget(target);
+		boolean hasDescendants = getContext().streamSources().anyMatch((source) -> source
+				.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT);
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
+				ConfigurationProperty property = source.getConfigurationProperty(name);
+				if (property != null && !hasDescendants) {
+					return getContext().getConverter().convert(property.getValue(),
+							target);
+				}
 				source = source.filter(name::isAncestorOf);
 			}
 			new EntryBinder(name, resolvedTarget, elementBinder).bindEntries(source, map);
@@ -65,7 +75,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	private Bindable<?> resolveTarget(Bindable<?> target) {
-		Class<?> type = target.getType().resolve();
+		Class<?> type = target.getType().resolve(Object.class);
 		if (Properties.class.isAssignableFrom(type)) {
 			return STRING_STRING_MAP;
 		}
@@ -73,10 +83,27 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	@Override
-	protected Map<Object, Object> merge(Map<Object, Object> existing,
+	@SuppressWarnings("unchecked")
+	protected Map<Object, Object> merge(Supplier<?> existing,
 			Map<Object, Object> additional) {
-		existing.putAll(additional);
-		return existing;
+		Map<Object, Object> existingMap = (Map<Object, Object>) existing.get();
+		if (existingMap == null) {
+			return additional;
+		}
+		existingMap.putAll(additional);
+		return copyIfPossible(existingMap);
+	}
+
+	private Map<Object, Object> copyIfPossible(Map<Object, Object> map) {
+		try {
+			Map<Object, Object> result = CollectionFactory.createMap(map.getClass(),
+					map.size());
+			result.putAll(map);
+			return result;
+		}
+		catch (Exception ex) {
+			return map;
+		}
 	}
 
 	private class EntryBinder {
@@ -106,7 +133,8 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source) {
 					Bindable<?> valueBindable = getValueBindable(name);
 					ConfigurationPropertyName entryName = getEntryName(source, name);
-					Object key = convert(getKeyName(entryName), this.keyType);
+					Object key = getContext().getConverter()
+							.convert(getKeyName(entryName), this.keyType);
 					map.computeIfAbsent(key,
 							(k) -> this.elementBinder.bind(entryName, valueBindable));
 				}
@@ -122,7 +150,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
-			Class<?> resolved = this.valueType.resolve();
+			Class<?> resolved = this.valueType.resolve(Object.class);
 			if (Collection.class.isAssignableFrom(resolved) || this.valueType.isArray()) {
 				return chopNameAtNumericIndex(name);
 			}
@@ -151,7 +179,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private boolean isScalarValue(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
-			Class<?> resolved = this.valueType.resolve();
+			Class<?> resolved = this.valueType.resolve(Object.class);
 			String packageName = ClassUtils.getPackageName(resolved);
 			if (!packageName.startsWith("java.lang") && !resolved.isEnum()) {
 				return false;
@@ -162,17 +190,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			}
 			Object value = property.getValue();
 			value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
-			return canConvert(value, this.valueType);
-		}
-
-		private boolean canConvert(Object source, ResolvableType targetType) {
-			return ResolvableTypeDescriptor.forType(targetType)
-					.canConvert(getContext().getConversionService(), source);
-		}
-
-		private Object convert(Object source, ResolvableType targetType) {
-			return ResolvableTypeDescriptor.forType(targetType)
-					.convert(getContext().getConversionService(), source);
+			return getContext().getConverter().canConvert(value, this.valueType);
 		}
 
 		private String getKeyName(ConfigurationPropertyName name) {

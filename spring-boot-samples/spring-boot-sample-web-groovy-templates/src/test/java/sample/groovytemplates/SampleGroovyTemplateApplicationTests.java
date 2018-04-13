@@ -50,7 +50,7 @@ public class SampleGroovyTemplateApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("<title>Messages");
@@ -58,7 +58,7 @@ public class SampleGroovyTemplateApplicationTests {
 	}
 
 	@Test
-	public void testCreate() throws Exception {
+	public void testCreate() {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 		map.set("text", "FOO text");
 		map.set("summary", "FOO");
@@ -67,7 +67,7 @@ public class SampleGroovyTemplateApplicationTests {
 	}
 
 	@Test
-	public void testCss() throws Exception {
+	public void testCss() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

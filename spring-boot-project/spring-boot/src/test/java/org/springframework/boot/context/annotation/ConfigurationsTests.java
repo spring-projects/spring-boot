@@ -45,14 +45,14 @@ public class ConfigurationsTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenClassesIsNullShouldThrowException() throws Exception {
+	public void createWhenClassesIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Classes must not be null");
 		new TestConfigurations(null);
 	}
 
 	@Test
-	public void createShouldSortClasses() throws Exception {
+	public void createShouldSortClasses() {
 		TestSortedConfigurations configurations = new TestSortedConfigurations(
 				Arrays.asList(OutputStream.class, InputStream.class));
 		assertThat(configurations.getClasses()).containsExactly(InputStream.class,
@@ -60,7 +60,7 @@ public class ConfigurationsTests {
 	}
 
 	@Test
-	public void getClassesShouldMergeByClassAndSort() throws Exception {
+	public void getClassesShouldMergeByClassAndSort() {
 		Configurations c1 = new TestSortedConfigurations(
 				Arrays.asList(OutputStream.class, InputStream.class));
 		Configurations c2 = new TestConfigurations(Arrays.asList(Short.class));

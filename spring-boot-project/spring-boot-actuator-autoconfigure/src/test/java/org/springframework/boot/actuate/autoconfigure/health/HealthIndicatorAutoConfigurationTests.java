@@ -47,24 +47,21 @@ public class HealthIndicatorAutoConfigurationTests {
 					AutoConfigurations.of(HealthIndicatorAutoConfiguration.class));
 
 	@Test
-	public void runWhenNoOtherIndicatorsShouldCreateDefaultApplicationHealthIndicator()
-			throws Exception {
+	public void runWhenNoOtherIndicatorsShouldCreateDefaultApplicationHealthIndicator() {
 		this.contextRunner
 				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
 						.isInstanceOf(ApplicationHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenHasDefinedIndicatorShouldNotCreateDefaultApplicationHealthIndicator()
-			throws Exception {
+	public void runWhenHasDefinedIndicatorShouldNotCreateDefaultApplicationHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
 						.isInstanceOf(CustomHealthIndicator.class));
 	}
 
 	@Test
-	public void runWhenHasDefaultsDisabledAndNoSingleIndicatorEnabledShouldCreateDefaultApplicationHealthIndicator()
-			throws Exception {
+	public void runWhenHasDefaultsDisabledAndNoSingleIndicatorEnabledShouldCreateDefaultApplicationHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.withPropertyValues("management.health.defaults.enabled:false")
 				.run((context) -> assertThat(context).getBean(HealthIndicator.class)
@@ -73,8 +70,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenHasDefaultsDisabledAndSingleIndicatorEnabledShouldCreateEnabledIndicator()
-			throws Exception {
+	public void runWhenHasDefaultsDisabledAndSingleIndicatorEnabledShouldCreateEnabledIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
 				.withPropertyValues("management.health.defaults.enabled:false",
 						"management.health.custom.enabled:true")
@@ -84,15 +80,14 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runShouldCreateOrderedHealthAggregator() throws Exception {
+	public void runShouldCreateOrderedHealthAggregator() {
 		this.contextRunner
 				.run((context) -> assertThat(context).getBean(HealthAggregator.class)
 						.isInstanceOf(OrderedHealthAggregator.class));
 	}
 
 	@Test
-	public void runWhenHasCustomOrderPropertyShouldCreateOrderedHealthAggregator()
-			throws Exception {
+	public void runWhenHasCustomOrderPropertyShouldCreateOrderedHealthAggregator() {
 		this.contextRunner.withPropertyValues("management.health.status.order:UP,DOWN")
 				.run((context) -> {
 					OrderedHealthAggregator aggregator = context
@@ -106,8 +101,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenHasCustomHealthAggregatorShouldNotCreateOrderedHealthAggregator()
-			throws Exception {
+	public void runWhenHasCustomHealthAggregatorShouldNotCreateOrderedHealthAggregator() {
 		this.contextRunner
 				.withUserConfiguration(CustomHealthAggregatorConfiguration.class)
 				.run((context) -> assertThat(context).getBean(HealthAggregator.class)

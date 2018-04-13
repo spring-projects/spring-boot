@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -191,7 +192,7 @@ public class ConfigurationMetadata {
 			previous = current;
 
 		}
-		return dashed.toString().toLowerCase();
+		return dashed.toString().toLowerCase(Locale.ENGLISH);
 	}
 
 	private static <T extends Comparable<T>> List<T> flattenValues(Map<?, List<T>> map) {

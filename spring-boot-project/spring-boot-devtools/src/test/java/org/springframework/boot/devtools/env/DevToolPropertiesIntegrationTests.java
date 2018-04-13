@@ -79,8 +79,7 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource()
-			throws Exception {
+	public void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource() {
 		Restarter.clearInstance();
 		Restarter.disable();
 		SpringApplication application = new SpringApplication(
@@ -92,8 +91,7 @@ public class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource()
-			throws Exception {
+	public void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource() {
 		Restarter.clearInstance();
 		Restarter.disable();
 		SpringApplication application = new SpringApplication(

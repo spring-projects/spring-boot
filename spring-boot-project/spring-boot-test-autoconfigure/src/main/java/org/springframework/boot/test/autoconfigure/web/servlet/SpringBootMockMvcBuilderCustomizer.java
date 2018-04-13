@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.result.PrintingResultHandler;
 import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -105,9 +106,9 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
-		ServletContextInitializerBeans Initializers = new ServletContextInitializerBeans(
+		ServletContextInitializerBeans initializers = new ServletContextInitializerBeans(
 				this.context);
-		for (ServletContextInitializer initializer : Initializers) {
+		for (ServletContextInitializer initializer : initializers) {
 			if (initializer instanceof FilterRegistrationBean) {
 				addFilter(builder, (FilterRegistrationBean<?>) initializer);
 			}
@@ -133,7 +134,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			builder.addFilters(filter);
 		}
 		else {
-			builder.addFilter(filter, urls.toArray(new String[urls.size()]));
+			builder.addFilter(filter, StringUtils.toStringArray(urls));
 		}
 	}
 

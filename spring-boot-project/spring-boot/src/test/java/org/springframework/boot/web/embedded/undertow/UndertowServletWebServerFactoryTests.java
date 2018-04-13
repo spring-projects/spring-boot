@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
 import io.undertow.Undertow.Builder;
@@ -95,7 +96,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void builderCustomizers() throws Exception {
+	public void builderCustomizers() {
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
 		for (int i = 0; i < customizers.length; i++) {
@@ -106,7 +107,7 @@ public class UndertowServletWebServerFactoryTests
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowBuilderCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize((Builder) any());
+			ordered.verify(customizer).customize(any(Builder.class));
 		}
 	}
 
@@ -127,7 +128,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void deploymentInfo() throws Exception {
+	public void deploymentInfo() {
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowDeploymentInfoCustomizer[] customizers = new UndertowDeploymentInfoCustomizer[4];
 		for (int i = 0; i < customizers.length; i++) {
@@ -139,7 +140,7 @@ public class UndertowServletWebServerFactoryTests
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowDeploymentInfoCustomizer customizer : customizers) {
-			ordered.verify(customizer).customize((DeploymentInfo) any());
+			ordered.verify(customizer).customize(any(DeploymentInfo.class));
 		}
 	}
 
@@ -149,7 +150,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Test
-	public void defaultContextPath() throws Exception {
+	public void defaultContextPath() {
 		UndertowServletWebServerFactory factory = getFactory();
 		final AtomicReference<String> contextPath = new AtomicReference<>();
 		factory.addDeploymentInfoCustomizers(
@@ -202,7 +203,7 @@ public class UndertowServletWebServerFactoryTests
 	}
 
 	@Override
-	protected void addConnector(final int port, AbstractServletWebServerFactory factory) {
+	protected void addConnector(int port, AbstractServletWebServerFactory factory) {
 		((UndertowServletWebServerFactory) factory).addBuilderCustomizers(
 				(builder) -> builder.addHttpListener(port, "0.0.0.0"));
 	}
@@ -213,7 +214,7 @@ public class UndertowServletWebServerFactoryTests
 				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
 	}
 
-	@Test(expected = SSLHandshakeException.class)
+	@Test(expected = SSLException.class)
 	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
 				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
@@ -231,7 +232,7 @@ public class UndertowServletWebServerFactoryTests
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
 
-	@Test(expected = SSLHandshakeException.class)
+	@Test(expected = SSLException.class)
 	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });

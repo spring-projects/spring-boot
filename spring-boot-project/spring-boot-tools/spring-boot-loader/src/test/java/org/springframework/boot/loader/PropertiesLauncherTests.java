@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class PropertiesLauncherTests {
 	private ClassLoader contextClassLoader;
 
 	@Before
-	public void setup() throws IOException {
+	public void setup() {
 		this.contextClassLoader = Thread.currentThread().getContextClassLoader();
 		MockitoAnnotations.initMocks(this);
 		System.setProperty("loader.home",
@@ -102,7 +102,7 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
-	public void testNonExistentHome() throws Exception {
+	public void testNonExistentHome() {
 		System.setProperty("loader.home", "src/test/resources/nonexistent");
 		this.expected.expectMessage("Invalid source folder");
 		PropertiesLauncher launcher = new PropertiesLauncher();
@@ -134,7 +134,7 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
-	public void testUserSpecifiedDotPath() throws Exception {
+	public void testUserSpecifiedDotPath() {
 		System.setProperty("loader.path", ".");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(ReflectionTestUtils.getField(launcher, "paths").toString())
@@ -211,6 +211,15 @@ public class PropertiesLauncherTests {
 		List<Archive> archives = launcher.getClassPathArchives();
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
 		assertThat(archives).areExactly(1, endingWith("app.jar!/"));
+	}
+
+	@Test
+	public void testUserSpecifiedNestedJarPath() throws Exception {
+		System.setProperty("loader.path", "nested-jars/app.jar!/foo.jar");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		List<Archive> archives = launcher.getClassPathArchives();
+		assertThat(archives).hasSize(1).areExactly(1, endingWith("foo.jar!/"));
 	}
 
 	@Test
@@ -299,7 +308,7 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
-	public void testSystemPropertiesSet() throws Exception {
+	public void testSystemPropertiesSet() {
 		System.setProperty("loader.system", "true");
 		new PropertiesLauncher();
 		assertThat(System.getProperty("loader.main")).isEqualTo("demo.Application");
@@ -337,6 +346,17 @@ public class PropertiesLauncherTests {
 		assertThat(launcher.getMainClass()).isEqualTo("demo.FooApplication");
 	}
 
+	@Test
+	public void encodedFileUrlLoaderPathIsHandledCorrectly() throws Exception {
+		File loaderPath = this.temporaryFolder.newFolder("loader path");
+		System.setProperty("loader.path", loaderPath.toURI().toURL().toString());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		List<Archive> archives = launcher.getClassPathArchives();
+		assertThat(archives.size()).isEqualTo(1);
+		File archiveRoot = (File) ReflectionTestUtils.getField(archives.get(0), "root");
+		assertThat(archiveRoot).isEqualTo(loaderPath);
+	}
+
 	private void waitFor(String value) throws Exception {
 		int count = 0;
 		boolean timeout = false;
@@ -348,7 +368,7 @@ public class PropertiesLauncherTests {
 		assertThat(timeout).as("Timed out waiting for (" + value + ")").isTrue();
 	}
 
-	private Condition<Archive> endingWith(final String value) {
+	private Condition<Archive> endingWith(String value) {
 		return new Condition<Archive>() {
 
 			@Override

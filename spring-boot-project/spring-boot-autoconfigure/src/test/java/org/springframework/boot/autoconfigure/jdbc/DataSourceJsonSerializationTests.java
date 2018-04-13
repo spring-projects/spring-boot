@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,7 +84,7 @@ public class DataSourceJsonSerializationTests {
 
 		@Override
 		public void serialize(DataSource value, JsonGenerator jgen,
-				SerializerProvider provider) throws IOException, JsonProcessingException {
+				SerializerProvider provider) throws IOException {
 			jgen.writeStartObject();
 			for (PropertyDescriptor property : BeanUtils
 					.getPropertyDescriptors(DataSource.class)) {

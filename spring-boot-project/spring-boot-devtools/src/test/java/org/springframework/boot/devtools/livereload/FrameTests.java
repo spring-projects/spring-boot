@@ -37,28 +37,28 @@ public class FrameTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void payloadMustNotBeNull() throws Exception {
+	public void payloadMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Payload must not be null");
 		new Frame((String) null);
 	}
 
 	@Test
-	public void typeMustNotBeNull() throws Exception {
+	public void typeMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Type must not be null");
 		new Frame((Frame.Type) null);
 	}
 
 	@Test
-	public void textPayload() throws Exception {
+	public void textPayload() {
 		Frame frame = new Frame("abc");
 		assertThat(frame.getType()).isEqualTo(Frame.Type.TEXT);
 		assertThat(frame.getPayload()).isEqualTo("abc".getBytes());
 	}
 
 	@Test
-	public void typedPayload() throws Exception {
+	public void typedPayload() {
 		Frame frame = new Frame(Frame.Type.CLOSE);
 		assertThat(frame.getType()).isEqualTo(Frame.Type.CLOSE);
 		assertThat(frame.getPayload()).isEqualTo(new byte[] {});

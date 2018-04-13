@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
@@ -80,7 +79,7 @@ import org.springframework.util.Assert;
 @Configuration
 @EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
 @AutoConfigureBefore(MongoAutoConfiguration.class)
-@ConditionalOnClass({ Mongo.class, MongodStarter.class })
+@ConditionalOnClass({ MongoClient.class, MongodStarter.class })
 public class EmbeddedMongoAutoConfiguration {
 
 	private static final byte[] IP4_LOOPBACK_ADDRESS = { 127, 0, 0, 1 };
@@ -247,7 +246,7 @@ public class EmbeddedMongoAutoConfiguration {
 	 * A workaround for the lack of a {@code toString} implementation on
 	 * {@code GenericFeatureAwareVersion}.
 	 */
-	private final static class ToStringFriendlyFeatureAwareVersion
+	private static final class ToStringFriendlyFeatureAwareVersion
 			implements IFeatureAwareVersion {
 
 		private final String version;

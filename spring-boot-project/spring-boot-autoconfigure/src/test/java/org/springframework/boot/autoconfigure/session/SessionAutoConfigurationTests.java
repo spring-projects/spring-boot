@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,17 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.session.web.http.CookieHttpSessionIdResolver;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -145,6 +149,28 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 							.getField(registration, "dispatcherTypes")).containsOnly(
 									DispatcherType.ERROR, DispatcherType.REQUEST);
 				});
+	}
+
+	@Test
+	public void sessionCookieConfigurationIsPickedUp() {
+		WebApplicationContextRunner webRunner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations
+								.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(SessionRepositoryConfiguration.class)
+						.withPropertyValues("server.port=0",
+								"server.servlet.session.cookie.name=testname");
+		webRunner.run((context) -> {
+			SessionRepositoryFilter<?> filter = context
+					.getBean(SessionRepositoryFilter.class);
+			CookieHttpSessionIdResolver sessionIdResolver = (CookieHttpSessionIdResolver) ReflectionTestUtils
+					.getField(filter, "httpSessionIdResolver");
+			DefaultCookieSerializer cookieSerializer = (DefaultCookieSerializer) ReflectionTestUtils
+					.getField(sessionIdResolver, "cookieSerializer");
+			String cookieName = (String) ReflectionTestUtils.getField(cookieSerializer,
+					"cookieName");
+			assertThat(cookieName).isEqualTo("testname");
+		});
 	}
 
 	@Configuration

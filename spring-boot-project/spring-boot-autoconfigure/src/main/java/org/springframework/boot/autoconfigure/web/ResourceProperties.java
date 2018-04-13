@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package org.springframework.boot.autoconfigure.web;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
 
 /**
@@ -275,16 +275,16 @@ public class ResourceProperties {
 		/**
 		 * Cache period for the resources served by the resource handler. If a duration
 		 * suffix is not specified, seconds will be used. Can be overridden by the
-		 * 'spring.resources.cache.control' properties.
+		 * 'spring.resources.cache.cachecontrol' properties.
 		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration period;
 
 		/**
 		 * Cache control HTTP headers, only allows valid directive combinations. Overrides
 		 * the 'spring.resources.cache.period' property.
 		 */
-		private final Control control = new Control();
+		private final Cachecontrol cachecontrol = new Cachecontrol();
 
 		public Duration getPeriod() {
 			return this.period;
@@ -294,20 +294,20 @@ public class ResourceProperties {
 			this.period = period;
 		}
 
-		public Control getControl() {
-			return this.control;
+		public Cachecontrol getCachecontrol() {
+			return this.cachecontrol;
 		}
 
 		/**
 		 * Cache Control HTTP header configuration.
 		 */
-		public static class Control {
+		public static class Cachecontrol {
 
 			/**
 			 * Maximum time the response should be cached, in seconds if no duration
 			 * suffix is not specified.
 			 */
-			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration maxAge;
 
 			/**
@@ -354,21 +354,21 @@ public class ResourceProperties {
 			 * Maximum time the response can be served after it becomes stale, in seconds
 			 * if no duration suffix is not specified.
 			 */
-			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration staleWhileRevalidate;
 
 			/**
 			 * Maximum time the response may be used when errors are encountered, in
 			 * seconds if no duration suffix is not specified.
 			 */
-			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration staleIfError;
 
 			/**
 			 * Maximum time the response should be cached by shared caches, in seconds if
 			 * no duration suffix is not specified.
 			 */
-			@DefaultDurationUnit(ChronoUnit.SECONDS)
+			@DurationUnit(ChronoUnit.SECONDS)
 			private Duration sMaxAge;
 
 			public Duration getMaxAge() {
@@ -460,26 +460,23 @@ public class ResourceProperties {
 			}
 
 			public CacheControl toHttpCacheControl() {
-				CacheControl cacheControl = createCacheControl();
-				callIfTrue(this.mustRevalidate, cacheControl,
-						CacheControl::mustRevalidate);
-				callIfTrue(this.noTransform, cacheControl, CacheControl::noTransform);
-				callIfTrue(this.cachePublic, cacheControl, CacheControl::cachePublic);
-				callIfTrue(this.cachePrivate, cacheControl, CacheControl::cachePrivate);
-				callIfTrue(this.proxyRevalidate, cacheControl,
-						CacheControl::proxyRevalidate);
-				if (this.staleWhileRevalidate != null) {
-					cacheControl.staleWhileRevalidate(
-							this.staleWhileRevalidate.getSeconds(), TimeUnit.SECONDS);
-				}
-				if (this.staleIfError != null) {
-					cacheControl.staleIfError(this.staleIfError.getSeconds(),
-							TimeUnit.SECONDS);
-				}
-				if (this.sMaxAge != null) {
-					cacheControl.sMaxAge(this.sMaxAge.getSeconds(), TimeUnit.SECONDS);
-				}
-				return cacheControl;
+				PropertyMapper map = PropertyMapper.get();
+				CacheControl control = createCacheControl();
+				map.from(this::getMustRevalidate).whenTrue()
+						.toCall(control::mustRevalidate);
+				map.from(this::getNoTransform).whenTrue().toCall(control::noTransform);
+				map.from(this::getCachePublic).whenTrue().toCall(control::cachePublic);
+				map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
+				map.from(this::getProxyRevalidate).whenTrue()
+						.toCall(control::proxyRevalidate);
+				map.from(this::getStaleWhileRevalidate).whenNonNull().to(
+						(duration) -> control.staleWhileRevalidate(duration.getSeconds(),
+								TimeUnit.SECONDS));
+				map.from(this::getStaleIfError).whenNonNull().to((duration) -> control
+						.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
+				map.from(this::getSMaxAge).whenNonNull().to((duration) -> control
+						.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
+				return control;
 			}
 
 			private CacheControl createCacheControl() {
@@ -494,12 +491,6 @@ public class ResourceProperties {
 							TimeUnit.SECONDS);
 				}
 				return CacheControl.empty();
-			}
-
-			private <T> void callIfTrue(Boolean property, T instance, Consumer<T> call) {
-				if (Boolean.TRUE.equals(property)) {
-					call.accept(instance);
-				}
 			}
 
 		}

@@ -53,7 +53,7 @@ public class MockBeanWithAopProxyTests {
 	private DateService dateService;
 
 	@Test
-	public void verifyShouldUseProxyTarget() throws Exception {
+	public void verifyShouldUseProxyTarget() {
 		given(this.dateService.getDate(false)).willReturn(1L);
 		Long d1 = this.dateService.getDate(false);
 		assertThat(d1).isEqualTo(1L);

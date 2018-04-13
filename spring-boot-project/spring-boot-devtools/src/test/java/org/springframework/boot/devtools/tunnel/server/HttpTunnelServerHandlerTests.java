@@ -37,7 +37,7 @@ public class HttpTunnelServerHandlerTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void serverMustNotBeNull() throws Exception {
+	public void serverMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Server must not be null");
 		new HttpTunnelServerHandler(null);

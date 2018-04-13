@@ -56,7 +56,7 @@ public class RestClientTestTwoComponentsIntegrationTests {
 	private MockRestServiceServer server;
 
 	@Test
-	public void serverShouldNotWork() throws Exception {
+	public void serverShouldNotWork() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to use auto-configured");
 		this.server.expect(requestTo("/test"))
@@ -64,7 +64,7 @@ public class RestClientTestTwoComponentsIntegrationTests {
 	}
 
 	@Test
-	public void client1RestCallViaCustomizer() throws Exception {
+	public void client1RestCallViaCustomizer() {
 		this.customizer.getServer(this.client1.getRestTemplate())
 				.expect(requestTo("/test"))
 				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
@@ -72,7 +72,7 @@ public class RestClientTestTwoComponentsIntegrationTests {
 	}
 
 	@Test
-	public void client2RestCallViaCustomizer() throws Exception {
+	public void client2RestCallViaCustomizer() {
 		this.customizer.getServer(this.client2.getRestTemplate())
 				.expect(requestTo("/test"))
 				.andRespond(withSuccess("there", MediaType.TEXT_HTML));

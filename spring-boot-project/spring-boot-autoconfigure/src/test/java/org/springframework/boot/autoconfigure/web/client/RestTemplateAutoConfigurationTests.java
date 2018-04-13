@@ -99,7 +99,7 @@ public class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void restTemplateShouldApplyCustomizer() throws Exception {
+	public void restTemplateShouldApplyCustomizer() {
 		load(RestTemplateCustomizerConfig.class, RestTemplateConfig.class);
 		RestTemplate restTemplate = this.context.getBean(RestTemplate.class);
 		RestTemplateCustomizer customizer = this.context
@@ -108,7 +108,7 @@ public class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void builderShouldBeFreshForEachUse() throws Exception {
+	public void builderShouldBeFreshForEachUse() {
 		load(DirtyRestTemplateConfig.class);
 	}
 

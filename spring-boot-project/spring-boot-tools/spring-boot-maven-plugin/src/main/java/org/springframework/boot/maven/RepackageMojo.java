@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -262,7 +262,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (!this.includeSystemScope) {
 			filters.add(new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
 		}
-		return filters.toArray(new ArtifactsFilter[filters.size()]);
+		return filters.toArray(new ArtifactsFilter[0]);
 	}
 
 	private LaunchScript getLaunchScript() throws IOException {

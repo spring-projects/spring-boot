@@ -38,7 +38,7 @@ public class HttpTunnelPayloadForwarderTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void targetChannelMustNotBeNull() throws Exception {
+	public void targetChannelMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("TargetChannel must not be null");
 		new HttpTunnelPayloadForwarder(null);

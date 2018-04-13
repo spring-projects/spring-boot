@@ -50,7 +50,7 @@ public class CacheManagerCustomizersTests {
 	}
 
 	@Test
-	public void customizeShouldCheckGeneric() throws Exception {
+	public void customizeShouldCheckGeneric() {
 		List<TestCustomizer<?>> list = new ArrayList<>();
 		list.add(new TestCustomizer<>());
 		list.add(new TestConcurrentMapCacheManagerCustomizer());

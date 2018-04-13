@@ -34,14 +34,14 @@ public class ConfigurationPropertyNameAliasesTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWithStringWhenNullNameShouldThrowException() throws Exception {
+	public void createWithStringWhenNullNameShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Name must not be null");
 		new ConfigurationPropertyNameAliases((String) null);
 	}
 
 	@Test
-	public void createWithStringShouldAddMapping() throws Exception {
+	public void createWithStringShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases(
 				"foo", "bar", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
@@ -50,7 +50,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void createWithNameShouldAddMapping() throws Exception {
+	public void createWithNameShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases(
 				ConfigurationPropertyName.of("foo"), ConfigurationPropertyName.of("bar"),
 				ConfigurationPropertyName.of("baz"));
@@ -60,7 +60,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void addAliasesFromStringShouldAddMapping() throws Exception {
+	public void addAliasesFromStringShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
@@ -69,7 +69,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void addAliasesFromNameShouldAddMapping() throws Exception {
+	public void addAliasesFromNameShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases(ConfigurationPropertyName.of("foo"),
 				ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
@@ -79,7 +79,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void addWhenHasExistingShouldAddAdditionalMappings() throws Exception {
+	public void addWhenHasExistingShouldAddAdditionalMappings() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		aliases.addAliases("foo", "baz");
@@ -89,13 +89,13 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void getAliasesWhenNotMappedShouldReturnEmptyList() throws Exception {
+	public void getAliasesWhenNotMappedShouldReturnEmptyList() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo"))).isEmpty();
 	}
 
 	@Test
-	public void getAliasesWhenMappedShouldReturnMapping() throws Exception {
+	public void getAliasesWhenMappedShouldReturnMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
@@ -103,7 +103,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void getNameForAliasWhenHasMappingShouldReturnName() throws Exception {
+	public void getNameForAliasWhenHasMappingShouldReturnName() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		aliases.addAliases("foo", "baz");
@@ -114,7 +114,7 @@ public class ConfigurationPropertyNameAliasesTests {
 	}
 
 	@Test
-	public void getNameForAliasWhenNotMappedShouldReturnNull() throws Exception {
+	public void getNameForAliasWhenNotMappedShouldReturnNull() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		assertThat((Object) aliases.getNameForAlias(ConfigurationPropertyName.of("baz")))

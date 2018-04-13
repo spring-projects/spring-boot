@@ -54,7 +54,7 @@ public class MockBeanOnTestFieldForExistingBeanWithQualifierIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testMocking() throws Exception {
+	public void testMocking() {
 		this.caller.sayGreeting();
 		verify(this.service).greeting();
 	}

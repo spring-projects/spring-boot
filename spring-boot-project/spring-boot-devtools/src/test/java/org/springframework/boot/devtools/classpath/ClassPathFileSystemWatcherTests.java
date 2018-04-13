@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class ClassPathFileSystemWatcherTests {
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
-	public void urlsMustNotBeNull() throws Exception {
+	public void urlsMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Urls must not be null");
 		URL[] urls = null;
@@ -70,7 +70,7 @@ public class ClassPathFileSystemWatcherTests {
 		Map<String, Object> properties = new HashMap<>();
 		File folder = this.temp.newFolder();
 		List<URL> urls = new ArrayList<>();
-		urls.add(new URL("http://spring.io"));
+		urls.add(new URL("https://spring.io"));
 		urls.add(folder.toURI().toURL());
 		properties.put("urls", urls);
 		MapPropertySource propertySource = new MapPropertySource("test", properties);

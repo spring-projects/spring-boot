@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
@@ -34,21 +35,25 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 public class HealthEndpointWebExtension {
 
-	private final HealthEndpoint delegate;
+	private final HealthIndicator delegate;
 
-	private final HealthStatusHttpMapper statusHttpMapper;
+	private final HealthWebEndpointResponseMapper responseMapper;
 
-	public HealthEndpointWebExtension(HealthEndpoint delegate,
-			HealthStatusHttpMapper statusHttpMapper) {
+	public HealthEndpointWebExtension(HealthIndicator delegate,
+			HealthWebEndpointResponseMapper responseMapper) {
 		this.delegate = delegate;
-		this.statusHttpMapper = statusHttpMapper;
+		this.responseMapper = responseMapper;
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Health> getHealth() {
-		Health health = this.delegate.health();
-		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-		return new WebEndpointResponse<>(health, status);
+	public WebEndpointResponse<Health> getHealth(SecurityContext securityContext) {
+		return this.responseMapper.map(this.delegate.health(), securityContext);
+	}
+
+	public WebEndpointResponse<Health> getHealth(SecurityContext securityContext,
+			ShowDetails showDetails) {
+		return this.responseMapper.map(this.delegate.health(), securityContext,
+				showDetails);
 	}
 
 }

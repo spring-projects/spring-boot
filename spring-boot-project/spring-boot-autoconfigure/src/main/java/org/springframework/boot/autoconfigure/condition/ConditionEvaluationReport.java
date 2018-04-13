@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -112,12 +111,11 @@ public final class ConditionEvaluationReport {
 	 */
 	public Map<String, ConditionAndOutcomes> getConditionAndOutcomesBySource() {
 		if (!this.addedAncestorOutcomes) {
-			for (Map.Entry<String, ConditionAndOutcomes> entry : this.outcomes
-					.entrySet()) {
-				if (!entry.getValue().isFullMatch()) {
-					addNoMatchOutcomeToAncestors(entry.getKey());
+			this.outcomes.forEach((source, sourceOutcomes) -> {
+				if (!sourceOutcomes.isFullMatch()) {
+					addNoMatchOutcomeToAncestors(source);
 				}
-			}
+			});
 			this.addedAncestorOutcomes = true;
 		}
 		return Collections.unmodifiableMap(this.outcomes);
@@ -125,13 +123,13 @@ public final class ConditionEvaluationReport {
 
 	private void addNoMatchOutcomeToAncestors(String source) {
 		String prefix = source + "$";
-		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
-			if (entry.getKey().startsWith(prefix)) {
+		this.outcomes.forEach((candidateSource, sourceOutcomes) -> {
+			if (candidateSource.startsWith(prefix)) {
 				ConditionOutcome outcome = ConditionOutcome.noMatch(ConditionMessage
 						.forCondition("Ancestor " + source).because("did not match"));
-				entry.getValue().add(ANCESTOR_CONDITION, outcome);
+				sourceOutcomes.add(ANCESTOR_CONDITION, outcome);
 			}
-		}
+		});
 	}
 
 	/**
@@ -186,6 +184,27 @@ public final class ConditionEvaluationReport {
 			report.parent = beanFactory.getBean(BEAN_NAME,
 					ConditionEvaluationReport.class);
 		}
+	}
+
+	public ConditionEvaluationReport getDelta(ConditionEvaluationReport previousReport) {
+		ConditionEvaluationReport delta = new ConditionEvaluationReport();
+		this.outcomes.forEach((source, sourceOutcomes) -> {
+			ConditionAndOutcomes previous = previousReport.outcomes.get(source);
+			if (previous == null
+					|| previous.isFullMatch() != sourceOutcomes.isFullMatch()) {
+				sourceOutcomes.forEach(
+						(conditionAndOutcome) -> delta.recordConditionEvaluation(source,
+								conditionAndOutcome.getCondition(),
+								conditionAndOutcome.getOutcome()));
+			}
+		});
+		List<String> newExclusions = new ArrayList<>(this.exclusions);
+		newExclusions.removeAll(previousReport.getExclusions());
+		delta.recordExclusions(newExclusions);
+		List<String> newUnconditionalClasses = new ArrayList<>(this.unconditionalClasses);
+		newUnconditionalClasses.removeAll(previousReport.unconditionalClasses);
+		delta.unconditionalClasses.addAll(newUnconditionalClasses);
+		return delta;
 	}
 
 	/**

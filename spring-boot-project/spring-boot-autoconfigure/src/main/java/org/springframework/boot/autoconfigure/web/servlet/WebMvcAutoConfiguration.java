@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.Servlet;
@@ -54,6 +52,7 @@ import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
+import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
@@ -66,6 +65,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ClassPathResource;
@@ -73,7 +73,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.format.datetime.DateFormatter;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -101,6 +101,7 @@ import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -167,6 +168,7 @@ public class WebMvcAutoConfiguration {
 	@Configuration
 	@Import(EnableWebMvcConfiguration.class)
 	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
+	@Order(0)
 	public static class WebMvcAutoConfigurationAdapter
 			implements WebMvcConfigurer, ResourceLoaderAware {
 
@@ -215,11 +217,25 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
+		public void configurePathMatch(PathMatchConfigurer configurer) {
+			configurer.setUseSuffixPatternMatch(
+					this.mvcProperties.getPathmatch().isUseSuffixPattern());
+			configurer.setUseRegisteredSuffixPatternMatch(
+					this.mvcProperties.getPathmatch().isUseRegisteredSuffixPattern());
+		}
+
+		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-			Map<String, MediaType> mediaTypes = this.mvcProperties.getMediaTypes();
-			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
-				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
+			WebMvcProperties.Contentnegotiation contentnegotiation = this.mvcProperties
+					.getContentnegotiation();
+			configurer.favorPathExtension(contentnegotiation.isFavorPathExtension());
+			configurer.favorParameter(contentnegotiation.isFavorParameter());
+			if (contentnegotiation.getParameterName() != null) {
+				configurer.parameterName(contentnegotiation.getParameterName());
 			}
+			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentnegotiation()
+					.getMediaTypes();
+			mediaTypes.forEach(configurer::mediaType);
 		}
 
 		@Bean
@@ -266,12 +282,6 @@ public class WebMvcAutoConfiguration {
 			return localeResolver;
 		}
 
-		@Bean
-		@ConditionalOnProperty(prefix = "spring.mvc", name = "date-format")
-		public Formatter<Date> dateFormatter() {
-			return new DateFormatter(this.mvcProperties.getDateFormat());
-		}
-
 		@Override
 		public MessageCodesResolver getMessageCodesResolver() {
 			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
@@ -307,13 +317,12 @@ public class WebMvcAutoConfiguration {
 				return;
 			}
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
-			CacheControl cacheControl = this.resourceProperties.getCache().getControl()
-					.toHttpCacheControl();
+			CacheControl cacheControl = this.resourceProperties.getCache()
+					.getCachecontrol().toHttpCacheControl();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				customizeResourceHandlerRegistration(
-						registry.addResourceHandler("/webjars/**")
-								.addResourceLocations(
-										"classpath:/META-INF/resources/webjars/")
+				customizeResourceHandlerRegistration(registry
+						.addResourceHandler("/webjars/**")
+						.addResourceLocations("classpath:/META-INF/resources/webjars/")
 						.setCachePeriod(getSeconds(cachePeriod))
 						.setCacheControl(cacheControl));
 			}
@@ -323,8 +332,8 @@ public class WebMvcAutoConfiguration {
 						registry.addResourceHandler(staticPathPattern)
 								.addResourceLocations(getResourceLocations(
 										this.resourceProperties.getStaticLocations()))
-						.setCachePeriod(getSeconds(cachePeriod))
-						.setCacheControl(cacheControl));
+								.setCachePeriod(getSeconds(cachePeriod))
+								.setCacheControl(cacheControl));
 			}
 		}
 
@@ -456,8 +465,8 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
 			RequestMappingHandlerAdapter adapter = super.requestMappingHandlerAdapter();
-			adapter.setIgnoreDefaultModelOnRedirect(this.mvcProperties == null ? true
-					: this.mvcProperties.isIgnoreDefaultModelOnRedirect());
+			adapter.setIgnoreDefaultModelOnRedirect(this.mvcProperties == null
+					|| this.mvcProperties.isIgnoreDefaultModelOnRedirect());
 			return adapter;
 		}
 
@@ -476,6 +485,15 @@ public class WebMvcAutoConfiguration {
 		public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 			// Must be @Primary for MvcUriComponentsBuilder to work
 			return super.requestMappingHandlerMapping();
+		}
+
+		@Bean
+		@Override
+		public FormattingConversionService mvcConversionService() {
+			WebConversionService conversionService = new WebConversionService(
+					this.mvcProperties.getDateFormat());
+			addFormatters(conversionService);
+			return conversionService;
 		}
 
 		@Bean

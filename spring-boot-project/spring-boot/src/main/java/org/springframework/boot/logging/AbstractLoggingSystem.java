@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.logging;
 
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -194,7 +195,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		private final Map<T, LogLevel> nativeToSystem;
 
 		public LogLevels() {
-			this.systemToNative = new HashMap<>();
+			this.systemToNative = new EnumMap<>(LogLevel.class);
 			this.nativeToSystem = new HashMap<>();
 		}
 

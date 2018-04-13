@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.boot.convert.DurationUnit;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 /**
@@ -39,7 +39,7 @@ public class TransactionProperties implements
 	 * Default transaction timeout. If a duration suffix is not specified, seconds will be
 	 * used.
 	 */
-	@DefaultDurationUnit(ChronoUnit.SECONDS)
+	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration defaultTimeout;
 
 	/**

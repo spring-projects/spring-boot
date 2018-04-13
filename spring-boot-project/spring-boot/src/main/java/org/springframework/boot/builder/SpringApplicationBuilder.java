@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StringUtils;
 
 /**
  * Builder for {@link SpringApplication} and {@link ApplicationContext} instances with
@@ -424,7 +425,7 @@ public class SpringApplicationBuilder {
 	}
 
 	private Map<String, Object> getMapFromProperties(Properties properties) {
-		HashMap<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		for (Object key : Collections.list(properties.propertyNames())) {
 			map.put((String) key, properties.get(key));
 		}
@@ -455,16 +456,16 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder profiles(String... profiles) {
 		this.additionalProfiles.addAll(Arrays.asList(profiles));
-		this.application.setAdditionalProfiles(this.additionalProfiles
-				.toArray(new String[this.additionalProfiles.size()]));
+		this.application.setAdditionalProfiles(
+				StringUtils.toStringArray(this.additionalProfiles));
 		return this;
 	}
 
 	private SpringApplicationBuilder additionalProfiles(
 			Collection<String> additionalProfiles) {
 		this.additionalProfiles = new LinkedHashSet<>(additionalProfiles);
-		this.application.setAdditionalProfiles(this.additionalProfiles
-				.toArray(new String[this.additionalProfiles.size()]));
+		this.application.setAdditionalProfiles(
+				StringUtils.toStringArray(this.additionalProfiles));
 		return this;
 	}
 

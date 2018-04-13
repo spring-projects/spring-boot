@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ManagementContextConfigurationImportSelectorTests {
 
 	@Test
-	public void selectImportsShouldOrderResult() throws Exception {
+	public void selectImportsShouldOrderResult() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(C.class,
 				A.class, D.class, B.class).selectImports(
 						new StandardAnnotationMetadata(EnableChildContext.class));
@@ -47,8 +47,7 @@ public class ManagementContextConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void selectImportsFiltersChildOnlyConfigurationWhenUsingSameContext()
-			throws Exception {
+	public void selectImportsFiltersChildOnlyConfigurationWhenUsingSameContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(
 				ChildOnly.class, SameOnly.class, A.class).selectImports(
 						new StandardAnnotationMetadata(EnableSameContext.class));
@@ -57,8 +56,7 @@ public class ManagementContextConfigurationImportSelectorTests {
 	}
 
 	@Test
-	public void selectImportsFiltersSameOnlyConfigurationWhenUsingChildContext()
-			throws Exception {
+	public void selectImportsFiltersSameOnlyConfigurationWhenUsingChildContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(
 				ChildOnly.class, SameOnly.class, A.class).selectImports(
 						new StandardAnnotationMetadata(EnableChildContext.class));

@@ -34,7 +34,7 @@ public class SampleFlywayApplicationTests {
 	private JdbcTemplate template;
 
 	@Test
-	public void testDefaultSettings() throws Exception {
+	public void testDefaultSettings() {
 		assertThat(this.template.queryForObject("SELECT COUNT(*) from PERSON",
 				Integer.class)).isEqualTo(1);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.web.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -63,9 +64,7 @@ public class Neo4jDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public org.neo4j.ogm.config.Configuration configuration(Neo4jProperties properties) {
-		org.neo4j.ogm.config.Configuration configuration = properties
-				.createConfiguration();
-		return configuration;
+		return properties.createConfiguration();
 	}
 
 	@Bean
@@ -106,7 +105,7 @@ public class Neo4jDataAutoConfiguration {
 		if (packages.isEmpty() && AutoConfigurationPackages.has(applicationContext)) {
 			packages = AutoConfigurationPackages.get(applicationContext);
 		}
-		return packages.toArray(new String[packages.size()]);
+		return StringUtils.toStringArray(packages);
 	}
 
 	@Configuration

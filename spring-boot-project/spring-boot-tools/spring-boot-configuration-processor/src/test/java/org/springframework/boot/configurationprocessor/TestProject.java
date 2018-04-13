@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,12 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -193,8 +191,7 @@ public class TestProject {
 		return new File(TestCompiler.SOURCE_FOLDER, TestCompiler.sourcePathFor(type));
 	}
 
-	private static void putContents(File targetFile, String contents)
-			throws FileNotFoundException, IOException, UnsupportedEncodingException {
+	private static void putContents(File targetFile, String contents) throws IOException {
 		FileCopyUtils.copy(new StringReader(contents), new FileWriter(targetFile));
 	}
 

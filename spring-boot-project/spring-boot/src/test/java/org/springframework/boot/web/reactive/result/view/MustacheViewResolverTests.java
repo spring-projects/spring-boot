@@ -45,12 +45,12 @@ public class MustacheViewResolverTests {
 	}
 
 	@Test
-	public void resolveNonExistent() throws Exception {
+	public void resolveNonExistent() {
 		assertThat(this.resolver.resolveViewName("bar", null).block()).isNull();
 	}
 
 	@Test
-	public void resolveExisting() throws Exception {
+	public void resolveExisting() {
 		assertThat(this.resolver.resolveViewName("template", null).block()).isNotNull();
 	}
 

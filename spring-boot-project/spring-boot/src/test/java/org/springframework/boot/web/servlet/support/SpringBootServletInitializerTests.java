@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,7 +62,7 @@ public class SpringBootServletInitializerTests {
 	private SpringApplication application;
 
 	@Test
-	public void failsWithoutConfigure() throws Exception {
+	public void failsWithoutConfigure() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("No SpringApplication sources have been defined");
 		new MockSpringBootServletInitializer()
@@ -71,7 +70,7 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	public void withConfigurationAnnotation() throws Exception {
+	public void withConfigurationAnnotation() {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
 		assertThat(this.application.getAllSources()).containsOnly(
@@ -79,14 +78,14 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	public void withConfiguredSource() throws Exception {
+	public void withConfiguredSource() {
 		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
 		assertThat(this.application.getAllSources()).containsOnly(Config.class,
 				ErrorPageFilterConfiguration.class);
 	}
 
 	@Test
-	public void applicationBuilderCanBeCustomized() throws Exception {
+	public void applicationBuilderCanBeCustomized() {
 		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
 		servletInitializer.createRootApplicationContext(this.servletContext);
 		assertThat(servletInitializer.applicationBuilder.built).isTrue();
@@ -94,7 +93,7 @@ public class SpringBootServletInitializerTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void mainClassHasSensibleDefault() throws Exception {
+	public void mainClassHasSensibleDefault() {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
 		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
@@ -103,7 +102,7 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	public void errorPageFilterRegistrationCanBeDisabled() throws Exception {
+	public void errorPageFilterRegistrationCanBeDisabled() {
 		WebServer webServer = new UndertowServletWebServerFactory(0)
 				.getWebServer((servletContext) -> {
 					try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
@@ -121,8 +120,7 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	public void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured()
-			throws Exception {
+	public void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured() {
 		try (ConfigurableApplicationContext context = new SpringApplication(
 				ExecutableWar.class).run()) {
 			assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
@@ -130,8 +128,7 @@ public class SpringBootServletInitializerTests {
 	}
 
 	@Test
-	public void servletContextPropertySourceIsAvailablePriorToRefresh()
-			throws ServletException {
+	public void servletContextPropertySourceIsAvailablePriorToRefresh() {
 		ServletContext servletContext = mock(ServletContext.class);
 		given(servletContext.getInitParameterNames()).willReturn(
 				Collections.enumeration(Arrays.asList("spring.profiles.active")));

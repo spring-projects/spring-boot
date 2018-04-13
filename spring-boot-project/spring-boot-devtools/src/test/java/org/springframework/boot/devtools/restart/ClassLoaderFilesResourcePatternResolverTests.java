@@ -69,19 +69,18 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void getClassLoaderShouldReturnClassLoader() throws Exception {
+	public void getClassLoaderShouldReturnClassLoader() {
 		assertThat(this.resolver.getClassLoader()).isNotNull();
 	}
 
 	@Test
-	public void getResourceShouldReturnResource() throws Exception {
+	public void getResourceShouldReturnResource() {
 		Resource resource = this.resolver.getResource("index.html");
 		assertThat(resource).isNotNull().isInstanceOf(ClassPathResource.class);
 	}
 
 	@Test
-	public void getResourceWhenHasServletContextShouldReturnServletResource()
-			throws Exception {
+	public void getResourceWhenHasServletContextShouldReturnServletResource() {
 		GenericWebApplicationContext context = new GenericWebApplicationContext(
 				new MockServletContext());
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
@@ -121,7 +120,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void customResourceLoaderIsUsedInNonWebApplication() throws Exception {
+	public void customResourceLoaderIsUsedInNonWebApplication() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		ResourceLoader resourceLoader = mock(ResourceLoader.class);
 		context.setResourceLoader(resourceLoader);
@@ -131,7 +130,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void customProtocolResolverIsUsedInNonWebApplication() throws Exception {
+	public void customProtocolResolverIsUsedInNonWebApplication() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		Resource resource = mock(Resource.class);
 		ProtocolResolver resolver = mockProtocolResolver("foo:some-file.txt", resource);
@@ -143,7 +142,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void customResourceLoaderIsUsedInWebApplication() throws Exception {
+	public void customResourceLoaderIsUsedInWebApplication() {
 		GenericWebApplicationContext context = new GenericWebApplicationContext(
 				new MockServletContext());
 		ResourceLoader resourceLoader = mock(ResourceLoader.class);
@@ -154,7 +153,7 @@ public class ClassLoaderFilesResourcePatternResolverTests {
 	}
 
 	@Test
-	public void customProtocolResolverIsUsedInWebApplication() throws Exception {
+	public void customProtocolResolverIsUsedInWebApplication() {
 		GenericWebApplicationContext context = new GenericWebApplicationContext(
 				new MockServletContext());
 		Resource resource = mock(Resource.class);

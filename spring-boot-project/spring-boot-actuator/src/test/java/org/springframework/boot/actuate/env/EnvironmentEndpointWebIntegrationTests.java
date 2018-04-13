@@ -45,20 +45,20 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void home() throws Exception {
+	public void home() {
 		client.get().uri("/actuator/env").exchange().expectStatus().isOk().expectBody()
 				.jsonPath("propertySources[?(@.name=='systemProperties')]").exists();
 	}
 
 	@Test
-	public void sub() throws Exception {
+	public void sub() {
 		client.get().uri("/actuator/env/foo").exchange().expectStatus().isOk()
 				.expectBody().jsonPath("property.source").isEqualTo("test")
 				.jsonPath("property.value").isEqualTo("bar");
 	}
 
 	@Test
-	public void regex() throws Exception {
+	public void regex() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("food", null);
 		EnvironmentEndpointWebIntegrationTests.context.getEnvironment()
@@ -69,8 +69,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
-			throws Exception {
+	public void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
 		context.getEnvironment().getPropertySources()
@@ -82,7 +81,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void nestedPathWithSensitivePlaceholderShouldSanitize() throws Exception {
+	public void nestedPathWithSensitivePlaceholderShouldSanitize() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
@@ -94,7 +93,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void nestedPathForUnknownKeyShouldReturn404AndBody() throws Exception {
+	public void nestedPathForUnknownKeyShouldReturn404AndBody() {
 		client.get().uri("/actuator/env/this.does.not.exist").exchange().expectStatus()
 				.isNotFound().expectBody().jsonPath("property").doesNotExist()
 				.jsonPath("propertySources[?(@.name=='test')]").exists()
@@ -103,8 +102,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty()
-			throws Exception {
+	public void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
 		context.getEnvironment().getPropertySources()
@@ -117,8 +115,7 @@ public class EnvironmentEndpointWebIntegrationTests {
 	}
 
 	@Test
-	public void nestedPathMatchedByRegexWithSensitivePlaceholderShouldSanitize()
-			throws Exception {
+	public void nestedPathMatchedByRegexWithSensitivePlaceholderShouldSanitize() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");

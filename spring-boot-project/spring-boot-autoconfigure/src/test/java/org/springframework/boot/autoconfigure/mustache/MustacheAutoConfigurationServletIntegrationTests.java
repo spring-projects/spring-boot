@@ -83,14 +83,14 @@ public class MustacheAutoConfigurationServletIntegrationTests {
 	}
 
 	@Test
-	public void testHomePage() throws Exception {
+	public void testHomePage() {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
 				String.class);
 		assertThat(body.contains("Hello World")).isTrue();
 	}
 
 	@Test
-	public void testPartialPage() throws Exception {
+	public void testPartialPage() {
 		String body = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertThat(body.contains("Hello World")).isTrue();

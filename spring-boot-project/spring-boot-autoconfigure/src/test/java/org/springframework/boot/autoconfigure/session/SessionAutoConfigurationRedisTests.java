@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.testsupport.rule.RedisTestServer;
+import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.redis.RedisFlushMode;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
@@ -45,15 +45,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SessionAutoConfigurationRedisTests
 		extends AbstractSessionAutoConfigurationTests {
 
-	@Rule
-	public final RedisTestServer redis = new RedisTestServer();
+	@ClassRule
+	public static RedisContainer redis = new RedisContainer();
 
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
 	public void defaultConfig() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=redis",
+						"spring.redis.port=" + redis.getMappedPort())
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
 						RedisFlushMode.ON_SAVE, "0 * * * * *"));
@@ -66,6 +68,7 @@ public class SessionAutoConfigurationRedisTests
 						JdbcOperationsSessionRepository.class,
 						MongoOperationsSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.withPropertyValues("spring.redis.port=" + redis.getMappedPort())
 				.run(validateSpringSessionUsesRedis("spring:session:event:created:",
 						RedisFlushMode.ON_SAVE, "0 * * * * *"));
 	}
@@ -77,7 +80,8 @@ public class SessionAutoConfigurationRedisTests
 				.withPropertyValues("spring.session.store-type=redis",
 						"spring.session.redis.namespace=foo",
 						"spring.session.redis.flush-mode=immediate",
-						"spring.session.redis.cleanup-cron=0 0 12 * * *")
+						"spring.session.redis.cleanup-cron=0 0 12 * * *",
+						"spring.redis.port=" + redis.getMappedPort())
 				.run(validateSpringSessionUsesRedis("foo:event:created:",
 						RedisFlushMode.IMMEDIATE, "0 0 12 * * *"));
 	}

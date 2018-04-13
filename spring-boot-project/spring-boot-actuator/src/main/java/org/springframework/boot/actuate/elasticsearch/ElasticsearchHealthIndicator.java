@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link HealthIndicator} for an Elasticsearch cluster.
@@ -53,8 +54,8 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
 			List<String> indices) {
-		this(client, responseTimeout, (indices == null ? (String[]) null
-				: indices.toArray(new String[indices.size()])));
+		this(client, responseTimeout,
+				(indices == null ? null : StringUtils.toStringArray(indices)));
 	}
 
 	/**
@@ -65,6 +66,7 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 	 */
 	public ElasticsearchHealthIndicator(Client client, long responseTimeout,
 			String... indices) {
+		super("Elasticsearch health check failed");
 		this.client = client;
 		this.responseTimeout = responseTimeout;
 		this.indices = indices;

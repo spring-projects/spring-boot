@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -77,7 +78,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	 */
 	private static final String[] WEBSPHERE_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
-			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
+			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform" };
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 
@@ -87,13 +88,16 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private final ImplicitNamingStrategy implicitNamingStrategy;
 
+	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
+
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
 			ObjectProvider<List<SchemaManagementProvider>> providers,
 			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
-			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy) {
+			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy,
+			ObjectProvider<List<HibernatePropertiesCustomizer>> hibernatePropertiesCustomizers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
 		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
@@ -102,6 +106,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				metadataProviders.getIfAvailable());
 		this.physicalNamingStrategy = physicalNamingStrategy.getIfAvailable();
 		this.implicitNamingStrategy = implicitNamingStrategy.getIfAvailable();
+		this.hibernatePropertiesCustomizers = hibernatePropertiesCustomizers
+				.getIfAvailable(() -> Collections.emptyList());
 	}
 
 	@Override
@@ -111,14 +117,14 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	@Override
 	protected Map<String, Object> getVendorProperties() {
-		Map<String, Object> vendorProperties = new LinkedHashMap<>();
-		String defaultDdlMode = this.defaultDdlAutoProvider
+		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider
 				.getDefaultDdlAuto(getDataSource());
-		vendorProperties.putAll(getProperties()
+		return new LinkedHashMap<>(getProperties()
 				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlMode)
 						.implicitNamingStrategy(this.implicitNamingStrategy)
-						.physicalNamingStrategy(this.physicalNamingStrategy)));
-		return vendorProperties;
+						.physicalNamingStrategy(this.physicalNamingStrategy)
+						.hibernatePropertiesCustomizers(
+								this.hibernatePropertiesCustomizers)));
 	}
 
 	@Override

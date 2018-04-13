@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,7 +172,7 @@ public class MailSenderAutoConfigurationTests {
 	}
 
 	@Test
-	public void jndiSessionNotAvailableWithJndiName() throws NamingException {
+	public void jndiSessionNotAvailableWithJndiName() {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Unable to find Session in JNDI location foo");
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
@@ -194,8 +194,7 @@ public class MailSenderAutoConfigurationTests {
 		verify(mailSender, never()).testConnection();
 	}
 
-	private Session configureJndiSession(String name)
-			throws IllegalStateException, NamingException {
+	private Session configureJndiSession(String name) throws IllegalStateException {
 		Properties properties = new Properties();
 		Session session = Session.getDefaultInstance(properties);
 		TestableInitialContextFactory.bind(name, session);

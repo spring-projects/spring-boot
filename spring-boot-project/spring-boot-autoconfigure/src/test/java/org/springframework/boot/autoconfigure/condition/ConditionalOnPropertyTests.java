@@ -98,7 +98,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Test
-	public void prefixWithoutPeriod() throws Exception {
+	public void prefixWithoutPeriod() {
 		load(RelaxedPropertiesRequiredConfigurationWithShortPrefix.class,
 				"spring.property=value1");
 		assertThat(this.context.containsBean("foo")).isTrue();
@@ -198,13 +198,13 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Test
-	public void usingValueAttribute() throws Exception {
+	public void usingValueAttribute() {
 		load(ValueAttribute.class, "some.property");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void nameOrValueMustBeSpecified() throws Exception {
+	public void nameOrValueMustBeSpecified() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(hasMessage(containsString("The name or "
 				+ "value attribute of @ConditionalOnProperty must be specified")));
@@ -212,7 +212,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Test
-	public void nameAndValueMustNotBeSpecified() throws Exception {
+	public void nameAndValueMustNotBeSpecified() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectCause(hasMessage(containsString("The name and "
 				+ "value attributes of @ConditionalOnProperty are exclusive")));
@@ -220,14 +220,13 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Test
-	public void metaAnnotationConditionMatchesWhenPropertyIsSet() throws Exception {
+	public void metaAnnotationConditionMatchesWhenPropertyIsSet() {
 		load(MetaAnnotation.class, "my.feature.enabled=true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void metaAnnotationConditionDoesNotMatchWhenPropertyIsNotSet()
-			throws Exception {
+	public void metaAnnotationConditionDoesNotMatchWhenPropertyIsNotSet() {
 		load(MetaAnnotation.class);
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}

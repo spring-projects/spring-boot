@@ -48,7 +48,7 @@ public class SampleBitronixApplicationTests {
 	}
 
 	@Test
-	public void testExposesXaAndNonXa() throws Exception {
+	public void testExposesXaAndNonXa() {
 		ApplicationContext context = SpringApplication
 				.run(SampleBitronixApplication.class);
 		Object jmsConnectionFactory = context.getBean("jmsConnectionFactory");
@@ -60,7 +60,7 @@ public class SampleBitronixApplicationTests {
 				.isNotInstanceOf(PoolingConnectionFactory.class);
 	}
 
-	private Condition<String> substring(final int times, final String substring) {
+	private Condition<String> substring(int times, String substring) {
 		return new Condition<String>(
 				"containing '" + substring + "' " + times + " times") {
 

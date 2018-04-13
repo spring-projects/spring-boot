@@ -89,7 +89,7 @@ public class TokenValidatorTests {
 			.singletonMap("valid-key", VALID_KEY);
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.tokenValidator = new TokenValidator(this.securityService);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.nio.channels.ByteChannel;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
@@ -106,11 +107,9 @@ import org.springframework.util.Assert;
  */
 public class HttpTunnelServer {
 
-	private static final int SECONDS = 1000;
+	private static final long DEFAULT_LONG_POLL_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
-	private static final int DEFAULT_LONG_POLL_TIMEOUT = 10 * SECONDS;
-
-	private static final long DEFAULT_DISCONNECT_TIMEOUT = 30 * SECONDS;
+	private static final long DEFAULT_DISCONNECT_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
 
 	private static final MediaType DISCONNECT_MEDIA_TYPE = new MediaType("application",
 			"x-disconnect");
@@ -119,7 +118,7 @@ public class HttpTunnelServer {
 
 	private final TargetServerConnection serverConnection;
 
-	private int longPollTimeout = DEFAULT_LONG_POLL_TIMEOUT;
+	private int longPollTimeout = (int) DEFAULT_LONG_POLL_TIMEOUT;
 
 	private long disconnectTimeout = DEFAULT_DISCONNECT_TIMEOUT;
 

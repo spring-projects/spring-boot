@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,17 +176,17 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		DefaultScopeParentClassLoader(ClassLoader parent) {
 			super(parent);
 			this.groovyOnlyClassLoader = new URLClassLoader(getGroovyJars(parent),
-					parent.getParent());
+					getClass().getClassLoader().getParent());
 		}
 
-		private URL[] getGroovyJars(final ClassLoader parent) {
+		private URL[] getGroovyJars(ClassLoader parent) {
 			Set<URL> urls = new HashSet<>();
 			findGroovyJarsDirectly(parent, urls);
 			if (urls.isEmpty()) {
-				findGroovyJarsFromClassPath(parent, urls);
+				findGroovyJarsFromClassPath(urls);
 			}
 			Assert.state(!urls.isEmpty(), "Unable to find groovy JAR");
-			return new ArrayList<>(urls).toArray(new URL[urls.size()]);
+			return new ArrayList<>(urls).toArray(new URL[0]);
 		}
 
 		private void findGroovyJarsDirectly(ClassLoader classLoader, Set<URL> urls) {
@@ -202,7 +202,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			}
 		}
 
-		private void findGroovyJarsFromClassPath(ClassLoader parent, Set<URL> urls) {
+		private void findGroovyJarsFromClassPath(Set<URL> urls) {
 			String classpath = System.getProperty("java.class.path");
 			String[] entries = classpath.split(System.getProperty("path.separator"));
 			for (String entry : entries) {

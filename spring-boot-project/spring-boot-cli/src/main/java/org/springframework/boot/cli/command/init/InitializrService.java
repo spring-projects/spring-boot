@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -251,7 +251,7 @@ class InitializrService {
 			int start = value.indexOf(FILENAME_HEADER_PREFIX);
 			if (start != -1) {
 				value = value.substring(start + FILENAME_HEADER_PREFIX.length());
-				int end = value.indexOf("\"");
+				int end = value.indexOf('\"');
 				if (end != -1) {
 					return value.substring(0, end);
 				}

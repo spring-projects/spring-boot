@@ -48,32 +48,32 @@ public class JavaVersionTests {
 	}
 
 	@Test
-	public void isEqualOrNewerThanWhenComparingSameShouldBeTrue() throws Exception {
+	public void isEqualOrNewerThanWhenComparingSameShouldBeTrue() {
 		assertThat(JavaVersion.EIGHT.isEqualOrNewerThan(JavaVersion.EIGHT)).isTrue();
 	}
 
 	@Test
-	public void isEqualOrNewerThanWhenSmallerToGreaterShouldBeFalse() throws Exception {
+	public void isEqualOrNewerThanWhenSmallerToGreaterShouldBeFalse() {
 		assertThat(JavaVersion.EIGHT.isEqualOrNewerThan(JavaVersion.NINE)).isFalse();
 	}
 
 	@Test
-	public void isEqualOrNewerThanWhenGreaterToSmallerShouldBeTrue() throws Exception {
+	public void isEqualOrNewerThanWhenGreaterToSmallerShouldBeTrue() {
 		assertThat(JavaVersion.NINE.isEqualOrNewerThan(JavaVersion.EIGHT)).isTrue();
 	}
 
 	@Test
-	public void isOlderThanThanWhenComparingSameShouldBeFalse() throws Exception {
+	public void isOlderThanThanWhenComparingSameShouldBeFalse() {
 		assertThat(JavaVersion.EIGHT.isOlderThan(JavaVersion.EIGHT)).isFalse();
 	}
 
 	@Test
-	public void isOlderThanWhenSmallerToGreaterShouldBeTrue() throws Exception {
+	public void isOlderThanWhenSmallerToGreaterShouldBeTrue() {
 		assertThat(JavaVersion.EIGHT.isOlderThan(JavaVersion.NINE)).isTrue();
 	}
 
 	@Test
-	public void isOlderThanWhenGreaterToSmallerShouldBeFalse() throws Exception {
+	public void isOlderThanWhenGreaterToSmallerShouldBeFalse() {
 		assertThat(JavaVersion.NINE.isOlderThan(JavaVersion.EIGHT)).isFalse();
 	}
 

@@ -48,7 +48,7 @@ public class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegration
 	private ExampleGenericStringServiceCaller caller;
 
 	@Test
-	public void testSpying() throws Exception {
+	public void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say two");
 		assertThat(Mockito.mockingDetails(this.spy).getMockCreationSettings()
 				.getMockName().toString()).isEqualTo("two");

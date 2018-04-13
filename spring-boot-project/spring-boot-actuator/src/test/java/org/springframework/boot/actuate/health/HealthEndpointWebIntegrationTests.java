@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.junit.Test;
@@ -42,14 +44,14 @@ public class HealthEndpointWebIntegrationTests {
 	private static ConfigurableApplicationContext context;
 
 	@Test
-	public void whenHealthIsUp200ResponseIsReturned() throws Exception {
+	public void whenHealthIsUp200ResponseIsReturned() {
 		client.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody()
 				.jsonPath("status").isEqualTo("UP").jsonPath("details.alpha.status")
 				.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP");
 	}
 
 	@Test
-	public void whenHealthIsDown503ResponseIsReturned() throws Exception {
+	public void whenHealthIsDown503ResponseIsReturned() {
 		context.getBean("alphaHealthIndicator", TestHealthIndicator.class)
 				.setHealth(Health.down().build());
 		client.get().uri("/actuator/health").exchange().expectStatus()
@@ -66,14 +68,18 @@ public class HealthEndpointWebIntegrationTests {
 				Map<String, HealthIndicator> healthIndicators) {
 			return new HealthEndpoint(
 					new CompositeHealthIndicatorFactory().createHealthIndicator(
-							new OrderedHealthAggregator(), healthIndicators),
-					true);
+							new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean
 		public HealthEndpointWebExtension healthWebEndpointExtension(
-				HealthEndpoint delegate) {
-			return new HealthEndpointWebExtension(delegate, new HealthStatusHttpMapper());
+				Map<String, HealthIndicator> healthIndicators) {
+			return new HealthEndpointWebExtension(
+					new CompositeHealthIndicatorFactory().createHealthIndicator(
+							new OrderedHealthAggregator(), healthIndicators),
+					new HealthWebEndpointResponseMapper(new HealthStatusHttpMapper(),
+							ShowDetails.ALWAYS,
+							new HashSet<>(Arrays.asList("ACTUATOR"))));
 		}
 
 		@Bean

@@ -32,7 +32,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,34 +53,39 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void couchbaseNotAvailable() throws Exception {
+	public void couchbaseNotAvailable() {
 		load(null);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void defaultRepository() throws Exception {
+	public void defaultRepository() {
 		load(DefaultConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(1);
 	}
 
 	@Test
-	public void disableReactiveRepository() {
+	public void imperativeRepositories() {
 		load(DefaultConfiguration.class,
-				"spring.data.couchbase.reactiverepositories.enabled=false",
-				"spring.data.couchbase.repositories.enabled=false");
+				"spring.data.couchbase.repositories.type=imperative");
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
-	public void noRepositoryAvailable() throws Exception {
+	public void disabledRepositories() {
+		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=none");
+		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
+	}
+
+	@Test
+	public void noRepositoryAvailable() {
 		load(NoRepositoryConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityRepository.class)).hasSize(0);
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		load(CouchbaseReactiveRepositoriesAutoConfigurationTests.CustomizedConfiguration.class);
+		load(CustomizedConfiguration.class);
 		assertThat(this.context.getBeansOfType(ReactiveCityCouchbaseRepository.class))
 				.isEmpty();
 	}
@@ -116,7 +121,8 @@ public class CouchbaseReactiveRepositoriesAutoConfigurationTests {
 
 	@Configuration
 	@TestAutoConfigurationPackage(CouchbaseReactiveRepositoriesAutoConfigurationTests.class)
-	@EnableMongoRepositories(basePackageClasses = CityCouchbaseRepository.class)
+	@EnableCouchbaseRepositories(basePackageClasses = CityCouchbaseRepository.class)
+	@Import(CouchbaseDataAutoConfigurationTests.CustomCouchbaseConfiguration.class)
 	protected static class CustomizedConfiguration {
 
 	}

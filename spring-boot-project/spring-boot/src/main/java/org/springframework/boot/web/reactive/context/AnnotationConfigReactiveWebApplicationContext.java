@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link ConfigurableReactiveWebApplicationContext} that accepts annotated classes as
  * input - in particular
- * {@link org.springframework.context.annotation.Configuration @Configuration} -annotated
+ * {@link org.springframework.context.annotation.Configuration @Configuration}-annotated
  * classes, but also plain {@link Component @Component} classes and JSR-330 compliant
  * classes using {@code javax.inject} annotations. Allows for registering classes one by
  * one (specifying class names as config location) as well as for classpath scanning
@@ -64,8 +64,6 @@ public class AnnotationConfigReactiveWebApplicationContext
 	private final Set<Class<?>> annotatedClasses = new LinkedHashSet<>();
 
 	private final Set<String> basePackages = new LinkedHashSet<>();
-
-	private String namespace;
 
 	@Override
 	protected ConfigurableEnvironment createEnvironment() {
@@ -235,8 +233,7 @@ public class AnnotationConfigReactiveWebApplicationContext
 					+ StringUtils.collectionToCommaDelimitedString(this.annotatedClasses)
 					+ "]");
 		}
-		reader.register(this.annotatedClasses
-				.toArray(new Class<?>[this.annotatedClasses.size()]));
+		reader.register(ClassUtils.toClassArray(this.annotatedClasses));
 	}
 
 	private void scanBasePackages(ClassPathBeanDefinitionScanner scanner) {
@@ -245,12 +242,12 @@ public class AnnotationConfigReactiveWebApplicationContext
 					+ StringUtils.collectionToCommaDelimitedString(this.basePackages)
 					+ "]");
 		}
-		scanner.scan(this.basePackages.toArray(new String[this.basePackages.size()]));
+		scanner.scan(StringUtils.toStringArray(this.basePackages));
 	}
 
 	private void registerConfigLocations(AnnotatedBeanDefinitionReader reader,
 			ClassPathBeanDefinitionScanner scanner, String[] configLocations)
-					throws LinkageError {
+			throws LinkageError {
 		for (String configLocation : configLocations) {
 			try {
 				register(reader, configLocation);
@@ -311,7 +308,6 @@ public class AnnotationConfigReactiveWebApplicationContext
 	 * with a {@code BeanNameGenerator} or {@code ScopeMetadataResolver} yet.
 	 * @param beanFactory the bean factory to load bean definitions into
 	 * @return the class path bean definition scanner
-	 * @since 4.1.9
 	 * @see #getEnvironment()
 	 * @see #getBeanNameGenerator()
 	 * @see #getScopeMetadataResolver()
@@ -325,16 +321,6 @@ public class AnnotationConfigReactiveWebApplicationContext
 	protected Resource getResourceByPath(String path) {
 		// We must be careful not to expose classpath resources
 		return new FilteredReactiveWebContextResource(path);
-	}
-
-	@Override
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
-
-	@Override
-	public String getNamespace() {
-		return this.namespace;
 	}
 
 }

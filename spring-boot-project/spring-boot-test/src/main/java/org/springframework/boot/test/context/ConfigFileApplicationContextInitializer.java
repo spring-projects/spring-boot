@@ -34,7 +34,7 @@ public class ConfigFileApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
-	public void initialize(final ConfigurableApplicationContext applicationContext) {
+	public void initialize(ConfigurableApplicationContext applicationContext) {
 		new ConfigFileApplicationListener() {
 			public void apply() {
 				addPropertySources(applicationContext.getEnvironment(),

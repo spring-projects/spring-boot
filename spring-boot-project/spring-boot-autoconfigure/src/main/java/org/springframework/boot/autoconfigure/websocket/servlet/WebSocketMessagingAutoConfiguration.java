@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,7 @@ import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 /**
@@ -56,17 +54,12 @@ public class WebSocketMessagingAutoConfiguration {
 			ObjectMapper.class })
 	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
 	static class WebSocketMessageConverterConfiguration
-			extends AbstractWebSocketMessageBrokerConfigurer {
+			implements WebSocketMessageBrokerConfigurer {
 
 		private final ObjectMapper objectMapper;
 
 		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper) {
 			this.objectMapper = objectMapper;
-		}
-
-		@Override
-		public void registerStompEndpoints(StompEndpointRegistry registry) {
-			// The user must register their own endpoints
 		}
 
 		@Override

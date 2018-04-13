@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class RunMojo extends AbstractRunMojo {
 					new JavaExecutable().toString());
 			Runtime.getRuntime()
 					.addShutdownHook(new Thread(new RunProcessKiller(runProcess)));
-			int exitCode = runProcess.run(true, args.toArray(new String[args.size()]));
+			int exitCode = runProcess.run(true, args.toArray(new String[0]));
 			if (exitCode == 0 || exitCode == EXIT_CODE_SIGINT) {
 				return;
 			}
@@ -123,12 +123,12 @@ public class RunMojo extends AbstractRunMojo {
 		return this.hasDevtools;
 	}
 
-	@SuppressWarnings("resource")
 	private boolean checkForDevtools() {
 		try {
 			URL[] urls = getClassPathUrls();
-			URLClassLoader classLoader = new URLClassLoader(urls);
-			return (classLoader.findResource(RESTARTER_CLASS_LOCATION) != null);
+			try (URLClassLoader classLoader = new URLClassLoader(urls)) {
+				return (classLoader.findResource(RESTARTER_CLASS_LOCATION) != null);
+			}
 		}
 		catch (Exception ex) {
 			return false;

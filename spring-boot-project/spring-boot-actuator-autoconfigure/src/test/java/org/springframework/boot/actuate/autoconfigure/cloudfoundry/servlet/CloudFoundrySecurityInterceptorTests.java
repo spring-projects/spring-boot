@@ -53,7 +53,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	private MockHttpServletRequest request;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
 				this.securityService, "my-app-id");
@@ -61,7 +61,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenRequestIsPreFlightShouldReturnTrue() throws Exception {
+	public void preHandleWhenRequestIsPreFlightShouldReturnTrue() {
 		this.request.setMethod("OPTIONS");
 		this.request.addHeader(HttpHeaders.ORIGIN, "http://example.com");
 		this.request.addHeader(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
@@ -70,14 +70,14 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenTokenIsMissingShouldReturnFalse() throws Exception {
+	public void preHandleWhenTokenIsMissingShouldReturnFalse() {
 		SecurityResponse response = this.interceptor.preHandle(this.request, "/a");
 		assertThat(response.getStatus())
 				.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus());
 	}
 
 	@Test
-	public void preHandleWhenTokenIsNotBearerShouldReturnFalse() throws Exception {
+	public void preHandleWhenTokenIsNotBearerShouldReturnFalse() {
 		this.request.addHeader("Authorization", mockAccessToken());
 		SecurityResponse response = this.interceptor.preHandle(this.request, "/a");
 		assertThat(response.getStatus())
@@ -85,7 +85,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenApplicationIdIsNullShouldReturnFalse() throws Exception {
+	public void preHandleWhenApplicationIdIsNullShouldReturnFalse() {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator,
 				this.securityService, null);
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
@@ -95,8 +95,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse()
-			throws Exception {
+	public void preHandleWhenCloudFoundrySecurityServiceIsNullShouldReturnFalse() {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, null,
 				"my-app-id");
 		this.request.addHeader("Authorization", "bearer " + mockAccessToken());
@@ -106,7 +105,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleWhenAccessIsNotAllowedShouldReturnFalse() throws Exception {
+	public void preHandleWhenAccessIsNotAllowedShouldReturnFalse() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
@@ -116,7 +115,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleSuccessfulWithFullAccess() throws Exception {
+	public void preHandleSuccessfulWithFullAccess() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
@@ -132,7 +131,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleSuccessfulWithRestrictedAccess() throws Exception {
+	public void preHandleSuccessfulWithRestrictedAccess() {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id"))

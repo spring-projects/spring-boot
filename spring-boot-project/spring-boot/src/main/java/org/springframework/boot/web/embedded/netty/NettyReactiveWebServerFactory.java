@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +41,9 @@ import org.springframework.util.Assert;
  */
 public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
 
-	private List<NettyServerCustomizer> nettyServerCustomizers = new ArrayList<>();
+	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
+
+	private Duration lifecycleTimeout;
 
 	public NettyReactiveWebServerFactory() {
 	}
@@ -51,10 +54,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	@Override
 	public WebServer getWebServer(HttpHandler httpHandler) {
-		HttpServer server = createHttpServer();
+		HttpServer httpServer = createHttpServer();
 		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(
 				httpHandler);
-		return new NettyWebServer(server, handlerAdapter);
+		return new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
 	}
 
 	/**
@@ -62,29 +65,37 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 * applied to the Netty server builder.
 	 * @return the customizers that will be applied
 	 */
-	public Collection<NettyServerCustomizer> getNettyServerCustomizers() {
-		return this.nettyServerCustomizers;
+	public Collection<NettyServerCustomizer> getServerCustomizers() {
+		return this.serverCustomizers;
 	}
 
 	/**
 	 * Set {@link NettyServerCustomizer}s that should be applied to the Netty server
 	 * builder. Calling this method will replace any existing customizers.
-	 * @param nettyServerCustomizers the customizers to set
+	 * @param serverCustomizers the customizers to set
 	 */
-	public void setNettyServerCustomizers(
-			Collection<? extends NettyServerCustomizer> nettyServerCustomizers) {
-		Assert.notNull(nettyServerCustomizers, "NettyServerCustomizers must not be null");
-		this.nettyServerCustomizers = new ArrayList<>(nettyServerCustomizers);
+	public void setServerCustomizers(
+			Collection<? extends NettyServerCustomizer> serverCustomizers) {
+		Assert.notNull(serverCustomizers, "ServerCustomizers must not be null");
+		this.serverCustomizers = new ArrayList<>(serverCustomizers);
 	}
 
 	/**
 	 * Add {@link NettyServerCustomizer}s that should applied while building the server.
-	 * @param nettyServerCustomizer the customizers to add
+	 * @param serverCustomizers the customizers to add
 	 */
-	public void addContextCustomizers(NettyServerCustomizer... nettyServerCustomizer) {
-		Assert.notNull(nettyServerCustomizer,
-				"NettyWebServerCustomizer must not be null");
-		this.nettyServerCustomizers.addAll(Arrays.asList(nettyServerCustomizer));
+	public void addServerCustomizers(NettyServerCustomizer... serverCustomizers) {
+		Assert.notNull(serverCustomizers, "ServerCustomizer must not be null");
+		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
+	}
+
+	/**
+	 * Set the maximum amount of time that should be waited when starting or stopping the
+	 * server.
+	 * @param lifecycleTimeout the lifecycle timeout
+	 */
+	public void setLifecycleTimeout(Duration lifecycleTimeout) {
+		this.lifecycleTimeout = lifecycleTimeout;
 	}
 
 	private HttpServer createHttpServer() {
@@ -94,6 +105,11 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 				SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(
 						getSsl(), getSslStoreProvider());
 				sslServerCustomizer.customize(options);
+			}
+			if (getCompression() != null && getCompression().getEnabled()) {
+				CompressionCustomizer compressionCustomizer = new CompressionCustomizer(
+						getCompression());
+				compressionCustomizer.customize(options);
 			}
 			applyCustomizers(options);
 		}).build();
@@ -107,8 +123,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private void applyCustomizers(Builder options) {
-		this.nettyServerCustomizers
-				.forEach((customizer) -> customizer.customize(options));
+		this.serverCustomizers.forEach((customizer) -> customizer.customize(options));
 	}
 
 }

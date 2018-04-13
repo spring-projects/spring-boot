@@ -19,8 +19,8 @@ package org.springframework.boot.diagnostics.analyzer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -118,21 +118,16 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void cycleWithAnUnknownStartIsNotAnalyzed() throws IOException {
+	public void cycleWithAnUnknownStartIsNotAnalyzed() {
 		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test")))
 				.isNull();
 	}
 
 	private List<String> readDescriptionLines(FailureAnalysis analysis)
 			throws IOException {
-		try (BufferedReader lineReader = new BufferedReader(
+		try (BufferedReader reader = new BufferedReader(
 				new StringReader(analysis.getDescription()))) {
-			List<String> lines = new ArrayList<>();
-			String line;
-			while ((line = lineReader.readLine()) != null) {
-				lines.add(line);
-			}
-			return lines;
+			return reader.lines().collect(Collectors.toList());
 		}
 	}
 

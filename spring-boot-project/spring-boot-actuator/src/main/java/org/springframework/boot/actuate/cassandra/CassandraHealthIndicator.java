@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,32 +37,31 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	private CassandraOperations cassandraOperations;
 
+	public CassandraHealthIndicator() {
+		super("Cassandra health check failed");
+	}
+
 	/**
 	 * Create a new {@link CassandraHealthIndicator} instance.
 	 * @param cassandraOperations the Cassandra operations
 	 */
 	public CassandraHealthIndicator(CassandraOperations cassandraOperations) {
+		super("Cassandra health check failed");
 		Assert.notNull(cassandraOperations, "CassandraOperations must not be null");
 		this.cassandraOperations = cassandraOperations;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		try {
-			Select select = QueryBuilder.select("release_version").from("system",
-					"local");
-			ResultSet results = this.cassandraOperations.getCqlOperations()
-					.queryForResultSet(select);
-			if (results.isExhausted()) {
-				builder.up();
-				return;
-			}
-			String version = results.one().getString(0);
-			builder.up().withDetail("version", version);
+		Select select = QueryBuilder.select("release_version").from("system", "local");
+		ResultSet results = this.cassandraOperations.getCqlOperations()
+				.queryForResultSet(select);
+		if (results.isExhausted()) {
+			builder.up();
+			return;
 		}
-		catch (Exception ex) {
-			builder.down(ex);
-		}
+		String version = results.one().getString(0);
+		builder.up().withDetail("version", version);
 	}
 
 }

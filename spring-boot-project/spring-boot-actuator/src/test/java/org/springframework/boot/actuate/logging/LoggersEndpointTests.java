@@ -45,7 +45,7 @@ public class LoggersEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void loggersShouldReturnLoggerConfigurations() throws Exception {
+	public void loggersShouldReturnLoggerConfigurations() {
 		given(this.loggingSystem.getLoggerConfigurations()).willReturn(Collections
 				.singletonList(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG)));
 		given(this.loggingSystem.getSupportedLogLevels())
@@ -62,7 +62,7 @@ public class LoggersEndpointTests {
 	}
 
 	@Test
-	public void loggerLevelsWhenNameSpecifiedShouldReturnLevels() throws Exception {
+	public void loggerLevelsWhenNameSpecifiedShouldReturnLevels() {
 		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
 				.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
 		LoggerLevels levels = new LoggersEndpoint(this.loggingSystem)
@@ -72,7 +72,7 @@ public class LoggersEndpointTests {
 	}
 
 	@Test
-	public void configureLogLevelShouldSetLevelOnLoggingSystem() throws Exception {
+	public void configureLogLevelShouldSetLevelOnLoggingSystem() {
 		new LoggersEndpoint(this.loggingSystem).configureLogLevel("ROOT", LogLevel.DEBUG);
 		verify(this.loggingSystem).setLogLevel("ROOT", LogLevel.DEBUG);
 	}

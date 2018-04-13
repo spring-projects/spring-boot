@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.test.context.runner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.assertj.ApplicationContextAssert;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.core.ResolvableType;
@@ -94,9 +96,11 @@ import org.springframework.util.Assert;
  * @see ReactiveWebApplicationContextRunner
  * @see ApplicationContextAssert
  */
-abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
+public abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	private final Supplier<C> contextFactory;
+
+	private final List<ApplicationContextInitializer<C>> initializers;
 
 	private final TestPropertyValues environmentProperties;
 
@@ -113,13 +117,14 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @param contextFactory the factory used to create the actual context
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
-		this(contextFactory, TestPropertyValues.empty(), TestPropertyValues.empty(), null,
-				null, Collections.emptyList());
+		this(contextFactory, Collections.emptyList(), TestPropertyValues.empty(),
+				TestPropertyValues.empty(), null, null, Collections.emptyList());
 	}
 
 	/**
 	 * Create a new {@link AbstractApplicationContextRunner} instance.
 	 * @param contextFactory the factory used to create the actual context
+	 * @param initializers the initializers
 	 * @param environmentProperties the environment properties
 	 * @param systemProperties the system properties
 	 * @param classLoader the class loader
@@ -127,6 +132,7 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @param configurations the configuration
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
+			List<ApplicationContextInitializer<C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
@@ -134,12 +140,27 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 		Assert.notNull(environmentProperties, "EnvironmentProperties must not be null");
 		Assert.notNull(systemProperties, "SystemProperties must not be null");
 		Assert.notNull(configurations, "Configurations must not be null");
+		Assert.notNull(initializers, "Initializers must not be null");
 		this.contextFactory = contextFactory;
+		this.initializers = Collections.unmodifiableList(initializers);
 		this.environmentProperties = environmentProperties;
 		this.systemProperties = systemProperties;
 		this.classLoader = classLoader;
 		this.parent = parent;
 		this.configurations = Collections.unmodifiableList(configurations);
+	}
+
+	/**
+	 * Add a {@link ApplicationContextInitializer} to be called when the context is
+	 * created.
+	 * @param initializer the initializer to add
+	 * @return a new instance with the updated initializers
+	 */
+	public SELF withInitializer(ApplicationContextInitializer<C> initializer) {
+		Assert.notNull(initializer, "Initializer must not be null");
+		return newInstance(this.contextFactory, add(this.initializers, initializer),
+				this.environmentProperties, this.systemProperties, this.classLoader,
+				this.parent, this.configurations);
 	}
 
 	/**
@@ -153,9 +174,9 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withPropertyValues(String... pairs) {
-		return newInstance(this.contextFactory, this.environmentProperties.and(pairs),
-				this.systemProperties, this.classLoader, this.parent,
-				this.configurations);
+		return newInstance(this.contextFactory, this.initializers,
+				this.environmentProperties.and(pairs), this.systemProperties,
+				this.classLoader, this.parent, this.configurations);
 	}
 
 	/**
@@ -169,9 +190,9 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withSystemProperties(String... pairs) {
-		return newInstance(this.contextFactory, this.environmentProperties,
-				this.systemProperties.and(pairs), this.classLoader, this.parent,
-				this.configurations);
+		return newInstance(this.contextFactory, this.initializers,
+				this.environmentProperties, this.systemProperties.and(pairs),
+				this.classLoader, this.parent, this.configurations);
 	}
 
 	/**
@@ -183,8 +204,9 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @see FilteredClassLoader
 	 */
 	public SELF withClassLoader(ClassLoader classLoader) {
-		return newInstance(this.contextFactory, this.environmentProperties,
-				this.systemProperties, classLoader, this.parent, this.configurations);
+		return newInstance(this.contextFactory, this.initializers,
+				this.environmentProperties, this.systemProperties, classLoader,
+				this.parent, this.configurations);
 	}
 
 	/**
@@ -194,8 +216,9 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 * @return a new instance with the updated parent
 	 */
 	public SELF withParent(ApplicationContext parent) {
-		return newInstance(this.contextFactory, this.environmentProperties,
-				this.systemProperties, this.classLoader, parent, this.configurations);
+		return newInstance(this.contextFactory, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader,
+				parent, this.configurations);
 	}
 
 	/**
@@ -215,9 +238,19 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	 */
 	public SELF withConfiguration(Configurations configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
-		return newInstance(this.contextFactory, this.environmentProperties,
-				this.systemProperties, this.classLoader, this.parent,
-				add(this.configurations, configurations));
+		return newInstance(this.contextFactory, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader,
+				this.parent, add(this.configurations, configurations));
+	}
+
+	/**
+	 * Apply customization to this runner.
+	 * @param customizer the customizer to call
+	 * @return a new instance with the customizations applied
+	 */
+	@SuppressWarnings("unchecked")
+	public SELF with(Function<SELF, SELF> customizer) {
+		return customizer.apply((SELF) this);
 	}
 
 	private <T> List<T> add(List<T> list, T element) {
@@ -227,6 +260,7 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 	}
 
 	protected abstract SELF newInstance(Supplier<C> contextFactory,
+			List<ApplicationContextInitializer<C>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations);
@@ -284,6 +318,7 @@ abstract class AbstractApplicationContextRunner<SELF extends AbstractApplication
 		if (classes.length > 0) {
 			((AnnotationConfigRegistry) context).register(classes);
 		}
+		this.initializers.forEach((initializer) -> initializer.initialize(context));
 		context.refresh();
 	}
 

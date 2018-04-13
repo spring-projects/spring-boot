@@ -127,14 +127,14 @@ public class CommandRunnerTests {
 	}
 
 	@Test
-	public void handlesSuccess() throws Exception {
+	public void handlesSuccess() {
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status).isEqualTo(0);
 		assertThat(this.calls).isEmpty();
 	}
 
 	@Test
-	public void handlesNoSuchCommand() throws Exception {
+	public void handlesNoSuchCommand() {
 		int status = this.commandRunner.runAndHandleErrors("missing");
 		assertThat(status).isEqualTo(1);
 		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE);
@@ -175,7 +175,7 @@ public class CommandRunnerTests {
 	}
 
 	@Test
-	public void exceptionMessages() throws Exception {
+	public void exceptionMessages() {
 		assertThat(new NoSuchCommandException("name").getMessage())
 				.isEqualTo("'name' is not a valid command. See 'help'.");
 	}

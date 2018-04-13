@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -25,7 +26,9 @@ import reactor.ipc.netty.http.server.HttpServerOptions;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -45,7 +48,7 @@ public class NettyReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void portInUseExceptionIsThrownWhenPortIsAlreadyInUse() throws Exception {
+	public void portInUseExceptionIsThrownWhenPortIsAlreadyInUse() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setPort(0);
 		this.webServer = factory.getWebServer(new EchoHandler());
@@ -58,18 +61,30 @@ public class NettyReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void nettyCustomizers() throws Exception {
+	public void nettyCustomizers() {
 		NettyReactiveWebServerFactory factory = getFactory();
 		NettyServerCustomizer[] customizers = new NettyServerCustomizer[2];
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(NettyServerCustomizer.class);
 		}
-		factory.setNettyServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		this.webServer = factory.getWebServer(new EchoHandler());
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (NettyServerCustomizer customizer : customizers) {
 			ordered.verify(customizer).customize(any(HttpServerOptions.Builder.class));
 		}
+	}
+
+	@Test
+	public void customStartupTimeout() {
+		Duration timeout = Duration.ofDays(365);
+		NettyReactiveWebServerFactory factory = getFactory();
+		factory.setLifecycleTimeout(timeout);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		Object context = ReflectionTestUtils.getField(this.webServer, "nettyContext");
+		Object actualTimeout = ReflectionTestUtils.getField(context, "lifecycleTimeout");
+		assertThat(actualTimeout).isEqualTo(timeout);
 	}
 
 }

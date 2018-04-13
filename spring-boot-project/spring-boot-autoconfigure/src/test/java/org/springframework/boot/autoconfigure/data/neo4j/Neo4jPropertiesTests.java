@@ -172,7 +172,7 @@ public class Neo4jPropertiesTests {
 		}
 	}
 
-	public Neo4jProperties load(final boolean embeddedAvailable, String... environment) {
+	public Neo4jProperties load(boolean embeddedAvailable, String... environment) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.setClassLoader(new URLClassLoader(new URL[0], getClass().getClassLoader()) {
 

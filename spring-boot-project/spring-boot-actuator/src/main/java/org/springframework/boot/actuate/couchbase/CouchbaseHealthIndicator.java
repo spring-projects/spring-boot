@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.actuate.couchbase;
 
-import java.util.List;
-
-import com.couchbase.client.java.util.features.Version;
+import com.couchbase.client.java.bucket.BucketInfo;
+import com.couchbase.client.java.cluster.ClusterInfo;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -31,23 +30,31 @@ import org.springframework.util.StringUtils;
  * {@link HealthIndicator} for Couchbase.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
-	private CouchbaseOperations couchbaseOperations;
+	private CouchbaseOperations operations;
+
+	public CouchbaseHealthIndicator() {
+		super("Couchbase health check failed");
+	}
 
 	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
+		super("Couchbase health check failed");
 		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
-		this.couchbaseOperations = couchbaseOperations;
+		this.operations = couchbaseOperations;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		List<Version> versions = this.couchbaseOperations.getCouchbaseClusterInfo()
-				.getAllVersions();
-		builder.up().withDetail("versions",
-				StringUtils.collectionToCommaDelimitedString(versions));
+		ClusterInfo cluster = this.operations.getCouchbaseClusterInfo();
+		BucketInfo bucket = this.operations.getCouchbaseBucket().bucketManager().info();
+		String versions = StringUtils
+				.collectionToCommaDelimitedString(cluster.getAllVersions());
+		String nodes = StringUtils.collectionToCommaDelimitedString(bucket.nodeList());
+		builder.up().withDetail("versions", versions).withDetail("nodes", nodes);
 	}
 
 }

@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -50,6 +51,7 @@ public @interface TestComponent {
 	 * a Spring bean in case of an auto-detected component.
 	 * @return the specified bean name, if any
 	 */
+	@AliasFor(annotation = Component.class)
 	String value() default "";
 
 }

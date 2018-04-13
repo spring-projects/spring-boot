@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,16 +44,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 public class ScheduledTasksEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+		extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void scheduledTasks() throws Exception {
 		this.mockMvc.perform(get("/actuator/scheduledtasks")).andExpect(status().isOk())
 				.andDo(document("scheduled-tasks",
-						preprocessResponse(replacePattern(
-								Pattern.compile(
-										"org.*\\.ScheduledTasksEndpointDocumentationTests\\$"
-												+ "TestConfiguration"),
+						preprocessResponse(replacePattern(Pattern.compile(
+								"org.*\\.ScheduledTasksEndpointDocumentationTests\\$"
+										+ "TestConfiguration"),
 								"com.example.Processor")),
 						responseFields(
 								fieldWithPath("cron").description("Cron tasks, if any."),

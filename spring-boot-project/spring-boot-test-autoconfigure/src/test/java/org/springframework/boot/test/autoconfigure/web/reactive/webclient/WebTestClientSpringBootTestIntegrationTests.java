@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class WebTestClientSpringBootTestIntegrationTests {
 	}
 
 	@Test
-	public void shouldHaveRealService() throws Exception {
+	public void shouldHaveRealService() {
 		assertThat(this.applicationContext.getBeansOfType(ExampleRealService.class))
 				.hasSize(1);
 	}
@@ -73,10 +73,8 @@ public class WebTestClientSpringBootTestIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http)
-				throws Exception {
-			http.authorizeExchange().anyExchange().permitAll();
-			return http.build();
+		public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+			return http.authorizeExchange().anyExchange().permitAll().and().build();
 		}
 
 	}

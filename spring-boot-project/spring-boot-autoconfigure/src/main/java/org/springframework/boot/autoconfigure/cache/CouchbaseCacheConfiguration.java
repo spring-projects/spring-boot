@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,16 @@ import com.couchbase.client.java.Bucket;
 import com.couchbase.client.spring.cache.CacheBuilder;
 import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 
+import org.springframework.boot.autoconfigure.cache.CacheProperties.Couchbase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * Couchbase cache configuration.
@@ -61,11 +64,10 @@ public class CouchbaseCacheConfiguration {
 	public CouchbaseCacheManager cacheManager() {
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		CacheBuilder builder = CacheBuilder.newInstance(this.bucket);
-		Duration expiration = this.cacheProperties.getCouchbase().getExpiration();
-		if (expiration != null) {
-			builder = builder.withExpiration((int) expiration.getSeconds());
-		}
-		String[] names = cacheNames.toArray(new String[cacheNames.size()]);
+		Couchbase couchbase = this.cacheProperties.getCouchbase();
+		PropertyMapper.get().from(couchbase::getExpiration).whenNonNull()
+				.asInt(Duration::getSeconds).to(builder::withExpiration);
+		String[] names = StringUtils.toStringArray(cacheNames);
 		CouchbaseCacheManager cacheManager = new CouchbaseCacheManager(builder, names);
 		return this.customizers.customize(cacheManager);
 	}

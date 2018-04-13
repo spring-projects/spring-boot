@@ -37,14 +37,14 @@ public class MapConfigurationPropertySourceTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenMapIsNullShouldThrowException() throws Exception {
+	public void createWhenMapIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Map must not be null");
 		new MapConfigurationPropertySource(null);
 	}
 
 	@Test
-	public void createWhenMapHasEntriesShouldAdaptMap() throws Exception {
+	public void createWhenMapHasEntriesShouldAdaptMap() {
 		Map<Object, Object> map = new LinkedHashMap<>();
 		map.put("foo.BAR", "spring");
 		map.put(ConfigurationPropertyName.of("foo.baz"), "boot");
@@ -54,7 +54,7 @@ public class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void putAllWhenMapIsNullShouldThrowException() throws Exception {
+	public void putAllWhenMapIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Map must not be null");
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
@@ -62,7 +62,7 @@ public class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void putAllShouldPutEntries() throws Exception {
+	public void putAllShouldPutEntries() {
 		Map<Object, Object> map = new LinkedHashMap<>();
 		map.put("foo.BAR", "spring");
 		map.put("foo.baz", "boot");
@@ -73,14 +73,14 @@ public class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void putShouldPutEntry() throws Exception {
+	public void putShouldPutEntry() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.bar", "baz");
 		assertThat(getValue(source, "foo.bar")).isEqualTo("baz");
 	}
 
 	@Test
-	public void getConfigurationPropertyShouldGetFromMemory() throws Exception {
+	public void getConfigurationPropertyShouldGetFromMemory() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.bar", "baz");
 		assertThat(getValue(source, "foo.bar")).isEqualTo("baz");
@@ -89,7 +89,7 @@ public class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void iteratorShouldGetFromMemory() throws Exception {
+	public void iteratorShouldGetFromMemory() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
@@ -99,7 +99,7 @@ public class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void streamShouldGetFromMemory() throws Exception {
+	public void streamShouldGetFromMemory() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");

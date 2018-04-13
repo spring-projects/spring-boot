@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ThreadDumpEndpointTests {
 
 	@Test
-	public void dumpThreads() throws Exception {
+	public void dumpThreads() {
 		assertThat(new ThreadDumpEndpoint().threadDump().getThreads().size())
 				.isGreaterThan(0);
 	}

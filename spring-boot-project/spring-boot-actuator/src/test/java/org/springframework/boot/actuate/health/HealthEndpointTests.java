@@ -41,7 +41,7 @@ public class HealthEndpointTests {
 		healthIndicators.put("upAgain", () -> new Health.Builder().status(Status.UP)
 				.withDetail("second", "2").build());
 		HealthEndpoint endpoint = new HealthEndpoint(
-				createHealthIndicator(healthIndicators), true);
+				createHealthIndicator(healthIndicators));
 		Health health = endpoint.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsOnlyKeys("up", "upAgain");
@@ -49,20 +49,6 @@ public class HealthEndpointTests {
 		assertThat(upHealth.getDetails()).containsOnly(entry("first", "1"));
 		Health upAgainHealth = (Health) health.getDetails().get("upAgain");
 		assertThat(upAgainHealth.getDetails()).containsOnly(entry("second", "2"));
-	}
-
-	@Test
-	public void onlyStatusIsExposed() {
-		Map<String, HealthIndicator> healthIndicators = new HashMap<>();
-		healthIndicators.put("up", () -> new Health.Builder().status(Status.UP)
-				.withDetail("first", "1").build());
-		healthIndicators.put("upAgain", () -> new Health.Builder().status(Status.UP)
-				.withDetail("second", "2").build());
-		HealthEndpoint endpoint = new HealthEndpoint(
-				createHealthIndicator(healthIndicators), false);
-		Health health = endpoint.health();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).isEmpty();
 	}
 
 	private HealthIndicator createHealthIndicator(

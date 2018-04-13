@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package org.springframework.boot.context;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,50 +38,67 @@ public class ContextIdApplicationContextInitializerTests {
 
 	private final ContextIdApplicationContextInitializer initializer = new ContextIdApplicationContextInitializer();
 
+	private List<ConfigurableApplicationContext> contexts = new ArrayList<>();
+
+	@After
+	public void closeContexts() {
+		Collections.reverse(this.contexts);
+		this.contexts.forEach(ConfigurableApplicationContext::close);
+	}
+
 	@Test
-	public void testDefaults() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		this.initializer.initialize(context);
+	public void singleContextWithDefaultName() {
+		ConfigurableApplicationContext context = createContext(null);
 		assertThat(context.getId()).isEqualTo("application");
 	}
 
 	@Test
-	public void testNameAndPort() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
-				"spring.application.name=foo", "PORT=8080");
-		this.initializer.initialize(context);
-		assertThat(context.getId()).isEqualTo("foo:8080");
+	public void singleContextWithCustomName() {
+		ConfigurableApplicationContext context = createContext(null,
+				"spring.application.name=test");
+		assertThat(context.getId()).isEqualTo("test");
 	}
 
 	@Test
-	public void testNameAndProfiles() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
-				"spring.application.name=foo", "spring.profiles.active=spam,bar",
-				"spring.application.index=12");
-		this.initializer.initialize(context);
-		assertThat(context.getId()).isEqualTo("foo:spam,bar:12");
+	public void linearHierarchy() {
+		ConfigurableApplicationContext grandparent = createContext(null);
+		ConfigurableApplicationContext parent = createContext(grandparent);
+		ConfigurableApplicationContext child = createContext(parent);
+		assertThat(child.getId()).isEqualTo("application-1-1");
 	}
 
 	@Test
-	public void testCloudFoundry() {
-		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
-				"spring.config.name=foo", "PORT=8080", "vcap.application.name=bar",
-				"vcap.application.instance_index=2");
-		this.initializer.initialize(context);
-		assertThat(context.getId()).isEqualTo("bar:2");
+	public void complexHierarchy() {
+		ConfigurableApplicationContext grandparent = createContext(null);
+		ConfigurableApplicationContext parent1 = createContext(grandparent);
+		ConfigurableApplicationContext parent2 = createContext(grandparent);
+		ConfigurableApplicationContext child1_1 = createContext(parent1);
+		assertThat(child1_1.getId()).isEqualTo("application-1-1");
+		ConfigurableApplicationContext child1_2 = createContext(parent1);
+		assertThat(child1_2.getId()).isEqualTo("application-1-2");
+		ConfigurableApplicationContext child2_1 = createContext(parent2);
+		assertThat(child2_1.getId()).isEqualTo("application-2-1");
 	}
 
 	@Test
-	public void testExplicitNameIsChosenInFavorOfCloudFoundry() {
+	public void contextWithParentWithNoContextIdFallsBackToDefaultId() {
+		ConfigurableApplicationContext parent = new AnnotationConfigApplicationContext();
+		this.contexts.add(parent);
+		parent.refresh();
+		assertThat(createContext(parent).getId()).isEqualTo("application");
+	}
+
+	private ConfigurableApplicationContext createContext(
+			ConfigurableApplicationContext parent, String... properties) {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
-				"spring.application.name=spam", "spring.config.name=foo", "PORT=8080",
-				"vcap.application.name=bar", "vcap.application.instance_index=2");
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, properties);
+		if (parent != null) {
+			context.setParent(parent);
+		}
 		this.initializer.initialize(context);
-		assertThat(context.getId()).isEqualTo("spam:2");
+		context.refresh();
+		this.contexts.add(context);
+		return context;
 	}
 
 }

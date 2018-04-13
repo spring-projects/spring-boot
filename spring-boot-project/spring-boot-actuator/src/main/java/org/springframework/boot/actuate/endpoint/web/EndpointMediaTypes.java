@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,15 +41,14 @@ public class EndpointMediaTypes {
 	 * @param consumed the default media types that are consumed by an endpoint. Must not
 	 */
 	public EndpointMediaTypes(List<String> produced, List<String> consumed) {
-		Assert.notNull(produced, () -> "Produced must not be null");
-		Assert.notNull(consumed, () -> "Consumed must not be null");
+		Assert.notNull(produced, "Produced must not be null");
+		Assert.notNull(consumed, "Consumed must not be null");
 		this.produced = Collections.unmodifiableList(produced);
 		this.consumed = Collections.unmodifiableList(consumed);
 	}
 
 	/**
 	 * Returns the media types produced by an endpoint.
-	 *
 	 * @return the produced media types
 	 */
 	public List<String> getProduced() {
@@ -58,7 +57,6 @@ public class EndpointMediaTypes {
 
 	/**
 	 * Returns the media types consumed by an endpoint.
-	 *
 	 * @return the consumed media types
 	 */
 	public List<String> getConsumed() {

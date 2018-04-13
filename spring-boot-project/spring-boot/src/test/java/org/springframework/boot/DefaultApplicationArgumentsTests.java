@@ -40,27 +40,27 @@ public class DefaultApplicationArgumentsTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void argumentsMustNotBeNull() throws Exception {
+	public void argumentsMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Args must not be null");
 		new DefaultApplicationArguments(null);
 	}
 
 	@Test
-	public void getArgs() throws Exception {
+	public void getArgs() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
 		assertThat(arguments.getSourceArgs()).isEqualTo(ARGS);
 	}
 
 	@Test
-	public void optionNames() throws Exception {
+	public void optionNames() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
 		Set<String> expected = new HashSet<>(Arrays.asList("foo", "debug"));
 		assertThat(arguments.getOptionNames()).isEqualTo(expected);
 	}
 
 	@Test
-	public void containsOption() throws Exception {
+	public void containsOption() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
 		assertThat(arguments.containsOption("foo")).isTrue();
 		assertThat(arguments.containsOption("debug")).isTrue();
@@ -68,7 +68,7 @@ public class DefaultApplicationArgumentsTests {
 	}
 
 	@Test
-	public void getOptionValues() throws Exception {
+	public void getOptionValues() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
 		assertThat(arguments.getOptionValues("foo"))
 				.isEqualTo(Arrays.asList("bar", "baz"));
@@ -77,13 +77,13 @@ public class DefaultApplicationArgumentsTests {
 	}
 
 	@Test
-	public void getNonOptionArgs() throws Exception {
+	public void getNonOptionArgs() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
 		assertThat(arguments.getNonOptionArgs()).containsExactly("spring", "boot");
 	}
 
 	@Test
-	public void getNoNonOptionArgs() throws Exception {
+	public void getNoNonOptionArgs() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(
 				new String[] { "--debug" });
 		assertThat(arguments.getNonOptionArgs()).isEmpty();

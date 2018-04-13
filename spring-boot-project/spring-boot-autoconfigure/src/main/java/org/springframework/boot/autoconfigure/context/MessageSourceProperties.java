@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ package org.springframework.boot.autoconfigure.context;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
+import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Configuration properties for Message Source.
@@ -30,9 +33,10 @@ import java.time.Duration;
 public class MessageSourceProperties {
 
 	/**
-	 * Comma-separated list of basenames, each following the ResourceBundle convention.
-	 * Essentially a fully-qualified classpath location. If it doesn't contain a package
-	 * qualifier (such as "org.mypackage"), it will be resolved from the classpath root.
+	 * Comma-separated list of basenames (essentially a fully-qualified classpath
+	 * location), each following the ResourceBundle convention with relaxed support for
+	 * slash based locations. If it doesn't contain a package qualifier (such as
+	 * "org.mypackage"), it will be resolved from the classpath root.
 	 */
 	private String basename = "messages";
 
@@ -42,9 +46,10 @@ public class MessageSourceProperties {
 	private Charset encoding = StandardCharsets.UTF_8;
 
 	/**
-	 * Loaded resource bundle files cache expiration, in seconds. When not set, bundles
-	 * are cached forever.
+	 * Loaded resource bundle files cache duration. When not set, bundles are cached
+	 * forever. If a duration suffix is not specified, seconds will be used.
 	 */
+	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration cacheDuration;
 
 	/**
@@ -110,7 +115,7 @@ public class MessageSourceProperties {
 		return this.useCodeAsDefaultMessage;
 	}
 
-	public void setUseCodeAsDefaultMessage(final boolean useCodeAsDefaultMessage) {
+	public void setUseCodeAsDefaultMessage(boolean useCodeAsDefaultMessage) {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
 	}
 

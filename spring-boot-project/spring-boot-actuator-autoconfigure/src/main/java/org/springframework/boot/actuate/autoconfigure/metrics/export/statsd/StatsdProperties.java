@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.metrics.export.statsd")
+@ConfigurationProperties(prefix = "management.metrics.export.statsd")
 public class StatsdProperties {
 
 	/**
-	 * Export metrics to StatsD.
+	 * Whether exporting of metrics to StatsD is enabled.
 	 */
-	private Boolean enabled;
+	private boolean enabled = true;
 
 	/**
 	 * StatsD line protocol to use.
 	 */
-	private StatsdFlavor flavor = StatsdFlavor.Datadog;
+	private StatsdFlavor flavor = StatsdFlavor.DATADOG;
 
 	/**
 	 * Host of the StatsD server to receive exported metrics.
@@ -58,8 +58,9 @@ public class StatsdProperties {
 	private Integer maxPacketLength = 1400;
 
 	/**
-	 * How often gauges will be polled. When a gauge is polled, its value is
-	 * recalculated and if the value has changed, it is sent to the StatsD server.
+	 * How often gauges will be polled. When a gauge is polled, its value is recalculated
+	 * and if the value has changed (or publishUnchangedMeters is true), it is sent to the
+	 * StatsD server.
 	 */
 	private Duration pollingFrequency = Duration.ofSeconds(10);
 
@@ -68,11 +69,16 @@ public class StatsdProperties {
 	 */
 	private Integer queueSize = Integer.MAX_VALUE;
 
-	public Boolean getEnabled() {
+	/**
+	 * Whether to send unchanged meters to the StatsD server.
+	 */
+	private boolean publishUnchangedMeters = true;
+
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -122,6 +128,14 @@ public class StatsdProperties {
 
 	public void setQueueSize(Integer queueSize) {
 		this.queueSize = queueSize;
+	}
+
+	public boolean isPublishUnchangedMeters() {
+		return this.publishUnchangedMeters;
+	}
+
+	public void setPublishUnchangedMeters(boolean publishUnchangedMeters) {
+		this.publishUnchangedMeters = publishUnchangedMeters;
 	}
 
 }

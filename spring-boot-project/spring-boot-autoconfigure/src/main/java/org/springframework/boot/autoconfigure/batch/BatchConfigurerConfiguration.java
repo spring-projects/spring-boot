@@ -39,6 +39,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 class BatchConfigurerConfiguration {
 
+	@Configuration
 	@ConditionalOnMissingBean(name = "entityManagerFactory")
 	static class JdbcBatchConfiguration {
 
@@ -52,6 +53,7 @@ class BatchConfigurerConfiguration {
 
 	}
 
+	@Configuration
 	@ConditionalOnClass(name = "javax.persistence.EntityManagerFactory")
 	@ConditionalOnBean(name = "entityManagerFactory")
 	static class JpaBatchConfiguration {

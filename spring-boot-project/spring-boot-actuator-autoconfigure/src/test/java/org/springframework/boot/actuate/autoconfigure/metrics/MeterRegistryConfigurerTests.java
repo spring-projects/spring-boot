@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,133 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.context.annotation.UserConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.MeterRegistry.Config;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.core.instrument.config.MeterFilter;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 
 /**
- * Tests for applying {@link MeterRegistryConfigurer MeterRegistryConfigurers}.
+ * Tests for {@link MeterRegistryConfigurer}.
  *
- * @author Jon Schneider
+ * @author Phillip Webb
  * @author Andy Wilkinson
  */
 public class MeterRegistryConfigurerTests {
 
-	@Test
-	public void commonTagsAreAppliedToAutoConfiguredBinders() {
-		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withConfiguration(
-						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
-				.withPropertyValues("metrics.use-global-registry=false")
-				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
-						.find("jvm.memory.used").tags("region", "us-east-1").gauge())
-								.isPresent());
+	private List<MeterBinder> binders = new ArrayList<>();
+
+	private List<MeterFilter> filters = new ArrayList<>();
+
+	private List<MeterRegistryCustomizer<?>> customizers = new ArrayList<>();
+
+	@Mock
+	private MeterBinder mockBinder;
+
+	@Mock
+	private MeterFilter mockFilter;
+
+	@Mock
+	private MeterRegistryCustomizer<MeterRegistry> mockCustomizer;
+
+	@Mock
+	private MeterRegistry mockRegistry;
+
+	@Mock
+	private Config mockConfig;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 	}
 
-	static class MeterRegistryConfigurerConfiguration {
+	@Test
+	public void configureWhenCompositeShouldApplyCustomizer() {
+		this.customizers.add(this.mockCustomizer);
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		configurer.configure(composite);
+		verify(this.mockCustomizer).customize(composite);
+	}
 
-		@Bean
-		public MeterRegistryConfigurer registryConfigurer() {
-			return (registry) -> registry.config().commonTags("region", "us-east-1");
+	@Test
+	public void configureShouldApplyCustomizer() {
+		this.customizers.add(this.mockCustomizer);
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
+		verify(this.mockCustomizer).customize(this.mockRegistry);
+	}
+
+	@Test
+	public void configureShouldApplyFilter() {
+		this.filters.add(this.mockFilter);
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
+		verify(this.mockConfig).meterFilter(this.mockFilter);
+	}
+
+	@Test
+	public void configureShouldApplyBinder() {
+		this.binders.add(this.mockBinder);
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
+		verify(this.mockBinder).bindTo(this.mockRegistry);
+	}
+
+	@Test
+	public void configureShouldBeCalledInOrderCustomizerFilterBinder() {
+		this.customizers.add(this.mockCustomizer);
+		this.filters.add(this.mockFilter);
+		this.binders.add(this.mockBinder);
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
+		InOrder ordered = inOrder(this.mockBinder, this.mockConfig, this.mockCustomizer);
+		ordered.verify(this.mockCustomizer).customize(this.mockRegistry);
+		ordered.verify(this.mockConfig).meterFilter(this.mockFilter);
+		ordered.verify(this.mockBinder).bindTo(this.mockRegistry);
+	}
+
+	@Test
+	public void configureWhenAddToGlobalRegistryShouldAddToGlobalRegistry() {
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, true);
+		try {
+			configurer.configure(this.mockRegistry);
+			assertThat(Metrics.globalRegistry.getRegistries())
+					.contains(this.mockRegistry);
 		}
+		finally {
+			Metrics.removeRegistry(this.mockRegistry);
+		}
+	}
 
+	@Test
+	public void configureWhenNotAddToGlobalRegistryShouldAddToGlobalRegistry() {
+		MeterRegistryConfigurer configurer = new MeterRegistryConfigurer(this.binders,
+				this.filters, this.customizers, false);
+		configurer.configure(this.mockRegistry);
+		assertThat(Metrics.globalRegistry.getRegistries())
+				.doesNotContain(this.mockRegistry);
 	}
 
 }

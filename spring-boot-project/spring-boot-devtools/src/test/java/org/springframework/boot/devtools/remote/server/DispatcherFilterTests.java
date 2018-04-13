@@ -70,13 +70,13 @@ public class DispatcherFilterTests {
 	private DispatcherFilter filter;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.filter = new DispatcherFilter(this.dispatcher);
 	}
 
 	@Test
-	public void dispatcherMustNotBeNull() throws Exception {
+	public void dispatcherMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Dispatcher must not be null");
 		new DispatcherFilter(null);

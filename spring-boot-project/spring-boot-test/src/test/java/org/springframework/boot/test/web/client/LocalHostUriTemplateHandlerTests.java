@@ -51,7 +51,7 @@ public class LocalHostUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void getRootUriShouldUseLocalServerPort() throws Exception {
+	public void getRootUriShouldUseLocalServerPort() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "1234");
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
@@ -60,7 +60,7 @@ public class LocalHostUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void getRootUriWhenLocalServerPortMissingShouldUsePort8080() throws Exception {
+	public void getRootUriWhenLocalServerPortMissingShouldUsePort8080() {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
 				environment);
@@ -76,7 +76,7 @@ public class LocalHostUriTemplateHandlerTests {
 	}
 
 	@Test
-	public void getRootUriShouldUseContextPath() throws Exception {
+	public void getRootUriShouldUseContextPath() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("server.servlet.context-path", "/foo");
 		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(

@@ -43,8 +43,7 @@ public class ShutdownEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("management.endpoint.shutdown.enabled:false")
 				.run((context) -> assertThat(context)

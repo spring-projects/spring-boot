@@ -68,7 +68,7 @@ public class FolderSnapshotTests {
 	}
 
 	@Test
-	public void equalsWhenNothingHasChanged() throws Exception {
+	public void equalsWhenNothingHasChanged() {
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
 		assertThat(this.initialSnapshot).isEqualTo(updatedSnapshot);
 		assertThat(this.initialSnapshot.hashCode()).isEqualTo(updatedSnapshot.hashCode());
@@ -82,7 +82,7 @@ public class FolderSnapshotTests {
 	}
 
 	@Test
-	public void notEqualsWhenAFileIsDeleted() throws Exception {
+	public void notEqualsWhenAFileIsDeleted() {
 		new File(new File(this.folder, "folder1"), "file1").delete();
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
 		assertThat(this.initialSnapshot).isNotEqualTo(updatedSnapshot);
@@ -97,7 +97,7 @@ public class FolderSnapshotTests {
 	}
 
 	@Test
-	public void getChangedFilesSnapshotMustNotBeNull() throws Exception {
+	public void getChangedFilesSnapshotMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Snapshot must not be null");
 		this.initialSnapshot.getChangedFiles(null, null);
@@ -112,7 +112,7 @@ public class FolderSnapshotTests {
 	}
 
 	@Test
-	public void getChangedFilesWhenNothingHasChanged() throws Exception {
+	public void getChangedFilesWhenNothingHasChanged() {
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
 		this.initialSnapshot.getChangedFiles(updatedSnapshot, null);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class DevToolsProperties {
 	private Livereload livereload = new Livereload();
 
 	@NestedConfigurationProperty
-	private RemoteDevToolsProperties remote = new RemoteDevToolsProperties();
+	private final RemoteDevToolsProperties remote = new RemoteDevToolsProperties();
 
 	public Restart getRestart() {
 		return this.restart;
@@ -95,8 +95,8 @@ public class DevToolsProperties {
 		private Duration quietPeriod = Duration.ofMillis(400);
 
 		/**
-		 * Name of a specific file that when changed will trigger the restart check. If
-		 * not specified any classpath file change will trigger the restart.
+		 * Name of a specific file that, when changed, triggers the restart check. If not
+		 * specified, any classpath file change triggers the restart.
 		 */
 		private String triggerFile;
 
@@ -104,6 +104,11 @@ public class DevToolsProperties {
 		 * Additional paths to watch for changes.
 		 */
 		private List<File> additionalPaths = new ArrayList<>();
+
+		/**
+		 * Whether to log the condition evaluation delta upon restart.
+		 */
+		private boolean logConditionEvaluationDelta = true;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -130,7 +135,7 @@ public class DevToolsProperties {
 				allExclude.addAll(
 						StringUtils.commaDelimitedListToSet(this.additionalExclude));
 			}
-			return allExclude.toArray(new String[allExclude.size()]);
+			return StringUtils.toStringArray(allExclude);
 		}
 
 		public String getExclude() {
@@ -179,6 +184,14 @@ public class DevToolsProperties {
 
 		public void setAdditionalPaths(List<File> additionalPaths) {
 			this.additionalPaths = additionalPaths;
+		}
+
+		public boolean isLogConditionEvaluationDelta() {
+			return this.logConditionEvaluationDelta;
+		}
+
+		public void setLogConditionEvaluationDelta(boolean logConditionEvaluationDelta) {
+			this.logConditionEvaluationDelta = logConditionEvaluationDelta;
 		}
 
 	}

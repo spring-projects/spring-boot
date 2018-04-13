@@ -46,7 +46,7 @@ public class AuditAutoConfigurationTests {
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void defaultConfiguration() throws Exception {
+	public void defaultConfiguration() {
 		registerAndRefresh(AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AuditEventRepository.class)).isNotNull();
 		assertThat(this.context.getBean(AuthenticationAuditListener.class)).isNotNull();
@@ -54,7 +54,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void ownAuditEventRepository() throws Exception {
+	public void ownAuditEventRepository() {
 		registerAndRefresh(CustomAuditEventRepositoryConfiguration.class,
 				AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AuditEventRepository.class))
@@ -62,7 +62,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void ownAuthenticationAuditListener() throws Exception {
+	public void ownAuthenticationAuditListener() {
 		registerAndRefresh(CustomAuthenticationAuditListenerConfiguration.class,
 				AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AbstractAuthenticationAuditListener.class))
@@ -70,7 +70,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void ownAuthorizationAuditListener() throws Exception {
+	public void ownAuthorizationAuditListener() {
 		registerAndRefresh(CustomAuthorizationAuditListenerConfiguration.class,
 				AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AbstractAuthorizationAuditListener.class))
@@ -78,7 +78,7 @@ public class AuditAutoConfigurationTests {
 	}
 
 	@Test
-	public void ownAuditListener() throws Exception {
+	public void ownAuditListener() {
 		registerAndRefresh(CustomAuditListenerConfiguration.class,
 				AuditAutoConfiguration.class);
 		assertThat(this.context.getBean(AbstractAuditListener.class))

@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
 public class RedisHealthIndicatorTests {
 
 	@Test
-	public void redisIsUp() throws Exception {
+	public void redisIsUp() {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
 		RedisConnection redisConnection = mock(RedisConnection.class);
@@ -59,7 +59,7 @@ public class RedisHealthIndicatorTests {
 	}
 
 	@Test
-	public void redisIsDown() throws Exception {
+	public void redisIsDown() {
 		RedisConnection redisConnection = mock(RedisConnection.class);
 		given(redisConnection.info())
 				.willThrow(new RedisConnectionFailureException("Connection failed"));
@@ -78,7 +78,7 @@ public class RedisHealthIndicatorTests {
 	}
 
 	@Test
-	public void redisClusterIsUp() throws Exception {
+	public void redisClusterIsUp() {
 		Properties clusterProperties = new Properties();
 		clusterProperties.setProperty("cluster_size", "4");
 		clusterProperties.setProperty("cluster_slots_ok", "4");

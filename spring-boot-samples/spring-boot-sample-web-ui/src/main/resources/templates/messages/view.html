@@ -6,27 +6,21 @@
 	<body>
 		<div class="container">
 			<div th:replace="fragments :: navbar"></div>
-			<h1>Messages : View</h1>
-			<div class="alert alert-success" th:if="${globalMessage}"
-				th:text="${globalMessage}">Some Success message</div>
-			<div class="pull-right">
-				<a th:href="@{/}" href="list.html"> Messages </a>
+			<div class="float-right mt-2">
+				<a class="btn btn-primary btn-sm" href="list.html" th:href="@{/}">Messages</a>
 			</div>
-			<dl>
-				<dt>ID</dt>
-				<dd id="id" th:text="${message.id}">123</dd>
-				<dt>Date</dt>
-				<dd id="created" th:text="${#calendars.format(message.created)}">
-					July 11, 2012 2:17:16 PM CDT</dd>
-				<dt>Summary</dt>
-				<dd id="summary" th:text="${message.summary}">A short summary...</dd>
-				<dt>Message</dt>
-				<dd id="text" th:text="${message.text}">A detailed message that
-					is longer than the summary.</dd>
-			</dl>
-			<div class="pull-left">
-				<a href="messages" th:href="@{'/delete/' + ${message.id}}">delete </a> |
-				<a href="form.html" th:href="@{'/modify/' + ${message.id}}"> modify </a>
+			<h4 class="float-left mt-2">Messages : View</h4>
+			<div class="clearfix"></div>
+			<div class="alert alert-success" th:if="${globalMessage}" th:text="${globalMessage}">Some Success message
+			</div>
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title" th:text="${message.id + ': ' + message.summary}">123 - A short summary...</h4>
+					<h6 class="card-subtitle mb-2 text-muted" th:text="${#calendars.format(message.created)}">July 11, 2012 2:17:16 PM CDT</h6>
+					<p class="card-text" th:text="${message.text}">A detailed message that is longer than the summary.</p>
+					<a class="card-link" href="messages" th:href="@{'/delete/' + ${message.id}}">delete</a>
+					<a class="card-link" href="form.html" th:href="@{'/modify/' + ${message.id}}"> modify</a>
+				</div>
 			</div>
 		</div>
 	</body>

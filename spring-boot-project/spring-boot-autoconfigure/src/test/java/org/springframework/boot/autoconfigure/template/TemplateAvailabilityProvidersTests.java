@@ -68,15 +68,14 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void createWhenApplicationContextIsNullShouldThrowException()
-			throws Exception {
+	public void createWhenApplicationContextIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ClassLoader must not be null");
 		new TemplateAvailabilityProviders((ApplicationContext) null);
 	}
 
 	@Test
-	public void createWhenUsingApplicationContextShouldLoadProviders() throws Exception {
+	public void createWhenUsingApplicationContextShouldLoadProviders() {
 		ApplicationContext applicationContext = mock(ApplicationContext.class);
 		given(applicationContext.getClassLoader()).willReturn(this.classLoader);
 		TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
@@ -86,21 +85,21 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void createWhenClassLoaderIsNullShouldThrowException() throws Exception {
+	public void createWhenClassLoaderIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ClassLoader must not be null");
 		new TemplateAvailabilityProviders((ClassLoader) null);
 	}
 
 	@Test
-	public void createWhenUsingClassLoaderShouldLoadProviders() throws Exception {
+	public void createWhenUsingClassLoaderShouldLoadProviders() {
 		TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
 				this.classLoader);
 		assertThat(providers.getProviders()).isNotEmpty();
 	}
 
 	@Test
-	public void createWhenProvidersIsNullShouldThrowException() throws Exception {
+	public void createWhenProvidersIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Providers must not be null");
 		new TemplateAvailabilityProviders(
@@ -108,22 +107,21 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void createWhenUsingProvidersShouldUseProviders() throws Exception {
+	public void createWhenUsingProvidersShouldUseProviders() {
 		TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(
 				Collections.singleton(this.provider));
 		assertThat(providers.getProviders()).containsOnly(this.provider);
 	}
 
 	@Test
-	public void getProviderWhenApplicationContextIsNullShouldThrowException()
-			throws Exception {
+	public void getProviderWhenApplicationContextIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ApplicationContext must not be null");
 		this.providers.getProvider(this.view, null);
 	}
 
 	@Test
-	public void getProviderWhenViewIsNullShouldThrowException() throws Exception {
+	public void getProviderWhenViewIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("View must not be null");
 		this.providers.getProvider(null, this.environment, this.classLoader,
@@ -131,7 +129,7 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void getProviderWhenEnvironmentIsNullShouldThrowException() throws Exception {
+	public void getProviderWhenEnvironmentIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		this.providers.getProvider(this.view, null, this.classLoader,
@@ -139,7 +137,7 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void getProviderWhenClassLoaderIsNullShouldThrowException() throws Exception {
+	public void getProviderWhenClassLoaderIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ClassLoader must not be null");
 		this.providers.getProvider(this.view, this.environment, null,
@@ -147,15 +145,14 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void getProviderWhenResourceLoaderIsNullShouldThrowException()
-			throws Exception {
+	public void getProviderWhenResourceLoaderIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ResourceLoader must not be null");
 		this.providers.getProvider(this.view, this.environment, this.classLoader, null);
 	}
 
 	@Test
-	public void getProviderWhenNoneMatchShouldReturnNull() throws Exception {
+	public void getProviderWhenNoneMatchShouldReturnNull() {
 		TemplateAvailabilityProvider found = this.providers.getProvider(this.view,
 				this.environment, this.classLoader, this.resourceLoader);
 		assertThat(found).isNull();
@@ -164,7 +161,7 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void getProviderWhenMatchShouldReturnProvider() throws Exception {
+	public void getProviderWhenMatchShouldReturnProvider() {
 		given(this.provider.isTemplateAvailable(this.view, this.environment,
 				this.classLoader, this.resourceLoader)).willReturn(true);
 		TemplateAvailabilityProvider found = this.providers.getProvider(this.view,
@@ -174,7 +171,7 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void getProviderShouldCacheMatchResult() throws Exception {
+	public void getProviderShouldCacheMatchResult() {
 		given(this.provider.isTemplateAvailable(this.view, this.environment,
 				this.classLoader, this.resourceLoader)).willReturn(true);
 		this.providers.getProvider(this.view, this.environment, this.classLoader,
@@ -186,7 +183,7 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void getProviderShouldCacheNoMatchResult() throws Exception {
+	public void getProviderShouldCacheNoMatchResult() {
 		this.providers.getProvider(this.view, this.environment, this.classLoader,
 				this.resourceLoader);
 		this.providers.getProvider(this.view, this.environment, this.classLoader,
@@ -196,7 +193,7 @@ public class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
-	public void getProviderWhenCacheDisabledShouldNotUseCache() throws Exception {
+	public void getProviderWhenCacheDisabledShouldNotUseCache() {
 		given(this.provider.isTemplateAvailable(this.view, this.environment,
 				this.classLoader, this.resourceLoader)).willReturn(true);
 		this.environment.setProperty("spring.template.provider.cache", "false");

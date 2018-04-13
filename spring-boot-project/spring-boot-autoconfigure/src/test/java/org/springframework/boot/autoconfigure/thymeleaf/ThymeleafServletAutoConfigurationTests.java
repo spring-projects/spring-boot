@@ -77,7 +77,7 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void createFromConfigClass() throws Exception {
+	public void createFromConfigClass() {
 		load(BaseConfiguration.class, "spring.thymeleaf.mode:HTML",
 				"spring.thymeleaf.suffix:");
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
@@ -87,7 +87,7 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideCharacterEncoding() throws Exception {
+	public void overrideCharacterEncoding() {
 		load(BaseConfiguration.class, "spring.thymeleaf.encoding:UTF-16");
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver instanceof SpringResourceTemplateResolver).isTrue();
@@ -99,14 +99,14 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideTemplateResolverOrder() throws Exception {
+	public void overrideTemplateResolverOrder() {
 		load(BaseConfiguration.class, "spring.thymeleaf.templateResolverOrder:25");
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver.getOrder()).isEqualTo(Integer.valueOf(25));
 	}
 
 	@Test
-	public void overrideViewNames() throws Exception {
+	public void overrideViewNames() {
 		load(BaseConfiguration.class, "spring.thymeleaf.viewNames:foo,bar");
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertThat(views.getViewNames()).isEqualTo(new String[] { "foo", "bar" });
@@ -127,14 +127,14 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void templateLocationDoesNotExist() throws Exception {
+	public void templateLocationDoesNotExist() {
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
 		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
-	public void templateLocationEmpty() throws Exception {
+	public void templateLocationEmpty() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
 		load(BaseConfiguration.class,
 				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
@@ -161,7 +161,7 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void useDataDialect() throws Exception {
+	public void useDataDialect() {
 		load(BaseConfiguration.class);
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
@@ -170,7 +170,7 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void useJava8TimeDialect() throws Exception {
+	public void useJava8TimeDialect() {
 		load(BaseConfiguration.class);
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK);
@@ -179,7 +179,7 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void renderTemplate() throws Exception {
+	public void renderTemplate() {
 		load(BaseConfiguration.class);
 		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
@@ -188,7 +188,7 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void renderNonWebAppTemplate() throws Exception {
+	public void renderNonWebAppTemplate() {
 		try (AnnotationConfigApplicationContext customContext = new AnnotationConfigApplicationContext(
 				ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class)) {
@@ -203,21 +203,20 @@ public class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
+	public void registerResourceHandlingFilterDisabledByDefault() {
 		load(BaseConfiguration.class);
 		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
 				.isEmpty();
 	}
 
 	@Test
-	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
-			throws Exception {
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() {
 		load(BaseConfiguration.class, "spring.resources.chain.enabled:true");
 		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}
 
 	@Test
-	public void layoutDialectCanBeCustomized() throws Exception {
+	public void layoutDialectCanBeCustomized() {
 		load(LayoutDialectConfiguration.class);
 		LayoutDialect layoutDialect = this.context.getBean(LayoutDialect.class);
 		assertThat(ReflectionTestUtils.getField(layoutDialect, "sortingStrategy"))

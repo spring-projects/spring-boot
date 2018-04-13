@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.springframework.boot.web.servlet.server;
 
 import java.io.File;
 
-import org.springframework.boot.ApplicationHome;
-import org.springframework.boot.ApplicationTemp;
+import org.springframework.boot.system.ApplicationHome;
+import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.util.Assert;
 
 /**
@@ -51,9 +51,14 @@ class SessionStoreDirectory {
 		if (!dir.exists() && mkdirs) {
 			dir.mkdirs();
 		}
-		Assert.state(!mkdirs || dir.exists(), "Session dir " + dir + " does not exist");
-		Assert.state(!dir.isFile(), "Session dir " + dir + " points to a file");
+		assertDirectory(mkdirs, dir);
 		return dir;
+	}
+
+	private void assertDirectory(boolean mkdirs, File dir) {
+		Assert.state(!mkdirs || dir.exists(),
+				() -> "Session dir " + dir + " does not exist");
+		Assert.state(!dir.isFile(), () -> "Session dir " + dir + " points to a file");
 	}
 
 }

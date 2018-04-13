@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,11 +147,9 @@ class Installer {
 		String home = SystemPropertyUtils
 				.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
 		File extDirectory = new File(new File(home, "lib"), "ext");
-		if (!extDirectory.isDirectory()) {
-			if (!extDirectory.mkdirs()) {
-				throw new IllegalStateException(
-						"Failed to create ext directory " + extDirectory);
-			}
+		if (!extDirectory.isDirectory() && !extDirectory.mkdirs()) {
+			throw new IllegalStateException(
+					"Failed to create ext directory " + extDirectory);
 		}
 		return extDirectory;
 	}

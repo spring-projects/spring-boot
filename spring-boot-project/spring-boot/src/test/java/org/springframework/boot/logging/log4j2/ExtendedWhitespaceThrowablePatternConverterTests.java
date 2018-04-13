@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ExtendedWhitespaceThrowablePatternConverterTests {
 
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
 	private final ThrowablePatternConverter converter = ExtendedWhitespaceThrowablePatternConverter
 			.newInstance(new DefaultConfiguration(), new String[] {});
 
 	@Test
-	public void noStackTrace() throws Exception {
+	public void noStackTrace() {
 		LogEvent event = Log4jLogEvent.newBuilder().build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
@@ -46,11 +44,12 @@ public class ExtendedWhitespaceThrowablePatternConverterTests {
 	}
 
 	@Test
-	public void withStackTrace() throws Exception {
+	public void withStackTrace() {
 		LogEvent event = Log4jLogEvent.newBuilder().setThrown(new Exception()).build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
-		assertThat(builder).startsWith(LINE_SEPARATOR).endsWith(LINE_SEPARATOR);
+		assertThat(builder).startsWith(System.lineSeparator())
+				.endsWith(System.lineSeparator());
 	}
 
 }

@@ -44,7 +44,7 @@ class DataMongoTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter
 	}
 
 	@Override
-	protected Filter[] getFilters(final FilterType type) {
+	protected Filter[] getFilters(FilterType type) {
 		switch (type) {
 		case INCLUDE:
 			return this.annotation.includeFilters();

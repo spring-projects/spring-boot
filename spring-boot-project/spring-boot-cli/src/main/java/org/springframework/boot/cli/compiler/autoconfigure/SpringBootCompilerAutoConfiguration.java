@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,11 +80,10 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 	public void applyToMainClass(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
 			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
-		addEnableAutoConfigurationAnnotation(source, classNode);
+		addEnableAutoConfigurationAnnotation(classNode);
 	}
 
-	private void addEnableAutoConfigurationAnnotation(SourceUnit source,
-			ClassNode classNode) {
+	private void addEnableAutoConfigurationAnnotation(ClassNode classNode) {
 		if (!hasEnableAutoConfigureAnnotation(classNode)) {
 			AnnotationNode annotationNode = new AnnotationNode(
 					ClassHelper.make("EnableAutoConfiguration"));

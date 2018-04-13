@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.function.BiConsumer;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,9 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
-	public void configurationPropertiesAreReturned() throws Exception {
+	public void configurationPropertiesAreReturned() {
 		load((context, properties) -> {
-			assertThat(properties.getContextId()).isEqualTo(context.getId());
 			assertThat(properties.getBeans().size()).isGreaterThan(0);
 			ConfigurationPropertiesBeanDescriptor nestedProperties = properties.getBeans()
 					.get("testProperties");
@@ -69,7 +69,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void defaultKeySanitization() throws Exception {
+	public void defaultKeySanitization() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -80,7 +80,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void customKeySanitization() throws Exception {
+	public void customKeySanitization() {
 		load("property", (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -91,7 +91,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void customPatternKeySanitization() throws Exception {
+	public void customPatternKeySanitization() {
 		load(".*pass.*", (context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -103,7 +103,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void keySanitizationWithCustomPatternUsingCompositeKeys() throws Exception {
+	public void keySanitizationWithCustomPatternUsingCompositeKeys() {
 		// gh-4415
 		load(Arrays.asList(".*\\.secrets\\..*", ".*\\.hidden\\..*"),
 				(context, properties) -> {
@@ -121,7 +121,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
-	public void mixedBoolean() throws Exception {
+	public void mixedBoolean() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -131,7 +131,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void listsAreSanitized() throws Exception {
+	public void listsAreSanitized() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -145,7 +145,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void listsOfListsAreSanitized() throws Exception {
+	public void listsOfListsAreSanitized() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
@@ -161,27 +161,27 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	private void load(
-			BiConsumer<ApplicationContext, ConfigurationPropertiesDescriptor> properties) {
+			BiConsumer<ApplicationContext, ContextConfigurationProperties> properties) {
 		load(Collections.emptyList(), properties);
 	}
 
 	private void load(String keyToSanitize,
-			BiConsumer<ApplicationContext, ConfigurationPropertiesDescriptor> properties) {
+			BiConsumer<ApplicationContext, ContextConfigurationProperties> properties) {
 		load(Collections.singletonList(keyToSanitize), properties);
 	}
 
 	private void load(List<String> keysToSanitize,
-			BiConsumer<ApplicationContext, ConfigurationPropertiesDescriptor> properties) {
+			BiConsumer<ApplicationContext, ContextConfigurationProperties> properties) {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withUserConfiguration(Config.class);
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
 			if (!CollectionUtils.isEmpty(keysToSanitize)) {
-				endpoint.setKeysToSanitize(
-						keysToSanitize.toArray(new String[keysToSanitize.size()]));
+				endpoint.setKeysToSanitize(StringUtils.toStringArray(keysToSanitize));
 			}
-			properties.accept(context, endpoint.configurationProperties());
+			properties.accept(context, endpoint.configurationProperties().getContexts()
+					.get(context.getId()));
 		});
 	}
 

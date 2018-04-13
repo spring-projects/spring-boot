@@ -66,7 +66,7 @@ public class UserVehicleControllerApplicationTests {
 	}
 
 	@Test
-	public void welcomeCommandLineRunnerShouldBeAvailable() throws Exception {
+	public void welcomeCommandLineRunnerShouldBeAvailable() {
 		// Since we're a @SpringBootTest all beans should be available.
 		assertThat(this.applicationContext.getBean(WelcomeCommandLineRunner.class))
 				.isNotNull();

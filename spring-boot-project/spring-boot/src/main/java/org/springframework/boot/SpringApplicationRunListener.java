@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public interface SpringApplicationRunListener {
 
@@ -61,11 +62,30 @@ public interface SpringApplicationRunListener {
 	void contextLoaded(ConfigurableApplicationContext context);
 
 	/**
-	 * Called immediately before the run method finishes.
-	 * @param context the application context or null if a failure occurred before the
-	 * context was created
-	 * @param exception any run exception or null if run completed successfully.
+	 * The context has been refreshed and the application has started but
+	 * {@link CommandLineRunner CommandLineRunners} and {@link ApplicationRunner
+	 * ApplicationRunners} have not been called.
+	 * @param context the application context.
+	 * @since 2.0.0
 	 */
-	void finished(ConfigurableApplicationContext context, Throwable exception);
+	void started(ConfigurableApplicationContext context);
+
+	/**
+	 * Called immediately before the run method finishes, when the application context has
+	 * been refreshed and all {@link CommandLineRunner CommandLineRunners} and
+	 * {@link ApplicationRunner ApplicationRunners} have been called.
+	 * @param context the application context.
+	 * @since 2.0.0
+	 */
+	void running(ConfigurableApplicationContext context);
+
+	/**
+	 * Called when a failure occurs when running the application.
+	 * @param context the application context or {@code null} if a failure occurred before
+	 * the context was created
+	 * @param exception the failure
+	 * @since 2.0.0
+	 */
+	void failed(ConfigurableApplicationContext context, Throwable exception);
 
 }

@@ -205,7 +205,7 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void invalidType() throws Exception {
+	public void invalidType() {
 		this.request.setType("does-not-exist");
 		this.thrown.expect(ReportableException.class);
 		this.request.generateUrl(createDefaultMetadata());

@@ -48,7 +48,7 @@ public class OutputCapture implements TestRule {
 	private List<Matcher<? super String>> matchers = new ArrayList<>();
 
 	@Override
-	public Statement apply(final Statement base, Description description) {
+	public Statement apply(Statement base, Description description) {
 		return new Statement() {
 			@Override
 			public void evaluate() throws Throwable {

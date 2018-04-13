@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxConsistency;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryPropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link InfluxProperties} to an {@link InfluxConfig}.
@@ -27,49 +27,52 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistr
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class InfluxPropertiesConfigAdapter
-		extends StepRegistryPropertiesConfigAdapter<InfluxProperties, InfluxConfig>
-		implements InfluxConfig {
-
-	private static final InfluxConfig DEFAULTS = (k) -> null;
+class InfluxPropertiesConfigAdapter extends
+		StepRegistryPropertiesConfigAdapter<InfluxProperties> implements InfluxConfig {
 
 	InfluxPropertiesConfigAdapter(InfluxProperties properties) {
-		super(properties, DEFAULTS);
+		super(properties);
 	}
 
 	@Override
 	public String db() {
-		return get(InfluxProperties::getDb, InfluxConfig::db);
+		return get(InfluxProperties::getDb, InfluxConfig.super::db);
 	}
 
 	@Override
 	public InfluxConsistency consistency() {
-		return get(InfluxProperties::getConsistency, InfluxConfig::consistency);
+		return get(InfluxProperties::getConsistency, InfluxConfig.super::consistency);
 	}
 
 	@Override
 	public String userName() {
-		return get(InfluxProperties::getUserName, InfluxConfig::userName);
+		return get(InfluxProperties::getUserName, InfluxConfig.super::userName);
 	}
 
 	@Override
 	public String password() {
-		return get(InfluxProperties::getPassword, InfluxConfig::password);
+		return get(InfluxProperties::getPassword, InfluxConfig.super::password);
 	}
 
 	@Override
 	public String retentionPolicy() {
-		return get(InfluxProperties::getRetentionPolicy, InfluxConfig::retentionPolicy);
+		return get(InfluxProperties::getRetentionPolicy,
+				InfluxConfig.super::retentionPolicy);
 	}
 
 	@Override
 	public String uri() {
-		return get(InfluxProperties::getUri, InfluxConfig::uri);
+		return get(InfluxProperties::getUri, InfluxConfig.super::uri);
 	}
 
 	@Override
 	public boolean compressed() {
-		return get(InfluxProperties::getCompressed, InfluxConfig::compressed);
+		return get(InfluxProperties::isCompressed, InfluxConfig.super::compressed);
+	}
+
+	@Override
+	public boolean autoCreateDb() {
+		return get(InfluxProperties::isAutoCreateDb, InfluxConfig.super::autoCreateDb);
 	}
 
 }

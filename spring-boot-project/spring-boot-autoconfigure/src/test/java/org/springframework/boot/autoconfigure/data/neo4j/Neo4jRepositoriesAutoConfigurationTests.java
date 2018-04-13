@@ -54,7 +54,7 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() throws Exception {
+	public void testDefaultRepositoryConfiguration() {
 		prepareApplicationContext(TestConfiguration.class);
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		Neo4jMappingContext mappingContext = this.context
@@ -63,7 +63,7 @@ public class Neo4jRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() throws Exception {
+	public void testNoRepositoryConfiguration() {
 		prepareApplicationContext(EmptyConfiguration.class);
 		assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
 	}

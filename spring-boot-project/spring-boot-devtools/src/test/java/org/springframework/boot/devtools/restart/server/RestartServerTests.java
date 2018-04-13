@@ -50,7 +50,7 @@ public class RestartServerTests {
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
-	public void sourceFolderUrlFilterMustNotBeNull() throws Exception {
+	public void sourceFolderUrlFilterMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("SourceFolderUrlFilter must not be null");
 		new RestartServer((SourceFolderUrlFilter) null);

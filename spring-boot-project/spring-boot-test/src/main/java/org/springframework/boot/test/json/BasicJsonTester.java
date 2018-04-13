@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -80,10 +79,9 @@ public class BasicJsonTester {
 	 * UTF-8.
 	 * @param resourceLoadClass the source class used when loading relative classpath
 	 * resources
-	 * @param type the type under test
 	 */
-	protected final void initialize(Class<?> resourceLoadClass, ResolvableType type) {
-		this.initialize(resourceLoadClass, null, type);
+	protected final void initialize(Class<?> resourceLoadClass) {
+		this.initialize(resourceLoadClass, null);
 	}
 
 	/**
@@ -91,11 +89,9 @@ public class BasicJsonTester {
 	 * @param resourceLoadClass the source class used when loading relative classpath
 	 * resources
 	 * @param charset the charset used when loading relative classpath resources
-	 * @param type the type under test
 	 * @since 1.4.1
 	 */
-	protected final void initialize(Class<?> resourceLoadClass, Charset charset,
-			ResolvableType type) {
+	protected final void initialize(Class<?> resourceLoadClass, Charset charset) {
 		if (this.loader == null) {
 			this.loader = new JsonLoader(resourceLoadClass, charset);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
-import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
@@ -32,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -51,12 +50,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link WebMvcMetrics}.
+ * Tests for {@link WebMvcMetricsFilter} in the presence of a custom exception handler.
  *
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
+@TestPropertySource(properties = "security.ignored=/**")
 public class WebMvcMetricsIntegrationTests {
 
 	@Autowired
@@ -66,12 +66,9 @@ public class WebMvcMetricsIntegrationTests {
 	private SimpleMeterRegistry registry;
 
 	@Autowired
-	private MockClock clock;
+	private WebMvcMetricsFilter filter;
 
 	private MockMvc mvc;
-
-	@Autowired
-	private WebMvcMetricsFilter filter;
 
 	@Before
 	public void setupMockMvc() {
@@ -82,20 +79,18 @@ public class WebMvcMetricsIntegrationTests {
 	@Test
 	public void handledExceptionIsRecordedInMetricTag() throws Exception {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
-		this.clock.add(SimpleConfig.DEFAULT_STEP);
-		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception1").value(Statistic.Count, 1.0).timer())
-						.isPresent();
+		assertThat(this.registry.get("http.server.requests")
+				.tags("exception", "Exception1", "status", "500").timer().count())
+						.isEqualTo(1L);
 	}
 
 	@Test
-	public void rethrownExceptionIsRecordedInMetricTag() throws Exception {
+	public void rethrownExceptionIsRecordedInMetricTag() {
 		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError"))
 				.andExpect(status().is5xxServerError()));
-		this.clock.add(SimpleConfig.DEFAULT_STEP);
-		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception2").value(Statistic.Count, 1.0).timer())
-						.isPresent();
+		assertThat(this.registry.get("http.server.requests")
+				.tags("exception", "Exception2", "status", "500").timer().count())
+						.isEqualTo(1L);
 	}
 
 	@Configuration
@@ -113,15 +108,10 @@ public class WebMvcMetricsIntegrationTests {
 		}
 
 		@Bean
-		public WebMvcMetrics controllerMetrics(MeterRegistry registry) {
-			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true, false);
-		}
-
-		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(WebMvcMetrics controllerMetrics,
-				HandlerMappingIntrospector introspector) {
-			return new WebMvcMetricsFilter(controllerMetrics, introspector);
+		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
+				WebApplicationContext ctx) {
+			return new WebMvcMetricsFilter(ctx, registry, new DefaultWebMvcTagsProvider(),
+					"http.server.requests", true);
 		}
 
 		@RestController
@@ -159,18 +149,14 @@ public class WebMvcMetricsIntegrationTests {
 	@ControllerAdvice
 	static class CustomExceptionHandler {
 
-		@Autowired
-		WebMvcMetrics metrics;
-
 		@ExceptionHandler
-		ResponseEntity<String> handleError(Exception1 ex) throws Throwable {
-			this.metrics.tagWithException(ex);
+		ResponseEntity<String> handleError(Exception1 ex) {
 			return new ResponseEntity<>("this is a custom exception body",
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		@ExceptionHandler
-		ResponseEntity<String> rethrowError(Exception2 ex) throws Throwable {
+		ResponseEntity<String> rethrowError(Exception2 ex) {
 			throw ex;
 		}
 

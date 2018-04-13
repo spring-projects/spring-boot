@@ -45,21 +45,21 @@ public class RestClientRestIntegrationTests {
 	private ExampleRestClient client;
 
 	@Test
-	public void mockServerCall1() throws Exception {
+	public void mockServerCall1() {
 		this.server.expect(requestTo("/test"))
 				.andRespond(withSuccess("1", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("1");
 	}
 
 	@Test
-	public void mockServerCall2() throws Exception {
+	public void mockServerCall2() {
 		this.server.expect(requestTo("/test"))
 				.andRespond(withSuccess("2", MediaType.TEXT_HTML));
 		assertThat(this.client.test()).isEqualTo("2");
 	}
 
 	@Test
-	public void mockServerCallWithContent() throws Exception {
+	public void mockServerCallWithContent() {
 		this.server.expect(requestTo("/test")).andExpect(content().string("test"))
 				.andRespond(withSuccess("1", MediaType.TEXT_HTML));
 		this.client.testPostWithBody("test");

@@ -106,7 +106,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanType() throws Exception {
+	public void testOnMissingBeanType() {
 		this.contextRunner
 				.withUserConfiguration(FooConfiguration.class,
 						OnBeanMissingClassConfiguration.class)
@@ -114,7 +114,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Test
-	public void withPropertyPlaceholderClassName() throws Exception {
+	public void withPropertyPlaceholderClassName() {
 		this.contextRunner
 				.withUserConfiguration(PropertySourcesPlaceholderConfigurer.class,
 						WithPropertyPlaceholderClassName.class,
@@ -270,7 +270,7 @@ public class ConditionalOnBeanTests {
 	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
 
 		@Override
-		public ExampleBean getObject() throws Exception {
+		public ExampleBean getObject() {
 			return new ExampleBean("fromFactory");
 		}
 

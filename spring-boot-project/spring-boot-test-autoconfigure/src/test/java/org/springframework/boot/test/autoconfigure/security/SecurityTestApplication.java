@@ -18,10 +18,7 @@ package org.springframework.boot.test.autoconfigure.security;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,12 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @SpringBootApplication
 public class SecurityTestApplication {
-
-	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-		return new InMemoryUserDetailsManager(User.withDefaultPasswordEncoder()
-				.username("user").password("secret").roles("USER").build());
-	}
 
 	@RestController
 	static class MyController {

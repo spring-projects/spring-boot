@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
@@ -69,8 +68,8 @@ class OnPropertyCondition extends SpringBootCondition {
 	private List<AnnotationAttributes> annotationAttributesFromMultiValueMap(
 			MultiValueMap<String, Object> multiValueMap) {
 		List<Map<String, Object>> maps = new ArrayList<>();
-		for (Entry<String, List<Object>> entry : multiValueMap.entrySet()) {
-			for (int i = 0; i < entry.getValue().size(); i++) {
+		multiValueMap.forEach((key, value) -> {
+			for (int i = 0; i < value.size(); i++) {
 				Map<String, Object> map;
 				if (i < maps.size()) {
 					map = maps.get(i);
@@ -79,9 +78,9 @@ class OnPropertyCondition extends SpringBootCondition {
 					map = new HashMap<>();
 					maps.add(map);
 				}
-				map.put(entry.getKey(), entry.getValue().get(i));
+				map.put(key, value.get(i));
 			}
-		}
+		});
 		List<AnnotationAttributes> annotationAttributes = new ArrayList<>(maps.size());
 		for (Map<String, Object> map : maps) {
 			annotationAttributes.add(AnnotationAttributes.fromMap(map));
@@ -106,7 +105,7 @@ class OnPropertyCondition extends SpringBootCondition {
 					ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
 							.found("different value in property",
 									"different value in properties")
-					.items(Style.QUOTE, nonMatchingProperties));
+							.items(Style.QUOTE, nonMatchingProperties));
 		}
 		return ConditionOutcome.match(ConditionMessage
 				.forCondition(ConditionalOnProperty.class, spec).because("matched"));

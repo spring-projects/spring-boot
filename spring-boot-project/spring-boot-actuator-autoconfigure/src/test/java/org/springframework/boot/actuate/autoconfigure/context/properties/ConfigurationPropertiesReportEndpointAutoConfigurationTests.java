@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,8 +51,7 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("management.endpoint.configprops.enabled:false")
 				.run((context) -> assertThat(context)
@@ -60,10 +59,9 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() throws Exception {
-		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues(
-						"management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
+	public void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
+		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues(
+				"management.endpoint.configprops.keys-to-sanitize: .*pass.*, property")
 				.run(validateTestProperties("******", "******"));
 	}
 
@@ -74,10 +72,11 @@ public class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 					.hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ConfigurationPropertiesDescriptor properties = endpoint
+			ApplicationConfigurationProperties properties = endpoint
 					.configurationProperties();
-			Map<String, Object> nestedProperties = properties.getBeans()
-					.get("testProperties").getProperties();
+			Map<String, Object> nestedProperties = properties.getContexts()
+					.get(context.getId()).getBeans().get("testProperties")
+					.getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
 			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);

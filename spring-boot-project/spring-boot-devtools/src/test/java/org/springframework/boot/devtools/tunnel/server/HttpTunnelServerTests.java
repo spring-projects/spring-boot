@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ public class HttpTunnelServerTests {
 		this.server = new HttpTunnelServer(this.serverConnection);
 		given(this.serverConnection.open(anyInt())).willAnswer((invocation) -> {
 			MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
-			channel.setTimeout((Integer) invocation.getArguments()[0]);
+			channel.setTimeout(invocation.getArgument(0));
 			return channel;
 		});
 		this.servletRequest = new MockHttpServletRequest();
@@ -102,7 +102,7 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void serverConnectionIsRequired() throws Exception {
+	public void serverConnectionIsRequired() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServerConnection must not be null");
 		new HttpTunnelServer(null);
@@ -123,7 +123,7 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void longPollTimeoutMustBePositiveValue() throws Exception {
+	public void longPollTimeoutMustBePositiveValue() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("LongPollTimeout must be a positive value");
 		this.server.setLongPollTimeout(0);
@@ -256,7 +256,7 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void disconnectTimeoutMustBePositive() throws Exception {
+	public void disconnectTimeoutMustBePositive() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("DisconnectTimeout must be a positive value");
 		this.server.setDisconnectTimeout(0);
@@ -406,7 +406,7 @@ public class HttpTunnelServerTests {
 		}
 
 		@Override
-		public void close() throws IOException {
+		public void close() {
 			this.open.set(false);
 		}
 

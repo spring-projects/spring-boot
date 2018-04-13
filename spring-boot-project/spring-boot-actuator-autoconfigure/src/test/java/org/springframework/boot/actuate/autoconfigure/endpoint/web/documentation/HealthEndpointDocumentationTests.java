@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,18 +47,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class HealthEndpointDocumentationTests extends AbstractEndpointDocumentationTests {
+public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	public void health() throws Exception {
 		this.mockMvc.perform(get("/actuator/health")).andExpect(status().isOk())
-				.andDo(document("health",
-						responseFields(
-								fieldWithPath("status").description(
-										"Overall status of the application."),
-						fieldWithPath("details")
-								.description("Details of the health of the application "
-										+ "(only included when `management.endpoint.health.show-details` is `true`)."),
+				.andDo(document("health", responseFields(
+						fieldWithPath("status")
+								.description("Overall status of the application."),
+						fieldWithPath("details").description(
+								"Details of the health of the application. Presence is controlled by "
+										+ "`management.endpoint.health.show-details`)."),
 						fieldWithPath("details.*.status").description(
 								"Status of a specific part of the application."),
 						subsectionWithPath("details.*.details").description(
@@ -74,7 +73,7 @@ public class HealthEndpointDocumentationTests extends AbstractEndpointDocumentat
 		@Bean
 		public HealthEndpoint endpoint(Map<String, HealthIndicator> healthIndicators) {
 			return new HealthEndpoint(new CompositeHealthIndicator(
-					new OrderedHealthAggregator(), healthIndicators), true);
+					new OrderedHealthAggregator(), healthIndicators));
 		}
 
 		@Bean

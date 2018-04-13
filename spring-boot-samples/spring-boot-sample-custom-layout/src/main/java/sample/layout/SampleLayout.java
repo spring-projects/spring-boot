@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.LoaderClassesWriter;
 
 /**
- * @author pwebb
+ * @author Phillip Webb
  */
 public class SampleLayout extends Layouts.Jar implements CustomLoaderLayout {
 

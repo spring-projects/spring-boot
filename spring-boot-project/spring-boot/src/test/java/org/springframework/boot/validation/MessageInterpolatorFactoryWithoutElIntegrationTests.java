@@ -44,7 +44,7 @@ public class MessageInterpolatorFactoryWithoutElIntegrationTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void defaultMessageInterpolatorShouldFail() throws Exception {
+	public void defaultMessageInterpolatorShouldFail() {
 		// Sanity test
 		this.thrown.expect(ValidationException.class);
 		this.thrown.expectMessage("javax.el.ExpressionFactory");

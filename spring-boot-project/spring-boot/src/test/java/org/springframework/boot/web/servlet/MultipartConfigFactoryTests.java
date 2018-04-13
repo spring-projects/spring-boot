@@ -40,7 +40,7 @@ public class MultipartConfigFactoryTests {
 	}
 
 	@Test
-	public void create() throws Exception {
+	public void create() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setLocation("loc");
 		factory.setMaxFileSize(1);
@@ -54,7 +54,7 @@ public class MultipartConfigFactoryTests {
 	}
 
 	@Test
-	public void createWithStringSizes() throws Exception {
+	public void createWithStringSizes() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setMaxFileSize("1");
 		factory.setMaxRequestSize("2kB");

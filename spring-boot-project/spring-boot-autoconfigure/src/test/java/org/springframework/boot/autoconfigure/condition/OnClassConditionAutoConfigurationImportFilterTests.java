@@ -48,14 +48,14 @@ public class OnClassConditionAutoConfigurationImportFilterTests {
 	}
 
 	@Test
-	public void shouldBeRegistered() throws Exception {
+	public void shouldBeRegistered() {
 		assertThat(SpringFactoriesLoader
 				.loadFactories(AutoConfigurationImportFilter.class, null))
 						.hasAtLeastOneElementOfType(OnClassCondition.class);
 	}
 
 	@Test
-	public void matchShouldMatchClasses() throws Exception {
+	public void matchShouldMatchClasses() {
 		String[] autoConfigurationClasses = new String[] { "test.match", "test.nomatch" };
 		boolean[] result = this.filter.match(autoConfigurationClasses,
 				getAutoConfigurationMetadata());
@@ -63,7 +63,7 @@ public class OnClassConditionAutoConfigurationImportFilterTests {
 	}
 
 	@Test
-	public void matchShouldRecordOutcome() throws Exception {
+	public void matchShouldRecordOutcome() {
 		String[] autoConfigurationClasses = new String[] { "test.match", "test.nomatch" };
 		this.filter.match(autoConfigurationClasses, getAutoConfigurationMetadata());
 		ConditionEvaluationReport report = ConditionEvaluationReport

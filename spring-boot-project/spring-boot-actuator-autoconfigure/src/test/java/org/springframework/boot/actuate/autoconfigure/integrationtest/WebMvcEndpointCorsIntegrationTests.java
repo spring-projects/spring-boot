@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,21 +25,13 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.beans.BeansEndpoint;
-import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -50,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for the actuator endpoints' CORS support
+ * Integration tests for the MVC actuator endpoints' CORS support
  *
  * @author Andy Wilkinson
  * @see WebMvcEndpointManagementContextConfiguration
@@ -70,16 +62,16 @@ public class WebMvcEndpointCorsIntegrationTests {
 				ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class,
 				BeansEndpointAutoConfiguration.class);
-		TestPropertyValues.of("management.endpoints.web.expose:*").applyTo(this.context);
+		TestPropertyValues.of("management.endpoints.web.exposure.include:*")
+				.applyTo(this.context);
 	}
 
 	@Test
 	public void corsIsDisabledByDefault() throws Exception {
-		MockMvc mockMvc = createMockMvc();
-		System.out.println(new ConditionEvaluationReportMessage(
-				this.context.getBean(ConditionEvaluationReport.class)));
-		mockMvc.perform(options("/actuator/beans").header("Origin", "foo.example.com")
-				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
+		createMockMvc()
+				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+				.andExpect(
 						header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
 	}
 
@@ -202,27 +194,6 @@ public class WebMvcEndpointCorsIntegrationTests {
 				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
 						"foo.example.com"))
 				.andExpect(status().isOk());
-	}
-
-	@Configuration
-	static class EndpointConfiguration {
-
-		@Bean
-		public BeansEndpoint beansEndpoint(
-				ConfigurableApplicationContext applicationContext) {
-			return new BeansEndpoint(applicationContext);
-		}
-
-	}
-
-	@Configuration
-	static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.cors();
-		}
-
 	}
 
 }

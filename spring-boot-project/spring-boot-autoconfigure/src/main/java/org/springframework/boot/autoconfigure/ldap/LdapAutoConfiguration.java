@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ public class LdapAutoConfiguration {
 		LdapContextSource source = new LdapContextSource();
 		source.setUserDn(this.properties.getUsername());
 		source.setPassword(this.properties.getPassword());
+		source.setAnonymousReadOnly(this.properties.getAnonymousReadOnly());
 		source.setBase(this.properties.getBase());
 		source.setUrls(this.properties.determineUrls(this.environment));
 		source.setBaseEnvironmentProperties(

@@ -49,8 +49,7 @@ public class InfoEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.info.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(InfoEndpoint.class));

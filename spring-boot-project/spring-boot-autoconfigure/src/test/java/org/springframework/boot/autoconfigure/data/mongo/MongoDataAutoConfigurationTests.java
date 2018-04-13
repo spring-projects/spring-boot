@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
 
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import org.junit.After;
 import org.junit.Test;
 
@@ -89,15 +89,15 @@ public class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	public void customConversions() throws Exception {
+	public void customConversions() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CustomConversionsConfig.class);
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoTemplate template = this.context.getBean(MongoTemplate.class);
-		assertThat(template.getConverter().getConversionService().canConvert(Mongo.class,
-				Boolean.class)).isTrue();
+		assertThat(template.getConverter().getConversionService()
+				.canConvert(MongoClient.class, Boolean.class)).isTrue();
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class MongoDataAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() throws Exception {
+	public void entityScanShouldSetInitialEntitySet() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EntityScanConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
@@ -203,10 +203,10 @@ public class MongoDataAutoConfigurationTests {
 
 	}
 
-	private static class MyConverter implements Converter<Mongo, Boolean> {
+	private static class MyConverter implements Converter<MongoClient, Boolean> {
 
 		@Override
-		public Boolean convert(Mongo source) {
+		public Boolean convert(MongoClient source) {
 			return null;
 		}
 

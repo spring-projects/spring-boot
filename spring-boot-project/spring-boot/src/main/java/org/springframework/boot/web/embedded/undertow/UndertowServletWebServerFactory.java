@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
@@ -85,7 +83,7 @@ import org.springframework.util.Assert;
  * @see UndertowServletWebServer
  */
 public class UndertowServletWebServerFactory extends AbstractServletWebServerFactory
-		implements ResourceLoaderAware {
+		implements ConfigurableUndertowWebServerFactory, ResourceLoaderAware {
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
@@ -160,18 +158,14 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	/**
 	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
-	 * applied to the Undertow {@link Builder} .
+	 * applied to the Undertow {@link Builder}.
 	 * @return the customizers that will be applied
 	 */
 	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
 		return this.builderCustomizers;
 	}
 
-	/**
-	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
-	 * Undertow {@link Builder}.
-	 * @param customizers the customizers to add
-	 */
+	@Override
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.builderCustomizers.addAll(Arrays.asList(customizers));
@@ -191,18 +185,14 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	/**
 	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
-	 * will be applied to the Undertow {@link DeploymentInfo} .
+	 * will be applied to the Undertow {@link DeploymentInfo}.
 	 * @return the customizers that will be applied
 	 */
 	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
 		return this.deploymentInfoCustomizers;
 	}
 
-	/**
-	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
-	 * Undertow {@link DeploymentInfo}.
-	 * @param customizers the customizers to add
-	 */
+	@Override
 	public void addDeploymentInfoCustomizers(
 			UndertowDeploymentInfoCustomizer... customizers) {
 		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
@@ -247,8 +237,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider())
 				.customize(builder);
 		if (getHttp2() != null) {
-			builder.setServerOption(UndertowOptions.ENABLE_HTTP2,
-					getHttp2().getEnabled());
+			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().isEnabled());
 		}
 	}
 
@@ -282,7 +271,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		if (isAccessLogEnabled()) {
 			configureAccessLog(deployment);
 		}
-		if (isPersistSession()) {
+		if (getSession().isPersistent()) {
 			File dir = getValidSessionStoreDir();
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
 		}
@@ -290,11 +279,16 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
-		int sessionTimeout = (getSessionTimeout() == null || getSessionTimeout().isZero()
-				|| getSessionTimeout().isNegative() ? -1
-						: (int) getSessionTimeout().toMinutes());
+		Duration timeoutDuration = getSession().getTimeout();
+		int sessionTimeout = (isZeroOrLess(timeoutDuration) ? -1
+				: (int) timeoutDuration.getSeconds());
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
+	}
+
+	private boolean isZeroOrLess(Duration timeoutDuration) {
+		return timeoutDuration == null || timeoutDuration.isZero()
+				|| timeoutDuration.isNegative();
 	}
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
@@ -334,11 +328,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private void addLocaleMappings(DeploymentInfo deployment) {
-		for (Map.Entry<Locale, Charset> entry : getLocaleCharsetMappings().entrySet()) {
-			Locale locale = entry.getKey();
-			Charset charset = entry.getValue();
-			deployment.addLocaleCharsetMapping(locale.toString(), charset.toString());
-		}
+		getLocaleCharsetMappings().forEach((locale, charset) -> deployment
+				.addLocaleCharsetMapping(locale.toString(), charset.toString()));
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
@@ -370,7 +361,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				: new LoaderHidingResourceManager(rootResourceManager));
 		for (URL url : metaInfResourceUrls) {
 			if ("file".equals(url.getProtocol())) {
-				File file = new File(url.getFile());
+				File file = new File(getDecodedFile(url));
 				if (file.isFile()) {
 					try {
 						resourceJarUrls.add(new URL("jar:" + url + "!/"));
@@ -390,7 +381,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		}
 		resourceManagers.add(new MetaInfResourcesResourceManager(resourceJarUrls));
 		return new CompositeResourceManager(
-				resourceManagers.toArray(new ResourceManager[resourceManagers.size()]));
+				resourceManagers.toArray(new ResourceManager[0]));
 	}
 
 	private File getCanonicalDocumentRoot(File docBase) {
@@ -449,26 +440,32 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		this.resourceLoader = resourceLoader;
 	}
 
+	@Override
 	public void setBufferSize(Integer bufferSize) {
 		this.bufferSize = bufferSize;
 	}
 
+	@Override
 	public void setIoThreads(Integer ioThreads) {
 		this.ioThreads = ioThreads;
 	}
 
+	@Override
 	public void setWorkerThreads(Integer workerThreads) {
 		this.workerThreads = workerThreads;
 	}
 
-	public void setDirectBuffers(Boolean directBuffers) {
+	@Override
+	public void setUseDirectBuffers(Boolean directBuffers) {
 		this.directBuffers = directBuffers;
 	}
 
+	@Override
 	public void setAccessLogDirectory(File accessLogDirectory) {
 		this.accessLogDirectory = accessLogDirectory;
 	}
 
+	@Override
 	public void setAccessLogPattern(String accessLogPattern) {
 		this.accessLogPattern = accessLogPattern;
 	}
@@ -477,14 +474,17 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return this.accessLogPrefix;
 	}
 
+	@Override
 	public void setAccessLogPrefix(String accessLogPrefix) {
 		this.accessLogPrefix = accessLogPrefix;
 	}
 
+	@Override
 	public void setAccessLogSuffix(String accessLogSuffix) {
 		this.accessLogSuffix = accessLogSuffix;
 	}
 
+	@Override
 	public void setAccessLogEnabled(boolean accessLogEnabled) {
 		this.accessLogEnabled = accessLogEnabled;
 	}
@@ -493,6 +493,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return this.accessLogEnabled;
 	}
 
+	@Override
 	public void setAccessLogRotate(boolean accessLogRotate) {
 		this.accessLogRotate = accessLogRotate;
 	}
@@ -501,11 +502,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return this.useForwardHeaders;
 	}
 
-	/**
-	 * Set if x-forward-* headers should be processed.
-	 * @param useForwardHeaders if x-forward headers should be used
-	 * @since 1.3.0
-	 */
+	@Override
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
 	}

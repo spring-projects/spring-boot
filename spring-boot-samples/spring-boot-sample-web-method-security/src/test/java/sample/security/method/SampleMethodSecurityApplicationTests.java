@@ -57,7 +57,7 @@ public class SampleMethodSecurityApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET,
@@ -67,7 +67,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	public void testLogin() throws Exception {
+	public void testLogin() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
@@ -82,7 +82,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	public void testDenied() throws Exception {
+	public void testDenied() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
@@ -102,7 +102,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	public void testManagementProtected() throws Exception {
+	public void testManagementProtected() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/actuator/beans",
@@ -111,7 +111,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	public void testManagementAuthorizedAccess() throws Exception {
+	public void testManagementAuthorizedAccess() {
 		BasicAuthorizationInterceptor basicAuthInterceptor = new BasicAuthorizationInterceptor(
 				"admin", "admin");
 		this.restTemplate.getRestTemplate().getInterceptors().add(basicAuthInterceptor);

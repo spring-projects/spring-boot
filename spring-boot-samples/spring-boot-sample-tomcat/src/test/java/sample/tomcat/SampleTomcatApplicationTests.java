@@ -59,7 +59,7 @@ public class SampleTomcatApplicationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
@@ -81,7 +81,7 @@ public class SampleTomcatApplicationTests {
 	}
 
 	@Test
-	public void testTimeout() throws Exception {
+	public void testTimeout() {
 		ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) this.applicationContext;
 		TomcatWebServer embeddedServletContainer = (TomcatWebServer) context
 				.getWebServer();

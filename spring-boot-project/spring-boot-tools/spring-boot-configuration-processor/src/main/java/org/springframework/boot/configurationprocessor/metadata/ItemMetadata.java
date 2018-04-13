@@ -16,6 +16,8 @@
 
 package org.springframework.boot.configurationprocessor.metadata;
 
+import java.util.Locale;
+
 /**
  * A group or property meta-data item from some {@link ConfigurationMetadata}.
  *
@@ -213,6 +215,11 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 			Object defaultValue, ItemDeprecation deprecation) {
 		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType,
 				sourceMethod, description, defaultValue, deprecation);
+	}
+
+	public static String newItemMetadataPrefix(String prefix, String suffix) {
+		return prefix.toLowerCase(Locale.ENGLISH)
+				+ ConfigurationMetadata.toDashedCase(suffix);
 	}
 
 	/**

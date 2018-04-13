@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,23 +30,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class WhitespaceThrowableProxyConverterTests {
 
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
 	private final WhitespaceThrowableProxyConverter converter = new WhitespaceThrowableProxyConverter();
 
 	private final LoggingEvent event = new LoggingEvent();
 
 	@Test
-	public void noStackTrace() throws Exception {
+	public void noStackTrace() {
 		String s = this.converter.convert(this.event);
 		assertThat(s).isEqualTo("");
 	}
 
 	@Test
-	public void withStackTrace() throws Exception {
+	public void withStackTrace() {
 		this.event.setThrowableProxy(new ThrowableProxy(new RuntimeException()));
 		String s = this.converter.convert(this.event);
-		assertThat(s).startsWith(LINE_SEPARATOR).endsWith(LINE_SEPARATOR);
+		assertThat(s).startsWith(System.lineSeparator()).endsWith(System.lineSeparator());
 	}
 
 }

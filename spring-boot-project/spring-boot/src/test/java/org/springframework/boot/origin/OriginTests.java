@@ -30,25 +30,24 @@ import static org.mockito.Mockito.mock;
 public class OriginTests {
 
 	@Test
-	public void fromWhenSourceIsNullShouldReturnNull() throws Exception {
+	public void fromWhenSourceIsNullShouldReturnNull() {
 		assertThat(Origin.from(null)).isNull();
 	}
 
 	@Test
-	public void fromWhenSourceIsRegularObjectShouldReturnNull() throws Exception {
+	public void fromWhenSourceIsRegularObjectShouldReturnNull() {
 		Object source = new Object();
 		assertThat(Origin.from(source)).isNull();
 	}
 
 	@Test
-	public void fromWhenSourceIsOriginShouldReturnSource() throws Exception {
+	public void fromWhenSourceIsOriginShouldReturnSource() {
 		Origin origin = mock(Origin.class);
 		assertThat(Origin.from(origin)).isEqualTo(origin);
 	}
 
 	@Test
-	public void fromWhenSourceIsOriginProviderShouldReturnProvidedOrigin()
-			throws Exception {
+	public void fromWhenSourceIsOriginProviderShouldReturnProvidedOrigin() {
 		Origin origin = mock(Origin.class);
 		OriginProvider originProvider = mock(OriginProvider.class);
 		given(originProvider.getOrigin()).willReturn(origin);
@@ -56,15 +55,14 @@ public class OriginTests {
 	}
 
 	@Test
-	public void fromWhenSourceIsThrowableShouldUseCause() throws Exception {
+	public void fromWhenSourceIsThrowableShouldUseCause() {
 		Origin origin = mock(Origin.class);
 		Exception exception = new RuntimeException(new TestException(origin, null));
 		assertThat(Origin.from(exception)).isEqualTo(origin);
 	}
 
 	@Test
-	public void fromWhenSourceIsThrowableAndOriginProviderThatReturnsNullShouldUseCause()
-			throws Exception {
+	public void fromWhenSourceIsThrowableAndOriginProviderThatReturnsNullShouldUseCause() {
 		Origin origin = mock(Origin.class);
 		Exception exception = new TestException(null, new TestException(origin, null));
 		assertThat(Origin.from(exception)).isEqualTo(origin);

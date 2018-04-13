@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
-import java.io.IOException;
-
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.impl.HazelcastClientProxy;
 import com.hazelcast.config.Config;
@@ -65,7 +63,7 @@ public class HazelcastAutoConfigurationClientTests {
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
-	public void systemProperty() throws IOException {
+	public void systemProperty() {
 		this.contextRunner
 				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
 						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
@@ -76,7 +74,7 @@ public class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
-	public void explicitConfigFile() throws IOException {
+	public void explicitConfigFile() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.hazelcast.config=org/springframework/boot/autoconfigure/"
@@ -87,7 +85,7 @@ public class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
-	public void explicitConfigUrl() throws IOException {
+	public void explicitConfigUrl() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.hazelcast.config=hazelcast-client-default.xml")

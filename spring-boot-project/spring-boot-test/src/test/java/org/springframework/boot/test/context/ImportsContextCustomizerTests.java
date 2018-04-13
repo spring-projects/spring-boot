@@ -43,14 +43,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ImportsContextCustomizerTests {
 
 	@Test
-	public void importSelectorsCouldUseAnyAnnotations() throws Exception {
+	public void importSelectorsCouldUseAnyAnnotations() {
 		assertThat(new ImportsContextCustomizer(FirstImportSelectorAnnotatedClass.class))
 				.isNotEqualTo(new ImportsContextCustomizer(
 						SecondImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
-	public void determinableImportSelector() throws Exception {
+	public void determinableImportSelector() {
 		assertThat(new ImportsContextCustomizer(
 				FirstDeterminableImportSelectorAnnotatedClass.class))
 						.isEqualTo(new ImportsContextCustomizer(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @TestPropertySource(properties = "spring.jackson.serialization.write-dates-as-timestamps=false")
 public class SessionsEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+		extends MockMvcEndpointDocumentationTests {
 
 	private static final Session sessionOne = createSession(
 			Instant.now().minusSeconds(60 * 60 * 12), Instant.now().minusSeconds(45));
@@ -67,10 +67,10 @@ public class SessionsEndpointDocumentationTests
 	private static final Session sessionThree = createSession(
 			Instant.now().minusSeconds(60 * 60 * 2), Instant.now().minusSeconds(12));
 
-	private static final List<FieldDescriptor> sessionFields = Arrays
-			.asList(fieldWithPath("id").description("ID of the session."),
-					fieldWithPath("attributeNames").description(
-							"Names of the attributes stored in the session."),
+	private static final List<FieldDescriptor> sessionFields = Arrays.asList(
+			fieldWithPath("id").description("ID of the session."),
+			fieldWithPath("attributeNames")
+					.description("Names of the attributes stored in the session."),
 			fieldWithPath("creationTime")
 					.description("Timestamp of when the session was created."),
 			fieldWithPath("lastAccessedTime")

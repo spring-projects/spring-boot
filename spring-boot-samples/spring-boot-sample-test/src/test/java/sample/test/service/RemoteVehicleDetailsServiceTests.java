@@ -58,15 +58,14 @@ public class RemoteVehicleDetailsServiceTests {
 	private MockRestServiceServer server;
 
 	@Test
-	public void getVehicleDetailsWhenVinIsNullShouldThrowException() throws Exception {
+	public void getVehicleDetailsWhenVinIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("VIN must not be null");
 		this.service.getVehicleDetails(null);
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
-			throws Exception {
+	public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withSuccess(getClassPathResource("vehicledetails.json"),
 						MediaType.APPLICATION_JSON));
@@ -77,8 +76,7 @@ public class RemoteVehicleDetailsServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIsNotFoundShouldThrowException()
-			throws Exception {
+	public void getVehicleDetailsWhenResultIsNotFoundShouldThrowException() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		this.thrown.expect(VehicleIdentificationNumberNotFoundException.class);
@@ -86,8 +84,7 @@ public class RemoteVehicleDetailsServiceTests {
 	}
 
 	@Test
-	public void getVehicleDetailsWhenResultIServerErrorShouldThrowException()
-			throws Exception {
+	public void getVehicleDetailsWhenResultIServerErrorShouldThrowException() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withServerError());
 		this.thrown.expect(HttpServerErrorException.class);

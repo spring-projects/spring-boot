@@ -39,6 +39,48 @@ be done with care.
 
 
 
+[[managing-dependencies-using-in-isolation]]
+=== Using Spring Boot's dependency management in isolation
+
+Spring Boot's dependency management can be used in a project without applying Spring
+Boot's plugin to that project. The `SpringBootPlugin` class provides a `BOM_COORDINATES`
+constant that can be used to import the bom without having to know its group ID,
+artifact ID, or version.
+
+First, configure the project to depend on the Spring Boot plugin but do not apply it:
+
+ifeval::["{version-type}" == "RELEASE"]
+----
+include::../gradle/managing-dependencies/depend-on-plugin-release.gradle[]
+----
+endif::[]
+ifeval::["{version-type}" == "MILESTONE"]
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/managing-dependencies/depend-on-plugin-milestone.gradle[]
+----
+endif::[]
+ifeval::["{version-type}" == "SNAPSHOT"]
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/managing-dependencies/depend-on-plugin-snapshot.gradle[]
+----
+endif::[]
+
+The Spring Boot plugin's dependency on the dependency management plugin means that you
+can use the dependency management plugin without having to declare a dependency on it.
+This also means that you will automatically use the same version of the dependency
+management plugin as Spring Boot uses.
+
+Apply the dependency management plugin and then configure it to import Spring Boot's bom:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::../gradle/managing-dependencies/configure-bom.gradle[tags=configure-bom]
+----
+
+
+
 [[managing-dependencies-learning-more]]
 === Learning more
 

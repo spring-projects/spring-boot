@@ -31,20 +31,19 @@ import static org.mockito.Mockito.mock;
 public class OriginLookupTests {
 
 	@Test
-	public void getOriginWhenSourceIsNullShouldReturnNull() throws Exception {
+	public void getOriginWhenSourceIsNullShouldReturnNull() {
 		assertThat(OriginLookup.getOrigin(null, "foo")).isNull();
 	}
 
 	@Test
-	public void getOriginWhenSourceIsNotLookupShouldReturnLookupOrigin()
-			throws Exception {
+	public void getOriginWhenSourceIsNotLookupShouldReturnLookupOrigin() {
 		Object source = new Object();
 		assertThat(OriginLookup.getOrigin(source, "foo")).isNull();
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void getOriginWhenSourceIsLookupShouldReturnLookupOrigin() throws Exception {
+	public void getOriginWhenSourceIsLookupShouldReturnLookupOrigin() {
 		OriginLookup<String> source = mock(OriginLookup.class);
 		Origin origin = MockOrigin.of("bar");
 		given(source.getOrigin("foo")).willReturn(origin);
@@ -53,8 +52,7 @@ public class OriginLookupTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void getOriginWhenSourceLookupThrowsAndErrorShouldReturnNull()
-			throws Exception {
+	public void getOriginWhenSourceLookupThrowsAndErrorShouldReturnNull() {
 		OriginLookup<String> source = mock(OriginLookup.class);
 		willThrow(RuntimeException.class).given(source).getOrigin("foo");
 		assertThat(OriginLookup.getOrigin(source, "foo")).isNull();

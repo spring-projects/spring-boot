@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
+import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -88,41 +88,43 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	@ReadOperation
-	public ConfigurationPropertiesDescriptor configurationProperties() {
+	public ApplicationConfigurationProperties configurationProperties() {
 		return extract(this.context);
 	}
 
-	private ConfigurationPropertiesDescriptor extract(ApplicationContext context) {
+	private ApplicationConfigurationProperties extract(ApplicationContext context) {
 		ObjectMapper mapper = new ObjectMapper();
 		configureObjectMapper(mapper);
-		return describeConfigurationProperties(context, mapper);
+		Map<String, ContextConfigurationProperties> contextProperties = new HashMap<>();
+		ApplicationContext target = context;
+		while (target != null) {
+			contextProperties.put(target.getId(),
+					describeConfigurationProperties(target, mapper));
+			target = target.getParent();
+		}
+		return new ApplicationConfigurationProperties(contextProperties);
 	}
 
-	private ConfigurationPropertiesDescriptor describeConfigurationProperties(
+	private ContextConfigurationProperties describeConfigurationProperties(
 			ApplicationContext context, ObjectMapper mapper) {
-		if (context == null) {
-			return null;
-		}
-		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(
+		ConfigurationBeanFactoryMetadata beanFactoryMetadata = getBeanFactoryMetadata(
 				context);
 		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
-				beanFactoryMetaData);
+				beanFactoryMetadata);
 		Map<String, ConfigurationPropertiesBeanDescriptor> beanDescriptors = new HashMap<>();
-		for (Map.Entry<String, Object> entry : beans.entrySet()) {
-			String beanName = entry.getKey();
-			Object bean = entry.getValue();
-			String prefix = extractPrefix(context, beanFactoryMetaData, beanName, bean);
+		beans.forEach((beanName, bean) -> {
+			String prefix = extractPrefix(context, beanFactoryMetadata, beanName);
 			beanDescriptors.put(beanName, new ConfigurationPropertiesBeanDescriptor(
 					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
-		}
-		return new ConfigurationPropertiesDescriptor(context.getId(), beanDescriptors,
-				describeConfigurationProperties(context.getParent(), mapper));
+		});
+		return new ContextConfigurationProperties(beanDescriptors,
+				context.getParent() == null ? null : context.getParent().getId());
 	}
 
-	private ConfigurationBeanFactoryMetaData getBeanFactoryMetaData(
+	private ConfigurationBeanFactoryMetadata getBeanFactoryMetadata(
 			ApplicationContext context) {
-		Map<String, ConfigurationBeanFactoryMetaData> beans = context
-				.getBeansOfType(ConfigurationBeanFactoryMetaData.class);
+		Map<String, ConfigurationBeanFactoryMetadata> beans = context
+				.getBeansOfType(ConfigurationBeanFactoryMetadata.class);
 		if (beans.size() == 1) {
 			return beans.values().iterator().next();
 		}
@@ -131,11 +133,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private Map<String, Object> getConfigurationPropertiesBeans(
 			ApplicationContext context,
-			ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
+			ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
 		Map<String, Object> beans = new HashMap<>();
 		beans.putAll(context.getBeansWithAnnotation(ConfigurationProperties.class));
-		if (beanFactoryMetaData != null) {
-			beans.putAll(beanFactoryMetaData
+		if (beanFactoryMetadata != null) {
+			beans.putAll(beanFactoryMetadata
 					.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
 		}
 		return beans;
@@ -197,12 +199,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @param context the application context
 	 * @param beanFactoryMetaData the bean factory meta-data
 	 * @param beanName the bean name
-	 * @param bean the bean
 	 * @return the prefix
 	 */
 	private String extractPrefix(ApplicationContext context,
-			ConfigurationBeanFactoryMetaData beanFactoryMetaData, String beanName,
-			Object bean) {
+			ConfigurationBeanFactoryMetadata beanFactoryMetaData, String beanName) {
 		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
 				ConfigurationProperties.class);
 		if (beanFactoryMetaData != null) {
@@ -227,10 +227,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> sanitize(String prefix, Map<String, Object> map) {
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			String key = entry.getKey();
+		map.forEach((key, value) -> {
 			String qualifiedKey = (prefix.isEmpty() ? prefix : prefix + ".") + key;
-			Object value = entry.getValue();
 			if (value instanceof Map) {
 				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value));
 			}
@@ -242,7 +240,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				value = this.sanitizer.sanitize(qualifiedKey, value);
 				map.put(key, value);
 			}
-		}
+		});
 		return map;
 	}
 
@@ -390,35 +388,47 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
+	 * A description of an application's {@link ConfigurationProperties} beans. Primarily
+	 * intended for serialization to JSON.
+	 */
+	public static final class ApplicationConfigurationProperties {
+
+		private final Map<String, ContextConfigurationProperties> contexts;
+
+		private ApplicationConfigurationProperties(
+				Map<String, ContextConfigurationProperties> contexts) {
+			this.contexts = contexts;
+		}
+
+		public Map<String, ContextConfigurationProperties> getContexts() {
+			return this.contexts;
+		}
+
+	}
+
+	/**
 	 * A description of an application context's {@link ConfigurationProperties} beans.
 	 * Primarily intended for serialization to JSON.
 	 */
-	public static final class ConfigurationPropertiesDescriptor {
-
-		private final String contextId;
+	public static final class ContextConfigurationProperties {
 
 		private final Map<String, ConfigurationPropertiesBeanDescriptor> beans;
 
-		private final ConfigurationPropertiesDescriptor parent;
+		private final String parentId;
 
-		private ConfigurationPropertiesDescriptor(String contextId,
+		private ContextConfigurationProperties(
 				Map<String, ConfigurationPropertiesBeanDescriptor> beans,
-				ConfigurationPropertiesDescriptor parent) {
-			this.contextId = contextId;
+				String parentId) {
 			this.beans = beans;
-			this.parent = parent;
-		}
-
-		public String getContextId() {
-			return this.contextId;
+			this.parentId = parentId;
 		}
 
 		public Map<String, ConfigurationPropertiesBeanDescriptor> getBeans() {
 			return this.beans;
 		}
 
-		public ConfigurationPropertiesDescriptor getParent() {
-			return this.parent;
+		public String getParentId() {
+			return this.parentId;
 		}
 
 	}

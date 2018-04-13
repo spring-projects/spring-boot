@@ -85,7 +85,7 @@ public class WebMvcTestAllControllersIntegrationTests {
 	}
 
 	@Test
-	public void shouldNotFilterErrorAttributes() throws Exception {
+	public void shouldNotFilterErrorAttributes() {
 		assertThat(this.errorAttributes).isNotNull();
 
 	}

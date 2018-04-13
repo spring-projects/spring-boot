@@ -13,7 +13,7 @@ problem.
 
 == Stack Overflow
 The Spring Boot community monitors the
-http://stackoverflow.com/tags/spring-boot[`spring-boot`] tag on Stack Overflow. Before
+https://stackoverflow.com/tags/spring-boot[`spring-boot`] tag on Stack Overflow. Before
 asking a question, please familiar yourself with Stack Overflow's
 https://stackoverflow.com/help/how-to-ask[advice on how to ask a good question].
 

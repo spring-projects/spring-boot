@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,11 +49,10 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource,
 			PropertyMapper mapper) {
 		super(propertySource, mapper, null);
-		assertEnumerablePropertySource(propertySource);
+		assertEnumerablePropertySource();
 	}
 
-	private void assertEnumerablePropertySource(
-			EnumerablePropertySource<?> propertySource) {
+	private void assertEnumerablePropertySource() {
 		if (getPropertySource() instanceof MapPropertySource) {
 			try {
 				((MapPropertySource) getPropertySource()).getSource().size();
@@ -71,7 +70,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		ConfigurationProperty configurationProperty = super.getConfigurationProperty(
 				name);
 		if (configurationProperty == null) {
-			configurationProperty = find(getPropertyMappings(), name);
+			configurationProperty = find(getPropertyMappings(getCache()), name);
 		}
 		return configurationProperty;
 	}
@@ -98,8 +97,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		if (names != null) {
 			return names;
 		}
-		List<PropertyMapping> mappings = getPropertyMappings();
-		names = new ArrayList<>(mappings.size());
+		PropertyMapping[] mappings = getPropertyMappings(cache);
+		names = new ArrayList<>(mappings.length);
 		for (PropertyMapping mapping : mappings) {
 			names.add(mapping.getConfigurationPropertyName());
 		}
@@ -110,22 +109,23 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return names;
 	}
 
-	private List<PropertyMapping> getPropertyMappings() {
-		Cache cache = getCache();
-		List<PropertyMapping> mappings = (cache != null ? cache.getMappings() : null);
-		if (mappings != null) {
-			return mappings;
+	private PropertyMapping[] getPropertyMappings(Cache cache) {
+		PropertyMapping[] result = (cache != null ? cache.getMappings() : null);
+		if (result != null) {
+			return result;
 		}
 		String[] names = getPropertySource().getPropertyNames();
-		mappings = new ArrayList<>(names.length);
+		List<PropertyMapping> mappings = new ArrayList<>(names.length * 2);
 		for (String name : names) {
-			mappings.addAll(getMapper().map(getPropertySource(), name));
+			for (PropertyMapping mapping : getMapper().map(name)) {
+				mappings.add(mapping);
+			}
 		}
-		mappings = Collections.unmodifiableList(mappings);
+		result = mappings.toArray(new PropertyMapping[0]);
 		if (cache != null) {
-			cache.setMappings(mappings);
+			cache.setMappings(result);
 		}
-		return mappings;
+		return result;
 	}
 
 	private Cache getCache() {
@@ -157,7 +157,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private List<ConfigurationPropertyName> names;
 
-		private List<PropertyMapping> mappings;
+		private PropertyMapping[] mappings;
 
 		public List<ConfigurationPropertyName> getNames() {
 			return this.names;
@@ -167,11 +167,11 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			this.names = names;
 		}
 
-		public List<PropertyMapping> getMappings() {
+		public PropertyMapping[] getMappings() {
 			return this.mappings;
 		}
 
-		public void setMappings(List<PropertyMapping> mappings) {
+		public void setMappings(PropertyMapping[] mappings) {
 			this.mappings = mappings;
 		}
 

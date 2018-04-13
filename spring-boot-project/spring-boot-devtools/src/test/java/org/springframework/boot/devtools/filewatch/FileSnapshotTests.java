@@ -49,7 +49,7 @@ public class FileSnapshotTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
-	public void fileMustNotBeNull() throws Exception {
+	public void fileMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("File must not be null");
 		new FileSnapshot(null);

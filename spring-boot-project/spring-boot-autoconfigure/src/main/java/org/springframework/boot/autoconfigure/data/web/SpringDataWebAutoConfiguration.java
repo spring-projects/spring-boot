@@ -65,10 +65,14 @@ public class SpringDataWebAutoConfiguration {
 	public PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
 		return (resolver) -> {
 			Pageable pageable = this.properties.getPageable();
-			resolver.setFallbackPageable(
-					PageRequest.of(0, pageable.getDefaultPageSize()));
 			resolver.setPageParameterName(pageable.getPageParameter());
 			resolver.setSizeParameterName(pageable.getSizeParameter());
+			resolver.setOneIndexedParameters(pageable.isOneIndexedParameters());
+			resolver.setPrefix(pageable.getPrefix());
+			resolver.setQualifierDelimiter(pageable.getQualifierDelimiter());
+			resolver.setFallbackPageable(
+					PageRequest.of(0, pageable.getDefaultPageSize()));
+			resolver.setMaxPageSize(pageable.getMaxPageSize());
 		};
 	}
 

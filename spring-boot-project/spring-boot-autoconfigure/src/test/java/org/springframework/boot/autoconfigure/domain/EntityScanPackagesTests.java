@@ -51,7 +51,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void getWhenNoneRegisteredShouldReturnNone() throws Exception {
+	public void getWhenNoneRegisteredShouldReturnNone() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.refresh();
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
@@ -60,7 +60,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void getShouldReturnRegisterPackages() throws Exception {
+	public void getShouldReturnRegisterPackages() {
 		this.context = new AnnotationConfigApplicationContext();
 		EntityScanPackages.register(this.context, "a", "b");
 		EntityScanPackages.register(this.context, "b", "c");
@@ -70,8 +70,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void registerFromArrayWhenRegistryIsNullShouldThrowException()
-			throws Exception {
+	public void registerFromArrayWhenRegistryIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Registry must not be null");
 		EntityScanPackages.register(null);
@@ -79,8 +78,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void registerFromArrayWhenPackageNamesIsNullShouldThrowException()
-			throws Exception {
+	public void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PackageNames must not be null");
@@ -88,16 +86,14 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void registerFromCollectionWhenRegistryIsNullShouldThrowException()
-			throws Exception {
+	public void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Registry must not be null");
 		EntityScanPackages.register(null, Collections.emptyList());
 	}
 
 	@Test
-	public void registerFromCollectionWhenPackageNamesIsNullShouldThrowException()
-			throws Exception {
+	public void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("PackageNames must not be null");
@@ -105,8 +101,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasValueAttributeShouldSetupPackages()
-			throws Exception {
+	public void entityScanAnnotationWhenHasValueAttributeShouldSetupPackages() {
 		this.context = new AnnotationConfigApplicationContext(
 				EntityScanValueConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
@@ -114,8 +109,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasValueAttributeShouldSetupPackagesAsm()
-			throws Exception {
+	public void entityScanAnnotationWhenHasValueAttributeShouldSetupPackagesAsm() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.registerBeanDefinition("entityScanValueConfig",
 				new RootBeanDefinition(EntityScanValueConfig.class.getName()));
@@ -125,8 +119,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasBasePackagesAttributeShouldSetupPackages()
-			throws Exception {
+	public void entityScanAnnotationWhenHasBasePackagesAttributeShouldSetupPackages() {
 		this.context = new AnnotationConfigApplicationContext(
 				EntityScanBasePackagesConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
@@ -134,16 +127,14 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasValueAndBasePackagesAttributeShouldThrow()
-			throws Exception {
+	public void entityScanAnnotationWhenHasValueAndBasePackagesAttributeShouldThrow() {
 		this.thrown.expect(AnnotationConfigurationException.class);
 		this.context = new AnnotationConfigApplicationContext(
 				EntityScanValueAndBasePackagesConfig.class);
 	}
 
 	@Test
-	public void entityScanAnnotationWhenHasBasePackageClassesAttributeShouldSetupPackages()
-			throws Exception {
+	public void entityScanAnnotationWhenHasBasePackageClassesAttributeShouldSetupPackages() {
 		this.context = new AnnotationConfigApplicationContext(
 				EntityScanBasePackageClassesConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
@@ -152,8 +143,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void entityScanAnnotationWhenNoAttributesShouldSetupPackages()
-			throws Exception {
+	public void entityScanAnnotationWhenNoAttributesShouldSetupPackages() {
 		this.context = new AnnotationConfigApplicationContext(
 				EntityScanNoAttributesConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);
@@ -162,8 +152,7 @@ public class EntityScanPackagesTests {
 	}
 
 	@Test
-	public void entityScanAnnotationWhenLoadingFromMultipleConfigsShouldCombinePackages()
-			throws Exception {
+	public void entityScanAnnotationWhenLoadingFromMultipleConfigsShouldCombinePackages() {
 		this.context = new AnnotationConfigApplicationContext(EntityScanValueConfig.class,
 				EntityScanBasePackagesConfig.class);
 		EntityScanPackages packages = EntityScanPackages.get(this.context);

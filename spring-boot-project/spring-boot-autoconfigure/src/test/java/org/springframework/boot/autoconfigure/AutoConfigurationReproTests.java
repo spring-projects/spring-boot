@@ -45,7 +45,7 @@ public class AutoConfigurationReproTests {
 	}
 
 	@Test
-	public void doesNotEarlyInitializeFactoryBeans() throws Exception {
+	public void doesNotEarlyInitializeFactoryBeans() {
 		SpringApplication application = new SpringApplication(EarlyInitConfig.class,
 				PropertySourcesPlaceholderConfigurer.class,
 				ServletWebServerFactoryAutoConfiguration.class);

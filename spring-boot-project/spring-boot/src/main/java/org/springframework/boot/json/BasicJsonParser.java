@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,31 +31,20 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Jean de Klerk
+ * @author Stephane Nicoll
  * @since 1.2.0
  * @see JsonParserFactory
  */
-public class BasicJsonParser implements JsonParser {
+public class BasicJsonParser extends AbstractJsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("{")) {
-				return parseMapInternal(json);
-			}
-		}
-		throw new IllegalArgumentException("Cannot parse JSON");
+		return parseMap(json, this::parseMapInternal);
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		if (json != null) {
-			json = json.trim();
-			if (json.startsWith("[")) {
-				return parseListInternal(json);
-			}
-		}
-		throw new IllegalArgumentException("Cannot parse JSON");
+		return parseList(json, this::parseListInternal);
 	}
 
 	private List<Object> parseListInternal(String json) {
@@ -112,12 +101,7 @@ public class BasicJsonParser implements JsonParser {
 		for (String pair : tokenize(json)) {
 			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
 			String key = trimLeadingCharacter(trimTrailingCharacter(values[0], '"'), '"');
-			Object value = null;
-			if (values.length > 0) {
-				String string = trimLeadingCharacter(
-						trimTrailingCharacter(values[1], '"'), '"');
-				value = parseInternal(string);
-			}
+			Object value = parseInternal(values[1]);
 			map.put(key, value);
 		}
 		return map;
@@ -128,6 +112,7 @@ public class BasicJsonParser implements JsonParser {
 		int index = 0;
 		int inObject = 0;
 		int inList = 0;
+		boolean inValue = false;
 		StringBuilder build = new StringBuilder();
 		while (index < json.length()) {
 			char current = json.charAt(index);
@@ -143,7 +128,10 @@ public class BasicJsonParser implements JsonParser {
 			if (current == ']') {
 				inList--;
 			}
-			if (current == ',' && inObject == 0 && inList == 0) {
+			if (current == '"') {
+				inValue = !inValue;
+			}
+			if (current == ',' && inObject == 0 && inList == 0 && !inValue) {
 				list.add(build.toString());
 				build.setLength(0);
 			}

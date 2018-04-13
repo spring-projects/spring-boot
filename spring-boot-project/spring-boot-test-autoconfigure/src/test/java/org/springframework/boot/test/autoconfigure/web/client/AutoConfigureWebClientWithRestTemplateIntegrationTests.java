@@ -51,7 +51,7 @@ public class AutoConfigureWebClientWithRestTemplateIntegrationTests {
 	private MockRestServiceServer server;
 
 	@Test
-	public void restTemplateTest() throws Exception {
+	public void restTemplateTest() {
 		this.server.expect(requestTo("/test"))
 				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test",

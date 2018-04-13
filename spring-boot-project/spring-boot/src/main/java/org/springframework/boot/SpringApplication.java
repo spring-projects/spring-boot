@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -326,19 +326,27 @@ public class SpringApplication {
 					printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
-			listeners.finished(context, null);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass)
 						.logStarted(getApplicationLog(), stopWatch);
 			}
+			listeners.started(context);
 			callRunners(context, applicationArguments);
-			return context;
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, listeners, exceptionReporters, ex);
+			handleRunFailure(context, ex, exceptionReporters, listeners);
 			throw new IllegalStateException(ex);
 		}
+
+		try {
+			listeners.running(context);
+		}
+		catch (Throwable ex) {
+			handleRunFailure(context, ex, exceptionReporters, null);
+			throw new IllegalStateException(ex);
+		}
+		return context;
 	}
 
 	private ConfigurableEnvironment prepareEnvironment(
@@ -379,7 +387,7 @@ public class SpringApplication {
 		// Load the sources
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
-		load(context, sources.toArray(new Object[sources.size()]));
+		load(context, sources.toArray(new Object[0]));
 		listeners.contextLoaded(context);
 	}
 
@@ -515,7 +523,7 @@ public class SpringApplication {
 		// But these ones should go first (last wins in a property key clash)
 		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
-		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
+		environment.setActiveProfiles(StringUtils.toStringArray(profiles));
 	}
 
 	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {
@@ -794,13 +802,15 @@ public class SpringApplication {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
-			SpringApplicationRunListeners listeners,
+			Throwable exception,
 			Collection<SpringBootExceptionReporter> exceptionReporters,
-			Throwable exception) {
+			SpringApplicationRunListeners listeners) {
 		try {
 			try {
 				handleExitCode(context, exception);
-				listeners.finished(context, exception);
+				if (listeners != null) {
+					listeners.failed(context, exception);
+				}
 			}
 			finally {
 				reportFailure(exceptionReporters, exception);
@@ -829,7 +839,7 @@ public class SpringApplication {
 			// Continue with normal handling of the original failure
 		}
 		if (logger.isErrorEnabled()) {
-			logger.error("Application startup failed", failure);
+			logger.error("Application run failed", failure);
 			registerLoggedException(failure);
 		}
 	}

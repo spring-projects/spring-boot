@@ -60,7 +60,7 @@ public class UndertowReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void builderCustomizersShouldBeInvoked() throws Exception {
+	public void builderCustomizersShouldBeInvoked() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];

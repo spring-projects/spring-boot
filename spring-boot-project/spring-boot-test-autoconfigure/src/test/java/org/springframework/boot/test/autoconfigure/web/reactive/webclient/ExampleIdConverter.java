@@ -22,13 +22,12 @@ import java.util.UUID;
 
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 /**
- * Example {@link Converter} used with {@link WebFluxTest} tests.
+ * Example {@link GenericConverter} used with {@link WebFluxTest} tests.
  *
  * @author Stephane Nicoll
  */

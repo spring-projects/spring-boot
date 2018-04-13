@@ -90,13 +90,11 @@ public class MailHealthIndicatorTests {
 		}
 
 		@Override
-		public void connect(String host, int port, String user, String password)
-				throws MessagingException {
+		public void connect(String host, int port, String user, String password) {
 		}
 
 		@Override
-		public void sendMessage(Message msg, Address[] addresses)
-				throws MessagingException {
+		public void sendMessage(Message msg, Address[] addresses) {
 		}
 
 	}

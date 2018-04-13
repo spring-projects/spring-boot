@@ -59,77 +59,77 @@ public class ColorConverterTests {
 	}
 
 	@Test
-	public void faint() throws Exception {
+	public void faint() {
 		this.converter.setOptionList(Collections.singletonList("faint"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[2min\033[0;39m");
 	}
 
 	@Test
-	public void red() throws Exception {
+	public void red() {
 		this.converter.setOptionList(Collections.singletonList("red"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[31min\033[0;39m");
 	}
 
 	@Test
-	public void green() throws Exception {
+	public void green() {
 		this.converter.setOptionList(Collections.singletonList("green"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[32min\033[0;39m");
 	}
 
 	@Test
-	public void yellow() throws Exception {
+	public void yellow() {
 		this.converter.setOptionList(Collections.singletonList("yellow"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[33min\033[0;39m");
 	}
 
 	@Test
-	public void blue() throws Exception {
+	public void blue() {
 		this.converter.setOptionList(Collections.singletonList("blue"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[34min\033[0;39m");
 	}
 
 	@Test
-	public void magenta() throws Exception {
+	public void magenta() {
 		this.converter.setOptionList(Collections.singletonList("magenta"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[35min\033[0;39m");
 	}
 
 	@Test
-	public void cyan() throws Exception {
+	public void cyan() {
 		this.converter.setOptionList(Collections.singletonList("cyan"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[36min\033[0;39m");
 	}
 
 	@Test
-	public void highlightError() throws Exception {
+	public void highlightError() {
 		this.event.setLevel(Level.ERROR);
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[31min\033[0;39m");
 	}
 
 	@Test
-	public void highlightWarn() throws Exception {
+	public void highlightWarn() {
 		this.event.setLevel(Level.WARN);
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[33min\033[0;39m");
 	}
 
 	@Test
-	public void highlightDebug() throws Exception {
+	public void highlightDebug() {
 		this.event.setLevel(Level.DEBUG);
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[32min\033[0;39m");
 	}
 
 	@Test
-	public void highlightTrace() throws Exception {
+	public void highlightTrace() {
 		this.event.setLevel(Level.TRACE);
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[32min\033[0;39m");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,8 @@ import org.springframework.util.Assert;
  */
 public class ImageBanner implements Banner {
 
+	private static final String PROPERTY_PREFIX = "spring.banner.image.";
+
 	private static final Log logger = LogFactory.getLog(ImageBanner.class);
 
 	private static final double[] RGB_WEIGHT = { 0.2126d, 0.7152d, 0.0722d };
@@ -98,11 +100,10 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(Environment environment, PrintStream out)
 			throws IOException {
-		int width = environment.getProperty("banner.image.width", Integer.class, 76);
-		int height = environment.getProperty("banner.image.height", Integer.class, 0);
-		int margin = environment.getProperty("banner.image.margin", Integer.class, 2);
-		boolean invert = environment.getProperty("banner.image.invert", Boolean.class,
-				false);
+		int width = getProperty(environment, "width", Integer.class, 76);
+		int height = getProperty(environment, "height", Integer.class, 0);
+		int margin = getProperty(environment, "margin", Integer.class, 2);
+		boolean invert = getProperty(environment, "invert", Boolean.class, false);
 		Frame[] frames = readFrames(width, height);
 		for (int i = 0; i < frames.length; i++) {
 			if (i > 0) {
@@ -111,6 +112,11 @@ public class ImageBanner implements Banner {
 			printBanner(frames[i].getImage(), margin, invert, out);
 			sleep(frames[i].getDelayTime());
 		}
+	}
+
+	private <T> T getProperty(Environment environment, String name, Class<T> targetType,
+			T defaultValue) {
+		return environment.getProperty(PROPERTY_PREFIX + name, targetType, defaultValue);
 	}
 
 	private Frame[] readFrames(int width, int height) throws IOException {
@@ -247,6 +253,7 @@ public class ImageBanner implements Banner {
 			Thread.sleep(delay);
 		}
 		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 	}
 

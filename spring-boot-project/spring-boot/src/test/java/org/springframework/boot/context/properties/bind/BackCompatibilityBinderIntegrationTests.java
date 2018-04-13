@@ -35,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BackCompatibilityBinderIntegrationTests {
 
 	@Test
-	public void bindWhenBindingCamelCaseToEnvironmentWithExtractUnderscore()
-			throws Exception {
+	public void bindWhenBindingCamelCaseToEnvironmentWithExtractUnderscore() {
 		// gh-10873
 		MockEnvironment environment = new MockEnvironment();
 		SystemEnvironmentPropertySource propertySource = new SystemEnvironmentPropertySource(

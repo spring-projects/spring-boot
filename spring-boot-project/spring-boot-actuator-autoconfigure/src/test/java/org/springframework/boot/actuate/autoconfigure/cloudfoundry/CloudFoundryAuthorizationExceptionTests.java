@@ -31,56 +31,55 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CloudFoundryAuthorizationExceptionTests {
 
 	@Test
-	public void statusCodeForInvalidTokenReasonShouldBe401() throws Exception {
+	public void statusCodeForInvalidTokenReasonShouldBe401() {
 		assertThat(createException(Reason.INVALID_TOKEN).getStatusCode())
 				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void statusCodeForInvalidIssuerReasonShouldBe401() throws Exception {
+	public void statusCodeForInvalidIssuerReasonShouldBe401() {
 		assertThat(createException(Reason.INVALID_ISSUER).getStatusCode())
 				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void statusCodeForInvalidAudienceReasonShouldBe401() throws Exception {
+	public void statusCodeForInvalidAudienceReasonShouldBe401() {
 		assertThat(createException(Reason.INVALID_AUDIENCE).getStatusCode())
 				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void statusCodeForInvalidSignatureReasonShouldBe401() throws Exception {
+	public void statusCodeForInvalidSignatureReasonShouldBe401() {
 		assertThat(createException(Reason.INVALID_SIGNATURE).getStatusCode())
 				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void statusCodeForMissingAuthorizationReasonShouldBe401() throws Exception {
+	public void statusCodeForMissingAuthorizationReasonShouldBe401() {
 		assertThat(createException(Reason.MISSING_AUTHORIZATION).getStatusCode())
 				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void statusCodeForUnsupportedSignatureAlgorithmReasonShouldBe401()
-			throws Exception {
+	public void statusCodeForUnsupportedSignatureAlgorithmReasonShouldBe401() {
 		assertThat(createException(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM)
 				.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void statusCodeForTokenExpiredReasonShouldBe401() throws Exception {
+	public void statusCodeForTokenExpiredReasonShouldBe401() {
 		assertThat(createException(Reason.TOKEN_EXPIRED).getStatusCode())
 				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	public void statusCodeForAccessDeniedReasonShouldBe403() throws Exception {
+	public void statusCodeForAccessDeniedReasonShouldBe403() {
 		assertThat(createException(Reason.ACCESS_DENIED).getStatusCode())
 				.isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
-	public void statusCodeForServiceUnavailableReasonShouldBe503() throws Exception {
+	public void statusCodeForServiceUnavailableReasonShouldBe503() {
 		assertThat(createException(Reason.SERVICE_UNAVAILABLE).getStatusCode())
 				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}

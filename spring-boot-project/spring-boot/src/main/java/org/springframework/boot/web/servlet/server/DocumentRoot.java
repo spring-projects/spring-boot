@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 package org.springframework.boot.web.servlet.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.CodeSource;
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 
@@ -82,7 +82,7 @@ class DocumentRoot {
 			this.logger.debug("Code archive: " + file);
 		}
 		if (file != null && file.exists() && !file.isDirectory()
-				&& file.getName().toLowerCase().endsWith(extension)) {
+				&& file.getName().toLowerCase(Locale.ENGLISH).endsWith(extension)) {
 			return file.getAbsoluteFile();
 		}
 		return null;
@@ -93,23 +93,30 @@ class DocumentRoot {
 	}
 
 	private File getCodeSourceArchive() {
+		return getCodeSourceArchive(getClass().getProtectionDomain().getCodeSource());
+	}
+
+	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
-			CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
 			URL location = (codeSource == null ? null : codeSource.getLocation());
 			if (location == null) {
 				return null;
 			}
-			String path = location.getPath();
+			String path;
 			URLConnection connection = location.openConnection();
 			if (connection instanceof JarURLConnection) {
 				path = ((JarURLConnection) connection).getJarFile().getName();
 			}
-			if (path.indexOf("!/") != -1) {
-				path = path.substring(0, path.indexOf("!/"));
+			else {
+				path = location.toURI().getPath();
+			}
+			int index = path.indexOf("!/");
+			if (index != -1) {
+				path = path.substring(0, index);
 			}
 			return new File(path);
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			return null;
 		}
 	}

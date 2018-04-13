@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.diagnostics.analyzer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.constraints.Min;
 
@@ -44,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BindFailureAnalyzerTests {
 
 	@Test
-	public void analysisForUnboundElementsIsNull() throws Exception {
+	public void analysisForUnboundElementsIsNull() {
 		FailureAnalysis analysis = performAnalysis(
 				UnboundElementsFailureConfiguration.class, "test.foo.listValue[0]=hello",
 				"test.foo.listValue[2]=world");
@@ -52,19 +53,28 @@ public class BindFailureAnalyzerTests {
 	}
 
 	@Test
-	public void analysisForValidationExceptionIsNull() throws Exception {
+	public void analysisForValidationExceptionIsNull() {
 		FailureAnalysis analysis = performAnalysis(
 				FieldValidationFailureConfiguration.class, "test.foo.value=1");
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void bindExceptionDueToOtherFailure() throws Exception {
+	public void bindExceptionDueToOtherFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
 				"test.foo.value=${BAR}");
 		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "${BAR}",
 				"\"test.foo.value\" from property source \"test\"",
 				"Could not resolve placeholder 'BAR' in value \"${BAR}\""));
+	}
+
+	@Test
+	public void bindExceptionForUnknownValueInEnumListsValidValuesInAction() {
+		FailureAnalysis analysis = performAnalysis(EnumFailureConfiguration.class,
+				"test.foo.fruit=apple,strawberry");
+		for (Fruit fruit : Fruit.values()) {
+			assertThat(analysis.getAction()).contains(fruit.name());
+		}
 	}
 
 	private static String failure(String property, String value, String origin,
@@ -124,6 +134,11 @@ public class BindFailureAnalyzerTests {
 
 	}
 
+	@EnableConfigurationProperties(EnumFailureProperties.class)
+	static class EnumFailureConfiguration {
+
+	}
+
 	@ConfigurationProperties("test.foo")
 	@Validated
 	static class FieldValidationFailureProperties {
@@ -167,6 +182,27 @@ public class BindFailureAnalyzerTests {
 		public void setValue(String value) {
 			this.value = value;
 		}
+
+	}
+
+	@ConfigurationProperties("test.foo")
+	static class EnumFailureProperties {
+
+		private Set<Fruit> fruit;
+
+		public Set<Fruit> getFruit() {
+			return this.fruit;
+		}
+
+		public void setFruit(Set<Fruit> fruit) {
+			this.fruit = fruit;
+		}
+
+	}
+
+	enum Fruit {
+
+		APPLE, BANANA, ORANGE;
 
 	}
 

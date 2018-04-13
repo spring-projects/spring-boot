@@ -1,0 +1,59 @@
+/*
+ * Copyright 2012-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.actuate.web.mappings.servlet;
+
+import java.util.Collection;
+
+import javax.servlet.FilterRegistration;
+
+/**
+ * A {@link RegistrationMappingDescription} derived from a {@link FilterRegistration}.
+ *
+ * @author Andy Wilkinson
+ * @since 2.0.0
+ */
+public class FilterRegistrationMappingDescription
+		extends RegistrationMappingDescription<FilterRegistration> {
+
+	/**
+	 * Creates a new {@code FilterRegistrationMappingDescription} derived from the given
+	 * {@code filterRegistration}.
+	 * @param filterRegistration the filter registration
+	 */
+	public FilterRegistrationMappingDescription(FilterRegistration filterRegistration) {
+		super(filterRegistration);
+	}
+
+	/**
+	 * Returns the servlet name mappings for the registered filter.
+	 *
+	 * @return the mappings
+	 */
+	public Collection<String> getServletNameMappings() {
+		return this.getRegistration().getServletNameMappings();
+	}
+
+	/**
+	 * Returns the URL pattern mappings for the registered filter.
+	 *
+	 * @return the mappings
+	 */
+	public Collection<String> getUrlPatternMappings() {
+		return this.getRegistration().getUrlPatternMappings();
+	}
+
+}

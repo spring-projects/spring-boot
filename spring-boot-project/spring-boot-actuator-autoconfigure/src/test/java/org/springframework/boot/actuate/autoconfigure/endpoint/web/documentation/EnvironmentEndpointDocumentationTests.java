@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @TestPropertySource(properties = "spring.config.location=classpath:/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/")
 public class EnvironmentEndpointDocumentationTests
-		extends AbstractEndpointDocumentationTests {
+		extends MockMvcEndpointDocumentationTests {
 
 	private static final FieldDescriptor activeProfiles = fieldWithPath("activeProfiles")
 			.description("Names of the active profiles, if any.");
@@ -71,12 +71,10 @@ public class EnvironmentEndpointDocumentationTests
 
 	@Test
 	public void env() throws Exception {
-		this.mockMvc.perform(get("/actuator/env")).andExpect(status().isOk())
-				.andDo(document("env/all",
-						preprocessResponse(replacePattern(
-								Pattern.compile(
-										"org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
-								""), filterProperties()),
+		this.mockMvc.perform(get("/actuator/env")).andExpect(status().isOk()).andDo(
+				document("env/all", preprocessResponse(replacePattern(Pattern.compile(
+						"org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
+						""), filterProperties()),
 						responseFields(activeProfiles, propertySources,
 								propertySourceName,
 								fieldWithPath("propertySources.[].properties")
@@ -94,14 +92,13 @@ public class EnvironmentEndpointDocumentationTests
 		this.mockMvc.perform(get("/actuator/env/com.example.cache.max-size"))
 				.andExpect(status().isOk())
 				.andDo(document("env/single",
-						preprocessResponse(replacePattern(
-								Pattern.compile(
-										"org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
+						preprocessResponse(replacePattern(Pattern.compile(
+								"org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"),
 								"")),
 						responseFields(
 								fieldWithPath("property").description(
 										"Property from the environment, if found.")
-								.optional(),
+										.optional(),
 								fieldWithPath("property.source").description(
 										"Name of the source of the property."),
 								fieldWithPath("property.value")

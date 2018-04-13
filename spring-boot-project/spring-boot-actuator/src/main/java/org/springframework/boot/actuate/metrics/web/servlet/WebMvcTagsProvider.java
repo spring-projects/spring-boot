@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,23 +32,25 @@ import io.micrometer.core.instrument.Tag;
 public interface WebMvcTagsProvider {
 
 	/**
-	 * Provides tags to be used by {@link LongTaskTimer long task timers}.
-	 * @param request the HTTP request
-	 * @param handler the handler for the request
-	 * @return tags to associate with metrics recorded for the request
-	 */
-	Iterable<Tag> httpLongRequestTags(HttpServletRequest request, Object handler);
-
-	/**
 	 * Provides tags to be associated with metrics for the given {@code request} and
-	 * {@code response} exchange. The request was handled by the given {@code handler}.
+	 * {@code response} exchange.
 	 * @param request the request
-	 * @param handler the handler
 	 * @param response the response
-	 * @param ex the current exception, if any
+	 * @param handler the handler for the request or {@code null} if the handler is
+	 * unknown
+	 * @param exception the current exception, if any
 	 * @return tags to associate with metrics for the request and response exchange
 	 */
-	Iterable<Tag> httpRequestTags(HttpServletRequest request, Object handler,
-			HttpServletResponse response, Throwable ex);
+	Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response,
+			Object handler, Throwable exception);
+
+	/**
+	 * Provides tags to be used by {@link LongTaskTimer long task timers}.
+	 * @param request the HTTP request
+	 * @param handler the handler for the request or {@code null} if the handler is
+	 * unknown
+	 * @return tags to associate with metrics recorded for the request
+	 */
+	Iterable<Tag> getLongRequestTags(HttpServletRequest request, Object handler);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Locale;
 
 import javax.sql.DataSource;
 
@@ -60,8 +61,6 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	HSQL(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:%s");
 
-	private static final String DEFAULT_DATABASE_NAME = "testdb";
-
 	private final EmbeddedDatabaseType type;
 
 	private final String driverClass;
@@ -92,21 +91,13 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	/**
-	 * Returns the URL for the connection using the default database name.
-	 * @return the connection URL
-	 */
-	public String getUrl() {
-		return getUrl(DEFAULT_DATABASE_NAME);
-	}
-
-	/**
 	 * Returns the URL for the connection using the specified {@code databaseName}.
 	 * @param databaseName the name of the database
 	 * @return the connection URL
 	 */
 	public String getUrl(String databaseName) {
-		Assert.hasText(databaseName, "DatabaseName must not be null.");
-		return this.url != null ? String.format(this.url, databaseName) : null;
+		Assert.hasText(databaseName, "DatabaseName must not be empty");
+		return (this.url != null ? String.format(this.url, databaseName) : null);
 	}
 
 	/**
@@ -165,7 +156,7 @@ public enum EmbeddedDatabaseConnection {
 			if (productName == null) {
 				return false;
 			}
-			productName = productName.toUpperCase();
+			productName = productName.toUpperCase(Locale.ENGLISH);
 			EmbeddedDatabaseConnection[] candidates = EmbeddedDatabaseConnection.values();
 			for (EmbeddedDatabaseConnection candidate : candidates) {
 				if (candidate != NONE && productName.contains(candidate.name())) {

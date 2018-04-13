@@ -62,7 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HttpTunnelIntegrationTests {
 
 	@Test
-	public void httpServerDirect() throws Exception {
+	public void httpServerDirect() {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 		context.register(ServerConfiguration.class);
 		context.refresh();
@@ -75,7 +75,7 @@ public class HttpTunnelIntegrationTests {
 	}
 
 	@Test
-	public void viaTunnel() throws Exception {
+	public void viaTunnel() {
 		AnnotationConfigServletWebServerApplicationContext serverContext = new AnnotationConfigServletWebServerApplicationContext();
 		serverContext.register(ServerConfiguration.class);
 		serverContext.refresh();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,17 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
-import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
-import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
+import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.boot.actuate.endpoint.web.WebOperation;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
-import org.springframework.boot.endpoint.web.EndpointMapping;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
@@ -73,7 +72,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 			CloudFoundrySecurityService.class);
 
 	@Test
-	public void operationWithSecurityInterceptorForbidden() throws Exception {
+	public void operationWithSecurityInterceptorForbidden() {
 		given(securityService.getAccessLevel(any(), eq("app-id")))
 				.willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
@@ -84,7 +83,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	@Test
-	public void operationWithSecurityInterceptorSuccess() throws Exception {
+	public void operationWithSecurityInterceptorSuccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id")))
 				.willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
@@ -96,36 +95,32 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	@Test
 	public void responseToOptionsRequestIncludesCorsHeaders() {
-		load(TestEndpointConfiguration.class,
-				(client) -> client.options().uri("/cfApplication/test")
-						.accept(MediaType.APPLICATION_JSON)
-						.header("Access-Control-Request-Method", "POST")
-						.header("Origin", "http://example.com").exchange().expectStatus()
-						.isOk().expectHeader()
-						.valueEquals("Access-Control-Allow-Origin", "http://example.com")
-						.expectHeader()
-						.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
+		load(TestEndpointConfiguration.class, (client) -> client.options()
+				.uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
+				.header("Access-Control-Request-Method", "POST")
+				.header("Origin", "http://example.com").exchange().expectStatus().isOk()
+				.expectHeader()
+				.valueEquals("Access-Control-Allow-Origin", "http://example.com")
+				.expectHeader().valueEquals("Access-Control-Allow-Methods", "GET,POST"));
 	}
 
 	@Test
 	public void linksToOtherEndpointsWithFullAccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id")))
 				.willReturn(AccessLevel.FULL);
-		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication")
-						.accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange()
-						.expectStatus().isOk().expectBody().jsonPath("_links.length()")
-						.isEqualTo(5).jsonPath("_links.self.href").isNotEmpty()
-						.jsonPath("_links.self.templated").isEqualTo(false)
-						.jsonPath("_links.info.href").isNotEmpty()
-						.jsonPath("_links.info.templated").isEqualTo(false)
-						.jsonPath("_links.env.href").isNotEmpty()
-						.jsonPath("_links.env.templated").isEqualTo(false)
-						.jsonPath("_links.test.href").isNotEmpty()
-						.jsonPath("_links.test.templated").isEqualTo(false)
-						.jsonPath("_links.test-part.href").isNotEmpty()
-						.jsonPath("_links.test-part.templated").isEqualTo(true));
+		load(TestEndpointConfiguration.class, (client) -> client.get()
+				.uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", "bearer " + mockAccessToken()).exchange()
+				.expectStatus().isOk().expectBody().jsonPath("_links.length()")
+				.isEqualTo(5).jsonPath("_links.self.href").isNotEmpty()
+				.jsonPath("_links.self.templated").isEqualTo(false)
+				.jsonPath("_links.info.href").isNotEmpty()
+				.jsonPath("_links.info.templated").isEqualTo(false)
+				.jsonPath("_links.env.href").isNotEmpty().jsonPath("_links.env.templated")
+				.isEqualTo(false).jsonPath("_links.test.href").isNotEmpty()
+				.jsonPath("_links.test.templated").isEqualTo(false)
+				.jsonPath("_links.test-part.href").isNotEmpty()
+				.jsonPath("_links.test-part.templated").isEqualTo(true));
 	}
 
 	@Test
@@ -204,7 +199,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 
 		@Bean
 		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
-				EndpointDiscoverer<WebOperation> webEndpointDiscoverer,
+				WebEndpointDiscoverer webEndpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -212,19 +207,20 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
 			return new CloudFoundryWebEndpointServletHandlerMapping(
 					new EndpointMapping("/cfApplication"),
-					webEndpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
-					corsConfiguration, interceptor);
+					webEndpointDiscoverer.getEndpoints(), endpointMediaTypes,
+					corsConfiguration, interceptor,
+					new EndpointLinksResolver(webEndpointDiscoverer.getEndpoints()));
 		}
 
 		@Bean
-		public WebAnnotationEndpointDiscoverer webEndpointDiscoverer(
+		public WebEndpointDiscoverer webEndpointDiscoverer(
 				ApplicationContext applicationContext,
 				EndpointMediaTypes endpointMediaTypes) {
-			ParameterMapper parameterMapper = new ConversionServiceParameterMapper(
+			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
-			return new WebAnnotationEndpointDiscoverer(applicationContext,
-					parameterMapper, endpointMediaTypes,
-					EndpointPathResolver.useEndpointId(), null, null);
+			return new WebEndpointDiscoverer(applicationContext, parameterMapper,
+					endpointMediaTypes, PathMapper.useEndpointId(),
+					Collections.emptyList(), Collections.emptyList());
 		}
 
 		@Bean

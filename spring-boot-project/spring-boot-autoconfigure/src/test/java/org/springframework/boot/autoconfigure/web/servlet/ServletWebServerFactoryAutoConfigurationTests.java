@@ -53,21 +53,21 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	@Test
-	public void createFromConfigClass() throws Exception {
+	public void createFromConfigClass() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				BaseConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void contextAlreadyHasDispatcherServletWithDefaultName() throws Exception {
+	public void contextAlreadyHasDispatcherServletWithDefaultName() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				DispatcherServletConfiguration.class, BaseConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void contextAlreadyHasDispatcherServlet() throws Exception {
+	public void contextAlreadyHasDispatcherServlet() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				SpringServletConfiguration.class, BaseConfiguration.class);
 		verifyContext();
@@ -76,7 +76,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void contextAlreadyHasNonDispatcherServlet() throws Exception {
+	public void contextAlreadyHasNonDispatcherServlet() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				NonSpringServletConfiguration.class, BaseConfiguration.class);
 		verifyContext(); // the non default servlet is still registered
@@ -85,7 +85,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void contextAlreadyHasNonServlet() throws Exception {
+	public void contextAlreadyHasNonServlet() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				NonServletConfiguration.class, BaseConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
@@ -94,7 +94,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void contextAlreadyHasDispatcherServletAndRegistration() throws Exception {
+	public void contextAlreadyHasDispatcherServletAndRegistration() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				DispatcherServletWithRegistrationConfiguration.class,
 				BaseConfiguration.class);
@@ -104,14 +104,14 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void webServerHasNoServletContext() throws Exception {
+	public void webServerHasNoServletContext() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				EnsureWebServerHasNoServletContext.class, BaseConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void customizeWebServerFactoryThroughCallback() throws Exception {
+	public void customizeWebServerFactoryThroughCallback() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(
 				CallbackEmbeddedServerFactoryCustomizer.class, BaseConfiguration.class);
 		verifyContext();
@@ -192,7 +192,7 @@ public class ServletWebServerFactoryAutoConfigurationTests {
 			return new FrameworkServlet() {
 				@Override
 				protected void doService(HttpServletRequest request,
-						HttpServletResponse response) throws Exception {
+						HttpServletResponse response) {
 				}
 			};
 		}

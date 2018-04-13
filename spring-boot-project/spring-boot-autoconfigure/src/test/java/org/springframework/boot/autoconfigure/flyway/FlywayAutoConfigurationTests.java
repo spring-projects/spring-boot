@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.FlywayCallback;
-import org.flywaydb.core.internal.callback.SqlScriptFlywayCallback;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -61,6 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Vedran Pavic
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Dominic Gunn
  */
 public class FlywayAutoConfigurationTests {
 
@@ -75,9 +75,19 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void createDataSource() {
+	public void createDataSourceWithUrl() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:flywaytest",
+				.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:flywaytest")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					assertThat(context.getBean(Flyway.class).getDataSource()).isNotNull();
+				});
+	}
+
+	@Test
+	public void createDataSourceWithUser() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:normal",
 						"spring.flyway.user:sa")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -89,6 +99,16 @@ public class FlywayAutoConfigurationTests {
 	public void flywayDataSource() {
 		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class,
 				EmbeddedDataSourceConfiguration.class).run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					assertThat(context.getBean(Flyway.class).getDataSource())
+							.isEqualTo(context.getBean("flywayDataSource"));
+				});
+	}
+
+	@Test
+	public void flywayDataSourceWithoutDataSourceAutoConfiguration() {
+		this.contextRunner.withUserConfiguration(FlywayDataSourceConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
 					assertThat(context.getBean(Flyway.class).getDataSource())
 							.isEqualTo(context.getBean("flywayDataSource"));
@@ -208,7 +228,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void customFlywayMigrationInitializer() throws Exception {
+	public void customFlywayMigrationInitializer() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 				CustomFlywayMigrationInitializer.class).run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
@@ -285,11 +305,9 @@ public class FlywayAutoConfigurationTests {
 							FlywayCallback.class);
 					FlywayCallback callbackTwo = context.getBean("callbackTwo",
 							FlywayCallback.class);
-					assertThat(flyway.getCallbacks()).hasSize(3);
-					assertThat(flyway.getCallbacks()).startsWith(callbackTwo,
+					assertThat(flyway.getCallbacks()).hasSize(2);
+					assertThat(flyway.getCallbacks()).containsExactly(callbackTwo,
 							callbackOne);
-					assertThat(flyway.getCallbacks()[2])
-							.isInstanceOf(SqlScriptFlywayCallback.class);
 					InOrder orderedCallbacks = inOrder(callbackOne, callbackTwo);
 					orderedCallbacks.verify(callbackTwo)
 							.beforeMigrate(any(Connection.class));

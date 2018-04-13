@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -28,6 +30,7 @@ import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -174,7 +177,7 @@ public class JpaProperties {
 		/**
 		 * DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto"
 		 * property. Defaults to "create-drop" when using an embedded database and no
-		 * schema manager was detected. Otherwise, defaults to "none" otherwise.
+		 * schema manager was detected. Otherwise, defaults to "none".
 		 */
 		private String ddlAuto;
 
@@ -215,12 +218,17 @@ public class JpaProperties {
 			getNaming().applyNamingStrategies(result,
 					settings.getImplicitNamingStrategy(),
 					settings.getPhysicalNamingStrategy());
-			String ddlAuto = determineDdlAuto(existing, settings.getDdlAuto());
+			String ddlAuto = determineDdlAuto(existing, settings::getDdlAuto);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
 				result.put("hibernate.hbm2ddl.auto", ddlAuto);
 			}
 			else {
 				result.remove("hibernate.hbm2ddl.auto");
+			}
+			Collection<HibernatePropertiesCustomizer> customizers = settings
+					.getHibernatePropertiesCustomizers();
+			if (!ObjectUtils.isEmpty(customizers)) {
+				customizers.forEach((customizer) -> customizer.customize(result));
 			}
 			return result;
 		}
@@ -236,13 +244,15 @@ public class JpaProperties {
 		}
 
 		private String determineDdlAuto(Map<String, String> existing,
-				String defaultDdlAuto) {
-			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto);
-			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
-					&& !"none".equals(ddlAuto)) {
-				return ddlAuto;
+				Supplier<String> defaultDdlAuto) {
+			if (!existing.containsKey("hibernate.hbm2ddl.auto")) {
+				String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
+						: defaultDdlAuto.get());
+				if (!"none".equals(ddlAuto)) {
+					return ddlAuto;
+				}
 			}
-			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
+			if (existing.containsKey("hibernate.hbm2ddl.auto")) {
 				return existing.get("hibernate.hbm2ddl.auto");
 			}
 			return "none";
@@ -285,13 +295,13 @@ public class JpaProperties {
 		private void applyNamingStrategies(Map<String, Object> properties,
 				ImplicitNamingStrategy implicitStrategyBean,
 				PhysicalNamingStrategy physicalStrategyBean) {
-			applyNamingStrategy(properties,
-					"hibernate.implicit_naming_strategy", implicitStrategyBean != null
-							? implicitStrategyBean : this.implicitStrategy,
+			applyNamingStrategy(properties, "hibernate.implicit_naming_strategy",
+					implicitStrategyBean != null ? implicitStrategyBean
+							: this.implicitStrategy,
 					DEFAULT_IMPLICIT_STRATEGY);
-			applyNamingStrategy(properties,
-					"hibernate.physical_naming_strategy", physicalStrategyBean != null
-							? physicalStrategyBean : this.physicalStrategy,
+			applyNamingStrategy(properties, "hibernate.physical_naming_strategy",
+					physicalStrategyBean != null ? physicalStrategyBean
+							: this.physicalStrategy,
 					DEFAULT_PHYSICAL_STRATEGY);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,10 +57,9 @@ public class SessionsEndpointTests {
 		assertThat(result.get(0).getId()).isEqualTo(session.getId());
 		assertThat(result.get(0).getAttributeNames())
 				.isEqualTo(session.getAttributeNames());
-		assertThat(result.get(0).getCreationTime())
-				.isEqualTo(session.getCreationTime().toEpochMilli());
+		assertThat(result.get(0).getCreationTime()).isEqualTo(session.getCreationTime());
 		assertThat(result.get(0).getLastAccessedTime())
-				.isEqualTo(session.getLastAccessedTime().toEpochMilli());
+				.isEqualTo(session.getLastAccessedTime());
 		assertThat(result.get(0).getMaxInactiveInterval())
 				.isEqualTo(session.getMaxInactiveInterval().getSeconds());
 		assertThat(result.get(0).isExpired()).isEqualTo(session.isExpired());
@@ -72,13 +71,17 @@ public class SessionsEndpointTests {
 		SessionDescriptor result = this.endpoint.getSession(session.getId());
 		assertThat(result.getId()).isEqualTo(session.getId());
 		assertThat(result.getAttributeNames()).isEqualTo(session.getAttributeNames());
-		assertThat(result.getCreationTime())
-				.isEqualTo(session.getCreationTime().toEpochMilli());
-		assertThat(result.getLastAccessedTime())
-				.isEqualTo(session.getLastAccessedTime().toEpochMilli());
+		assertThat(result.getCreationTime()).isEqualTo(session.getCreationTime());
+		assertThat(result.getLastAccessedTime()).isEqualTo(session.getLastAccessedTime());
 		assertThat(result.getMaxInactiveInterval())
 				.isEqualTo(session.getMaxInactiveInterval().getSeconds());
 		assertThat(result.isExpired()).isEqualTo(session.isExpired());
+	}
+
+	@Test
+	public void getSessionWithIdNotFound() {
+		given(this.repository.findById("not-found")).willReturn(null);
+		assertThat(this.endpoint.getSession("not-found")).isNull();
 	}
 
 	@Test

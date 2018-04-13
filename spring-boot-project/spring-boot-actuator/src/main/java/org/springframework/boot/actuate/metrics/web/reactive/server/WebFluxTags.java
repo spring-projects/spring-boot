@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.metrics.web.reactive.server;
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPattern;
@@ -33,6 +32,10 @@ import org.springframework.web.util.pattern.PathPattern;
  * @since 2.0.0
  */
 public final class WebFluxTags {
+
+	private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
+
+	private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
 
 	private WebFluxTags() {
 	}
@@ -70,14 +73,23 @@ public final class WebFluxTags {
 	 * @return the uri tag derived from the exchange
 	 */
 	public static Tag uri(ServerWebExchange exchange) {
-		PathPattern pathPattern = exchange.getAttributeOrDefault(
-				HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, null);
-		String uri = pathPattern == null ? exchange.getRequest().getURI().toString()
-				: pathPattern.getPatternString();
-		if (!StringUtils.hasText(uri)) {
-			uri = "/";
+		if (exchange != null) {
+			PathPattern pathPattern = exchange
+					.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+			if (pathPattern != null) {
+				return Tag.of("uri", pathPattern.getPatternString());
+			}
+			HttpStatus status = exchange.getResponse().getStatusCode();
+			if (status != null && status.is3xxRedirection()) {
+				return URI_REDIRECTION;
+			}
+			if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
+				return URI_NOT_FOUND;
+			}
+			String path = exchange.getRequest().getPath().value();
+			return Tag.of("uri", path.isEmpty() ? "root" : path);
 		}
-		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
+		return Tag.of("uri", "UNKNOWN");
 	}
 
 	/**

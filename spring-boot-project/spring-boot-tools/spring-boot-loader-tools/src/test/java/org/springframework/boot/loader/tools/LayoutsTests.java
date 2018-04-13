@@ -36,7 +36,7 @@ public class LayoutsTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void jarFile() throws Exception {
+	public void jarFile() {
 		assertThat(Layouts.forFile(new File("test.jar"))).isInstanceOf(Layouts.Jar.class);
 		assertThat(Layouts.forFile(new File("test.JAR"))).isInstanceOf(Layouts.Jar.class);
 		assertThat(Layouts.forFile(new File("test.jAr"))).isInstanceOf(Layouts.Jar.class);
@@ -45,7 +45,7 @@ public class LayoutsTests {
 	}
 
 	@Test
-	public void warFile() throws Exception {
+	public void warFile() {
 		assertThat(Layouts.forFile(new File("test.war"))).isInstanceOf(Layouts.War.class);
 		assertThat(Layouts.forFile(new File("test.WAR"))).isInstanceOf(Layouts.War.class);
 		assertThat(Layouts.forFile(new File("test.wAr"))).isInstanceOf(Layouts.War.class);
@@ -54,14 +54,14 @@ public class LayoutsTests {
 	}
 
 	@Test
-	public void unknownFile() throws Exception {
+	public void unknownFile() {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to deduce layout for 'test.txt'");
 		Layouts.forFile(new File("test.txt"));
 	}
 
 	@Test
-	public void jarLayout() throws Exception {
+	public void jarLayout() {
 		Layout layout = new Layouts.Jar();
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
 				.isEqualTo("BOOT-INF/lib/");
@@ -74,7 +74,7 @@ public class LayoutsTests {
 	}
 
 	@Test
-	public void warLayout() throws Exception {
+	public void warLayout() {
 		Layout layout = new Layouts.War();
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE))
 				.isEqualTo("WEB-INF/lib/");

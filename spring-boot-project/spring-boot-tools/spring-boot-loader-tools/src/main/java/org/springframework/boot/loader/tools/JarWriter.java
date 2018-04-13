@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.loader.tools;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,13 +47,15 @@ import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.UnixStat;
 
 /**
- * Writes JAR content, ensuring valid directory entries are always create and duplicate
+ * Writes JAR content, ensuring valid directory entries are always created and duplicate
  * items are ignored.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
 public class JarWriter implements LoaderClassesWriter, AutoCloseable {
+
+	private static final UnpackHandler NEVER_UNPACK = new NeverUnpackHandler();
 
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
@@ -108,7 +111,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * @param manifest the manifest to write
 	 * @throws IOException of the manifest cannot be written
 	 */
-	public void writeManifest(final Manifest manifest) throws IOException {
+	public void writeManifest(Manifest manifest) throws IOException {
 		JarArchiveEntry entry = new JarArchiveEntry("META-INF/MANIFEST.MF");
 		writeEntry(entry, manifest::write);
 	}
@@ -119,11 +122,15 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
-		this.writeEntries(jarFile, new IdentityEntryTransformer());
+		this.writeEntries(jarFile, new IdentityEntryTransformer(), NEVER_UNPACK);
 	}
 
-	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer)
-			throws IOException {
+	void writeEntries(JarFile jarFile, UnpackHandler unpackHandler) throws IOException {
+		this.writeEntries(jarFile, new IdentityEntryTransformer(), unpackHandler);
+	}
+
+	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer,
+			UnpackHandler unpackHandler) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
@@ -133,7 +140,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, true);
 				JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
 				if (transformedEntry != null) {
-					writeEntry(transformedEntry, entryWriter);
+					writeEntry(transformedEntry, entryWriter, unpackHandler);
 				}
 			}
 		}
@@ -172,11 +179,9 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		File file = library.getFile();
 		JarArchiveEntry entry = new JarArchiveEntry(destination + library.getName());
 		entry.setTime(getNestedLibraryTime(file));
-		if (library.isUnpackRequired()) {
-			entry.setComment("UNPACK:" + FileUtils.sha1Hash(file));
-		}
 		new CrcAndSize(file).setupStoredEntry(entry);
-		writeEntry(entry, new InputStreamEntryWriter(new FileInputStream(file), true));
+		writeEntry(entry, new InputStreamEntryWriter(new FileInputStream(file), true),
+				new LibraryUnpackHandler(library));
 	}
 
 	private long getNestedLibraryTime(File file) {
@@ -215,16 +220,16 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	@Override
 	public void writeLoaderClasses(String loaderJarResourceName) throws IOException {
 		URL loaderJar = getClass().getClassLoader().getResource(loaderJarResourceName);
-		JarInputStream inputStream = new JarInputStream(
-				new BufferedInputStream(loaderJar.openStream()));
-		JarEntry entry;
-		while ((entry = inputStream.getNextJarEntry()) != null) {
-			if (entry.getName().endsWith(".class")) {
-				writeEntry(new JarArchiveEntry(entry),
-						new InputStreamEntryWriter(inputStream, false));
+		try (JarInputStream inputStream = new JarInputStream(
+				new BufferedInputStream(loaderJar.openStream()))) {
+			JarEntry entry;
+			while ((entry = inputStream.getNextJarEntry()) != null) {
+				if (entry.getName().endsWith(".class")) {
+					writeEntry(new JarArchiveEntry(entry),
+							new InputStreamEntryWriter(inputStream, false));
+				}
 			}
 		}
-		inputStream.close();
 	}
 
 	/**
@@ -236,15 +241,21 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		this.jarOutput.close();
 	}
 
-	/**
-	 * Perform the actual write of a {@link JarEntry}. All other {@code write} method
-	 * delegate to this one.
-	 * @param entry the entry to write
-	 * @param entryWriter the entry writer or {@code null} if there is no content
-	 * @throws IOException in case of I/O errors
-	 */
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter)
 			throws IOException {
+		writeEntry(entry, entryWriter, NEVER_UNPACK);
+	}
+
+	/**
+	 * Perform the actual write of a {@link JarEntry}. All other write methods delegate to
+	 * this one.
+	 * @param entry the entry to write
+	 * @param entryWriter the entry writer or {@code null} if there is no content
+	 * @param unpackHandler handles possible unpacking for the entry
+	 * @throws IOException in case of I/O errors
+	 */
+	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter,
+			UnpackHandler unpackHandler) throws IOException {
 		String parent = entry.getName();
 		if (parent.endsWith("/")) {
 			parent = parent.substring(0, parent.length() - 1);
@@ -253,20 +264,33 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		else {
 			entry.setUnixMode(UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
 		}
-		if (parent.lastIndexOf("/") != -1) {
-			parent = parent.substring(0, parent.lastIndexOf("/") + 1);
+		if (parent.lastIndexOf('/') != -1) {
+			parent = parent.substring(0, parent.lastIndexOf('/') + 1);
 			if (!parent.isEmpty()) {
-				writeEntry(new JarArchiveEntry(parent), null);
+				writeEntry(new JarArchiveEntry(parent), null, unpackHandler);
 			}
 		}
 
 		if (this.writtenEntries.add(entry.getName())) {
+			entryWriter = addUnpackCommentIfNecessary(entry, entryWriter, unpackHandler);
 			this.jarOutput.putArchiveEntry(entry);
 			if (entryWriter != null) {
 				entryWriter.write(this.jarOutput);
 			}
 			this.jarOutput.closeArchiveEntry();
 		}
+	}
+
+	private EntryWriter addUnpackCommentIfNecessary(JarArchiveEntry entry,
+			EntryWriter entryWriter, UnpackHandler unpackHandler) throws IOException {
+		if (entryWriter == null || !unpackHandler.requiresUnpack(entry.getName())) {
+			return entryWriter;
+		}
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		entryWriter.write(output);
+		entry.setComment("UNPACK:" + unpackHandler.sha1Hash(entry.getName()));
+		return new InputStreamEntryWriter(new ByteArrayInputStream(output.toByteArray()),
+				true);
 	}
 
 	/**
@@ -417,6 +441,52 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		@Override
 		public JarArchiveEntry transform(JarArchiveEntry jarEntry) {
 			return jarEntry;
+		}
+
+	}
+
+	/**
+	 * An {@code UnpackHandler} determines whether or not unpacking is required and
+	 * provides a SHA1 hash if required.
+	 */
+	interface UnpackHandler {
+
+		boolean requiresUnpack(String name);
+
+		String sha1Hash(String name) throws IOException;
+
+	}
+
+	private static final class NeverUnpackHandler implements UnpackHandler {
+
+		@Override
+		public boolean requiresUnpack(String name) {
+			return false;
+		}
+
+		@Override
+		public String sha1Hash(String name) {
+			throw new UnsupportedOperationException();
+		}
+
+	}
+
+	private static final class LibraryUnpackHandler implements UnpackHandler {
+
+		private final Library library;
+
+		private LibraryUnpackHandler(Library library) {
+			this.library = library;
+		}
+
+		@Override
+		public boolean requiresUnpack(String name) {
+			return this.library.isUnpackRequired();
+		}
+
+		@Override
+		public String sha1Hash(String name) throws IOException {
+			return FileUtils.sha1Hash(this.library.getFile());
 		}
 
 	}

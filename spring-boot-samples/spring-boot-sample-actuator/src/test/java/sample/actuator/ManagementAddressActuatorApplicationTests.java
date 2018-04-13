@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
 		"management.server.port=0", "management.server.address=127.0.0.1",
-		"management.server.context-path:/admin" })
+		"management.server.servlet.context-path:/admin" })
 public class ManagementAddressActuatorApplicationTests {
 
 	@LocalServerPort
@@ -50,7 +50,7 @@ public class ManagementAddressActuatorApplicationTests {
 	private int managementPort = 9011;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, Map.class);
@@ -58,7 +58,7 @@ public class ManagementAddressActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHealth() throws Exception {
+	public void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.withBasicAuth("user", getPassword()).getForEntity("http://localhost:"
 						+ this.managementPort + "/admin/actuator/health", String.class);

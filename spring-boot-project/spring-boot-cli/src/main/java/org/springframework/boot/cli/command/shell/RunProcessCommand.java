@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.loader.tools.RunProcess;
+import org.springframework.util.StringUtils;
 
 /**
  * Special {@link Command} used to run a process from the shell. NOTE: this command is not
@@ -49,7 +50,7 @@ class RunProcessCommand extends AbstractCommand {
 
 	protected ExitStatus run(Collection<String> args) throws IOException {
 		this.process = new RunProcess(this.command);
-		int code = this.process.run(true, args.toArray(new String[args.size()]));
+		int code = this.process.run(true, StringUtils.toStringArray(args));
 		if (code == 0) {
 			return ExitStatus.OK;
 		}

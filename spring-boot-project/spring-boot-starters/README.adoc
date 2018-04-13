@@ -8,14 +8,14 @@ JPA for database access just include the `spring-boot-starter-data-jpa` dependen
 your project, and you are good to go.
 
 For complete details see the
-http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
 
 == Community Contributions
 If you create a starter for a technology that is not already in the standard list we can
 list it here. Just send a pull request for this page.
 
 WARNING: While the
-http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
 mentions that 3rd party starters should not start with `spring-boot`, some starters
 do as they were designed before this was clarified.
 
@@ -33,6 +33,9 @@ do as they were designed before this was clarified.
 
 | http://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
+
+| http://www.axonframework.org/[Axon Framework]
+| https://github.com/AxonFramework/AxonFramework
 
 | https://azure.microsoft.com/[Azure]
 | https://github.com/Microsoft/azure-spring-boot-starters
@@ -61,11 +64,17 @@ do as they were designed before this was clarified.
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
 | https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
 
+| https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
+| https://github.com/jliu666/docker-api-spring-boot
+
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
 
 | http://ff4j.org/[Feature Flipping For Java (FF4J)]
 | https://github.com/clun/ff4j/
+
+| https://www.flowable.org/[Flowable]
+| https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters
 
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
@@ -97,8 +106,14 @@ do as they were designed before this was clarified.
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/spring-boot-starter-jade4j
 
+| https://github.com/sbraconnier/jodconverter[JODConverter]
+| https://github.com/sbraconnier/jodconverter
+
 | JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
 | http://joinfaces.org
+
+| http://www.liquigraph.org/[Liquigraph]
+| https://github.com/liquigraph/liquigraph
 
 | http://log4jdbc.brunorozendo.com/[Log4jdbc]
 | https://github.com/candrews/log4jdbc-spring-boot-starter
@@ -124,6 +139,9 @@ do as they were designed before this was clarified.
 | https://github.com/facebook/nifty[Nifty] (Thrift on Netty)
 | https://github.com/bigdullrock/nifty-spring-boot-starter
 
+| https://github.com/nutzam/nutz[Nutz.Dao]
+| https://github.com/nutzam/nutzmore
+
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
@@ -133,14 +151,20 @@ do as they were designed before this was clarified.
 | http://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
+| https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
+| https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
+
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/paypal/resteasy-spring-boot
 
 | http://restfb.com/[RestFB] Messenger
 | https://github.com/marsbits/restfbmessenger
 
-| http://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
+| https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
+
+| https://github.com/savantly-net/sprout-platform[Sprout Platform]
+| https://github.com/savantly-net/sprout-platform/tree/master/spring/sprout-spring-boot-starter
 
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot

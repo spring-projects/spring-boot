@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.web.reactive.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContextException;
@@ -32,9 +33,12 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 public class ReactiveWebServerApplicationContext
-		extends GenericReactiveWebApplicationContext {
+		extends GenericReactiveWebApplicationContext
+		implements ConfigurableWebServerApplicationContext {
 
 	private volatile WebServer webServer;
+
+	private String serverNamespace;
 
 	/**
 	 * Create a new {@link ReactiveWebServerApplicationContext}.
@@ -102,6 +106,7 @@ public class ReactiveWebServerApplicationContext
 	 * the server has not yet been created.
 	 * @return the web server
 	 */
+	@Override
 	public WebServer getWebServer() {
 		return this.webServer;
 	}
@@ -170,4 +175,15 @@ public class ReactiveWebServerApplicationContext
 			}
 		}
 	}
+
+	@Override
+	public String getServerNamespace() {
+		return this.serverNamespace;
+	}
+
+	@Override
+	public void setServerNamespace(String serverNamespace) {
+		this.serverNamespace = serverNamespace;
+	}
+
 }

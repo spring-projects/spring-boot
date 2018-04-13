@@ -16,10 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.core.env.PropertySource;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -44,56 +40,53 @@ final class DefaultPropertyMapper implements PropertyMapper {
 	}
 
 	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
-			ConfigurationPropertyName configurationPropertyName) {
+	public PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName) {
 		// Use a local copy in case another thread changes things
 		LastMapping<ConfigurationPropertyName> last = this.lastMappedConfigurationPropertyName;
 		if (last != null && last.isFrom(configurationPropertyName)) {
 			return last.getMapping();
 		}
 		String convertedName = configurationPropertyName.toString();
-		List<PropertyMapping> mapping = Collections.singletonList(
-				new PropertyMapping(convertedName, configurationPropertyName));
+		PropertyMapping[] mapping = {
+				new PropertyMapping(convertedName, configurationPropertyName) };
 		this.lastMappedConfigurationPropertyName = new LastMapping<>(
 				configurationPropertyName, mapping);
 		return mapping;
 	}
 
 	@Override
-	public List<PropertyMapping> map(PropertySource<?> propertySource,
-			String propertySourceName) {
+	public PropertyMapping[] map(String propertySourceName) {
 		// Use a local copy in case another thread changes things
 		LastMapping<String> last = this.lastMappedPropertyName;
 		if (last != null && last.isFrom(propertySourceName)) {
 			return last.getMapping();
 		}
-		List<PropertyMapping> mapping = tryMap(propertySourceName);
+		PropertyMapping[] mapping = tryMap(propertySourceName);
 		this.lastMappedPropertyName = new LastMapping<>(propertySourceName, mapping);
 		return mapping;
 	}
 
-	private List<PropertyMapping> tryMap(String propertySourceName) {
+	private PropertyMapping[] tryMap(String propertySourceName) {
 		try {
 			ConfigurationPropertyName convertedName = ConfigurationPropertyName
 					.adapt(propertySourceName, '.');
 			if (!convertedName.isEmpty()) {
-				PropertyMapping o = new PropertyMapping(propertySourceName,
-						convertedName);
-				return Collections.singletonList(o);
+				return new PropertyMapping[] {
+						new PropertyMapping(propertySourceName, convertedName) };
 			}
 		}
 		catch (Exception ex) {
 		}
-		return Collections.emptyList();
+		return NO_MAPPINGS;
 	}
 
 	private static class LastMapping<T> {
 
 		private final T from;
 
-		private final List<PropertyMapping> mapping;
+		private final PropertyMapping[] mapping;
 
-		LastMapping(T from, List<PropertyMapping> mapping) {
+		LastMapping(T from, PropertyMapping[] mapping) {
 			this.from = from;
 			this.mapping = mapping;
 		}
@@ -102,7 +95,7 @@ final class DefaultPropertyMapper implements PropertyMapper {
 			return ObjectUtils.nullSafeEquals(from, this.from);
 		}
 
-		public List<PropertyMapping> getMapping() {
+		public PropertyMapping[] getMapping() {
 			return this.mapping;
 		}
 

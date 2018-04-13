@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.util;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
@@ -24,8 +25,8 @@ import java.util.Set;
  * Helper class for resolving placeholders in texts. Usually applied to file paths.
  * <p>
  * A text may contain {@code $ ...} placeholders, to be resolved as system properties:
- * e.g. {@code $ user.dir} . Default values can be supplied using the ":" separator
- * between key and value.
+ * e.g. {@code $ user.dir}. Default values can be supplied using the ":" separator between
+ * key and value.
  * <p>
  * Adapted from Spring.
  *
@@ -184,11 +185,13 @@ public abstract class SystemPropertyUtils {
 			}
 			if (propVal == null) {
 				// Try with underscores.
-				propVal = System.getenv(key.replace('.', '_'));
+				String name = key.replace('.', '_');
+				propVal = System.getenv(name);
 			}
 			if (propVal == null) {
 				// Try uppercase with underscores as well.
-				propVal = System.getenv(key.toUpperCase().replace('.', '_'));
+				String name = key.toUpperCase(Locale.ENGLISH).replace('.', '_');
+				propVal = System.getenv(name);
 			}
 			if (propVal != null) {
 				return propVal;

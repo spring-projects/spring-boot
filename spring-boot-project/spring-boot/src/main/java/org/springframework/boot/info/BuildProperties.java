@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.info;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 /**
@@ -77,8 +77,8 @@ public class BuildProperties extends InfoProperties {
 	 * @return the build time
 	 * @see #get(String)
 	 */
-	public Date getTime() {
-		return getDate("time");
+	public Instant getTime() {
+		return getInstant("time");
 	}
 
 	private static Properties processEntries(Properties properties) {
@@ -89,12 +89,12 @@ public class BuildProperties extends InfoProperties {
 	private static void coerceDate(Properties properties, String key) {
 		String value = properties.getProperty(key);
 		if (value != null) {
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 			try {
-				String updatedValue = String.valueOf(format.parse(value).getTime());
+				String updatedValue = String.valueOf(DateTimeFormatter.ISO_INSTANT
+						.parse(value, Instant::from).toEpochMilli());
 				properties.setProperty(key, updatedValue);
 			}
-			catch (ParseException ex) {
+			catch (DateTimeException ex) {
 				// Ignore and store the original value
 			}
 		}

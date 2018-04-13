@@ -35,14 +35,14 @@ public class BindValidationExceptionTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenValidationErrorsIsNullShouldThrowException() throws Exception {
+	public void createWhenValidationErrorsIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ValidationErrors must not be null");
 		new BindValidationException(null);
 	}
 
 	@Test
-	public void getValidationErrorsShouldReturnValidationErrors() throws Exception {
+	public void getValidationErrorsShouldReturnValidationErrors() {
 		ValidationErrors errors = mock(ValidationErrors.class);
 		BindValidationException exception = new BindValidationException(errors);
 		assertThat(exception.getValidationErrors()).isEqualTo(errors);

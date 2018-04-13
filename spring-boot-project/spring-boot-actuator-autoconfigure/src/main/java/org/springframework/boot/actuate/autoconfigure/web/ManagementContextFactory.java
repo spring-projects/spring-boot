@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.web;
 
+import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Factory for creating a separate management context when the management web server is
@@ -35,7 +35,7 @@ public interface ManagementContextFactory {
 	 * @param configurationClasses the configuration classes
 	 * @return a configured application context
 	 */
-	ConfigurableApplicationContext createManagementContext(ApplicationContext parent,
-			Class<?>... configurationClasses);
+	ConfigurableWebServerApplicationContext createManagementContext(
+			ApplicationContext parent, Class<?>... configurationClasses);
 
 }

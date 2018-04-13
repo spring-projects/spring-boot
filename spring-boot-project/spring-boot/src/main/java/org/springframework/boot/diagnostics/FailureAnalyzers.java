@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringBootExceptionReporter;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
@@ -95,6 +96,9 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 			FailureAnalyzer analyzer) {
 		if (analyzer instanceof BeanFactoryAware) {
 			((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
+		}
+		if (analyzer instanceof EnvironmentAware) {
+			((EnvironmentAware) analyzer).setEnvironment(context.getEnvironment());
 		}
 	}
 

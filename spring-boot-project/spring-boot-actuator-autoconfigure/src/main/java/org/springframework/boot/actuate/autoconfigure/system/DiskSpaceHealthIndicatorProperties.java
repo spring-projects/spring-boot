@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class DiskSpaceHealthIndicatorProperties {
 	private File path = new File(".");
 
 	/**
-	 * Minimum disk space that should be available, in bytes.
+	 * Minimum disk space, in bytes, that should be available.
 	 */
 	private long threshold = DEFAULT_THRESHOLD;
 
@@ -50,8 +50,8 @@ public class DiskSpaceHealthIndicatorProperties {
 	}
 
 	public void setPath(File path) {
-		Assert.isTrue(path.exists(), "Path '" + path + "' does not exist");
-		Assert.isTrue(path.canRead(), "Path '" + path + "' cannot be read");
+		Assert.isTrue(path.exists(), () -> "Path '" + path + "' does not exist");
+		Assert.isTrue(path.canRead(), () -> "Path '" + path + "' cannot be read");
 		this.path = path;
 	}
 

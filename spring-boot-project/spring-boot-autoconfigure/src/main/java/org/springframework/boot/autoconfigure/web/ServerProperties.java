@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,16 +27,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.boot.context.properties.bind.convert.DefaultDurationUnit;
+import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Jsp;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -68,13 +68,8 @@ public class ServerProperties {
 	 */
 	private InetAddress address;
 
-	/**
-	 * Display name of the application.
-	 */
-	private String displayName = "application";
-
 	@NestedConfigurationProperty
-	private ErrorProperties error = new ErrorProperties();
+	private final ErrorProperties error = new ErrorProperties();
 
 	/**
 	 * Whether X-Forwarded-* headers should be applied to the HttpRequest.
@@ -98,18 +93,16 @@ public class ServerProperties {
 	 */
 	private Duration connectionTimeout;
 
-	private Session session = new Session();
-
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
 	@NestedConfigurationProperty
-	private Compression compression = new Compression();
+	private final Compression compression = new Compression();
 
 	@NestedConfigurationProperty
-	private Http2 http2 = new Http2();
+	private final Http2 http2 = new Http2();
 
-	private Servlet servlet = new Servlet();
+	private final Servlet servlet = new Servlet();
 
 	private final Tomcat tomcat = new Tomcat();
 
@@ -131,14 +124,6 @@ public class ServerProperties {
 
 	public void setAddress(InetAddress address) {
 		this.address = address;
-	}
-
-	public String getDisplayName() {
-		return this.displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public Boolean isUseForwardHeaders() {
@@ -177,14 +162,6 @@ public class ServerProperties {
 		return this.error;
 	}
 
-	public Session getSession() {
-		return this.session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
 	public Ssl getSsl() {
 		return this.ssl;
 	}
@@ -205,10 +182,6 @@ public class ServerProperties {
 		return this.servlet;
 	}
 
-	public void setServlet(Servlet servlet) {
-		this.servlet = servlet;
-	}
-
 	public Tomcat getTomcat() {
 		return this.tomcat;
 	}
@@ -224,7 +197,7 @@ public class ServerProperties {
 	/**
 	 * Servlet properties.
 	 */
-	public class Servlet {
+	public static class Servlet {
 
 		/**
 		 * Servlet context init parameters.
@@ -237,12 +210,20 @@ public class ServerProperties {
 		private String contextPath;
 
 		/**
+		 * Display name of the application.
+		 */
+		private String applicationDisplayName = "application";
+
+		/**
 		 * Path of the main dispatcher servlet.
 		 */
 		private String path = "/";
 
 		@NestedConfigurationProperty
-		private Jsp jsp = new Jsp();
+		private final Jsp jsp = new Jsp();
+
+		@NestedConfigurationProperty
+		private final Session session = new Session();
 
 		public String getContextPath() {
 			return this.contextPath;
@@ -257,6 +238,14 @@ public class ServerProperties {
 				return contextPath.substring(0, contextPath.length() - 1);
 			}
 			return contextPath;
+		}
+
+		public String getApplicationDisplayName() {
+			return this.applicationDisplayName;
+		}
+
+		public void setApplicationDisplayName(String displayName) {
+			this.applicationDisplayName = displayName;
 		}
 
 		public String getPath() {
@@ -276,8 +265,8 @@ public class ServerProperties {
 			return this.jsp;
 		}
 
-		public void setJsp(Jsp jsp) {
-			this.jsp = jsp;
+		public Session getSession() {
+			return this.session;
 		}
 
 		public String getServletMapping() {
@@ -303,8 +292,9 @@ public class ServerProperties {
 
 		public String getServletPrefix() {
 			String result = this.path;
-			if (result.contains("*")) {
-				result = result.substring(0, result.indexOf("*"));
+			int index = result.indexOf('*');
+			if (index != -1) {
+				result = result.substring(0, index);
 			}
 			if (result.endsWith("/")) {
 				result = result.substring(0, result.length() - 1);
@@ -333,194 +323,6 @@ public class ServerProperties {
 	}
 
 	/**
-	 * Session properties.
-	 */
-	public static class Session {
-
-		/**
-		 * Session timeout. If a duration suffix is not specified, seconds will be used.
-		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
-		private Duration timeout;
-
-		/**
-		 * Session tracking modes (one or more of the following: "cookie", "url", "ssl").
-		 */
-		private Set<SessionTrackingMode> trackingModes;
-
-		/**
-		 * Whether to persist session data between restarts.
-		 */
-		private boolean persistent;
-
-		/**
-		 * Directory used to store session data.
-		 */
-		private File storeDir;
-
-		private Cookie cookie = new Cookie();
-
-		public Cookie getCookie() {
-			return this.cookie;
-		}
-
-		public Duration getTimeout() {
-			return this.timeout;
-		}
-
-		public void setTimeout(Duration timeout) {
-			this.timeout = timeout;
-		}
-
-		public Set<SessionTrackingMode> getTrackingModes() {
-			return this.trackingModes;
-		}
-
-		public void setTrackingModes(Set<SessionTrackingMode> trackingModes) {
-			this.trackingModes = trackingModes;
-		}
-
-		public boolean isPersistent() {
-			return this.persistent;
-		}
-
-		public void setPersistent(boolean persistent) {
-			this.persistent = persistent;
-		}
-
-		public File getStoreDir() {
-			return this.storeDir;
-		}
-
-		public void setStoreDir(File storeDir) {
-			this.storeDir = storeDir;
-		}
-
-		/**
-		 * Cookie properties.
-		 */
-		public static class Cookie {
-
-			/**
-			 * Session cookie name.
-			 */
-			private String name;
-
-			/**
-			 * Domain for the session cookie.
-			 */
-			private String domain;
-
-			/**
-			 * Path of the session cookie.
-			 */
-			private String path;
-
-			/**
-			 * Comment for the session cookie.
-			 */
-			private String comment;
-
-			/**
-			 * "HttpOnly" flag for the session cookie.
-			 */
-			private Boolean httpOnly;
-
-			/**
-			 * "Secure" flag for the session cookie.
-			 */
-			private Boolean secure;
-
-			/**
-			 * Maximum age of the session cookie.
-			 */
-			@DefaultDurationUnit(ChronoUnit.SECONDS)
-			private Duration maxAge;
-
-			public String getName() {
-				return this.name;
-			}
-
-			public void setName(String name) {
-				this.name = name;
-			}
-
-			public String getDomain() {
-				return this.domain;
-			}
-
-			public void setDomain(String domain) {
-				this.domain = domain;
-			}
-
-			public String getPath() {
-				return this.path;
-			}
-
-			public void setPath(String path) {
-				this.path = path;
-			}
-
-			public String getComment() {
-				return this.comment;
-			}
-
-			public void setComment(String comment) {
-				this.comment = comment;
-			}
-
-			public Boolean getHttpOnly() {
-				return this.httpOnly;
-			}
-
-			public void setHttpOnly(Boolean httpOnly) {
-				this.httpOnly = httpOnly;
-			}
-
-			public Boolean getSecure() {
-				return this.secure;
-			}
-
-			public void setSecure(Boolean secure) {
-				this.secure = secure;
-			}
-
-			public Duration getMaxAge() {
-				return this.maxAge;
-			}
-
-			public void setMaxAge(Duration maxAge) {
-				this.maxAge = maxAge;
-			}
-
-		}
-
-		/**
-		 * Available session tracking modes (mirrors
-		 * {@link javax.servlet.SessionTrackingMode}.
-		 */
-		public enum SessionTrackingMode {
-
-			/**
-			 * Send a cookie in response to the client's first request.
-			 */
-			COOKIE,
-
-			/**
-			 * Rewrite the URL to append a session ID.
-			 */
-			URL,
-
-			/**
-			 * Use SSL build-in mechanism to track the session.
-			 */
-			SSL
-
-		}
-
-	}
-
-	/**
 	 * Tomcat properties.
 	 */
 	public static class Tomcat {
@@ -531,7 +333,7 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Regular expression that matches proxies that are to be trusted.
+		 * Regular expression matching trusted IP addresses.
 		 */
 		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
@@ -558,22 +360,20 @@ public class ServerProperties {
 
 		/**
 		 * Name of the HTTP header from which the remote IP is extracted. For instance,
-		 * 'X-FORWARDED-FOR'.
+		 * `X-FORWARDED-FOR`.
 		 */
 		private String remoteIpHeader;
 
 		/**
-		 * Tomcat base directory. If not specified, a temporary directory will be used.
+		 * Tomcat base directory. If not specified, a temporary directory is used.
 		 */
 		private File basedir;
 
 		/**
-		 * <<<<<<< HEAD Delay between the invocation of backgroundProcess methods. If a
-		 * duration suffix is not specified, seconds will be used. ======= Delay, in
-		 * seconds, between the invocation of backgroundProcess methods. >>>>>>> Align
-		 * edits with code
+		 * Delay between the invocation of backgroundProcess methods. If a duration suffix
+		 * is not specified, seconds will be used.
 		 */
-		@DefaultDurationUnit(ChronoUnit.SECONDS)
+		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(30);
 
 		/**
@@ -601,6 +401,12 @@ public class ServerProperties {
 		 * the path.
 		 */
 		private Boolean redirectContextRoot;
+
+		/**
+		 * Whether HTTP 1.1 and later location headers generated by a call to sendRedirect
+		 * will use relative or absolute redirects.
+		 */
+		private Boolean useRelativeRedirects;
 
 		/**
 		 * Character encoding to use to decode the URI.
@@ -714,6 +520,14 @@ public class ServerProperties {
 
 		public void setRedirectContextRoot(Boolean redirectContextRoot) {
 			this.redirectContextRoot = redirectContextRoot;
+		}
+
+		public Boolean getUseRelativeRedirects() {
+			return this.useRelativeRedirects;
+		}
+
+		public void setUseRelativeRedirects(Boolean useRelativeRedirects) {
+			this.useRelativeRedirects = useRelativeRedirects;
 		}
 
 		public String getRemoteIpHeader() {
@@ -914,9 +728,7 @@ public class ServerProperties {
 		public static class Resource {
 
 			/**
-			 * <<<<<<< HEAD Time-to-live of the static resource cache. =======
-			 * Time-to-live, in milliseconds, of the static resource cache. >>>>>>> Align
-			 * edits with code
+			 * Time-to-live of the static resource cache.
 			 */
 			private Duration cacheTtl;
 
@@ -1246,7 +1058,7 @@ public class ServerProperties {
 			/**
 			 * Whether to enable the access log.
 			 */
-			private Boolean enabled;
+			private boolean enabled = false;
 
 			/**
 			 * Format pattern for access logs.
@@ -1273,11 +1085,11 @@ public class ServerProperties {
 			 */
 			private boolean rotate = true;
 
-			public Boolean getEnabled() {
+			public boolean isEnabled() {
 				return this.enabled;
 			}
 
-			public void setEnabled(Boolean enabled) {
+			public void setEnabled(boolean enabled) {
 				this.enabled = enabled;
 			}
 

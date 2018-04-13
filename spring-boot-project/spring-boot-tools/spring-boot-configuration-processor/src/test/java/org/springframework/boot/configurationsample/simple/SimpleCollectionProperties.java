@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,8 @@ public class SimpleCollectionProperties {
 
 	private final List<Double> doubles = new ArrayList<>();
 
+	private final Map<String, Holder<String>> namesToHolders = new HashMap<>();
+
 	public Map<Integer, String> getIntegersToNames() {
 		return this.integersToNames;
 	}
@@ -79,6 +81,21 @@ public class SimpleCollectionProperties {
 
 	public List<Double> getDoubles() {
 		return this.doubles;
+	}
+
+	public Map<String, Holder<String>> getNamesToHolders() {
+		return this.namesToHolders;
+	}
+
+	public static class Holder<T> {
+
+		@SuppressWarnings("unused")
+		private T target;
+
+		public void setTarget(T target) {
+			this.target = target;
+		}
+
 	}
 
 }

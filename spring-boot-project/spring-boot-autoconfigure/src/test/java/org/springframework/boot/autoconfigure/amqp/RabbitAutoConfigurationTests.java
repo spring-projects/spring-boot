@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,12 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLSocketFactory;
 
 import com.rabbitmq.client.Address;
+import com.rabbitmq.client.Connection;
 import org.aopalliance.aop.Advice;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +38,7 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -57,6 +60,10 @@ import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -66,7 +73,6 @@ import static org.mockito.Mockito.verify;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Gary Russell
- * @author Stephane Nicoll
  */
 public class RabbitAutoConfigurationTests {
 
@@ -104,6 +110,33 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testDefaultRabbitTemplateConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					RabbitTemplate defaultRabbitTemplate = new RabbitTemplate();
+					assertThat(rabbitTemplate.getRoutingKey())
+							.isEqualTo(defaultRabbitTemplate.getRoutingKey());
+					assertThat(rabbitTemplate.getExchange())
+							.isEqualTo(defaultRabbitTemplate.getExchange());
+				});
+	}
+
+	@Test
+	public void testDefaultConnectionFactoryConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
+					RabbitProperties properties = new RabbitProperties();
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					assertThat(rabbitConnectionFactory.getUsername())
+							.isEqualTo(properties.getUsername());
+					assertThat(rabbitConnectionFactory.getPassword())
+							.isEqualTo(properties.getPassword());
+				});
+	}
+
+	@Test
 	public void testConnectionFactoryWithOverrides() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.host:remote-server",
@@ -122,6 +155,29 @@ public class RabbitAutoConfigurationTests {
 							.getPropertyValue("rabbitConnectionFactory");
 					assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
 					assertThat((Address[]) dfa.getPropertyValue("addresses")).hasSize(1);
+				});
+	}
+
+	@Test
+	public void testConnectionFactoryWithCustomConnectionNameStrategy() {
+		this.contextRunner
+				.withUserConfiguration(ConnectionNameStrategyConfiguration.class)
+				.run((context) -> {
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(connectionFactory);
+					Address[] addresses = (Address[]) dfa.getPropertyValue("addresses");
+					assertThat(addresses).hasSize(1);
+					com.rabbitmq.client.ConnectionFactory rcf = mock(
+							com.rabbitmq.client.ConnectionFactory.class);
+					given(rcf.newConnection(isNull(), eq(addresses), anyString()))
+							.willReturn(mock(Connection.class));
+					dfa.setPropertyValue("rabbitConnectionFactory", rcf);
+					connectionFactory.createConnection();
+					verify(rcf).newConnection(isNull(), eq(addresses), eq("test#0"));
+					connectionFactory.resetConnection();
+					connectionFactory.createConnection();
+					verify(rcf).newConnection(isNull(), eq(addresses), eq("test#1"));
 				});
 	}
 
@@ -221,6 +277,19 @@ public class RabbitAutoConfigurationTests {
 					assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
 					assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
 					assertThat(backOffPolicy.getMaxInterval()).isEqualTo(5000);
+				});
+	}
+
+	@Test
+	public void testRabbitTemplateExchangeAndRoutingKey() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.template.exchange:my-exchange",
+						"spring.rabbitmq.template.routing-key:my-routing-key")
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					assertThat(rabbitTemplate.getExchange()).isEqualTo("my-exchange");
+					assertThat(rabbitTemplate.getRoutingKey())
+							.isEqualTo("my-routing-key");
 				});
 	}
 
@@ -493,7 +562,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableRabbitAutomatically() throws Exception {
+	public void enableRabbitAutomatically() {
 		this.contextRunner.withUserConfiguration(NoEnableRabbitConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasBean(
@@ -570,7 +639,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithInvalidKeystoreTypeShouldFail() throws Exception {
+	public void enableSslWithInvalidKeystoreTypeShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=foo",
@@ -584,7 +653,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithInvalidTrustStoreTypeShouldFail() throws Exception {
+	public void enableSslWithInvalidTrustStoreTypeShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.trustStore=bar",
@@ -598,7 +667,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() throws Exception {
+	public void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
@@ -708,6 +777,18 @@ public class RabbitAutoConfigurationTests {
 		@Bean
 		public MessageRecoverer anotherMessageRecoverer() {
 			return mock(MessageRecoverer.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class ConnectionNameStrategyConfiguration {
+
+		private final AtomicInteger counter = new AtomicInteger();
+
+		@Bean
+		public ConnectionNameStrategy myConnectionNameStrategy() {
+			return (connectionFactory) -> "test#" + this.counter.getAndIncrement();
 		}
 
 	}

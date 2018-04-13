@@ -43,35 +43,35 @@ public class OriginTrackedMapPropertySourceTests {
 	private Origin origin = mock(Origin.class);
 
 	@Test
-	public void getPropertyWhenMissingShouldReturnNull() throws Exception {
+	public void getPropertyWhenMissingShouldReturnNull() {
 		assertThat(this.source.getProperty("test")).isNull();
 	}
 
 	@Test
-	public void getPropertyWhenNonTrackedShouldReturnValue() throws Exception {
+	public void getPropertyWhenNonTrackedShouldReturnValue() {
 		this.map.put("test", "foo");
 		assertThat(this.source.getProperty("test")).isEqualTo("foo");
 	}
 
 	@Test
-	public void getPropertyWhenTrackedShouldReturnValue() throws Exception {
+	public void getPropertyWhenTrackedShouldReturnValue() {
 		this.map.put("test", OriginTrackedValue.of("foo", this.origin));
 		assertThat(this.source.getProperty("test")).isEqualTo("foo");
 	}
 
 	@Test
-	public void getPropertyOriginWhenMissingShouldReturnNull() throws Exception {
+	public void getPropertyOriginWhenMissingShouldReturnNull() {
 		assertThat(this.source.getOrigin("test")).isNull();
 	}
 
 	@Test
-	public void getPropertyOriginWhenNonTrackedShouldReturnNull() throws Exception {
+	public void getPropertyOriginWhenNonTrackedShouldReturnNull() {
 		this.map.put("test", "foo");
 		assertThat(this.source.getOrigin("test")).isNull();
 	}
 
 	@Test
-	public void getPropertyOriginWhenTrackedShouldReturnOrigin() throws Exception {
+	public void getPropertyOriginWhenTrackedShouldReturnOrigin() {
 		this.map.put("test", OriginTrackedValue.of("foo", this.origin));
 		assertThat(this.source.getOrigin("test")).isEqualTo(this.origin);
 	}

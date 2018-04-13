@@ -92,7 +92,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void hierarchyConsidered() throws Exception {
+	public void hierarchyConsidered() {
 		this.context.register(FooConfiguration.class);
 		this.context.refresh();
 		AnnotationConfigApplicationContext childContext = new AnnotationConfigApplicationContext();
@@ -103,7 +103,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void hierarchyNotConsidered() throws Exception {
+	public void hierarchyNotConsidered() {
 		this.context.register(FooConfiguration.class);
 		this.context.refresh();
 		AnnotationConfigApplicationContext childContext = new AnnotationConfigApplicationContext();
@@ -114,7 +114,7 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void impliedOnBeanMethod() throws Exception {
+	public void impliedOnBeanMethod() {
 		this.context.register(ExampleBeanConfiguration.class, ImpliedOnBeanMethod.class);
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(ExampleBean.class).size()).isEqualTo(1);
@@ -610,7 +610,7 @@ public class ConditionalOnMissingBeanTests {
 		}
 
 		@Override
-		public ExampleBean getObject() throws Exception {
+		public ExampleBean getObject() {
 			return new ExampleBean("fromFactory");
 		}
 
@@ -633,7 +633,7 @@ public class ConditionalOnMissingBeanTests {
 		}
 
 		@Override
-		public ExampleBean getObject() throws Exception {
+		public ExampleBean getObject() {
 			return new ExampleBean("fromFactory");
 		}
 

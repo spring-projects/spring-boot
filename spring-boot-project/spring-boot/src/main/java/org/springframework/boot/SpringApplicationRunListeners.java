@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,16 +67,28 @@ class SpringApplicationRunListeners {
 		}
 	}
 
-	public void finished(ConfigurableApplicationContext context, Throwable exception) {
+	public void started(ConfigurableApplicationContext context) {
 		for (SpringApplicationRunListener listener : this.listeners) {
-			callFinishedListener(listener, context, exception);
+			listener.started(context);
 		}
 	}
 
-	private void callFinishedListener(SpringApplicationRunListener listener,
+	public void running(ConfigurableApplicationContext context) {
+		for (SpringApplicationRunListener listener : this.listeners) {
+			listener.running(context);
+		}
+	}
+
+	public void failed(ConfigurableApplicationContext context, Throwable exception) {
+		for (SpringApplicationRunListener listener : this.listeners) {
+			callFailedListener(listener, context, exception);
+		}
+	}
+
+	private void callFailedListener(SpringApplicationRunListener listener,
 			ConfigurableApplicationContext context, Throwable exception) {
 		try {
-			listener.finished(context, exception);
+			listener.failed(context, exception);
 		}
 		catch (Throwable ex) {
 			if (exception == null) {

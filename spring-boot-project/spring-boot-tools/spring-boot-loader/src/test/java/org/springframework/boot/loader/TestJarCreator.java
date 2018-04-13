@@ -51,11 +51,12 @@ public abstract class TestJarCreator {
 
 			writeNestedEntry("nested.jar", unpackNested, jarOutputStream);
 			writeNestedEntry("another-nested.jar", unpackNested, jarOutputStream);
+			writeNestedEntry("space nested.jar", unpackNested, jarOutputStream);
 		}
 	}
 
 	private static void writeNestedEntry(String name, boolean unpackNested,
-			JarOutputStream jarOutputStream) throws Exception, IOException {
+			JarOutputStream jarOutputStream) throws Exception {
 		JarEntry nestedEntry = new JarEntry(name);
 		byte[] nestedJarData = getNestedJarData();
 		nestedEntry.setSize(nestedJarData.length);

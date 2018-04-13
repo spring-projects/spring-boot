@@ -38,7 +38,7 @@ public class PropertyMappingTests {
 	private Environment environment;
 
 	@Test
-	public void hasProperty() throws Exception {
+	public void hasProperty() {
 		assertThat(this.environment.getProperty("example-property")).isEqualTo("abc");
 	}
 

@@ -155,7 +155,7 @@ public class ErrorPageFilterIntegrationTests {
 				@Override
 				public void postHandle(HttpServletRequest request,
 						HttpServletResponse response, Object handler,
-						ModelAndView modelAndView) throws Exception {
+						ModelAndView modelAndView) {
 					HelloWorldController.this.setStatus(response.getStatus());
 					HelloWorldController.this.latch.countDown();
 				}
@@ -182,8 +182,7 @@ public class ErrorPageFilterIntegrationTests {
 		private static final String[] EMPTY_RESOURCE_SUFFIXES = {};
 
 		@Override
-		public ApplicationContext loadContext(MergedContextConfiguration config)
-				throws Exception {
+		public ApplicationContext loadContext(MergedContextConfiguration config) {
 			AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 					config.getClasses());
 			context.registerShutdownHook();
@@ -191,7 +190,7 @@ public class ErrorPageFilterIntegrationTests {
 		}
 
 		@Override
-		public ApplicationContext loadContext(String... locations) throws Exception {
+		public ApplicationContext loadContext(String... locations) {
 			throw new UnsupportedOptionException();
 		}
 

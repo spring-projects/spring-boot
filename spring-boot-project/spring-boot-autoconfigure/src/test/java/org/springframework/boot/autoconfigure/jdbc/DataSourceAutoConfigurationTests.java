@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +47,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -68,13 +67,13 @@ public class DataSourceAutoConfigurationTests {
 							+ new Random().nextInt());
 
 	@Test
-	public void testDefaultDataSourceExists() throws Exception {
+	public void testDefaultDataSourceExists() {
 		this.contextRunner
 				.run((context) -> assertThat(context).hasSingleBean(DataSource.class));
 	}
 
 	@Test
-	public void testDataSourceHasEmbeddedDefault() throws Exception {
+	public void testDataSourceHasEmbeddedDefault() {
 		this.contextRunner.run((context) -> {
 			HikariDataSource dataSource = context.getBean(HikariDataSource.class);
 			assertThat(dataSource.getJdbcUrl()).isNotNull();
@@ -83,7 +82,7 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testBadUrl() throws Exception {
+	public void testBadUrl() {
 		this.contextRunner
 				.withPropertyValues("spring.datasource.url:jdbc:not-going-to-work")
 				.withClassLoader(new DisableEmbeddedDatabaseClassLoader())
@@ -92,7 +91,7 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testBadDriverClass() throws Exception {
+	public void testBadDriverClass() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.datasource.driverClassName:org.none.jdbcDriver")
@@ -102,7 +101,7 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void hikariValidatesConnectionByDefault() throws Exception {
+	public void hikariValidatesConnectionByDefault() {
 		assertDataSource(HikariDataSource.class,
 				Collections.singletonList("org.apache.tomcat"), (dataSource) ->
 				// Use Connection#isValid()
@@ -110,7 +109,7 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void tomcatIsFallback() throws Exception {
+	public void tomcatIsFallback() {
 		assertDataSource(org.apache.tomcat.jdbc.pool.DataSource.class,
 				Collections.singletonList("com.zaxxer.hikari"),
 				(dataSource) -> assertThat(dataSource.getUrl())
@@ -128,7 +127,7 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void commonsDbcp2IsFallback() throws Exception {
+	public void commonsDbcp2IsFallback() {
 		assertDataSource(BasicDataSource.class,
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"),
 				(dataSource) -> assertThat(dataSource.getUrl())
@@ -136,10 +135,10 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void commonsDbcp2ValidatesConnectionByDefault() throws Exception {
+	public void commonsDbcp2ValidatesConnectionByDefault() {
 		assertDataSource(org.apache.commons.dbcp2.BasicDataSource.class,
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"), (dataSource) -> {
-					assertThat(dataSource.getTestOnBorrow()).isEqualTo(true);
+					assertThat(dataSource.getTestOnBorrow()).isTrue();
 					assertThat(dataSource.getValidationQuery()).isNull(); // Use
 																			// Connection#isValid()
 				});
@@ -147,7 +146,7 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("resource")
-	public void testEmbeddedTypeDefaultsUsername() throws Exception {
+	public void testEmbeddedTypeDefaultsUsername() {
 		this.contextRunner.withPropertyValues(
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb").run((context) -> {
@@ -196,7 +195,7 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testExplicitDriverClassClearsUsername() throws Exception {
+	public void testExplicitDriverClassClearsUsername() {
 		this.contextRunner.withPropertyValues(
 				"spring.datasource.driverClassName:" + DatabaseTestDriver.class.getName(),
 				"spring.datasource.url:jdbc:foo://localhost").run((context) -> {
@@ -209,7 +208,7 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDefaultDataSourceCanBeOverridden() throws Exception {
+	public void testDefaultDataSourceCanBeOverridden() {
 		this.contextRunner.withUserConfiguration(TestDataSourceConfiguration.class)
 				.run((context) -> assertThat(context).getBean(DataSource.class)
 						.isInstanceOf(BasicDataSource.class));
@@ -228,7 +227,7 @@ public class DataSourceAutoConfigurationTests {
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType,
 			List<String> hiddenPackages, Consumer<T> consumer) {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
-				hiddenPackages.toArray(new String[hiddenPackages.size()]));
+				StringUtils.toStringArray(hiddenPackages));
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			DataSource bean = context.getBean(DataSource.class);
 			assertThat(bean).isInstanceOf(expectedType);
@@ -272,18 +271,17 @@ public class DataSourceAutoConfigurationTests {
 	public static class DatabaseTestDriver implements Driver {
 
 		@Override
-		public Connection connect(String url, Properties info) throws SQLException {
+		public Connection connect(String url, Properties info) {
 			return mock(Connection.class);
 		}
 
 		@Override
-		public boolean acceptsURL(String url) throws SQLException {
+		public boolean acceptsURL(String url) {
 			return true;
 		}
 
 		@Override
-		public DriverPropertyInfo[] getPropertyInfo(String url, Properties info)
-				throws SQLException {
+		public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) {
 			return new DriverPropertyInfo[0];
 		}
 
@@ -303,7 +301,7 @@ public class DataSourceAutoConfigurationTests {
 		}
 
 		@Override
-		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		public Logger getParentLogger() {
 			return mock(Logger.class);
 		}
 

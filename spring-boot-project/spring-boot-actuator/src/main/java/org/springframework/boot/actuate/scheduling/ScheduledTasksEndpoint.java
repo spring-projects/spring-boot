@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,27 +105,27 @@ public class ScheduledTasksEndpoint {
 	/**
 	 * Base class for descriptions of a {@link Task}.
 	 */
-	public static abstract class TaskDescription {
+	public abstract static class TaskDescription {
 
-		private static final Map<Class<? extends Task>, Function<Task, TaskDescription>> describers = new LinkedHashMap<>();
+		private static final Map<Class<? extends Task>, Function<Task, TaskDescription>> DESCRIBERS = new LinkedHashMap<>();
 
 		static {
-			describers.put(FixedRateTask.class,
+			DESCRIBERS.put(FixedRateTask.class,
 					(task) -> new FixedRateTaskDescription((FixedRateTask) task));
-			describers.put(FixedDelayTask.class,
+			DESCRIBERS.put(FixedDelayTask.class,
 					(task) -> new FixedDelayTaskDescription((FixedDelayTask) task));
-			describers.put(CronTask.class,
+			DESCRIBERS.put(CronTask.class,
 					(task) -> new CronTaskDescription((CronTask) task));
-			describers.put(TriggerTask.class,
+			DESCRIBERS.put(TriggerTask.class,
 					(task) -> describeTriggerTask((TriggerTask) task));
 		}
 
-		private TaskType type;
+		private final TaskType type;
 
 		private final RunnableDescription runnable;
 
 		private static TaskDescription of(Task task) {
-			return describers.entrySet().stream()
+			return DESCRIBERS.entrySet().stream()
 					.filter((entry) -> entry.getKey().isInstance(task))
 					.map((entry) -> entry.getValue().apply(task)).findFirst()
 					.orElse(null);
@@ -226,7 +226,7 @@ public class ScheduledTasksEndpoint {
 	}
 
 	/**
-	 * A description of an {@link CronTask} or a {@link TriggerTask} with a
+	 * A description of a {@link CronTask} or a {@link TriggerTask} with a
 	 * {@link CronTrigger}.
 	 */
 	public static final class CronTaskDescription extends TaskDescription {

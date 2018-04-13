@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.junit.Assume;
 import org.junit.rules.TestRule;
@@ -42,6 +43,7 @@ import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
@@ -83,7 +85,7 @@ public class CliTester implements TestRule {
 					"--classpath=.:" + new File("target/test-classes").getAbsolutePath());
 		}
 		Future<RunCommand> future = submitCommand(new RunCommand(),
-				updatedArgs.toArray(new String[updatedArgs.size()]));
+				StringUtils.toStringArray(updatedArgs));
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
 	}
@@ -100,7 +102,7 @@ public class CliTester implements TestRule {
 		return getOutput();
 	}
 
-	private <T extends OptionParsingCommand> Future<T> submitCommand(final T command,
+	private <T extends OptionParsingCommand> Future<T> submitCommand(T command,
 			String... args) {
 		clearUrlHandler();
 		final String[] sources = getSources(args);
@@ -165,7 +167,7 @@ public class CliTester implements TestRule {
 	}
 
 	@Override
-	public Statement apply(final Statement base, final Description description) {
+	public Statement apply(Statement base, Description description) {
 		final Statement statement = CliTester.this.outputCapture
 				.apply(new RunLauncherStatement(base), description);
 		return new Statement() {
@@ -192,12 +194,7 @@ public class CliTester implements TestRule {
 			InputStream stream = URI.create("http://localhost:" + port + uri).toURL()
 					.openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			String line;
-			StringBuilder result = new StringBuilder();
-			while ((line = reader.readLine()) != null) {
-				result.append(line);
-			}
-			return result.toString();
+			return reader.lines().collect(Collectors.joining());
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

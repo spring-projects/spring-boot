@@ -42,8 +42,7 @@ public class BeansEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
-			throws Exception {
+	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.beans.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(BeansEndpoint.class));

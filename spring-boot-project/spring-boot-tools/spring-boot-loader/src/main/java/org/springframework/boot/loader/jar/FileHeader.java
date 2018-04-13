@@ -30,10 +30,10 @@ interface FileHeader {
 	/**
 	 * Returns {@code true} if the header has the given name.
 	 * @param name the name to test
-	 * @param suffix an additional suffix (or {@code null})
+	 * @param suffix an additional suffix (or {@code 0})
 	 * @return {@code true} if the header has the given name
 	 */
-	boolean hasName(String name, String suffix);
+	boolean hasName(CharSequence name, char suffix);
 
 	/**
 	 * Return the offset of the load file header within the archive data.

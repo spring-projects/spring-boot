@@ -50,7 +50,7 @@ public class MustacheViewTests {
 	}
 
 	@Test
-	public void viewResolvesHandlebars() throws Exception {
+	public void viewResolvesHandlebars() {
 		this.exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/test").build());
 		MustacheView view = new MustacheView();

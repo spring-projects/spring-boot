@@ -45,7 +45,7 @@ public class NoManagementSampleActuatorApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	public void testHome() throws Exception {
+	public void testHome() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate
 				.withBasicAuth("user", getPassword()).getForEntity("/", Map.class);
@@ -56,7 +56,7 @@ public class NoManagementSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetricsNotAvailable() throws Exception {
+	public void testMetricsNotAvailable() {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = this.restTemplate

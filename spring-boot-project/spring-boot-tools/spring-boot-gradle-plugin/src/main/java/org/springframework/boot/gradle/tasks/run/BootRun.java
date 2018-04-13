@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ public class BootRun extends JavaExec {
 	 * {@code sourceSet's} {@link SourceSet#getResources() resources} to the start of the
 	 * classpath in place of the {@link SourceSet#getOutput output's}
 	 * {@link SourceSetOutput#getResourcesDir() resources directory}.
-	 *
 	 * @param sourceSet the source set
 	 */
 	public void sourceResources(SourceSet sourceSet) {

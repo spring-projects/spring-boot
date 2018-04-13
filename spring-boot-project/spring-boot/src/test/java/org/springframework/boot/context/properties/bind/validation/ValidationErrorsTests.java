@@ -50,28 +50,28 @@ public class ValidationErrorsTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void createWhenNameIsNullShouldThrowException() throws Exception {
+	public void createWhenNameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Name must not be null");
 		new ValidationErrors(null, Collections.emptySet(), Collections.emptyList());
 	}
 
 	@Test
-	public void createWhenBoundPropertiesIsNullShouldThrowException() throws Exception {
+	public void createWhenBoundPropertiesIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("BoundProperties must not be null");
 		new ValidationErrors(NAME, null, Collections.emptyList());
 	}
 
 	@Test
-	public void createWhenErrorsIsNullShouldThrowException() throws Exception {
+	public void createWhenErrorsIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Errors must not be null");
 		new ValidationErrors(NAME, Collections.emptySet(), null);
 	}
 
 	@Test
-	public void getNameShouldReturnName() throws Exception {
+	public void getNameShouldReturnName() {
 		ConfigurationPropertyName name = NAME;
 		ValidationErrors errors = new ValidationErrors(name, Collections.emptySet(),
 				Collections.emptyList());
@@ -79,7 +79,7 @@ public class ValidationErrorsTests {
 	}
 
 	@Test
-	public void getBoundPropertiesShouldReturnBoundProperties() throws Exception {
+	public void getBoundPropertiesShouldReturnBoundProperties() {
 		Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 		boundProperties.add(new ConfigurationProperty(NAME, "foo", null));
 		ValidationErrors errors = new ValidationErrors(NAME, boundProperties,
@@ -88,7 +88,7 @@ public class ValidationErrorsTests {
 	}
 
 	@Test
-	public void getErrorsShouldReturnErrors() throws Exception {
+	public void getErrorsShouldReturnErrors() {
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new ObjectError("foo", "bar"));
 		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(),
@@ -97,7 +97,7 @@ public class ValidationErrorsTests {
 	}
 
 	@Test
-	public void iteratorShouldIterateErrors() throws Exception {
+	public void iteratorShouldIterateErrors() {
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new ObjectError("foo", "bar"));
 		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(),
@@ -106,7 +106,7 @@ public class ValidationErrorsTests {
 	}
 
 	@Test
-	public void getErrorsShouldAdaptFieldErrorsToBeOriginProviders() throws Exception {
+	public void getErrorsShouldAdaptFieldErrorsToBeOriginProviders() {
 		Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 		ConfigurationPropertyName name1 = ConfigurationPropertyName.of("foo.bar");
 		Origin origin1 = MockOrigin.of("line1");

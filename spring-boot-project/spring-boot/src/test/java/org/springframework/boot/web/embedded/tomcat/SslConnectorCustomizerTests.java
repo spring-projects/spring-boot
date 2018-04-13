@@ -39,7 +39,7 @@ public class SslConnectorCustomizerTests {
 	private Connector connector;
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		this.tomcat = new Tomcat();
 		this.connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		this.connector.setPort(0);

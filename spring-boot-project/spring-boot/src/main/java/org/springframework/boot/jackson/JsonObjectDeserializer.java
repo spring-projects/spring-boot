@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public abstract class JsonObjectDeserializer<T>
 	 */
 	protected abstract T deserializeObject(JsonParser jsonParser,
 			DeserializationContext context, ObjectCodec codec, JsonNode tree)
-					throws IOException;
+			throws IOException;
 
 	/**
 	 * Helper method to extract a value from the given {@code jsonNode} or return

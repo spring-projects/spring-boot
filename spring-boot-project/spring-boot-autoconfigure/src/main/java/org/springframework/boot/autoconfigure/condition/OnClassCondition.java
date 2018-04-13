@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,10 +157,10 @@ class OnClassCondition extends SpringBootCondition
 			Class<?> annotationType) {
 		MultiValueMap<String, Object> attributes = metadata
 				.getAllAnnotationAttributes(annotationType.getName(), true);
-		List<String> candidates = new ArrayList<>();
 		if (attributes == null) {
 			return Collections.emptyList();
 		}
+		List<String> candidates = new ArrayList<>();
 		addAll(candidates, attributes.get("value"));
 		addAll(candidates, attributes.get("name"));
 		return candidates;
@@ -252,7 +252,7 @@ class OnClassCondition extends SpringBootCondition
 
 		private volatile ConditionOutcome[] outcomes;
 
-		private ThreadedOutcomesResolver(final OutcomesResolver outcomesResolver) {
+		private ThreadedOutcomesResolver(OutcomesResolver outcomesResolver) {
 			this.thread = new Thread(
 					() -> this.outcomes = outcomesResolver.resolveOutcomes());
 			this.thread.start();

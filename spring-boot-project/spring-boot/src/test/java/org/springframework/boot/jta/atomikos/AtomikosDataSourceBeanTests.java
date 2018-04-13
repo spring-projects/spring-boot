@@ -16,7 +16,6 @@
 
 package org.springframework.boot.jta.atomikos;
 
-import com.atomikos.jdbc.AtomikosSQLException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +46,7 @@ public class AtomikosDataSourceBeanTests {
 	private static class MockAtomikosDataSourceBean extends AtomikosDataSourceBean {
 
 		@Override
-		public synchronized void init() throws AtomikosSQLException {
+		public synchronized void init() {
 		}
 
 		@Override

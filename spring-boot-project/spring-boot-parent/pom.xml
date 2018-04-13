@@ -14,7 +14,7 @@
 	<description>Spring Boot Parent</description>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
-		<url>http://www.spring.io</url>
+		<url>https://spring.io</url>
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
@@ -54,6 +54,25 @@
 				<version>1.2.17</version>
 			</dependency>
 			<dependency>
+				<groupId>com.nhaarman</groupId>
+				<artifactId>mockito-kotlin</artifactId>
+				<version>1.5.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.jetbrains.kotlin</groupId>
+						<artifactId>kotlin-stdlib</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.jetbrains.kotlin</groupId>
+						<artifactId>kotlin-reflect</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.mockito</groupId>
+						<artifactId>mockito-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
 				<groupId>com.squareup.okhttp</groupId>
 				<artifactId>okhttp</artifactId>
 				<version>2.7.5</version>
@@ -69,6 +88,11 @@
 				<version>3.9.0</version>
 			</dependency>
 			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers</artifactId>
+				<version>1.7.0</version>
+			</dependency>
+			<dependency>
 				<groupId>com.vaadin.external.google</groupId>
 				<artifactId>android-json</artifactId>
 				<version>0.0.20131108.vaadin1</version>
@@ -76,7 +100,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>1.0.3.RELEASE</version>
+				<version>1.0.5.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
@@ -166,7 +190,7 @@
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-utils</artifactId>
-				<version>3.0.20</version>
+				<version>3.0.24</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.aether</groupId>
@@ -257,12 +281,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>
@@ -274,6 +292,9 @@
 					<version>${kotlin.version}</version>
 					<configuration>
 						<jvmTarget>${java.version}</jvmTarget>
+						<apiVersion>1.1</apiVersion>
+						<languageVersion>1.1</languageVersion>
+						<javaParameters>true</javaParameters>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -284,12 +305,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>2.17</version>
+					<version>3.0.0</version>
 					<dependencies>
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>7.6</version>
+							<version>8.5</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -322,7 +343,7 @@
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
-					<version>1.6.4</version>
+					<version>1.6.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
@@ -505,6 +526,25 @@
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>regex-property</id>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>modulename</name>
+							<value>${project.artifactId}</value>
+							<regex>-</regex>
+							<replacement>.</replacement>
+							<failIfNoMatch>true</failIfNoMatch>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
 				<inherited>true</inherited>
 				<executions>
@@ -614,10 +654,17 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
 						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+							<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
 						</manifest>
+						<manifestEntries>
+							<Implementation-Title>${project.name}</Implementation-Title>
+							<Automatic-Module-Name>${modulename}</Automatic-Module-Name>
+							<Implementation-Version>${project.version}</Implementation-Version>
+							<Built-By>Spring</Built-By>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
@@ -692,6 +739,13 @@
 								<inherited>true</inherited>
 							</execution>
 						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.commons</groupId>
+								<artifactId>commons-lang3</artifactId>
+								<version>3.7</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
@@ -713,11 +767,8 @@
 		<profile>
 			<id>java9</id>
 			<activation>
-				<jdk>9</jdk>
+				<jdk>[9,)</jdk>
 			</activation>
-			<properties>
-				<aspectj.version>1.9.0.RC1</aspectj.version>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -729,6 +780,17 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>java10</id>
+			<activation>
+				<jdk>10</jdk>
+			</activation>
+			<properties>
+				<maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
+				<maven-site-plugin.version>3.7</maven-site-plugin.version>
+				<maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
+			</properties>
 		</profile>
 	</profiles>
 </project>

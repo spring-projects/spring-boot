@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jersey;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
@@ -35,7 +34,6 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -56,8 +54,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.DynamicRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.RegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -181,10 +179,8 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		return ClassUtils.getUserClass(this.config.getClass()).getName();
 	}
 
-	private void addInitParameters(RegistrationBean registration) {
-		for (Entry<String, String> entry : this.jersey.getInit().entrySet()) {
-			registration.addInitParameter(entry.getKey(), entry.getValue());
-		}
+	private void addInitParameters(DynamicRegistrationBean<?> registration) {
+		this.jersey.getInit().forEach(registration::addInitParameter);
 	}
 
 	private static String findApplicationPath(ApplicationPath annotation) {
@@ -213,9 +209,6 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 						+ servletRegistrationName + "'");
 			}
 			registration.setInitParameters(this.jersey.getInit());
-			registration.setInitParameter(
-					CommonProperties.METAINF_SERVICES_LOOKUP_DISABLE,
-					Boolean.TRUE.toString());
 		}
 	}
 
