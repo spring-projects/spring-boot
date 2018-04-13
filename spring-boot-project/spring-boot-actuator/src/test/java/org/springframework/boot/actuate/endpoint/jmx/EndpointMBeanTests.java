@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.FatalBeanException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mockito.Mockito.mock;
@@ -82,6 +84,34 @@ public class EndpointMBeanTests {
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
 		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
 		assertThat(result).isEqualTo("result");
+	}
+
+	@Test
+	public void invokeWhenOperationFailedShouldTranslateException()
+			throws MBeanException, ReflectionException {
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
+				new TestJmxOperation((arguments) -> {
+					throw new FatalBeanException("test failure");
+				}));
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
+		this.thrown.expect(MBeanException.class);
+		this.thrown.expectCause(instanceOf(IllegalStateException.class));
+		this.thrown.expectMessage("test failure");
+		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+	}
+
+	@Test
+	public void invokeWhenOperationFailedWithJdkExceptionShouldReuseException()
+			throws MBeanException, ReflectionException {
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
+				new TestJmxOperation((arguments) -> {
+					throw new UnsupportedOperationException("test failure");
+				}));
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
+		this.thrown.expect(MBeanException.class);
+		this.thrown.expectCause(instanceOf(UnsupportedOperationException.class));
+		this.thrown.expectMessage("test failure");
+		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
 	}
 
 	@Test
