@@ -1757,6 +1757,10 @@ these gauges has a name that is prefixed by `jdbc`.
 
 Metrics are also tagged by the name of the `DataSource` computed based on the bean name.
 
+TIP: By default, Spring Boot provides metadata for all supported data sources; you can
+add additional `DataSourcePoolMetadataProvider` beans if your favorite data source isn't
+supported out of the box. See `DataSourcePoolMetadataProvidersConfiguration` for examples.
+
 Also, Hikari-specific metrics are exposed with a `hikaricp` prefix. Each metric is tagged
 by the name of the Pool (can be controlled with `spring.datasource.name`).
 
