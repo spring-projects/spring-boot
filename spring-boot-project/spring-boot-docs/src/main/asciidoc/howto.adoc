@@ -569,6 +569,19 @@ server.
 
 
 
+[[howto-use-another-web-server]]
+=== Disabling the Web Server
+If your classpath contains the necessary bits to start a web server, Spring Boot will
+automatically start it. To disable this behaviour configure the `WebApplicationType` in
+your `application.properties`, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.main.web-application-type=none
+----
+
+
+
 [[howto-configure-jetty]]
 === Configure Jetty
 Generally, you can follow the advice from
