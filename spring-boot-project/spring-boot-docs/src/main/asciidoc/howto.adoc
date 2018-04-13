@@ -516,9 +516,6 @@ includes Tomcat by including `spring-boot-starter-tomcat`, but you can use
 `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`,
 `spring-boot-starter-jetty`, or `spring-boot-starter-undertow` instead.
 
-NOTE: Many starters support only Spring MVC, so they transitively bring
-`spring-boot-starter-web` into your application classpath.
-
 If you need to use a different HTTP server, you need to exclude the default dependencies
 and include the one you need. Spring Boot provides separate starters for
 HTTP servers to help make this process as easy as possible.
