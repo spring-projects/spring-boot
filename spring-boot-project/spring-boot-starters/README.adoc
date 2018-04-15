@@ -109,7 +109,18 @@ do as they were designed before this was clarified.
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
 
-| JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
+| JSF (
+https://javaserverfaces.github.io/[Mojarra],
+https://myfaces.apache.org[MyFaces],<br/>
+https://www.primefaces.org/[PrimeFaces],
+http://primefaces-extensions.github.io/[PrimeFaces Extensions],
+https://www.bootsfaces.net/[BootsFaces],
+http://butterfaces.org/[ButterFaces],
+http://omnifaces.org/[OmniFaces],
+http://angularfaces.net/[AngularFaces],
+https://github.com/adminfaces[AdminFaces],
+https://www.ocpsoft.org/rewrite/[Rewrite]
+)
 | http://joinfaces.org
 
 | http://www.liquigraph.org/[Liquigraph]
