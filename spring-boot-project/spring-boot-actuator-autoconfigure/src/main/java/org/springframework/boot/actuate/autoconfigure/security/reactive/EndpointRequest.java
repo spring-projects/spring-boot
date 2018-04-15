@@ -240,7 +240,7 @@ public final class EndpointRequest {
 	}
 
 	/**
-	 * The The {@link ServerWebExchangeMatcher} used to match against the links endpoint.
+	 * The {@link ServerWebExchangeMatcher} used to match against the links endpoint.
 	 */
 	public static final class LinksServerWebExchangeMatcher
 			extends ApplicationContextServerWebExchangeMatcher<WebEndpointProperties> {
