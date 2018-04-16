@@ -30,6 +30,8 @@ import org.junit.rules.ExpectedException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.FatalBeanException;
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
+import org.springframework.boot.actuate.endpoint.InvocationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -122,6 +124,23 @@ public class EndpointMBeanTests {
 		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
 		this.thrown.expectMessage("no operation named missingOperation");
 		bean.invoke("missingOperation", NO_PARAMS, NO_SIGNATURE);
+	}
+
+	@Test
+	public void invokeWhenOperationIsInvalidShouldThrowException()
+			throws MBeanException, ReflectionException {
+		TestJmxOperation operation = new TestJmxOperation() {
+			@Override
+			public Object invoke(InvocationContext context) {
+				throw new InvalidEndpointRequestException("test failure", "test");
+			}
+		};
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(operation);
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
+		this.thrown.expect(ReflectionException.class);
+		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
+		this.thrown.expectMessage("test failure");
+		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
 	}
 
 	@Test
