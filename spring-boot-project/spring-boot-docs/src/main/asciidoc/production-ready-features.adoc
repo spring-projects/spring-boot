@@ -1436,7 +1436,8 @@ to use can be provided using:
 ----
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional
-meter id is mapped to flat hierarchical names.
+meter id is {micrometer-registry-documentation}/graphite#_hierarchical_name_mapping[mapped
+to flat hierarchical names].
 
 TIP: To take control over this behaviour, define your `GraphiteMeterRegistry` and supply
 your own `HierarchicalNameMapper`. An auto-configured `GraphiteConfig` and `Clock` beans
@@ -1470,7 +1471,9 @@ server] to use can be provided using:
 Micrometer provides a hierarchical mapping to
 {micrometer-registry-documentation}/jmx[JMX], primarily as a cheap and portable way to
 view metrics locally. Micrometer provides a default `HierarchicalNameMapper` that governs
-how a dimensional meter id is mapped to flat hierarchical names.
+how a dimensional meter id is
+{micrometer-registry-documentation}/jmx#_hierarchical_name_mapping[mapped to flat
+hierarchical names].
 
 TIP: To take control over this behaviour, define your `JmxMeterRegistry` and supply your
 own `HierarchicalNameMapper`. An auto-configured `JmxConfig` and `Clock` beans are
