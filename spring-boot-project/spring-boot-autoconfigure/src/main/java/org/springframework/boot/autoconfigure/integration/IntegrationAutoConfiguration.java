@@ -43,7 +43,6 @@ import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
-import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 import org.springframework.util.StringUtils;
 
 /**
@@ -55,7 +54,6 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Madhura Bhave
- * @author Tim Ysewyn
  * @since 1.1.0
  */
 @Configuration
@@ -70,12 +68,6 @@ public class IntegrationAutoConfiguration {
 	@Configuration
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public IntegrationGraphServer integrationGraphServer() {
-			return new IntegrationGraphServer();
-		}
 
 	}
 

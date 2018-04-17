@@ -106,8 +106,8 @@ exchanges).
 |Yes
 
 |`integrationgraph`
-|Exposes the Spring Integration graph.
-|No
+|Shows the Spring Integration graph.
+|Yes
 
 |`loggers`
 |Shows and modifies the configuration of loggers in the application.

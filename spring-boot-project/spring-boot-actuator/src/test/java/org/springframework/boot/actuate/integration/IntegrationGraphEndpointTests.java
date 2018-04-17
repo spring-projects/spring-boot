@@ -49,21 +49,18 @@ public class IntegrationGraphEndpointTests {
 	}
 
 	@Test
-	public void shouldReturnGraph() {
+	public void readOperationShouldReturnGraph() {
 		Graph mockedGraph = mock(Graph.class);
 		when(this.integrationGraphServer.getGraph()).thenReturn(mockedGraph);
 
 		Graph graph = this.integrationGraphEndpoint.graph();
-
 		verify(this.integrationGraphServer).getGraph();
-
 		assertThat(graph).isEqualTo(mockedGraph);
 	}
 
 	@Test
-	public void shouldRebuildGraph() {
+	public void writeOperationShouldRebuildGraph() {
 		this.integrationGraphEndpoint.rebuild();
-
 		verify(this.integrationGraphServer).rebuild();
 	}
 

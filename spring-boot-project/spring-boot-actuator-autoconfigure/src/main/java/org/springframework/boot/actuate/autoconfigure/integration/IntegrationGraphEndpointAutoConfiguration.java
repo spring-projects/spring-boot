@@ -18,31 +18,43 @@ package org.springframework.boot.actuate.autoconfigure.integration;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the {@link IntegrationGraphEndpoint}.
  *
  * @author Tim Ysewyn
+ * @author Stephane Nicoll
  * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass(IntegrationGraphServer.class)
+@ConditionalOnBean(HeaderChannelRegistry.class)
+@AutoConfigureAfter(IntegrationAutoConfiguration.class)
 public class IntegrationGraphEndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(IntegrationGraphServer.class)
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
 	public IntegrationGraphEndpoint integrationGraphEndpoint(
 			IntegrationGraphServer integrationGraphServer) {
 		return new IntegrationGraphEndpoint(integrationGraphServer);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint(endpoint = IntegrationGraphEndpoint.class)
+	public IntegrationGraphServer integrationGraphServer() {
+		return new IntegrationGraphServer();
 	}
 
 }

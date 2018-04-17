@@ -45,7 +45,8 @@ public class IntegrationGraphEndpointDocumentationTests extends MockMvcEndpointD
 
 	@Test
 	public void rebuild() throws Exception {
-		this.mockMvc.perform(post("/actuator/integrationgraph")).andExpect(status().isNoContent())
+		this.mockMvc.perform(post("/actuator/integrationgraph")).andExpect(status()
+				.isNoContent())
 				.andDo(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
 	}
 

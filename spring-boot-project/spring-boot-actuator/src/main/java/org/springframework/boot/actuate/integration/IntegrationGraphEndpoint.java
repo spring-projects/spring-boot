@@ -28,31 +28,28 @@ import org.springframework.integration.support.management.graph.IntegrationGraph
  * @author Tim Ysewyn
  * @since 2.1.0
  */
-@Endpoint(id = "integrationgraph", enableByDefault = false)
+@Endpoint(id = "integrationgraph")
 public class IntegrationGraphEndpoint {
 
-	private final IntegrationGraphServer integrationGraphServer;
+	private final IntegrationGraphServer graphServer;
 
 	/**
-	 * Creates a new {@code IntegrationGraphEndpoint} that exposes a graph containing all the
-	 * Spring Integration components in the given {@code integrationGraphServer}.
-	 *
-	 * @param integrationGraphServer the integration graph server
-	 * @see IntegrationGraphServer
+	 * Create a new {@code IntegrationGraphEndpoint} that exposes a graph containing all
+	 * the Spring Integration components in the given {@link IntegrationGraphServer}.
+	 * @param graphServer the integration graph server
 	 */
-	public IntegrationGraphEndpoint(IntegrationGraphServer integrationGraphServer) {
-		this.integrationGraphServer = integrationGraphServer;
+	public IntegrationGraphEndpoint(IntegrationGraphServer graphServer) {
+		this.graphServer = graphServer;
 	}
 
 	@ReadOperation
 	public Graph graph() {
-		return this.integrationGraphServer.getGraph();
+		return this.graphServer.getGraph();
 	}
-
 
 	@WriteOperation
 	public void rebuild() {
-		this.integrationGraphServer.rebuild();
+		this.graphServer.rebuild();
 	}
 
 }

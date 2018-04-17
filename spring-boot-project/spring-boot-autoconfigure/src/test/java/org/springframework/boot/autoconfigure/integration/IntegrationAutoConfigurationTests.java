@@ -42,7 +42,6 @@ import org.springframework.integration.gateway.RequestReplyExchanger;
 import org.springframework.integration.handler.MessageProcessor;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
-import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jmx.export.MBeanExporter;
@@ -56,7 +55,6 @@ import static org.mockito.Mockito.mock;
  * @author Artem Bilan
  * @author Stephane Nicoll
  * @author Vedran Pavic
- * @author Tim Ysewyn
  */
 public class IntegrationAutoConfigurationTests {
 
@@ -70,7 +68,6 @@ public class IntegrationAutoConfigurationTests {
 	@Test
 	public void integrationIsAvailable() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(IntegrationGraphServer.class);
 			assertThat(context).hasSingleBean(TestGateway.class);
 			assertThat(context)
 					.hasSingleBean(IntegrationComponentScanAutoConfiguration.class);
