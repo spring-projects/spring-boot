@@ -1768,6 +1768,27 @@ Also, Hikari-specific metrics are exposed with a `hikaricp` prefix. Each metric 
 by the name of the Pool (can be controlled with `spring.datasource.name`).
 
 
+
+[[production-ready-metrics-hibernate]]
+==== Hibernate Metrics
+Auto-configuration enables the instrumentation of all available Hibernate
+`EntityManagerFactory` instances that have statistics enabled with a metric named
+`hibernate`.
+
+Metrics are also tagged by the name of the `EntityManagerFactory` that is derived from
+the bean name.
+
+To enable statistics, the standardJPA property `hibernate.generate_statistics` must be
+set to `true`. You can enable that on the auto-configured `EntityManagerFactory` as shown
+in the following example:
+
+[source,properties,indent=0]
+----
+	spring.jpa.properties.hibernate.generate_statistics=true
+----
+
+
+
 [[production-ready-metrics-rabbitmq]]
 ==== RabbitMQ Metrics
 Auto-configuration will enable the instrumentation of all available RabbitMQ connection
