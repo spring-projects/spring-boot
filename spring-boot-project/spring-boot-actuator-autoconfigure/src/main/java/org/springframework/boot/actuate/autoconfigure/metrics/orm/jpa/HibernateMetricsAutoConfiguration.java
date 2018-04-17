@@ -30,23 +30,22 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.Simp
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for metrics on all available
- * Hibernate {@link EntityManagerFactory entityManagerFactories} with statistics enabled.
- * <p>
- * {@link HibernateMetrics} can only monitor Hibernate {@link EntityManagerFactory}
- * instances with statistics enabled (for instance, by setting JPA property
- * <code>hibernate.generate_statistics</code> to <code>true</code>).
+ * Hibernate {@link EntityManagerFactory} instances that have statistics enabled.
  *
  * @author Rui Figueira
+ * @author Stephane Nicoll
  */
 @Configuration
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
+@ConditionalOnClass({ EntityManagerFactory.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
 public class HibernateMetricsAutoConfiguration {
 
@@ -61,13 +60,12 @@ public class HibernateMetricsAutoConfiguration {
 	@Autowired
 	public void bindEntityManagerFactoriesToRegistry(
 			Map<String, EntityManagerFactory> entityManagerFactories) {
-		entityManagerFactories.forEach(this::maybeBindEntityManagerFactoryToRegistry);
+		entityManagerFactories.forEach(this::bindEntityManagerFactoryToRegistry);
 	}
 
-	private void maybeBindEntityManagerFactoryToRegistry(String beanName,
+	private void bindEntityManagerFactoryToRegistry(String beanName,
 			EntityManagerFactory entityManagerFactory) {
 		String entityManagerFactoryName = getEntityManagerFactoryName(beanName);
-		// HibernateMetrics internally checks if statistics are enabled before binding
 		new HibernateMetrics(entityManagerFactory, entityManagerFactoryName,
 				Collections.emptyList()).bindTo(this.registry);
 	}
