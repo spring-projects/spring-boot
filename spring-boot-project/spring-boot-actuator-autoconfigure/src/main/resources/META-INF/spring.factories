@@ -51,6 +51,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.Wavefron
 org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.web.jersey.JerseyServerMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration,\
