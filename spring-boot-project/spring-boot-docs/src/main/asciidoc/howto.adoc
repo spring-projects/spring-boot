@@ -1701,13 +1701,15 @@ class for more details.
 
 [[howto-two-datasources]]
 === Configure Two DataSources
-If you need to configure multiple data sources, you can apply the same tricks that are
-described in the previous section. You must, however, mark one of the `DataSource`
-instances as `@Primary`, because various auto-configurations down the road expect to be
-able to get one by type.
+`DataSourceAutoConfiguration` and `DataSourceTransactionManagerAutoConfiguration` and both expect
+to be able to locate a `DataSource` by type and will be unable to do so if you configure multiple
+data sources. In this case these pieces of auto-configuration will back off completely.
 
-If you create your own `DataSource`, the auto-configuration backs off. In the following
-example, we provide the _exact_ same feature set as the auto-configuration provides
+You may mark one of the `DataSource` instances as `@Primary` to allow this auto-configuration to
+apply for this instance only. You then need to apply the same configuration manually to your other
+data sources if desired.
+
+In the following example, we provide the _exact_ same feature set as the auto-configuration provides
 on the primary data source:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
@@ -1715,7 +1717,7 @@ on the primary data source:
 include::{code-examples}/jdbc/SimpleTwoDataSourcesExample.java[tag=configuration]
 ----
 
-TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the database
+TIP: `firstDataSourceProperties` has been marked as `@Primary` so that the database
 initializer feature uses your copy (if you use the initializer).
 
 Both data sources are also bound for advanced customizations. For instance, you could
