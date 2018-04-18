@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,35 @@
  * limitations under the License.
  */
 
-package sample.data.cassandra;
+package org.springframework.boot.test.autoconfigure.data.cassandra;
 
-import java.util.List;
 
-import org.springframework.data.cassandra.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+/**
+ * Enum identifying any keyspace actions to take at startup.
+ *
+ * @author Dmytro Nosan
+ */
+public enum KeyspaceAction {
 
-public interface CustomerRepository extends CrudRepository<Customer, String> {
+	/**
+	 * Take no keyspace actions.
+	 */
+	NONE,
 
-	@Query("Select * from customer where firstname=?0")
-	Customer findByFirstName(String firstName);
+	/**
+	 * Create keyspace. Fail if a keyspace already exists.
+	 */
+	CREATE,
 
-	@Query("Select * from customer where lastname=?0")
-	List<Customer> findByLastName(String lastName);
+	/**
+	 * Create keyspace. Avoid keyspace creation if the keyspace already exists.
+	 */
+	CREATE_IF_NOT_EXISTS,
+
+	/**
+	 * Create keyspace, dropping the keyspace first if it exists.
+	 */
+	RECREATE
+
 
 }

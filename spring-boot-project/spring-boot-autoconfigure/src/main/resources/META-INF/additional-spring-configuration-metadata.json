@@ -1433,6 +1433,75 @@
       "name": "spring.webservices.wsdl-locations",
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans."
+    },
+    {
+      "name": "spring.cassandra.embedded.partitioner",
+      "defaultValue": "org.apache.cassandra.dht.Murmur3Partitioner"
+    },
+    {
+      "name": "spring.cassandra.embedded.endpoint-snitch",
+      "defaultValue": "org.apache.cassandra.locator.SimpleSnitch"
+    },
+    {
+      "name": "spring.cassandra.embedded.request-scheduler",
+      "defaultValue": "org.apache.cassandra.scheduler.NoScheduler"
+    },
+    {
+      "name": "spring.cassandra.embedded.internode-authenticator",
+      "defaultValue": "org.apache.cassandra.auth.AllowAllInternodeAuthenticator"
+    },
+    {
+      "name": "spring.cassandra.embedded.authorizer",
+      "defaultValue": "org.apache.cassandra.auth.AllowAllAuthorizer"
+    },
+    {
+      "name": "spring.cassandra.embedded.role-manager",
+      "defaultValue": "org.apache.cassandra.auth.CassandraRoleManager"
+    },
+    {
+      "name": "spring.cassandra.embedded.authenticator",
+      "defaultValue": "org.apache.cassandra.auth.AllowAllAuthenticator"
+    },
+    {
+      "name": "spring.cassandra.embedded.disk-failure-policy",
+      "defaultValue": "ignore"
+    },
+    {
+      "name": "spring.cassandra.embedded.disk-access-mode",
+      "defaultValue": "auto"
+    },
+    {
+      "name": "spring.cassandra.embedded.commit-failure-policy",
+      "defaultValue": "stop"
+    },
+    {
+      "name": "spring.cassandra.embedded.user-function-timeout-policy",
+      "defaultValue": "die"
+    },
+    {
+      "name": "spring.cassandra.embedded.request-scheduler-id",
+      "defaultValue": "keyspace"
+    },
+    {
+      "name": "spring.cassandra.embedded.disk-optimization-strategy",
+      "defaultValue": "ssd"
+    },
+    {
+      "name": "spring.cassandra.embedded.internode-compression",
+      "defaultValue": "none"
+    },
+    {
+      "name": "spring.cassandra.embedded.memtable-allocation-type",
+      "defaultValue": "heap_buffers"
+    },
+    {
+      "name": "spring.cassandra.embedded.seed-provider.target-class",
+      "type": "org.apache.cassandra.locator.SeedProvider",
+      "defaultValue": "org.apache.cassandra.locator.SimpleSeedProvider"
+    },
+    {
+      "name": "spring.cassandra.embedded.commit-log-sync",
+      "defaultValue": "periodic"
     }
   ],
   "hints": [
@@ -1678,6 +1747,67 @@
           "name": "class-reference",
           "parameters": {
             "target": "org.hibernate.boot.model.naming.PhysicalNamingStrategy"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.cassandra.embedded.rpc-type",
+      "values": [
+        {
+          "value": "sync",
+          "description": "One connection per thread in the rpc pool."
+        },
+        {
+          "value": "async",
+          "description": "Nonblocking server implementation with one thread to serve rpc connections."
+        },
+        {
+          "value": "hsha",
+          "description": "Stands for 'half synchronous, half asynchronous.'"
+        }
+      ]
+    },
+    {
+      "name": "spring.cassandra.embedded.seed-provider.target-class",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.apache.cassandra.locator.SeedProvider"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.cassandra.embedded.hints-compression.target-class",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.apache.cassandra.io.compress.ICompressor"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.cassandra.embedded.commit-log-compression.target-class",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.apache.cassandra.io.compress.ICompressor"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.cassandra.embedded.back-pressure-strategy.target-class",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "org.apache.cassandra.net.BackPressureStrategy"
           }
         }
       ]

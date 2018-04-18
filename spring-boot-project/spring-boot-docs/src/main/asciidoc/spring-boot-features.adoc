@@ -4395,6 +4395,20 @@ with `@Query`.
 TIP: For complete details of Spring Data Cassandra, refer to the
 https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
+[[boot-features-cassandra-embedded]]
+==== Embedded Cassandra
+Spring Boot offers auto-configuration for
+https://github.com/apache/cassandra[Cassandra Daemon]. To use it in
+your Spring Boot application, add a dependency on `org.apache.cassandra:cassandra-all`.
+
+The port that Cassandra listens on can be configured by setting the `spring.cassandra.embedded.port`
+property. To use a randomly allocated free port, use a value of 0. The `Cluster`
+created by `CassandraAutoConfiguration` is automatically configured to use the randomly
+allocated port, if an embedded Cassandra is present and `spring.data.cassandra.port` is not present or set as 0.
+You can declare your own `Config` bean to take control of the Cassandra instances configuration.
+
+TIP: You can easily debug an embedded cassandra
+using `spring.cassandra.embedded.arguments[0]=-agentlib:jdwp=transport=dt_socket,address=-1,server=y,suspend=y` property.
 
 
 [[boot-features-couchbase]]
@@ -7002,6 +7016,37 @@ A list of the auto-configuration settings that are enabled by `@DataLdapTest` ca
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-cassandra-test]]
+==== Auto-configured Data Cassandra Tests
+You can use `@DataCassandraTest` to test Cassandra applications. By default, it scans for
+`@Table` classes and configures Spring Data Cassandra repositories. Regular `@Component`
+beans are not loaded into the `ApplicationContext`. (For more about using Cassandra with
+Spring Boot, see "<<boot-features-cassandra>>", earlier in this chapter.)
+
+The following example shows the `@DataCassandraTest` annotation in use:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataCassandraTest
+	public class ExampleDataCassandraTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+TIP: By default, @DataCassandraTest configures an in-memory embedded Cassandra, if you don't need it, you can
+easily exclude it via ```@DataCassandraTest(excludeAutoConfiguration=EmbeddedCassandraAutoConfiguration.class)```
+
+A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST Clients

@@ -11,6 +11,12 @@
       "type": "org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint",
       "description": "MVC Print option.",
       "defaultValue": "default"
+    },
+    {
+      "name": "spring.data.cassandra.test.keyspace-action",
+      "type": "org.springframework.boot.test.autoconfigure.data.cassandra.KeyspaceAction",
+      "description": "Keyspace action",
+      "defaultValue": "create_if_not_exists"
     }
   ]
 }

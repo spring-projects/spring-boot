@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.datastax.driver.core.ConsistencyLevel;
-import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
@@ -64,7 +63,7 @@ public class CassandraProperties {
 	/**
 	 * Port of the Cassandra server.
 	 */
-	private int port = ProtocolOptions.DEFAULT_PORT;
+	private Integer port;
 
 	/**
 	 * Login user of the server.
@@ -156,11 +155,11 @@ public class CassandraProperties {
 		return this.contactPoints;
 	}
 
-	public int getPort() {
+	public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(int port) {
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 

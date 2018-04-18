@@ -192,6 +192,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.cassandra</groupId>
+			<artifactId>cassandra-all</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 			<optional>true</optional>

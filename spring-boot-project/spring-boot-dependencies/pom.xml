@@ -209,6 +209,7 @@
 		<versions-maven-plugin.version>2.3</versions-maven-plugin.version>
 		<xml-maven-plugin.version>1.0.1</xml-maven-plugin.version>
 		<flatten-maven-plugin.version>1.0.0</flatten-maven-plugin.version>
+		<cassandra-all.version>3.11.2</cassandra-all.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -588,6 +589,11 @@
 				<groupId>com.datastax.cassandra</groupId>
 				<artifactId>cassandra-driver-mapping</artifactId>
 				<version>${cassandra-driver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cassandra</groupId>
+				<artifactId>cassandra-all</artifactId>
+				<version>${cassandra-all.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml</groupId>

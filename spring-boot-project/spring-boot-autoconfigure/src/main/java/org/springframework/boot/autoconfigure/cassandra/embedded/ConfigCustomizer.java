@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package sample.data.cassandra;
+package org.springframework.boot.autoconfigure.cassandra.embedded;
 
-import java.util.List;
+import org.apache.cassandra.config.Config;
 
-import org.springframework.data.cassandra.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
-public interface CustomerRepository extends CrudRepository<Customer, String> {
-
-	@Query("Select * from customer where firstname=?0")
-	Customer findByFirstName(String firstName);
-
-	@Query("Select * from customer where lastname=?0")
-	List<Customer> findByLastName(String lastName);
-
+/**
+ * Callback interface that can be used to customize a {@link Config}.
+ *
+ * @author Dmytro Nosan
+ */
+@FunctionalInterface
+public interface ConfigCustomizer {
+	/**
+	 * Customize the {@link Config}.
+	 *
+	 * @param config the config to customize
+	 */
+	void customize(Config config);
 }

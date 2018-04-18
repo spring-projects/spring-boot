@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,38 @@
  * limitations under the License.
  */
 
-package sample.data.cassandra;
+package org.springframework.boot.test.autoconfigure.data.cassandra;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SampleCassandraApplication}.
+ * Integration test with custom include filter for {@link DataCassandraTest}.
+ *
+ * @author Dmytro Nosan
  */
 @RunWith(SpringRunner.class)
-@DataCassandraTest
-public class SampleCassandraApplicationTests {
+@DataCassandraTest(includeFilters = @Filter(Service.class))
+public class DataCassandraTestWithIncludeFilterIntegrationTests {
 
-	@ClassRule
-	public static OutputCapture outputCapture = new OutputCapture();
+
+	@Autowired
+	private ExampleService service;
 
 	@Test
-	public void testDefaultSettings() {
-		String output = SampleCassandraApplicationTests.outputCapture.toString();
-		assertThat(output).contains("firstName='Alice', lastName='Smith'");
+	public void testService() {
+		assertThat(this.service.getTableName(City.class)).isEqualTo("mycity");
 	}
+
+
+
 
 
 }
