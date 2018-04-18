@@ -58,7 +58,7 @@ public final class WebMvcTags {
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
 	public static Tag method(HttpServletRequest request) {
-		return request == null ? METHOD_UNKNOWN : Tag.of("method", request.getMethod());
+		return (request == null ? METHOD_UNKNOWN : Tag.of("method", request.getMethod()));
 	}
 
 	/**
@@ -67,8 +67,8 @@ public final class WebMvcTags {
 	 * @return the status tag derived from the status of the response
 	 */
 	public static Tag status(HttpServletResponse response) {
-		return response == null ? STATUS_UNKNOWN :
-				Tag.of("status", Integer.toString(response.getStatus()));
+		return (response == null ? STATUS_UNKNOWN :
+				Tag.of("status", Integer.toString(response.getStatus())));
 	}
 
 	/**
@@ -128,8 +128,9 @@ public final class WebMvcTags {
 	 * @return the exception tag derived from the exception
 	 */
 	public static Tag exception(Throwable exception) {
-		return exception == null ? EXCEPTION_NONE :
-				Tag.of("exception", exception.getClass().getSimpleName());
+		return (exception != null
+				? Tag.of("exception", exception.getClass().getSimpleName())
+				: EXCEPTION_NONE);
 	}
 
 }
