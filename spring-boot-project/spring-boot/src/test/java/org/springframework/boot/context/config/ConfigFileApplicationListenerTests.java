@@ -758,6 +758,8 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(environment).has(matchingProfile("morespecific"));
 		assertThat(environment).has(matchingProfile("yetmorespecific"));
 		assertThat(environment).doesNotHave(matchingProfile("missing"));
+		assertThat(this.out.toString())
+				.contains("The following profiles are active: includeprofile,specific,morespecific,yetmorespecific");
 	}
 
 	@Test
