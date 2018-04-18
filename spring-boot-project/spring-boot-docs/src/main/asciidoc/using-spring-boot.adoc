@@ -385,7 +385,7 @@ The `Application.java` file would declare the `main` method, along with the basi
 	package com.example.myapplication;
 
 	import org.springframework.boot.SpringApplication;
-	import org.springframework.boot.autoconfigure.SpringBootApplication
+	import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 	@SpringBootApplication
 	public class Application {
