@@ -291,9 +291,9 @@ and `non-option` arguments, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	import org.springframework.boot.*
-	import org.springframework.beans.factory.annotation.*
-	import org.springframework.stereotype.*
+	import org.springframework.boot.*;
+	import org.springframework.beans.factory.annotation.*;
+	import org.springframework.stereotype.*;
 
 	@Component
 	public class MyBean {
@@ -327,8 +327,8 @@ discussed earlier. The following example shows a `CommandLineRunner` with a `run
 
 [source,java,indent=0]
 ----
-	import org.springframework.boot.*
-	import org.springframework.stereotype.*
+	import org.springframework.boot.*;
+	import org.springframework.stereotype.*;
 
 	@Component
 	public class MyBean implements CommandLineRunner {
@@ -433,8 +433,8 @@ property, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	import org.springframework.stereotype.*
-	import org.springframework.beans.factory.annotation.*
+	import org.springframework.stereotype.*;
+	import org.springframework.beans.factory.annotation.*;
 
 	@Component
 	public class MyBean {
@@ -4595,7 +4595,7 @@ relevant annotation to its method, as shown in the following example:
 
 [source,java,indent=0]
 ----
-    import org.springframework.cache.annotation.Cacheable
+    import org.springframework.cache.annotation.Cacheable;
 	import org.springframework.stereotype.Component;
 
 	@Component
