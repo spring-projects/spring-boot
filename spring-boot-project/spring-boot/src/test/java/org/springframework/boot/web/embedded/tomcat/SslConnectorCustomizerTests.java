@@ -16,6 +16,13 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.net.SSLHostConfig;
@@ -24,8 +31,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SslConnectorCustomizer}
@@ -99,6 +111,52 @@ public class SslConnectorCustomizerTests {
 				.findSslHostConfigs()[0];
 		assertThat(sslHostConfig.getSslProtocol()).isEqualTo("TLS");
 		assertThat(sslHostConfig.getEnabledProtocols()).containsExactly("TLSv1.2");
+	}
+
+	@Test
+	public void customizeWhenSslStoreProviderProvidesOnlyKeyStoreShouldUseDefaultTruststore() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyPassword("password");
+		ssl.setTrustStore("src/test/resources/test.jks");
+		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
+		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, sslStoreProvider);
+		Connector connector = this.tomcat.getConnector();
+		customizer.customize(connector);
+		this.tomcat.start();
+		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
+				.findSslHostConfigs()[0];
+		SSLHostConfig sslHostConfigWithDefaults = new SSLHostConfig();
+		assertThat(sslHostConfig.getTruststoreFile()).isEqualTo(sslHostConfigWithDefaults.getTruststoreFile());
+		assertThat(sslHostConfig.getCertificateKeystoreFile()).isEqualTo(SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
+	}
+
+	@Test
+	public void customizeWhenSslStoreProviderProvidesOnlyTrustStoreShouldUseDefaultKeystore() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyPassword("password");
+		ssl.setKeyStore("src/test/resources/test.jks");
+		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
+		given(sslStoreProvider.getTrustStore()).willReturn(loadStore());
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, sslStoreProvider);
+		Connector connector = this.tomcat.getConnector();
+		customizer.customize(connector);
+		this.tomcat.start();
+		SSLHostConfig sslHostConfig = connector.getProtocolHandler()
+				.findSslHostConfigs()[0];
+		SSLHostConfig sslHostConfigWithDefaults = new SSLHostConfig();
+		assertThat(sslHostConfig.getTruststoreFile()).isEqualTo(SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
+		assertThat(sslHostConfig.getCertificateKeystoreFile()).contains(sslHostConfigWithDefaults.getCertificateKeystoreFile());
+	}
+
+	private KeyStore loadStore() throws KeyStoreException, IOException,
+			NoSuchAlgorithmException, CertificateException {
+		KeyStore keyStore = KeyStore.getInstance("JKS");
+		Resource resource = new ClassPathResource("test.jks");
+		try (InputStream inputStream = resource.getInputStream()) {
+			keyStore.load(inputStream, "secret".toCharArray());
+			return keyStore;
+		}
 	}
 
 }
