@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Default order of Spring Security's Filter in the servlet container (i.e. amongst
 	 * other filters registered with the container). There is no connection between this
-	 * and the <code>@Order</code> on a WebSecurityConfigurer.
+	 * and the {@code @Order} on a WebSecurityConfigurer.
 	 */
 	public static final int DEFAULT_FILTER_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
 			- 100;
