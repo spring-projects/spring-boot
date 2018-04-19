@@ -4,7 +4,7 @@ set -e
 pushd git-repo > /dev/null
 	PREV_SHA=$( git rev-parse HEAD^1 )
 popd > /dev/null
-PREV_STATUSES=$( curl https://api.github.com/repos/spring-projects/spring-boot/commits/$PREV_SHA/statuses )
+PREV_STATUSES=$( curl https://api.github.com/repos/spring-projects/spring-boot/commits/$PREV_SHA/statuses -H "Authorization: token ${ACCESS_TOKEN}" )
 PREV_STATES=$( echo $PREV_STATUSES | jq -r --arg BUILD_JOB_NAME "$BUILD_JOB_NAME" '.[]  | select(.context == $BUILD_JOB_NAME) | .state' )
 WAS_PREV_SUCCESSFUL=$( echo "$PREV_STATES" | grep 'success' || true )
 
