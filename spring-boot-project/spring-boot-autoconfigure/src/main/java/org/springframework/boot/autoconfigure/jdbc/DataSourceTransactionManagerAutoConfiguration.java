@@ -44,6 +44,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Configuration
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
+@ConditionalOnSingleCandidate(DataSource.class)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceTransactionManagerAutoConfiguration {

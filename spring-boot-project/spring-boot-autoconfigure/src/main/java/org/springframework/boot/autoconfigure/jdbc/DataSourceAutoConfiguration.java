@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -49,6 +50,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  */
 @Configuration
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
+@ConditionalOnSingleCandidate(DataSource.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Import({ DataSourcePoolMetadataProvidersConfiguration.class,
 		DataSourceInitializationConfiguration.class })
