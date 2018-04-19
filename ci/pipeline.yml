@@ -145,6 +145,7 @@ jobs:
           BUILD_PIPELINE_NAME: ((pipeline-name))
           BUILD_JOB_NAME: build
           CONCOURSE_URL: ((concourse-url))
+          ACCESS_TOKEN: ((github-access-token))
       - put: email-notification
         params:
           subject: email-details/subject
@@ -158,6 +159,7 @@ jobs:
         BUILD_PIPELINE_NAME: ((pipeline-name))
         BUILD_JOB_NAME: build
         CONCOURSE_URL: ((concourse-url))
+        ACCESS_TOKEN: ((github-access-token))
   - put: repo-status-build
     params: { state: "success", commit: "git-repo" }
   - put: email-notification
@@ -220,6 +222,7 @@ jobs:
           BUILD_PIPELINE_NAME: ((pipeline-name))
           BUILD_JOB_NAME: jdk9-build
           CONCOURSE_URL: ((concourse-url))
+          ACCESS_TOKEN: ((github-access-token))
       - put: email-notification
         params:
           subject: email-details/subject
@@ -233,6 +236,7 @@ jobs:
         BUILD_PIPELINE_NAME: ((pipeline-name))
         BUILD_JOB_NAME: jdk9-build
         CONCOURSE_URL: ((concourse-url))
+        ACCESS_TOKEN: ((github-access-token))
   - put: repo-status-jdk9-build
     params: { state: "success", commit: "git-repo" }
   - put: email-notification
@@ -279,6 +283,7 @@ jobs:
           BUILD_PIPELINE_NAME: ((pipeline-name))
           BUILD_JOB_NAME: jdk10-build
           CONCOURSE_URL: ((concourse-url))
+          ACCESS_TOKEN: ((github-access-token))
       - put: email-notification
         params:
           subject: email-details/subject
@@ -292,6 +297,7 @@ jobs:
         BUILD_PIPELINE_NAME: ((pipeline-name))
         BUILD_JOB_NAME: jdk10-build
         CONCOURSE_URL: ((concourse-url))
+        ACCESS_TOKEN: ((github-access-token))
   - put: repo-status-jdk10-build
     params: { state: "success", commit: "git-repo" }
   - put: email-notification
