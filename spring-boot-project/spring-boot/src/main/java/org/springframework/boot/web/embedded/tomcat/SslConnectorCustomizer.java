@@ -111,9 +111,19 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 				.getInstance();
 		instance.addUserFactory(
 				new SslStoreProviderUrlStreamHandlerFactory(sslStoreProvider));
-		protocol.setKeystoreFile(SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
-		protocol.setTruststoreFile(
-				SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
+		try {
+			if (sslStoreProvider.getKeyStore() != null) {
+				protocol.setKeystoreFile(SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
+			}
+			if (sslStoreProvider.getTrustStore() != null) {
+				protocol.setTruststoreFile(
+						SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
+			}
+		}
+		catch (Exception ex) {
+			throw new WebServerException("Could not load store: " + ex.getMessage(),
+					ex);
+		}
 	}
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
