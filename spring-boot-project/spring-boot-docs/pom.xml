@@ -21,6 +21,7 @@
 		<asciidoctorj.epub.version>1.5.0-alpha.7</asciidoctorj.epub.version>
     <asciidoctorj.version>1.5.6</asciidoctorj.version>
     <jruby.version>1.7.26</jruby.version>
+		<shared.resources>${project.build.directory}/doc-resources</shared.resources>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -968,6 +969,31 @@
 	<profiles>
 		<profile>
 			<id>full</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.doc-resources</groupId>
+					<artifactId>spring-doc-resources</artifactId>
+					<version>0.1-SNAPSHOT</version>
+					<scope>provided</scope>
+					<type>zip</type>
+				</dependency>
+			</dependencies>
+			<repositories>
+				<repository>
+					<id>spring-libs-snapshot</id>
+					<url>https://repo.spring.io/libs-snapshot</url>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-plugins-release</id>
+					<url>https://repo.spring.io/plugins-release</url>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-libs-milestone</id>
+					<url>https://repo.spring.io/libs-milestone</url>
+				</pluginRepository>
+			</pluginRepositories>
 			<activation>
 				<property>
 					<name>full</name>
@@ -1226,7 +1252,26 @@
 							</dependency>
 						</dependencies>
 					</plugin>
-					<!-- Plugin I got from Asciidoctor -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-shared-resources</id>
+								<goals>
+									<goal>unpack-dependencies</goal>
+								</goals>
+								<phase>initialize</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<includeGroupIds>org.springframework.doc-resources</includeGroupIds>
+							<includeArtifactIds>spring-doc-resources</includeArtifactIds>
+							<includeTypes>zip</includeTypes>
+							<excludeTransitive>true</excludeTransitive>
+							<outputDirectory>${shared.resources}</outputDirectory>
+						</configuration>
+					</plugin>
 					<plugin>
 							<groupId>org.asciidoctor</groupId>
 							<artifactId>asciidoctor-maven-plugin</artifactId>
@@ -1256,7 +1301,7 @@
 									</dependency>
 							</dependencies>
 							<configuration>
-								<sourceDirectory>./src/main/asciidoc</sourceDirectory>
+								<sourceDirectory>${project.build.directory}/doc-working/</sourceDirectory>
 							</configuration>
 							<executions>
 									<execution>
@@ -1342,6 +1387,35 @@
 							</dependency>
 						</dependencies>
 						<executions>
+							<execution>
+								<id>collect-doc-resources</id>
+								<phase>process-sources</phase>
+								<configuration>
+									<tasks>
+										<copy file="${shared.resources}/html/docinfo.html" tofile="${project.build.directory}/doc-working/docinfo.html" />
+										<copy file="${shared.resources}/html/docinfo-footer.html" tofile="${project.build.directory}/doc-working/docinfo-footer.html" />
+										<copy file="${shared.resources}/stylesheets/spring.css" tofile="${project.build.directory}/doc-working/stylesheets/spring.css" />
+										<copy todir="${project.build.directory}/doc-working/tocbot-3.0.2">
+											<fileset dir="${shared.resources}/javascript/tocbot-3.0.2" includes="*.*" >
+												<include name="*.*" />
+											</fileset>
+										</copy>
+										<copy todir="${project.build.directory}/doc-working/images">
+											<fileset dir="src/main/asciidoc/images" includes="*.*" >
+												<include name="*.*" />
+											</fileset>
+										</copy>
+										<copy todir="${project.build.directory}/doc-working">
+											<fileset dir="src/main/asciidoc" includes="*.adoc" >
+												<include name="*.adoc" />
+											</fileset>
+										</copy>
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
 							<execution>
 								<id>copy-docs</id>
 								<phase>prepare-package</phase>
