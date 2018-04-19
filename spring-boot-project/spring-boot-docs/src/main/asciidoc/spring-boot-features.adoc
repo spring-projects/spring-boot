@@ -6911,6 +6911,35 @@ A list of the auto-configuration settings that are enabled by `@DataLdapTest` ca
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-cassandra-test]]
+==== Auto-configured Data Cassandra Tests
+You can use `@DataCassandraTest` to test Cassandra applications. By default, it scans for
+`@Table` classes and configures Spring Data Cassandra repositories. Regular `@Component`
+beans are not loaded into the `ApplicationContext`. (For more about using Cassandra with
+Spring Boot, see "<<boot-features-cassandra>>", earlier in this chapter.)
+
+The following example shows the `@DataCassandraTest` annotation in use:
+
+[source,java,indent=0]
+----
+	import org.junit.runner.RunWith;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
+	import org.springframework.test.context.junit4.SpringRunner;
+
+	@RunWith(SpringRunner.class)
+	@DataCassandraTest
+	public class ExampleDataCassandraTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+
+A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST Clients

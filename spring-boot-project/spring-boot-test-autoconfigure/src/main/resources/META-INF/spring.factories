@@ -30,6 +30,14 @@ org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
 
+# AutoConfigureDataCassandra auto-configuration imports
+org.springframework.boot.test.autoconfigure.data.cassandra.AutoConfigureDataCassandra=\
+org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.cassandra.CassandraRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration
+
 # AutoConfigureDataNeo4j auto-configuration imports
 org.springframework.boot.test.autoconfigure.data.neo4j.AutoConfigureDataNeo4j=\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
@@ -142,7 +150,8 @@ org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory,\
-org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory
+org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory,\
+org.springframework.boot.test.autoconfigure.data.cassandra.CassandraContextCustomizerFactory
 
 # Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\
