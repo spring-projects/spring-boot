@@ -51,7 +51,7 @@ public class CmProcessRegistrationEmployerBatch extends CmProcessRegistrationEmp
 
 	@Override
 	public void validateSoftParameters(boolean isNewRun) {
-		System.out.println("File path: " + this.getParameters().getFilePaths());
+		System.out.println("File path:- " + this.getParameters().getFilePaths());
 		System.out.println("Form Type: " + this.getParameters().getFormType());
 		System.out.println("Path To Move: " + this.getParameters().getPathToMove());
 		System.out.println("Path To Move: " + this.getParameters().getErrorFilePathToMove());
