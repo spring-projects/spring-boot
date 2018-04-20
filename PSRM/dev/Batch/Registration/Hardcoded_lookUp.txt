@@ -1,0 +1,118 @@
+String regType = "";
+     					if (listesValues.get(0).toString().equalsIgnoreCase("Immatriculation Volontaire")) {
+     						regType = "BVOLN";
+     					} else {
+     						regType = "CMPL";
+     					}
+     					listesValues.set(0, regType);
+     					
+     					String empType = "";
+     					if (listesValues.get(1).toString().equalsIgnoreCase("Société Privée")) {
+     						empType = "PVT";
+     					} else {
+     						empType = "COOP";
+     					}
+     					listesValues.set(1, empType);
+     					
+     					String estType = "";
+     					if (listesValues.get(2).toString().equalsIgnoreCase("Siége")) {
+     						estType = "HDQT";
+     					} else {
+     						estType = "BRNC";
+     					}
+     					listesValues.set(2, estType);
+     					
+     					String region = "";
+     					if (listesValues.get(14).toString().equalsIgnoreCase("Dakar")) {
+     						region = "DK";
+     					} else {
+     						region = "Thies";
+     					}
+     					listesValues.set(14, region);
+     					
+     					String department = "";
+     					if (listesValues.get(16).toString().equalsIgnoreCase("Dakar")) {
+     						department = "DKDA";
+     					} else {
+     						department = "";
+     					}
+     					listesValues.set(16, department);
+     					
+     					String city = "";
+     					if (listesValues.get(17).toString().equalsIgnoreCase("Bambilor")) {
+     						city = "BAM";
+     					} else if (listesValues.get(17).toString().equalsIgnoreCase("Diamniadio")) {
+     						city = "DIA";
+     					} else if (listesValues.get(17).toString().equalsIgnoreCase("Dakar1")) { 
+     						city = "DK";
+     					}
+     					listesValues.set(17, city);
+     					
+     					String district = "";
+     					if (listesValues.get(19).toString().equalsIgnoreCase("Dakar")) {
+     						district = "DK";
+     					} else {
+     						district = "";
+     					}
+     					listesValues.set(19, district);
+     					
+     					String businessSector = "";
+     					if (listesValues.get(24).toString().equalsIgnoreCase("Agence de Voyage - Tourisme")) {
+     						businessSector = "GE";
+     					} else if (listesValues.get(24).toString().equalsIgnoreCase("Agriculture - Elevage")) {
+     						businessSector = "AGRI";
+     					} else if (listesValues.get(24).toString().equalsIgnoreCase("Industries Alimentaires")) {
+     						businessSector = "ALI";
+     					}
+     					listesValues.set(24, businessSector);
+     					
+     					String mainLOB = "";
+     					if (listesValues.get(27).toString().equalsIgnoreCase("Activités d'hébergement et de restauration")) {
+     						mainLOB = "AAC";
+     					} else if (listesValues.get(27).toString().equalsIgnoreCase("Agriculture, sylviculture et pêche")) {
+     						mainLOB = "AFF";
+     					} else if (listesValues.get(27).toString().equalsIgnoreCase("Construction")) {
+     						mainLOB = "CONS";
+     					}
+     					listesValues.set(27, mainLOB);
+     					
+     					String secLOB = "";
+     					if (listesValues.get(29).toString().equalsIgnoreCase("Activités d'hébergement et de restauration")) {
+     						secLOB = "AAC";
+     					} else if (listesValues.get(29).toString().equalsIgnoreCase("Agriculture, sylviculture et pêche")) {
+     						secLOB = "AFF";
+     					} else if (listesValues.get(29).toString().equalsIgnoreCase("Construction")) {
+     						secLOB = "CONS";
+     					}
+     					listesValues.set(29, secLOB);
+     					
+     					String branch = "";
+     					if (listesValues.get(31).toString().equalsIgnoreCase("CC des entreprises d'assurance, 30 juillet 1977")) {
+     						branch = "CC1";
+     					} else if (listesValues.get(31).toString().equalsIgnoreCase("CC du transport aérien, 08 novembre 1965")) {
+     						branch = "CC2";
+     					} else if (listesValues.get(31).toString().equalsIgnoreCase("CC des industries fédérales du vêtement, 10 janvier 1963")) {
+     						branch = "CC3";
+     					}
+     					listesValues.set(31, branch);
+     					
+     					String paymentMethod = "";
+     					if (listesValues.get(33).toString().equalsIgnoreCase("Paiement Direct aux employé(e)s")) {
+     						paymentMethod = "DRCT";
+     					} else if (listesValues.get(33).toString().equalsIgnoreCase("Paiement via employeur")) {
+     						paymentMethod = "EMPR";
+     					} else if (listesValues.get(33).toString().equalsIgnoreCase("Autres")) {
+     						paymentMethod = "OTHR";
+     					}
+     					listesValues.set(33, paymentMethod);
+     					
+     					String declerationDNS = "";
+     					if (listesValues.get(35).toString().equalsIgnoreCase("Déclaration via support papier en agence")) {
+     						declerationDNS = "EXL";
+     					} else if (listesValues.get(35).toString().equalsIgnoreCase("Déclaration via tableaux Excel téléchargés")) {
+     						declerationDNS = "PPR";
+     					} else if (listesValues.get(35).toString().equalsIgnoreCase("Déclaration directe via site web")) {
+     						declerationDNS = "WEB";
+     					}
+     					listesValues.set(35, declerationDNS);
+     					

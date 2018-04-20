@@ -164,7 +164,6 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 			boolean foundNinea = false;
 			boolean checkErrorInExcel = false;
 			boolean processed = false;
-			List<Object> listesValues = new ArrayList<Object>();
             log.info("*****Starting Execute Work Unit");
             String fileName = listOfUnit.getSupplementallData("fileName").toString();
             log.info("*****executeWorkUnit : " +  fileName );
@@ -177,23 +176,21 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
             Iterator<Row> rowIterator = spreadsheet.iterator();
             int cellCount = spreadsheet.getRow(0).getLastCellNum();
             log.info("CellCount:: " + cellCount);
-            while(rowIterator.hasNext()){
-            	XSSFRow row = (XSSFRow) rowIterator.next();
-            	if(row.getRowNum() >= 2) {
-                	break;
-                }
+            while(rowIterator.hasNext()){                               
 	            int nineaNumber = 0;
 				cellId = 1;
 				String establishmentDate = null;
 				String immatriculationDate = null;
 				String premierEmployeeDate = null;
 				Boolean checkValidationFlag = false;
+                XSSFRow row = (XSSFRow) rowIterator.next();
                 if(row.getRowNum() == 0) {
                 	continue;
                 }
                 log.info("#############----ENTERTING INTO ROW-----#############:"+row.getRowNum());
 
-                	Iterator<Cell> cellIterator = row.cellIterator();                	
+                	 Iterator<Cell> cellIterator = row.cellIterator();
+                	 List<Object> listesValues = new ArrayList<Object>();
      				while (cellIterator.hasNext() && !foundNinea) {
 					while (cellId <= cellCount && !checkErrorInExcel) {
 						Cell cell = cellIterator.next();
@@ -218,40 +215,40 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 										break;
 									}
 								}
-							} else if (headerName != null && headerName.equalsIgnoreCase("Numéro de registre du commerce")) {
-								if (customValidation.validateCommercialRegister(cell.getStringCellValue())) {//validation Trade register Number.
-									checkValidationFlag = customValidation.validateTRNExist(cell.getStringCellValue());
+							} /*else if (headerName != null && headerName.equalsIgnoreCase("Numéro de registre du commerce")) {
+								if (validation.validateCommercialRegister(cell.getStringCellValue())) {//validation Trade register Number.
+									checkValidationFlag = validation.validateTRNExist(cell.getStringCellValue());
 									if (checkValidationFlag != null && checkValidationFlag) {// Error Skip the row
 										checkErrorInExcel = true;
-										createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "303", fileName);
+										createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "303");
 										log.info("Given Trade Registration Number--> " + cell.getStringCellValue() + " already Exists");
 										break;
 									}
 								}else{
 									checkErrorInExcel = true;
-									createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "304", fileName);
+									createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "304");
 									log.info("Given Trade Registration Number:--> " + cell.getStringCellValue() + " is Invalid ");
 									break;
 								}
 							}else if(headerName != null && headerName.equalsIgnoreCase("NINET") && cell.getColumnIndex()==4 ){
-								checkValidationFlag = customValidation.validateCodeEstablishment(cell.getStringCellValue());
+								checkValidationFlag = validation.validateCodeEstablishment(cell.getStringCellValue());
 								if (checkValidationFlag != null && !checkValidationFlag) {// NINET validation
 									// Error Skip the row
 									checkErrorInExcel = true;
-									createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "305", fileName);
+									createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "305");
 									log.info("Given Ninea Number having Invalid NINET:" + nineaNumber);
 									break;
 								} 
 							}else if(headerName != null && headerName.equalsIgnoreCase("Numéro d'identification fiscale")){
-								checkValidationFlag = customValidation.validateTaxIdenficationNumber(cell.getStringCellValue());
+								checkValidationFlag = validation.validateTaxIdenficationNumber(cell.getStringCellValue());
 								if (checkValidationFlag != null && !checkValidationFlag) {// TIN validation
 									// Error Skip the row
 									checkErrorInExcel = true;
-									createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "306", fileName);
+									createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "306");
 									log.info("Given Ninea Number having Invalid TIN Number:" + nineaNumber);
 									break;
 								} 
-							}
+							}*/
 							listesValues.add(cell.getStringCellValue());
 							System.out.println(cell.getStringCellValue());
 							break;
@@ -399,8 +396,12 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 							System.out.println("Blank:");
 							break;
 						}
+
+						log.info("*****Iterated through One Employee Details***");
 						cellId++;
 					}
+     					log.info("*****Search Person from Business Service****");
+     							
      					foundNinea = true;
 					if (checkErrorInExcel) {
 						checkErrorInExcel = false;
@@ -408,13 +409,13 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 					}
      					try {
      						processed = formCreator(fileName, listesValues);
-     						System.out.println("*****Bo Creation Status**** " + processed);
-     						log.info("*****Bo Creation Status**** " + processed);
-     					} catch (Exception exception) {
+     					} catch (Exception e) {
      						processed = false;
-     						System.out.println("*****Issue in Processing file***** " + fileName + "NineaNumber:: "+ listesValues.get(3));
-     						log.info("*****Issue in Processing file***** " + fileName + "NineaNumber:: "+ listesValues.get(3));
-     						exception.printStackTrace();
+     						System.out.println("*****Issue in Processing file*****" + fileName + "IdNumber:: "
+     								+ listesValues.get(3) + "IdValue:: " + listesValues.get(2));
+     						log.info("*****Issue in Processing file*****" + fileName + "IdNumber:: " + listesValues.get(3)
+     								+ "IdValue:: " + listesValues.get(2));
+     						e.printStackTrace();
      					}
      				}
                 foundNinea = false;
@@ -484,6 +485,7 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 		 * @param listesValues
 		 */
 		public boolean formCreator(String fileName,List<Object> listesValues) {
+
             BusinessObjectInstance boInstance = null;
 
             boInstance = createFormBOInstance(this.getParameters().getFormType() ,"T-DNSU-" + getSystemDateTime().toString());
@@ -496,7 +498,7 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
             COTSInstanceNode bankInformationForm = boInstance.getGroup("bankInformationForm");
             COTSInstanceNode employerStatus = boInstance.getGroup("employerStatus");
             COTSInstanceNode employeeRegistrationForm = boInstance.getGroup("employeeRegistrationForm");
-            COTSInstanceNode groupDmt = boInstance.getGroup("employeeContractForm");
+            COTSInstanceNode groupDmt = boInstance.getGroup("dmt");
             /* 
            // COTSInstanceNode documentsForm = boInstance.getGroup("documentsForm");*/
             int count = 0;
@@ -504,58 +506,53 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
             	 COTSFieldDataAndMD<?> regType = employerQuery.getFieldAndMDForPath("regType/asCurrent");
             	 regType.setXMLValue(listesValues.get(count).toString());
             	 count++;
+            	//employerQuery.getGroupFromPath("regType").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmRegistrationType"), getLookUpValue(listesValues.get(count).toString(), "CmRegistrationType")));//cmRegistrationType-javaname
             	
             	COTSFieldDataAndMD<?> employerType = employerQuery.getFieldAndMDForPath("employerType/asCurrent");
             	employerType.setXMLValue(listesValues.get(count).toString());
             	count++;
+                //employerQuery.getGroupFromPath("employerType").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmEmployerType"), getLookUpValue(listesValues.get(count).toString(), "CmEmployerType")));//cmRegistrationType-javaname
                
             	COTSFieldDataAndMD<?> estType = employerQuery.getFieldAndMDForPath("estType/asCurrent");
             	estType.setXMLValue(listesValues.get(count).toString());
             	count++;
-            	
-            	COTSFieldDataAndMD<?> nineaNumber = employerQuery.getFieldAndMDForPath("nineaNumber/asCurrent");
-            	nineaNumber.setXMLValue(listesValues.get(count).toString());
-            	count++;
-            	
-            	COTSFieldDataAndMD<?> ninetNumber = employerQuery.getFieldAndMDForPath("ninetNumber/asCurrent");
-            	ninetNumber.setXMLValue(listesValues.get(count).toString());
-            	count++;
-            	
-            	/*COTSFieldDataAndMD<?> hqId = employerQuery.getFieldAndMDForPath("hqId/asCurrent");
-            	hqId.setXMLValue(listesValues.get(count).toString());
-            	count++;*/
-            	
-            	COTSFieldDataAndMD<?> companyOriginId = employerQuery.getFieldAndMDForPath("companyOriginId/asCurrent");
-            	companyOriginId.setXMLValue(listesValues.get(count).toString());
-            	count++;
-            	
-            	COTSFieldDataAndMD<?> taxId = employerQuery.getFieldAndMDForPath("taxId/asCurrent");
-            	taxId.setXMLValue(listesValues.get(count).toString());
-            	count++;
-            	
-            	COTSFieldDataAndMD<?> taxIdDate = employerQuery.getFieldAndMDForPath("taxIdDate/asCurrent");
-            	taxIdDate.setXMLValue(listesValues.get(count).toString());
-            	count++;
-            	
-            	COTSFieldDataAndMD<?> tradeRegisterNumber = employerQuery.getFieldAndMDForPath("tradeRegisterNumber/asCurrent");
-            	tradeRegisterNumber.setXMLValue(listesValues.get(count).toString());
-            	count++;
-            	
+                //employerQuery.getGroupFromPath("estType").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmEstablishmentType"), getLookUpValue(listesValues.get(count).toString(), "CmEstablishmentType")));//cmEstablishmentType-javaname
+                employerQuery.getGroupFromPath("nineaNumber").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
+                count++;
+                employerQuery.getGroupFromPath("ninetNumber").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));//String
+                count++;
+                /*employerQuery.getGroupFromPath("ninetNumber").set(AS_CURRENT, listesValues.get(count).toString());
+                count++;*/
+                employerQuery.getGroupFromPath("hqId").set(AS_CURRENT, listesValues.get(count).toString());
+                count++;
+                employerQuery.getGroupFromPath("companyOriginId").set(AS_CURRENT, listesValues.get(count).toString());
+                count++;
+                employerQuery.getGroupFromPath("taxId").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
+                count++;
+                
+                //String txnDate = getDateString(listesValues.get(count).toString());
+                COTSFieldDataAndMD<?> taxIdDate = employerQuery.getFieldAndMDForPath("taxIdDate/asCurrent");
+                taxIdDate.setXMLValue(listesValues.get(count).toString());
+                count++;
+                
+                employerQuery.getGroupFromPath("tradeRegisterNumber").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));//String
+                count++;
+                //String tradeDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> tradeRegisterDate = employerQuery.getFieldAndMDForPath("tradeRegisterDate/asCurrent");
                 tradeRegisterDate.setXMLValue(listesValues.get(count).toString());
                 count++;
                 //--------------------------*************------------------------------------------------------------------------------//
                 
                 //******Main Registration Form BO Creation*********************************//
-                
-                COTSFieldDataAndMD<?> employerName = mainRegistrationForm.getFieldAndMDForPath("employerName/asCurrent");
-                employerName.setXMLValue(listesValues.get(count).toString());
+                mainRegistrationForm.getGroupFromPath("employerName").set(AS_CURRENT, (String)listesValues.get(count));
                 count++;
+                mainRegistrationForm.getGroupFromPath("shortName").set(AS_CURRENT, (String)listesValues.get(count));
+                count++; 
                 
-                COTSFieldDataAndMD<?> shortName = mainRegistrationForm.getFieldAndMDForPath("shortName/asCurrent");
-                shortName.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
+                //String submissionDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> dateOfSubmission = mainRegistrationForm.getFieldAndMDForPath("dateOfSubmission/asCurrent");
                 dateOfSubmission.setXMLValue(listesValues.get(count).toString());
                 count++;
@@ -563,6 +560,10 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 COTSFieldDataAndMD<?> region = mainRegistrationForm.getFieldAndMDForPath("region/asCurrent");
                 region.setXMLValue(listesValues.get(count).toString());
                 count++;
+                
+                //mainRegistrationForm.getGroupFromPath("region").set(AS_CURRENT, listesValues.get(count).toString()); 
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmRegion"), getLookUpValue(listesValues.get(count).toString(), "CmRegion")));
+                //String inspectionDate = getDateString(listesValues.get(count).toString());
                 
                 COTSFieldDataAndMD<?> dateOfInspection = mainRegistrationForm.getFieldAndMDForPath("dateOfInspection/asCurrent");
                 dateOfInspection.setXMLValue(listesValues.get(count).toString());
@@ -572,10 +573,16 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 department.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
+                //mainRegistrationForm.getGroupFromPath("department").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmDepartement"), getLookUpValue(listesValues.get(count).toString(), "CmDepartement")));
+                //count++;
                 COTSFieldDataAndMD<?> city = mainRegistrationForm.getFieldAndMDForPath("city/asCurrent");
                 city.setXMLValue(listesValues.get(count).toString());
                 count++;
-
+                //mainRegistrationForm.getGroupFromPath("city").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmCity"), getLookUpValue(listesValues.get(count).toString(), "CmCity")));
+                //count++;
+                //String firstHireDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> dateOfFirstHire = mainRegistrationForm.getFieldAndMDForPath("dateOfFirstHire/asCurrent");
                 dateOfFirstHire.setXMLValue(listesValues.get(count).toString());
                 count++;
@@ -583,117 +590,116 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 COTSFieldDataAndMD<?> district = mainRegistrationForm.getFieldAndMDForPath("district/asCurrent");
                 district.setXMLValue(listesValues.get(count).toString());
                 count++;
-
+                //mainRegistrationForm.getGroupFromPath("district").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmDistrict"), getLookUpValue(listesValues.get(count).toString(), "CmDistrict")));
+                //count++;
+                
+                //String effectiveDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> dateOfEffectiveMembership = mainRegistrationForm.getFieldAndMDForPath("dateOfEffectiveMembership/asCurrent");
                 dateOfEffectiveMembership.setXMLValue(listesValues.get(count).toString());            
                 count++;
                 
-                COTSFieldDataAndMD<?> address = mainRegistrationForm.getFieldAndMDForPath("address/asCurrent");
-                address.setXMLValue(listesValues.get(count).toString());            
+                mainRegistrationForm.getGroupFromPath("address").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
+               // String hiringFirstExecutiveDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> dateOfHiringFirstExecutiveEmpl = mainRegistrationForm.getFieldAndMDForPath("dateOfHiringFirstExecutiveEmpl/asCurrent");
                 dateOfHiringFirstExecutiveEmpl.setXMLValue(listesValues.get(count).toString());  
                 count++;
                 
-                COTSFieldDataAndMD<?> postbox = mainRegistrationForm.getFieldAndMDForPath("postbox/asCurrent");
-                postbox.setXMLValue(listesValues.get(count).toString());  
+                mainRegistrationForm.getGroupFromPath("postbox").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
                 COTSFieldDataAndMD<?> businessSector = mainRegistrationForm.getFieldAndMDForPath("businessSector/asCurrent");
                 businessSector.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> atRate = mainRegistrationForm.getFieldAndMDForPath("atRate/asCurrent");
-                atRate.setXMLValue(listesValues.get(count).toString());
+                //mainRegistrationForm.getGroupFromPath("businessSector").set(AS_CURRENT, listesValues.get(count).toString()); 
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmBusinessSector"), getLookUpValue(listesValues.get(count).toString(), "CmBusinessSector")));
+                //count++;
+                mainRegistrationForm.getGroupFromPath("atRate").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
                 count++;
-                
-                COTSFieldDataAndMD<?> telephone = mainRegistrationForm.getFieldAndMDForPath("telephone/asCurrent");
-                telephone.setXMLValue(listesValues.get(count).toString());
+                mainRegistrationForm.getGroupFromPath("telephone").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
                 COTSFieldDataAndMD<?> mainLineOfBusiness = mainRegistrationForm.getFieldAndMDForPath("mainLineOfBusiness/asCurrent");
                 mainLineOfBusiness.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> email = mainRegistrationForm.getFieldAndMDForPath("email/asCurrent");
-                email.setXMLValue(listesValues.get(count).toString());
+                //mainRegistrationForm.getGroupFromPath("mainLineOfBusiness").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmMainLine"), getLookUpValue(listesValues.get(count).toString(), "CmMainLine")));
+                //count++;
+                mainRegistrationForm.getGroupFromPath("email").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
                 COTSFieldDataAndMD<?> secondaryLineOfBusiness = mainRegistrationForm.getFieldAndMDForPath("secondaryLineOfBusiness/asCurrent");
                 secondaryLineOfBusiness.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> website = mainRegistrationForm.getFieldAndMDForPath("website/asCurrent");
-                website.setXMLValue(listesValues.get(count).toString());
+                //mainRegistrationForm.getGroupFromPath("secondaryLineOfBusiness").set(AS_CURRENT, listesValues.get(count).toString()); 
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmMainLine"), getLookUpValue(listesValues.get(count).toString(), "CmMainLine")));
+                //count++;
+                mainRegistrationForm.getGroupFromPath("website").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
                 COTSFieldDataAndMD<?> branchAgreement = mainRegistrationForm.getFieldAndMDForPath("branchAgreement/asCurrent");
                 branchAgreement.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> sector = mainRegistrationForm.getFieldAndMDForPath("sector/asCurrent");
-                sector.setXMLValue(listesValues.get(count).toString());
+                //mainRegistrationForm.getGroupFromPath("branchAgreement").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmBranchAgreement"), getLookUpValue(listesValues.get(count).toString(), "CmBranchAgreement")));
+                //count++;
+                mainRegistrationForm.getGroupFromPath("sector").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
                 COTSFieldDataAndMD<?> paymentMethod = mainRegistrationForm.getFieldAndMDForPath("paymentMethod/asCurrent");
                 paymentMethod.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> zone = mainRegistrationForm.getFieldAndMDForPath("zone/asCurrent");
-                zone.setXMLValue(listesValues.get(count).toString());
+                //mainRegistrationForm.getGroupFromPath("paymentMethod").set(AS_CURRENT, listesValues.get(count).toString()); 
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmPaymentMethod"), getLookUpValue(listesValues.get(count).toString(), "CmPaymentMethod")));
+                //count++;
+                mainRegistrationForm.getGroupFromPath("zone").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
                 COTSFieldDataAndMD<?> dnsDeclaration = mainRegistrationForm.getFieldAndMDForPath("dnsDeclaration/asCurrent");
                 dnsDeclaration.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> cssAgency = mainRegistrationForm.getFieldAndMDForPath("cssAgency/asCurrent");
-                cssAgency.setXMLValue(listesValues.get(count).toString());
+                //mainRegistrationForm.getGroupFromPath("dnsDeclaration").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmDnsDeclaration"), getLookUpValue(listesValues.get(count).toString(), "CmDnsDeclaration")));
+                //count++;
+                mainRegistrationForm.getGroupFromPath("cssAgency").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> noOfWorkersInGenScheme = mainRegistrationForm.getFieldAndMDForPath("noOfWorkersInGenScheme/asCurrent");
-                noOfWorkersInGenScheme.setXMLValue(listesValues.get(count).toString());
+                mainRegistrationForm.getGroupFromPath("noOfWorkersInGenScheme").set(AS_CURRENT, listesValues.get(count).toString());//Number
                 count++;
-                
-                COTSFieldDataAndMD<?> ipresAgency = mainRegistrationForm.getFieldAndMDForPath("ipresAgency/asCurrent");
-                ipresAgency.setXMLValue(listesValues.get(count).toString());
+                mainRegistrationForm.getGroupFromPath("ipresAgency").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> noOfWorkersInBasicScheme = mainRegistrationForm.getFieldAndMDForPath("noOfWorkersInBasicScheme/asCurrent");
-                noOfWorkersInBasicScheme.setXMLValue(listesValues.get(count).toString());
+                mainRegistrationForm.getGroupFromPath("noOfWorkersInBasicScheme").set(AS_CURRENT, listesValues.get(count).toString());//Number
                 count++;
-                
                 //--------------------------*************------------------------------------------------------------------------------//CmRegion
                 
                 //-----------------------------Legal Form BO Creation----------------------------------------------------------------//
                 COTSFieldDataAndMD<?> legalStatus = legalForm.getFieldAndMDForPath("legalStatus/asCurrent");
                 legalStatus.setXMLValue(listesValues.get(count).toString());
                 count++;
+                //legalForm.getGroupFromPath("legalStatus").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmLegalStatus"), getLookUpValue(listesValues.get(count).toString(), "CmLegalStatus")));
+                //count++;
                 
+                //String custStartDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> startDate = legalForm.getFieldAndMDForPath("startDate/asCurrent");
                 startDate.setXMLValue(listesValues.get(count).toString());
                 count++;
                 //--------------------------*************------------------------------------------------------------------------------//
                 
                 //------------------------------LegalRepresentativeForm BO Creation----------------------------------------------------//
-                
-                COTSFieldDataAndMD<?> legalRepPerson = legalRepresentativeForm.getFieldAndMDForPath("legalRepPerson/asCurrent");
-                legalRepPerson.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("legalRepPerson").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> nin = legalRepresentativeForm.getFieldAndMDForPath("nin/asCurrent");
-                nin.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("nin").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
                 count++;
                 
-                COTSFieldDataAndMD<?> lastName = legalRepresentativeForm.getFieldAndMDForPath("lastName/asCurrent");
-                lastName.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("lastName").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> firstName = legalRepresentativeForm.getFieldAndMDForPath("firstName/asCurrent");
-                firstName.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("firstName").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
+                //String birthdate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> birthDate = legalRepresentativeForm.getFieldAndMDForPath("birthDate/asCurrent");
                 birthDate.setXMLValue(listesValues.get(count).toString());
                 count++;
@@ -701,331 +707,262 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 COTSFieldDataAndMD<?> legalRegion = legalRepresentativeForm.getFieldAndMDForPath("region/asCurrent");
                 legalRegion.setXMLValue(listesValues.get(count).toString());
                 count++;
+                //legalRepresentativeForm.getGroupFromPath("region").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmRegion"), getLookUpValue(listesValues.get(count).toString(), "CmRegion")));
+                //count++;
                 
-                COTSFieldDataAndMD<?> placeOfBirth = legalRepresentativeForm.getFieldAndMDForPath("placeOfBirth/asCurrent");
-                placeOfBirth.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("placeOfBirth").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
                 COTSFieldDataAndMD<?> legalDepartment = legalRepresentativeForm.getFieldAndMDForPath("department/asCurrent");
                 legalDepartment.setXMLValue(listesValues.get(count).toString());
                 count++;
+                //legalRepresentativeForm.getGroupFromPath("department").set(AS_CURRENT, listesValues.get(count).toString()); 
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmDepartement"), getLookUpValue(listesValues.get(count).toString(), "CmDepartement")));
+                //count++;
                 
                 COTSFieldDataAndMD<?> nationality = legalRepresentativeForm.getFieldAndMDForPath("nationality/asCurrent");
                 nationality.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
+                //legalRepresentativeForm.getGroupFromPath("nationality").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmNationality"), getLookUpValue(listesValues.get(count).toString(), "CmNationality")));
+                //count++;
                 COTSFieldDataAndMD<?> legalCity = legalRepresentativeForm.getFieldAndMDForPath("city/asCurrent");
                 legalCity.setXMLValue(listesValues.get(count).toString());
                 count++;
-
+                //legalRepresentativeForm.getGroupFromPath("city").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmCity"), getLookUpValue(listesValues.get(count).toString(), "CmCity")));
+                //count++;
                 COTSFieldDataAndMD<?> typeOfNationality = legalRepresentativeForm.getFieldAndMDForPath("typeOfNationality/asCurrent");
                 typeOfNationality.setXMLValue(listesValues.get(count).toString());
                 count++;
-
+                //legalRepresentativeForm.getGroupFromPath("typeOfNationality").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmNationalityType"), getLookUpValue(listesValues.get(count).toString(), "CmNationalityType")));
+                //count++;
                 COTSFieldDataAndMD<?> legalDistrict = legalRepresentativeForm.getFieldAndMDForPath("district/asCurrent");
                 legalDistrict.setXMLValue(listesValues.get(count).toString());
                 count++;
-
+                //legalRepresentativeForm.getGroupFromPath("district").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmDistrict"), getLookUpValue(listesValues.get(count).toString(), "CmDistrict")));
+                //count++;
                 COTSFieldDataAndMD<?> typeOfIdentity = legalRepresentativeForm.getFieldAndMDForPath("typeOfIdentity/asCurrent");
                 typeOfIdentity.setXMLValue(listesValues.get(count).toString());
                 count++;
+                //legalRepresentativeForm.getGroupFromPath("typeOfIdentity").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmIdentityType"), getLookUpValue(listesValues.get(count).toString(), "CmIdentityType")));
+                //count++;
                 
-                
-                COTSFieldDataAndMD<?> legaladdress = legalRepresentativeForm.getFieldAndMDForPath("address/asCurrent");
-                legaladdress.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("address").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> identityIdNumber = legalRepresentativeForm.getFieldAndMDForPath("identityIdNumber/asCurrent");
-                identityIdNumber.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("identityIdNumber").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> postboxNumber = legalRepresentativeForm.getFieldAndMDForPath("postboxNumber/asCurrent");
-                postboxNumber.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("postboxNumber").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
+                //String issueDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> dateOfIssue = legalRepresentativeForm.getFieldAndMDForPath("issuedDate/asCurrent");
                 dateOfIssue.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> landLineNumber = legalRepresentativeForm.getFieldAndMDForPath("landLineNumber/asCurrent");
-                landLineNumber.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("landLineNumber").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
+                //String expiryDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> expirationDate = legalRepresentativeForm.getFieldAndMDForPath("expiryDate/asCurrent");
                 expirationDate.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> mobileNumber = legalRepresentativeForm.getFieldAndMDForPath("mobileNumber/asCurrent");
-                mobileNumber.setXMLValue(listesValues.get(count).toString());
+                legalRepresentativeForm.getGroupFromPath("mobileNumber").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> legalRepresentativeEmail = legalRepresentativeForm.getFieldAndMDForPath("email/asCurrent");
-                legalRepresentativeEmail.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
+                legalRepresentativeForm.getGroupFromPath("email").set(AS_CURRENT, listesValues.get(count).toString());
+                count++;                
                 //--------------------------*************------------------------------------------------------------------------------//
                 
                 //------------------------------PersonContactForm BO Creation----------------------------------------------------//
-                
-                COTSFieldDataAndMD<?> personContactId = personContactForm.getFieldAndMDForPath("personContactId/asCurrent");
-                personContactId.setXMLValue(listesValues.get(count).toString());
+                personContactForm.getGroupFromPath("personContactId").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> initial = personContactForm.getFieldAndMDForPath("initial/asCurrent");
-                initial.setXMLValue(listesValues.get(count).toString());
+                personContactForm.getGroupFromPath("initial").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> telephoneNumber = personContactForm.getFieldAndMDForPath("telephoneNumber/asCurrent");
-                telephoneNumber.setXMLValue(listesValues.get(count).toString());
+                personContactForm.getGroupFromPath("telephoneNumber").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> personContactlastName = personContactForm.getFieldAndMDForPath("lastName/asCurrent");
-                personContactlastName.setXMLValue(listesValues.get(count).toString());
+                personContactForm.getGroupFromPath("lastName").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
                 COTSFieldDataAndMD<?> positionHeld = personContactForm.getFieldAndMDForPath("positionHeld/asCurrent");
                 positionHeld.setXMLValue(listesValues.get(count).toString());
                 count++;
+                //personContactForm.getGroupFromPath("positionHeld").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmPositionHeld"), getLookUpValue(listesValues.get(count).toString(), "CmPositionHeld")));
+                //count++;
                 
-                COTSFieldDataAndMD<?> personContactFormEmail = personContactForm.getFieldAndMDForPath("email/asCurrent");
-                personContactFormEmail.setXMLValue(listesValues.get(count).toString());
+                personContactForm.getGroupFromPath("email").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
                 COTSFieldDataAndMD<?> role = personContactForm.getFieldAndMDForPath("role/asCurrent");
                 role.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
+                //personContactForm.getGroupFromPath("role").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmRole"), getLookUpValue(listesValues.get(count).toString(), "CmRole")));
+                //count++;
               //--------------------------*************------------------------------------------------------------------------------//
                 
                 //------------------------------BankInformationForm BO Creation----------------------------------------------------//
                 COTSFieldDataAndMD<?> usage = bankInformationForm.getFieldAndMDForPath("usage/asCurrent");
                 usage.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> bankCode = bankInformationForm.getFieldAndMDForPath("bankCode/asCurrent");
-                bankCode.setXMLValue(listesValues.get(count).toString());
+                //bankInformationForm.getGroupFromPath("usage").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmUsage"), getLookUpValue(listesValues.get(count).toString(), "CmUsage")));
+                //count++;
+                bankInformationForm.getGroupFromPath("bankCode").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-
-                COTSFieldDataAndMD<?> codeBox = bankInformationForm.getFieldAndMDForPath("codeBox/asCurrent");
-                codeBox.setXMLValue(listesValues.get(count).toString());
+                bankInformationForm.getGroupFromPath("codeBox").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> accountNumber = bankInformationForm.getFieldAndMDForPath("accountNumber/asCurrent");
-                accountNumber.setXMLValue(listesValues.get(count).toString());
+                bankInformationForm.getGroupFromPath("accountNumber").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
                 count++;
                 
-                COTSFieldDataAndMD<?> ribNumber = bankInformationForm.getFieldAndMDForPath("ribNumber/asCurrent");
-                ribNumber.setXMLValue(listesValues.get(count).toString());
+                bankInformationForm.getGroupFromPath("ribNumber").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> bicNumber = bankInformationForm.getFieldAndMDForPath("bicNumber/asCurrent");
-                bicNumber.setXMLValue(listesValues.get(count).toString());
+                bankInformationForm.getGroupFromPath("bicNumber").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> swiftCode = bankInformationForm.getFieldAndMDForPath("swiftCode/asCurrent");
-                swiftCode.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
+                bankInformationForm.getGroupFromPath("swiftCode").set(AS_CURRENT, listesValues.get(count).toString());
+                count++;                
               //--------------------------*************------------------------------------------------------------------------------//
                 //------------------------------EmployerStatus BO Creation----------------------------------------------------//
-                
-                COTSFieldDataAndMD<?> status = employerStatus.getFieldAndMDForPath("status/asCurrent");
-                status.setXMLValue(listesValues.get(count).toString());
+                employerStatus.getGroupFromPath("status").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
+               // String emplstartDate = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> empStartDate = employerStatus.getFieldAndMDForPath("startDate/asCurrent");
                 empStartDate.setXMLValue(listesValues.get(count).toString());
                 count++;
               //--------------------------*************------------------------------------------------------------------------------//
               //------------------------------EmployeeRegistrationForm BO Creation----------------------------------------------------//
-                COTSFieldDataAndMD<?> employee = employeeRegistrationForm.getFieldAndMDForPath("employee/asCurrent");
-                employee.setXMLValue(listesValues.get(count).toString());
+                employeeRegistrationForm.getGroupFromPath("employee").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
 				
-                COTSFieldDataAndMD<?> empNin = employeeRegistrationForm.getFieldAndMDForPath("nin/asCurrent");
-                empNin.setXMLValue(listesValues.get(count).toString());
+                employeeRegistrationForm.getGroupFromPath("nin").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
                 count++;
 				
-                COTSFieldDataAndMD<?> empLastName = employeeRegistrationForm.getFieldAndMDForPath("lastName/asCurrent");
-                empLastName.setXMLValue(listesValues.get(count).toString());
+                employeeRegistrationForm.getGroupFromPath("lastName").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-               
-                COTSFieldDataAndMD<?> empFirstName = employeeRegistrationForm.getFieldAndMDForPath("firstName/asCurrent");
-                empFirstName.setXMLValue(listesValues.get(count).toString());
+    
+                employeeRegistrationForm.getGroupFromPath("firstName").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
 				
                 COTSFieldDataAndMD<?> sex = employeeRegistrationForm.getFieldAndMDForPath("sex/asCurrent");
                 sex.setXMLValue(listesValues.get(count).toString());
                 count++;
+                //employeeRegistrationForm.getGroupFromPath("sex").set(AS_CURRENT,listesValues.get(count).toString()); 
+                  //new ExtendedLookupValue_Id(new BusinessObject_Id("CmSex"), getLookUpValue(listesValues.get(count).toString(), "CmSex")));
+				//count++;				  
 				
-                COTSFieldDataAndMD<?> EmpPlaceOfBirth = employeeRegistrationForm.getFieldAndMDForPath("placeOfBirth/asCurrent");
-                EmpPlaceOfBirth.setXMLValue(listesValues.get(count).toString());
-                count++;
-				
-                COTSFieldDataAndMD<?> empBirthDate = employeeRegistrationForm.getFieldAndMDForPath("birthDate/asCurrent");
-                empBirthDate.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> country = employeeRegistrationForm.getFieldAndMDForPath("country/asCurrent");
-                country.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> fathersName = employeeRegistrationForm.getFieldAndMDForPath("fathersName/asCurrent");
-                fathersName.setXMLValue(listesValues.get(count).toString());
+				employeeRegistrationForm.getGroupFromPath("placeOfBirth").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
 				
-                COTSFieldDataAndMD<?> mothersName = employeeRegistrationForm.getFieldAndMDForPath("mothersName/asCurrent");
-                mothersName.setXMLValue(listesValues.get(count).toString());
+                //String dob = getDateString(listesValues.get(count).toString());
+                COTSFieldDataAndMD<?> emPBirthDate = employeeRegistrationForm.getFieldAndMDForPath("birthDate/asCurrent");
+                emPBirthDate.setXMLValue(listesValues.get(count).toString());
+                count++;
+
+                //employeeRegistrationForm.getGroupFromPath("country").set(AS_CURRENT, "SE");
+				employeeRegistrationForm.getGroupFromPath("country").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
                 
+                employeeRegistrationForm.getGroupFromPath("fathersName").set(AS_CURRENT, listesValues.get(count).toString());
+                count++;
+				
+                employeeRegistrationForm.getGroupFromPath("mothersName").set(AS_CURRENT, listesValues.get(count).toString());
+                count++;
                 COTSFieldDataAndMD<?> ethicalGroup = employeeRegistrationForm.getFieldAndMDForPath("ethicalGroup/asCurrent");
                 ethicalGroup.setXMLValue(listesValues.get(count).toString());
                 count++;
-
+                //employeeRegistrationForm.getGroupFromPath("ethicalGroup").set(AS_CURRENT, listesValues.get(count).toString()); 
+                  //new ExtendedLookupValue_Id(new BusinessObject_Id("CmEthicalGroup"), getLookUpValue(listesValues.get(count).toString(), "CmEthicalGroup")));
+                //count++;
                 COTSFieldDataAndMD<?> emplTypeOfIdentity= employeeRegistrationForm.getFieldAndMDForPath("typeOfIdentity/asCurrent");
                 emplTypeOfIdentity.setXMLValue(listesValues.get(count).toString());
                 count++;
+                //employeeRegistrationForm.getGroupFromPath("typeOfIdentity").set(AS_CURRENT, listesValues.get(count).toString());
+                  //new ExtendedLookupValue_Id(new BusinessObject_Id("CmIdentityType"), getLookUpValue(listesValues.get(count).toString(), "CmIdentityType")));
+                //count++;								
 				
-                COTSFieldDataAndMD<?> empIdentityIdNumber = employeeRegistrationForm.getFieldAndMDForPath("identityIdNumber/asCurrent");
-                empIdentityIdNumber.setXMLValue(listesValues.get(count).toString());
+                employeeRegistrationForm.getGroupFromPath("identityIdNumber").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
 				count++;
 				
+				//String issuedOn = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> issuedDate = employeeRegistrationForm.getFieldAndMDForPath("issued/asCurrent");
                 issuedDate.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
                 COTSFieldDataAndMD<?> place= employeeRegistrationForm.getFieldAndMDForPath("place/asCurrent");
                 place.setXMLValue(listesValues.get(count).toString());
                 count++;
+                //employeeRegistrationForm.getGroupFromPath("place").set(AS_CURRENT, listesValues.get(count).toString()); 
+                  //new ExtendedLookupValue_Id(new BusinessObject_Id("CmPlace"), getLookUpValue(listesValues.get(count).toString(), "CmPlace")));
+                //count++;				
 				
-                COTSFieldDataAndMD<?> issuedBy = employeeRegistrationForm.getFieldAndMDForPath("issuedBy/asCurrent");
-                issuedBy.setXMLValue(listesValues.get(count).toString());
+                employeeRegistrationForm.getGroupFromPath("issuedBy").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
 				
-                COTSFieldDataAndMD<?> registeredNationalCcpf = employeeRegistrationForm.getFieldAndMDForPath("registeredNationalCcpf/asCurrent");
-                registeredNationalCcpf.setXMLValue(listesValues.get(count).toString());
+                employeeRegistrationForm.getGroupFromPath("registeredNationalCcpf").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
 				count++;
 				
-				COTSFieldDataAndMD<?> registeredNationalAgro = employeeRegistrationForm.getFieldAndMDForPath("registeredNationalAgro/asCurrent");
-				registeredNationalAgro.setXMLValue(listesValues.get(count).toString());
+				employeeRegistrationForm.getGroupFromPath("registeredNationalAgro").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
 				count++;
-				
 				COTSFieldDataAndMD<?> emplRegion = employeeRegistrationForm.getFieldAndMDForPath("region/asCurrent");
 				emplRegion.setXMLValue(listesValues.get(count).toString());
 	            count++;
-
-	            COTSFieldDataAndMD<?> emplDepartment = employeeRegistrationForm.getFieldAndMDForPath("department/asCurrent");
+				//employeeRegistrationForm.getGroupFromPath("region").set(AS_CURRENT, listesValues.get(count).toString());
+                  //new ExtendedLookupValue_Id(new BusinessObject_Id("CmRegion"), getLookUpValue(listesValues.get(count).toString(), "CmRegion")));
+                //count++;
+                COTSFieldDataAndMD<?> emplDepartment = employeeRegistrationForm.getFieldAndMDForPath("department/asCurrent");
                 emplDepartment.setXMLValue(listesValues.get(count).toString());
 	            count++;				
-
-	            COTSFieldDataAndMD<?> cityTown = employeeRegistrationForm.getFieldAndMDForPath("cityTown/asCurrent");
+                //employeeRegistrationForm.getGroupFromPath("department").set(AS_CURRENT, listesValues.get(count).toString()); 
+                  //new ExtendedLookupValue_Id(new BusinessObject_Id("CmDepartement"), getLookUpValue(listesValues.get(count).toString(), "CmDepartement")));
+                //count++;
+                COTSFieldDataAndMD<?> cityTown = employeeRegistrationForm.getFieldAndMDForPath("cityTown/asCurrent");
                 cityTown.setXMLValue(listesValues.get(count).toString());
 	            count++;
-
-	            COTSFieldDataAndMD<?> emplDistrict = employeeRegistrationForm.getFieldAndMDForPath("district/asCurrent");
+                //employeeRegistrationForm.getGroupFromPath("cityTown").set(AS_CURRENT, listesValues.get(count).toString());
+                		//new ExtendedLookupValue_Id(new BusinessObject_Id("CmCity"), getLookUpValue(listesValues.get(count).toString(), "CmCity")));
+                //count++;
+                COTSFieldDataAndMD<?> emplDistrict = employeeRegistrationForm.getFieldAndMDForPath("district/asCurrent");
                 emplDistrict.setXMLValue(listesValues.get(count).toString());
 	            count++;
+                //employeeRegistrationForm.getGroupFromPath("district").set(AS_CURRENT, listesValues.get(count).toString());
+                	//new ExtendedLookupValue_Id(new BusinessObject_Id("CmDistrict"), getLookUpValue(listesValues.get(count).toString(), "CmDistrict")));
+                //count++;
 				
-	            COTSFieldDataAndMD<?> empAddress = employeeRegistrationForm.getFieldAndMDForPath("address/asCurrent");
-	            empAddress.setXMLValue(listesValues.get(count).toString());
+                employeeRegistrationForm.getGroupFromPath("address").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> empPostboxNumber = employeeRegistrationForm.getFieldAndMDForPath("postboxNumber/asCurrent");
-                empPostboxNumber.setXMLValue(listesValues.get(count).toString());
+				
+                employeeRegistrationForm.getGroupFromPath("postboxNumber").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
 				count++;
 				
-				COTSFieldDataAndMD<?> ninea = employeeRegistrationForm.getFieldAndMDForPath("ninea/asCurrent");
-				ninea.setXMLValue(listesValues.get(count).toString());
+				employeeRegistrationForm.getGroupFromPath("ninea").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));
 				count++;
 				
-				COTSFieldDataAndMD<?> ninet = employeeRegistrationForm.getFieldAndMDForPath("ninet/asCurrent");
-				ninet.setXMLValue(listesValues.get(count).toString());
+				employeeRegistrationForm.getGroupFromPath("ninet").set(AS_CURRENT, new BigDecimal(listesValues.get(count).toString()));//String
 				count++;
-				
-				COTSFieldDataAndMD<?> previousEmployer = employeeRegistrationForm.getFieldAndMDForPath("previousEmployer/asCurrent");
-				previousEmployer.setXMLValue(listesValues.get(count).toString());
+				  
+				employeeRegistrationForm.getGroupFromPath("previousEmployer").set(AS_CURRENT, listesValues.get(count).toString());
 				count++;
 				 
-				COTSFieldDataAndMD<?> employerAddress = employeeRegistrationForm.getFieldAndMDForPath("employerAddress/asCurrent");
-				employerAddress.setXMLValue(listesValues.get(count).toString());
+				employeeRegistrationForm.getGroupFromPath("employerAddress").set(AS_CURRENT, listesValues.get(count).toString());
                 count++;
 				
+                //String dateOfEnt = getDateString(listesValues.get(count).toString());
                 COTSFieldDataAndMD<?> dateOfEntry = employeeRegistrationForm.getFieldAndMDForPath("dateOfEntry/asCurrent");
                 dateOfEntry.setXMLValue(listesValues.get(count).toString());
 				count++;
-				//--------------------------*************------------------------------------------------------------------------------//
-	            //------------------------------EmployeeRegistrationForm BO Creation----------------------------------------------------//
-				COTSFieldDataAndMD<?> workersMovement = groupDmt.getFieldAndMDForPath("workersMovement/asCurrent");
-				workersMovement.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> date = groupDmt.getFieldAndMDForPath("date/asCurrent");
-	            date.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> workerIdNumber = groupDmt.getFieldAndMDForPath("workerIdNumber/asCurrent");
-	            workerIdNumber.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> dmtNin = groupDmt.getFieldAndMDForPath("nin/asCurrent");
-	            dmtNin.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> dmtLastName = groupDmt.getFieldAndMDForPath("lastName/asCurrent");
-	        	dmtLastName.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> dmtFirstName = groupDmt.getFieldAndMDForPath("firstName/asCurrent");
-	            dmtFirstName.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> entryDateOfEstablishment = groupDmt.getFieldAndMDForPath("entryDateOfEstablishment/asCurrent");
-	            entryDateOfEstablishment.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> hiringDeclarationDate = groupDmt.getFieldAndMDForPath("hiringDeclarationDate/asCurrent");
-	            hiringDeclarationDate.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> profession = groupDmt.getFieldAndMDForPath("profession/asCurrent");
-	            profession.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> employmentInTheEstablishment = groupDmt.getFieldAndMDForPath("employmentInTheEstablishment/asCurrent");
-	            employmentInTheEstablishment.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> referenceJob = groupDmt.getFieldAndMDForPath("referenceJob/asCurrent");
-	            referenceJob.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> collectiveAgreement = groupDmt.getFieldAndMDForPath("collectiveAgreement/asCurrent");
-	            collectiveAgreement.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> category = groupDmt.getFieldAndMDForPath("category/asCurrent");
-	            category.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> natureOfContract = groupDmt.getFieldAndMDForPath("natureOfContract/asCurrent");
-	            natureOfContract.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> contractStartDate = groupDmt.getFieldAndMDForPath("contractStartDate/asCurrent");
-	            contractStartDate.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> contractEndDate = groupDmt.getFieldAndMDForPath("contractEndDate/asCurrent");
-	            contractEndDate.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> contractualSalary = groupDmt.getFieldAndMDForPath("contractualSalary/asCurrent");
-	            contractualSalary.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> percentageOfEmployment = groupDmt.getFieldAndMDForPath("percentageOfEmployment/asCurrent");
-	            percentageOfEmployment.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> visaNumberOfLabor = groupDmt.getFieldAndMDForPath("visaNumberOfLabor/asCurrent");
-	            visaNumberOfLabor.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> dateOfVisaOfTheLabor = groupDmt.getFieldAndMDForPath("dateOfVisaOfTheLabor/asCurrent");
-	            dateOfVisaOfTheLabor.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> visaNumberOfLocal = groupDmt.getFieldAndMDForPath("visaNumberOfLocal/asCurrent");
-	            visaNumberOfLocal.setXMLValue(listesValues.get(count).toString());
-				count++;
-				COTSFieldDataAndMD<?> dateOfVisaOfTheLocal = groupDmt.getFieldAndMDForPath("dateOfVisaOfTheLocal/asCurrent");
-				dateOfVisaOfTheLocal.setXMLValue(listesValues.get(count).toString());
-				count++;
-				COTSFieldDataAndMD<?> industryTheEmployeeWillWork = groupDmt.getFieldAndMDForPath("industryTheEmployeeWillWork/asCurrent");
-				industryTheEmployeeWillWork.setXMLValue(listesValues.get(count).toString());
-				count++;
-				COTSFieldDataAndMD<?> worksite = groupDmt.getFieldAndMDForPath("worksite/asCurrent");
-				worksite.setXMLValue(listesValues.get(count).toString());
+				COTSFieldDataAndMD<?> typeMouvement = groupDmt.getFieldAndMDForPath("typeMouvement/asCurrent");
+				typeMouvement.setXMLValue(listesValues.get(count).toString());
 				count++;
             }
             

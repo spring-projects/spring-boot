@@ -1,20 +1,16 @@
 package com.splwg.cm.domain.batch;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletionException;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -22,49 +18,45 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
-import com.ibm.icu.math.BigDecimal;
 import com.splwg.base.api.batch.CommitEveryUnitStrategy;
 import com.splwg.base.api.batch.JobWork;
 import com.splwg.base.api.batch.RunAbortedException;
 import com.splwg.base.api.batch.ThreadAbortedException;
 import com.splwg.base.api.batch.ThreadExecutionStrategy;
 import com.splwg.base.api.batch.ThreadWorkUnit;
+import com.splwg.shared.logging.Logger;
+import com.splwg.shared.logging.LoggerFactory;
+
 import com.splwg.base.api.businessObject.BusinessObjectDispatcher;
 import com.splwg.base.api.businessObject.BusinessObjectInstance;
 import com.splwg.base.api.businessObject.COTSFieldDataAndMD;
 import com.splwg.base.api.businessObject.COTSInstanceNode;
 import com.splwg.base.api.businessService.BusinessServiceDispatcher;
 import com.splwg.base.api.businessService.BusinessServiceInstance;
-import com.splwg.base.api.sql.PreparedStatement;
-import com.splwg.base.api.sql.SQLResultRow;
-import com.splwg.base.domain.common.businessObject.BusinessObject_Id;
 import com.splwg.base.domain.todo.role.Role;
 import com.splwg.base.domain.todo.role.Role_Id;
-import com.splwg.cm.domain.common.businessComponent.CmPersonSearchComponent;
 import com.splwg.cm.domain.common.businessComponent.CmXLSXReaderComponent;
-import com.splwg.shared.logging.Logger;
-import com.splwg.shared.logging.LoggerFactory;
 import com.splwg.tax.domain.admin.formType.FormType;
 import com.splwg.tax.domain.admin.formType.FormType_Id;
-import com.splwg.tax.domain.admin.idType.IdType_Id;
-import com.splwg.tax.domain.customerinfo.person.Person;
+
 /**
-* @author CISSYS
-*
-@BatchJob (modules = { },
-*      softParameters = { @BatchJobSoftParameter (name = formType, required = true, type = string)
-*            , @BatchJobSoftParameter (name = filePaths, required = true, type = string)})
-*/
+ * @author Denash Kumar M
+ *
+@BatchJob (modules = { "demo"},
+ *      softParameters = { @BatchJobSoftParameter (name = pathToMove, required = true, type = string)
+ *            , @BatchJobSoftParameter (name = filePaths, required = true, type = string)
+ *            , @BatchJobSoftParameter (name = formType, required = true, type = string)})
+ */
 public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationExcelFileBatch_Gen {
-    @Override
+
+	@Override
     public void validateSoftParameters(boolean isNewRun) {
-        System.out.println("File path"+this.getParameters().getFilePaths());
-        System.out.println("Form Type"+this.getParameters().getFormType());
+        System.out.println("File path: "+this.getParameters().getFilePaths());
+        System.out.println("Form Type: "+this.getParameters().getFormType());
+        System.out.println("Path To Move: "+this.getParameters().getPathToMove());
     }
-
     private final static Logger log = LoggerFactory.getLogger(CmProcessRegistrationExcelFileBatch.class);
-
-	private File[] getNewTextFiles() {
+    private File[] getNewTextFiles() {
 		File dir = new File(this.getParameters().getFilePaths());
 		return dir.listFiles(new FilenameFilter() {
 			@Override
@@ -73,97 +65,61 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 			}
 		});
 	}
-
-   public JobWork getJobWork() {
-
-        log.info("*****Starting getJobWork");
-        System.out.println("######################## Demarrage JobWorker ############################");
-        List<ThreadWorkUnit> listOfThreadWorkUnit = new ArrayList<ThreadWorkUnit>();
-        
-        File[] files = this.getNewTextFiles();
-
-        for (File file : files) {
-            if (file.isFile()) {
-                ThreadWorkUnit unit = new ThreadWorkUnit();
-                 //A unit must be created for every file in the path, this will represent a row to be processed.
-                //String fileName = this.getParameters().getFilePaths()+file.getName();
-                unit.addSupplementalData("fileName", this.getParameters().getFilePaths()+file.getName());
-                //unit.addSupplementalData("fileName", file.getName());
-                listOfThreadWorkUnit.add(unit);
-                log.info("***** getJobWork ::::: " + this.getParameters().getFilePaths()+file.getName());
-            }
-        }
-
-        JobWork jobWork = createJobWorkForThreadWorkUnitList(listOfThreadWorkUnit);
-        System.out.println("######################## Terminer JobWorker ############################");
-        return jobWork;
-    }
 	
-	/* public JobWork getJobWork() {
+	public JobWork getJobWork() {
 
+		log.info("*****Démarrer getJobWork***");
+		System.out.println("######################## Demarrage JobWorker ############################");
+		List<ThreadWorkUnit> listOfThreadWorkUnit = new ArrayList<ThreadWorkUnit>();
 
-	        log.info("*****Starting getJobWork");
-	        System.out.println("######################## Demarrage JobWorker ############################");
-	        ArrayList<ThreadWorkUnit> list = new ArrayList<ThreadWorkUnit>();
-	        
-	       // File[] files = this.getNewTextFiles();
+		File[] files = this.getNewTextFiles();
 
-	        //String a = this.getParameters().getFilePath();
-	      //  for (File file : files) {
-	          //  if (file.isFile()) {
-	                ThreadWorkUnit unit = new ThreadWorkUnit();
-	                // A unit must be created for every file in the path, this will represent a row to be processed.
-	                unit.addSupplementalData("fileName", this.getParameters().getFilePaths());
-	                list.add(unit);
-	                log.info("***** getJobWork ::::: " + this.getParameters().getFilePaths());
-	          //  }
-	     //   }
+		for (File file : files) {
+			if (file.isFile()) {
+				ThreadWorkUnit unit = new ThreadWorkUnit();
+				// A unit must be created for every file in the path, this will
+				// represent a row to be processed.
+				// String fileName =
+				// this.getParameters().getFilePaths()+file.getName();
+				unit.addSupplementalData("fileName", this.getParameters().getFilePaths() + file.getName());
+				// unit.addSupplementalData("fileName", file.getName());
+				listOfThreadWorkUnit.add(unit);
+				log.info("***** getJobWork ::::: " + this.getParameters().getFilePaths() + file.getName());
+			}
+		}
 
-	        JobWork jobWork = createJobWorkForThreadWorkUnitList(list);
-	        System.out.println("######################## Terminer JobWorker ############################");
-	        return jobWork;
-	    }*/
+		JobWork jobWork = createJobWorkForThreadWorkUnitList(listOfThreadWorkUnit);
+		System.out.println("######################## Terminer JobWorker ############################");
+		return jobWork;
+	}
 
-    public Class<CmProcessRegistrationExcelFileBatchWorker> getThreadWorkerClass() {
-        return CmProcessRegistrationExcelFileBatchWorker.class;
-    }
+	public Class<CmProcessRegistrationExcelFileBatchWorker> getThreadWorkerClass() {
+		return CmProcessRegistrationExcelFileBatchWorker.class;
+	}
 
-    public static class CmProcessRegistrationExcelFileBatchWorker extends CmProcessRegistrationExcelFileBatchWorker_Gen {
-        public static final String AS_CURRENT = "asCurrent";
+	public static class CmProcessRegistrationExcelFileBatchWorker
+			extends CmProcessRegistrationExcelFileBatchWorker_Gen {
+		public static final String AS_CURRENT = "asCurrent";
 		private CmXLSXReaderComponent cmXLSXReader = CmXLSXReaderComponent.Factory.newInstance();
 		private static CmValidation customValidation = new CmValidation();
-        private Person employerPer;
-        XSSFSheet spreadsheet;
+		XSSFSheet spreadsheet;
         private int cellId = 0;
-
-      //  CisDivision_Id cisDivisionId = new CisDivision_Id("SNSS");
-
-        public ThreadExecutionStrategy createExecutionStrategy() {
-            return new CommitEveryUnitStrategy(this);
-        }
-
-        @Override
+		public ThreadExecutionStrategy createExecutionStrategy() {
+			// TODO Auto-generated method stub
+			return new CommitEveryUnitStrategy(this);
+		}
+		@Override
         public void initializeThreadWork(boolean initializationPreviouslySuccessful)
                 throws ThreadAbortedException, RunAbortedException {
 
             log.info("*****initializeThreadWork");                  
         }
 
-        private Person getPersonId(String idNumber, String IdType){
-            log.info("*****Starting getpersonId");
-            CmPersonSearchComponent perSearch = new CmPersonSearchComponent.Factory().newInstance();
-            IdType_Id idType = new IdType_Id(IdType);
-            log.info("*****ID Type: " + idType.getTrimmedValue());
-            return perSearch.searchPerson(idType.getEntity(), idNumber);            
-        }
-
-        public boolean executeWorkUnit(ThreadWorkUnit listOfUnit) throws ThreadAbortedException, RunAbortedException {
+		public boolean executeWorkUnit(ThreadWorkUnit listOfUnit) throws ThreadAbortedException, RunAbortedException {
 
             System.out.println("######################## Demarrage executeWorkUnit ############################");
-            int rowId = 0;
-			boolean foundNinea = false;
-			boolean checkErrorInExcel = false;
-			boolean processed = false;
+			boolean foundNinea = false, checkErrorInExcel = false, processed = false, isExist = false;
+			Cell cell;
 			List<Object> listesValues = new ArrayList<Object>();
             log.info("*****Starting Execute Work Unit");
             String fileName = listOfUnit.getSupplementallData("fileName").toString();
@@ -184,9 +140,7 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 }
 	            int nineaNumber = 0;
 				cellId = 1;
-				String establishmentDate = null;
-				String immatriculationDate = null;
-				String premierEmployeeDate = null;
+				String establishmentDate = null, immatriculationDate = null, premierEmployeeDate = null;
 				Boolean checkValidationFlag = false;
                 if(row.getRowNum() == 0) {
                 	continue;
@@ -196,9 +150,8 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 	Iterator<Cell> cellIterator = row.cellIterator();                	
      				while (cellIterator.hasNext() && !foundNinea) {
 					while (cellId <= cellCount && !checkErrorInExcel) {
-						Cell cell = cellIterator.next();
-						String headerName=cell.getSheet().getRow(0).getCell(cellId-1)
-     						    .getRichStringCellValue().toString();
+						cell = cellIterator.next();
+						String headerName=cell.getSheet().getRow(0).getCell(cellId-1) .getRichStringCellValue().toString();
 						switch (cell.getCellType()) {
 						case Cell.CELL_TYPE_STRING:
 							if (headerName != null && headerName.equalsIgnoreCase("Email")) {
@@ -212,7 +165,7 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 								} else {
 									checkValidationFlag = customValidation.validateEmailExist(cell.getStringCellValue());
 									if (checkValidationFlag != null && checkValidationFlag) {// Error skip the row
-										checkErrorInExcel = true;
+										checkErrorInExcel = isExist = processed = true;
 										createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "302",fileName);
 										log.info("Given Email ID:--> " + cell.getStringCellValue() + " already Exists");
 										break;
@@ -222,7 +175,7 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 								if (customValidation.validateCommercialRegister(cell.getStringCellValue())) {//validation Trade register Number.
 									checkValidationFlag = customValidation.validateTRNExist(cell.getStringCellValue());
 									if (checkValidationFlag != null && checkValidationFlag) {// Error Skip the row
-										checkErrorInExcel = true;
+										checkErrorInExcel = isExist = processed = true;
 										createToDo(cell.getStringCellValue(), String.valueOf(nineaNumber), "303", fileName);
 										log.info("Given Trade Registration Number--> " + cell.getStringCellValue() + " already Exists");
 										break;
@@ -233,7 +186,7 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 									log.info("Given Trade Registration Number:--> " + cell.getStringCellValue() + " is Invalid ");
 									break;
 								}
-							}else if(headerName != null && headerName.equalsIgnoreCase("NINET") && cell.getColumnIndex()==4 ){
+							}else if(headerName != null && headerName.equalsIgnoreCase("NINET") && cell.getColumnIndex()==4 ){//add validation for digits
 								checkValidationFlag = customValidation.validateCodeEstablishment(cell.getStringCellValue());
 								if (checkValidationFlag != null && !checkValidationFlag) {// NINET validation
 									// Error Skip the row
@@ -364,7 +317,9 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 										nineaNumber = (int) cell.getNumericCellValue();
 										checkValidationFlag = customValidation.validateNineaExist(ninea);
 										if (checkValidationFlag != null && checkValidationFlag) {// Error Skip the row
-											checkErrorInExcel = true;
+											checkErrorInExcel = isExist = processed = true;
+											//isExist = true;
+											//processed = true;
 											createToDo("", String.valueOf(nineaNumber), "313",fileName);
 											log.info("Given Ninea Number already Exists: " + nineaNumber);
 											break;
@@ -408,6 +363,7 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 					}
      					try {
      						processed = formCreator(fileName, listesValues);
+     						isExist = true;
      						System.out.println("*****Bo Creation Status**** " + processed);
      						log.info("*****Bo Creation Status**** " + processed);
      					} catch (Exception exception) {
@@ -419,9 +375,9 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
      				}
                 foundNinea = false;
             }
-            if(processed) {
-            	 Path fileToMovePath = Paths.get(fileName);
-         	    Path targetPath = Paths.get("D:\\PSRM\\");
+            if(processed && isExist) {
+            	Path fileToMovePath = Paths.get(fileName);
+         	    Path targetPath = Paths.get(this.getParameters().getPathToMove());
          	    try {
      				Files.move(fileToMovePath, targetPath.resolve(fileToMovePath.getFileName()));
      			} catch (IOException exception) {
@@ -434,56 +390,15 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
             System.out.println("######################## Terminer executeWorkUnit ############################");
             return true;
           }
-
-        private void createToDo(String messageParam, String nineaNumber, String messageNumber, String fileName ) {
-    		startChanges();
-    		// BusinessService_Id businessServiceId=new
-    		// BusinessService_Id("F1-AddToDoEntry");
-			BusinessServiceInstance businessServiceInstance = BusinessServiceInstance.create("F1-AddToDoEntry");    
-            Role_Id toDoRoleId = new Role_Id("CM-REGTODO");
-            Role toDoRole=toDoRoleId.getEntity();
-            businessServiceInstance.getFieldAndMDForPath("sendTo").setXMLValue("SNDR");
-            businessServiceInstance.getFieldAndMDForPath("subject").setXMLValue("Batch Update from PSRM");
-            businessServiceInstance.getFieldAndMDForPath("toDoType").setXMLValue("CM-REGTO");
-            businessServiceInstance.getFieldAndMDForPath("toDoRole").setXMLValue(toDoRole.getId().getTrimmedValue());
-            businessServiceInstance.getFieldAndMDForPath("drillKey1").setXMLValue("CM-REGBT");
-            businessServiceInstance.getFieldAndMDForPath("messageCategory").setXMLValue("90007");
-    		businessServiceInstance.getFieldAndMDForPath("messageNumber").setXMLValue(messageNumber);
-    		businessServiceInstance.getFieldAndMDForPath("messageParm1").setXMLValue(messageParam);
-            businessServiceInstance.getFieldAndMDForPath("messageParm2").setXMLValue(nineaNumber);
-            businessServiceInstance.getFieldAndMDForPath("messageParm3").setXMLValue(fileName);
-            businessServiceInstance.getFieldAndMDForPath("sortKey1").setXMLValue("CM-REGBT");
-            
-            BusinessServiceDispatcher.execute(businessServiceInstance);
-            saveChanges();
-            //getSession().commit();
-    	}
-
-		private BusinessObjectInstance createFormBOInstance(String formTypeString, String documentLocator) {
-
-            FormType formType = new FormType_Id(formTypeString).getEntity();
-            String formTypeBo = formType.getRelatedTransactionBOId().getTrimmedValue();
-
-            log.info("#### Creating BO for " + formType);
-
-            BusinessObjectInstance boInstance = BusinessObjectInstance.create(formTypeBo);
-
-            log.info("#### Form Type BO MD Schema: " + boInstance.getSchemaMD());
-
-            boInstance.set("bo", formTypeBo);
-            boInstance.set("formType", formType.getId().getTrimmedValue());
-            boInstance.set("receiveDate", getSystemDateTime().getDate());
-            boInstance.set("documentLocator", documentLocator);
-
-            return boInstance;
-
-        }
-
+		
 		/**
+		 * Method to create BO
+		 * 
 		 * @param fileName
 		 * @param listesValues
+		 * @return
 		 */
-		public boolean formCreator(String fileName,List<Object> listesValues) {
+		private boolean formCreator(String fileName, List<Object> listesValues) {
             BusinessObjectInstance boInstance = null;
 
             boInstance = createFormBOInstance(this.getParameters().getFormType() ,"T-DNSU-" + getSystemDateTime().toString());
@@ -492,18 +407,16 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
             COTSInstanceNode mainRegistrationForm = boInstance.getGroup("mainRegistrationForm");
             COTSInstanceNode legalForm = boInstance.getGroup("legalForm");
             COTSInstanceNode legalRepresentativeForm = boInstance.getGroup("legalRepresentativeForm");
-            COTSInstanceNode personContactForm = boInstance.getGroup("personContactForm");
-            COTSInstanceNode bankInformationForm = boInstance.getGroup("bankInformationForm");
-            COTSInstanceNode employerStatus = boInstance.getGroup("employerStatus");
             COTSInstanceNode employeeRegistrationForm = boInstance.getGroup("employeeRegistrationForm");
             COTSInstanceNode groupDmt = boInstance.getGroup("employeeContractForm");
-            /* 
-           // COTSInstanceNode documentsForm = boInstance.getGroup("documentsForm");*/
+            //COTSInstanceNode documentsForm = boInstance.getGroup("documentsForm");
+           
             int count = 0;
             while(count == 0) {
-            	 COTSFieldDataAndMD<?> regType = employerQuery.getFieldAndMDForPath("regType/asCurrent");
+            	 //Removed on 06April2018 based on functional testing feedback from Kahwla
+            	 /*COTSFieldDataAndMD<?> regType = employerQuery.getFieldAndMDForPath("regType/asCurrent");
             	 regType.setXMLValue(listesValues.get(count).toString());
-            	 count++;
+            	 count++;*/
             	
             	COTSFieldDataAndMD<?> employerType = employerQuery.getFieldAndMDForPath("employerType/asCurrent");
             	employerType.setXMLValue(listesValues.get(count).toString());
@@ -521,9 +434,9 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
             	ninetNumber.setXMLValue(listesValues.get(count).toString());
             	count++;
             	
-            	/*COTSFieldDataAndMD<?> hqId = employerQuery.getFieldAndMDForPath("hqId/asCurrent");
+            	COTSFieldDataAndMD<?> hqId = employerQuery.getFieldAndMDForPath("hqId/asCurrent");
             	hqId.setXMLValue(listesValues.get(count).toString());
-            	count++;*/
+            	count++;
             	
             	COTSFieldDataAndMD<?> companyOriginId = employerQuery.getFieldAndMDForPath("companyOriginId/asCurrent");
             	companyOriginId.setXMLValue(listesValues.get(count).toString());
@@ -550,7 +463,7 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 
                 COTSFieldDataAndMD<?> employerName = mainRegistrationForm.getFieldAndMDForPath("employerName/asCurrent");
                 employerName.setXMLValue(listesValues.get(count).toString());
-                count++;
+                count++;//Need to move to the first section
                 
                 COTSFieldDataAndMD<?> shortName = mainRegistrationForm.getFieldAndMDForPath("shortName/asCurrent");
                 shortName.setXMLValue(listesValues.get(count).toString());
@@ -584,20 +497,12 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 district.setXMLValue(listesValues.get(count).toString());
                 count++;
 
-                COTSFieldDataAndMD<?> dateOfEffectiveMembership = mainRegistrationForm.getFieldAndMDForPath("dateOfEffectiveMembership/asCurrent");
-                dateOfEffectiveMembership.setXMLValue(listesValues.get(count).toString());            
-                count++;
-                
                 COTSFieldDataAndMD<?> address = mainRegistrationForm.getFieldAndMDForPath("address/asCurrent");
                 address.setXMLValue(listesValues.get(count).toString());            
                 count++;
                 
                 COTSFieldDataAndMD<?> dateOfHiringFirstExecutiveEmpl = mainRegistrationForm.getFieldAndMDForPath("dateOfHiringFirstExecutiveEmpl/asCurrent");
                 dateOfHiringFirstExecutiveEmpl.setXMLValue(listesValues.get(count).toString());  
-                count++;
-                
-                COTSFieldDataAndMD<?> postbox = mainRegistrationForm.getFieldAndMDForPath("postbox/asCurrent");
-                postbox.setXMLValue(listesValues.get(count).toString());  
                 count++;
                 
                 COTSFieldDataAndMD<?> businessSector = mainRegistrationForm.getFieldAndMDForPath("businessSector/asCurrent");
@@ -620,32 +525,16 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 email.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> secondaryLineOfBusiness = mainRegistrationForm.getFieldAndMDForPath("secondaryLineOfBusiness/asCurrent");
-                secondaryLineOfBusiness.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
                 COTSFieldDataAndMD<?> website = mainRegistrationForm.getFieldAndMDForPath("website/asCurrent");
                 website.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> branchAgreement = mainRegistrationForm.getFieldAndMDForPath("branchAgreement/asCurrent");
-                branchAgreement.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
                 COTSFieldDataAndMD<?> sector = mainRegistrationForm.getFieldAndMDForPath("sector/asCurrent");
                 sector.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
-                COTSFieldDataAndMD<?> paymentMethod = mainRegistrationForm.getFieldAndMDForPath("paymentMethod/asCurrent");
-                paymentMethod.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
                 COTSFieldDataAndMD<?> zone = mainRegistrationForm.getFieldAndMDForPath("zone/asCurrent");
                 zone.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> dnsDeclaration = mainRegistrationForm.getFieldAndMDForPath("dnsDeclaration/asCurrent");
-                dnsDeclaration.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
                 COTSFieldDataAndMD<?> cssAgency = mainRegistrationForm.getFieldAndMDForPath("cssAgency/asCurrent");
@@ -730,7 +619,6 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 typeOfIdentity.setXMLValue(listesValues.get(count).toString());
                 count++;
                 
-                
                 COTSFieldDataAndMD<?> legaladdress = legalRepresentativeForm.getFieldAndMDForPath("address/asCurrent");
                 legaladdress.setXMLValue(listesValues.get(count).toString());
                 count++;
@@ -765,78 +653,6 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 
                 //--------------------------*************------------------------------------------------------------------------------//
                 
-                //------------------------------PersonContactForm BO Creation----------------------------------------------------//
-                
-                COTSFieldDataAndMD<?> personContactId = personContactForm.getFieldAndMDForPath("personContactId/asCurrent");
-                personContactId.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> initial = personContactForm.getFieldAndMDForPath("initial/asCurrent");
-                initial.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> telephoneNumber = personContactForm.getFieldAndMDForPath("telephoneNumber/asCurrent");
-                telephoneNumber.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> personContactlastName = personContactForm.getFieldAndMDForPath("lastName/asCurrent");
-                personContactlastName.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> positionHeld = personContactForm.getFieldAndMDForPath("positionHeld/asCurrent");
-                positionHeld.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> personContactFormEmail = personContactForm.getFieldAndMDForPath("email/asCurrent");
-                personContactFormEmail.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> role = personContactForm.getFieldAndMDForPath("role/asCurrent");
-                role.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-              //--------------------------*************------------------------------------------------------------------------------//
-                
-                //------------------------------BankInformationForm BO Creation----------------------------------------------------//
-                COTSFieldDataAndMD<?> usage = bankInformationForm.getFieldAndMDForPath("usage/asCurrent");
-                usage.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> bankCode = bankInformationForm.getFieldAndMDForPath("bankCode/asCurrent");
-                bankCode.setXMLValue(listesValues.get(count).toString());
-                count++;
-
-                COTSFieldDataAndMD<?> codeBox = bankInformationForm.getFieldAndMDForPath("codeBox/asCurrent");
-                codeBox.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> accountNumber = bankInformationForm.getFieldAndMDForPath("accountNumber/asCurrent");
-                accountNumber.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> ribNumber = bankInformationForm.getFieldAndMDForPath("ribNumber/asCurrent");
-                ribNumber.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> bicNumber = bankInformationForm.getFieldAndMDForPath("bicNumber/asCurrent");
-                bicNumber.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> swiftCode = bankInformationForm.getFieldAndMDForPath("swiftCode/asCurrent");
-                swiftCode.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-              //--------------------------*************------------------------------------------------------------------------------//
-                //------------------------------EmployerStatus BO Creation----------------------------------------------------//
-                
-                COTSFieldDataAndMD<?> status = employerStatus.getFieldAndMDForPath("status/asCurrent");
-                status.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> empStartDate = employerStatus.getFieldAndMDForPath("startDate/asCurrent");
-                empStartDate.setXMLValue(listesValues.get(count).toString());
-                count++;
-              //--------------------------*************------------------------------------------------------------------------------//
               //------------------------------EmployeeRegistrationForm BO Creation----------------------------------------------------//
                 COTSFieldDataAndMD<?> employee = employeeRegistrationForm.getFieldAndMDForPath("employee/asCurrent");
                 employee.setXMLValue(listesValues.get(count).toString());
@@ -857,9 +673,9 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 COTSFieldDataAndMD<?> sex = employeeRegistrationForm.getFieldAndMDForPath("sex/asCurrent");
                 sex.setXMLValue(listesValues.get(count).toString());
                 count++;
-				
-                COTSFieldDataAndMD<?> EmpPlaceOfBirth = employeeRegistrationForm.getFieldAndMDForPath("placeOfBirth/asCurrent");
-                EmpPlaceOfBirth.setXMLValue(listesValues.get(count).toString());
+                
+                COTSFieldDataAndMD<?> emploPlaceOfBirth = employeeRegistrationForm.getFieldAndMDForPath("placeOfBirth/asCurrent");
+                emploPlaceOfBirth.setXMLValue(listesValues.get(count).toString());
                 count++;
 				
                 COTSFieldDataAndMD<?> empBirthDate = employeeRegistrationForm.getFieldAndMDForPath("birthDate/asCurrent");
@@ -868,18 +684,6 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 
                 COTSFieldDataAndMD<?> country = employeeRegistrationForm.getFieldAndMDForPath("country/asCurrent");
                 country.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> fathersName = employeeRegistrationForm.getFieldAndMDForPath("fathersName/asCurrent");
-                fathersName.setXMLValue(listesValues.get(count).toString());
-                count++;
-				
-                COTSFieldDataAndMD<?> mothersName = employeeRegistrationForm.getFieldAndMDForPath("mothersName/asCurrent");
-                mothersName.setXMLValue(listesValues.get(count).toString());
-                count++;
-                
-                COTSFieldDataAndMD<?> ethicalGroup = employeeRegistrationForm.getFieldAndMDForPath("ethicalGroup/asCurrent");
-                ethicalGroup.setXMLValue(listesValues.get(count).toString());
                 count++;
 
                 COTSFieldDataAndMD<?> emplTypeOfIdentity= employeeRegistrationForm.getFieldAndMDForPath("typeOfIdentity/asCurrent");
@@ -893,22 +697,6 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
                 COTSFieldDataAndMD<?> issuedDate = employeeRegistrationForm.getFieldAndMDForPath("issued/asCurrent");
                 issuedDate.setXMLValue(listesValues.get(count).toString());
                 count++;
-                
-                COTSFieldDataAndMD<?> place= employeeRegistrationForm.getFieldAndMDForPath("place/asCurrent");
-                place.setXMLValue(listesValues.get(count).toString());
-                count++;
-				
-                COTSFieldDataAndMD<?> issuedBy = employeeRegistrationForm.getFieldAndMDForPath("issuedBy/asCurrent");
-                issuedBy.setXMLValue(listesValues.get(count).toString());
-                count++;
-				
-                COTSFieldDataAndMD<?> registeredNationalCcpf = employeeRegistrationForm.getFieldAndMDForPath("registeredNationalCcpf/asCurrent");
-                registeredNationalCcpf.setXMLValue(listesValues.get(count).toString());
-				count++;
-				
-				COTSFieldDataAndMD<?> registeredNationalAgro = employeeRegistrationForm.getFieldAndMDForPath("registeredNationalAgro/asCurrent");
-				registeredNationalAgro.setXMLValue(listesValues.get(count).toString());
-				count++;
 				
 				COTSFieldDataAndMD<?> emplRegion = employeeRegistrationForm.getFieldAndMDForPath("region/asCurrent");
 				emplRegion.setXMLValue(listesValues.get(count).toString());
@@ -925,11 +713,11 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 	            COTSFieldDataAndMD<?> emplDistrict = employeeRegistrationForm.getFieldAndMDForPath("district/asCurrent");
                 emplDistrict.setXMLValue(listesValues.get(count).toString());
 	            count++;
-				
-	            COTSFieldDataAndMD<?> empAddress = employeeRegistrationForm.getFieldAndMDForPath("address/asCurrent");
-	            empAddress.setXMLValue(listesValues.get(count).toString());
-                count++;
                 
+	            COTSFieldDataAndMD<?> emplAddress = employeeRegistrationForm.getFieldAndMDForPath("address/asCurrent");
+	            emplAddress.setXMLValue(listesValues.get(count).toString());
+	            count++;
+	            
                 COTSFieldDataAndMD<?> empPostboxNumber = employeeRegistrationForm.getFieldAndMDForPath("postboxNumber/asCurrent");
                 empPostboxNumber.setXMLValue(listesValues.get(count).toString());
 				count++;
@@ -945,88 +733,79 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 				COTSFieldDataAndMD<?> previousEmployer = employeeRegistrationForm.getFieldAndMDForPath("previousEmployer/asCurrent");
 				previousEmployer.setXMLValue(listesValues.get(count).toString());
 				count++;
-				 
-				COTSFieldDataAndMD<?> employerAddress = employeeRegistrationForm.getFieldAndMDForPath("employerAddress/asCurrent");
-				employerAddress.setXMLValue(listesValues.get(count).toString());
-                count++;
-				
-                COTSFieldDataAndMD<?> dateOfEntry = employeeRegistrationForm.getFieldAndMDForPath("dateOfEntry/asCurrent");
-                dateOfEntry.setXMLValue(listesValues.get(count).toString());
-				count++;
 				//--------------------------*************------------------------------------------------------------------------------//
-	            //------------------------------EmployeeRegistrationForm BO Creation----------------------------------------------------//
+				
+	            //------------------------------DMT BO Creation----------------------------------------------------//
 				COTSFieldDataAndMD<?> workersMovement = groupDmt.getFieldAndMDForPath("workersMovement/asCurrent");
 				workersMovement.setXMLValue(listesValues.get(count).toString());
 				count++;
-	            COTSFieldDataAndMD<?> date = groupDmt.getFieldAndMDForPath("date/asCurrent");
-	            date.setXMLValue(listesValues.get(count).toString());
-				count++;
+	            
 	            COTSFieldDataAndMD<?> workerIdNumber = groupDmt.getFieldAndMDForPath("workerIdNumber/asCurrent");
 	            workerIdNumber.setXMLValue(listesValues.get(count).toString());
 				count++;
-	            COTSFieldDataAndMD<?> dmtNin = groupDmt.getFieldAndMDForPath("nin/asCurrent");
-	            dmtNin.setXMLValue(listesValues.get(count).toString());
-				count++;
+	            
 	            COTSFieldDataAndMD<?> dmtLastName = groupDmt.getFieldAndMDForPath("lastName/asCurrent");
 	        	dmtLastName.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> dmtFirstName = groupDmt.getFieldAndMDForPath("firstName/asCurrent");
 	            dmtFirstName.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> entryDateOfEstablishment = groupDmt.getFieldAndMDForPath("entryDateOfEstablishment/asCurrent");
 	            entryDateOfEstablishment.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> hiringDeclarationDate = groupDmt.getFieldAndMDForPath("hiringDeclarationDate/asCurrent");
 	            hiringDeclarationDate.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> profession = groupDmt.getFieldAndMDForPath("profession/asCurrent");
 	            profession.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> employmentInTheEstablishment = groupDmt.getFieldAndMDForPath("employmentInTheEstablishment/asCurrent");
 	            employmentInTheEstablishment.setXMLValue(listesValues.get(count).toString());
 				count++;
-	            COTSFieldDataAndMD<?> referenceJob = groupDmt.getFieldAndMDForPath("referenceJob/asCurrent");
-	            referenceJob.setXMLValue(listesValues.get(count).toString());
-				count++;
+	            
 	            COTSFieldDataAndMD<?> collectiveAgreement = groupDmt.getFieldAndMDForPath("collectiveAgreement/asCurrent");
 	            collectiveAgreement.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> category = groupDmt.getFieldAndMDForPath("category/asCurrent");
 	            category.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> natureOfContract = groupDmt.getFieldAndMDForPath("natureOfContract/asCurrent");
 	            natureOfContract.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> contractStartDate = groupDmt.getFieldAndMDForPath("contractStartDate/asCurrent");
 	            contractStartDate.setXMLValue(listesValues.get(count).toString());
 				count++;
-	            COTSFieldDataAndMD<?> contractEndDate = groupDmt.getFieldAndMDForPath("contractEndDate/asCurrent");
-	            contractEndDate.setXMLValue(listesValues.get(count).toString());
-				count++;
+	           
 	            COTSFieldDataAndMD<?> contractualSalary = groupDmt.getFieldAndMDForPath("contractualSalary/asCurrent");
 	            contractualSalary.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 	            COTSFieldDataAndMD<?> percentageOfEmployment = groupDmt.getFieldAndMDForPath("percentageOfEmployment/asCurrent");
 	            percentageOfEmployment.setXMLValue(listesValues.get(count).toString());
 				count++;
-	            COTSFieldDataAndMD<?> visaNumberOfLabor = groupDmt.getFieldAndMDForPath("visaNumberOfLabor/asCurrent");
-	            visaNumberOfLabor.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> dateOfVisaOfTheLabor = groupDmt.getFieldAndMDForPath("dateOfVisaOfTheLabor/asCurrent");
-	            dateOfVisaOfTheLabor.setXMLValue(listesValues.get(count).toString());
-				count++;
-	            COTSFieldDataAndMD<?> visaNumberOfLocal = groupDmt.getFieldAndMDForPath("visaNumberOfLocal/asCurrent");
-	            visaNumberOfLocal.setXMLValue(listesValues.get(count).toString());
-				count++;
-				COTSFieldDataAndMD<?> dateOfVisaOfTheLocal = groupDmt.getFieldAndMDForPath("dateOfVisaOfTheLocal/asCurrent");
-				dateOfVisaOfTheLocal.setXMLValue(listesValues.get(count).toString());
-				count++;
+	           
 				COTSFieldDataAndMD<?> industryTheEmployeeWillWork = groupDmt.getFieldAndMDForPath("industryTheEmployeeWillWork/asCurrent");
 				industryTheEmployeeWillWork.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
 				COTSFieldDataAndMD<?> worksite = groupDmt.getFieldAndMDForPath("worksite/asCurrent");
 				worksite.setXMLValue(listesValues.get(count).toString());
 				count++;
+				
+				//Invokde GED with the help of SOA
+				
+				/* COTSFieldDataAndMD<?> url = documentsForm.getFieldAndMDForPath("url/asCurrent");
+		       	 url.setXMLValue("http://ged/3565622");
+		       	 COTSFieldDataAndMD<?> docType = documentsForm.getFieldAndMDForPath("docType/asCurrent");
+		       	 docType.setXMLValue("contract");*/
             }
             
               if (boInstance != null) {
@@ -1034,90 +813,39 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
               }
               return true;
           }
-       
 		
-		//SELECT COUNTRY from CI_COUNTRY_L where LANGUAGE_CD='ENG' and DESCR = 'Republic of South Africa';
-		private String getCounrtyCode(String description) {
-        	PreparedStatement psPreparedStatement = null;
-    		StringBuilder stringBuilder = new StringBuilder();
-    		
-    		stringBuilder.append("SELECT COUNTRY from CI_COUNTRY_L where LANGUAGE_CD='ENG' and UPPER(DESCR) = UPPER(:DESCR)");
-    				
-    		psPreparedStatement = createPreparedStatement(stringBuilder.toString());
-    		psPreparedStatement.setAutoclose(false);
-    		psPreparedStatement.bindString("DESCR", description, null);
-    		String countryCode = "";
-    		try {
-    			SQLResultRow result = psPreparedStatement.firstRow();
-    			countryCode = result.getString("COUNTRY");
-    			System.out.println("countryCode:: " + countryCode);
-    		} catch (Exception exception) {
-    			log.info("Unable to get countryCode for the Description:: "+description+ " "+exception.getMessage());
-    			exception.printStackTrace();
-    		} finally {
-    			psPreparedStatement.close();
-    			psPreparedStatement = null;
-    		}
-			return countryCode;
-		}
-		
-        /**
-         * Method to get Lookupvalue from Database
-         * 
-         * @param string
-         * @return
-         */
-        private String getLookUpValue(String description, String lookUpType) {
-        	PreparedStatement psPreparedStatement = null;
-    		StringBuilder stringBuilder = new StringBuilder();
-    		
-    		stringBuilder.append("select BUS_OBJ_CD, F1_EXT_LOOKUP_VALUE, DESCR from F1_EXT_LOOKUP_VAL_L where LANGUAGE_CD = 'ENG' and")
-    		.append(" UPPER(DESCR) = UPPER(:DESCR) AND BUS_OBJ_CD =:BUS_OBJ_CD ");
-    				
-    		psPreparedStatement = createPreparedStatement(stringBuilder.toString());
-    		psPreparedStatement.setAutoclose(false);
-    		psPreparedStatement.bindString("DESCR", description, null);
-    		psPreparedStatement.bindEntity("BUS_OBJ_CD", new BusinessObject_Id(lookUpType).getEntity());
-    		String lookUpValue = "";
-    		try {
-    			SQLResultRow result = psPreparedStatement.firstRow();
-    			lookUpValue = result.getString("F1_EXT_LOOKUP_VALUE");
-    			System.out.println("lookUpValue:: " + lookUpValue);
-    		} catch (Exception exception) {
-    			log.info("Unable to get Lookup value for the Description:: "+description+ " "+exception.getMessage());
-    			exception.printStackTrace();
-    		} finally {
-    			psPreparedStatement.close();
-    			psPreparedStatement = null;
-    		}
-			return lookUpValue;
-		}
-
 		/**
-		 * Method to get date as String
+		 * Method to create FormBOInstance
 		 * 
-		 * @param dateObject
+		 * @param formType
+		 * @param string
 		 * @return
 		 */
-		private String getDateString(String dateObject) {
-        	String parsedDate = "";
-        	try {
-        		String appDate = dateObject;
-        		DateFormat inputFormat = new SimpleDateFormat("E MMM dd HH:mm:ss 'GMT' yyyy");
-		        java.util.Date date = inputFormat.parse(appDate);
+		private BusinessObjectInstance createFormBOInstance(String formTypeString, String documentLocator) {
 
-		        DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-		        //outputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            FormType formType = new FormType_Id(formTypeString).getEntity();
+            String formTypeBo = formType.getRelatedTransactionBOId().getTrimmedValue();
 
-		        parsedDate = outputFormat.format(date);
-		        System.out.println(parsedDate);
-            } catch(Exception exception) {
-          	  exception.printStackTrace();
-            }
-        	
-        	return parsedDate;
-		}
+            log.info("#### Creating BO for " + formType);
 
+            BusinessObjectInstance boInstance = BusinessObjectInstance.create(formTypeBo);
+
+            log.info("#### Form Type BO MD Schema: " + boInstance.getSchemaMD());
+
+            boInstance.set("bo", formTypeBo);
+            boInstance.set("formType", formType.getId().getTrimmedValue());
+            boInstance.set("receiveDate", getSystemDateTime().getDate());
+            boInstance.set("documentLocator", documentLocator);
+
+            return boInstance;
+
+        }
+		/**
+		 * Method to create BoInstance
+		 * 
+		 * @param boInstance
+		 * @return
+		 */
 		private BusinessObjectInstance validateAndPostForm(BusinessObjectInstance boInstance) {
 
             log.info("#### BO Instance Schema before ADD: " + boInstance.getDocument().asXML());
@@ -1138,83 +866,49 @@ public class CmProcessRegistrationExcelFileBatch extends CmProcessRegistrationEx
 
             return boInstance;
         }
-        
+		/**
+		 * Method to create To Do
+		 * 
+		 * @param messageParam
+		 * @param nineaNumber
+		 * @param messageNumber
+		 * @param fileName
+		 */
+		private void createToDo(String messageParam, String nineaNumber, String messageNumber, String fileName ) {
+    		startChanges();
+    		// BusinessService_Id businessServiceId=new
+    		// BusinessService_Id("F1-AddToDoEntry");
+			BusinessServiceInstance businessServiceInstance = BusinessServiceInstance.create("F1-AddToDoEntry");    
+            Role_Id toDoRoleId = new Role_Id("CM-REGTODO");
+            Role toDoRole=toDoRoleId.getEntity();
+            businessServiceInstance.getFieldAndMDForPath("sendTo").setXMLValue("SNDR");
+            businessServiceInstance.getFieldAndMDForPath("subject").setXMLValue("Batch Update from PSRM");
+            businessServiceInstance.getFieldAndMDForPath("toDoType").setXMLValue("CM-REGTO");
+            businessServiceInstance.getFieldAndMDForPath("toDoRole").setXMLValue(toDoRole.getId().getTrimmedValue());
+            businessServiceInstance.getFieldAndMDForPath("drillKey1").setXMLValue("CM-REGBT");
+            businessServiceInstance.getFieldAndMDForPath("messageCategory").setXMLValue("90007");
+    		businessServiceInstance.getFieldAndMDForPath("messageNumber").setXMLValue(messageNumber);
+    		businessServiceInstance.getFieldAndMDForPath("messageParm1").setXMLValue(messageParam);
+            businessServiceInstance.getFieldAndMDForPath("messageParm2").setXMLValue(nineaNumber);
+            businessServiceInstance.getFieldAndMDForPath("messageParm3").setXMLValue(fileName);
+            businessServiceInstance.getFieldAndMDForPath("sortKey1").setXMLValue("CM-REGBT");
+            
+            BusinessServiceDispatcher.execute(businessServiceInstance);
+            saveChanges();
+            //getSession().commit();
+    	}
 		
-       
-        private void convertDate(String date) {        	
-        	String dateOfb = "";
-            try {
-          	  String date_s = date;
-                SimpleDateFormat dt = new SimpleDateFormat("dd/mm/yyyy");
-      	      java.util.Date formateddate = dt.parse(date_s);
-      	        
-      	       SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-mm-dd");
-      	       dateOfb = dt1.format(formateddate);
-      	       System.out.println(dt1.format(formateddate));
-            } catch(Exception exception) {
-          	  exception.printStackTrace();
-            }
-        }
-        /**
-         * Validate Email Address
-         * 
-         * @param stringCellValue
-         * @return
-         */
-        private boolean validateEmail(String stringCellValue) {
-			// TODO Auto-generated method stub
-        	Pattern pattern;
-        	Matcher matcher;
-        	String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-        			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-        	pattern = Pattern.compile(EMAIL_PATTERN);
-        	matcher = pattern.matcher(stringCellValue);
-    		return matcher.matches();
+		@Override
+		public void finalizeThreadWork() throws ThreadAbortedException, RunAbortedException {
+			 //completeProcessing();
+		}
+		
+		@Override
+		public void finalizeJobWork() throws Exception {
+			log.error("finalizeJobWork!!!");
+			super.finalizeJobWork();
 			
 		}
+	}
 
-        private File changeExtension(File file, String extension) {
-            String filename = file.getName();
-            String filePath = file.getAbsolutePath();
-            
-            log.info("*****changeExtension start:" + filename);
-
-            if (filename.contains(".")) {
-                filename = filename.substring(0, filename.lastIndexOf('.'));
-            }
-            filename += "." + extension;
-            
-            String strFileRenamed = filePath;
-            
-            if (strFileRenamed.contains(".")) {
-                strFileRenamed = strFileRenamed.substring(0, strFileRenamed.lastIndexOf('.'));
-            }
-            
-            strFileRenamed += "." + extension;
-
-
-            log.info("*****to rename File:" + strFileRenamed);
-
-            
-            File fileRenamed = new File(strFileRenamed);
-            
-            if (fileRenamed.exists()) {
-                log.info("The " + filename + " exist" );
-
-            }
-            else
-            {
-                log.info("The " + filename + " does not exist" );
-
-            }
-            if (fileRenamed.delete()) 
-            {
-                log.info("The " + filename + " was deleted" );
-            }
-            
-            file.renameTo(new File(file.getParentFile(), filename));
-            
-            return file;        
-        }
-    } 
 }
