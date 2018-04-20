@@ -18,6 +18,7 @@ package org.springframework.boot.web.embedded.tomcat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -25,6 +26,7 @@ import java.security.cert.CertificateException;
 
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +36,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -60,6 +63,8 @@ public class SslConnectorCustomizerTests {
 
 	@After
 	public void stop() throws Exception {
+		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
+		ReflectionTestUtils.setField(URL.class, "factory", null);
 		this.tomcat.stop();
 	}
 
