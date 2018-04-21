@@ -35,11 +35,11 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	private final String rootUri;
 
-	private final UriTemplateHandler handler;
+	private final UriTemplateHandler delegateHandler;
 
-	protected RootUriTemplateHandler(UriTemplateHandler handler) {
+	protected RootUriTemplateHandler(UriTemplateHandler delegateHandler) {
 		this.rootUri = null;
-		this.handler = handler;
+		this.delegateHandler = delegateHandler;
 	}
 
 	/**
@@ -53,23 +53,23 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	/**
 	 * Create a new {@link RootUriTemplateHandler} instance.
 	 * @param rootUri the root URI to be used to prefix relative URLs
-	 * @param handler the delegate handler
+	 * @param delegateHandler the delegate handler
 	 */
-	public RootUriTemplateHandler(String rootUri, UriTemplateHandler handler) {
+	public RootUriTemplateHandler(String rootUri, UriTemplateHandler delegateHandler) {
 		Assert.notNull(rootUri, "RootUri must not be null");
-		Assert.notNull(handler, "Handler must not be null");
+		Assert.notNull(delegateHandler, "DelegateHandler must not be null");
 		this.rootUri = rootUri;
-		this.handler = handler;
+		this.delegateHandler = delegateHandler;
 	}
 
 	@Override
 	public URI expand(String uriTemplate, Map<String, ?> uriVariables) {
-		return this.handler.expand(apply(uriTemplate), uriVariables);
+		return this.delegateHandler.expand(apply(uriTemplate), uriVariables);
 	}
 
 	@Override
 	public URI expand(String uriTemplate, Object... uriVariables) {
-		return this.handler.expand(apply(uriTemplate), uriVariables);
+		return this.delegateHandler.expand(apply(uriTemplate), uriVariables);
 	}
 
 	private String apply(String uriTemplate) {
@@ -81,6 +81,10 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	public String getRootUri() {
 		return this.rootUri;
+	}
+
+	public UriTemplateHandler getDelegateHandler() {
+		return this.delegateHandler;
 	}
 
 	/**
