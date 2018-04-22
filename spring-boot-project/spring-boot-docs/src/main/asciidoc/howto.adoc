@@ -276,15 +276,12 @@ configuration by setting properties in `+spring.main.*+`. For example, in
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.main.web-environment=false
+	spring.main.web-application-type=none
 	spring.main.banner-mode=off
 ----
 
-Then the Spring Boot banner is not printed on startup, and the application is
-not a web application.
-
-NOTE: The preceding example also demonstrates how flexible binding allows the use of
-underscores (`_`) as well as dashes (`-`) in property names.
+Then the Spring Boot banner is not printed on startup, and the application is not starting
+an embedded web server.
 
 Properties defined in external configuration override the values specified with the Java
 API, with the notable exception of the sources used to create the `ApplicationContext`.
