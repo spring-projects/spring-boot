@@ -980,6 +980,9 @@ fly by using its default constructor, you need a setter.
 Some people use Project Lombok to add getters and setters automatically. Make sure that
 Lombok does not generate any particular constructor for such a type, as it is used
 automatically by the container to instantiate the object.
+
+Finally, only standard Java Bean properties are considered and binding on static
+properties are not supported.
 ====
 
 TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value`
