@@ -283,9 +283,6 @@ configuration by setting properties in `+spring.main.*+`. For example, in
 Then the Spring Boot banner is not printed on startup, and the application is not starting
 an embedded web server.
 
-NOTE: The preceding example also demonstrates how flexible binding allows the use of
-underscores (`_`) as well as dashes (`-`) in property names.
-
 Properties defined in external configuration override the values specified with the Java
 API, with the notable exception of the sources used to create the `ApplicationContext`.
 Consider the following application:
