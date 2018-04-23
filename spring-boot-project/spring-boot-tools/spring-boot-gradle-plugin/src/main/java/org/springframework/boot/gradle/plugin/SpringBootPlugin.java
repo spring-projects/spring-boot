@@ -30,6 +30,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
@@ -121,15 +122,16 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	private void unregisterUnresolvedDependenciesAnalyzer(Project project) {
 		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
-		project.getConfigurations().all((configuration) -> configuration.getIncoming()
-				.afterResolve((resolvableDependencies) -> {
-					if (configuration.getIncoming().equals(resolvableDependencies)) {
-						unresolvedDependenciesAnalyzer
-								.analyze(configuration.getResolvedConfiguration()
-										.getLenientConfiguration()
-										.getUnresolvedModuleDependencies());
-					}
-				}));
+		project.getConfigurations().all((configuration) -> {
+			ResolvableDependencies incoming = configuration.getIncoming();
+			incoming.afterResolve((resolvableDependencies) -> {
+				if (incoming.equals(resolvableDependencies)) {
+					unresolvedDependenciesAnalyzer.analyze(configuration
+							.getResolvedConfiguration().getLenientConfiguration()
+							.getUnresolvedModuleDependencies());
+				}
+			});
+		});
 		project.getGradle().buildFinished(
 				(buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
 	}
