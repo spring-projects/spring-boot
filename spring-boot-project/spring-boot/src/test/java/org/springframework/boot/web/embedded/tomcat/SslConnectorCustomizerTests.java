@@ -24,6 +24,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
@@ -152,6 +153,21 @@ public class SslConnectorCustomizerTests {
 		SSLHostConfig sslHostConfigWithDefaults = new SSLHostConfig();
 		assertThat(sslHostConfig.getTruststoreFile()).isEqualTo(SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
 		assertThat(sslHostConfig.getCertificateKeystoreFile()).contains(sslHostConfigWithDefaults.getCertificateKeystoreFile());
+	}
+
+	@Test
+	public void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyPassword("password");
+		ssl.setKeyStorePassword("secret");
+		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
+		given(sslStoreProvider.getTrustStore()).willReturn(loadStore());
+		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, sslStoreProvider);
+		Connector connector = this.tomcat.getConnector();
+		customizer.customize(connector);
+		this.tomcat.start();
+		assertThat(connector.getState()).isEqualTo(LifecycleState.STARTED);
 	}
 
 	private KeyStore loadStore() throws KeyStoreException, IOException,
