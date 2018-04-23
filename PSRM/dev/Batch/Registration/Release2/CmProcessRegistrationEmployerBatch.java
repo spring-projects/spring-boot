@@ -930,13 +930,13 @@ public class CmProcessRegistrationEmployerBatch extends CmProcessRegistrationEmp
 			businessServiceInstance.getFieldAndMDForPath("subject").setXMLValue("Batch Update from PSRM");
 			businessServiceInstance.getFieldAndMDForPath("toDoType").setXMLValue("CM-REGTO");
 			businessServiceInstance.getFieldAndMDForPath("toDoRole").setXMLValue(toDoRole.getId().getTrimmedValue());
-			businessServiceInstance.getFieldAndMDForPath("drillKey1").setXMLValue("CM-IMBT");
+			businessServiceInstance.getFieldAndMDForPath("drillKey1").setXMLValue("CM-REGBT");
 			businessServiceInstance.getFieldAndMDForPath("messageCategory").setXMLValue("90007");
 			businessServiceInstance.getFieldAndMDForPath("messageNumber").setXMLValue(messageNumber);
 			businessServiceInstance.getFieldAndMDForPath("messageParm1").setXMLValue(messageParam);
 			businessServiceInstance.getFieldAndMDForPath("messageParm2").setXMLValue(nineaNumber);
 			businessServiceInstance.getFieldAndMDForPath("messageParm3").setXMLValue(fileName);
-			businessServiceInstance.getFieldAndMDForPath("sortKey1").setXMLValue("CM-IMBT");
+			businessServiceInstance.getFieldAndMDForPath("sortKey1").setXMLValue("CM-REGBT");
 
 			BusinessServiceDispatcher.execute(businessServiceInstance);
 			saveChanges();
