@@ -55,6 +55,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -62,8 +63,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
+import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -820,6 +824,20 @@ public class WebMvcAutoConfigurationTests {
 							strategy) -> WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy.class
 									.isAssignableFrom(strategy.getClass()));
 				});
+	}
+
+	@Test
+	public void contentNegotiationStrategySkipsPathExtension() throws Exception {
+		ContentNegotiationStrategy delegate = mock(ContentNegotiationStrategy.class);
+		ContentNegotiationStrategy strategy = new WebMvcAutoConfiguration
+				.OptionalPathExtensionContentNegotiationStrategy(delegate);
+
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute(PathExtensionContentNegotiationStrategy.class
+				.getName() + ".SKIP", Boolean.TRUE);
+		ServletWebRequest webRequest = new ServletWebRequest(request);
+		List<MediaType> mediaTypes = strategy.resolveMediaTypes(webRequest);
+		assertThat(mediaTypes).containsOnly(MediaType.ALL);
 	}
 
 	private void assertCacheControl(AssertableWebApplicationContext context) {

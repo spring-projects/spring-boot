@@ -653,7 +653,7 @@ public class WebMvcAutoConfiguration {
 			Object skip = webRequest.getAttribute(SKIP_ATTRIBUTE,
 					RequestAttributes.SCOPE_REQUEST);
 			if (skip != null && Boolean.parseBoolean(skip.toString())) {
-				return Collections.emptyList();
+				return MEDIA_TYPE_ALL_LIST;
 			}
 			return this.delegate.resolveMediaTypes(webRequest);
 		}
