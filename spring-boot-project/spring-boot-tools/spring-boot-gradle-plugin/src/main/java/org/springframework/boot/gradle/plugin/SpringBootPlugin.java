@@ -42,6 +42,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootWar;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Danny Hyun
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
@@ -121,10 +122,14 @@ public class SpringBootPlugin implements Plugin<Project> {
 	private void unregisterUnresolvedDependenciesAnalyzer(Project project) {
 		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
 		project.getConfigurations().all((configuration) -> configuration.getIncoming()
-				.afterResolve((resolvableDependencies) -> unresolvedDependenciesAnalyzer
-						.analyze(configuration.getResolvedConfiguration()
-								.getLenientConfiguration()
-								.getUnresolvedModuleDependencies())));
+				.afterResolve((resolvableDependencies) -> {
+					if (configuration.getIncoming().equals(resolvableDependencies)) {
+						unresolvedDependenciesAnalyzer
+								.analyze(configuration.getResolvedConfiguration()
+										.getLenientConfiguration()
+										.getUnresolvedModuleDependencies());
+					}
+				}));
 		project.getGradle().buildFinished(
 				(buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
 	}
