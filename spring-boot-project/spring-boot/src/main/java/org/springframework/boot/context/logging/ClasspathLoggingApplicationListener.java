@@ -54,7 +54,8 @@ public final class ClasspathLoggingApplicationListener
 			}
 			else if (event instanceof ApplicationFailedEvent) {
 				logger.debug(
-						"Application failed to start with classpath: " + getClasspath());
+						"Application failed to start with classpath: " + getClasspath(),
+						((ApplicationFailedEvent) event).getException());
 			}
 		}
 	}
