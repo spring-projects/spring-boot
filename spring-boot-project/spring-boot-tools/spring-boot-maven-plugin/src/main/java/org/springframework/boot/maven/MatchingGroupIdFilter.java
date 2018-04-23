@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,16 +28,18 @@ import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatur
  * classes use of {@link String#startsWith} to match on prefix.
  *
  * @author Mark Ingram
+ * @author Dmytro Nosan
  * @since 1.1
  */
 public class MatchingGroupIdFilter extends AbstractArtifactFeatureFilter {
 
 	/**
-	 * Create a new instance with the CSV groupId values that should be excluded.
+	 * Create a new instance with the CSV groupId values that should be excluded/included.
+	 * @param include the group values to include
 	 * @param exclude the group values to exclude
 	 */
-	public MatchingGroupIdFilter(String exclude) {
-		super("", exclude);
+	public MatchingGroupIdFilter(String include, String exclude) {
+		super(include, exclude);
 	}
 
 	@Override
