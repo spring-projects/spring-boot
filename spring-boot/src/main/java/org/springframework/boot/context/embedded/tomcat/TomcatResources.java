@@ -16,11 +16,11 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.List;
 
 import javax.naming.directory.DirContext;
@@ -49,28 +49,24 @@ abstract class TomcatResources {
 
 	void addResourceJars(List<URL> resourceJarUrls) {
 		for (URL url : resourceJarUrls) {
-			String file = getDecodedFile(url);
-			if (file.endsWith(".jar") || file.endsWith(".jar!/")) {
-				String jar = url.toString();
-				if (!jar.startsWith("jar:")) {
-					// A jar file in the file system. Convert to Jar URL.
-					jar = "jar:" + jar + "!/";
+			try {
+				String path = url.getPath();
+				if (path.endsWith(".jar") || path.endsWith(".jar!/")) {
+					String jar = url.toString();
+					if (!jar.startsWith("jar:")) {
+						// A jar file in the file system. Convert to Jar URL.
+						jar = "jar:" + jar + "!/";
+					}
+					addJar(jar);
 				}
-				addJar(jar);
+				else {
+					addDir(new File(url.toURI()).getAbsolutePath(), url);
+				}
 			}
-			else {
-				addDir(file, url);
+			catch (URISyntaxException ex) {
+				throw new IllegalStateException(
+						"Failed to create File from URL '" + url + "'");
 			}
-		}
-	}
-
-	private String getDecodedFile(URL url) {
-		try {
-			return URLDecoder.decode(url.getFile(), "UTF-8");
-		}
-		catch (UnsupportedEncodingException ex) {
-			throw new IllegalStateException(
-					"Failed to decode '" + url.getFile() + "' using UTF-8");
 		}
 	}
 

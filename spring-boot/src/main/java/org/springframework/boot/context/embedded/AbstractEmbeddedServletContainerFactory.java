@@ -109,7 +109,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	private boolean isStaticResourceJar(URL url) {
 		try {
 			if ("file".equals(url.getProtocol())) {
-				File file = new File(getDecodedFile(url));
+				File file = new File(url.toURI());
 				return (file.isDirectory()
 						&& new File(file, "META-INF/resources").isDirectory())
 						|| isResourcesJar(file);
@@ -122,12 +122,20 @@ public abstract class AbstractEmbeddedServletContainerFactory
 				}
 			}
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
 		return false;
 	}
 
+	/**
+	 * Converts the given {@code url} into a decoded file path.
+	 *
+	 * @param url the url to convert
+	 * @return the file path
+	 * @deprecated Since 1.5.13 in favor of {@link File#File(java.net.URI)}
+	 */
+	@Deprecated
 	protected final String getDecodedFile(URL url) {
 		try {
 			return URLDecoder.decode(url.getFile(), "UTF-8");
