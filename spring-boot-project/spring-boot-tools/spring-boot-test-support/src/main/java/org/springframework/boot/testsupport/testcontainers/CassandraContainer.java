@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testsupport.testcontainers;
 
+import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -37,10 +38,9 @@ public class CassandraContainer extends Container {
 	private static final int PORT = 9042;
 
 	public CassandraContainer() {
-		super("cassandra:3.11.1", PORT,
-				(container) -> container
-						.waitingFor(new WaitStrategy(container.getMappedPort(PORT)))
-						.withStartupAttempts(3));
+		super("cassandra:3.11.1", PORT, (container) -> container
+				.waitingFor(new WaitStrategy(container.getMappedPort(PORT)))
+				.withStartupAttempts(3).withStartupTimeout(Duration.ofSeconds(60)));
 	}
 
 	private static class WaitStrategy extends HostPortWaitStrategy {
