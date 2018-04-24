@@ -16,12 +16,17 @@
 
 package sample.data.jpa.web;
 
+import sample.data.jpa.domain.City;
+import sample.data.jpa.service.CitySearchCriteria;
 import sample.data.jpa.service.CityService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -35,6 +40,13 @@ public class SampleController {
 	@Transactional(readOnly = true)
 	public String helloWorld() {
 		return this.cityService.getCity("Bath", "UK").getName();
+	}
+
+	@GetMapping("/paged")
+	@ResponseBody
+	@Transactional(readOnly = true)
+	public Page<City> paged(@RequestParam("name") String name, Pageable pageable) {
+		return this.cityService.findCities(new CitySearchCriteria(name), pageable);
 	}
 
 }
