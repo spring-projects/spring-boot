@@ -569,18 +569,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	static class SystemPropertyFormatter {
 
-		private static final String NO_VALUE_FORMAT = "-D%s";
-
-		private static final String KEY_VALUE_FORMAT = NO_VALUE_FORMAT + "=%s";
-
 		public static String format(Object key, Object value) {
 			if (key == null) {
 				return "";
 			}
-			if (value == null || String.valueOf(value).trim().isEmpty()) {
-				return String.format(NO_VALUE_FORMAT, key);
+			if (value == null || String.valueOf(value).isEmpty()) {
+				return String.format("-D%s", key);
 			}
-			return String.format(KEY_VALUE_FORMAT, key, value);
+			return String.format("-D%s=\"%s\"", key, value);
 		}
 	}
 

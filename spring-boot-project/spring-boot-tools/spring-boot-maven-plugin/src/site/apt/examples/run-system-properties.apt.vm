@@ -40,7 +40,9 @@
 ---
 
   If the value is empty or not defined (i.e. <<<<my-property/>>>>), the system property
-  is set with an empty String as the value.
+  is set with an empty String as the value. Maven trims values specified in the pom so it
+  is not possible to specify a System property who needs to start or end with a space via
+  this mechanism: consider using <<<jvmArguments>> instead.
 
   Any String typed Maven variable can be passed as system properties. Any attempt to pass
   any other Maven variable type (e.g. a <<<List>>> or a <<<URL>>> variable) will cause the

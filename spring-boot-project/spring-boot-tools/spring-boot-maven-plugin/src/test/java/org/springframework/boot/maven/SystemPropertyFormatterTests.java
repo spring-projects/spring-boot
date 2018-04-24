@@ -40,12 +40,18 @@ public class SystemPropertyFormatterTests {
 	@Test
 	public void parseKeyWithValue() {
 		assertThat(SystemPropertyFormatter.format("key1", "value1"))
-				.isEqualTo("-Dkey1=value1");
+				.isEqualTo("-Dkey1=\"value1\"");
 	}
 
 	@Test
 	public void parseKeyWithEmptyValue() {
 		assertThat(SystemPropertyFormatter.format("key1", "")).isEqualTo("-Dkey1");
+	}
+
+	@Test
+	public void parseKeyWithOnlySpace() {
+		assertThat(SystemPropertyFormatter.format("key1", "   "))
+				.isEqualTo("-Dkey1=\"   \"");
 	}
 
 }
