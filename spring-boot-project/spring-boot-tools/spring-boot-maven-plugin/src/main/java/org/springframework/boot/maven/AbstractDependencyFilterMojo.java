@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,10 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	/**
 	 * Comma separated list of artifact names to exclude (exact match).
 	 * @since 1.1
+	 * @deprecated as of 2.0.2 in favour of {@code excludes}
 	 */
 	@Parameter(property = "spring-boot.excludeArtifactIds", defaultValue = "")
+	@Deprecated
 	private String excludeArtifactIds;
 
 	protected void setExcludes(List<Exclude> excludes) {
@@ -83,6 +85,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		this.excludeGroupIds = excludeGroupIds;
 	}
 
+	@Deprecated
 	protected void setExcludeArtifactIds(String excludeArtifactIds) {
 		this.excludeArtifactIds = excludeArtifactIds;
 	}
