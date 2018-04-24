@@ -69,12 +69,8 @@ public class RunProcess {
 		return run(waitForProcess, Arrays.asList(args), Collections.emptyMap());
 	}
 
-	public int run(boolean waitForProcess, String[] args, Map<String, String> environmentVariables) throws IOException {
-		return run(waitForProcess, Arrays.asList(args), environmentVariables);
-	}
-
-	protected int run(boolean waitForProcess, Collection<String> args, Map<String, String> environmentVariables)
-			throws IOException {
+	public int run(boolean waitForProcess, Collection<String> args,
+			Map<String, String> environmentVariables) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
 		builder.directory(this.workingDirectory);
 		builder.command().addAll(args);

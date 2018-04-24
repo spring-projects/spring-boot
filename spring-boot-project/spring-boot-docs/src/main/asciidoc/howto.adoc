@@ -2771,14 +2771,6 @@ See {spring-boot-maven-plugin-site}/examples/run-debug.html[this example] for mo
 details.
 
 
-[[howto-set-env-maven-run]]
-=== Run Spring Boot Application with Environment variables Started with Maven
-To set up the environment variables to a Spring Boot application that was started with Maven, you
-can use the `environmentVariables` property of the {spring-boot-maven-plugin-site}[maven plugin].
-
-See {spring-boot-maven-plugin-site}/examples/run-with-env.html[this example] for more
-details.
-
 
 [[howto-build-an-executable-archive-with-ant]]
 === Build an Executable Archive from Ant without Using `spring-boot-antlib`

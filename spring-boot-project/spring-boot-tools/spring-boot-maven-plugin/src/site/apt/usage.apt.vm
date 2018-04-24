@@ -140,11 +140,12 @@ mvn spring-boot:run
 
   If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
   the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
-  for more details. There is also explicit support
-  {{{./examples/run-system-properties.html}for system properties}} and
-  {{{./examples/run-with-env.html}environment variables}}. As a convenience, the profiles
-  to enable are handled by a specific property (<<<profiles>>>), see
-  {{{./examples/run-profiles.html}Specify active profiles}}.
+  for more details. There is also explicit support for
+  {{{./examples/run-system-properties.html}system properties}} and
+  {{{./examples/run-env-variables.html}environment variables}}.
+
+  As a convenience, the profiles to enable are handled by a specific property (
+  <<<profiles>>>), see {{{./examples/run-profiles.html}Specify active profiles}}.
 
   Spring Boot 1.3 has introduced <<<devtools>>>, a module to improve the development-time
   experience when working on Spring Boot applications. To enable it, just add the following

@@ -29,53 +29,39 @@ import java.util.Map;
  */
 class EnvVariables {
 
-	private static final String SPACE = "=";
-	private static final String NO_VALUE = "";
+	private final Map<String, String> variables;
 
-	private final Map<String, String> args = new LinkedHashMap<>();
-
-	EnvVariables(Map<String, String> args) {
-		this.args.putAll(getArgs(args));
+	EnvVariables(Map<String, String> variables) {
+		this.variables = parseEnvVariables(variables);
 	}
 
-	Map<String, String> asMap() {
-		return Collections.unmodifiableMap(this.args);
-	}
-
-	String[] asArray() {
-		List<String> args = new ArrayList<>(this.args.size());
-		for (Map.Entry<String, String> arg : this.args.entrySet()) {
-			args.add(arg.getKey() + SPACE + arg.getValue());
-		}
-		return args.toArray(new String[args.size()]);
-	}
-
-
-	private Map<String, String> getArgs(Map<String, String> args) {
-
+	private static Map<String, String> parseEnvVariables(Map<String, String> args) {
 		if (args == null || args.isEmpty()) {
 			return Collections.emptyMap();
 		}
-
 		Map<String, String> result = new LinkedHashMap<>();
 		for (Map.Entry<String, String> e : args.entrySet()) {
-			if (hasText(e.getKey())) {
+			if (e.getKey() != null) {
 				result.put(e.getKey(), getValue(e.getValue()));
 			}
 		}
 		return result;
 	}
 
-	private String getValue(String value) {
-		if (hasText(value)) {
-			return value;
+	private static String getValue(String value) {
+		return (value != null ? value : "");
+	}
+
+	public Map<String, String> asMap() {
+		return Collections.unmodifiableMap(this.variables);
+	}
+
+	public String[] asArray() {
+		List<String> args = new ArrayList<>(this.variables.size());
+		for (Map.Entry<String, String> arg : this.variables.entrySet()) {
+			args.add(arg.getKey() + "=" + arg.getValue());
 		}
-		return NO_VALUE;
+		return args.toArray(new String[0]);
 	}
-
-	private boolean hasText(String source) {
-		return source != null && !source.trim().isEmpty();
-	}
-
 
 }

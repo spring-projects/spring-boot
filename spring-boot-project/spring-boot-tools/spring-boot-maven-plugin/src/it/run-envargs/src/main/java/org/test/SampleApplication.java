@@ -18,7 +18,6 @@ package org.test;
 
 public class SampleApplication {
 
-
 	public static void main(String[] args) {
 		assertEnvValue("ENV1", "5000");
 		assertEnvValue("ENV2", "Some Text");
@@ -26,14 +25,13 @@ public class SampleApplication {
 		assertEnvValue("ENV4", "");
 
 		System.out.println("I haz been run");
-
 	}
 
-
-	static void assertEnvValue(String envKey, String expectedValue) {
+	private static void assertEnvValue(String envKey, String expectedValue) {
 		String actual = System.getenv(envKey);
 		if (!expectedValue.equals(actual)) {
-			throw new IllegalStateException("env property [" + envKey + "] mismatch (got [" + actual + "], expected [" + expectedValue + "]");
+			throw new IllegalStateException("env property [" + envKey + "] mismatch "
+					+ "(got [" + actual + "], expected [" + expectedValue + "]");
 		}
 	}
 

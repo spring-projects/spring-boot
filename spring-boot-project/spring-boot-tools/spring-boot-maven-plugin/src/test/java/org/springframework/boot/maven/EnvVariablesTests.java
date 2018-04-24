@@ -22,6 +22,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link EnvVariables}.
@@ -33,40 +34,29 @@ public class EnvVariablesTests {
 	@Test
 	public void asNull() {
 		Map<String, String> args = new EnvVariables(null).asMap();
-		assertThat(args).hasSize(0);
+		assertThat(args).isEmpty();
 	}
-
 
 	@Test
 	public void asArray() {
 		assertThat(new EnvVariables(getTestArgs()).asArray())
-				.contains("key=My Value")
-				.contains("key1= tt ")
-				.contains("key2=")
-				.contains("key3=");
+				.contains("key=My Value", "key1= tt ", "key2=   ", "key3=");
 	}
 
 	@Test
 	public void asMap() {
-		assertThat(new EnvVariables(getTestArgs()).asMap())
-				.containsEntry("key", "My Value")
-				.containsEntry("key1", " tt ")
-				.containsEntry("key2", "")
-				.containsEntry("key3", "");
+		assertThat(new EnvVariables(getTestArgs()).asMap()).containsExactly(
+				entry("key", "My Value"), entry("key1", " tt "), entry("key2", "   "),
+				entry("key3", ""));
 	}
-
 
 	private Map<String, String> getTestArgs() {
 		Map<String, String> args = new LinkedHashMap<>();
 		args.put("key", "My Value");
-		//should not be trimmed
 		args.put("key1", " tt ");
 		args.put("key2", "   ");
 		args.put("key3", null);
 		return args;
 	}
-
-
-
 
 }

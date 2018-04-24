@@ -47,7 +47,6 @@ import org.springframework.boot.loader.tools.RunProcess;
  * stopped after.
  *
  * @author Stephane Nicoll
- * @author Dmytro Nosan
  * @since 1.3.0
  * @see StopMojo
  */
@@ -90,7 +89,8 @@ public class StartMojo extends AbstractRunMojo {
 	private final Object lock = new Object();
 
 	@Override
-	protected void runWithForkedJvm(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
+	protected void runWithForkedJvm(File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables)
 			throws MojoExecutionException, MojoFailureException {
 		RunProcess runProcess = runProcess(workingDirectory, args, environmentVariables);
 		try {
@@ -102,12 +102,13 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
-	private RunProcess runProcess(File workingDirectory, List<String> args, Map<String, String> environmentVariables)
+	private RunProcess runProcess(File workingDirectory, List<String> args,
+			Map<String, String> environmentVariables)
 			throws MojoExecutionException {
 		try {
 			RunProcess runProcess = new RunProcess(workingDirectory,
 					new JavaExecutable().toString());
-			runProcess.run(false, args.toArray(new String[0]), environmentVariables);
+			runProcess.run(false, args, environmentVariables);
 			return runProcess;
 		}
 		catch (Exception ex) {
