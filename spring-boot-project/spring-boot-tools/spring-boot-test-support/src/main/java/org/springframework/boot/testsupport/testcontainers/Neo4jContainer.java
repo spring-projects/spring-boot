@@ -43,7 +43,7 @@ public class Neo4jContainer extends Container {
 						.withEnv("NEO4J_AUTH", "none"));
 	}
 
-	private static class WaitStrategy extends HostPortWaitStrategy {
+	private static final class WaitStrategy extends HostPortWaitStrategy {
 
 		private final int port;
 

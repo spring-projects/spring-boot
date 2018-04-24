@@ -43,7 +43,7 @@ public class CassandraContainer extends Container {
 				.withStartupAttempts(3).withStartupTimeout(Duration.ofSeconds(60)));
 	}
 
-	private static class WaitStrategy extends HostPortWaitStrategy {
+	private static final class WaitStrategy extends HostPortWaitStrategy {
 
 		private final int port;
 
