@@ -1,0 +1,101 @@
+/**
+ * As a demonstration of coding, this program implements a simple "Ceasar Cipher"
+ * in which characters in a string are simply offset in the alphabet by a given
+ * fixed amount.  The offset is the "key" for the code. The user specifies the
+ * offset and an input string.  The input string is converted to lower case and
+ * encoded.  Then the coded string is decoded to get back the original string.
+ */
+public class SimpleCode {
+
+   public static void main(String[] args) {
+      int offset;        // The "key" for the encoding, a number from 1 to 25.
+      String plainText;  // The original string that is to be encoded.
+      String cipherText; // The coded version of the string.
+      do {
+         System.out.println();
+         System.out.print("Enter the key, a number from 1 to 25:  ");
+         offset = TextIO.getlnInt();
+         if (offset < 0 || offset > 25)
+            System.out.println("Please enter a number in the correct range!");
+      } while (offset < 0 || offset > 25);
+      System.out.println();
+      System.out.println("Enter your plaintext: ");
+      System.out.print("? ");
+      plainText = TextIO.getln();
+      plainText = plainText.toLowerCase();  // convert to lower case
+      cipherText = "";
+      int i;
+      for (i = 0; i < plainText.length(); i++) {
+         char plainChar, encodedChar;
+         plainChar = plainText.charAt(i);
+         if (plainChar < 'a' || plainChar > 'z')
+            cipherText += plainChar;  // it's not a letter; don't encode it.
+         else {
+            encodedChar = encode( plainChar, offset );
+            cipherText += encodedChar;
+         }
+      }
+      System.out.println();
+      System.out.println("Text in lower case: " + plainText);
+      System.out.println("Encoded text:       " + cipherText);
+      plainText = "";  // to be reconstructed from cipher Text
+      for (i = 0; i < cipherText.length(); i++) {
+         char plainChar, encodedChar;
+         encodedChar = cipherText.charAt(i);
+         if (encodedChar < 'a' || encodedChar > 'z')
+            plainText += encodedChar;  // it's not a letter; don't decode it.
+         else {
+            plainChar = decode( encodedChar, offset );
+            plainText += plainChar;
+         }
+      }
+      System.out.println("Decoded text:       " + plainText);
+      System.out.println();
+   }
+   
+   
+   /**
+    *  Encodes a single letter as another letter by applying an offset
+    *  to move the letter forward in the alphabet.  If the new position
+    *  is past the end of the alphabet, it wraps around to the beginning.
+    *  @param ch the letter that is to be encoded.  This must be a lower
+    *     case letter!
+    *  @param offset an integer in the range 0 to 25 (inclusive).  The
+    *     ch is "moved" forward this many spaces in the alphabet.
+    *  @return the encoded letter
+    */
+   private static char encode(char ch, int offset) {
+      int chCode;
+      char encodedChar;
+      chCode = (int)ch - (int)'a';  // convert ch to a number from 0 to 25
+      chCode += offset;  // add the offset to the character code
+      if (chCode >= 26) {  // wrap around to the beginning of the alphabet
+         chCode = chCode - 26;
+      }
+      encodedChar = (char)(chCode + (int)'a');  // convert back to a letter
+      return encodedChar;
+   }
+
+
+   /**
+    *  Decodes a single letter to another letter by applying an offset.
+    *  @param ch the letter that is to be encoded.  This must be a lower
+    *     case letter!
+    *  @param offset an integer in the range 0 to 25 (inclusive).  The
+    *     ch is "moved" backward this many spaces in the alphabet, undoing
+    *     the operation that was used to encode the letter.
+    *  @return the decoded letter
+    */
+   private static char decode(char ch, int offset) {
+      int chCode;
+      char decodedChar;
+      chCode = (int)ch - (int)'a';  // convert ch to a number from 0 to 25
+      chCode -= offset;  // subtract the offset from the character code
+      if (chCode < 0) {  // wrap around to the end of the alphabet
+         chCode = chCode + 26;
+      }
+      decodedChar = (char)(chCode + (int)'a');  // convert back to a letter
+      return decodedChar;
+   }
+
+}
