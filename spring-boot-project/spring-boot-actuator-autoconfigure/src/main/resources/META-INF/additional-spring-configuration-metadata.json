@@ -1230,6 +1230,12 @@
       }
     },
     {
+      "name": "management.server.add-application-context-header",
+      "type": "java.lang.Boolean",
+      "description": "Add the \"X-Application-Context\" HTTP header in each response.",
+      "defaultValue": false
+    },
+    {
       "name": "management.shell.auth.jaas.domain",
       "type": "java.lang.String",
       "description": "JAAS domain.",
