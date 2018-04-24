@@ -111,7 +111,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * List of JVM system properties to pass to the process. NOTE: the use of system
 	 * properties means that processes will be started by forking a new JVM.
-	 * @since 2.1.0
+	 * @since 2.1
 	 */
 	@Parameter
 	private Map<String, String> systemPropertyVariables;
