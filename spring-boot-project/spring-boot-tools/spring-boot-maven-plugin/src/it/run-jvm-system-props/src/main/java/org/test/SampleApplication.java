@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,18 @@ public class SampleApplication {
 		if (!"value2".equals(bar)) {
 			throw new IllegalStateException("bar system property mismatch (got [" + bar + "]");
 		}
-
 		String property1 = System.getProperty("property1");
 		if (!"value1".equals(property1)) {
 			throw new IllegalStateException("property1 system property mismatch (got [" + property1 + "]");
 		}
-
 		String property2 = System.getProperty("property2");
 		if (!"".equals(property2)) {
-			throw new IllegalStateException("property1 system property mismatch (got [" + property2 + "]");
+			throw new IllegalStateException("property2 system property mismatch (got [" + property2 + "]");
 		}
-
+		String property3 = System.getProperty("property3");
+		if (!"run-jvmargs".equals(property3)) {
+			throw new IllegalStateException("property3 system property mismatch (got [" + property3 + "]");
+		}
 		System.out.println("I haz been run");
 	}
 

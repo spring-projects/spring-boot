@@ -27,6 +27,8 @@
 							<systemPropertyVariables>
 								<property1>value1</property1>
 								<property2/>
+								<property3>${project.artifactId}</property3>
+								<foo>should-be-ignored</foo>
 							</systemPropertyVariables>
 						</configuration>
 					</execution>

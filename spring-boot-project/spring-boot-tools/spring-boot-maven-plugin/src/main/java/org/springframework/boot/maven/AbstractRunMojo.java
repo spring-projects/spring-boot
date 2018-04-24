@@ -108,6 +108,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private String jvmArguments;
 
 	/**
+	 * List of JVM system properties to pass to the process. NOTE: the use of system
+	 * properties means that processes will be started by forking a new JVM.
+	 * @since 2.1.0
+	 */
+	@Parameter
+	private Map<String, String> systemPropertyVariables;
+
+	/**
 	 * Arguments that should be passed to the application. On command line use commas to
 	 * separate multiple arguments.
 	 * @since 1.0
@@ -171,15 +179,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	@Parameter(property = "spring-boot.run.skip", defaultValue = "false")
 	private boolean skip;
 
-	/**
-	 * List of JVM system properties. System property consists of key and value
-	 * and it will be transformed to <code>-Dkey=value</code> format.
-	 * In case if value is not specified or empty only key will be provided.
-	 * @since 2.0
-	 */
-	@Parameter(property = "spring-boot.run.systemPropertyVariabled")
-	private Map<String, String> systemPropertyVariables;
-
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.skip) {
@@ -213,7 +212,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private boolean hasJvmArgs() {
 		return (this.jvmArguments != null && !this.jvmArguments.isEmpty()) ||
-				(this.systemPropertyVariables != null && !this.systemPropertyVariables.isEmpty());
+				(this.systemPropertyVariables != null
+						&& !this.systemPropertyVariables.isEmpty());
 	}
 
 	private boolean hasWorkingDirectorySet() {
@@ -244,22 +244,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			getLog().warn("Fork mode disabled, ignoring agent");
 		}
 		if (hasJvmArgs()) {
-			String messageTemplate = "Fork mode disabled, ignoring JVM argument(s) [%s%s]";
-			String sysPropsStr = "";
-			if (this.systemPropertyVariables != null && !this.systemPropertyVariables.isEmpty()) {
-				sysPropsStr = this.systemPropertyVariables
-						.entrySet()
-						.stream()
-						.map(e -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
-						.collect(Collectors.joining(" "));
-			}
-			String message = String.format(
-					messageTemplate,
-					this.jvmArguments,
-					sysPropsStr.isEmpty() ? sysPropsStr : " " + sysPropsStr
-			);
-
-			getLog().warn(message);
+			RunArguments runArguments = resolveJvmArguments();
+			getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
+					+ Arrays.stream(runArguments.asArray()).collect(
+							Collectors.joining(" ")) + "]");
 		}
 		if (hasWorkingDirectorySet()) {
 			getLog().warn("Fork mode disabled, ignoring working directory configuration");
@@ -319,19 +307,15 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	protected RunArguments resolveJvmArguments() {
 		final StringBuilder stringBuilder = new StringBuilder();
-		if (this.jvmArguments != null) {
-			stringBuilder.append(this.jvmArguments);
-		}
 		if (this.systemPropertyVariables != null) {
-			String result = this.systemPropertyVariables
+			stringBuilder.append(this.systemPropertyVariables
 					.entrySet()
 					.stream()
 					.map(e -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
-					.collect(Collectors.joining(" "));
-			stringBuilder
-					.append(" ")
-					.append(result);
-
+					.collect(Collectors.joining(" ")));
+		}
+		if (this.jvmArguments != null) {
+			stringBuilder.append(" ").append(this.jvmArguments);
 		}
 		return new RunArguments(stringBuilder.toString());
 	}
@@ -551,11 +535,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	/**
-	 * System properties formatter.
+	 * Format System properties.
 	 */
 	static class SystemPropertyFormatter {
 
 		private static final String NO_VALUE_FORMAT = "-D%s";
+
 		private static final String KEY_VALUE_FORMAT = NO_VALUE_FORMAT + "=%s";
 
 		public static String format(Object key, Object value) {
