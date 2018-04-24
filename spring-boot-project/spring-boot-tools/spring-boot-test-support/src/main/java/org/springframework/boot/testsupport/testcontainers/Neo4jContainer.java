@@ -24,7 +24,7 @@ import org.neo4j.ogm.session.SessionFactory;
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 /**
  * A {@link GenericContainer} for Neo4J.
@@ -34,19 +34,28 @@ import org.testcontainers.containers.wait.HostPortWaitStrategy;
  */
 public class Neo4jContainer extends Container {
 
+	private static final int PORT = 7687;
+
 	public Neo4jContainer() {
-		super("neo4j:3.3.1", 7687, (container) -> container.waitingFor(new WaitStrategy())
-				.withEnv("NEO4J_AUTH", "none"));
+		super("neo4j:3.3.1", PORT,
+				(container) -> container
+						.waitingFor(new WaitStrategy(container.getMappedPort(PORT)))
+						.withEnv("NEO4J_AUTH", "none"));
 	}
 
 	private static class WaitStrategy extends HostPortWaitStrategy {
 
+		private final int port;
+
+		private WaitStrategy(int port) {
+			this.port = port;
+		}
+
 		@Override
-		public void waitUntilReady(GenericContainer container) {
+		public void waitUntilReady() {
 			super.waitUntilReady();
 			Configuration configuration = new Configuration.Builder()
-					.uri("bolt://localhost:" + container.getMappedPort(7687))
-					.build();
+					.uri("bolt://localhost:" + this.port).build();
 			SessionFactory sessionFactory = new SessionFactory(configuration,
 					"org.springframework.boot.test.autoconfigure.data.neo4j");
 			try {
