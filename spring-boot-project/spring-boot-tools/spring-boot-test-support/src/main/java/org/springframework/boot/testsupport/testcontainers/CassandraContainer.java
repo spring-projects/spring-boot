@@ -24,7 +24,7 @@ import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.HostPortWaitStrategy;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
 /**
  * A {@link GenericContainer} for Cassandra.
@@ -37,14 +37,22 @@ public class CassandraContainer extends Container {
 	private static final int PORT = 9042;
 
 	public CassandraContainer() {
-		super("cassandra:3.11.1", PORT, (container) -> container
-				.waitingFor(new WaitStrategy()).withStartupAttempts(3));
+		super("cassandra:3.11.1", PORT,
+				(container) -> container
+						.waitingFor(new WaitStrategy(container.getMappedPort(PORT)))
+						.withStartupAttempts(3));
 	}
 
 	private static class WaitStrategy extends HostPortWaitStrategy {
 
+		private final int port;
+
+		private WaitStrategy(int port) {
+			this.port = port;
+		}
+
 		@Override
-		public void waitUntilReady(GenericContainer container) {
+		public void waitUntilReady() {
 			super.waitUntilReady();
 
 			try {
@@ -58,8 +66,7 @@ public class CassandraContainer extends Container {
 
 		private Callable<Boolean> checkConnection() {
 			return () -> {
-				try (Cluster cluster = Cluster.builder()
-						.withPort(container.getMappedPort(PORT))
+				try (Cluster cluster = Cluster.builder().withPort(this.port)
 						.addContactPoint("localhost").build()) {
 					cluster.connect();
 					return true;
