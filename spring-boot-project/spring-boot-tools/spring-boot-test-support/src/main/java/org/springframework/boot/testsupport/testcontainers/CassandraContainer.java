@@ -38,17 +38,18 @@ public class CassandraContainer extends Container {
 	private static final int PORT = 9042;
 
 	public CassandraContainer() {
-		super("cassandra:3.11.1", PORT, (container) -> container
-				.waitingFor(new WaitStrategy(container.getMappedPort(PORT)))
-				.withStartupAttempts(3).withStartupTimeout(Duration.ofSeconds(60)));
+		super("cassandra:3.11.1", PORT,
+				(container) -> container.waitingFor(new WaitStrategy(container))
+						.withStartupAttempts(3)
+						.withStartupTimeout(Duration.ofSeconds(60)));
 	}
 
 	private static final class WaitStrategy extends HostPortWaitStrategy {
 
-		private final int port;
+		private final GenericContainer<?> container;
 
-		private WaitStrategy(int port) {
-			this.port = port;
+		private WaitStrategy(GenericContainer<?> container) {
+			this.container = container;
 		}
 
 		@Override
@@ -66,7 +67,8 @@ public class CassandraContainer extends Container {
 
 		private Callable<Boolean> checkConnection() {
 			return () -> {
-				try (Cluster cluster = Cluster.builder().withPort(this.port)
+				try (Cluster cluster = Cluster.builder()
+						.withPort(this.container.getMappedPort(CassandraContainer.PORT))
 						.addContactPoint("localhost").build()) {
 					cluster.connect();
 					return true;

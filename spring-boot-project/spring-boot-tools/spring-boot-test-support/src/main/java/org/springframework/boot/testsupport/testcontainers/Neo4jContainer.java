@@ -37,25 +37,25 @@ public class Neo4jContainer extends Container {
 	private static final int PORT = 7687;
 
 	public Neo4jContainer() {
-		super("neo4j:3.3.1", PORT,
-				(container) -> container
-						.waitingFor(new WaitStrategy(container.getMappedPort(PORT)))
-						.withEnv("NEO4J_AUTH", "none"));
+		super("neo4j:3.3.1", PORT, (container) -> container
+				.waitingFor(new WaitStrategy(container)).withEnv("NEO4J_AUTH", "none"));
 	}
 
 	private static final class WaitStrategy extends HostPortWaitStrategy {
 
-		private final int port;
+		private final GenericContainer<?> container;
 
-		private WaitStrategy(int port) {
-			this.port = port;
+		private WaitStrategy(GenericContainer<?> container) {
+			this.container = container;
 		}
 
 		@Override
 		public void waitUntilReady() {
 			super.waitUntilReady();
 			Configuration configuration = new Configuration.Builder()
-					.uri("bolt://localhost:" + this.port).build();
+					.uri("bolt://localhost:"
+							+ this.container.getMappedPort(Neo4jContainer.PORT))
+					.build();
 			SessionFactory sessionFactory = new SessionFactory(configuration,
 					"org.springframework.boot.test.autoconfigure.data.neo4j");
 			try {
