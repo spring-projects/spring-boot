@@ -1,0 +1,43 @@
+ -----
+ Specify environment variables
+ -----
+Dmytro Nosan
+ -----
+ 2018-04-08
+ -----
+
+  The environmnet variables to use for a particular application can be specified using the <<<environmentVariables>>>
+  argument. The following configuration enables the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+            <environmentVariables>
+                <ENV1>5000</ENV1>
+                <ENV2>Some Text</ENV2>
+                <ENV3/>
+                <ENV4></ENV4>
+            </environmentVariables>
+        </configuration>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  Note that since you specified some Environment variables, the process is forked automatically.
+
+
