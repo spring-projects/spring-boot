@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
@@ -104,6 +106,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.run.jvmArguments")
 	private String jvmArguments;
+
+	/**
+	 * List of JVM system properties to pass to the process. NOTE: the use of system
+	 * properties means that processes will be started by forking a new JVM.
+	 * @since 2.1.0
+	 */
+	@Parameter
+	private Map<String, String> systemPropertyVariables;
 
 	/**
 	 * Arguments that should be passed to the application. On command line use commas to
@@ -201,7 +211,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private boolean hasJvmArgs() {
-		return (this.jvmArguments != null && !this.jvmArguments.isEmpty());
+		return (this.jvmArguments != null && !this.jvmArguments.isEmpty()) ||
+				(this.systemPropertyVariables != null
+						&& !this.systemPropertyVariables.isEmpty());
 	}
 
 	private boolean hasWorkingDirectorySet() {
@@ -232,8 +244,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			getLog().warn("Fork mode disabled, ignoring agent");
 		}
 		if (hasJvmArgs()) {
+			RunArguments runArguments = resolveJvmArguments();
 			getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
-					+ this.jvmArguments + "]");
+					+ Arrays.stream(runArguments.asArray()).collect(
+							Collectors.joining(" ")) + "]");
 		}
 		if (hasWorkingDirectorySet()) {
 			getLog().warn("Fork mode disabled, ignoring working directory configuration");
@@ -292,7 +306,18 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return a {@link RunArguments} defining the JVM arguments
 	 */
 	protected RunArguments resolveJvmArguments() {
-		return new RunArguments(this.jvmArguments);
+		final StringBuilder stringBuilder = new StringBuilder();
+		if (this.systemPropertyVariables != null) {
+			stringBuilder.append(this.systemPropertyVariables
+					.entrySet()
+					.stream()
+					.map(e -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
+					.collect(Collectors.joining(" ")));
+		}
+		if (this.jvmArguments != null) {
+			stringBuilder.append(" ").append(this.jvmArguments);
+		}
+		return new RunArguments(stringBuilder.toString());
 	}
 
 	private void addJvmArgs(List<String> args) {
@@ -507,6 +532,26 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			}
 		}
 
+	}
+
+	/**
+	 * Format System properties.
+	 */
+	static class SystemPropertyFormatter {
+
+		private static final String NO_VALUE_FORMAT = "-D%s";
+
+		private static final String KEY_VALUE_FORMAT = NO_VALUE_FORMAT + "=%s";
+
+		public static String format(Object key, Object value) {
+			if (key == null) {
+				return "";
+			}
+			if (value == null || String.valueOf(value).trim().isEmpty()) {
+				return String.format(NO_VALUE_FORMAT, key);
+			}
+			return String.format(KEY_VALUE_FORMAT, key, value);
+		}
 	}
 
 }
