@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.undertow;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -51,6 +52,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -222,14 +225,18 @@ public class UndertowEmbeddedServletContainerFactoryTests
 				});
 	}
 
-	@Test(expected = SSLHandshakeException.class)
+	@Test
 	public void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
+		this.thrown.expect(anyOf(instanceOf(SSLHandshakeException.class),
+				instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
 				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
 	}
 
-	@Test(expected = SSLHandshakeException.class)
+	@Test
 	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
+		this.thrown.expect(anyOf(instanceOf(SSLHandshakeException.class),
+				instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
 				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
 	}
@@ -246,8 +253,10 @@ public class UndertowEmbeddedServletContainerFactoryTests
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
 
-	@Test(expected = SSLHandshakeException.class)
+	@Test
 	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
+		this.thrown.expect(anyOf(instanceOf(SSLHandshakeException.class),
+				instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
