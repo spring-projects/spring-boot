@@ -36,17 +36,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Johannes Edmeier
  */
 public class CachesEndpointTests {
-
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(CacheAutoConfiguration.class));
 
 	@Test
 	public void cacheReportIsReturned() {
+		//@formatter:off
 		this.contextRunner.withUserConfiguration(Config.class)
-				.run((context) -> assertThat(
-						context.getBean(CachesEndpoint.class).cacheManagerBeans()
-								.getCacheManagers().get("cacheManager").getCacheNames())
-										.containsOnly("first", "second"));
+				.run(context -> assertThat(context.getBean(CachesEndpoint.class).caches().getCaches())
+						.hasSize(2)
+						.anySatisfy(cache -> {
+									assertThat(cache.getName()).isEqualTo("first");
+									assertThat(cache.getCacheManager()).isEqualTo("cacheManager");
+						}).anySatisfy(cache -> {
+									assertThat(cache.getName()).isEqualTo("second");
+									assertThat(cache.getCacheManager()).isEqualTo("cacheManager");
+						})
+				);
+		//@formatter:on
 	}
 
 	@Test

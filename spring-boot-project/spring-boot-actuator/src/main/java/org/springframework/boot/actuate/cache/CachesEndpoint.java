@@ -18,9 +18,7 @@ package org.springframework.boot.actuate.cache;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -29,6 +27,8 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * {@link Endpoint} to expose cache operations.
@@ -45,31 +45,33 @@ public class CachesEndpoint {
 	}
 
 	@ReadOperation
-	public ContextCacheManagerBeans cacheManagerBeans() {
-		Map<String, CacheManagerDescriptor> cacheManagers = new HashMap<>();
+	public CachesDescriptor caches() {
+		List<CacheDescriptor> caches = new ArrayList<>();
 		this.context.getBeansOfType(CacheManager.class)
-				.forEach((name, cacheManager) -> cacheManagers.put(name,
-						new CacheManagerDescriptor(cacheManager.getCacheNames())));
-		return new ContextCacheManagerBeans(cacheManagers);
+					.forEach((name, cacheManager) -> caches.addAll(
+							getCacheDescriptors(name, cacheManager.getCacheNames())));
+		return new CachesDescriptor(caches);
+	}
+
+	private Collection<? extends CacheDescriptor> getCacheDescriptors(String cacheManager,
+																	  Collection<String> cacheNames) {
+		return cacheNames.stream().map(cacheName -> new CacheDescriptor(cacheName, cacheManager)).collect(toList());
 	}
 
 	@DeleteOperation
 	public void clearCaches(@Nullable String cacheManager, @Nullable String cacheName) {
 		if (cacheManager == null) {
 			this.context.getBeansOfType(CacheManager.class)
-					.forEach((name, manager) -> this.clearCaches(manager, cacheName));
-		}
-		else {
-			this.clearCaches(this.context.getBean(cacheManager, CacheManager.class),
-					cacheName);
+						.forEach((name, manager) -> this.clearCaches(manager, cacheName));
+		} else {
+			this.clearCaches(this.context.getBean(cacheManager, CacheManager.class), cacheName);
 		}
 	}
 
 	private void clearCaches(CacheManager cacheManager, String cacheName) {
 		if (cacheName == null) {
 			cacheManager.getCacheNames().forEach(cn -> cacheManager.getCache(cn).clear());
-		}
-		else {
+		} else {
 			Cache cache = cacheManager.getCache(cacheName);
 			if (cache != null) {
 				cache.clear();
@@ -78,36 +80,40 @@ public class CachesEndpoint {
 	}
 
 	/**
-	 * Description of an application context's {@link CacheManager} beans, primarily
+	 * Description of an application context's caches, primarily
 	 * intended for serialization to JSON.
 	 */
-	public static final class ContextCacheManagerBeans {
+	public static final class CachesDescriptor {
+		private final List<CacheDescriptor> caches;
 
-		private final Map<String, CacheManagerDescriptor> cacheManagers;
-
-		private ContextCacheManagerBeans(
-				Map<String, CacheManagerDescriptor> cacheManagers) {
-			this.cacheManagers = cacheManagers;
+		private CachesDescriptor(List<CacheDescriptor> caches) {
+			this.caches = caches;
 		}
 
-		public Map<String, CacheManagerDescriptor> getCacheManagers() {
-			return this.cacheManagers;
+		public List<CacheDescriptor> getCaches() {
+			return this.caches;
 		}
 	}
 
 	/**
-	 * Description of a {@link CacheManager} bean, primarily intended for serialization to
+	 * Description of a {@link Cache}, primarily intended for serialization to
 	 * JSON.
 	 */
-	public static final class CacheManagerDescriptor {
-		private final List<String> cacheNames;
+	public static final class CacheDescriptor {
+		private final String name;
+		private final String cacheManager;
 
-		private CacheManagerDescriptor(Collection<String> cacheNames) {
-			this.cacheNames = new ArrayList<>(cacheNames);
+		public CacheDescriptor(String name, String cacheManager) {
+			this.name = name;
+			this.cacheManager = cacheManager;
 		}
 
-		public List<String> getCacheNames() {
-			return this.cacheNames;
+		public String getName() {
+			return name;
+		}
+
+		public String getCacheManager() {
+			return cacheManager;
 		}
 	}
 }
