@@ -28,12 +28,9 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.CouchbaseConfiguration;
-import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -203,7 +200,6 @@ public class CouchbaseAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import(CouchbaseDataAutoConfiguration.class)
 	static class CustomCouchbaseConfiguration extends CouchbaseConfiguration {
 
 		CustomCouchbaseConfiguration(CouchbaseProperties properties) {
