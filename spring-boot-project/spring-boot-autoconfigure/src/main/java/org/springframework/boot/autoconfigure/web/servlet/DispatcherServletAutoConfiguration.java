@@ -88,8 +88,11 @@ public class DispatcherServletAutoConfiguration {
 
 		private final WebMvcProperties webMvcProperties;
 
-		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties) {
+		private final ServerProperties serverProperties;
+
+		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties, ServerProperties serverProperties) {
 			this.webMvcProperties = webMvcProperties;
+			this.serverProperties = serverProperties;
 		}
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
@@ -110,6 +113,11 @@ public class DispatcherServletAutoConfiguration {
 		public MultipartResolver multipartResolver(MultipartResolver resolver) {
 			// Detect if the user has created a MultipartResolver but named it incorrectly
 			return resolver;
+		}
+
+		@Bean
+		public DispatcherServletPathProvider mainDispatcherServletPathProvider() {
+			return () -> DispatcherServletConfiguration.this.serverProperties.getServlet().getPath();
 		}
 
 	}
