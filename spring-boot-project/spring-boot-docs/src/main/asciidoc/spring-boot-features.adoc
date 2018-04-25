@@ -7773,6 +7773,11 @@ class KotlinExampleProperties {
 }
 ----
 
+TIP: To generate
+<<appendix-configuration-metadata#configuration-metadata-annotation-processor,your own
+metadata>> using the annotation processor, {kotlin-documentation}kapt.html[`kapt` should
+be configured] with the `spring-boot-configuration-processor` dependency.
+
 
 [[boot-features-kotlin-testing]]
 === Testing
