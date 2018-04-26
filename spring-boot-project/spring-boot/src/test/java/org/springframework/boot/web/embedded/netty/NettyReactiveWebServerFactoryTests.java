@@ -25,11 +25,10 @@ import reactor.ipc.netty.http.server.HttpServerOptions;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
-import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -48,15 +47,13 @@ public class NettyReactiveWebServerFactoryTests
 	}
 
 	@Test
-	public void portInUseExceptionIsThrownWhenPortIsAlreadyInUse() {
+	public void exceptionIsThrownWhenPortIsAlreadyInUse() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setPort(0);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
-		this.thrown.expect(PortInUseException.class);
-		this.thrown.expectMessage(
-				equalTo("Port " + this.webServer.getPort() + " is already in use"));
+		this.thrown.expect(WebServerException.class);
 		factory.getWebServer(new EchoHandler()).start();
 	}
 
