@@ -710,7 +710,7 @@ The preceding example would be transformed into these properties:
 	my.servers[1]=another.example.com
 ----
 
-To bind to properties like that by using the Spring `DataBinder` utilities (which is what
+To bind to properties like that by using Spring Boot's `Binder` utilities (which is what
 `@ConfigurationProperties` does), you need to have a property in the target bean of type
 `java.util.List` (or `Set`) and you either need to provide a setter or initialize it with
 a mutable value. For example, the following example binds to the properties shown
@@ -728,15 +728,6 @@ previously:
 		}
 	}
 ----
-
-[NOTE]
-====
-When lists are configured in more than one place, overriding works by replacing the entire
-list. In the preceding example, when `my.servers` is defined in several places, the
-entire list from the `PropertySource` with higher precedence overrides any other
-configuration for that list. Both comma-separated lists and YAML lists can be used for
-completely overriding the contents of the list.
-====
 
 
 
@@ -816,76 +807,6 @@ negated profiles may match.
 ==== YAML Shortcomings
 YAML files cannot be loaded by using the `@PropertySource` annotation. So, in the case
 that you need to load values that way, you need to use a properties file.
-
-
-
-[[boot-features-external-config-complex-type-merge]]
-==== Merging YAML Lists
-As <<boot-features-external-config-loading-yaml,we showed earlier>>, any YAML content is
-ultimately transformed to properties. That process may be counter-intuitive when
-overriding "`list`" properties through a profile.
-
-For example, assume a `MyPojo` object with `name` and `description` attributes that are
-`null` by default. The following example exposes a list of `MyPojo` objects from
-`AcmeProperties`:
-
-[source,java,indent=0]
-----
-	@ConfigurationProperties("acme")
-	public class AcmeProperties {
-
-		private final List<MyPojo> list = new ArrayList<>();
-
-		public List<MyPojo> getList() {
-			return this.list;
-		}
-
-	}
-----
-
-Consider the following configuration:
-
-[source,yaml,indent=0]
-----
-	acme:
-	  list:
-	    - name: my name
-	      description: my description
-	---
-	spring:
-	  profiles: dev
-	acme:
-	  list:
-        - name: my another name
-----
-
-If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry,
-as previously defined. If the `dev` profile is enabled, however, the `list` _still_
-contains only one entry (with a name of `my another name` and a description of `null`).
-This configuration _does not_ add a second `MyPojo` instance to the list, and it does not
-merge the items.
-
-When a collection is specified in multiple profiles, the one with the highest priority
-(and only that one) is used. Consider the following example:
-
-[source,yaml,indent=0]
-----
-	acme:
-	  list:
-		- name: my name
-		  description: my description
-		- name: another name
-		  description: another description
-	---
-	spring:
-	  profiles: dev
-	acme:
-	  list:
-		 - name: my another name
-----
-
-In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains
-_one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
 
 
 
@@ -1181,6 +1102,122 @@ property name
 TIP: We recommend that, when possible, properties are stored in lower-case kebab format,
 such as `my.property-name=acme`.
 
+[[boot-features-external-config-complex-type-merge]]
+==== Merging Complex Types
+When lists are configured in more than one place, overriding works by replacing the entire
+list.
+
+For example, assume a `MyPojo` object with `name` and `description` attributes that are
+`null` by default. The following example exposes a list of `MyPojo` objects from
+`AcmeProperties`:
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
+
+		private final List<MyPojo> list = new ArrayList<>();
+
+		public List<MyPojo> getList() {
+			return this.list;
+		}
+
+	}
+----
+
+Consider the following configuration:
+
+[source,yaml,indent=0]
+----
+	acme:
+	  list:
+	    - name: my name
+	      description: my description
+	---
+	spring:
+	  profiles: dev
+	acme:
+	  list:
+	    - name: my another name
+----
+
+If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry,
+as previously defined. If the `dev` profile is enabled, however, the `list` _still_
+contains only one entry (with a name of `my another name` and a description of `null`).
+This configuration _does not_ add a second `MyPojo` instance to the list, and it does not
+merge the items.
+
+When a `List` is specified in multiple profiles, the one with the highest priority
+(and only that one) is used. Consider the following example:
+
+[source,yaml,indent=0]
+----
+	acme:
+	  list:
+	    - name: my name
+	      description: my description
+	    - name: another name
+	      description: another description
+	---
+	spring:
+	  profiles: dev
+	acme:
+	  list:
+	    - name: my another name
+----
+
+In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains
+_one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
+For YAML, both comma-separated lists and YAML lists can be used for
+completely overriding the contents of the list.
+
+For `Map` properties, you can bind with property values drawn from multiple sources. However,
+for the same property in multiple sources, the one with the highest priority is used.
+The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
+
+		private final Map<String, MyPojo> map = new HashMap<>();
+
+		public Map<String, MyPojo> getMap() {
+			return this.map;
+		}
+
+	}
+----
+
+Consider the following configuration:
+
+[source,yaml,indent=0]
+----
+	acme:
+	  map:
+	    key1:
+	      name: my name 1
+	      description: my description 1
+	---
+	spring:
+	  profiles: dev
+	acme:
+	  map:
+	    key1:
+	      name: my name 1
+	    key2:
+	      name: dev name 2
+	      description: dev description 2
+----
+
+If the `dev` profile is not active, `AcmeProperties.map` contains one entry with key `key1`
+(with a name of `my name 1` and a description of `my description 1`).
+If the `dev` profile is enabled, however, `map` contains two entries with keys `key1`
+(with a name of `dev name 1` and a description of `my description 1`) and
+`key2` (with a name of `dev name 2` and a description of `dev description 2`).
+
+NOTE: The preceeding merging rules apply to properties from all property sources and not just
+YAML files.
 
 [[boot-features-external-config-conversion]]
 ==== Properties Conversion
