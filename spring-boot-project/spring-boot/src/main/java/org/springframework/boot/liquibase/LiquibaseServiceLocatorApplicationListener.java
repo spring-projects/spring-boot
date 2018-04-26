@@ -57,7 +57,7 @@ public class LiquibaseServiceLocatorApplicationListener
 			customResolverServiceLocator.addPackageToScan(
 					CommonsLoggingLiquibaseLogger.class.getPackage().getName());
 			ServiceLocator.setInstance(customResolverServiceLocator);
-			liquibase.logging.LogFactory.reset();
+			liquibase.logging.LogService.setLoggerFactory(new CommonsLoggingLoggerFactory());
 		}
 
 	}
