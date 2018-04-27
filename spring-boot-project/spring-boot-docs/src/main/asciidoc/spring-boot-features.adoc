@@ -4,6 +4,8 @@
 [[boot-features]]
 = Spring Boot Features
 
+include::attributes.adoc[]
+
 [partintro]
 --
 This section dives into the details of Spring Boot. Here you can learn about the key

@@ -1,6 +1,8 @@
 [[cli]]
 = Spring Boot CLI
 
+include::attributes.adoc[]
+
 [partintro]
 --
 The Spring Boot CLI is a command line tool that you can use if you want to quickly develop

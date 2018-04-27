@@ -1038,6 +1038,20 @@
 						<artifactId>maven-dependency-plugin</artifactId>
 						<executions>
 							<execution>
+								<id>unpack-shared-resources</id>
+								<goals>
+									<goal>unpack-dependencies</goal>
+								</goals>
+								<phase>initialize</phase>
+								<configuration>
+								<includeGroupIds>org.springframework.doc-resources</includeGroupIds>
+									<includeArtifactIds>spring-doc-resources</includeArtifactIds>
+									<includeTypes>zip</includeTypes>
+									<excludeTransitive>true</excludeTransitive>
+									<outputDirectory>${shared.resources}</outputDirectory>
+								</configuration>
+							</execution>
+							<execution>
 								<id>copy-starters-pom</id>
 								<phase>generate-resources</phase>
 								<goals>
@@ -1253,26 +1267,6 @@
 						</dependencies>
 					</plugin>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>unpack-shared-resources</id>
-								<goals>
-									<goal>unpack-dependencies</goal>
-								</goals>
-								<phase>initialize</phase>
-							</execution>
-						</executions>
-						<configuration>
-							<includeGroupIds>org.springframework.doc-resources</includeGroupIds>
-							<includeArtifactIds>spring-doc-resources</includeArtifactIds>
-							<includeTypes>zip</includeTypes>
-							<excludeTransitive>true</excludeTransitive>
-							<outputDirectory>${shared.resources}</outputDirectory>
-						</configuration>
-					</plugin>
-					<plugin>
 							<groupId>org.asciidoctor</groupId>
 							<artifactId>asciidoctor-maven-plugin</artifactId>
 							<version>${asciidoctor.maven.plugin.version}</version>
@@ -1301,7 +1295,7 @@
 									</dependency>
 							</dependencies>
 							<configuration>
-								<sourceDirectory>${project.build.directory}/doc-working/</sourceDirectory>
+								<sourceDirectory>${project.build.directory}/working-docs</sourceDirectory>
 							</configuration>
 							<executions>
 									<execution>
@@ -1314,6 +1308,15 @@
 												<backend>html5</backend>
 												<sourceHighlighter>coderay</sourceHighlighter>
 												<attributes>
+													<docinfo>true</docinfo>
+													<spring-boot-docs-version>${revision}</spring-boot-docs-version>
+													<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+													<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
+													<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
+													<github-tag>${github-tag}</github-tag>
+													<spring-version>${spring.version}</spring-version>
+													<spring-docs-version>${spring.version}</spring-docs-version>
+													<spring-boot-version>${revision}</spring-boot-version>
 													<linkcss>true</linkcss>
 													<imagesdir>./images</imagesdir>
 													<toc>left</toc>
@@ -1338,6 +1341,15 @@
 											<backend>pdf</backend>
 											<sourceHighlighter>coderay</sourceHighlighter>
 											<attributes>
+												<docinfo>true</docinfo>
+												<spring-boot-docs-version>${revision}</spring-boot-docs-version>
+												<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+												<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
+												<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
+												<github-tag>${github-tag}</github-tag>
+												<spring-version>${spring.version}</spring-version>
+												<spring-docs-version>${spring.version}</spring-docs-version>
+												<spring-boot-version>${revision}</spring-boot-version>
 												<icons>font</icons>
 												<pagenums/>
 												<toc/>
@@ -1356,6 +1368,22 @@
 											<backend>epub3</backend>
 											<sourceHighlighter>coderay</sourceHighlighter>
 											<sourceDocumentName>index.adoc</sourceDocumentName>
+											<attributes>
+												<docinfo>true</docinfo>
+												<spring-boot-docs-version>${revision}</spring-boot-docs-version>
+												<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+												<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
+												<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
+												<github-tag>${github-tag}</github-tag>
+												<spring-version>${spring.version}</spring-version>
+												<spring-docs-version>${spring.version}</spring-docs-version>
+												<spring-boot-version>${revision}</spring-boot-version>
+												<icons>font</icons>
+												<pagenums/>
+												<idprefix/>
+												<idseparator>-</idseparator>
+												<epub/>
+											</attributes>
 										</configuration>
 									</execution>
 							</executions>
@@ -1392,20 +1420,20 @@
 								<phase>process-sources</phase>
 								<configuration>
 									<tasks>
-										<copy file="${shared.resources}/html/docinfo.html" tofile="${project.build.directory}/doc-working/docinfo.html" />
-										<copy file="${shared.resources}/html/docinfo-footer.html" tofile="${project.build.directory}/doc-working/docinfo-footer.html" />
-										<copy file="${shared.resources}/stylesheets/spring.css" tofile="${project.build.directory}/doc-working/stylesheets/spring.css" />
-										<copy todir="${project.build.directory}/doc-working/tocbot-3.0.2">
+										<copy file="${shared.resources}/html/docinfo.html" tofile="${project.build.directory}/working-docs/docinfo.html" />
+										<copy file="${shared.resources}/html/docinfo-footer.html" tofile="${project.build.directory}/working-docs/docinfo-footer.html" />
+										<copy file="${shared.resources}/stylesheets/spring.css" tofile="${project.build.directory}/working-docs/stylesheets/spring.css" />
+										<copy todir="${project.build.directory}/working-docs/tocbot-3.0.2">
 											<fileset dir="${shared.resources}/javascript/tocbot-3.0.2" includes="*.*" >
 												<include name="*.*" />
 											</fileset>
 										</copy>
-										<copy todir="${project.build.directory}/doc-working/images">
+										<copy todir="${project.build.directory}/working-docs/images" failonerror="false">
 											<fileset dir="src/main/asciidoc/images" includes="*.*" >
 												<include name="*.*" />
 											</fileset>
 										</copy>
-										<copy todir="${project.build.directory}/doc-working">
+										<copy todir="${project.build.directory}/working-docs">
 											<fileset dir="src/main/asciidoc" includes="*.adoc" >
 												<include name="*.adoc" />
 											</fileset>

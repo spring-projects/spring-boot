@@ -1,6 +1,8 @@
 [[using-boot]]
 = Using Spring Boot
 
+include::attributes.adoc[]
+
 [partintro]
 --
 This section goes into more detail about how you should use Spring Boot. It covers topics

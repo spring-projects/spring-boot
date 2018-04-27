@@ -1,31 +1,3 @@
-= Spring Boot Reference Guide
-Phillip Webb, Dave Syer, Josh Long, Stéphane Nicoll, Rob Winch, Andy Wilkinson, Marcel Overdijk, Christian Dupuis, Sébastien Deleuze, Michael Simons, Vedran Pavić, Jay Bryant, Madhura Bhave
-:docinfo: shared
-:imagesdir: images
-ifdef::epub[:front-cover-image: image:epub-cover.png[Front Cover,1050,1600]]
-
-{spring-boot-version}
-
-Copyright &#169; 2012-2018
-
-Copies of this document may be made for your own use and for distribution to
-others, provided that you do not charge any fee for such copies and further
-provided that each copy contains this Copyright Notice, whether distributed in
-print or electronically.
-
-// Do NOT put a blank line in the preceding lines. The cover page won't render if you do.
-
-:doctype: book
-:idprefix:
-:idseparator: -
-:stylesdir: stylesheets
-:stylesheet: spring.css
-:toc: left
-:toclevels: 4
-:source-highlighter: prettify
-:numbered:
-:icons: font
-:hide-uri-scheme:
 :spring-boot-repo: snapshot
 :github-tag: master
 :spring-boot-docs-version: current
@@ -61,7 +33,6 @@ print or electronically.
 :spring-boot-gradle-plugin: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin
 :spring-boot-gradle-plugin-reference: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin/reference/html
 :spring-reference: https://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/
-:spring-initializr-reference: https://docs.spring.io/initializr/docs/current/reference/htmlsingle
 :spring-rest-docs: https://projects.spring.io/spring-restdocs/
 :spring-integration: https://projects.spring.io/spring-integration/
 :spring-session: https://projects.spring.io/spring-session/
@@ -85,27 +56,10 @@ print or electronically.
 :code-examples: ../java/org/springframework/boot/docs
 :test-examples: ../../test/java/org/springframework/boot/docs
 :gradle-user-guide: https://docs.gradle.org/4.2.1/userguide
-:hibernate-documentation: https://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html
+:hibernate-documentation: https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html
 :jetty-documentation: https://www.eclipse.org/jetty/documentation/9.4.x
-:jooq-manual: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :micrometer-concepts-documentation: https://micrometer.io/docs/concepts
 :micrometer-registry-documentation: http://micrometer.io/docs/registry
 :tomcat-documentation: https://tomcat.apache.org/tomcat-8.5-doc
 :kotlin-documentation: https://kotlinlang.org/docs/reference/
 :junit5-documentation: https://junit.org/junit5/docs/current/user-guide
-
-// ======================================================================================
-
-ifdef::epub[include::preamble.adoc[]]
-include::documentation-overview.adoc[]
-include::getting-started.adoc[]
-include::using-spring-boot.adoc[]
-include::spring-boot-features.adoc[]
-include::production-ready-features.adoc[]
-include::deployment.adoc[]
-include::spring-boot-cli.adoc[]
-include::build-tool-plugins.adoc[]
-include::howto.adoc[]
-include::appendix.adoc[]
-
-// ======================================================================================

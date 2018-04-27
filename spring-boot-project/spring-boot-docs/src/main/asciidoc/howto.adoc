@@ -3,6 +3,8 @@
 [[howto]]
 = "`How-to`" Guides
 
+include::attributes.adoc[]
+
 [partintro]
 --
 This section provides answers to some common '`how do I do that...`' questions

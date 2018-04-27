@@ -1,6 +1,9 @@
 :numbered!:
 [appendix]
 [[common-application-properties]]
+
+include::attributes.adoc[]
+
 == Common application properties
 Various properties can be specified inside your `application.properties` file, inside
 your `application.yml` file, or as command line switches. This appendix provides a list

@@ -1,6 +1,8 @@
 [[boot-documentation]]
 = Spring Boot Documentation
 
+include::attributes.adoc[]
+
 [partintro]
 --
 This section provides a brief overview of Spring Boot reference documentation. It serves
@@ -152,4 +154,3 @@ Properties>> |
 <<appendix-auto-configuration-classes.adoc#auto-configuration-classes, Auto-configuration
 classes>> |
 <<appendix-executable-jar-format.adoc#executable-jar, Executable Jars>>
-

@@ -3,6 +3,7 @@
 The reference documentation consists of the following sections:
 
 [horizontal]
+link:preamble.html[Legal] :: Legal information.
 link:documentation-overview.html[Documentation Overview] :: About the Documentation, Getting Help, First Steps, and more.
 link:getting-started.html[Getting Started] :: Introducing Spring Boot, System Requirements, Servlet Containers, Installing Spring Boot, Developing Your First Spring Boot Application
 link:using-spring-boot.html[Using Spring Boot] :: Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, and more.

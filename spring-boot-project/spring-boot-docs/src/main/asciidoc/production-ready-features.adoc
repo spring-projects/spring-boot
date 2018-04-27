@@ -3,6 +3,8 @@
 [[production-ready]]
 = Spring Boot Actuator: Production-ready Features
 
+include::attributes.adoc[]
+
 [partintro]
 --
 Spring Boot includes a number of additional features to help you monitor and manage your

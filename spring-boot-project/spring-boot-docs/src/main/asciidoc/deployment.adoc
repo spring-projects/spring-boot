@@ -1,6 +1,8 @@
 [[deployment]]
 = Deploying Spring Boot Applications
 
+include::attributes.adoc[]
+
 [partintro]
 --
 Spring Boot's flexible packaging options provide a great deal of choice when it comes to

@@ -1,6 +1,8 @@
 [[build-tool-plugins]]
 = Build Tool Plugins
 
+include::attributes.adoc[]
+
 [partintro]
 --
 Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a variety
