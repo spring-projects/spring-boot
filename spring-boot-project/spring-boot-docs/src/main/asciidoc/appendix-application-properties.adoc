@@ -1188,12 +1188,12 @@ content into your application. Rather, pick only the properties that you need.
 	# CONFIGURATION PROPERTIES REPORT ENDPOINT ({sc-spring-boot-actuator}/context/properties/ConfigurationPropertiesReportEndpoint.{sc-ext}[ConfigurationPropertiesReportEndpoint], {sc-spring-boot-actuator-autoconfigure}/context/properties/ConfigurationPropertiesReportEndpointProperties.{sc-ext}[ConfigurationPropertiesReportEndpointProperties])
 	management.endpoint.configprops.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.configprops.enabled=true # Whether to enable the configprops endpoint.
-	management.endpoint.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
+	management.endpoint.configprops.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services,sun.java.command # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
 	# ENVIRONMENT ENDPOINT ({sc-spring-boot-actuator}/env/EnvironmentEndpoint.{sc-ext}[EnvironmentEndpoint], {sc-spring-boot-actuator-autoconfigure}/env/EnvironmentEndpointProperties.{sc-ext}[EnvironmentEndpointProperties])
 	management.endpoint.env.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.env.enabled=true # Whether to enable the env endpoint.
-	management.endpoint.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
+	management.endpoint.env.keys-to-sanitize=password,secret,key,token,.*credentials.*,vcap_services,sun.java.command # Keys that should be sanitized. Keys can be simple strings that the property ends with or regular expressions.
 
 	# FLYWAY ENDPOINT ({sc-spring-boot-actuator}/flyway/FlywayEndpoint.{sc-ext}[FlywayEndpoint])
 	management.endpoint.flyway.cache.time-to-live=0ms # Maximum time that a response can be cached.
