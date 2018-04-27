@@ -1220,7 +1220,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# INTEGRATION GRAPH ENDPOINT ({sc-spring-boot-actuator}/integration/IntegrationGraphEndpoint.{sc-ext}[IntegrationGraphEndpoint])
 	management.endpoint.integrationgraph.cache.time-to-live=0ms # Maximum time that a response can be cached.
-    management.endpoint.integrationgraph.enabled=true # Whether to enable the integrationgraph endpoint.
+	management.endpoint.integrationgraph.enabled=true # Whether to enable the integrationgraph endpoint.
 
 	# JOLOKIA ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/jolokia/JolokiaProperties.{sc-ext}[JolokiaProperties])
 	management.endpoint.jolokia.config.*= # Jolokia settings. Refer to the documentation of Jolokia for more details.
