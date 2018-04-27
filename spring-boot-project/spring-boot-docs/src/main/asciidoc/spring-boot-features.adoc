@@ -1216,7 +1216,7 @@ If the `dev` profile is enabled, however, `map` contains two entries with keys `
 (with a name of `dev name 1` and a description of `my description 1`) and
 `key2` (with a name of `dev name 2` and a description of `dev description 2`).
 
-NOTE: The preceeding merging rules apply to properties from all property sources and not just
+NOTE: The preceding merging rules apply to properties from all property sources and not just
 YAML files.
 
 [[boot-features-external-config-conversion]]

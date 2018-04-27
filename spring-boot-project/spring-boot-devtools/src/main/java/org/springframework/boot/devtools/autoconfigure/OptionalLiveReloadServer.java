@@ -66,7 +66,7 @@ public class OptionalLiveReloadServer implements InitializingBean {
 	}
 
 	/**
-	 * Trigger LiveReload if the server is up an running.
+	 * Trigger LiveReload if the server is up and running.
 	 */
 	public void triggerReload() {
 		if (this.server != null) {

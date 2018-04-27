@@ -32,7 +32,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Configure the HTTP compression on an Reactor Netty request/response handler.
+ * Configure the HTTP compression on a Reactor Netty request/response handler.
  *
  * @author Stephane Maldini
  * @author Phillip Webb
