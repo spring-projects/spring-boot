@@ -74,7 +74,7 @@ public class RestTemplateMetricsAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	public MeterFilter metricsWebClientUriTagFilter(MetricsProperties properties) {
+	public MeterFilter metricsHttpClientUriTagFilter(MetricsProperties properties) {
 		String metricName = properties.getWeb().getClient().getRequestsMetricName();
 		MeterFilter denyFilter = new MaximumUriTagsReachedMeterFilter(metricName);
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
@@ -109,7 +109,7 @@ public class RestTemplateMetricsAutoConfiguration {
 			if (this.logger.isWarnEnabled()) {
 				this.logger.warn(
 						"Reached the maximum number of URI tags for '" + this.metricName
-								+ "'. Are you using uriVariables on RestTemplate calls?");
+								+ "'. Are you using uriVariables on HTTP client calls?");
 			}
 		}
 

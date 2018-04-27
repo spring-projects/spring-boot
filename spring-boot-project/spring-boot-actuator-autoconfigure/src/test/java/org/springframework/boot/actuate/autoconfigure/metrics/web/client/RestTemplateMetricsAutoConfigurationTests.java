@@ -75,7 +75,9 @@ public class RestTemplateMetricsAutoConfigurationTests {
 
 	@Test
 	public void afterMaxUrisReachedFurtherUrisAreDenied() {
-		this.contextRunner.run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.metrics.web.client.max-uri-tags=10")
+				.run((context) -> {
 			MetricsProperties properties = context.getBean(MetricsProperties.class);
 			int maxUriTags = properties.getWeb().getClient().getMaxUriTags();
 			MeterRegistry registry = context.getBean(MeterRegistry.class);

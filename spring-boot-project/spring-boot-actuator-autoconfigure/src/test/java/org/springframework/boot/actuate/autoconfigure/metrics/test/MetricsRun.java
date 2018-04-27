@@ -39,6 +39,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.Stat
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebClientMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -78,6 +79,7 @@ public final class MetricsRun {
 			DataSourcePoolMetricsAutoConfiguration.class,
 			HibernateMetricsAutoConfiguration.class,
 			RestTemplateMetricsAutoConfiguration.class,
+			WebClientMetricsAutoConfiguration.class,
 			WebFluxMetricsAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class);
 
 	private MetricsRun() {
