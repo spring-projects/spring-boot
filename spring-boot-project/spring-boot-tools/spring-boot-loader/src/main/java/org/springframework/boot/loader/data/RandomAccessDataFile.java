@@ -104,7 +104,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	private int read(byte[] bytes, long position, int offset, int length)
 			throws IOException {
-		if (position > this.length) {
+		if (position >= this.length) {
 			return -1;
 		}
 		return this.fileAccess.read(bytes, this.offset + position, offset, length);
