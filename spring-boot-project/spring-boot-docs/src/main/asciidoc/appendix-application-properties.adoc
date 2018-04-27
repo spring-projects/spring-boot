@@ -445,6 +445,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SPRING SESSION ({sc-spring-boot-autoconfigure}/session/SessionProperties.{sc-ext}[SessionProperties])
 	spring.session.store-type= # Session store type.
+	spring.session.timeout= # Session timeout. If a duration suffix is not specified, seconds will be used.
 	spring.session.servlet.filter-order=-2147483598 # Session repository filter order.
 	spring.session.servlet.filter-dispatcher-types=async,error,request # Session repository filter dispatcher types.
 
