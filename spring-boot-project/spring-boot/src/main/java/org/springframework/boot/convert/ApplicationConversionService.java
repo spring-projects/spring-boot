@@ -72,11 +72,11 @@ public class ApplicationConversionService extends FormattingConversionService {
 	}
 
 	/**
-	 * Configure the given {@link FormatterRegistry} with formatters and converts
+	 * Configure the given {@link FormatterRegistry} with formatters and converters
 	 * appropriate for most Spring Boot applications.
 	 * @param registry the registry of converters to add to (must also be castable to
 	 * ConversionService, e.g. being a {@link ConfigurableConversionService})
-	 * @throws ClassCastException if the given ConverterRegistry could not be cast to a
+	 * @throws ClassCastException if the given FormatterRegistry could not be cast to a
 	 * ConversionService
 	 */
 	public static void configure(FormatterRegistry registry) {
@@ -88,7 +88,6 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	/**
 	 * Add converters useful for most Spring Boot applications.
-	 * {@link DefaultConversionService#addDefaultConverters(ConverterRegistry)}
 	 * @param registry the registry of converters to add to (must also be castable to
 	 * ConversionService, e.g. being a {@link ConfigurableConversionService})
 	 * @throws ClassCastException if the given ConverterRegistry could not be cast to a
