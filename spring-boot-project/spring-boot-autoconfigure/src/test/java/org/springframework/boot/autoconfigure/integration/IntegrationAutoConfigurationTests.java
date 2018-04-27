@@ -24,7 +24,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanAutoConfiguration;
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -70,18 +70,18 @@ public class IntegrationAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(TestGateway.class);
 			assertThat(context)
-					.hasSingleBean(IntegrationComponentScanAutoConfiguration.class);
+					.hasSingleBean(IntegrationComponentScanConfiguration.class);
 		});
 	}
 
 	@Test
 	public void explicitIntegrationComponentScan() {
 		this.contextRunner
-				.withUserConfiguration(IntegrationComponentScanConfiguration.class)
+				.withUserConfiguration(CustomIntegrationComponentScanConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TestGateway.class);
 					assertThat(context).doesNotHaveBean(
-							IntegrationComponentScanAutoConfiguration.class);
+							IntegrationComponentScanConfiguration.class);
 				});
 	}
 
@@ -223,7 +223,7 @@ public class IntegrationAutoConfigurationTests {
 
 	@Configuration
 	@IntegrationComponentScan
-	static class IntegrationComponentScanConfiguration {
+	static class CustomIntegrationComponentScanConfiguration {
 
 	}
 
