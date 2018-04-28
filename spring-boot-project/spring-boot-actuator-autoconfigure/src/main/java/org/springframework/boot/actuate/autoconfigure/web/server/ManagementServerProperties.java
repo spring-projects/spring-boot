@@ -56,11 +56,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	private Ssl ssl;
 
 	/**
-	 * Add the "X-Application-Context" HTTP header in each response.
-	 */
-	private boolean addApplicationContextHeader = false;
-
-	/**
 	 * Returns the management port or {@code null} if the
 	 * {@link ServerProperties#getPort() server port} should be used.
 	 * @return the port
@@ -97,14 +92,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 
 	public Servlet getServlet() {
 		return this.servlet;
-	}
-
-	public boolean getAddApplicationContextHeader() {
-		return this.addApplicationContextHeader;
-	}
-
-	public void setAddApplicationContextHeader(boolean addApplicationContextHeader) {
-		this.addApplicationContextHeader = addApplicationContextHeader;
 	}
 
 	/**

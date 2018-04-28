@@ -202,12 +202,30 @@ can also watch files, automatically recompiling and restarting when they change.
 
 
 === spring-boot-actuator
-Spring Boot Actuator provides additional auto-configuration to decorate your application
-with features that make it instantly deployable and supportable in production. For
-instance, if you are writing a JSON web service then it will provide a server, security,
-logging, externalized configuration, management endpoints, an audit abstraction, and
-more. If you want to switch off the built-in features, or extend or replace them, it
-makes that really easy as well.
+Actuator endpoints let you monitor and interact with your application.
+Spring Boot Actuator provides the infrastructure required for actuator endpoints. It contains
+annotation support for actuator endpoints. Out of the box, this module provides a number of endpoints
+including the `HealthEndpoint`, `EnvironmentEndpoint`, `BeansEndpoints` and many more.
+
+
+
+=== spring-boot-actuator-autoconfigure
+This provides auto-configuration for actuator endpoints based on the content of the classpath and a set of properties.
+For instance, if Micrometer is on the classpath, it will auto-configure the `MetricsEndpoint`.
+It contains configuration to expose endpoints over HTTP or JMX.
+Just like Spring Boot AutoConfigure, this will back away as the user starts to define their own beans.
+
+
+
+=== spring-boot-test
+This module contains core items and annotations that can be helpful when testing your application.
+
+
+
+=== spring-boot-test-autoconfigure
+Like other Spring Boot Auto-Configuration modules, spring-boot-test-autoconfigure, provides auto-configuration
+for tests based on the classpath. It includes a number of annotations that can be used to automatically
+configure a slice of your application that needs to be tested.
 
 
 
@@ -217,6 +235,13 @@ that can be launched using `java -jar`. Generally you will not need to use
 `spring-boot-loader` directly, but instead work with the
 link:spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin[Gradle] or
 link:spring-boot-project/spring-boot-tools/spring-boot-maven-plugin[Maven] plugin.
+
+
+
+=== spring-boot-devtools
+The spring-boot-devtools module provides additional development-time features such as automatic retarts,
+for a smoother application development experience. Developer tools are automatically disabled when
+running a fully packaged application.
 
 
 

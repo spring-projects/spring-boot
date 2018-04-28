@@ -113,6 +113,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 				new SslStoreProviderUrlStreamHandlerFactory(sslStoreProvider));
 		try {
 			if (sslStoreProvider.getKeyStore() != null) {
+				protocol.setKeystorePass("");
 				protocol.setKeystoreFile(SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
 			}
 			if (sslStoreProvider.getTrustStore() != null) {
