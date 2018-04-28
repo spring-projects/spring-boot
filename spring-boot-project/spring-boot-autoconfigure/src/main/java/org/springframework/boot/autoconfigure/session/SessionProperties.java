@@ -65,8 +65,7 @@ public class SessionProperties {
 	@PostConstruct
 	public void checkSessionTimeout() {
 		if (this.timeout == null && this.serverProperties != null) {
-			Session session = this.serverProperties.getServlet().getSession();
-			this.timeout = (session == null ? null : session.getTimeout());
+			this.timeout = this.serverProperties.getServlet().getSession().getTimeout();
 		}
 	}
 
@@ -87,16 +86,16 @@ public class SessionProperties {
 		return this.timeout;
 	}
 
+	public void setTimeout(Duration timeout) {
+		this.timeout = timeout;
+	}
+
 	public Servlet getServlet() {
 		return this.servlet;
 	}
 
 	public void setServlet(Servlet servlet) {
 		this.servlet = servlet;
-	}
-
-	public void setTimeout(Duration timeout) {
-		this.timeout = timeout;
 	}
 
 	/**
