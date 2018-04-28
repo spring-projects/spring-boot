@@ -547,7 +547,7 @@ TIP: Notice how using constructor injection lets the `riskAssessor` field be mar
 == Using the @SpringBootApplication Annotation
 Many Spring Boot developers like their apps to use auto-configuration, component scan and
 be able to define extra configuration on their "application class". A single
-`@SpringBootApplication` annotation can be used to enable those tree features, that is:
+`@SpringBootApplication` annotation can be used to enable those three features, that is:
 
 * `@EnableAutoConfiguration`: enable <<using-boot-auto-configuration,Spring Boot's
 auto-configuration mechanism>>
