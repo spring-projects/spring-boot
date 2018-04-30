@@ -138,7 +138,7 @@ public class WebEndpointAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	static class WebEndpointServletAutoConfiguration {
+	static class WebEndpointServletConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ServletEndpointsSupplier.class)
