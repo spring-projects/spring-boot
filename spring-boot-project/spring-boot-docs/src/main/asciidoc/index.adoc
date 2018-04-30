@@ -87,7 +87,7 @@ ifdef::epub[:front-cover-image: image:epub-cover.png[Front Cover,1050,1600]]
 
 // ======================================================================================
 
-ifdef::epub[include::preamble.adoc[]]
+include::colophon.adoc[]
 include::documentation-overview.adoc[]
 include::getting-started.adoc[]
 include::using-spring-boot.adoc[]
