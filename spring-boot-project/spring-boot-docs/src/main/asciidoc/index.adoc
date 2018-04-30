@@ -4,15 +4,6 @@ Phillip Webb, Dave Syer, Josh Long, Stéphane Nicoll, Rob Winch, Andy Wilkinson,
 :imagesdir: images
 ifdef::epub[:front-cover-image: image:epub-cover.png[Front Cover,1050,1600]]
 
-{spring-boot-version}
-
-Copyright &#169; 2012-2018
-
-Copies of this document may be made for your own use and for distribution to
-others, provided that you do not charge any fee for such copies and further
-provided that each copy contains this Copyright Notice, whether distributed in
-print or electronically.
-
 // Do NOT put a blank line in the preceding lines. The cover page won't render if you do.
 
 :doctype: book
