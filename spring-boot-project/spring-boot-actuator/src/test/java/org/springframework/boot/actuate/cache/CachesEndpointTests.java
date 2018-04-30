@@ -16,102 +16,201 @@
 
 package org.springframework.boot.actuate.cache;
 
-import org.junit.Test;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import org.springframework.boot.actuate.cache.CachesEndpoint.CacheDescriptor;
+import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntry;
 import org.springframework.cache.Cache;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.support.SimpleCacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CachesEndpoint}.
  *
- * @author Johannes Edmeier
+ * @author Stephane Nicoll
  */
 public class CachesEndpointTests {
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(CacheAutoConfiguration.class));
+
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void cacheReportIsReturned() {
-		//@formatter:off
-		this.contextRunner.withUserConfiguration(Config.class)
-				.run(context -> assertThat(context.getBean(CachesEndpoint.class).caches().getCaches())
-						.hasSize(2)
-						.anySatisfy(cache -> {
-									assertThat(cache.getName()).isEqualTo("first");
-									assertThat(cache.getCacheManager()).isEqualTo("cacheManager");
-						}).anySatisfy(cache -> {
-									assertThat(cache.getName()).isEqualTo("second");
-									assertThat(cache.getCacheManager()).isEqualTo("cacheManager");
-						})
-				);
-		//@formatter:on
+	public void allCachesWithSingleCacheManager() {
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
+				"test", new ConcurrentMapCacheManager("a", "b")));
+		Map<String, Map<String, CacheDescriptor>> allDescriptors = endpoint.caches()
+				.getCacheManagers();
+		assertThat(allDescriptors).containsOnlyKeys("test");
+		Map<String, CacheDescriptor> descriptors = allDescriptors.get("test");
+		assertThat(descriptors).containsOnlyKeys("a", "b");
+		assertThat(descriptors.get("a").getTarget()).isEqualTo(
+				ConcurrentHashMap.class.getName());
+		assertThat(descriptors.get("b").getTarget()).isEqualTo(
+				ConcurrentHashMap.class.getName());
 	}
 
 	@Test
-	public void cacheIsCleared() {
-		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
-			Cache firstCache = context.getBean("firstCache", Cache.class);
-			firstCache.put("key", "vale");
-			Cache secondCache = context.getBean("secondCache", Cache.class);
-			secondCache.put("key", "value");
-			context.getBean(CachesEndpoint.class).clearCaches(null, null);
-			assertThat(firstCache.get("key", String.class)).isNull();
-			assertThat(secondCache.get("key", String.class)).isNull();
-		});
+	public void allCachesWithSeveralCacheManagers() {
+		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
+		cacheManagers.put("test", new ConcurrentMapCacheManager("a", "b"));
+		cacheManagers.put("another", new ConcurrentMapCacheManager("a", "c"));
+		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
+		Map<String, Map<String, CacheDescriptor>> allDescriptors = endpoint.caches()
+				.getCacheManagers();
+		assertThat(allDescriptors).containsOnlyKeys("test", "another");
+		assertThat(allDescriptors.get("test")).containsOnlyKeys("a", "b");
+		assertThat(allDescriptors.get("another")).containsOnlyKeys("a", "c");
 	}
 
 	@Test
-	public void namedCacheIsCleared() {
-		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
-			Cache firstCache = context.getBean("firstCache", Cache.class);
-			firstCache.put("key", "value");
-			Cache secondCache = context.getBean("secondCache", Cache.class);
-			secondCache.put("key", "value");
-			context.getBean(CachesEndpoint.class).clearCaches(null, "first");
-			assertThat(firstCache.get("key", String.class)).isNull();
-			assertThat(secondCache.get("key", String.class)).isEqualTo("value");
-		});
+	public void namedCacheWithSingleCacheManager() {
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
+				"test", new ConcurrentMapCacheManager("b", "a")));
+		CacheEntry entry = endpoint.cache("a", null);
+		assertThat(entry).isNotNull();
+		assertThat(entry.getCacheManager()).isEqualTo("test");
+		assertThat(entry.getName()).isEqualTo("a");
+		assertThat(entry.getTarget()).isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@Test
-	public void unknwonCache() {
-		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
-			Cache firstCache = context.getBean("firstCache", Cache.class);
-			firstCache.put("key", "value");
-			Cache secondCache = context.getBean("secondCache", Cache.class);
-			secondCache.put("key", "value");
-			context.getBean(CachesEndpoint.class).clearCaches(null, "UNKNWON");
-			assertThat(firstCache.get("key", String.class)).isEqualTo("value");
-			assertThat(secondCache.get("key", String.class)).isEqualTo("value");
-		});
+	public void namedCacheWithSeveralCacheManagers() {
+		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
+		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "dupe-cache"));
+		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "dupe-cache"));
+		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
+		this.thrown.expect(NonUniqueCacheException.class);
+		this.thrown.expectMessage("dupe-cache");
+		this.thrown.expectMessage("test");
+		this.thrown.expectMessage("another");
+		endpoint.cache("dupe-cache", null);
 	}
 
-	@Configuration
-	@EnableCaching
-	public static class Config {
-		@Bean
-		public Cache firstCache() {
-			return new ConcurrentMapCache("first");
-		}
+	@Test
+	public void namedCacheWithUnknownCache() {
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
+				"test", new ConcurrentMapCacheManager("b", "a")));
+		CacheEntry entry = endpoint.cache("unknown", null);
+		assertThat(entry).isNull();
+	}
 
-		@Bean
-		public Cache secondCache() {
-			return new ConcurrentMapCache("second");
-		}
+	@Test
+	public void namedCacheWithWrongCacheManager() {
+		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
+		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "a"));
+		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "a"));
+		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
+		CacheEntry entry = endpoint.cache("c", "test");
+		assertThat(entry).isNull();
+	}
 
-		@Bean
-		public CachesEndpoint endpoint(ApplicationContext context) {
-			return new CachesEndpoint(context);
-		}
+	@Test
+	public void namedCacheWithSeveralCacheManagersWithCacheManagerFilter() {
+		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
+		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "a"));
+		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "a"));
+		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
+		CacheEntry entry = endpoint.cache("a", "test");
+		assertThat(entry).isNotNull();
+		assertThat(entry.getCacheManager()).isEqualTo("test");
+		assertThat(entry.getName()).isEqualTo("a");
+	}
+
+	@Test
+	public void clearAllCaches() {
+		Cache a = mockCache("a");
+		Cache b = mockCache("b");
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
+				"test", cacheManager(a, b)));
+		endpoint.clearCaches();
+		verify(a).clear();
+		verify(b).clear();
+	}
+
+	@Test
+	public void clearCache() {
+		Cache a = mockCache("a");
+		Cache b = mockCache("b");
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
+				"test", cacheManager(a, b)));
+		assertThat(endpoint.clearCache("a", null)).isTrue();
+		verify(a).clear();
+		verify(b, never()).clear();
+	}
+
+	@Test
+	public void clearCacheWithSeveralCacheManagers() {
+		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
+		cacheManagers.put("test", cacheManager(mockCache("dupe-cache"), mockCache("b")));
+		cacheManagers.put("another", cacheManager(mockCache("dupe-cache")));
+		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
+
+		this.thrown.expectMessage("dupe-cache");
+		this.thrown.expectMessage("test");
+		this.thrown.expectMessage("another");
+		endpoint.clearCache("dupe-cache", null);
+	}
+
+	@Test
+	public void clearCacheWithSeveralCacheManagersWithCacheManagerFilter() {
+		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
+		Cache a = mockCache("a");
+		Cache b = mockCache("b");
+		cacheManagers.put("test", cacheManager(a, b));
+		Cache anotherA = mockCache("a");
+		cacheManagers.put("another", cacheManager(anotherA));
+		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
+		assertThat(endpoint.clearCache("a", "another")).isTrue();
+		verify(a, never()).clear();
+		verify(anotherA).clear();
+		verify(b, never()).clear();
+	}
+
+	@Test
+	public void clearCacheWithUnknownCache() {
+		Cache a = mockCache("a");
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
+				"test", cacheManager(a)));
+		assertThat(endpoint.clearCache("unknown", null)).isFalse();
+		verify(a, never()).clear();
+	}
+
+	@Test
+	public void clearCacheWithUnknownCacheManager() {
+		Cache a = mockCache("a");
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
+				"test", cacheManager(a)));
+		assertThat(endpoint.clearCache("a", "unknown")).isFalse();
+		verify(a, never()).clear();
+	}
+
+	private CacheManager cacheManager(Cache... caches) {
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		cacheManager.setCaches(Arrays.asList(caches));
+		cacheManager.afterPropertiesSet();
+		return cacheManager;
+	}
+
+	private Cache mockCache(String name) {
+		Cache cache = mock(Cache.class);
+		given(cache.getName()).willReturn(name);
+		given(cache.getNativeCache()).willReturn(new Object());
+		return cache;
 	}
 
 }

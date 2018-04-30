@@ -75,6 +75,10 @@ The following technology-agnostic endpoints are available:
 |Displays a complete list of all the Spring beans in your application.
 |Yes
 
+|`caches`
+|Exposes available caches.
+|Yes
+
 |`conditions`
 |Shows the conditions that were evaluated on configuration and auto-configuration
 classes and the reasons why they did or did not match.

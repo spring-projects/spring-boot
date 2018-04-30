@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,103 +17,202 @@
 package org.springframework.boot.actuate.cache;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
 
-import static java.util.stream.Collectors.toList;
-
 /**
- * {@link Endpoint} to expose cache operations.
+ * {@link Endpoint} to expose available {@link Cache caches}.
  *
  * @author Johannes Edmeuer
- * @since 2.0.2
+ * @author Stephane Nicoll
+ * @since 2.1.0
  */
 @Endpoint(id = "caches")
 public class CachesEndpoint {
-	private final ApplicationContext context;
 
-	public CachesEndpoint(ApplicationContext context) {
-		this.context = context;
+	private final Map<String, CacheManager> cacheManagers;
+
+	/**
+	 * Create a new endpoint with the {@link CacheManager} instances to use.
+	 * @param cacheManagers the cache managers to use, indexed by name
+	 */
+	public CachesEndpoint(Map<String, CacheManager> cacheManagers) {
+		this.cacheManagers = new LinkedHashMap<>(cacheManagers);
 	}
 
+	/**
+	 * Return a {@link CachesReport} of all available {@link Cache caches}.
+	 * @return a caches reports
+	 */
 	@ReadOperation
-	public CachesDescriptor caches() {
-		List<CacheDescriptor> caches = new ArrayList<>();
-		this.context.getBeansOfType(CacheManager.class)
-					.forEach((name, cacheManager) -> caches.addAll(
-							getCacheDescriptors(name, cacheManager.getCacheNames())));
-		return new CachesDescriptor(caches);
+	public CachesReport caches() {
+		Map<String, Map<String, CacheDescriptor>> descriptors = new LinkedHashMap<>();
+		getCacheEntries((name) -> true, (cacheManager) -> true).forEach((entry) -> {
+			Map<String, CacheDescriptor> cmDescriptors = descriptors.computeIfAbsent(
+					entry.getCacheManager(), (key) -> new LinkedHashMap<>());
+			String cache = entry.getName();
+			cmDescriptors.put(cache, new CacheDescriptor(entry.getTarget()));
+		});
+		return new CachesReport(descriptors);
 	}
 
-	private Collection<? extends CacheDescriptor> getCacheDescriptors(String cacheManager,
-																	  Collection<String> cacheNames) {
-		return cacheNames.stream().map(cacheName -> new CacheDescriptor(cacheName, cacheManager)).collect(toList());
+	/**
+	 * Return a {@link CacheDescriptor} for the specified cache.
+	 * @param cache then name of the cache
+	 * @param cacheManager the name of the cacheManager (can be {@code null}
+	 * @return the descriptor of the cache or {@code null} if no such cache exists
+	 * @throws NonUniqueCacheException if more than one cache with that name exist and no
+	 * {@code cacheManager} was provided to identify a unique candidate
+	 */
+	@ReadOperation
+	public CacheEntry cache(@Selector String cache, @Nullable String cacheManager) {
+		return extractUniqueCacheEntry(cache, getCacheEntries(
+				(name) -> name.equals(cache), safeEqual(cacheManager)));
 	}
 
+	/**
+	 * Clear all the available {@link Cache caches}.
+	 */
 	@DeleteOperation
-	public void clearCaches(@Nullable String cacheManager, @Nullable String cacheName) {
-		if (cacheManager == null) {
-			this.context.getBeansOfType(CacheManager.class)
-						.forEach((name, manager) -> this.clearCaches(manager, cacheName));
-		} else {
-			this.clearCaches(this.context.getBean(cacheManager, CacheManager.class), cacheName);
-		}
-	}
-
-	private void clearCaches(CacheManager cacheManager, String cacheName) {
-		if (cacheName == null) {
-			cacheManager.getCacheNames().forEach(cn -> cacheManager.getCache(cn).clear());
-		} else {
-			Cache cache = cacheManager.getCache(cacheName);
-			if (cache != null) {
-				cache.clear();
-			}
-		}
+	public void clearCaches() {
+		getCacheEntries((name) -> true, (cacheManagerName) -> true)
+				.forEach(this::clearCache);
 	}
 
 	/**
-	 * Description of an application context's caches, primarily
-	 * intended for serialization to JSON.
+	 * Clear the specific {@link Cache}.
+	 * @param cache then name of the cache
+	 * @param cacheManager the name of the cacheManager (can be {@code null}
+	 * @return {@code true} if the cache was cleared or {@code false} if no such cache exists
+	 * @throws NonUniqueCacheException if more than one cache with that name exist and no
 	 */
-	public static final class CachesDescriptor {
-		private final List<CacheDescriptor> caches;
+	@DeleteOperation
+	public boolean clearCache(@Selector String cache, @Nullable String cacheManager) {
+		CacheEntry entry = extractUniqueCacheEntry(cache, getCacheEntries(
+				(name) -> name.equals(cache), safeEqual(cacheManager)));
+		return (entry != null && clearCache(entry));
+	}
 
-		private CachesDescriptor(List<CacheDescriptor> caches) {
-			this.caches = caches;
-		}
+	private List<CacheEntry> getCacheEntries(
+			Predicate<String> cacheNamePredicate,
+			Predicate<String> cacheManagerNamePredicate) {
+		List<CacheEntry> entries = new ArrayList<>();
+		this.cacheManagers.keySet().stream().filter(cacheManagerNamePredicate)
+				.forEach((cacheManagerName) -> entries.addAll(
+						getCacheEntries(cacheManagerName, cacheNamePredicate)));
+		return entries;
+	}
 
-		public List<CacheDescriptor> getCaches() {
-			return this.caches;
+	private List<CacheEntry> getCacheEntries(String cacheManagerName,
+			Predicate<String> cacheNamePredicate) {
+		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
+		List<CacheEntry> entries = new ArrayList<>();
+		cacheManager.getCacheNames().stream().filter(cacheNamePredicate)
+				.map(cacheManager::getCache).filter(Objects::nonNull)
+				.forEach((cache) -> entries.add(
+						new CacheEntry(cache, cacheManagerName)));
+		return entries;
+	}
+
+	private CacheEntry extractUniqueCacheEntry(String cache,
+			List<CacheEntry> entries) {
+		if (entries.size() > 1) {
+			throw new NonUniqueCacheException(cache, entries.stream()
+					.map(CacheEntry::getCacheManager).distinct()
+					.collect(Collectors.toList()));
 		}
+		return (entries.isEmpty() ? null : entries.get(0));
+	}
+
+	private boolean clearCache(CacheEntry entry) {
+		String cacheName = entry.getName();
+		Cache cache = this.cacheManagers.get(entry.getCacheManager()).getCache(cacheName);
+		if (cache != null) {
+			cache.clear();
+			return true;
+		}
+		return false;
+	}
+
+	private Predicate<String> safeEqual(String name) {
+		return (name != null ? ((requested) -> requested.equals(name))
+				: ((requested) -> true));
 	}
 
 	/**
-	 * Description of a {@link Cache}, primarily intended for serialization to
-	 * JSON.
+	 * A report of available {@link Cache caches}, primarily intended for serialization
+	 * to JSON.
 	 */
-	public static final class CacheDescriptor {
+	public static final class CachesReport {
+
+		private final Map<String, Map<String, CacheDescriptor>> cacheManagers;
+
+		public CachesReport(Map<String, Map<String, CacheDescriptor>> cacheManagers) {
+			this.cacheManagers = cacheManagers;
+		}
+
+		public Map<String, Map<String, CacheDescriptor>> getCacheManagers() {
+			return this.cacheManagers;
+		}
+
+	}
+
+	/**
+	 * Basic description of a {@link Cache}, primarily intended for serialization to JSON.
+	 */
+	public static class CacheDescriptor {
+
+		private final String target;
+
+		public CacheDescriptor(String target) {
+			this.target = target;
+		}
+
+		/**
+		 * Return the fully qualified name of the native cache.
+		 * @return the fully qualified name of the native cache
+		 */
+		public String getTarget() {
+			return this.target;
+		}
+
+	}
+
+	/**
+	 * Description of a {@link Cache}, primarily intended for serialization to JSON.
+	 */
+	public static final class CacheEntry extends CacheDescriptor {
+
 		private final String name;
+
 		private final String cacheManager;
 
-		public CacheDescriptor(String name, String cacheManager) {
-			this.name = name;
+		public CacheEntry(Cache cache, String cacheManager) {
+			super(cache.getNativeCache().getClass().getName());
+			this.name = cache.getName();
 			this.cacheManager = cacheManager;
 		}
 
 		public String getName() {
-			return name;
+			return this.name;
 		}
 
 		public String getCacheManager() {
-			return cacheManager;
+			return this.cacheManager;
 		}
+
 	}
+
 }

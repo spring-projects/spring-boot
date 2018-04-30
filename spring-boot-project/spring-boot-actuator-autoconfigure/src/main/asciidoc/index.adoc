@@ -51,6 +51,7 @@ https://en.wikipedia.org/wiki/ISO_8601[ISO 8601].
 
 include::endpoints/auditevents.adoc[leveloffset=+1]
 include::endpoints/beans.adoc[leveloffset=+1]
+include::endpoints/caches.adoc[leveloffset=+1]
 include::endpoints/conditions.adoc[leveloffset=+1]
 include::endpoints/configprops.adoc[leveloffset=+1]
 include::endpoints/env.adoc[leveloffset=+1]

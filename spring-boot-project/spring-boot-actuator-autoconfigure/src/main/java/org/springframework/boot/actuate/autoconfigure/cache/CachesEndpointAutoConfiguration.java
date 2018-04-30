@@ -16,8 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.cache;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.cache.CachesEndpoint;
+import org.springframework.boot.actuate.cache.CachesEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -25,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,7 +37,8 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CachesEndpoint}.
  *
  * @author Johannes Edmeier
- * @since 2.0.0
+ * @author Stephane Nicoll
+ * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass(CacheManager.class)
@@ -41,11 +46,20 @@ import org.springframework.context.annotation.Configuration;
 public class CachesEndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(CacheManager.class)
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public CachesEndpoint cachesEndpoint(ApplicationContext context) {
-		return new CachesEndpoint(context);
+	public CachesEndpoint cachesEndpoint(
+			ObjectProvider<Map<String, CacheManager>> cacheManagers) {
+		return new CachesEndpoint(cacheManagers.getIfAvailable(LinkedHashMap::new));
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledEndpoint
+	@ConditionalOnBean(CachesEndpoint.class)
+	public CachesEndpointWebExtension cachesEndpointWebExtension(
+			CachesEndpoint cachesEndpoint) {
+		return new CachesEndpointWebExtension(cachesEndpoint);
 	}
 
 }

@@ -1182,6 +1182,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoint.beans.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.beans.enabled=true # Whether to enable the beans endpoint.
 
+	# CACHES ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/cache/CachesEndpoint.{sc-ext}[CachesEndpoint])
+	management.endpoint.caches.cache.time-to-live=0ms # Maximum time that a response can be cached.
+	management.endpoint.caches.enabled=true # Whether to enable the caches endpoint.
+
 	# CONDITIONS REPORT ENDPOINT ({sc-spring-boot-actuator-autoconfigure}/condition/ConditionsReportEndpoint.{sc-ext}[ConditionsReportEndpoint])
 	management.endpoint.conditions.cache.time-to-live=0ms # Maximum time that a response can be cached.
 	management.endpoint.conditions.enabled=true # Whether to enable the conditions endpoint.
