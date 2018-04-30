@@ -57,9 +57,9 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 * @param length the length of the section
 	 */
 	private RandomAccessDataFile(FileAccess fileAccess, long offset, long length) {
+		this.fileAccess = fileAccess;
 		this.offset = offset;
 		this.length = length;
-		this.fileAccess = fileAccess;
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-	 * {@link RandomAccessDataInputStream} implementation for the
+	 * {@link InputStream} implementation for the
 	 * {@link RandomAccessDataFile}.
 	 */
 	private class DataInputStream extends InputStream {
