@@ -679,22 +679,22 @@ public class MapBinderTests {
 
 	public static class ExampleCustomNoDefaultConstructorBean {
 
-		private MyCustomNoDefaultConstructorList items = new MyCustomNoDefaultConstructorList(
+		private MyCustomNoDefaultConstructorMap items = new MyCustomNoDefaultConstructorMap(
 				Collections.singletonMap("foo", "bar"));
 
-		public MyCustomNoDefaultConstructorList getItems() {
+		public MyCustomNoDefaultConstructorMap getItems() {
 			return this.items;
 		}
 
-		public void setItems(MyCustomNoDefaultConstructorList items) {
+		public void setItems(MyCustomNoDefaultConstructorMap items) {
 			this.items = items;
 		}
 
 	}
 
-	public static class MyCustomNoDefaultConstructorList extends HashMap<String, String> {
+	public static class MyCustomNoDefaultConstructorMap extends HashMap<String, String> {
 
-		public MyCustomNoDefaultConstructorList(Map<String, String> items) {
+		public MyCustomNoDefaultConstructorMap(Map<String, String> items) {
 			putAll(items);
 		}
 
@@ -702,20 +702,20 @@ public class MapBinderTests {
 
 	public static class ExampleCustomWithDefaultConstructorBean {
 
-		private MyCustomWithDefaultConstructorList items = new MyCustomWithDefaultConstructorList();
+		private MyCustomWithDefaultConstructorMap items = new MyCustomWithDefaultConstructorMap();
 
-		public MyCustomWithDefaultConstructorList getItems() {
+		public MyCustomWithDefaultConstructorMap getItems() {
 			return this.items;
 		}
 
-		public void setItems(MyCustomWithDefaultConstructorList items) {
+		public void setItems(MyCustomWithDefaultConstructorMap items) {
 			this.items.clear();
 			this.items.putAll(items);
 		}
 
 	}
 
-	public static class MyCustomWithDefaultConstructorList
+	public static class MyCustomWithDefaultConstructorMap
 			extends HashMap<String, String> {
 
 	}
