@@ -239,7 +239,7 @@ link:spring-boot-project/spring-boot-tools/spring-boot-maven-plugin[Maven] plugi
 
 
 === spring-boot-devtools
-The spring-boot-devtools module provides additional development-time features such as automatic retarts,
+The spring-boot-devtools module provides additional development-time features such as automatic restarts,
 for a smoother application development experience. Developer tools are automatically disabled when
 running a fully packaged application.
 
