@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.data;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -90,6 +91,12 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	@Override
 	public byte[] read(long offset, long length) throws IOException {
+		if (offset > this.length) {
+			throw new IndexOutOfBoundsException();
+		}
+		if (offset + length > this.length) {
+			throw new EOFException();
+		}
 		byte[] bytes = new byte[(int) length];
 		read(bytes, offset, 0, bytes.length);
 		return bytes;
