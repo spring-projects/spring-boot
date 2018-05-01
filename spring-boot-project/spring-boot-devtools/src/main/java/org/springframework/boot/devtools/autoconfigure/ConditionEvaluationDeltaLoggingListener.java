@@ -50,7 +50,8 @@ class ConditionEvaluationDeltaLoggingListener
 					this.logger.debug("Condition evaluation delta:"
 							+ new ConditionEvaluationReportMessage(delta,
 									"CONDITION EVALUATION DELTA"));
-				} else if (this.logger.isInfoEnabled()) {
+				}
+				else if (this.logger.isInfoEnabled()) {
 					this.logger.info("Condition evaluation changed. "
 							+ "To see the delta re-run your application with "
 							+ "'debug' enabled.");
