@@ -6015,7 +6015,7 @@ the name of the table for the JDBC store, as shown in the following example:
 ----
 
 For setting the timeout of the session you can use the `spring.session.timeout` property.
-If that property is not set, the auto-configuration fallbacks to the value of
+If that property is not set, the auto-configuration falls back to the value of
 `server.servlet.session.timeout`.
 
 [[boot-features-jmx]]
