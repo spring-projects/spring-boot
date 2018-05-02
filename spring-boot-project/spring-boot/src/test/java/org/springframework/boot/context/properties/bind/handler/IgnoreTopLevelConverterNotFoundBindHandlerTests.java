@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,11 +56,6 @@ public class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 		this.binder = new Binder(this.sources);
 	}
 
-	@After
-	public void tearDown() {
-		this.sources.clear();
-	}
-
 	@Test
 	public void bindWhenHandlerNotPresentShouldFail() {
 		this.thrown.expectCause(instanceOf(ConverterNotFoundException.class));
@@ -75,7 +69,7 @@ public class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenExceptionNotIgnorableShouldNotFail() {
+	public void bindWhenExceptionNotIgnorableShouldFail() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "1");
 		this.sources.add(source);
