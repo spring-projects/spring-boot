@@ -80,6 +80,7 @@ import org.springframework.boot.configurationsample.specific.InnerClassPropertie
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 import org.springframework.boot.configurationsample.specific.InvalidAccessorProperties;
 import org.springframework.boot.configurationsample.specific.InvalidDoubleRegistrationProperties;
+import org.springframework.boot.configurationsample.specific.SimpleConflictingProperties;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 import org.springframework.boot.configurationsample.specific.StaticAccessor;
 import org.springframework.boot.configurationsample.specific.WildcardConfig;
@@ -756,6 +757,19 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
 				.withDeprecation(null, null).withDefaultValue(true));
 		assertThat(metadata.getItems()).hasSize(4);
+	}
+
+	@Test
+	public void mergeExistingPropertyWithSeveralCandidates() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag",
+				Boolean.class.getName(), null, null, null, true, null);
+		writeAdditionalMetadata(property);
+		ConfigurationMetadata metadata = compile(SimpleProperties.class,
+				SimpleConflictingProperties.class);
+		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
+				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
+				.withDeprecation(null, null).withDefaultValue(true));
 	}
 
 	@Test
