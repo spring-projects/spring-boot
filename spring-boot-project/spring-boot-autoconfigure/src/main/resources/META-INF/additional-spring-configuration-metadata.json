@@ -1210,6 +1210,13 @@
       }
     },
     {
+      "name": "spring.flyway.locations",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": [
+        "classpath:db/migration"
+      ]
+    },
+    {
       "name": "spring.flyway.sql-migration-suffix",
       "deprecation": {
         "replacement": "spring.flyway.sql-migration-suffixes",
