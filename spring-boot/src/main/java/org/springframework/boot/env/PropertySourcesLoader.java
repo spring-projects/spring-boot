@@ -127,7 +127,7 @@ public class PropertySourcesLoader {
 				if (canLoadFileExtension(loader, resource)) {
 					PropertySource<?> specific = loader.load(sourceName, resource,
 							profile);
-					addPropertySource(group, specific, profile);
+					addPropertySource(group, specific);
 					return specific;
 				}
 			}
@@ -154,8 +154,7 @@ public class PropertySourcesLoader {
 		return false;
 	}
 
-	private void addPropertySource(String basename, PropertySource<?> source,
-			String profile) {
+	private void addPropertySource(String basename, PropertySource<?> source) {
 
 		if (source == null) {
 			return;

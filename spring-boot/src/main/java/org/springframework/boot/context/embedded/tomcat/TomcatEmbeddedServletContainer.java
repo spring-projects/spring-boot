@@ -208,7 +208,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 				addPreviouslyRemovedConnectors();
 				Connector connector = this.tomcat.getConnector();
 				if (connector != null && this.autoStart) {
-					startConnector(connector);
+					performDeferredLoadOnStartup();
 				}
 				checkThatConnectorsHaveStarted();
 				this.started = true;
@@ -281,7 +281,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		}
 	}
 
-	private void startConnector(Connector connector) {
+	private void performDeferredLoadOnStartup() {
 		try {
 			for (Container child : this.tomcat.getHost().findChildren()) {
 				if (child instanceof TomcatEmbeddedContext) {
