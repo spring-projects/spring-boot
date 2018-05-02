@@ -86,6 +86,18 @@ public class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
+	public void noMBeanServerAvailable() {
+		ApplicationContextRunner contextRunnerWithoutJmx = new ApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(
+						IntegrationAutoConfiguration.class));
+		contextRunnerWithoutJmx.run((context) -> {
+			assertThat(context).hasSingleBean(TestGateway.class);
+			assertThat(context)
+					.hasSingleBean(IntegrationComponentScanConfiguration.class);
+		});
+	}
+
+	@Test
 	public void parentContext() {
 		this.contextRunner.run((context) -> this.contextRunner.withParent(context)
 				.withPropertyValues("spring.jmx.default_domain=org.foo")
