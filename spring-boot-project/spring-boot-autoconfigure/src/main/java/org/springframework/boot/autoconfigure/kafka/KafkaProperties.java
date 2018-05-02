@@ -929,7 +929,7 @@ public class KafkaProperties {
 		}
 
 		public String getKeyStoreType() {
-			return keyStoreType;
+			return this.keyStoreType;
 		}
 
 		public void setKeyStoreType(String keyStoreType) {
@@ -953,7 +953,7 @@ public class KafkaProperties {
 		}
 
 		public String getTrustStoreType() {
-			return trustStoreType;
+			return this.trustStoreType;
 		}
 
 		public void setTrustStoreType(String trustStoreType) {
@@ -961,7 +961,7 @@ public class KafkaProperties {
 		}
 
 		public String getProtocol() {
-			return protocol;
+			return this.protocol;
 		}
 
 		public void setProtocol(String protocol) {
