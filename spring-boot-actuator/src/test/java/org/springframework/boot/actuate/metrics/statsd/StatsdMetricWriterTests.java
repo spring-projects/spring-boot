@@ -151,7 +151,7 @@ public class StatsdMetricWriterTests {
 				try {
 					Thread.sleep(50L);
 				}
-				catch (InterruptedException e) {
+				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
 				}
 			}

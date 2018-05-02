@@ -222,8 +222,8 @@ public class DependencyManagementBomTransformation
 				return new UrlModelSource(
 						Grape.getInstance().resolve(null, dependency)[0].toURL());
 			}
-			catch (MalformedURLException e) {
-				throw new UnresolvableModelException(e.getMessage(), groupId, artifactId,
+			catch (MalformedURLException ex) {
+				throw new UnresolvableModelException(ex.getMessage(), groupId, artifactId,
 						version);
 			}
 		}

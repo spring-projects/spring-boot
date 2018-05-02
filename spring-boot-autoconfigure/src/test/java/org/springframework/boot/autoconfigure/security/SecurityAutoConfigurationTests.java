@@ -210,7 +210,7 @@ public class SecurityAutoConfigurationTests {
 			manager.authenticate(new UsernamePasswordAuthenticationToken("foo", "wrong"));
 			fail("Expected BadCredentialsException");
 		}
-		catch (BadCredentialsException e) {
+		catch (BadCredentialsException ex) {
 			// expected
 		}
 		assertThat(listener.event)

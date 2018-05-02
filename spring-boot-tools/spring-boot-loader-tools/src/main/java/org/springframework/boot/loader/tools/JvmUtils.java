@@ -60,8 +60,8 @@ abstract class JvmUtils {
 			return new File(System.getProperty("java.home")).toURI().toURL()
 					.toExternalForm();
 		}
-		catch (MalformedURLException e) {
-			throw new IllegalStateException("Cannot locate java.home", e);
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException("Cannot locate java.home", ex);
 		}
 	}
 

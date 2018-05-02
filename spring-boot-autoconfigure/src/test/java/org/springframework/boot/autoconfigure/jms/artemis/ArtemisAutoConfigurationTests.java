@@ -349,10 +349,10 @@ public class ArtemisAutoConfigurationTests {
 									+ "' was not expected but got " + destination);
 						}
 					}
-					catch (JMSException e) {
+					catch (JMSException ex) {
 						if (shouldExist) {
 							throw new IllegalStateException("Destination '" + name
-									+ "' was expected but got " + e.getMessage());
+									+ "' was expected but got " + ex.getMessage());
 						}
 					}
 					return null;

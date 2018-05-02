@@ -116,8 +116,8 @@ public class MavenSettingsReader {
 			try {
 				this._cipher = new DefaultPlexusCipher();
 			}
-			catch (PlexusCipherException e) {
-				throw new IllegalStateException(e);
+			catch (PlexusCipherException ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 

@@ -359,8 +359,8 @@ class ProjectGenerationRequest {
 
 			return builder.build();
 		}
-		catch (URISyntaxException e) {
-			throw new ReportableException("Invalid service URL (" + e.getMessage() + ")");
+		catch (URISyntaxException ex) {
+			throw new ReportableException("Invalid service URL (" + ex.getMessage() + ")");
 		}
 	}
 

@@ -529,8 +529,8 @@ public class UndertowEmbeddedServletContainerFactory
 			root = (root != null ? root : createTempDir("undertow-docbase"));
 			return root.getCanonicalFile();
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Cannot get canonical document root", e);
+		catch (IOException ex) {
+			throw new IllegalStateException("Cannot get canonical document root", ex);
 		}
 	}
 
