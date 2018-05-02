@@ -59,6 +59,14 @@ public class StaticResourceJarsTests {
 	}
 
 	@Test
+	public void includeJarWithStaticResourcesWithPlusInItsPath() throws Exception {
+		File jarFile = createResourcesJar("test + resources.jar");
+		List<URL> staticResourceJarUrls = new StaticResourceJars()
+				.getUrlsFrom(jarFile.toURI().toURL());
+		assertThat(staticResourceJarUrls).hasSize(1);
+	}
+
+	@Test
 	public void excludeJarWithoutStaticResources() throws Exception {
 		File jarFile = createJar("dependency.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars()
