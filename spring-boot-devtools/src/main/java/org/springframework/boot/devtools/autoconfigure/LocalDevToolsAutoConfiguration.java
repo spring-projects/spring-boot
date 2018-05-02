@@ -62,22 +62,10 @@ public class LocalDevToolsAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
-		private DevToolsProperties properties;
-
 		private LiveReloadServer liveReloadServer;
 
-		LiveReloadConfiguration(DevToolsProperties properties,
-				ObjectProvider<LiveReloadServer> liveReloadServer) {
-			this.properties = properties;
+		LiveReloadConfiguration(ObjectProvider<LiveReloadServer> liveReloadServer) {
 			this.liveReloadServer = liveReloadServer.getIfAvailable();
-		}
-
-		@Bean
-		@RestartScope
-		@ConditionalOnMissingBean
-		public LiveReloadServer liveReloadServer() {
-			return new LiveReloadServer(this.properties.getLivereload().getPort(),
-					Restarter.getInstance().getThreadFactory());
 		}
 
 		@EventListener
@@ -95,6 +83,19 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		public OptionalLiveReloadServer optionalLiveReloadServer() {
 			return new OptionalLiveReloadServer(this.liveReloadServer);
+		}
+
+		@Configuration
+		static class LiveReloadServerConfiguration {
+
+			@Bean
+			@RestartScope
+			@ConditionalOnMissingBean
+			public LiveReloadServer liveReloadServer(DevToolsProperties properties) {
+				return new LiveReloadServer(properties.getLivereload().getPort(),
+						Restarter.getInstance().getThreadFactory());
+			}
+
 		}
 
 	}
