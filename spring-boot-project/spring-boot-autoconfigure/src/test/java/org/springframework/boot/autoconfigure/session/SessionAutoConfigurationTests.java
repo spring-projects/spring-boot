@@ -101,22 +101,25 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 
 	@Test
 	public void autoConfigWhenSpringSessionTimeoutIsSetShouldUseThat() {
-		this.contextRunner.withUserConfiguration(ServerPropertiesConfiguration.class,
-				SessionRepositoryConfiguration.class)
+		this.contextRunner
+				.withUserConfiguration(ServerPropertiesConfiguration.class,
+						SessionRepositoryConfiguration.class)
 				.withPropertyValues("server.servlet.session.timeout=1",
-						"spring.session.timeout=3").run((context) ->
-				assertThat(context.getBean(SessionProperties.class).getTimeout())
-						.isEqualTo(Duration.ofSeconds(3)));
+						"spring.session.timeout=3")
+				.run((context) -> assertThat(
+						context.getBean(SessionProperties.class).getTimeout())
+								.isEqualTo(Duration.ofSeconds(3)));
 	}
 
 	@Test
 	public void autoConfigWhenSpringSessionTimeoutIsNotSetShouldUseServerSessionTimeout() {
-		this.contextRunner.withUserConfiguration(ServerPropertiesConfiguration.class,
-				SessionRepositoryConfiguration.class)
-				.withPropertyValues("server.servlet.session.timeout=3").run((context) -> {
-			assertThat(context.getBean(SessionProperties.class).getTimeout())
-					.isEqualTo(Duration.ofSeconds(3));
-		});
+		this.contextRunner
+				.withUserConfiguration(ServerPropertiesConfiguration.class,
+						SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.servlet.session.timeout=3")
+				.run((context) -> assertThat(
+						context.getBean(SessionProperties.class).getTimeout())
+								.isEqualTo(Duration.ofSeconds(3)));
 	}
 
 	@SuppressWarnings("unchecked")
