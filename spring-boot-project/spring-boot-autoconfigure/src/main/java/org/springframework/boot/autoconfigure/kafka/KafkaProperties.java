@@ -143,25 +143,7 @@ public class KafkaProperties {
 		if (this.clientId != null) {
 			properties.put(CommonClientConfigs.CLIENT_ID_CONFIG, this.clientId);
 		}
-		if (this.ssl.getKeyPassword() != null) {
-			properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.ssl.getKeyPassword());
-		}
-		if (this.ssl.getKeystoreLocation() != null) {
-			properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
-					resourceToPath(this.ssl.getKeystoreLocation()));
-		}
-		if (this.ssl.getKeystorePassword() != null) {
-			properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
-					this.ssl.getKeystorePassword());
-		}
-		if (this.ssl.getTruststoreLocation() != null) {
-			properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-					resourceToPath(this.ssl.getTruststoreLocation()));
-		}
-		if (this.ssl.getTruststorePassword() != null) {
-			properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
-					this.ssl.getTruststorePassword());
-		}
+		properties.putAll(this.ssl.buildProperties());
 		if (!CollectionUtils.isEmpty(this.properties)) {
 			properties.putAll(this.properties);
 		}
@@ -438,26 +420,6 @@ public class KafkaProperties {
 				properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
 						this.keyDeserializer);
 			}
-			if (this.ssl.getKeyPassword() != null) {
-				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG,
-						this.ssl.getKeyPassword());
-			}
-			if (this.ssl.getKeystoreLocation() != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
-						resourceToPath(this.ssl.getKeystoreLocation()));
-			}
-			if (this.ssl.getKeystorePassword() != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
-						this.ssl.getKeystorePassword());
-			}
-			if (this.ssl.getTruststoreLocation() != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-						resourceToPath(this.ssl.getTruststoreLocation()));
-			}
-			if (this.ssl.getTruststorePassword() != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
-						this.ssl.getTruststorePassword());
-			}
 			if (this.valueDeserializer != null) {
 				properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
 						this.valueDeserializer);
@@ -466,6 +428,7 @@ public class KafkaProperties {
 				properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,
 						this.maxPollRecords);
 			}
+			properties.putAll(this.ssl.buildProperties());
 			properties.putAll(this.properties);
 			return properties;
 		}
@@ -651,30 +614,11 @@ public class KafkaProperties {
 			if (this.retries != null) {
 				properties.put(ProducerConfig.RETRIES_CONFIG, this.retries);
 			}
-			if (this.ssl.getKeyPassword() != null) {
-				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG,
-						this.ssl.getKeyPassword());
-			}
-			if (this.ssl.getKeystoreLocation() != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
-						resourceToPath(this.ssl.getKeystoreLocation()));
-			}
-			if (this.ssl.getKeystorePassword() != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
-						this.ssl.getKeystorePassword());
-			}
-			if (this.ssl.getTruststoreLocation() != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-						resourceToPath(this.ssl.getTruststoreLocation()));
-			}
-			if (this.ssl.getTruststorePassword() != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
-						this.ssl.getTruststorePassword());
-			}
 			if (this.valueSerializer != null) {
 				properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
 						this.valueSerializer);
 			}
+			properties.putAll(this.ssl.buildProperties());
 			properties.putAll(this.properties);
 			return properties;
 		}
@@ -729,26 +673,7 @@ public class KafkaProperties {
 			if (this.clientId != null) {
 				properties.put(ProducerConfig.CLIENT_ID_CONFIG, this.clientId);
 			}
-			if (this.ssl.getKeyPassword() != null) {
-				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG,
-						this.ssl.getKeyPassword());
-			}
-			if (this.ssl.getKeystoreLocation() != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
-						resourceToPath(this.ssl.getKeystoreLocation()));
-			}
-			if (this.ssl.getKeystorePassword() != null) {
-				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
-						this.ssl.getKeystorePassword());
-			}
-			if (this.ssl.getTruststoreLocation() != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-						resourceToPath(this.ssl.getTruststoreLocation()));
-			}
-			if (this.ssl.getTruststorePassword() != null) {
-				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
-						this.ssl.getTruststorePassword());
-			}
+			properties.putAll(this.ssl.buildProperties());
 			properties.putAll(this.properties);
 			return properties;
 		}
@@ -955,6 +880,11 @@ public class KafkaProperties {
 		private String keystorePassword;
 
 		/**
+		 * Type of the key store.
+		 */
+		private String keyStoreType;
+
+		/**
 		 * Location of the trust store file.
 		 */
 		private Resource truststoreLocation;
@@ -963,6 +893,16 @@ public class KafkaProperties {
 		 * Store password for the trust store file.
 		 */
 		private String truststorePassword;
+
+		/**
+		 * Type of the trust store.
+		 */
+		private String trustStoreType;
+
+		/**
+		 * SSL protocol to use.
+		 */
+		private String protocol;
 
 		public String getKeyPassword() {
 			return this.keyPassword;
@@ -988,6 +928,14 @@ public class KafkaProperties {
 			this.keystorePassword = keystorePassword;
 		}
 
+		public String getKeyStoreType() {
+			return this.keyStoreType;
+		}
+
+		public void setKeyStoreType(String keyStoreType) {
+			this.keyStoreType = keyStoreType;
+		}
+
 		public Resource getTruststoreLocation() {
 			return this.truststoreLocation;
 		}
@@ -1004,6 +952,56 @@ public class KafkaProperties {
 			this.truststorePassword = truststorePassword;
 		}
 
+		public String getTrustStoreType() {
+			return this.trustStoreType;
+		}
+
+		public void setTrustStoreType(String trustStoreType) {
+			this.trustStoreType = trustStoreType;
+		}
+
+		public String getProtocol() {
+			return this.protocol;
+		}
+
+		public void setProtocol(String protocol) {
+			this.protocol = protocol;
+		}
+
+		public Map<String, Object> buildProperties() {
+			Map<String, Object> properties = new HashMap<>();
+			if (this.getKeyPassword() != null) {
+				properties.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, this.getKeyPassword());
+			}
+			if (this.getKeystoreLocation() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
+						resourceToPath(this.getKeystoreLocation()));
+			}
+			if (this.getKeystorePassword() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
+						this.getKeystorePassword());
+			}
+			if (this.getKeyStoreType() != null) {
+				properties.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG,
+						this.getKeyStoreType());
+			}
+			if (this.getTruststoreLocation() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+						resourceToPath(this.getTruststoreLocation()));
+			}
+			if (this.getTruststorePassword() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
+						this.getTruststorePassword());
+			}
+			if (this.getTrustStoreType() != null) {
+				properties.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG,
+						this.getTrustStoreType());
+			}
+			if (this.getProtocol() != null) {
+				properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, this.getProtocol());
+			}
+			return properties;
+		}
 	}
 
 	public static class Jaas {
