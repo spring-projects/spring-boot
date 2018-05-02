@@ -36,6 +36,7 @@ import org.springframework.core.env.Environment;
  * @author Yulin Qin
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Yan Na
  * @since 2.0.0
  */
 public class UndertowWebServerFactoryCustomizer implements
@@ -94,6 +95,8 @@ public class UndertowWebServerFactoryCustomizer implements
 						connectionTimeout));
 		factory.addDeploymentInfoCustomizers((deploymentInfo) -> deploymentInfo
 				.setEagerFilterInit(undertowProperties.isEagerFilterInit()));
+		WebServerFactoryUtils.coverEnvironmentServerPort(this.environment,
+				this.serverProperties);
 	}
 
 	private boolean isPositive(Number value) {
