@@ -145,8 +145,8 @@ public class ConfigurationMetadata {
 	}
 
 	private ItemMetadata findMatchingItemMetadata(ItemMetadata metadata) {
-		List<ItemMetadata> candidates = this.items.get(metadata.getName());
-		if (candidates == null || candidates.isEmpty()) {
+		List<ItemMetadata> candidates = getCandidates(metadata.getName());
+		if (candidates.isEmpty()) {
 			return null;
 		}
 		candidates.removeIf((itemMetadata) -> !itemMetadata.hasSameType(metadata));
@@ -159,6 +159,11 @@ public class ConfigurationMetadata {
 			}
 		}
 		return null;
+	}
+
+	private List<ItemMetadata> getCandidates(String name) {
+		List<ItemMetadata> candidates = this.items.get(name);
+		return (candidates != null ? new ArrayList<>(candidates) : new ArrayList<>());
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {
