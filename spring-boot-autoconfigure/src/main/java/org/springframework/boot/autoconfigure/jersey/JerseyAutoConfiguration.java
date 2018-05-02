@@ -198,7 +198,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		if (!applicationPath.startsWith("/")) {
 			applicationPath = "/" + applicationPath;
 		}
-		return applicationPath.equals("/") ? "/*" : applicationPath + "/*";
+		return (applicationPath.equals("/") ? "/*" : applicationPath + "/*");
 	}
 
 	@Override

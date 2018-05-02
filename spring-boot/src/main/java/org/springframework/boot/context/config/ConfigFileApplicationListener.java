@@ -344,8 +344,8 @@ public class ConfigFileApplicationListener
 
 		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
-			this.resourceLoader = resourceLoader == null ? new DefaultResourceLoader()
-					: resourceLoader;
+			this.resourceLoader = (resourceLoader != null ? resourceLoader
+					: new DefaultResourceLoader());
 		}
 
 		public void load() {
@@ -437,7 +437,7 @@ public class ConfigFileApplicationListener
 		}
 
 		private void load(String location, String name, Profile profile) {
-			String group = "profile=" + (profile == null ? "" : profile);
+			String group = "profile=" + (profile != null ? profile : "");
 			if (!StringUtils.hasText(name)) {
 				// Try to load directly from the location
 				loadIntoGroup(group, location, profile);
@@ -488,7 +488,7 @@ public class ConfigFileApplicationListener
 				String name = "applicationConfig: [" + location + "]";
 				String group = "applicationConfig: [" + identifier + "]";
 				propertySource = this.propertiesLoader.load(resource, group, name,
-						(profile == null ? null : profile.getName()));
+						(profile != null ? profile.getName() : null));
 				if (propertySource != null) {
 					msg.append("Loaded ");
 					handleProfileProperties(propertySource);

@@ -50,7 +50,7 @@ public abstract class AbstractConfigurationMetadataTests {
 		assertThat(actual).isNotNull();
 		assertThat(actual.getId()).isEqualTo(id);
 		assertThat(actual.getName()).isEqualTo(name);
-		String typeName = type != null ? type.getName() : null;
+		String typeName = (type != null ? type.getName() : null);
 		assertThat(actual.getType()).isEqualTo(typeName);
 		assertThat(actual.getDefaultValue()).isEqualTo(defaultValue);
 	}

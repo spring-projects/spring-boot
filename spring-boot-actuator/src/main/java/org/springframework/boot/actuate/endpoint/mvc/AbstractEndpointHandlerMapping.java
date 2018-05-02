@@ -150,7 +150,7 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 		}
 		Assert.state(handler instanceof MvcEndpoint, "Only MvcEndpoints are supported");
 		String path = getPath((MvcEndpoint) handler);
-		return (path == null ? null : getEndpointPatterns(path, mapping));
+		return (path != null ? getEndpointPatterns(path, mapping) : null);
 	}
 
 	/**
@@ -163,8 +163,8 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 	}
 
 	private String[] getEndpointPatterns(String path, RequestMappingInfo mapping) {
-		String patternPrefix = StringUtils.hasText(this.prefix) ? this.prefix + path
-				: path;
+		String patternPrefix = (StringUtils.hasText(this.prefix) ? this.prefix + path
+				: path);
 		Set<String> defaultPatterns = mapping.getPatternsCondition().getPatterns();
 		if (defaultPatterns.isEmpty()) {
 			return new String[] { patternPrefix, patternPrefix + ".json" };

@@ -404,7 +404,7 @@ public class JettyEmbeddedServletContainerFactory
 
 	private File getTempDirectory() {
 		String temp = System.getProperty("java.io.tmpdir");
-		return (temp == null ? null : new File(temp));
+		return (temp != null ? new File(temp) : null);
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {

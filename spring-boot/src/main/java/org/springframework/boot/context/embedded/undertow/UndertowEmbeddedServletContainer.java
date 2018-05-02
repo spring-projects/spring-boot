@@ -287,8 +287,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	private Port getPortFromChannel(BoundChannel channel) {
 		SocketAddress socketAddress = channel.getLocalAddress();
 		if (socketAddress instanceof InetSocketAddress) {
-			String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null
-					? "https" : "http";
+			String protocol = (ReflectionUtils.findField(channel.getClass(),
+					"ssl") != null ? "https" : "http");
 			return new Port(((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
 		return null;

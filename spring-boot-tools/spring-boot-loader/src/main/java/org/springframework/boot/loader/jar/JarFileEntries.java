@@ -280,7 +280,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	}
 
 	private AsciiBytes applyFilter(AsciiBytes name) {
-		return (this.filter == null ? name : this.filter.apply(name));
+		return (this.filter != null ? this.filter.apply(name) : name);
 	}
 
 	/**

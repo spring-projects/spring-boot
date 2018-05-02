@@ -103,7 +103,7 @@ final class CentralDirectoryFileHeader implements FileHeader {
 
 	@Override
 	public boolean hasName(String name, String suffix) {
-		return this.name.equals(new AsciiBytes(suffix == null ? name : name + suffix));
+		return this.name.equals(new AsciiBytes(suffix != null ? name + suffix : name));
 	}
 
 	public boolean isDirectory() {

@@ -72,7 +72,7 @@ public abstract class EnvironmentTestUtils {
 		for (String pair : pairs) {
 			int index = getSeparatorIndex(pair);
 			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = index > 0 ? pair.substring(index + 1) : "";
+			String value = (index > 0 ? pair.substring(index + 1) : "");
 			map.put(key.trim(), value.trim());
 		}
 	}

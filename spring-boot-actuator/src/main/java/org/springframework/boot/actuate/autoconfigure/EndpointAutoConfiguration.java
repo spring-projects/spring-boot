@@ -114,12 +114,12 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint healthEndpoint() {
-		return new HealthEndpoint(
-				this.healthAggregator == null ? new OrderedHealthAggregator()
-						: this.healthAggregator,
-				this.healthIndicators == null
-						? Collections.<String, HealthIndicator>emptyMap()
-						: this.healthIndicators);
+		HealthAggregator healthAggregator = (this.healthAggregator != null
+				? this.healthAggregator : new OrderedHealthAggregator());
+		Map<String, HealthIndicator> healthIndicators = (this.healthIndicators != null
+				? this.healthIndicators
+				: Collections.<String, HealthIndicator>emptyMap());
+		return new HealthEndpoint(healthAggregator, healthIndicators);
 	}
 
 	@Bean
@@ -131,8 +131,8 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfoEndpoint infoEndpoint() throws Exception {
-		return new InfoEndpoint(this.infoContributors == null
-				? Collections.<InfoContributor>emptyList() : this.infoContributors);
+		return new InfoEndpoint(this.infoContributors != null ? this.infoContributors
+				: Collections.<InfoContributor>emptyList());
 	}
 
 	@Bean
@@ -156,8 +156,8 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public TraceEndpoint traceEndpoint() {
-		return new TraceEndpoint(this.traceRepository == null
-				? new InMemoryTraceRepository() : this.traceRepository);
+		return new TraceEndpoint(this.traceRepository != null ? this.traceRepository
+				: new InMemoryTraceRepository());
 	}
 
 	@Bean

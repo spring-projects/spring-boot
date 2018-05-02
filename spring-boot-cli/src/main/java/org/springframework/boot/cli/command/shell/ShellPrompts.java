@@ -53,7 +53,7 @@ public class ShellPrompts {
 	 * @return the current prompt
 	 */
 	public String getPrompt() {
-		return this.prompts.isEmpty() ? DEFAULT_PROMPT : this.prompts.peek();
+		return (this.prompts.isEmpty() ? DEFAULT_PROMPT : this.prompts.peek());
 	}
 
 }

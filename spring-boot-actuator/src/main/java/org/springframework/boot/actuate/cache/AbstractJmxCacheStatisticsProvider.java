@@ -56,7 +56,7 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache>
 	public CacheStatistics getCacheStatistics(CacheManager cacheManager, C cache) {
 		try {
 			ObjectName objectName = internalGetObjectName(cache);
-			return (objectName == null ? null : getCacheStatistics(objectName));
+			return (objectName != null ? getCacheStatistics(objectName) : null);
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new IllegalStateException(ex);

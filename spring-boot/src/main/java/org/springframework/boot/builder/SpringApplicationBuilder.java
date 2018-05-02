@@ -390,7 +390,7 @@ public class SpringApplicationBuilder {
 		for (String property : properties) {
 			int index = lowestIndexOf(property, ":", "=");
 			String key = property.substring(0, index > 0 ? index : property.length());
-			String value = index > 0 ? property.substring(index + 1) : "";
+			String value = (index > 0 ? property.substring(index + 1) : "");
 			map.put(key, value);
 		}
 		return map;
@@ -401,7 +401,7 @@ public class SpringApplicationBuilder {
 		for (String candidate : candidates) {
 			int candidateIndex = property.indexOf(candidate);
 			if (candidateIndex > 0) {
-				index = (index == -1 ? candidateIndex : Math.min(index, candidateIndex));
+				index = (index != -1 ? Math.min(index, candidateIndex) : candidateIndex);
 			}
 		}
 		return index;

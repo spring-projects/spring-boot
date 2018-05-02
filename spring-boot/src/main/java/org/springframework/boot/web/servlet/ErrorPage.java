@@ -84,7 +84,7 @@ public class ErrorPage {
 	 * @return the status value (or 0 for a page that matches any status)
 	 */
 	public int getStatusCode() {
-		return (this.status == null ? 0 : this.status.value());
+		return (this.status != null ? this.status.value() : 0);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class ErrorPage {
 	 * @return the exception type name (or {@code null} if there is none)
 	 */
 	public String getExceptionName() {
-		return (this.exception == null ? null : this.exception.getName());
+		return (this.exception != null ? this.exception.getName() : null);
 	}
 
 	/**

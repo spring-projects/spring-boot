@@ -149,8 +149,8 @@ class InitializrServiceMetadata {
 		}
 		JSONObject type = root.getJSONObject(TYPE_EL);
 		JSONArray array = type.getJSONArray(VALUES_EL);
-		String defaultType = type.has(DEFAULT_ATTRIBUTE)
-				? type.getString(DEFAULT_ATTRIBUTE) : null;
+		String defaultType = (type.has(DEFAULT_ATTRIBUTE)
+				? type.getString(DEFAULT_ATTRIBUTE) : null);
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject typeJson = array.getJSONObject(i);
 			ProjectType projectType = parseType(typeJson, defaultType);
@@ -212,7 +212,7 @@ class InitializrServiceMetadata {
 
 	private String getStringValue(JSONObject object, String name, String defaultValue)
 			throws JSONException {
-		return object.has(name) ? object.getString(name) : defaultValue;
+		return (object.has(name) ? object.getString(name) : defaultValue);
 	}
 
 	private Map<String, String> parseStringItems(JSONObject json) throws JSONException {

@@ -114,8 +114,8 @@ class ProjectLibraries implements Libraries {
 
 	private Set<GradleLibrary> getLibraries(String configurationName,
 			LibraryScope scope) {
-		Configuration configuration = (configurationName == null ? null
-				: this.project.getConfigurations().findByName(configurationName));
+		Configuration configuration = (configurationName != null
+				? this.project.getConfigurations().findByName(configurationName) : null);
 		if (configuration == null) {
 			return null;
 		}
@@ -321,8 +321,8 @@ class ProjectLibraries implements Libraries {
 				String configurationName = (String) this.getTargetConfiguration
 						.invoke(projectDependency);
 				return projectDependency.getDependencyProject().getConfigurations()
-						.getByName(configurationName == null
-								? Dependency.DEFAULT_CONFIGURATION : configurationName);
+						.getByName(configurationName != null ? configurationName
+								: Dependency.DEFAULT_CONFIGURATION);
 			}
 			catch (Exception ex) {
 				throw new RuntimeException("Failed to get target configuration", ex);

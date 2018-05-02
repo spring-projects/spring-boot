@@ -114,8 +114,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		finally {
 			addTimeTaken(trace, startTime);
 			addSessionIdIfNecessary(request, trace);
-			enhanceTrace(trace, status == response.getStatus() ? response
-					: new CustomStatusResponseWrapper(response, status));
+			enhanceTrace(trace, status != response.getStatus()
+					? new CustomStatusResponseWrapper(response, status) : response);
 			this.repository.add(trace);
 		}
 	}
@@ -124,7 +124,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			Map<String, Object> trace) {
 		HttpSession session = request.getSession(false);
 		add(trace, Include.SESSION_ID, "sessionId",
-				(session == null ? null : session.getId()));
+				(session != null ? session.getId() : null));
 	}
 
 	protected Map<String, Object> getTrace(HttpServletRequest request) {
@@ -144,7 +144,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 				request.getPathTranslated());
 		add(trace, Include.CONTEXT_PATH, "contextPath", request.getContextPath());
 		add(trace, Include.USER_PRINCIPAL, "userPrincipal",
-				(userPrincipal == null ? null : userPrincipal.getName()));
+				(userPrincipal != null ? userPrincipal.getName() : null));
 		if (isIncluded(Include.PARAMETERS)) {
 			trace.put("parameters", getParameterMapCopy(request));
 		}

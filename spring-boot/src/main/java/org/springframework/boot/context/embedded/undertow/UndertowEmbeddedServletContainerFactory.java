@@ -371,13 +371,13 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private KeyStore loadKeyStore(String type, String resource, String password)
 			throws Exception {
-		type = (type == null ? "JKS" : type);
+		type = (type != null ? type : "JKS");
 		if (resource == null) {
 			return null;
 		}
 		KeyStore store = KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password == null ? null : password.toCharArray());
+		store.load(url.openStream(), password != null ? password.toCharArray() : null);
 		return store;
 	}
 
@@ -435,8 +435,8 @@ public class UndertowEmbeddedServletContainerFactory
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					createWorker(), this.accessLogDirectory, prefix, this.accessLogSuffix,
 					this.accessLogRotate);
-			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
-					: "common";
+			String formatString = (this.accessLogPattern != null ? this.accessLogPattern
+					: "common");
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
 					Undertow.class.getClassLoader());
 		}
@@ -489,8 +489,8 @@ public class UndertowEmbeddedServletContainerFactory
 		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
 		List<URL> resourceJarUrls = new ArrayList<URL>();
 		List<ResourceManager> resourceManagers = new ArrayList<ResourceManager>();
-		ResourceManager rootResourceManager = root.isDirectory()
-				? new FileResourceManager(root, 0) : new JarResourceManager(root);
+		ResourceManager rootResourceManager = (root.isDirectory()
+				? new FileResourceManager(root, 0) : new JarResourceManager(root));
 		resourceManagers.add(rootResourceManager);
 		for (URL url : metaInfResourceUrls) {
 			if ("file".equals(url.getProtocol())) {

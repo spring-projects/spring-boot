@@ -95,9 +95,10 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	private ProfilesMatcher getProfilesMatcher() {
-		return this.activeProfiles.length == 0 ? new EmptyProfilesMatcher()
-				: new ActiveProfilesMatcher(
-						new HashSet<String>(Arrays.asList(this.activeProfiles)));
+		return (this.activeProfiles.length != 0
+				? new ActiveProfilesMatcher(
+						new HashSet<String>(Arrays.asList(this.activeProfiles)))
+				: new EmptyProfilesMatcher());
 	}
 
 	private Set<String> extractProfiles(List<String> profiles, ProfileType type) {
@@ -111,8 +112,8 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 				candidateType = ProfileType.NEGATIVE;
 			}
 			if (candidateType == type) {
-				extractedProfiles.add(type == ProfileType.POSITIVE ? candidate
-						: candidate.substring(1));
+				extractedProfiles.add(type != ProfileType.POSITIVE
+						? candidate.substring(1) : candidate);
 			}
 		}
 		return extractedProfiles;

@@ -226,7 +226,7 @@ public class MongoProperties {
 		if (options == null) {
 			options = MongoClientOptions.builder().build();
 		}
-		String host = this.host == null ? "localhost" : this.host;
+		String host = (this.host != null ? this.host : "localhost");
 		return new MongoClient(Collections.singletonList(new ServerAddress(host, port)),
 				Collections.<MongoCredential>emptyList(), options);
 	}
@@ -242,13 +242,13 @@ public class MongoProperties {
 			}
 			List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 			if (hasCustomCredentials()) {
-				String database = this.authenticationDatabase == null
-						? getMongoClientDatabase() : this.authenticationDatabase;
+				String database = (this.authenticationDatabase != null
+						? this.authenticationDatabase : getMongoClientDatabase());
 				credentials.add(MongoCredential.createCredential(this.username, database,
 						this.password));
 			}
-			String host = this.host == null ? "localhost" : this.host;
-			int port = this.port != null ? this.port : DEFAULT_PORT;
+			String host = (this.host != null ? this.host : "localhost");
+			int port = (this.port != null ? this.port : DEFAULT_PORT);
 			return new MongoClient(
 					Collections.singletonList(new ServerAddress(host, port)), credentials,
 					options);

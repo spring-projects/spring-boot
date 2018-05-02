@@ -123,7 +123,7 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 		}
 
 		private String nullSafeToString(Object obj) {
-			return (obj == null ? null : obj.toString());
+			return (obj != null ? obj.toString() : null);
 		}
 
 		public MigrationType getType() {

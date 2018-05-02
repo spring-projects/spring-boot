@@ -385,7 +385,7 @@ public class RelaxedDataBinder extends DataBinder {
 		if (propertyName == null) {
 			propertyName = resolveNestedPropertyName(target, prefix, name);
 		}
-		return (propertyName == null ? name : propertyName);
+		return (propertyName != null ? propertyName : name);
 	}
 
 	private String resolveNestedPropertyName(BeanWrapper target, String prefix,
@@ -712,7 +712,7 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 
 		private boolean isBenign(PropertyOrigin origin) {
-			String name = (origin == null ? null : origin.getSource().getName());
+			String name = (origin != null ? origin.getSource().getName() : null);
 			return BENIGN_PROPERTY_SOURCE_NAMES.contains(name);
 		}
 

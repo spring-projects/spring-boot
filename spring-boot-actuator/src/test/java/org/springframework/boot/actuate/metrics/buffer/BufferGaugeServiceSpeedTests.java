@@ -69,8 +69,8 @@ public class BufferGaugeServiceSpeedTests {
 
 	private static int threadCount = 2;
 
-	private static final int number = Boolean.getBoolean("performance.test") ? 10000000
-			: 1000000;
+	private static final int number = (Boolean.getBoolean("performance.test") ? 10000000
+			: 1000000);
 
 	private static StopWatch watch = new StopWatch("count");
 

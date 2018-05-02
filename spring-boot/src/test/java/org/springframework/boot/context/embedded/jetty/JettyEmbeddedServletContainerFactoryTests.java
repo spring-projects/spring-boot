@@ -443,7 +443,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
 				.getServer().getHandler();
 		String charsetName = context.getLocaleEncoding(locale);
-		return (charsetName != null) ? Charset.forName(charsetName) : null;
+		return (charsetName != null ? Charset.forName(charsetName) : null);
 	}
 
 	@Override

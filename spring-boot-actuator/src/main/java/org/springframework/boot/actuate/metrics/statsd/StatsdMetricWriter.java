@@ -78,7 +78,7 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 	}
 
 	private static String trimPrefix(String prefix) {
-		String trimmedPrefix = StringUtils.hasText(prefix) ? prefix : null;
+		String trimmedPrefix = (StringUtils.hasText(prefix) ? prefix : null);
 		while (trimmedPrefix != null && trimmedPrefix.endsWith(".")) {
 			trimmedPrefix = trimmedPrefix.substring(0, trimmedPrefix.length() - 1);
 		}

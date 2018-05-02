@@ -67,8 +67,8 @@ public class DefaultGaugeServiceSpeedTests {
 
 	private static int threadCount = 2;
 
-	private static final int number = Boolean.getBoolean("performance.test") ? 5000000
-			: 1000000;
+	private static final int number = (Boolean.getBoolean("performance.test") ? 5000000
+			: 1000000);
 
 	private static int count;
 

@@ -107,7 +107,7 @@ public class HelpCommand extends AbstractCommand {
 				}
 				Collection<HelpExample> examples = command.getExamples();
 				if (examples != null) {
-					Log.info(examples.size() == 1 ? "example:" : "examples:");
+					Log.info(examples.size() != 1 ? "examples:" : "example:");
 					Log.info("");
 					for (HelpExample example : examples) {
 						Log.info("    " + example.getDescription() + ":");

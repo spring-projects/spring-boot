@@ -260,7 +260,7 @@ public class CommandRunner implements Iterable<Command> {
 	}
 
 	protected boolean errorMessage(String message) {
-		Log.error(message == null ? "Unexpected error" : message);
+		Log.error(message != null ? message : "Unexpected error");
 		return message != null;
 	}
 
@@ -280,8 +280,8 @@ public class CommandRunner implements Iterable<Command> {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
 				Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", command.getName(),
-						(usageHelp == null ? "" : usageHelp),
-						(description == null ? "" : description)));
+						(usageHelp != null ? usageHelp : ""),
+						(description != null ? description : "")));
 			}
 		}
 		Log.info("");

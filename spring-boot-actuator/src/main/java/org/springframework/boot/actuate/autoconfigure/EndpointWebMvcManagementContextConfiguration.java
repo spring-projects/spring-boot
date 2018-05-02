@@ -89,9 +89,8 @@ public class EndpointWebMvcManagementContextConfiguration {
 		this.corsProperties = corsProperties;
 		List<EndpointHandlerMappingCustomizer> providedCustomizers = mappingCustomizers
 				.getIfAvailable();
-		this.mappingCustomizers = providedCustomizers == null
-				? Collections.<EndpointHandlerMappingCustomizer>emptyList()
-				: providedCustomizers;
+		this.mappingCustomizers = (providedCustomizers != null ? providedCustomizers
+				: Collections.<EndpointHandlerMappingCustomizer>emptyList());
 	}
 
 	@Bean

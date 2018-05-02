@@ -164,7 +164,7 @@ public class OptionHandler {
 		OptionHelpAdapter(OptionDescriptor descriptor) {
 			this.options = new LinkedHashSet<String>();
 			for (String option : descriptor.options()) {
-				this.options.add((option.length() == 1 ? "-" : "--") + option);
+				this.options.add((option.length() != 1 ? "--" : "-") + option);
 			}
 			if (this.options.contains("--cp")) {
 				this.options.remove("--cp");

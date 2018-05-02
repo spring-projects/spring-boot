@@ -382,7 +382,7 @@ public class ServerProperties
 			return this.useForwardHeaders;
 		}
 		CloudPlatform platform = CloudPlatform.getActive(this.environment);
-		return (platform == null ? false : platform.isUsingForwardHeaders());
+		return (platform != null ? platform.isUsingForwardHeaders() : false);
 	}
 
 	public Integer getConnectionTimeout() {

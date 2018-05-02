@@ -44,7 +44,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
 		File home = getHomeFolder();
-		File propertyFile = (home == null ? null : new File(home, FILE_NAME));
+		File propertyFile = (home != null ? new File(home, FILE_NAME) : null);
 		if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
 			FileSystemResource resource = new FileSystemResource(propertyFile);
 			Properties properties;

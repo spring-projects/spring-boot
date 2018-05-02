@@ -124,7 +124,7 @@ public class CacheAutoConfiguration {
 		}
 
 		private String[] append(String[] array, String value) {
-			String[] result = new String[array == null ? 1 : array.length + 1];
+			String[] result = new String[array != null ? array.length + 1 : 1];
 			if (array != null) {
 				System.arraycopy(array, 0, result, 0, array.length);
 			}

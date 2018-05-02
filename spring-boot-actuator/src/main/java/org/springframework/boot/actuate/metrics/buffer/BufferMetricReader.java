@@ -55,7 +55,7 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 		if (buffer == null) {
 			buffer = this.gaugeBuffers.find(name);
 		}
-		return (buffer == null ? null : asMetric(name, buffer));
+		return (buffer != null ? asMetric(name, buffer) : null);
 	}
 
 	@Override

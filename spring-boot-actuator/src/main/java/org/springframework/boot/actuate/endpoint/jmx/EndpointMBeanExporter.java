@@ -115,7 +115,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	 * @param objectMapper the object mapper
 	 */
 	public EndpointMBeanExporter(ObjectMapper objectMapper) {
-		this.objectMapper = (objectMapper == null ? new ObjectMapper() : objectMapper);
+		this.objectMapper = (objectMapper != null ? objectMapper : new ObjectMapper());
 		setAutodetect(false);
 		setNamingStrategy(this.defaultNamingStrategy);
 		setAssembler(this.assembler);

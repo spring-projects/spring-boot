@@ -316,8 +316,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		factory.setValidator(determineValidator(bean));
 		// If no explicit conversion service is provided we add one so that (at least)
 		// comma-separated arrays of convertibles can be bound automatically
-		factory.setConversionService(this.conversionService == null
-				? getDefaultConversionService() : this.conversionService);
+		factory.setConversionService(this.conversionService != null
+				? this.conversionService : getDefaultConversionService());
 		if (annotation != null) {
 			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
 			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());

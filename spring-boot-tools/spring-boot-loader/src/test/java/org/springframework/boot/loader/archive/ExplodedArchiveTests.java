@@ -69,9 +69,9 @@ public class ExplodedArchiveTests {
 		File file = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(file);
 
-		this.rootFolder = StringUtils.hasText(folderName)
+		this.rootFolder = (StringUtils.hasText(folderName)
 				? this.temporaryFolder.newFolder(folderName)
-				: this.temporaryFolder.newFolder();
+				: this.temporaryFolder.newFolder());
 		JarFile jarFile = new JarFile(file);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {

@@ -67,8 +67,8 @@ public class DefaultCounterServiceSpeedTests {
 
 	private static int threadCount = 2;
 
-	private static final int number = Boolean.getBoolean("performance.test") ? 2000000
-			: 1000000;
+	private static final int number = (Boolean.getBoolean("performance.test") ? 2000000
+			: 1000000);
 
 	private static int count;
 

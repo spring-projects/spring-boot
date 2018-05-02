@@ -239,8 +239,8 @@ public class EmbeddedMongoAutoConfiguration {
 				Set<Feature> features) {
 			Assert.notNull(version, "version must not be null");
 			this.version = version;
-			this.features = (features == null ? Collections.<Feature>emptySet()
-					: features);
+			this.features = (features != null ? features
+					: Collections.<Feature>emptySet());
 		}
 
 		@Override

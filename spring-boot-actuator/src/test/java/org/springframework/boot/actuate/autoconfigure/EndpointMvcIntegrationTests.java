@@ -128,8 +128,8 @@ public class EndpointMvcIntegrationTests {
 		@Bean
 		@ConditionalOnMissingBean
 		public HttpMessageConverters messageConverters() {
-			return new HttpMessageConverters(this.converters == null
-					? Collections.<HttpMessageConverter<?>>emptyList() : this.converters);
+			return new HttpMessageConverters(this.converters != null ? this.converters
+					: Collections.<HttpMessageConverter<?>>emptyList());
 		}
 
 		@Bean

@@ -35,7 +35,7 @@ final class Trees extends ReflectionWrapper {
 
 	public Tree getTree(Element element) throws Exception {
 		Object tree = findMethod("getTree", Element.class).invoke(getInstance(), element);
-		return (tree == null ? null : new Tree(tree));
+		return (tree != null ? new Tree(tree) : null);
 	}
 
 	public static Trees instance(ProcessingEnvironment env) throws Exception {

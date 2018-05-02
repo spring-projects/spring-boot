@@ -68,7 +68,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 	protected void append(ILoggingEvent event) {
 		AppendableLogger logger = getLogger(this.destinationLogger);
 		Level remapped = this.remapLevels.get(event.getLevel());
-		logger.callAppenders(remapped == null ? event : new RemappedLoggingEvent(event));
+		logger.callAppenders(remapped != null ? new RemappedLoggingEvent(event) : event);
 	}
 
 	protected AppendableLogger getLogger(String name) {
@@ -140,7 +140,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 		public Level getLevel() {
 			Level remappedLevel = LevelRemappingAppender.this.remapLevels
 					.get(this.event.getLevel());
-			return (remappedLevel == null ? this.event.getLevel() : remappedLevel);
+			return (remappedLevel != null ? remappedLevel : this.event.getLevel());
 		}
 
 		@Override

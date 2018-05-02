@@ -139,7 +139,7 @@ public class ClassPathChangeUploaderTests {
 
 	private void assertClassFile(ClassLoaderFile file, String content, Kind kind) {
 		assertThat(file.getContents())
-				.isEqualTo(content == null ? null : content.getBytes());
+				.isEqualTo(content != null ? content.getBytes() : null);
 		assertThat(file.getKind()).isEqualTo(kind);
 	}
 

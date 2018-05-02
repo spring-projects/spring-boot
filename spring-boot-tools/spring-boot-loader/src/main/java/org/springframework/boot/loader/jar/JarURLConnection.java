@@ -205,7 +205,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 				return this.jarFile.size();
 			}
 			JarEntry entry = getJarEntry();
-			return (entry == null ? -1 : (int) entry.getSize());
+			return (entry != null ? (int) entry.getSize() : -1);
 		}
 		catch (IOException ex) {
 			return -1;
@@ -220,7 +220,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public String getContentType() {
-		return (this.jarEntryName == null ? null : this.jarEntryName.getContentType());
+		return (this.jarEntryName != null ? this.jarEntryName.getContentType() : null);
 	}
 
 	@Override
@@ -242,7 +242,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 		try {
 			JarEntry entry = getJarEntry();
-			return (entry == null ? 0 : entry.getTime());
+			return (entry != null ? entry.getTime() : 0);
 		}
 		catch (IOException ex) {
 			return 0;

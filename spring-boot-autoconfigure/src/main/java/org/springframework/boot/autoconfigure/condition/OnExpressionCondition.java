@@ -44,10 +44,10 @@ class OnExpressionCondition extends SpringBootCondition {
 		String rawExpression = expression;
 		expression = context.getEnvironment().resolvePlaceholders(expression);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		BeanExpressionResolver resolver = (beanFactory != null)
-				? beanFactory.getBeanExpressionResolver() : null;
-		BeanExpressionContext expressionContext = (beanFactory != null)
-				? new BeanExpressionContext(beanFactory, null) : null;
+		BeanExpressionResolver resolver = (beanFactory != null
+				? beanFactory.getBeanExpressionResolver() : null);
+		BeanExpressionContext expressionContext = (beanFactory != null
+				? new BeanExpressionContext(beanFactory, null) : null);
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}

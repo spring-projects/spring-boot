@@ -63,7 +63,7 @@ public final class ObjectContent<T> implements AssertProvider<ObjectContentAsser
 	@Override
 	public String toString() {
 		return "ObjectContent " + this.object
-				+ (this.type == null ? "" : " created from " + this.type);
+				+ (this.type != null ? " created from " + this.type : "");
 	}
 
 }

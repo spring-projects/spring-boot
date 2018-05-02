@@ -196,7 +196,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	 */
 	protected String getDescription(HttpServletRequest request) {
 		return "[" + request.getServletPath()
-				+ (request.getPathInfo() == null ? "" : request.getPathInfo()) + "]";
+				+ (request.getPathInfo() != null ? request.getPathInfo() : "") + "]";
 	}
 
 	private void handleCommittedResponse(HttpServletRequest request, Throwable ex) {

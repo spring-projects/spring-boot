@@ -67,17 +67,17 @@ public class MockEmbeddedServletContainerFactory
 	}
 
 	public ServletContext getServletContext() {
-		return getContainer() == null ? null : getContainer().servletContext;
+		return (getContainer() != null ? getContainer().servletContext : null);
 	}
 
 	public RegisteredServlet getRegisteredServlet(int index) {
-		return getContainer() == null ? null
-				: getContainer().getRegisteredServlets().get(index);
+		return (getContainer() != null ? getContainer().getRegisteredServlets().get(index)
+				: null);
 	}
 
 	public RegisteredFilter getRegisteredFilter(int index) {
-		return getContainer() == null ? null
-				: getContainer().getRegisteredFilters().get(index);
+		return (getContainer() != null ? getContainer().getRegisteredFilters().get(index)
+				: null);
 	}
 
 	public static class MockEmbeddedServletContainer implements EmbeddedServletContainer {

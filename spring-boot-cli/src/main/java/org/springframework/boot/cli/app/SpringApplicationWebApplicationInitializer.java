@@ -64,7 +64,7 @@ public class SpringApplicationWebApplicationInitializer
 
 	private Manifest getManifest(ServletContext servletContext) throws IOException {
 		InputStream stream = servletContext.getResourceAsStream("/META-INF/MANIFEST.MF");
-		Manifest manifest = (stream == null ? null : new Manifest(stream));
+		Manifest manifest = (stream != null ? new Manifest(stream) : null);
 		return manifest;
 	}
 

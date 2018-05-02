@@ -95,8 +95,8 @@ public class MetricExportAutoConfiguration {
 			exporters.setReader(reader);
 			exporters.setWriters(writers);
 		}
-		exporters.setExporters(this.exporters == null
-				? Collections.<String, Exporter>emptyMap() : this.exporters);
+		exporters.setExporters(this.exporters != null ? this.exporters
+				: Collections.<String, Exporter>emptyMap());
 		return exporters;
 	}
 
