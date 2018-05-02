@@ -19,7 +19,7 @@ package org.springframework.boot.liquibase;
 import liquibase.logging.Logger;
 import liquibase.logging.LoggerContext;
 import liquibase.logging.core.AbstractLoggerFactory;
-import liquibase.logging.core.Slf4jLoggerContext;
+import liquibase.logging.core.NoOpLoggerContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Vladyslav Kiriushkin
  * @since 2.1.0
  */
-public class CommonsLoggingLoggerFactory extends AbstractLoggerFactory {
+class CommonsLoggingLoggerFactory extends AbstractLoggerFactory {
 
 	@Override
 	public Logger getLog(Class clazz) {
@@ -38,7 +38,7 @@ public class CommonsLoggingLoggerFactory extends AbstractLoggerFactory {
 
 	@Override
 	public LoggerContext pushContext(String key, Object object) {
-		return new Slf4jLoggerContext(key, object);
+		return new NoOpLoggerContext();
 	}
 
 	protected Logger createLoggerImpl(Log logger) {
