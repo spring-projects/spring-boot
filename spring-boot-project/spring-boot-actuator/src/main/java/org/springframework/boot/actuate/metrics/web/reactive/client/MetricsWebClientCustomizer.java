@@ -22,8 +22,8 @@ import org.springframework.boot.web.reactive.function.client.WebClientCustomizer
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * {@link WebClientCustomizer} that configures the {@link WebClient}
- * to record request metrics.
+ * {@link WebClientCustomizer} that configures the {@link WebClient} to record request
+ * metrics.
  *
  * @author Brian Clozel
  * @since 2.1.0
@@ -33,9 +33,9 @@ public class MetricsWebClientCustomizer implements WebClientCustomizer {
 	private final MetricsWebClientFilterFunction filterFunction;
 
 	/**
-	 * Create a new {@code MetricsWebClientFilterFunction} that will record
-	 * metrics using the given {@code meterRegistry} with tags provided by the
-	 * given {@code tagProvider}.
+	 * Create a new {@code MetricsWebClientFilterFunction} that will record metrics using
+	 * the given {@code meterRegistry} with tags provided by the given
+	 * {@code tagProvider}.
 	 * @param meterRegistry the meter registry
 	 * @param tagProvider the tag provider
 	 * @param metricName the name of the recorded metric
@@ -48,10 +48,11 @@ public class MetricsWebClientCustomizer implements WebClientCustomizer {
 
 	@Override
 	public void customize(WebClient.Builder webClientBuilder) {
-		webClientBuilder.filters(filterFunctions -> {
+		webClientBuilder.filters((filterFunctions) -> {
 			if (!filterFunctions.contains(this.filterFunction)) {
 				filterFunctions.add(0, this.filterFunction);
 			}
 		});
 	}
+
 }

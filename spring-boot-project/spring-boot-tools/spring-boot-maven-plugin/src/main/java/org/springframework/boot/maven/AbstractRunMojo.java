@@ -213,7 +213,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @see #logDisabledFork()
 	 */
 	protected boolean enableForkByDefault() {
-		return hasAgent() || hasJvmArgs() || hasEnvVariables() || hasWorkingDirectorySet();
+		return hasAgent() || hasJvmArgs() || hasEnvVariables()
+				|| hasWorkingDirectorySet();
 	}
 
 	private boolean hasAgent() {
@@ -221,13 +222,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private boolean hasJvmArgs() {
-		return (this.jvmArguments != null && !this.jvmArguments.isEmpty()) ||
-				(this.systemPropertyVariables != null
+		return (this.jvmArguments != null && !this.jvmArguments.isEmpty())
+				|| (this.systemPropertyVariables != null
 						&& !this.systemPropertyVariables.isEmpty());
 	}
 
 	private boolean hasEnvVariables() {
-		return (this.environmentVariables != null && !this.environmentVariables.isEmpty());
+		return (this.environmentVariables != null
+				&& !this.environmentVariables.isEmpty());
 	}
 
 	private boolean hasWorkingDirectorySet() {
@@ -259,9 +261,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 		if (hasJvmArgs()) {
 			RunArguments runArguments = resolveJvmArguments();
-			getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
-					+ Arrays.stream(runArguments.asArray()).collect(
-							Collectors.joining(" ")) + "]");
+			getLog().warn("Fork mode disabled, ignoring JVM argument(s) [" + Arrays
+					.stream(runArguments.asArray()).collect(Collectors.joining(" "))
+					+ "]");
 		}
 		if (hasWorkingDirectorySet()) {
 			getLog().warn("Fork mode disabled, ignoring working directory configuration");
@@ -338,10 +340,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	protected RunArguments resolveJvmArguments() {
 		final StringBuilder stringBuilder = new StringBuilder();
 		if (this.systemPropertyVariables != null) {
-			stringBuilder.append(this.systemPropertyVariables
-					.entrySet()
-					.stream()
-					.map(e -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
+			stringBuilder.append(this.systemPropertyVariables.entrySet().stream()
+					.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
 					.collect(Collectors.joining(" ")));
 		}
 		if (this.jvmArguments != null) {

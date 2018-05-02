@@ -38,33 +38,24 @@ import static org.mockito.Mockito.mock;
  */
 public class WebFluxMetricsAutoConfigurationTests {
 
-	private ReactiveWebApplicationContextRunner contextRunner =
-			new ReactiveWebApplicationContextRunner()
-					.withConfiguration(AutoConfigurations.of(
-							MetricsAutoConfiguration.class,
-							SimpleMetricsExportAutoConfiguration.class,
-							WebFluxMetricsAutoConfiguration.class));
+	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+					SimpleMetricsExportAutoConfiguration.class,
+					WebFluxMetricsAutoConfiguration.class));
 
 	@Test
 	public void shouldProvideWebFluxMetricsBeans() {
-		this.contextRunner
-				.run((context) -> {
-					assertThat(context)
-							.getBeans(MetricsWebFilter.class).hasSize(1);
-					assertThat(context)
-							.getBeans(DefaultWebFluxTagsProvider.class).hasSize(1);
-				});
+		this.contextRunner.run((context) -> {
+			assertThat(context).getBeans(MetricsWebFilter.class).hasSize(1);
+			assertThat(context).getBeans(DefaultWebFluxTagsProvider.class).hasSize(1);
+		});
 	}
 
 	@Test
 	public void shouldNotOverrideCustomTagsProvider() {
-		this.contextRunner
-				.withUserConfiguration(CustomWebFluxTagsProviderConfig.class)
-				.run((context) -> {
-					assertThat(context)
-							.getBeans(WebFluxTagsProvider.class)
-							.hasSize(1).containsKey("customWebFluxTagsProvider");
-				});
+		this.contextRunner.withUserConfiguration(CustomWebFluxTagsProviderConfig.class)
+				.run((context) -> assertThat(context).getBeans(WebFluxTagsProvider.class)
+						.hasSize(1).containsKey("customWebFluxTagsProvider"));
 	}
 
 	@Configuration

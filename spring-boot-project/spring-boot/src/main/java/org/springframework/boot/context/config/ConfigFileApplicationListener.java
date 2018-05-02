@@ -342,15 +342,16 @@ public class ConfigFileApplicationListener
 		 * properties that are already set.
 		 */
 		private void initializeProfiles() {
-			//The default profile for these purposes is represented as null. We add it
+			// The default profile for these purposes is represented as null. We add it
 			// first so that it is processed first and has lowest priority.
 			this.profiles.add(null);
 			Set<Profile> activatedViaProperty = getProfilesActivatedViaActiveProfileProperty();
 			processOtherActiveProfiles(activatedViaProperty);
-			// Any pre-existing active activeProfiles set via property sources (e.g. System
+			// Any pre-existing active activeProfiles set via property sources (e.g.
+			// System
 			// properties) take precedence over those added in config files.
 			addActiveProfiles(activatedViaProperty);
-			if (this.profiles.size() == 1) {     //only has null profile
+			if (this.profiles.size() == 1) { // only has null profile
 				for (String defaultProfileName : this.environment.getDefaultProfiles()) {
 					ConfigFileApplicationListener.Profile defaultProfile = new ConfigFileApplicationListener.Profile(
 							defaultProfileName, true);
@@ -372,9 +373,10 @@ public class ConfigFileApplicationListener
 		}
 
 		private void processOtherActiveProfiles(Set<Profile> activatedViaProperty) {
-			List<Profile> otherActiveProfiles = Arrays.stream(this.environment.getActiveProfiles())
-					.map(Profile::new)
-					.filter(o -> !activatedViaProperty.contains(o)).collect(Collectors.toList());
+			List<Profile> otherActiveProfiles = Arrays
+					.stream(this.environment.getActiveProfiles()).map(Profile::new)
+					.filter((o) -> !activatedViaProperty.contains(o))
+					.collect(Collectors.toList());
 			this.profiles.addAll(otherActiveProfiles);
 		}
 
@@ -397,7 +399,8 @@ public class ConfigFileApplicationListener
 		}
 
 		private void removeUnprocessedDefaultProfiles() {
-			this.profiles.removeIf(profile -> (profile != null && profile.isDefaultProfile()));
+			this.profiles.removeIf(
+					(profile) -> (profile != null && profile.isDefaultProfile()));
 		}
 
 		private DocumentFilter getPositiveProfileFilter(Profile profile) {

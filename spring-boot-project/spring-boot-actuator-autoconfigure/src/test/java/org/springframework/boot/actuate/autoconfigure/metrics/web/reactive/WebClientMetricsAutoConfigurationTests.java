@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.mock.http.client.reactive.MockClientHttpResponse;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,9 +48,9 @@ import static org.mockito.Mockito.mock;
  */
 public class WebClientMetricsAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner =
-			new ApplicationContextRunner().with(MetricsRun.simple())
-					.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class));
+	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.with(MetricsRun.simple())
+			.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class));
 
 	private ClientHttpConnector connector;
 
@@ -72,8 +71,7 @@ public class WebClientMetricsAutoConfigurationTests {
 			WebClient webClient = builder.clientConnector(this.connector).build();
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			assertThat(registry.find("http.client.requests").meter()).isNull();
-			ClientResponse response = webClient.get()
-					.uri("http://example.org/projects/{project}", "spring-boot")
+			webClient.get().uri("http://example.org/projects/{project}", "spring-boot")
 					.exchange().block();
 			assertThat(registry.find("http.client.requests")
 					.tags("uri", "/projects/{project}").meter()).isNotNull();
@@ -83,11 +81,9 @@ public class WebClientMetricsAutoConfigurationTests {
 	@Test
 	public void shouldNotOverrideCustomTagsProvider() {
 		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class)
-				.run((context) -> {
-					assertThat(context)
-							.getBeans(WebClientExchangeTagsProvider.class)
-							.hasSize(1).containsKey("customTagProvider");
-				});
+				.run((context) -> assertThat(context)
+						.getBeans(WebClientExchangeTagsProvider.class).hasSize(1)
+						.containsKey("customTagProvider"));
 	}
 
 	@Test
@@ -97,15 +93,16 @@ public class WebClientMetricsAutoConfigurationTests {
 				.run((context) -> {
 					WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 					WebClient webClient = builder.clientConnector(this.connector).build();
-					MetricsProperties properties = context.getBean(MetricsProperties.class);
+					MetricsProperties properties = context
+							.getBean(MetricsProperties.class);
 					int maxUriTags = properties.getWeb().getClient().getMaxUriTags();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					for (int i = 0; i < maxUriTags + 10; i++) {
-						webClient.get()
-								.uri("http://example.org/projects/" + i)
-								.exchange().block();
+						webClient.get().uri("http://example.org/projects/" + i).exchange()
+								.block();
 					}
-					assertThat(registry.get("http.client.requests").meters()).hasSize(maxUriTags);
+					assertThat(registry.get("http.client.requests").meters())
+							.hasSize(maxUriTags);
 					assertThat(this.out.toString())
 							.contains("Reached the maximum number of URI tags "
 									+ "for 'http.client.requests'");

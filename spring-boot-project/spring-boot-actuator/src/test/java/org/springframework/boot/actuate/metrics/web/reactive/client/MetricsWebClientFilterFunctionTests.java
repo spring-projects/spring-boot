@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-
 /**
  * Tests for {@link MetricsWebClientFilterFunction}
  *
@@ -46,7 +45,8 @@ import static org.mockito.Mockito.mock;
  */
 public class MetricsWebClientFilterFunctionTests {
 
-	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
+	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName()
+			+ ".uriTemplate";
 
 	private MeterRegistry registry;
 
@@ -62,58 +62,59 @@ public class MetricsWebClientFilterFunctionTests {
 		this.filterFunction = new MetricsWebClientFilterFunction(this.registry,
 				new DefaultWebClientExchangeTagsProvider(), "http.client.requests");
 		this.response = mock(ClientResponse.class);
-		this.exchange = r -> Mono.just(this.response);
+		this.exchange = (r) -> Mono.just(this.response);
 	}
 
 	@Test
 	public void filterShouldRecordTimer() {
-		ClientRequest request = ClientRequest
-				.create(HttpMethod.GET, URI.create("http://example.com/projects/spring-boot"))
-				.build();
+		ClientRequest request = ClientRequest.create(HttpMethod.GET,
+				URI.create("http://example.com/projects/spring-boot")).build();
 		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		this.filterFunction.filter(request, this.exchange).block();
 		assertThat(this.registry.get("http.client.requests")
-				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200").timer()
-				.count()).isEqualTo(1);
+				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "200")
+				.timer().count()).isEqualTo(1);
 	}
 
 	@Test
 	public void filterWhenUriTemplatePresentShouldRecordTimer() {
 		ClientRequest request = ClientRequest
-				.create(HttpMethod.GET, URI.create("http://example.com/projects/spring-boot"))
-				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}")
-				.build();
+				.create(HttpMethod.GET,
+						URI.create("http://example.com/projects/spring-boot"))
+				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
 		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 		this.filterFunction.filter(request, this.exchange).block();
 		assertThat(this.registry.get("http.client.requests")
-				.tags("method", "GET", "uri", "/projects/{project}", "status", "200").timer()
-				.count()).isEqualTo(1);
+				.tags("method", "GET", "uri", "/projects/{project}", "status", "200")
+				.timer().count()).isEqualTo(1);
 	}
 
 	@Test
 	public void filterWhenIoExceptionThrownShouldRecordTimer() {
-		ClientRequest request = ClientRequest
-				.create(HttpMethod.GET, URI.create("http://example.com/projects/spring-boot"))
-				.build();
-		ExchangeFunction errorExchange = r -> Mono.error(new IOException());
+		ClientRequest request = ClientRequest.create(HttpMethod.GET,
+				URI.create("http://example.com/projects/spring-boot")).build();
+		ExchangeFunction errorExchange = (r) -> Mono.error(new IOException());
 		this.filterFunction.filter(request, errorExchange)
-				.onErrorResume(IOException.class, t -> Mono.empty()).block();
-		assertThat(this.registry.get("http.client.requests")
-				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "IO_ERROR").timer()
-				.count()).isEqualTo(1);
+				.onErrorResume(IOException.class, (t) -> Mono.empty()).block();
+		assertThat(
+				this.registry
+						.get("http.client.requests").tags("method", "GET", "uri",
+								"/projects/spring-boot", "status", "IO_ERROR")
+						.timer().count()).isEqualTo(1);
 	}
 
 	@Test
 	public void filterWhenExceptionThrownShouldRecordTimer() {
-		ClientRequest request = ClientRequest
-				.create(HttpMethod.GET, URI.create("http://example.com/projects/spring-boot"))
-				.build();
-		ExchangeFunction exchange = r -> Mono.error(new IllegalArgumentException());
+		ClientRequest request = ClientRequest.create(HttpMethod.GET,
+				URI.create("http://example.com/projects/spring-boot")).build();
+		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException());
 		this.filterFunction.filter(request, exchange)
-				.onErrorResume(IllegalArgumentException.class, t -> Mono.empty()).block();
-		assertThat(this.registry.get("http.client.requests")
-				.tags("method", "GET", "uri", "/projects/spring-boot", "status", "CLIENT_ERROR").timer()
-				.count()).isEqualTo(1);
+				.onErrorResume(IllegalArgumentException.class, (t) -> Mono.empty())
+				.block();
+		assertThat(this.registry
+				.get("http.client.requests").tags("method", "GET", "uri",
+						"/projects/spring-boot", "status", "CLIENT_ERROR")
+				.timer().count()).isEqualTo(1);
 	}
 
 }
