@@ -42,6 +42,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author Yan Na
  * @since 2.0.0
  */
 public class JettyWebServerFactoryCustomizer implements
@@ -85,6 +86,8 @@ public class JettyWebServerFactoryCustomizer implements
 		propertyMapper.from(jettyProperties::getAccesslog)
 				.when(ServerProperties.Jetty.Accesslog::isEnabled)
 				.to((accesslog) -> customizeAccessLog(factory, accesslog));
+		WebServerFactoryUtils.coverEnvironmentServerPort(this.environment,
+				this.serverProperties);
 	}
 
 	private boolean isPositive(Integer value) {

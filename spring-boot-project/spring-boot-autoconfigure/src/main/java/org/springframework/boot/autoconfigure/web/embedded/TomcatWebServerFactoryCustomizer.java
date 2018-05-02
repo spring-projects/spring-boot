@@ -46,6 +46,7 @@ import org.springframework.util.StringUtils;
  * @author Yulin Qin
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Yan Na
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer implements
@@ -103,6 +104,8 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
+		WebServerFactoryUtils.coverEnvironmentServerPort(this.environment,
+				this.serverProperties);
 	}
 
 	private boolean isPositive(int value) {
