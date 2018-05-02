@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  */
 class IdeApplicationLauncher extends AbstractApplicationLauncher {
 
-	private final File exploded = new File("target/ide application");
+	private final File exploded = new File("target/the+ide application");
 
 	IdeApplicationLauncher(ApplicationBuilder applicationBuilder) {
 		super(applicationBuilder);

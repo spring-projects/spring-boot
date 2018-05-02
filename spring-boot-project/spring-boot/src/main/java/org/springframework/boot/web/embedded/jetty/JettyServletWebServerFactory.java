@@ -279,9 +279,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 	}
 
-	private Resource createResource(URL url) throws IOException {
+	private Resource createResource(URL url) throws Exception {
 		if ("file".equals(url.getProtocol())) {
-			File file = new File(getDecodedFile(url));
+			File file = new File(url.toURI());
 			if (file.isFile()) {
 				return Resource.newResource("jar:" + url + "!/META-INF/resources");
 			}
