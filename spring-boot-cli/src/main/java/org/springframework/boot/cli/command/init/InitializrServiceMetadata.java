@@ -227,7 +227,7 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private final static class MetadataHolder<K, T> {
+	private static final class MetadataHolder<K, T> {
 
 		private final Map<K, T> content;
 

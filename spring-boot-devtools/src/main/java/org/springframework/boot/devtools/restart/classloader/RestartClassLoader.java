@@ -91,9 +91,9 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		}
 		Method classLoadingLockMethod = ReflectionUtils.findMethod(ClassLoader.class,
 				"getClassLoadingLock", String.class);
-		this.classLoadingLockSupplier = classLoadingLockMethod != null
-						? new StandardClassLoadingLockSupplier()
-						: new Java6ClassLoadingLockSupplier();
+		this.classLoadingLockSupplier = (classLoadingLockMethod != null
+				? new StandardClassLoadingLockSupplier()
+				: new Java6ClassLoadingLockSupplier());
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public class JacksonTesterTests extends AbstractJsonMarshalTesterTests {
 		return new JacksonTester<Object>(resourceLoadClass, type, new ObjectMapper());
 	}
 
-	static abstract class InitFieldsBaseClass {
+	abstract static class InitFieldsBaseClass {
 
 		public JacksonTester<ExampleObject> base;
 

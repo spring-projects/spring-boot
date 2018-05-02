@@ -64,7 +64,7 @@ public class TestableInitialContextFactory implements InitialContextFactory {
 		return context;
 	}
 
-	private final static class TestableContext extends InitialContext {
+	private static final class TestableContext extends InitialContext {
 
 		private final Map<String, Object> bindings = new HashMap<String, Object>();
 

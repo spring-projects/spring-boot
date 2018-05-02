@@ -199,7 +199,7 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	/**
 	 * Simple {@link Gauge} implementation to {@literal double} value.
 	 */
-	private final static class SimpleGauge implements Gauge<Double> {
+	private static final class SimpleGauge implements Gauge<Double> {
 
 		private volatile double value;
 
@@ -221,7 +221,7 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	/**
 	 * Strategy used to register metrics.
 	 */
-	private static abstract class MetricRegistrar<T extends Metric> {
+	private abstract static class MetricRegistrar<T extends Metric> {
 
 		private final Class<T> type;
 

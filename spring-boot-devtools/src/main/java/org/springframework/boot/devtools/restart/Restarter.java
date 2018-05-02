@@ -606,7 +606,7 @@ public class Restarter {
 	 * Set the restarter instance (useful for testing).
 	 * @param instance the instance to set
 	 */
-	final static void setInstance(Restarter instance) {
+	static final void setInstance(Restarter instance) {
 		synchronized (INSTANCE_MONITOR) {
 			Restarter.instance = instance;
 		}

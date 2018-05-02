@@ -338,7 +338,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	static abstract class AccessLogCustomizer<T extends EmbeddedServletContainerFactory>
+	abstract static class AccessLogCustomizer<T extends EmbeddedServletContainerFactory>
 			implements EmbeddedServletContainerCustomizer, Ordered {
 
 		private final Class<T> factoryClass;

@@ -190,7 +190,7 @@ public class ShellProperties {
 	/**
 	 * Base class for CRaSH properties.
 	 */
-	public static abstract class CrshShellProperties {
+	public abstract static class CrshShellProperties {
 
 		/**
 		 * Apply the properties to a CRaSH configuration.
@@ -203,7 +203,7 @@ public class ShellProperties {
 	/**
 	 * Base class for Auth specific properties.
 	 */
-	public static abstract class CrshShellAuthenticationProperties
+	public abstract static class CrshShellAuthenticationProperties
 			extends CrshShellProperties {
 
 	}

@@ -76,7 +76,7 @@ public class SilentExitExceptionHandlerTests {
 
 	}
 
-	private static abstract class TestThread extends Thread {
+	private abstract static class TestThread extends Thread {
 
 		private Throwable thrown;
 
