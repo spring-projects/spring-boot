@@ -31,6 +31,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  *
  * @author Stephane Nicoll
  */
+@SuppressWarnings("unused")
 // tag::test[]
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = "spring.jmx.enabled=true")
@@ -43,7 +44,6 @@ public class SampleJmxTests {
 	@Test
 	public void exampleTest() {
 		// ...
-
 	}
 
 }
