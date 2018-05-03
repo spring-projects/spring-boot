@@ -143,6 +143,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Statement separator in SQL initialization scripts.
 	 */
 	private String separator = ";";
+	
+	/**
+	 * Identifies single-line comments within the SQL scripts.
+	 */
+	private String commentPrefix = ScriptUtils.DEFAULT_COMMENT_PREFIX;
 
 	/**
 	 * SQL scripts encoding.
@@ -456,6 +461,15 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	public void setSeparator(String separator) {
 		this.separator = separator;
+	}
+	
+	/**
+	 * Set the prefix that identifies single-line comments within the SQL scripts.
+	 * <p>Defaults to {@code "--"}.
+	 * @param commentPrefix the prefix for single-line comments
+	 */
+	public void setCommentPrefix(String commentPrefix) {
+		this.commentPrefix = commentPrefix;
 	}
 
 	public Charset getSqlScriptEncoding() {
