@@ -168,7 +168,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Manifest getManifest() throws IOException {
-		Manifest manifest = (this.manifest == null ? null : this.manifest.get());
+		Manifest manifest = (this.manifest != null ? this.manifest.get() : null);
 		if (manifest == null) {
 			try {
 				manifest = this.manifestSupplier.get();
@@ -222,7 +222,7 @@ public class JarFile extends java.util.jar.JarFile {
 		if (ze instanceof JarEntry) {
 			return this.entries.getInputStream((JarEntry) ze);
 		}
-		return getInputStream(ze == null ? null : ze.getName());
+		return getInputStream(ze != null ? ze.getName() : null);
 	}
 
 	InputStream getInputStream(String name) throws IOException {

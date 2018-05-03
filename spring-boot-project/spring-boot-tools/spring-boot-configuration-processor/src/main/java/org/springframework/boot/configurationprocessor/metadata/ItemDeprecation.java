@@ -108,7 +108,7 @@ public class ItemDeprecation {
 	}
 
 	private int nullSafeHashCode(Object o) {
-		return (o == null ? 0 : o.hashCode());
+		return (o != null ? o.hashCode() : 0);
 	}
 
 }

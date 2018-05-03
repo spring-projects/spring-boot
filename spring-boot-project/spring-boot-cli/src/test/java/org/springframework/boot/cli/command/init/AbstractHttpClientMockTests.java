@@ -119,8 +119,8 @@ public abstract class AbstractHttpClientMockTests {
 		try {
 			HttpEntity entity = mock(HttpEntity.class);
 			given(entity.getContent()).willReturn(new ByteArrayInputStream(content));
-			Header contentTypeHeader = contentType != null
-					? new BasicHeader("Content-Type", contentType) : null;
+			Header contentTypeHeader = (contentType != null
+					? new BasicHeader("Content-Type", contentType) : null);
 			given(entity.getContentType()).willReturn(contentTypeHeader);
 			given(response.getEntity()).willReturn(entity);
 			return entity;
@@ -138,7 +138,7 @@ public abstract class AbstractHttpClientMockTests {
 
 	protected void mockHttpHeader(CloseableHttpResponse response, String headerName,
 			String value) {
-		Header header = value != null ? new BasicHeader(headerName, value) : null;
+		Header header = (value != null ? new BasicHeader(headerName, value) : null);
 		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
 

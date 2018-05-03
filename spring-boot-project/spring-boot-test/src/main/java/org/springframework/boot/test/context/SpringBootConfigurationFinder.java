@@ -79,7 +79,7 @@ final class SpringBootConfigurationFinder {
 
 	private String getParentPackage(String sourcePackage) {
 		int lastDot = sourcePackage.lastIndexOf('.');
-		return (lastDot == -1 ? "" : sourcePackage.substring(0, lastDot));
+		return (lastDot != -1 ? sourcePackage.substring(0, lastDot) : "");
 	}
 
 	/**

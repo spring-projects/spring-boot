@@ -98,8 +98,8 @@ public class TestConfigurationMetadataAnnotationProcessor
 			}
 			return this.metadata;
 		}
-		catch (IOException e) {
-			throw new RuntimeException("Failed to read metadata from disk", e);
+		catch (IOException ex) {
+			throw new RuntimeException("Failed to read metadata from disk", ex);
 		}
 	}
 

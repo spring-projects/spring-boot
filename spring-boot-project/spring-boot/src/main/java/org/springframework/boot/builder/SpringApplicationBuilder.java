@@ -408,7 +408,7 @@ public class SpringApplicationBuilder {
 		for (String candidate : candidates) {
 			int candidateIndex = property.indexOf(candidate);
 			if (candidateIndex > 0) {
-				index = (index == -1 ? candidateIndex : Math.min(index, candidateIndex));
+				index = (index != -1 ? Math.min(index, candidateIndex) : candidateIndex);
 			}
 		}
 		return index;

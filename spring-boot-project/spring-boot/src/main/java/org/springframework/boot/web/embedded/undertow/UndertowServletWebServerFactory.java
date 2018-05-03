@@ -303,8 +303,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					createWorker(), this.accessLogDirectory, prefix, this.accessLogSuffix,
 					this.accessLogRotate);
-			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
-					: "common";
+			String formatString = (this.accessLogPattern != null ? this.accessLogPattern
+					: "common");
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
 					Undertow.class.getClassLoader());
 		}
@@ -355,8 +355,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
 		List<URL> resourceJarUrls = new ArrayList<>();
 		List<ResourceManager> resourceManagers = new ArrayList<>();
-		ResourceManager rootResourceManager = docBase.isDirectory()
-				? new FileResourceManager(docBase, 0) : new JarResourceManager(docBase);
+		ResourceManager rootResourceManager = (docBase.isDirectory()
+				? new FileResourceManager(docBase, 0) : new JarResourceManager(docBase));
 		resourceManagers.add(root == null ? rootResourceManager
 				: new LoaderHidingResourceManager(rootResourceManager));
 		for (URL url : metaInfResourceUrls) {
@@ -389,8 +389,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			File root = docBase != null ? docBase : createTempDir("undertow-docbase");
 			return root.getCanonicalFile();
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Cannot get canonical document root", e);
+		catch (IOException ex) {
+			throw new IllegalStateException("Cannot get canonical document root", ex);
 		}
 	}
 

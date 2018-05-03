@@ -73,7 +73,7 @@ public class CommandCompleter extends StringsCompleter {
 	public int complete(String buffer, int cursor, List<CharSequence> candidates) {
 		int completionIndex = super.complete(buffer, cursor, candidates);
 		int spaceIndex = buffer.indexOf(' ');
-		String commandName = (spaceIndex == -1) ? "" : buffer.substring(0, spaceIndex);
+		String commandName = ((spaceIndex != -1) ? buffer.substring(0, spaceIndex) : "");
 		if (!"".equals(commandName.trim())) {
 			for (Command command : this.commands) {
 				if (command.getName().equals(commandName)) {
@@ -129,7 +129,7 @@ public class CommandCompleter extends StringsCompleter {
 		OptionHelpLine(OptionHelp optionHelp) {
 			StringBuilder options = new StringBuilder();
 			for (String option : optionHelp.getOptions()) {
-				options.append(options.length() == 0 ? "" : ", ");
+				options.append(options.length() != 0 ? ", " : "");
 				options.append(option);
 			}
 			this.options = options.toString();

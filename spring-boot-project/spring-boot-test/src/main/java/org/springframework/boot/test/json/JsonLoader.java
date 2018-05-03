@@ -43,7 +43,7 @@ class JsonLoader {
 
 	JsonLoader(Class<?> resourceLoadClass, Charset charset) {
 		this.resourceLoadClass = resourceLoadClass;
-		this.charset = charset == null ? StandardCharsets.UTF_8 : charset;
+		this.charset = (charset != null ? charset : StandardCharsets.UTF_8);
 	}
 
 	Class<?> getResourceLoadClass() {

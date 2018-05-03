@@ -112,7 +112,7 @@ public class LoggersEndpoint {
 		}
 
 		private String getName(LogLevel level) {
-			return (level == null ? null : level.name());
+			return (level != null ? level.name() : null);
 		}
 
 		public String getConfiguredLevel() {
