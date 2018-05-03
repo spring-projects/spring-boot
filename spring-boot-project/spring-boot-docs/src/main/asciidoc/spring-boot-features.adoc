@@ -6096,7 +6096,13 @@ context by default only if you use `SpringApplication` to create it.
 Spring Boot provides a `@SpringBootTest` annotation, which can be used as an alternative
 to the standard `spring-test` `@ContextConfiguration` annotation when you need Spring
 Boot features. The annotation works by creating the `ApplicationContext` used in your
-tests through `SpringApplication`.
+tests through `SpringApplication`. In addition to `@SpringBootTest` a number of other
+annotations are also provided for
+<<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,testing more
+specific slices>> of an application.
+
+TIP: Don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise
+the annotations will be ignored.
 
 You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine how
 your tests run:
@@ -6120,13 +6126,6 @@ test method by default. However, as using this arrangement with either `RANDOM_P
 `DEFINED_PORT` implicitly provides a real servlet environment, the HTTP client and server
 run in separate threads and, thus, in separate transactions. Any transaction initiated on
 the server does not roll back in this case.
-
-NOTE: In addition to `@SpringBootTest`, a number of other annotations are also provided
-for testing more specific slices of an application. You can find more detail throughout
-this chapter.
-
-TIP: Do not forget to add `@RunWith(SpringRunner.class)` to your test. Otherwise, the
-annotations are ignored.
 
 
 
@@ -6241,6 +6240,19 @@ Spring Boot also provides a `TestRestTemplate` facility:
 [source,java,indent=0]
 ----
 include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[tag=test-random-port]
+----
+
+
+
+[[boot-features-testing-spring-boot-applications-jmx]]
+==== Using JMX
+As the test context framework caches context, JMX is disabled by default to prevent
+identical components to register on the same domain. If such test needs access to an
+`MBeanServer`, consider marking it dirty as well:
+
+[source,java,indent=0]
+----
+include::{test-examples}/jmx/SampleJmxTests.java[tag=test]
 ----
 
 
