@@ -53,7 +53,7 @@ public class OriginTrackedValue implements OriginProvider {
 
 	@Override
 	public String toString() {
-		return (this.value == null ? null : this.value.toString());
+		return (this.value != null ? this.value.toString() : null);
 	}
 
 	@Override

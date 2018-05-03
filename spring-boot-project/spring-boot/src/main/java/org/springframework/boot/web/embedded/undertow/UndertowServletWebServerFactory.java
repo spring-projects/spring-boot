@@ -387,7 +387,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private File getCanonicalDocumentRoot(File docBase) {
 		try {
-			File root = docBase != null ? docBase : createTempDir("undertow-docbase");
+			File root = (docBase != null ? docBase : createTempDir("undertow-docbase"));
 			return root.getCanonicalFile();
 		}
 		catch (IOException ex) {

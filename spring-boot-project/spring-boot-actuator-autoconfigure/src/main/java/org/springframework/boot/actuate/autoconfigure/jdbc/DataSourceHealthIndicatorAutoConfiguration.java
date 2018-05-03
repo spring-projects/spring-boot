@@ -112,7 +112,7 @@ public class DataSourceHealthIndicatorAutoConfiguration extends
 	private String getValidationQuery(DataSource source) {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
 				.getDataSourcePoolMetadata(source);
-		return (poolMetadata == null ? null : poolMetadata.getValidationQuery());
+		return (poolMetadata != null ? poolMetadata.getValidationQuery() : null);
 	}
 
 }

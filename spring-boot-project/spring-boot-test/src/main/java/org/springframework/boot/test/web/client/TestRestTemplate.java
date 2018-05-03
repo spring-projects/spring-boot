@@ -130,7 +130,7 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username,
 			String password, HttpClientOption... httpClientOptions) {
-		this(restTemplateBuilder == null ? null : restTemplateBuilder.build(), username,
+		this(restTemplateBuilder != null ? restTemplateBuilder.build() : null, username,
 				password, httpClientOptions);
 	}
 
@@ -138,8 +138,8 @@ public class TestRestTemplate {
 			HttpClientOption... httpClientOptions) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		this.httpClientOptions = httpClientOptions;
-		if (getRequestFactoryClass(restTemplate).isAssignableFrom(
-				HttpComponentsClientHttpRequestFactory.class)) {
+		if (getRequestFactoryClass(restTemplate)
+				.isAssignableFrom(HttpComponentsClientHttpRequestFactory.class)) {
 			restTemplate.setRequestFactory(
 					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}

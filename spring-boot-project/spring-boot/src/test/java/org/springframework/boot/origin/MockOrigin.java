@@ -54,7 +54,7 @@ public final class MockOrigin implements Origin {
 	}
 
 	public static Origin of(String value) {
-		return (value == null ? null : new MockOrigin(value));
+		return (value != null ? new MockOrigin(value) : null);
 	}
 
 }

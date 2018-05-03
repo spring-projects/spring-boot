@@ -120,7 +120,7 @@ public class JarFile extends java.util.jar.JarFile {
 		parser.addVisitor(centralDirectoryVisitor());
 		this.data = parser.parse(data, filter == null);
 		this.type = type;
-		this.manifestSupplier = manifestSupplier != null ? manifestSupplier : () -> {
+		this.manifestSupplier = (manifestSupplier != null ? manifestSupplier : () -> {
 			try (InputStream inputStream = getInputStream(MANIFEST_NAME)) {
 				if (inputStream == null) {
 					return null;
@@ -130,7 +130,7 @@ public class JarFile extends java.util.jar.JarFile {
 			catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-		};
+		});
 	}
 
 	private CentralDirectoryVisitor centralDirectoryVisitor() {

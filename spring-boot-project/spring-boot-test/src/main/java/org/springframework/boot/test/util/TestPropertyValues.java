@@ -235,7 +235,7 @@ public final class TestPropertyValues {
 		}
 
 		protected String applySuffix(String name) {
-			return (this.suffix == null ? name : name + "-" + this.suffix);
+			return (this.suffix != null ? name + "-" + this.suffix : name);
 		}
 
 	}

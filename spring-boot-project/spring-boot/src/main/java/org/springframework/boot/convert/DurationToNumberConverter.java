@@ -47,7 +47,7 @@ final class DurationToNumberConverter implements GenericConverter {
 			return null;
 		}
 		DurationUnit unit = sourceType.getAnnotation(DurationUnit.class);
-		return convert((Duration) source, (unit == null ? null : unit.value()),
+		return convert((Duration) source, (unit != null ? unit.value() : null),
 				targetType.getObjectType());
 	}
 

@@ -78,7 +78,7 @@ public class HeapDumpWebEndpoint {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {
 				try {
 					return new WebEndpointResponse<>(
-							dumpHeap(live == null ? true : live));
+							dumpHeap(live != null ? live : true));
 				}
 				finally {
 					this.lock.unlock();

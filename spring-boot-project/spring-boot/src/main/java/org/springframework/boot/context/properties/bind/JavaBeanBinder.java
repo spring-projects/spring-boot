@@ -287,7 +287,7 @@ class JavaBeanBinder implements BeanBinder {
 
 		public Annotation[] getAnnotations() {
 			try {
-				return (this.field == null ? null : this.field.getDeclaredAnnotations());
+				return (this.field != null ? this.field.getDeclaredAnnotations() : null);
 			}
 			catch (Exception ex) {
 				return null;
