@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -143,6 +144,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Statement separator in SQL initialization scripts.
 	 */
 	private String separator = ";";
+	
+	/**
+	 * Prefix that identifies single-line comments within the SQL scripts.
+	 */
+	private String commentPrefix = ScriptUtils.DEFAULT_COMMENT_PREFIX;
 
 	/**
 	 * SQL scripts encoding.
@@ -456,6 +462,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	public void setSeparator(String separator) {
 		this.separator = separator;
+	}
+	
+	public String getCommentPrefix() {
+		return this.commentPrefix;
+	}
+	
+	public void setCommentPrefix(String commentPrefix) {
+		this.commentPrefix = commentPrefix;
 	}
 
 	public Charset getSqlScriptEncoding() {
