@@ -194,6 +194,7 @@ class DataSourceInitializer {
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		populator.setContinueOnError(this.properties.isContinueOnError());
 		populator.setSeparator(this.properties.getSeparator());
+		populator.setCommentPrefix(this.properties.getCommentPrefix());
 		if (this.properties.getSqlScriptEncoding() != null) {
 			populator.setSqlScriptEncoding(this.properties.getSqlScriptEncoding().name());
 		}
