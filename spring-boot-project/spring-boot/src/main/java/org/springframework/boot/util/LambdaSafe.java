@@ -286,12 +286,11 @@ public final class LambdaSafe {
 		 * @param invoker the invoker used to invoke the callback
 		 */
 		public void invoke(Consumer<C> invoker) {
-			Function<C, InvocationResult<Void>> mapper = (callbackInstance) -> invoke(
-					callbackInstance, () -> {
-						invoker.accept(callbackInstance);
-						return null;
-					});
-			this.callbackInstances.stream().map(mapper).forEach((result) -> {
+			this.callbackInstances.forEach((callbackInstance) -> {
+				invoke(callbackInstance, () -> {
+					invoker.accept(callbackInstance);
+					return null;
+				});
 			});
 		}
 
