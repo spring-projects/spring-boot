@@ -37,7 +37,7 @@ import org.gradle.api.tasks.bundling.Jar;
  */
 public class BootJar extends Jar implements BootArchive {
 
-	private BootArchiveSupport support = new BootArchiveSupport(
+	private final BootArchiveSupport support = new BootArchiveSupport(
 			"org.springframework.boot.loader.JarLauncher", this::resolveZipCompression);
 
 	private FileCollection classpath;
@@ -48,10 +48,8 @@ public class BootJar extends Jar implements BootArchive {
 	 * Creates a new {@code BootJar} task.
 	 */
 	public BootJar() {
-		CopySpec bootInf = getRootSpec().addChildBeforeSpec(getMainSpec())
-				.into("BOOT-INF");
-		bootInf.into("classes", classpathFiles(File::isDirectory));
-		bootInf.into("lib", classpathFiles(File::isFile));
+		into("BOOT-INF/classes", classpathFiles(File::isDirectory));
+		into("BOOT-INF/lib", classpathFiles(File::isFile));
 	}
 
 	private Action<CopySpec> classpathFiles(Spec<File> filter) {
