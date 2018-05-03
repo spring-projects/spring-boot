@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
@@ -770,6 +772,17 @@ public class CacheAutoConfigurationTests {
 		validateCaffeineCacheWithStats();
 	}
 
+	@Test
+	public void autoConfiguredCacheManagerCanBeSwapped() {
+		load(CacheManagerPostProcessorConfiguration.class, "spring.cache.type=caffeine");
+		validateCacheManager(SimpleCacheManager.class);
+		CacheManagerPostProcessor postProcessor = this.context.getBean(
+				CacheManagerPostProcessor.class);
+		assertThat(postProcessor.cacheManagers).hasSize(1);
+		assertThat(postProcessor.cacheManagers.get(0))
+				.isInstanceOf(CaffeineCacheManager.class);
+	}
+
 	private void validateCaffeineCacheWithStats() {
 		CaffeineCacheManager cacheManager = validateCacheManager(
 				CaffeineCacheManager.class);
@@ -1160,6 +1173,39 @@ public class CacheAutoConfigurationTests {
 				throw new IllegalStateException("Customized invoked twice");
 			}
 			this.cacheManager = cacheManager;
+		}
+
+	}
+
+	@Configuration
+	@EnableCaching
+	static class CacheManagerPostProcessorConfiguration {
+
+		@Bean
+		public static BeanPostProcessor cacheManagerBeanPostProcessor() {
+			return new CacheManagerPostProcessor();
+		}
+
+	}
+
+	private static class CacheManagerPostProcessor implements BeanPostProcessor {
+
+		private final List<CacheManager> cacheManagers = new ArrayList<CacheManager>();
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean,
+				String beanName) throws BeansException {
+			return bean;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean,
+				String beanName) throws BeansException {
+			if (bean instanceof CacheManager) {
+				this.cacheManagers.add((CacheManager) bean);
+				return new SimpleCacheManager();
+			}
+			return bean;
 		}
 
 	}
