@@ -146,7 +146,7 @@ public class WebServicesAutoConfiguration {
 				return this.applicationContext
 						.getResources(ensureTrailingSlash(location) + pattern);
 			}
-			catch (IOException e) {
+			catch (IOException ex) {
 				return new Resource[0];
 			}
 		}

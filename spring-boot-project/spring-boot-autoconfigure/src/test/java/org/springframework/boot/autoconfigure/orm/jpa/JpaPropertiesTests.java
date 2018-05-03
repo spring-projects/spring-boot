@@ -307,7 +307,7 @@ public class JpaPropertiesTests {
 			given(connection.getMetaData()).willReturn(metadata);
 			given(ds.getConnection()).willReturn(connection);
 		}
-		catch (SQLException e) {
+		catch (SQLException ex) {
 			// Do nothing
 		}
 		return ds;
