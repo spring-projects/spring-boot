@@ -101,7 +101,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 		}
 		PatternParser parser = PatternLayout.createPatternParser(config);
 		List<PatternFormatter> formatters = parser.parse(options[0]);
-		AnsiElement element = (options.length == 1 ? null : ELEMENTS.get(options[1]));
+		AnsiElement element = (options.length != 1 ? ELEMENTS.get(options[1]) : null);
 		return new ColorConverter(formatters, element);
 	}
 
@@ -126,7 +126,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 			if (element == null) {
 				// Assume highlighting
 				element = LEVELS.get(event.getLevel().intLevel());
-				element = (element == null ? AnsiColor.GREEN : element);
+				element = (element != null ? element : AnsiColor.GREEN);
 			}
 			appendAnsiString(toAppendTo, buf.toString(), element);
 		}

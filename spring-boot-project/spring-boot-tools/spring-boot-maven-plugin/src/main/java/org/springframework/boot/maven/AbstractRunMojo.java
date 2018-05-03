@@ -401,8 +401,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void addDependencies(List<URL> urls)
 			throws MalformedURLException, MojoExecutionException {
-		FilterArtifacts filters = this.useTestClasspath ? getFilters()
-				: getFilters(new TestArtifactFilter());
+		FilterArtifacts filters = (this.useTestClasspath ? getFilters()
+				: getFilters(new TestArtifactFilter()));
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				filters);
 		for (Artifact artifact : artifacts) {
@@ -450,7 +450,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		public void uncaughtException(Thread thread, Throwable ex) {
 			if (!(ex instanceof ThreadDeath)) {
 				synchronized (this.monitor) {
-					this.exception = (this.exception == null ? ex : this.exception);
+					this.exception = (this.exception != null ? this.exception : ex);
 				}
 				getLog().warn(ex);
 			}

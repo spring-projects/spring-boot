@@ -175,8 +175,8 @@ public class ConditionsReportEndpoint {
 
 		public MessageAndConditions(ConditionAndOutcomes conditionAndOutcomes) {
 			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-				List<MessageAndCondition> target = conditionAndOutcome.getOutcome()
-						.isMatch() ? this.matched : this.notMatched;
+				List<MessageAndCondition> target = (conditionAndOutcome.getOutcome()
+						.isMatch() ? this.matched : this.notMatched);
 				target.add(new MessageAndCondition(conditionAndOutcome));
 			}
 		}

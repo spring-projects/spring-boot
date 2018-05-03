@@ -991,7 +991,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		}
 		try {
 			return JSONCompare.compareJSON(
-					(expectedJson == null ? null : expectedJson.toString()),
+					(expectedJson != null ? expectedJson.toString() : null),
 					this.actual.toString(), compareMode);
 		}
 		catch (Exception ex) {
@@ -1009,7 +1009,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		}
 		try {
 			return JSONCompare.compareJSON(
-					(expectedJson == null ? null : expectedJson.toString()),
+					(expectedJson != null ? expectedJson.toString() : null),
 					this.actual.toString(), comparator);
 		}
 		catch (Exception ex) {
@@ -1054,7 +1054,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 
 		JsonPathValue(CharSequence expression, Object... args) {
 			org.springframework.util.Assert.hasText(
-					(expression == null ? null : expression.toString()),
+					(expression != null ? expression.toString() : null),
 					"expression must not be null or empty");
 			this.expression = String.format(expression.toString(), args);
 			this.jsonPath = JsonPath.compile(this.expression);
@@ -1107,7 +1107,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		public Object getValue(boolean required) {
 			try {
 				CharSequence json = JsonContentAssert.this.actual;
-				return this.jsonPath.read(json == null ? null : json.toString());
+				return this.jsonPath.read(json != null ? json.toString() : null);
 			}
 			catch (Exception ex) {
 				if (!required) {

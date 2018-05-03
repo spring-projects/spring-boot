@@ -46,8 +46,8 @@ class OnResourceCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata
 				.getAllAnnotationAttributes(ConditionalOnResource.class.getName(), true);
-		ResourceLoader loader = context.getResourceLoader() == null
-				? this.defaultResourceLoader : context.getResourceLoader();
+		ResourceLoader loader = (context.getResourceLoader() != null
+				? context.getResourceLoader() : this.defaultResourceLoader);
 		List<String> locations = new ArrayList<>();
 		collectValues(locations, attributes.get("resources"));
 		Assert.isTrue(!locations.isEmpty(),

@@ -553,8 +553,8 @@ public class SpringApplication {
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
-		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
-				: new DefaultResourceLoader(getClassLoader());
+		ResourceLoader resourceLoader = (this.resourceLoader != null ? this.resourceLoader
+				: new DefaultResourceLoader(getClassLoader()));
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(
 				resourceLoader, this.banner);
 		if (this.bannerMode == Mode.LOG) {
@@ -1304,7 +1304,7 @@ public class SpringApplication {
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-			exitCode = (exitCode == 0 ? 1 : exitCode);
+			exitCode = (exitCode != 0 ? exitCode : 1);
 		}
 		return exitCode;
 	}

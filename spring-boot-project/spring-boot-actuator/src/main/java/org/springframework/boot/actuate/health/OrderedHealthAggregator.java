@@ -98,7 +98,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 		public int compare(Status s1, Status s2) {
 			int i1 = this.statusOrder.indexOf(s1.getCode());
 			int i2 = this.statusOrder.indexOf(s2.getCode());
-			return (i1 < i2 ? -1 : (i1 == i2 ? s1.getCode().compareTo(s2.getCode()) : 1));
+			return (i1 < i2 ? -1 : (i1 != i2 ? 1 : s1.getCode().compareTo(s2.getCode())));
 		}
 
 	}
