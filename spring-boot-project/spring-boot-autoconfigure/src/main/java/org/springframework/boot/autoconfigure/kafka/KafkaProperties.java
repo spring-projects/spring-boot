@@ -1002,6 +1002,7 @@ public class KafkaProperties {
 			}
 			return properties;
 		}
+
 	}
 
 	public static class Jaas {
