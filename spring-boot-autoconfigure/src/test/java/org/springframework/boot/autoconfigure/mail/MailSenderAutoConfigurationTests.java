@@ -149,9 +149,10 @@ public class MailSenderAutoConfigurationTests {
 		Session session = configureJndiSession("foo");
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
 		Session sessionBean = this.context.getBean(Session.class);
+		JavaMailSenderImpl mailSender = this.context.getBean(JavaMailSenderImpl.class);
 		assertThat(sessionBean).isEqualTo(session);
-		assertThat(this.context.getBean(JavaMailSenderImpl.class).getSession())
-				.isEqualTo(sessionBean);
+		assertThat(mailSender.getSession()).isEqualTo(sessionBean);
+		assertThat(mailSender.getDefaultEncoding()).isEqualTo("UTF-8");
 	}
 
 	@Test

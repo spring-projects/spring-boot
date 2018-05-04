@@ -69,9 +69,10 @@ public class MailSenderAutoConfiguration {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		if (this.session != null) {
 			sender.setSession(this.session);
+			applyProperties(sender);
 		}
 		else {
-			applyProperties(sender);
+			applyJavaMailProperties(sender);
 		}
 		return sender;
 	}
@@ -87,6 +88,10 @@ public class MailSenderAutoConfiguration {
 		if (this.properties.getDefaultEncoding() != null) {
 			sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
 		}
+	}
+
+	private void applyJavaMailProperties(JavaMailSenderImpl sender) {
+		applyProperties(sender);
 		if (!this.properties.getProperties().isEmpty()) {
 			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
 		}
