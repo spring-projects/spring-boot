@@ -796,7 +796,7 @@ For example, the following class:
 
 		// ... getter and setters
 
-		private static class Host {
+		public static class Host {
 
 			private String ip;
 
