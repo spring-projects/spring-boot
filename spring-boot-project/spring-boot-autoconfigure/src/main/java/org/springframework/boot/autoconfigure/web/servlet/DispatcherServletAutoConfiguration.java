@@ -90,7 +90,8 @@ public class DispatcherServletAutoConfiguration {
 
 		private final ServerProperties serverProperties;
 
-		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties, ServerProperties serverProperties) {
+		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties,
+				ServerProperties serverProperties) {
 			this.webMvcProperties = webMvcProperties;
 			this.serverProperties = serverProperties;
 		}
@@ -117,7 +118,8 @@ public class DispatcherServletAutoConfiguration {
 
 		@Bean
 		public DispatcherServletPathProvider mainDispatcherServletPathProvider() {
-			return () -> DispatcherServletConfiguration.this.serverProperties.getServlet().getPath();
+			return () -> DispatcherServletConfiguration.this.serverProperties.getServlet()
+					.getPath();
 		}
 
 	}

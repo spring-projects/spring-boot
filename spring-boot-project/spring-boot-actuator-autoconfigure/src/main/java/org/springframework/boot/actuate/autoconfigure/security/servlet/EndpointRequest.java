@@ -165,7 +165,8 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(Supplier<WebApplicationContext> webApplicationContext) {
+		protected void initialized(
+				Supplier<WebApplicationContext> webApplicationContext) {
 			this.delegate = createDelegate(webApplicationContext);
 		}
 
@@ -173,8 +174,10 @@ public final class EndpointRequest {
 				Supplier<WebApplicationContext> webApplicationContext) {
 			try {
 				WebApplicationContext context = webApplicationContext.get();
-				PathMappedEndpoints pathMappedEndpoints = context.getBean(PathMappedEndpoints.class);
-				DispatcherServletPathProvider pathProvider = context.getBean(DispatcherServletPathProvider.class);
+				PathMappedEndpoints pathMappedEndpoints = context
+						.getBean(PathMappedEndpoints.class);
+				DispatcherServletPathProvider pathProvider = context
+						.getBean(DispatcherServletPathProvider.class);
 				return createDelegate(pathMappedEndpoints, pathProvider.getServletPath());
 			}
 			catch (NoSuchBeanDefinitionException ex) {
@@ -182,18 +185,20 @@ public final class EndpointRequest {
 			}
 		}
 
-		private RequestMatcher createDelegate(PathMappedEndpoints pathMappedEndpoints, String servletPath) {
+		private RequestMatcher createDelegate(PathMappedEndpoints pathMappedEndpoints,
+				String servletPath) {
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
 				paths.addAll(pathMappedEndpoints.getAllPaths());
 			}
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
-			List<RequestMatcher> delegateMatchers = getDelegateMatchers(servletPath, paths);
+			List<RequestMatcher> delegateMatchers = getDelegateMatchers(servletPath,
+					paths);
 			if (this.includeLinks
 					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(
-						new AntPathRequestMatcher(servletPath + pathMappedEndpoints.getBasePath()));
+				delegateMatchers.add(new AntPathRequestMatcher(
+						servletPath + pathMappedEndpoints.getBasePath()));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
@@ -221,8 +226,10 @@ public final class EndpointRequest {
 			return annotation.id();
 		}
 
-		private List<RequestMatcher> getDelegateMatchers(String servletPath, Set<String> paths) {
-			return paths.stream().map((path) -> new AntPathRequestMatcher(servletPath + path + "/**"))
+		private List<RequestMatcher> getDelegateMatchers(String servletPath,
+				Set<String> paths) {
+			return paths.stream()
+					.map((path) -> new AntPathRequestMatcher(servletPath + path + "/**"))
 					.collect(Collectors.toList());
 		}
 
@@ -247,11 +254,14 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(Supplier<WebApplicationContext> webApplicationContext) {
+		protected void initialized(
+				Supplier<WebApplicationContext> webApplicationContext) {
 			try {
 				WebApplicationContext context = webApplicationContext.get();
-				WebEndpointProperties properties = context.getBean(WebEndpointProperties.class);
-				DispatcherServletPathProvider pathProvider = context.getBean(DispatcherServletPathProvider.class);
+				WebEndpointProperties properties = context
+						.getBean(WebEndpointProperties.class);
+				DispatcherServletPathProvider pathProvider = context
+						.getBean(DispatcherServletPathProvider.class);
 				this.delegate = createDelegate(pathProvider.getServletPath(), properties);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
@@ -259,7 +269,8 @@ public final class EndpointRequest {
 			}
 		}
 
-		private RequestMatcher createDelegate(String path, WebEndpointProperties properties) {
+		private RequestMatcher createDelegate(String path,
+				WebEndpointProperties properties) {
 			if (StringUtils.hasText(properties.getBasePath())) {
 				return new AntPathRequestMatcher(path + properties.getBasePath());
 			}

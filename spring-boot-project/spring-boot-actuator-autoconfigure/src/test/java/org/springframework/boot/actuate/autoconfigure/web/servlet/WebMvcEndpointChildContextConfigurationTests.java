@@ -65,9 +65,11 @@ public class WebMvcEndpointChildContextConfigurationTests {
 
 	@Test
 	public void contextShouldConfigureDispatcherServletPathProviderWithEmptyPath() {
-		this.contextRunner.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
-				.run((context) -> assertThat(context.getBean(DispatcherServletPathProvider.class)
-						.getServletPath()).isEmpty());
+		this.contextRunner
+				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
+				.run((context) -> assertThat(context
+						.getBean(DispatcherServletPathProvider.class).getServletPath())
+								.isEmpty());
 	}
 
 	static class ExistingConfig {
