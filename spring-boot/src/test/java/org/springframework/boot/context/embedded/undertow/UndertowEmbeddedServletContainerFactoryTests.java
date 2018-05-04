@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLException;
 
 import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -227,16 +227,16 @@ public class UndertowEmbeddedServletContainerFactoryTests
 
 	@Test
 	public void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
-		this.thrown.expect(anyOf(instanceOf(SSLHandshakeException.class),
-				instanceOf(SocketException.class)));
+		this.thrown.expect(
+				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
 				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
 	}
 
 	@Test
 	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
-		this.thrown.expect(anyOf(instanceOf(SSLHandshakeException.class),
-				instanceOf(SocketException.class)));
+		this.thrown.expect(
+				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
 				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
 	}
@@ -255,8 +255,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 
 	@Test
 	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
-		this.thrown.expect(anyOf(instanceOf(SSLHandshakeException.class),
-				instanceOf(SocketException.class)));
+		this.thrown.expect(
+				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}
