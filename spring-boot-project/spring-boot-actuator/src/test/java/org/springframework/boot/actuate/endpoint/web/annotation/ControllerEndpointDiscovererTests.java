@@ -57,16 +57,17 @@ public class ControllerEndpointDiscovererTests {
 
 	@Test
 	public void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
-		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run(
-				assertDiscoverer((discoverer) ->
-						assertThat(discoverer.getEndpoints()).isEmpty()));
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.run(assertDiscoverer(
+						(discoverer) -> assertThat(discoverer.getEndpoints()).isEmpty()));
 	}
 
 	@Test
 	public void getEndpointsShouldIncludeControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestControllerEndpoint.class)
 				.run(assertDiscoverer((discoverer) -> {
-					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					Collection<ExposableControllerEndpoint> endpoints = discoverer
+							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getId()).isEqualTo("testcontroller");
@@ -79,10 +80,11 @@ public class ControllerEndpointDiscovererTests {
 	@Test
 	public void getEndpointsShouldDiscoverProxyControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestProxyControllerEndpoint.class)
-				.withConfiguration(AutoConfigurations.of(
-						ValidationAutoConfiguration.class))
+				.withConfiguration(
+						AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run(assertDiscoverer((discoverer) -> {
-					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					Collection<ExposableControllerEndpoint> endpoints = discoverer
+							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getId()).isEqualTo("testcontroller");
@@ -96,7 +98,8 @@ public class ControllerEndpointDiscovererTests {
 	public void getEndpointsShouldIncludeRestControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestRestControllerEndpoint.class)
 				.run(assertDiscoverer((discoverer) -> {
-					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					Collection<ExposableControllerEndpoint> endpoints = discoverer
+							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getId()).isEqualTo("testrestcontroller");
@@ -108,10 +111,11 @@ public class ControllerEndpointDiscovererTests {
 	@Test
 	public void getEndpointsShouldDiscoverProxyRestControllerEndpoints() {
 		this.contextRunner.withUserConfiguration(TestProxyRestControllerEndpoint.class)
-				.withConfiguration(AutoConfigurations.of(
-						ValidationAutoConfiguration.class))
+				.withConfiguration(
+						AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run(assertDiscoverer((discoverer) -> {
-					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					Collection<ExposableControllerEndpoint> endpoints = discoverer
+							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableControllerEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getId()).isEqualTo("testrestcontroller");
@@ -125,7 +129,8 @@ public class ControllerEndpointDiscovererTests {
 	public void getEndpointsShouldNotDiscoverRegularEndpoints() {
 		this.contextRunner.withUserConfiguration(WithRegularEndpointConfiguration.class)
 				.run(assertDiscoverer((discoverer) -> {
-					Collection<ExposableControllerEndpoint> endpoints = discoverer.getEndpoints();
+					Collection<ExposableControllerEndpoint> endpoints = discoverer
+							.getEndpoints();
 					List<String> ids = endpoints.stream().map(ExposableEndpoint::getId)
 							.collect(Collectors.toList());
 					assertThat(ids).containsOnly("testcontroller", "testrestcontroller");
@@ -137,7 +142,8 @@ public class ControllerEndpointDiscovererTests {
 		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
 				.run(assertDiscoverer((discoverer) -> {
 					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage("ControllerEndpoints must not declare operations");
+					this.thrown.expectMessage(
+							"ControllerEndpoints must not declare operations");
 					discoverer.getEndpoints();
 				}));
 	}

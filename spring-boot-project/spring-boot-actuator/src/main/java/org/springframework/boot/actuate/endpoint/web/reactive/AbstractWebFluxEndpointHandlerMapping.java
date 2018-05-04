@@ -251,6 +251,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping
 
 		Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				Map<String, String> body);
+
 	}
 
 	/**

@@ -71,8 +71,7 @@ public class SignalFxMetricsExportAutoConfigurationTests {
 	@Test
 	public void autoConfigurationCanBeDisabled() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues(
-						"management.metrics.export.signalfx.enabled=false")
+				.withPropertyValues("management.metrics.export.signalfx.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(SignalFxMeterRegistry.class)
 						.doesNotHaveBean(SignalFxConfig.class));

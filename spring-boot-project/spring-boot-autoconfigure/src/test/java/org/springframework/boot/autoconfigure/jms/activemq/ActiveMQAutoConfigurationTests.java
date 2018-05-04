@@ -232,6 +232,7 @@ public class ActiveMQAutoConfigurationTests {
 				factory.setUserName("foobar");
 			};
 		}
+
 	}
 
 }

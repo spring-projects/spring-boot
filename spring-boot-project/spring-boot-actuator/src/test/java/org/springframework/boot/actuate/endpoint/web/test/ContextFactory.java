@@ -27,4 +27,5 @@ import org.springframework.context.ConfigurableApplicationContext;
 interface ContextFactory {
 
 	ConfigurableApplicationContext createContext(List<Class<?>> configurationClasses);
+
 }

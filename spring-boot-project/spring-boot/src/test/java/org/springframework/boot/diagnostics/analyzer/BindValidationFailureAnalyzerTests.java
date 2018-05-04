@@ -221,4 +221,5 @@ public class BindValidationFailureAnalyzerTests {
 		}
 
 	}
+
 }

@@ -56,4 +56,5 @@ public class SystemEnvironmentOriginTests {
 		assertThat(origin.toString())
 				.isEqualTo("System Environment Property \"FOO_BAR\"");
 	}
+
 }

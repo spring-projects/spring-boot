@@ -186,6 +186,7 @@ public class CouchbaseDataAutoConfigurationTests {
 		public Boolean convert(CouchbaseProperties value) {
 			return true;
 		}
+
 	}
 
 }

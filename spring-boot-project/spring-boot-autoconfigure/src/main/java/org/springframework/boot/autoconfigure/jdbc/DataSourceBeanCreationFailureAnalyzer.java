@@ -62,8 +62,8 @@ class DataSourceBeanCreationFailureAnalyzer
 		if (!StringUtils.hasText(cause.getProperties().getUrl())) {
 			description.append("'url' attribute is not specified and ");
 		}
-		description.append(
-				String.format("no embedded datasource could be configured.%n"));
+		description
+				.append(String.format("no embedded datasource could be configured.%n"));
 		description.append(String.format("%nReason: %s%n", cause.getMessage()));
 		return description.toString();
 	}

@@ -458,6 +458,7 @@ public class RabbitProperties {
 			public void setCheckoutTimeout(Duration checkoutTimeout) {
 				this.checkoutTimeout = checkoutTimeout;
 			}
+
 		}
 
 		public static class Connection {

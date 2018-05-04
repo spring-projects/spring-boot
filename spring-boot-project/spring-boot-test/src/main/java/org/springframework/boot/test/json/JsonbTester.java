@@ -123,6 +123,7 @@ public class JsonbTester<T> extends AbstractJsonMarshalTester<T> {
 				Class<?> resourceLoadClass, ResolvableType type, Jsonb marshaller) {
 			return new JsonbTester<>(resourceLoadClass, type, marshaller);
 		}
+
 	}
 
 }

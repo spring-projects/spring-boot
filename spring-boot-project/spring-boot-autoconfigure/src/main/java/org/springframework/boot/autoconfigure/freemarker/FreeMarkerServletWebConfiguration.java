@@ -77,4 +77,5 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 	public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
 		return new ResourceUrlEncodingFilter();
 	}
+
 }

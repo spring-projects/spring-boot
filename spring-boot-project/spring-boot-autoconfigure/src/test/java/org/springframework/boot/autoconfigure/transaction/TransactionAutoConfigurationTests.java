@@ -203,6 +203,7 @@ public class TransactionAutoConfigurationTests {
 		public AnotherServiceImpl anotherService() {
 			return new AnotherServiceImpl();
 		}
+
 	}
 
 	@Configuration

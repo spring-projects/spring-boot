@@ -76,6 +76,7 @@ public class ElasticsearchNodeTemplate {
 					Arrays.asList(Netty4Plugin.class));
 			new File("target/es/node/logs").mkdirs();
 		}
+
 	}
 
 	public final class ElasticsearchNode {

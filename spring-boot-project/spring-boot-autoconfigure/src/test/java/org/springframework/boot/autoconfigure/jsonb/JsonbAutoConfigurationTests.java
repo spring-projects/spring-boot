@@ -55,6 +55,7 @@ public class JsonbAutoConfigurationTests {
 		public void setData(String data) {
 			this.data = data;
 		}
+
 	}
 
 }

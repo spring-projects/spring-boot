@@ -335,6 +335,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			}
 			super.serializeAsField(pojo, jgen, provider, writer);
 		}
+
 	}
 
 	/**

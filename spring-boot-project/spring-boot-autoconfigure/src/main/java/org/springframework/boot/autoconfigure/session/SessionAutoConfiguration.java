@@ -191,6 +191,7 @@ public class SessionAutoConfiguration {
 				// Ignore
 			}
 		}
+
 	}
 
 	/**

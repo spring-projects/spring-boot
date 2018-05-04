@@ -30,4 +30,5 @@ public class TestMethodConfiguration {
 	public Object method() {
 		return null;
 	}
+
 }

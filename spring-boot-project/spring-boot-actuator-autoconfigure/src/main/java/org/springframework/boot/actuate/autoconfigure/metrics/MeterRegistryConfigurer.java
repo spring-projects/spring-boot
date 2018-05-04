@@ -28,11 +28,11 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import org.springframework.boot.util.LambdaSafe;
 
 /**
- * Configurer to apply {@link MeterRegistryCustomizer customizers},
- * {@link MeterFilter filters}, {@link MeterBinder binders} and {@link Metrics#addRegistry
- * global registration} to {@link MeterRegistry meter registries}. This configurer
- * intentionally skips {@link CompositeMeterRegistry} with the assumptions that the
- * registries it contains are beans and will be customized directly.
+ * Configurer to apply {@link MeterRegistryCustomizer customizers}, {@link MeterFilter
+ * filters}, {@link MeterBinder binders} and {@link Metrics#addRegistry global
+ * registration} to {@link MeterRegistry meter registries}. This configurer intentionally
+ * skips {@link CompositeMeterRegistry} with the assumptions that the registries it
+ * contains are beans and will be customized directly.
  *
  * @author Jon Schneider
  * @author Phillip Webb

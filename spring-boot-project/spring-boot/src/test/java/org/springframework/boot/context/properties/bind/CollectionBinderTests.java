@@ -425,6 +425,7 @@ public class CollectionBinderTests {
 		public void setItemsSet(Set<String> itemsSet) {
 			this.itemsSet = itemsSet;
 		}
+
 	}
 
 	public static class ExampleCustomNoDefaultConstructorBean {
@@ -490,6 +491,7 @@ public class CollectionBinderTests {
 		public void setValue(String value) {
 			this.value = value;
 		}
+
 	}
 
 	public static class ClonedArrayBean {

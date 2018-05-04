@@ -304,6 +304,7 @@ public class ValidationAutoConfigurationTests {
 	interface AnotherSampleService {
 
 		void doSomething(@Min(42) Integer counter);
+
 	}
 
 	@Validated
@@ -313,6 +314,7 @@ public class ValidationAutoConfigurationTests {
 		public void doSomething(Integer counter) {
 
 		}
+
 	}
 
 	@Configuration
@@ -382,6 +384,7 @@ public class ValidationAutoConfigurationTests {
 			}
 
 		}
+
 	}
 
 }

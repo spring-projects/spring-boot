@@ -151,8 +151,8 @@ public class ConfigurationMetadata {
 		}
 		candidates.removeIf((itemMetadata) -> !itemMetadata.hasSameType(metadata));
 		if (candidates.size() > 1 && metadata.getType() != null) {
-			candidates.removeIf((itemMetadata) ->
-					!metadata.getType().equals(itemMetadata.getType()));
+			candidates.removeIf(
+					(itemMetadata) -> !metadata.getType().equals(itemMetadata.getType()));
 		}
 		if (candidates.size() == 1) {
 			return candidates.get(0);

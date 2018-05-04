@@ -61,4 +61,5 @@ public class SystemEnvironmentOrigin implements Origin {
 		SystemEnvironmentOrigin other = (SystemEnvironmentOrigin) obj;
 		return ObjectUtils.nullSafeEquals(this.property, other.property);
 	}
+
 }

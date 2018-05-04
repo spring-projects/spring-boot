@@ -957,6 +957,7 @@ public class ServerProperties {
 			public void setLogLatency(boolean logLatency) {
 				this.logLatency = logLatency;
 			}
+
 		}
 
 	}

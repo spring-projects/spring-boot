@@ -114,7 +114,8 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		try {
 			if (sslStoreProvider.getKeyStore() != null) {
 				protocol.setKeystorePass("");
-				protocol.setKeystoreFile(SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
+				protocol.setKeystoreFile(
+						SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
 			}
 			if (sslStoreProvider.getTrustStore() != null) {
 				protocol.setTruststoreFile(
@@ -122,8 +123,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 			}
 		}
 		catch (Exception ex) {
-			throw new WebServerException("Could not load store: " + ex.getMessage(),
-					ex);
+			throw new WebServerException("Could not load store: " + ex.getMessage(), ex);
 		}
 	}
 

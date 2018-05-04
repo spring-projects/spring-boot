@@ -126,4 +126,5 @@ final class UndertowCompressionConfigurer {
 		}
 
 	}
+
 }

@@ -127,6 +127,7 @@ public class MustacheAutoConfigurationTests {
 			return Mustache.compiler().standardsMode(true)
 					.withLoader(mustacheTemplateLoader);
 		}
+
 	}
 
 }

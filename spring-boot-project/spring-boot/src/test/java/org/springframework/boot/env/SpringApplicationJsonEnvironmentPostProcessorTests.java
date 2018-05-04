@@ -135,4 +135,5 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 		assertThat(origin.getPropertyName()).isEqualTo("spring.application.json");
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("bar");
 	}
+
 }

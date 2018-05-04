@@ -39,4 +39,5 @@ public class ExampleEntry {
 	public void setDn(Name dn) {
 		this.dn = dn;
 	}
+
 }

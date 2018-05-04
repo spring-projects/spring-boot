@@ -69,4 +69,5 @@ class DataNeo4jTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter
 	protected Set<Class<?>> getComponentIncludes() {
 		return Collections.emptySet();
 	}
+
 }

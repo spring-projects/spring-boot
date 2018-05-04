@@ -110,20 +110,23 @@ public class RandomAccessDataFileTests {
 	}
 
 	@Test
-	public void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException() throws Exception {
+	public void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException()
+			throws Exception {
 		this.thrown.expect(IndexOutOfBoundsException.class);
 		RandomAccessData subsection = this.file.getSubsection(0, 10);
 		subsection.read(11, 0);
 	}
 
 	@Test
-	public void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException() throws Exception {
+	public void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException()
+			throws Exception {
 		this.thrown.expect(EOFException.class);
 		this.file.read(256, 1);
 	}
 
 	@Test
-	public void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException() throws Exception {
+	public void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException()
+			throws Exception {
 		this.thrown.expect(EOFException.class);
 		RandomAccessData subsection = this.file.getSubsection(0, 10);
 		subsection.read(10, 1);

@@ -373,6 +373,7 @@ public class WebFluxAutoConfigurationTests {
 		public CodecCustomizer firstCodecCustomizer() {
 			return mock(CodecCustomizer.class);
 		}
+
 	}
 
 	@Configuration
@@ -388,6 +389,7 @@ public class WebFluxAutoConfigurationTests {
 		public ViewResolver anotherViewResolver() {
 			return mock(ViewResolver.class);
 		}
+
 	}
 
 	@Configuration
@@ -407,6 +409,7 @@ public class WebFluxAutoConfigurationTests {
 		public HttpHandler httpHandler() {
 			return (serverHttpRequest, serverHttpResponse) -> null;
 		}
+
 	}
 
 	@Configuration

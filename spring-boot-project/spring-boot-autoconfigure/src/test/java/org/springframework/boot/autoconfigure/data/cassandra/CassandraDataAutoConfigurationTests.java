@@ -158,6 +158,7 @@ public class CassandraDataAutoConfigurationTests {
 		public String convert(Person o) {
 			return null;
 		}
+
 	}
 
 	private static class Person {
