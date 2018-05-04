@@ -127,8 +127,8 @@ public class DataSourceXAResourceRecoveryHelper
 		try {
 			this.xaConnection.close();
 		}
-		catch (SQLException ex) {
-			logger.warn("Failed to close connection", ex);
+		catch (SQLException e) {
+			logger.warn("Failed to close connection", e);
 		}
 		finally {
 			this.xaConnection = null;

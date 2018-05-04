@@ -127,7 +127,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	/**
-	 * {@link InputStream} implementation for the {@link RandomAccessDataFile}.
+	 * {@link InputStream} implementation for the
+	 * {@link RandomAccessDataFile}.
 	 */
 	private class DataInputStream extends InputStream {
 
@@ -144,7 +145,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		@Override
 		public int read(byte[] b) throws IOException {
-			return read(b, 0, b != null ? b.length : 0);
+			return read(b, 0, b == null ? 0 : b.length);
 		}
 
 		@Override

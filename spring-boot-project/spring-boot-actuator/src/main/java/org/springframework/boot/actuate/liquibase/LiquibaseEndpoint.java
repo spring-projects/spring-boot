@@ -69,7 +69,7 @@ public class LiquibaseEndpoint {
 							createReport(liquibase, service, factory)));
 			ApplicationContext parent = target.getParent();
 			contextBeans.put(target.getId(), new ContextLiquibaseBeans(liquibaseBeans,
-					parent != null ? parent.getId() : null));
+					parent == null ? null : parent.getId()));
 			target = parent;
 		}
 		return new ApplicationLiquibaseBeans(contextBeans);
@@ -204,8 +204,8 @@ public class LiquibaseEndpoint {
 			this.execType = ranChangeSet.getExecType();
 			this.id = ranChangeSet.getId();
 			this.labels = ranChangeSet.getLabels().getLabels();
-			this.checksum = (ranChangeSet.getLastCheckSum() != null
-					? ranChangeSet.getLastCheckSum().toString() : null);
+			this.checksum = ranChangeSet.getLastCheckSum() == null ? null
+					: ranChangeSet.getLastCheckSum().toString();
 			this.orderExecuted = ranChangeSet.getOrderExecuted();
 			this.tag = ranChangeSet.getTag();
 		}

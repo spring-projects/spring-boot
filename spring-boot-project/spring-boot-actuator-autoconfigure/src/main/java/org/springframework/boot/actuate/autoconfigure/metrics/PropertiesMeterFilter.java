@@ -68,10 +68,10 @@ public class PropertiesMeterFilter implements MeterFilter {
 	}
 
 	private long[] convertSla(Meter.Type meterType, ServiceLevelAgreementBoundary[] sla) {
-		long[] converted = Arrays.stream(sla != null ? sla : EMPTY_SLA)
+		long[] converted = Arrays.stream(sla == null ? EMPTY_SLA : sla)
 				.map((candidate) -> candidate.getValue(meterType))
 				.filter(Objects::nonNull).mapToLong(Long::longValue).toArray();
-		return (converted.length != 0 ? converted : null);
+		return (converted.length == 0 ? null : converted);
 	}
 
 	private <T> T lookup(Map<String, T> values, Id id, T defaultValue) {
@@ -82,7 +82,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 				return result;
 			}
 			int lastDot = name.lastIndexOf('.');
-			name = (lastDot != -1 ? name.substring(0, lastDot) : "");
+			name = lastDot == -1 ? "" : name.substring(0, lastDot);
 		}
 		return values.getOrDefault("all", defaultValue);
 	}

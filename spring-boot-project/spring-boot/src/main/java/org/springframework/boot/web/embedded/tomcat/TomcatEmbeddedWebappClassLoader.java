@@ -65,7 +65,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 			throws ClassNotFoundException {
 		synchronized (getClassLoadingLock(name)) {
 			Class<?> result = findExistingLoadedClass(name);
-			result = (result != null ? result : doLoadClass(name));
+			result = (result == null ? doLoadClass(name) : result);
 			if (result == null) {
 				throw new ClassNotFoundException(name);
 			}
@@ -75,7 +75,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 
 	private Class<?> findExistingLoadedClass(String name) {
 		Class<?> resultClass = findLoadedClass0(name);
-		resultClass = (resultClass != null ? resultClass : findLoadedClass(name));
+		resultClass = (resultClass == null ? findLoadedClass(name) : resultClass);
 		return resultClass;
 	}
 
@@ -83,10 +83,10 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 		checkPackageAccess(name);
 		if ((this.delegate || filter(name, true))) {
 			Class<?> result = loadFromParent(name);
-			return (result != null ? result : findClassIgnoringNotFound(name));
+			return (result == null ? findClassIgnoringNotFound(name) : result);
 		}
 		Class<?> result = findClassIgnoringNotFound(name);
-		return (result != null ? result : loadFromParent(name));
+		return (result == null ? loadFromParent(name) : result);
 	}
 
 	private Class<?> resolveIfNecessary(Class<?> resultClass, boolean resolve) {

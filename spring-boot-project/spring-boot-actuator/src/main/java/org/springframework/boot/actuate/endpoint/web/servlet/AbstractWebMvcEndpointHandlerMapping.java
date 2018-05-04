@@ -257,7 +257,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 				arguments.putAll(body);
 			}
 			request.getParameterMap().forEach((name, values) -> arguments.put(name,
-					values.length != 1 ? Arrays.asList(values) : values[0]));
+					values.length == 1 ? values[0] : Arrays.asList(values)));
 			return arguments;
 		}
 
@@ -269,8 +269,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping
 
 		private Object handleResult(Object result, HttpMethod httpMethod) {
 			if (result == null) {
-				return new ResponseEntity<>(httpMethod != HttpMethod.GET
-						? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>(httpMethod == HttpMethod.GET
+						? HttpStatus.NOT_FOUND : HttpStatus.NO_CONTENT);
 			}
 			if (!(result instanceof WebEndpointResponse)) {
 				return result;

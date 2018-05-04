@@ -105,7 +105,7 @@ public class JmxEndpointIntegrationTests {
 			getMBeanInfo(mBeanServer, objectName);
 			return true;
 		}
-		catch (InstanceNotFoundException ex) {
+		catch (InstanceNotFoundException e) {
 			return false;
 		}
 	}

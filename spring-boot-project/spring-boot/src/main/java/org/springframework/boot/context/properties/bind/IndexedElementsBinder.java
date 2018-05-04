@@ -100,7 +100,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 				source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
 			ConfigurationPropertyName name = root
-					.append(i != 0 ? "[" + i + "]" : INDEX_ZERO);
+					.append(i == 0 ? INDEX_ZERO : "[" + i + "]");
 			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
 			if (value == null) {
 				break;

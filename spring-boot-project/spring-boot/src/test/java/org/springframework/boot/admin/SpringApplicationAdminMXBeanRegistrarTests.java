@@ -175,8 +175,8 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 		try {
 			return new ObjectName(jmxName);
 		}
-		catch (MalformedObjectNameException ex) {
-			throw new IllegalStateException("Invalid jmx name " + jmxName, ex);
+		catch (MalformedObjectNameException e) {
+			throw new IllegalStateException("Invalid jmx name " + jmxName, e);
 		}
 	}
 

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.audit;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -44,13 +43,8 @@ public class AuditEventsEndpoint {
 	@ReadOperation
 	public AuditEventsDescriptor events(@Nullable String principal,
 			@Nullable OffsetDateTime after, @Nullable String type) {
-		List<AuditEvent> events = this.auditEventRepository.find(principal,
-				getInstant(after), type);
-		return new AuditEventsDescriptor(events);
-	}
-
-	private Instant getInstant(OffsetDateTime offsetDateTime) {
-		return (offsetDateTime != null ? offsetDateTime.toInstant() : null);
+		return new AuditEventsDescriptor(this.auditEventRepository.find(principal,
+				after == null ? null : after.toInstant(), type));
 	}
 
 	/**

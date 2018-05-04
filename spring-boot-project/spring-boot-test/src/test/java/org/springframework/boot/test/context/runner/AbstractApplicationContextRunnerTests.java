@@ -158,7 +158,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 								context.getClassLoader());
 						fail("Should have thrown a ClassNotFoundException");
 					}
-					catch (ClassNotFoundException ex) {
+					catch (ClassNotFoundException e) {
 						// expected
 					}
 				});

@@ -86,8 +86,8 @@ public class ReactiveMongoClientFactory {
 	private MongoClient createEmbeddedMongoClient(MongoClientSettings settings,
 			int port) {
 		Builder builder = builder(settings);
-		String host = (this.properties.getHost() != null ? this.properties.getHost()
-				: "localhost");
+		String host = this.properties.getHost() == null ? "localhost"
+				: this.properties.getHost();
 		ClusterSettings clusterSettings = ClusterSettings.builder()
 				.hosts(Collections.singletonList(new ServerAddress(host, port))).build();
 		builder.clusterSettings(clusterSettings);
@@ -119,16 +119,16 @@ public class ReactiveMongoClientFactory {
 	}
 
 	private void applyCredentials(Builder builder) {
-		String database = (this.properties.getAuthenticationDatabase() != null
-				? this.properties.getAuthenticationDatabase()
-				: this.properties.getMongoClientDatabase());
+		String database = this.properties.getAuthenticationDatabase() == null
+				? this.properties.getMongoClientDatabase()
+				: this.properties.getAuthenticationDatabase();
 		builder.credential((MongoCredential.createCredential(
 				this.properties.getUsername(), database, this.properties.getPassword())));
 
 	}
 
 	private <T> T getOrDefault(T value, T defaultValue) {
-		return (value != null ? value : defaultValue);
+		return (value == null ? defaultValue : value);
 	}
 
 	private MongoClient createMongoClient(Builder builder) {

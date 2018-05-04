@@ -311,11 +311,11 @@ public class ErrorMvcAutoConfiguration {
 		@Override
 		public String resolvePlaceholder(String placeholderName) {
 			Expression expression = this.expressions.get(placeholderName);
-			return escape(expression != null ? expression.getValue(this.context) : null);
+			return escape(expression == null ? null : expression.getValue(this.context));
 		}
 
 		private String escape(Object value) {
-			return HtmlUtils.htmlEscape(value != null ? value.toString() : null);
+			return HtmlUtils.htmlEscape(value == null ? null : value.toString());
 		}
 
 	}

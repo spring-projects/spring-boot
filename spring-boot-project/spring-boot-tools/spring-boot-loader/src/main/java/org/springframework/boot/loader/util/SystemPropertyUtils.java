@@ -155,7 +155,7 @@ public abstract class SystemPropertyUtils {
 		if (propVal != null) {
 			return propVal;
 		}
-		return (properties != null ? properties.getProperty(placeholderName) : null);
+		return properties == null ? null : properties.getProperty(placeholderName);
 	}
 
 	public static String getProperty(String key) {

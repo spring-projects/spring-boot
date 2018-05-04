@@ -136,7 +136,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 				given(dataSource.getConnection().getMetaData())
 						.willReturn(mock(DatabaseMetaData.class));
 			}
-			catch (SQLException ex) {
+			catch (SQLException e) {
 				// Do nothing
 			}
 			return dataSource;

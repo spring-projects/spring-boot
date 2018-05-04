@@ -291,7 +291,7 @@ public class UndertowServletWebServerFactoryTests
 		DeploymentInfo info = ((DeploymentManager) ReflectionTestUtils
 				.getField(this.webServer, "manager")).getDeployment().getDeploymentInfo();
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
-		return (charsetName != null ? Charset.forName(charsetName) : null);
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 	@Override

@@ -828,7 +828,7 @@ Consider the following class:
 
 		// ... getter and setters
 
-		public static class Host {
+		private static class Host {
 
 			private String ip;
 

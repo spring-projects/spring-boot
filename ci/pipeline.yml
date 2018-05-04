@@ -17,11 +17,6 @@ resource_types:
   source:
     repository: dpb587/github-status-resource
     tag: master
-- name: slack-notification
-  type: docker-image
-  source:
-    repository: cfcommunity/slack-notification-resource
-    tag: latest
 resources:
 - name: git-repo
   type: git
@@ -103,10 +98,6 @@ resources:
     access_token: ((github-access-token))
     branch: ((branch))
     context: jdk10-build
-- name: slack-alert
-  type: slack-notification
-  source:
-    url: ((slack-webhook-url))
 jobs:
 - name: build-spring-boot-ci-images
   plan:
@@ -166,12 +157,6 @@ jobs:
         params:
           subject: email-details/subject
           body: email-details/body
-      - put: slack-alert
-        params:
-          text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_JOB_NAME} failed!>"
-          silent: true
-          icon_emoji: ":concourse:"
-          username: concourse-ci
   - do:
     - task: determine-email-body
       image: spring-boot-ci-image
@@ -188,12 +173,6 @@ jobs:
     params:
       subject: email-details/subject
       body: email-details/body
-  - put: slack-alert
-    params:
-      text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_JOB_NAME} was successful!>"
-      silent: true
-      icon_emoji: ":concourse:"
-      username: concourse-ci
   - put: artifactory-repo
     params: &artifactory-params
       repo: libs-snapshot-local
@@ -296,12 +275,6 @@ jobs:
         params:
           subject: email-details/subject
           body: email-details/body
-      - put: slack-alert
-        params:
-          text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_JOB_NAME} failed!>"
-          silent: true
-          icon_emoji: ":concourse:"
-          username: concourse-ci
   - do:
     - task: determine-email-body
       image: spring-boot-jdk9-ci-image
@@ -318,12 +291,6 @@ jobs:
     params:
       subject: email-details/subject
       body: email-details/body
-  - put: slack-alert
-    params:
-      text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_JOB_NAME} was successful!>"
-      silent: true
-      icon_emoji: ":concourse:"
-      username: concourse-ci
 - name: jdk10-build
   serial: true
   public: true
@@ -369,12 +336,6 @@ jobs:
         params:
           subject: email-details/subject
           body: email-details/body
-      - put: slack-alert
-        params:
-          text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_JOB_NAME} failed!>"
-          silent: true
-          icon_emoji: ":concourse:"
-          username: concourse-ci
   - do:
     - task: determine-email-body
       image: spring-boot-jdk10-ci-image
@@ -391,12 +352,6 @@ jobs:
     params:
       subject: email-details/subject
       body: email-details/body
-  - put: slack-alert
-    params:
-      text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_JOB_NAME} was successful!>"
-      silent: true
-      icon_emoji: ":concourse:"
-      username: concourse-ci
 - name: stage-milestone
   serial: true
   plan:

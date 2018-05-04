@@ -64,7 +64,7 @@ final class DispatcherServletHandlerMappings {
 			initializeDispatcherServletIfPossible();
 			handlerMappings = this.dispatcherServlet.getHandlerMappings();
 		}
-		return (handlerMappings != null ? handlerMappings : Collections.emptyList());
+		return handlerMappings == null ? Collections.emptyList() : handlerMappings;
 	}
 
 	private void initializeDispatcherServletIfPossible() {
