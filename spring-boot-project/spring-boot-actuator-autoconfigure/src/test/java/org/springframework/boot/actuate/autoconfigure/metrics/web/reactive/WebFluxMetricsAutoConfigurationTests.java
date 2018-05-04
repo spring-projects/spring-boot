@@ -65,5 +65,7 @@ public class WebFluxMetricsAutoConfigurationTests {
 		public WebFluxTagsProvider customWebFluxTagsProvider() {
 			return mock(WebFluxTagsProvider.class);
 		}
+
 	}
+
 }

@@ -67,8 +67,7 @@ public class RunMojo extends AbstractRunMojo {
 
 	@Override
 	protected void runWithForkedJvm(File workingDirectory, List<String> args,
-			Map<String, String> environmentVariables)
-			throws MojoExecutionException {
+			Map<String, String> environmentVariables) throws MojoExecutionException {
 		try {
 			RunProcess runProcess = new RunProcess(workingDirectory,
 					new JavaExecutable().toString());

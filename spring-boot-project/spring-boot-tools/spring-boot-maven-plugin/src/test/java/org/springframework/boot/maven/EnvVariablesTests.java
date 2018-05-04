@@ -39,8 +39,8 @@ public class EnvVariablesTests {
 
 	@Test
 	public void asArray() {
-		assertThat(new EnvVariables(getTestArgs()).asArray())
-				.contains("key=My Value", "key1= tt ", "key2=   ", "key3=");
+		assertThat(new EnvVariables(getTestArgs()).asArray()).contains("key=My Value",
+				"key1= tt ", "key2=   ", "key3=");
 	}
 
 	@Test

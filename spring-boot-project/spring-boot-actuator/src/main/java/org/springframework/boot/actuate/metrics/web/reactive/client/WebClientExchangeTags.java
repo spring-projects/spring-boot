@@ -34,7 +34,8 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 public final class WebClientExchangeTags {
 
-	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
+	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName()
+			+ ".uriTemplate";
 
 	private static final Tag IO_ERROR = Tag.of("status", "IO_ERROR");
 
@@ -44,8 +45,8 @@ public final class WebClientExchangeTags {
 	}
 
 	/**
-	 * Creates a {@code method} {@code Tag} for the
-	 * {@link ClientHttpRequest#getMethod() method} of the given {@code request}.
+	 * Creates a {@code method} {@code Tag} for the {@link ClientHttpRequest#getMethod()
+	 * method} of the given {@code request}.
 	 * @param request the request
 	 * @return the method tag
 	 */
@@ -80,8 +81,8 @@ public final class WebClientExchangeTags {
 	}
 
 	/**
-	 * Creates a {@code status} {@code Tag} derived from the
-	 * exception thrown by the client.
+	 * Creates a {@code status} {@code Tag} derived from the exception thrown by the
+	 * client.
 	 * @param throwable the exception
 	 * @return the status tag
 	 */
@@ -90,9 +91,9 @@ public final class WebClientExchangeTags {
 	}
 
 	/**
-	 * Create a {@code clientName} {@code Tag} derived from
-	 * the {@link java.net.URI#getHost host}
-	 * of the {@link ClientRequest#url() URL} of the given {@code request}.
+	 * Create a {@code clientName} {@code Tag} derived from the
+	 * {@link java.net.URI#getHost host} of the {@link ClientRequest#url() URL} of the
+	 * given {@code request}.
 	 * @param request the request
 	 * @return the clientName tag
 	 */

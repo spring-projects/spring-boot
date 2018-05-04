@@ -60,4 +60,5 @@ public class MetricsWebClientCustomizerTests {
 		this.clientBuilder.filters((filters) -> assertThat(filters).hasSize(1).first()
 				.isInstanceOf(MetricsWebClientFilterFunction.class));
 	}
+
 }

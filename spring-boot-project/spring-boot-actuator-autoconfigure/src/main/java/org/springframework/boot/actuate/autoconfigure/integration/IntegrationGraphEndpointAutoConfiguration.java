@@ -30,7 +30,8 @@ import org.springframework.integration.support.channel.HeaderChannelRegistry;
 import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for the {@link IntegrationGraphEndpoint}.
+ * {@link EnableAutoConfiguration Auto-configuration} for the
+ * {@link IntegrationGraphEndpoint}.
  *
  * @author Tim Ysewyn
  * @author Stephane Nicoll
@@ -58,4 +59,3 @@ public class IntegrationGraphEndpointAutoConfiguration {
 	}
 
 }
-

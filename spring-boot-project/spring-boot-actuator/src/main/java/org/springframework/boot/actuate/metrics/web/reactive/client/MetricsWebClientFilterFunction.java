@@ -29,8 +29,8 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 
 /**
- * {@link ExchangeFilterFunction} applied via a
- * {@link MetricsWebClientCustomizer} to record metrics.
+ * {@link ExchangeFilterFunction} applied via a {@link MetricsWebClientCustomizer} to
+ * record metrics.
  *
  * @author Brian Clozel
  * @since 2.1.0
@@ -58,8 +58,7 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 				.doOnSuccessOrError((clientResponse, throwable) -> {
 					Iterable<Tag> tags = this.tagProvider.tags(clientRequest,
 							clientResponse, throwable);
-					Timer.builder(this.metricName)
-							.tags(tags)
+					Timer.builder(this.metricName).tags(tags)
 							.description("Timer of WebClient operation")
 							.register(this.meterRegistry)
 							.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);

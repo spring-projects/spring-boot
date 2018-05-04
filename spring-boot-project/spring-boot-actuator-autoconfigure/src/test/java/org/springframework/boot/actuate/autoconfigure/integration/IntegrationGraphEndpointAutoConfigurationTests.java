@@ -59,8 +59,8 @@ public class IntegrationGraphEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenSpringIntegrationIsNotEnabledShouldNotHaveEndpointBean() {
 		ApplicationContextRunner noSpringIntegrationRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(
-						IntegrationGraphEndpointAutoConfiguration.class));
+				.withConfiguration(AutoConfigurations
+						.of(IntegrationGraphEndpointAutoConfiguration.class));
 		noSpringIntegrationRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(IntegrationGraphEndpoint.class);
 			assertThat(context).doesNotHaveBean(IntegrationGraphServer.class);

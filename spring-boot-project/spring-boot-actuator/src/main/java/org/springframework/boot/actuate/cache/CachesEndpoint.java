@@ -78,8 +78,8 @@ public class CachesEndpoint {
 	 */
 	@ReadOperation
 	public CacheEntry cache(@Selector String cache, @Nullable String cacheManager) {
-		return extractUniqueCacheEntry(cache, getCacheEntries(
-				(name) -> name.equals(cache), safeEqual(cacheManager)));
+		return extractUniqueCacheEntry(cache,
+				getCacheEntries((name) -> name.equals(cache), safeEqual(cacheManager)));
 	}
 
 	/**
@@ -95,23 +95,23 @@ public class CachesEndpoint {
 	 * Clear the specific {@link Cache}.
 	 * @param cache then name of the cache
 	 * @param cacheManager the name of the cacheManager (can be {@code null}
-	 * @return {@code true} if the cache was cleared or {@code false} if no such cache exists
+	 * @return {@code true} if the cache was cleared or {@code false} if no such cache
+	 * exists
 	 * @throws NonUniqueCacheException if more than one cache with that name exist and no
 	 */
 	@DeleteOperation
 	public boolean clearCache(@Selector String cache, @Nullable String cacheManager) {
-		CacheEntry entry = extractUniqueCacheEntry(cache, getCacheEntries(
-				(name) -> name.equals(cache), safeEqual(cacheManager)));
+		CacheEntry entry = extractUniqueCacheEntry(cache,
+				getCacheEntries((name) -> name.equals(cache), safeEqual(cacheManager)));
 		return (entry != null && clearCache(entry));
 	}
 
-	private List<CacheEntry> getCacheEntries(
-			Predicate<String> cacheNamePredicate,
+	private List<CacheEntry> getCacheEntries(Predicate<String> cacheNamePredicate,
 			Predicate<String> cacheManagerNamePredicate) {
 		List<CacheEntry> entries = new ArrayList<>();
 		this.cacheManagers.keySet().stream().filter(cacheManagerNamePredicate)
-				.forEach((cacheManagerName) -> entries.addAll(
-						getCacheEntries(cacheManagerName, cacheNamePredicate)));
+				.forEach((cacheManagerName) -> entries
+						.addAll(getCacheEntries(cacheManagerName, cacheNamePredicate)));
 		return entries;
 	}
 
@@ -121,17 +121,15 @@ public class CachesEndpoint {
 		List<CacheEntry> entries = new ArrayList<>();
 		cacheManager.getCacheNames().stream().filter(cacheNamePredicate)
 				.map(cacheManager::getCache).filter(Objects::nonNull)
-				.forEach((cache) -> entries.add(
-						new CacheEntry(cache, cacheManagerName)));
+				.forEach((cache) -> entries.add(new CacheEntry(cache, cacheManagerName)));
 		return entries;
 	}
 
-	private CacheEntry extractUniqueCacheEntry(String cache,
-			List<CacheEntry> entries) {
+	private CacheEntry extractUniqueCacheEntry(String cache, List<CacheEntry> entries) {
 		if (entries.size() > 1) {
-			throw new NonUniqueCacheException(cache, entries.stream()
-					.map(CacheEntry::getCacheManager).distinct()
-					.collect(Collectors.toList()));
+			throw new NonUniqueCacheException(cache,
+					entries.stream().map(CacheEntry::getCacheManager).distinct()
+							.collect(Collectors.toList()));
 		}
 		return (entries.isEmpty() ? null : entries.get(0));
 	}
@@ -152,8 +150,8 @@ public class CachesEndpoint {
 	}
 
 	/**
-	 * A report of available {@link Cache caches}, primarily intended for serialization
-	 * to JSON.
+	 * A report of available {@link Cache caches}, primarily intended for serialization to
+	 * JSON.
 	 */
 	public static final class CachesReport {
 

@@ -116,6 +116,7 @@ public class WebClientMetricsAutoConfigurationTests {
 		public WebClientExchangeTagsProvider customTagProvider() {
 			return mock(WebClientExchangeTagsProvider.class);
 		}
+
 	}
 
 }

@@ -38,5 +38,7 @@ public interface WebClientExchangeTagsProvider {
 	 * @param throwable the exception (may be {@code null})
 	 * @return tags to associate with metrics for the request and response exchange
 	 */
-	Iterable<Tag> tags(ClientRequest request, ClientResponse response, Throwable throwable);
+	Iterable<Tag> tags(ClientRequest request, ClientResponse response,
+			Throwable throwable);
+
 }

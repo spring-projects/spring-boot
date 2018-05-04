@@ -59,8 +59,7 @@ public class CouchbaseConfiguration {
 	@Bean
 	@Primary
 	public Cluster couchbaseCluster() {
-		return CouchbaseCluster.create(couchbaseEnvironment(),
-				determineBootstrapHosts());
+		return CouchbaseCluster.create(couchbaseEnvironment(), determineBootstrapHosts());
 	}
 
 	/**
@@ -75,10 +74,8 @@ public class CouchbaseConfiguration {
 	@Primary
 	@DependsOn("couchbaseClient")
 	public ClusterInfo couchbaseClusterInfo() {
-		return couchbaseCluster()
-				.clusterManager(this.properties.getBucket().getName(),
-						this.properties.getBucket().getPassword())
-				.info();
+		return couchbaseCluster().clusterManager(this.properties.getBucket().getName(),
+				this.properties.getBucket().getPassword()).info();
 	}
 
 	@Bean
@@ -113,8 +110,8 @@ public class CouchbaseConfiguration {
 			builder = builder.viewServiceConfig(getViewServiceConfig(endpoints));
 		}
 		if (timeouts.getSocketConnect() != null) {
-			builder = builder.socketConnectTimeout(
-					(int) timeouts.getSocketConnect().toMillis());
+			builder = builder
+					.socketConnectTimeout((int) timeouts.getSocketConnect().toMillis());
 		}
 		if (timeouts.getView() != null) {
 			builder = builder.viewTimeout(timeouts.getView().toMillis());
@@ -147,8 +144,7 @@ public class CouchbaseConfiguration {
 	private <T> T getServiceConfig(CouchbaseService service, Integer fallback,
 			BiFunction<Integer, Integer, T> factory) {
 		if (service.getMinEndpoints() != 1 || service.getMaxEndpoints() != 1) {
-			return factory.apply(service.getMinEndpoints(),
-					service.getMaxEndpoints());
+			return factory.apply(service.getMinEndpoints(), service.getMaxEndpoints());
 		}
 		int endpoints = (fallback != null ? fallback : 1);
 		return factory.apply(endpoints, endpoints);

@@ -34,7 +34,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link CachesEndpoint} exposed by Jersey, Spring MVC, and WebFlux.
+ * Integration tests for {@link CachesEndpoint} exposed by Jersey, Spring MVC, and
+ * WebFlux.
  *
  * @author Stephane Nicoll
  */
@@ -48,23 +49,22 @@ public class CachesEndpointWebIntegrationTests {
 	@Test
 	public void allCaches() {
 		client.get().uri("/actuator/caches").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("cacheManagers.one.a.target").isEqualTo(
-						ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.one.b.target").isEqualTo(
-						ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.a.target").isEqualTo(
-						ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.c.target").isEqualTo(
-						ConcurrentHashMap.class.getName());
+				.jsonPath("cacheManagers.one.a.target")
+				.isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.one.b.target")
+				.isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.two.a.target")
+				.isEqualTo(ConcurrentHashMap.class.getName())
+				.jsonPath("cacheManagers.two.c.target")
+				.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@Test
 	public void namedCache() {
 		client.get().uri("/actuator/caches/b").exchange().expectStatus().isOk()
-				.expectBody()
-				.jsonPath("name").isEqualTo("b")
-				.jsonPath("cacheManager").isEqualTo("one")
-				.jsonPath("target").isEqualTo(ConcurrentHashMap.class.getName());
+				.expectBody().jsonPath("name").isEqualTo("b").jsonPath("cacheManager")
+				.isEqualTo("one").jsonPath("target")
+				.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@Test
@@ -75,8 +75,7 @@ public class CachesEndpointWebIntegrationTests {
 
 	@Test
 	public void namedCacheWithNonUniqueName() {
-		client.get().uri("/actuator/caches/a").exchange().expectStatus()
-				.isBadRequest();
+		client.get().uri("/actuator/caches/a").exchange().expectStatus().isBadRequest();
 	}
 
 	@Test
@@ -95,10 +94,8 @@ public class CachesEndpointWebIntegrationTests {
 
 	@Test
 	public void clearNamedCacheWithNonUniqueName() {
-		client.get().uri("/actuator/caches/a").exchange().expectStatus()
-				.isBadRequest();
+		client.get().uri("/actuator/caches/a").exchange().expectStatus().isBadRequest();
 	}
-
 
 	@Configuration
 	static class TestConfiguration {

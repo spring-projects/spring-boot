@@ -578,6 +578,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			}
 			return String.format("-D%s=\"%s\"", key, value);
 		}
+
 	}
 
 }

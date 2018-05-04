@@ -97,10 +97,9 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		return getEndpointAttributes(endpointType);
 	}
 
-	private Class<?> getEndpointType(ConditionContext context,
-			MethodMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(
-				ConditionalOnEnabledEndpoint.class.getName());
+	private Class<?> getEndpointType(ConditionContext context, MethodMetadata metadata) {
+		Map<String, Object> attributes = metadata
+				.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName());
 		if (attributes != null && attributes.containsKey("endpoint")) {
 			Class<?> target = (Class<?>) attributes.get("endpoint");
 			if (target != Void.class) {

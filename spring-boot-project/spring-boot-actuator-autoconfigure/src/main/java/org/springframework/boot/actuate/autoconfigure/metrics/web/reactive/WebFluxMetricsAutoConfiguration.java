@@ -33,8 +33,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for instrumentation
- * of Spring WebFlux applications.
+ * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring
+ * WebFlux applications.
  *
  * @author Jon Schneider
  * @since 2.0.0

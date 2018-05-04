@@ -37,20 +37,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for instrumentation
- * of {@link org.springframework.web.reactive.function.client.WebClient}.
+ * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of
+ * {@link org.springframework.web.reactive.function.client.WebClient}.
  *
- * <p>This is reusing the {@link io.micrometer.core.instrument.config.MeterFilter}
- * defined in {@link RestTemplateMetricsAutoConfiguration} for limiting the
- * cardinality of "uri" tags.
+ * <p>
+ * This is reusing the {@link io.micrometer.core.instrument.config.MeterFilter} defined in
+ * {@link RestTemplateMetricsAutoConfiguration} for limiting the cardinality of "uri"
+ * tags.
  *
  * @author Brian Clozel
  * @since 2.1.0
  */
 @Configuration
 @ConditionalOnClass(WebClient.class)
-@AutoConfigureAfter({MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class})
+@AutoConfigureAfter({ MetricsAutoConfiguration.class,
+		SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureBefore(WebClientAutoConfiguration.class)
 @ConditionalOnBean(MeterRegistry.class)
 public class WebClientMetricsAutoConfiguration {
@@ -62,8 +63,8 @@ public class WebClientMetricsAutoConfiguration {
 	}
 
 	@Bean
-	public MetricsWebClientCustomizer metricsWebClientCustomizer(MeterRegistry meterRegistry,
-			WebClientExchangeTagsProvider tagsProvider,
+	public MetricsWebClientCustomizer metricsWebClientCustomizer(
+			MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagsProvider,
 			MetricsProperties properties) {
 		return new MetricsWebClientCustomizer(meterRegistry, tagsProvider,
 				properties.getWeb().getClient().getRequestsMetricName());

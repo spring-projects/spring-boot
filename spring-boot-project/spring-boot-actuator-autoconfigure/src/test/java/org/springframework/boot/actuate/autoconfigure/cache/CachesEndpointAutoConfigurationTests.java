@@ -42,15 +42,14 @@ public class CachesEndpointAutoConfigurationTests {
 
 	@Test
 	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withUserConfiguration(CacheConfiguration.class)
-				.run((context) ->
-						assertThat(context).hasSingleBean(CachesEndpoint.class));
+		this.contextRunner.withUserConfiguration(CacheConfiguration.class).run(
+				(context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
 	public void runWithoutCacheManagerShouldHaveEndpointBean() {
-		this.contextRunner.run((context) ->
-				assertThat(context).hasSingleBean(CachesEndpoint.class));
+		this.contextRunner.run(
+				(context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test

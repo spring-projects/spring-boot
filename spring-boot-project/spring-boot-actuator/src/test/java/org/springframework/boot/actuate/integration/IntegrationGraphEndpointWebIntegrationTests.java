@@ -28,7 +28,8 @@ import org.springframework.integration.support.management.graph.IntegrationGraph
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Integration tests for {@link IntegrationGraphEndpoint} exposed by Jersey, Spring MVC, and WebFlux.
+ * Integration tests for {@link IntegrationGraphEndpoint} exposed by Jersey, Spring MVC,
+ * and WebFlux.
  *
  * @author Tim Ysewyn
  */
@@ -39,8 +40,8 @@ public class IntegrationGraphEndpointWebIntegrationTests {
 
 	@Test
 	public void graph() {
-		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange()
-				.expectStatus().isOk().expectBody()
+		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isOk().expectBody()
 				.jsonPath("contentDescriptor.providerVersion").isNotEmpty()
 				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.0f)
 				.jsonPath("contentDescriptor.provider").isEqualTo("spring-integration");
@@ -48,8 +49,8 @@ public class IntegrationGraphEndpointWebIntegrationTests {
 
 	@Test
 	public void rebuild() {
-		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange()
-				.expectStatus().isNoContent();
+		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isNoContent();
 	}
 
 	@Configuration
@@ -57,7 +58,8 @@ public class IntegrationGraphEndpointWebIntegrationTests {
 	public static class TestConfiguration {
 
 		@Bean
-		public IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
+		public IntegrationGraphEndpoint endpoint(
+				IntegrationGraphServer integrationGraphServer) {
 			return new IntegrationGraphEndpoint(integrationGraphServer);
 		}
 

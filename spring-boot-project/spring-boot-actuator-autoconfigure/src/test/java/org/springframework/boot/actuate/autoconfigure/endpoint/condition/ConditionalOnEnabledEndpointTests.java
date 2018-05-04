@@ -104,9 +104,10 @@ public class ConditionalOnEnabledEndpointTests {
 
 	@Test
 	public void outcomeWithReferenceWhenNoPropertiesShouldMatch() {
-		this.contextRunner.withUserConfiguration(FooEndpointEnabledByDefaultTrue.class,
-				ComponentEnabledIfEndpointIsEnabledConfiguration.class).run((context) ->
-			assertThat(context).hasBean("fooComponent"));
+		this.contextRunner
+				.withUserConfiguration(FooEndpointEnabledByDefaultTrue.class,
+						ComponentEnabledIfEndpointIsEnabledConfiguration.class)
+				.run((context) -> assertThat(context).hasBean("fooComponent"));
 	}
 
 	@Test
@@ -114,8 +115,7 @@ public class ConditionalOnEnabledEndpointTests {
 		this.contextRunner.withPropertyValues("management.endpoint.foo.enabled=true")
 				.withUserConfiguration(FooEndpointEnabledByDefaultTrue.class,
 						ComponentEnabledIfEndpointIsEnabledConfiguration.class)
-				.run((context) ->
-						assertThat(context).hasBean("fooComponent"));
+				.run((context) -> assertThat(context).hasBean("fooComponent"));
 	}
 
 	@Test
@@ -123,21 +123,22 @@ public class ConditionalOnEnabledEndpointTests {
 		this.contextRunner.withPropertyValues("management.endpoint.foo.enabled=false")
 				.withUserConfiguration(FooEndpointEnabledByDefaultTrue.class,
 						ComponentEnabledIfEndpointIsEnabledConfiguration.class)
-				.run((context) ->
-						assertThat(context).doesNotHaveBean("fooComponent"));
+				.run((context) -> assertThat(context).doesNotHaveBean("fooComponent"));
 	}
 
 	@Test
 	public void outcomeWithNoReferenceShouldFail() {
-		this.contextRunner.withUserConfiguration(
-				ComponentWithNoEndpointReferenceConfiguration.class).run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(context.getStartupFailure().getCause().getMessage()).contains(
-					"No endpoint is specified and the return type of the @Bean method "
-							+ "is neither an @Endpoint, nor an @EndpointExtension");
-		});
+		this.contextRunner
+				.withUserConfiguration(
+						ComponentWithNoEndpointReferenceConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure().getCause().getMessage())
+							.contains(
+									"No endpoint is specified and the return type of the @Bean method "
+											+ "is neither an @Endpoint, nor an @EndpointExtension");
+				});
 	}
-
 
 	@Endpoint(id = "foo", enableByDefault = true)
 	static class FooEndpointEnabledByDefaultTrue {

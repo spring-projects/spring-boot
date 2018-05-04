@@ -51,17 +51,17 @@ public class CachesEndpointTests {
 
 	@Test
 	public void allCachesWithSingleCacheManager() {
-		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
-				"test", new ConcurrentMapCacheManager("a", "b")));
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap("test",
+				new ConcurrentMapCacheManager("a", "b")));
 		Map<String, Map<String, CacheDescriptor>> allDescriptors = endpoint.caches()
 				.getCacheManagers();
 		assertThat(allDescriptors).containsOnlyKeys("test");
 		Map<String, CacheDescriptor> descriptors = allDescriptors.get("test");
 		assertThat(descriptors).containsOnlyKeys("a", "b");
-		assertThat(descriptors.get("a").getTarget()).isEqualTo(
-				ConcurrentHashMap.class.getName());
-		assertThat(descriptors.get("b").getTarget()).isEqualTo(
-				ConcurrentHashMap.class.getName());
+		assertThat(descriptors.get("a").getTarget())
+				.isEqualTo(ConcurrentHashMap.class.getName());
+		assertThat(descriptors.get("b").getTarget())
+				.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@Test
@@ -79,8 +79,8 @@ public class CachesEndpointTests {
 
 	@Test
 	public void namedCacheWithSingleCacheManager() {
-		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
-				"test", new ConcurrentMapCacheManager("b", "a")));
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap("test",
+				new ConcurrentMapCacheManager("b", "a")));
 		CacheEntry entry = endpoint.cache("a", null);
 		assertThat(entry).isNotNull();
 		assertThat(entry.getCacheManager()).isEqualTo("test");
@@ -103,8 +103,8 @@ public class CachesEndpointTests {
 
 	@Test
 	public void namedCacheWithUnknownCache() {
-		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
-				"test", new ConcurrentMapCacheManager("b", "a")));
+		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap("test",
+				new ConcurrentMapCacheManager("b", "a")));
 		CacheEntry entry = endpoint.cache("unknown", null);
 		assertThat(entry).isNull();
 	}
@@ -135,8 +135,8 @@ public class CachesEndpointTests {
 	public void clearAllCaches() {
 		Cache a = mockCache("a");
 		Cache b = mockCache("b");
-		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
-				"test", cacheManager(a, b)));
+		CachesEndpoint endpoint = new CachesEndpoint(
+				Collections.singletonMap("test", cacheManager(a, b)));
 		endpoint.clearCaches();
 		verify(a).clear();
 		verify(b).clear();
@@ -146,8 +146,8 @@ public class CachesEndpointTests {
 	public void clearCache() {
 		Cache a = mockCache("a");
 		Cache b = mockCache("b");
-		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
-				"test", cacheManager(a, b)));
+		CachesEndpoint endpoint = new CachesEndpoint(
+				Collections.singletonMap("test", cacheManager(a, b)));
 		assertThat(endpoint.clearCache("a", null)).isTrue();
 		verify(a).clear();
 		verify(b, never()).clear();
@@ -184,8 +184,8 @@ public class CachesEndpointTests {
 	@Test
 	public void clearCacheWithUnknownCache() {
 		Cache a = mockCache("a");
-		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
-				"test", cacheManager(a)));
+		CachesEndpoint endpoint = new CachesEndpoint(
+				Collections.singletonMap("test", cacheManager(a)));
 		assertThat(endpoint.clearCache("unknown", null)).isFalse();
 		verify(a, never()).clear();
 	}
@@ -193,8 +193,8 @@ public class CachesEndpointTests {
 	@Test
 	public void clearCacheWithUnknownCacheManager() {
 		Cache a = mockCache("a");
-		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap(
-				"test", cacheManager(a)));
+		CachesEndpoint endpoint = new CachesEndpoint(
+				Collections.singletonMap("test", cacheManager(a)));
 		assertThat(endpoint.clearCache("a", "unknown")).isFalse();
 		verify(a, never()).clear();
 	}

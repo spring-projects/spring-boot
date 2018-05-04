@@ -40,7 +40,8 @@ import static org.mockito.Mockito.mock;
  */
 public class WebClientExchangeTagsTests {
 
-	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
+	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName()
+			+ ".uriTemplate";
 
 	private ClientRequest request;
 
@@ -49,8 +50,10 @@ public class WebClientExchangeTagsTests {
 	@Before
 	public void setup() {
 		this.request = ClientRequest
-				.create(HttpMethod.GET, URI.create("http://example.org/projects/spring-boot"))
-				.attribute(URI_TEMPLATE_ATTRIBUTE, "http://example.org/projects/{project}")
+				.create(HttpMethod.GET,
+						URI.create("http://example.org/projects/spring-boot"))
+				.attribute(URI_TEMPLATE_ATTRIBUTE,
+						"http://example.org/projects/{project}")
 				.build();
 		this.response = mock(ClientResponse.class);
 		given(this.response.statusCode()).willReturn(HttpStatus.OK);
@@ -71,18 +74,17 @@ public class WebClientExchangeTagsTests {
 	@Test
 	public void uriWhenRelativeTemplateIsAvailableShouldReturnTemplate() {
 		this.request = ClientRequest
-				.create(HttpMethod.GET, URI.create("http://example.org/projects/spring-boot"))
-				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}")
-				.build();
+				.create(HttpMethod.GET,
+						URI.create("http://example.org/projects/spring-boot"))
+				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
 		assertThat(WebClientExchangeTags.uri(this.request))
 				.isEqualTo(Tag.of("uri", "/projects/{project}"));
 	}
 
 	@Test
 	public void uriWhenTemplateIsMissingShouldReturnPath() {
-		this.request = ClientRequest
-				.create(HttpMethod.GET, URI.create("http://example.org/projects/spring-boot"))
-				.build();
+		this.request = ClientRequest.create(HttpMethod.GET,
+				URI.create("http://example.org/projects/spring-boot")).build();
 		assertThat(WebClientExchangeTags.uri(this.request))
 				.isEqualTo(Tag.of("uri", "/projects/spring-boot"));
 	}
