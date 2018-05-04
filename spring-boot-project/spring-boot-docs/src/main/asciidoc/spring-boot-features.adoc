@@ -5994,8 +5994,8 @@ When building a reactive web application, the following stores can be auto-confi
 * Redis
 * MongoDB
 
-If a single Spring Session module is present on the classpath, Spring Boot will be able to
-auto-configure session store without any user configuration. Otherwise, you must choose
+If a single Spring Session module is present on the classpath, Spring Boot uses that store
+implementation automatically. If you have more than one implementation, you must choose
 the {sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish
 to use to store the sessions. For instance, to use JDBC as the back-end store, you can
 configure your application as follows:
