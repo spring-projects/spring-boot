@@ -106,7 +106,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	private Throwable determineException(Throwable error) {
 		if (error instanceof ResponseStatusException) {
-			return error.getCause() != null ? error.getCause() : error;
+			return (error.getCause() != null ? error.getCause() : error);
 		}
 		return error;
 	}

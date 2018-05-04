@@ -62,8 +62,8 @@ public class Neo4jContainer extends Container {
 				Unreliables.retryUntilTrue((int) this.startupTimeout.getSeconds(),
 						TimeUnit.SECONDS, checkConnection(sessionFactory));
 			}
-			catch (TimeoutException e) {
-				throw new IllegalStateException();
+			catch (TimeoutException ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 

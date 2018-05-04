@@ -321,7 +321,7 @@ public class JettyServletWebServerFactoryTests
 		WebAppContext context = (WebAppContext) ((JettyWebServer) this.webServer)
 				.getServer().getHandler();
 		String charsetName = context.getLocaleEncoding(locale);
-		return (charsetName != null) ? Charset.forName(charsetName) : null;
+		return (charsetName != null ? Charset.forName(charsetName) : null);
 	}
 
 	@Override

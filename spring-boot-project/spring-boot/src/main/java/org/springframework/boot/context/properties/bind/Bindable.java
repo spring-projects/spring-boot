@@ -110,7 +110,7 @@ public final class Bindable<T> {
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);
 		creator.append("type", this.type);
-		creator.append("value", (this.value == null ? "none" : "provided"));
+		creator.append("value", (this.value != null ? "provided" : "none"));
 		creator.append("annotations", this.annotations);
 		return creator.toString();
 	}
@@ -150,7 +150,7 @@ public final class Bindable<T> {
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
 		return new Bindable<>(this.type, this.boxedType, this.value,
-				(annotations == null ? NO_ANNOTATIONS : annotations));
+				(annotations != null ? annotations : NO_ANNOTATIONS));
 	}
 
 	/**
@@ -163,7 +163,7 @@ public final class Bindable<T> {
 				existingValue == null || this.type.isArray()
 						|| this.boxedType.resolve().isInstance(existingValue),
 				() -> "ExistingValue must be an instance of " + this.type);
-		Supplier<T> value = (existingValue == null ? null : () -> existingValue);
+		Supplier<T> value = (existingValue != null ? () -> existingValue : null);
 		return new Bindable<>(this.type, this.boxedType, value, NO_ANNOTATIONS);
 	}
 

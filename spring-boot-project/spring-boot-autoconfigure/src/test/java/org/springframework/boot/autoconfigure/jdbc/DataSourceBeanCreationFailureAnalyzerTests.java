@@ -46,8 +46,8 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 	public void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis.getDescription()).contains(
-				"'spring.datasource.url' is not specified",
-				"no embedded datasource could be auto-configured",
+				"'url' attribute is not specified",
+				"no embedded datasource could be configured",
 				"Failed to determine a suitable driver class");
 		assertThat(failureAnalysis.getAction()).contains(
 				"If you want an embedded database (H2, HSQL or Derby), please put it on the classpath",

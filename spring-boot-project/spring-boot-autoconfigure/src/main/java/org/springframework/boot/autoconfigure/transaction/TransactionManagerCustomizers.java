@@ -36,8 +36,8 @@ public class TransactionManagerCustomizers {
 
 	public TransactionManagerCustomizers(
 			Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
-		this.customizers = (customizers == null ? Collections.emptyList()
-				: new ArrayList<>(customizers));
+		this.customizers = (customizers != null ? new ArrayList<>(customizers)
+				: Collections.emptyList());
 	}
 
 	@SuppressWarnings("unchecked")

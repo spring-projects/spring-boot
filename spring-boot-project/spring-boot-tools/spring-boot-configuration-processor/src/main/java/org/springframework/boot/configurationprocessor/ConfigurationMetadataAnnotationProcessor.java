@@ -390,7 +390,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
 					this.typeUtils.getQualifiedName(returnElement),
 					this.typeUtils.getQualifiedName(element),
-					(getter == null ? null : getter.toString())));
+					(getter != null ? getter.toString() : null)));
 			processTypeElement(nestedPrefix, (TypeElement) returnElement, source);
 		}
 	}
@@ -423,7 +423,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey, "enabled",
 				Boolean.class.getName(), type, null,
 				String.format("Whether to enable the %s endpoint.", endpointId),
-				(enabledByDefault == null ? true : enabledByDefault), null));
+				(enabledByDefault != null ? enabledByDefault : true), null));
 		if (hasMainReadOperation(element)) {
 			this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,
 					"cache.time-to-live", Duration.class.getName(), type, null,

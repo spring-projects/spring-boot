@@ -43,7 +43,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
@@ -77,8 +77,11 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.ssl.key-password=p1",
 						"spring.kafka.ssl.keystore-location=classpath:ksLoc",
 						"spring.kafka.ssl.keystore-password=p2",
+						"spring.kafka.ssl.keystore-type=PKCS12",
 						"spring.kafka.ssl.truststore-location=classpath:tsLoc",
 						"spring.kafka.ssl.truststore-password=p3",
+						"spring.kafka.ssl.truststore-type=PKCS12",
+						"spring.kafka.ssl.protocol=TLSv1.2",
 						"spring.kafka.consumer.auto-commit-interval=123",
 						"spring.kafka.consumer.max-poll-records=42",
 						"spring.kafka.consumer.auto-offset-reset=earliest",
@@ -106,11 +109,17 @@ public class KafkaAutoConfigurationTests {
 									.endsWith(File.separator + "ksLoc");
 					assertThat(configs.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG))
 							.isEqualTo("p2");
+					assertThat(configs.get(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG))
+							.isEqualTo("PKCS12");
 					assertThat((String) configs
 							.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
 									.endsWith(File.separator + "tsLoc");
 					assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
 							.isEqualTo("p3");
+					assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG))
+							.isEqualTo("PKCS12");
+					assertThat(configs.get(SslConfigs.SSL_PROTOCOL_CONFIG))
+							.isEqualTo("TLSv1.2");
 					// consumer
 					assertThat(configs.get(ConsumerConfig.CLIENT_ID_CONFIG))
 							.isEqualTo("ccid"); // override
@@ -159,8 +168,11 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.producer.ssl.key-password=p4",
 						"spring.kafka.producer.ssl.keystore-location=classpath:ksLocP",
 						"spring.kafka.producer.ssl.keystore-password=p5",
+						"spring.kafka.producer.ssl.keystore-type=PKCS12",
 						"spring.kafka.producer.ssl.truststore-location=classpath:tsLocP",
 						"spring.kafka.producer.ssl.truststore-password=p6",
+						"spring.kafka.producer.ssl.truststore-type=PKCS12",
+						"spring.kafka.producer.ssl.protocol=TLSv1.2",
 						"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer")
 				.run((context) -> {
 					DefaultKafkaProducerFactory<?, ?> producerFactory = context
@@ -189,11 +201,17 @@ public class KafkaAutoConfigurationTests {
 									.endsWith(File.separator + "ksLocP");
 					assertThat(configs.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG))
 							.isEqualTo("p5");
+					assertThat(configs.get(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG))
+							.isEqualTo("PKCS12");
 					assertThat((String) configs
 							.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
 									.endsWith(File.separator + "tsLocP");
 					assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
 							.isEqualTo("p6");
+					assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG))
+							.isEqualTo("PKCS12");
+					assertThat(configs.get(SslConfigs.SSL_PROTOCOL_CONFIG))
+							.isEqualTo("TLSv1.2");
 					assertThat(configs.get(ProducerConfig.RETRIES_CONFIG)).isEqualTo(2);
 					assertThat(configs.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG))
 							.isEqualTo(IntegerSerializer.class);
@@ -209,17 +227,18 @@ public class KafkaAutoConfigurationTests {
 
 	@Test
 	public void adminProperties() {
-		this.contextRunner
-				.withPropertyValues("spring.kafka.clientId=cid",
-						"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
-						"spring.kafka.admin.fail-fast=true",
-						"spring.kafka.admin.properties.fiz.buz=fix.fox",
-						"spring.kafka.admin.ssl.key-password=p4",
-						"spring.kafka.admin.ssl.keystore-location=classpath:ksLocP",
-						"spring.kafka.admin.ssl.keystore-password=p5",
-						"spring.kafka.admin.ssl.truststore-location=classpath:tsLocP",
-						"spring.kafka.admin.ssl.truststore-password=p6")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.kafka.clientId=cid",
+				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
+				"spring.kafka.admin.fail-fast=true",
+				"spring.kafka.admin.properties.fiz.buz=fix.fox",
+				"spring.kafka.admin.ssl.key-password=p4",
+				"spring.kafka.admin.ssl.keystore-location=classpath:ksLocP",
+				"spring.kafka.admin.ssl.keystore-password=p5",
+				"spring.kafka.admin.ssl.keystore-type=PKCS12",
+				"spring.kafka.admin.ssl.truststore-location=classpath:tsLocP",
+				"spring.kafka.admin.ssl.truststore-password=p6",
+				"spring.kafka.admin.ssl.truststore-type=PKCS12",
+				"spring.kafka.admin.ssl.protocol=TLSv1.2").run((context) -> {
 					KafkaAdmin admin = context.getBean(KafkaAdmin.class);
 					Map<String, Object> configs = admin.getConfig();
 					// common
@@ -233,11 +252,17 @@ public class KafkaAutoConfigurationTests {
 									.endsWith(File.separator + "ksLocP");
 					assertThat(configs.get(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG))
 							.isEqualTo("p5");
+					assertThat(configs.get(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG))
+							.isEqualTo("PKCS12");
 					assertThat((String) configs
 							.get(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG))
 									.endsWith(File.separator + "tsLocP");
 					assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG))
 							.isEqualTo("p6");
+					assertThat(configs.get(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG))
+							.isEqualTo("PKCS12");
+					assertThat(configs.get(SslConfigs.SSL_PROTOCOL_CONFIG))
+							.isEqualTo("TLSv1.2");
 					assertThat(
 							context.getBeansOfType(KafkaJaasLoginModuleInitializer.class))
 									.isEmpty();

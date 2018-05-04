@@ -167,8 +167,8 @@ public class UndertowWebServer implements WebServer {
 	private UndertowWebServer.Port getPortFromChannel(BoundChannel channel) {
 		SocketAddress socketAddress = channel.getLocalAddress();
 		if (socketAddress instanceof InetSocketAddress) {
-			String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null
-					? "https" : "http";
+			Field sslField = ReflectionUtils.findField(channel.getClass(), "ssl");
+			String protocol = (sslField != null ? "https" : "http");
 			return new UndertowWebServer.Port(
 					((InetSocketAddress) socketAddress).getPort(), protocol);
 		}

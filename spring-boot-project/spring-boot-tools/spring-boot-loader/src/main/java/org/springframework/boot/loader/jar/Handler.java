@@ -250,7 +250,7 @@ public class Handler extends URLStreamHandler {
 	}
 
 	private int hashCode(String protocol, String file) {
-		int result = (protocol == null ? 0 : protocol.hashCode());
+		int result = (protocol != null ? protocol.hashCode() : 0);
 		int separatorIndex = file.indexOf(SEPARATOR);
 		if (separatorIndex == -1) {
 			return result + file.hashCode();
@@ -319,7 +319,7 @@ public class Handler extends URLStreamHandler {
 			String path = name.substring(FILE_PROTOCOL.length());
 			File file = new File(URLDecoder.decode(path, "UTF-8"));
 			Map<File, JarFile> cache = rootFileCache.get();
-			JarFile result = (cache == null ? null : cache.get(file));
+			JarFile result = (cache != null ? cache.get(file) : null);
 			if (result == null) {
 				result = new JarFile(file);
 				addToRootFileCache(file, result);

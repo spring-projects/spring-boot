@@ -121,7 +121,7 @@ public class DataSourceAutoConfiguration {
 		private ClassLoader getDataSourceClassLoader(ConditionContext context) {
 			Class<?> dataSourceClass = DataSourceBuilder
 					.findType(context.getClassLoader());
-			return (dataSourceClass == null ? null : dataSourceClass.getClassLoader());
+			return (dataSourceClass != null ? dataSourceClass.getClassLoader() : null);
 		}
 
 	}

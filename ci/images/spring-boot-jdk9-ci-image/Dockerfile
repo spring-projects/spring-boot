@@ -1,4 +1,4 @@
-FROM openjdk:9-b179-jdk
+FROM openjdk:9.0.4-12-jdk
 
 RUN apt-get update && \
     apt-get install -y git && \

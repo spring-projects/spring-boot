@@ -72,7 +72,7 @@ public class ProjectInfoAutoConfiguration {
 	}
 
 	protected Properties loadFrom(Resource location, String prefix) throws IOException {
-		String p = prefix.endsWith(".") ? prefix : prefix + ".";
+		String p = (prefix.endsWith(".") ? prefix : prefix + ".");
 		Properties source = PropertiesLoaderUtils.loadProperties(location);
 		Properties target = new Properties();
 		for (String key : source.stringPropertyNames()) {

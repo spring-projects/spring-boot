@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package sample.data.jpa.domain;
+package org.springframework.boot.docs.jmx;
 
-public interface HotelSummary {
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 
-	City getCity();
-
-	String getName();
-
-	Double getAverageRating();
-
-	default Integer getAverageRatingRounded() {
-		return (getAverageRating() != null ? (int) Math.round(getAverageRating()) : null);
-	}
+/**
+ * A sample {@link SpringBootConfiguration} that only enables JMX auto-configuration.
+ *
+ * @author Stephane Nicoll
+ */
+@SpringBootConfiguration
+@ImportAutoConfiguration(JmxAutoConfiguration.class)
+public class SampleApp {
 
 }

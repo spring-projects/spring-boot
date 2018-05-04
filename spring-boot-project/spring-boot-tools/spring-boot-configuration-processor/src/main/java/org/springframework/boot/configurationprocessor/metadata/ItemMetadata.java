@@ -61,11 +61,11 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		while (prefix != null && prefix.endsWith(".")) {
 			prefix = prefix.substring(0, prefix.length() - 1);
 		}
-		StringBuilder fullName = new StringBuilder(prefix == null ? "" : prefix);
+		StringBuilder fullName = new StringBuilder(prefix != null ? prefix : "");
 		if (fullName.length() > 0 && name != null) {
 			fullName.append(".");
 		}
-		fullName.append(name == null ? "" : ConfigurationMetadata.toDashedCase(name));
+		fullName.append(name != null ? ConfigurationMetadata.toDashedCase(name) : "");
 		return fullName.toString();
 	}
 
@@ -196,7 +196,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 	}
 
 	private int nullSafeHashCode(Object o) {
-		return (o == null ? 0 : o.hashCode());
+		return (o != null ? o.hashCode() : 0);
 	}
 
 	@Override

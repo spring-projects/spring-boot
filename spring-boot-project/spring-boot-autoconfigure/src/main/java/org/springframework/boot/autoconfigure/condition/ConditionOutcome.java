@@ -146,7 +146,7 @@ public class ConditionOutcome {
 
 	@Override
 	public String toString() {
-		return (this.message == null ? "" : this.message.toString());
+		return (this.message != null ? this.message.toString() : "");
 	}
 
 	/**

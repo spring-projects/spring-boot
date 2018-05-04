@@ -36,7 +36,7 @@ final class StringSequence implements CharSequence {
 	private int hash;
 
 	StringSequence(String source) {
-		this(source, 0, (source == null ? -1 : source.length()));
+		this(source, 0, source != null ? source.length() : -1);
 	}
 
 	StringSequence(String source, int start, int end) {

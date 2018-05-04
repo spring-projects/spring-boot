@@ -74,7 +74,7 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 		Delimiter delimiter = sourceType.getAnnotation(Delimiter.class);
 		return source.stream()
 				.map((element) -> convertElement(element, sourceType, targetType))
-				.collect(Collectors.joining(delimiter == null ? "," : delimiter.value()));
+				.collect(Collectors.joining(delimiter != null ? delimiter.value() : ","));
 	}
 
 	private String convertElement(Object element, TypeDescriptor sourceType,

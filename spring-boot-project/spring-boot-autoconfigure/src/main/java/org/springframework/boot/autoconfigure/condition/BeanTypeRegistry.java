@@ -285,9 +285,9 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	private Method[] getCandidateFactoryMethods(BeanDefinition definition,
 			Class<?> factoryClass) {
-		return shouldConsiderNonPublicMethods(definition)
+		return (shouldConsiderNonPublicMethods(definition)
 				? ReflectionUtils.getAllDeclaredMethods(factoryClass)
-				: factoryClass.getMethods();
+				: factoryClass.getMethods());
 	}
 
 	private boolean shouldConsiderNonPublicMethods(BeanDefinition definition) {

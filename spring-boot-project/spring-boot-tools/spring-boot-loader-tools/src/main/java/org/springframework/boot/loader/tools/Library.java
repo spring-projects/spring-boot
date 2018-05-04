@@ -63,7 +63,7 @@ public class Library {
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
 	 */
 	public Library(String name, File file, LibraryScope scope, boolean unpackRequired) {
-		this.name = (name == null ? file.getName() : name);
+		this.name = (name != null ? name : file.getName());
 		this.file = file;
 		this.scope = scope;
 		this.unpackRequired = unpackRequired;

@@ -67,7 +67,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		if (element == null) {
 			// Assume highlighting
 			element = LEVELS.get(event.getLevel().toInteger());
-			element = (element == null ? AnsiColor.GREEN : element);
+			element = (element != null ? element : AnsiColor.GREEN);
 		}
 		return toAnsiString(in, element);
 	}

@@ -303,8 +303,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					createWorker(), this.accessLogDirectory, prefix, this.accessLogSuffix,
 					this.accessLogRotate);
-			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
-					: "common";
+			String formatString = (this.accessLogPattern != null ? this.accessLogPattern
+					: "common");
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
 					Undertow.class.getClassLoader());
 		}
@@ -354,11 +354,13 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		File docBase = getCanonicalDocumentRoot(root);
 		List<URL> metaInfResourceUrls = getUrlsOfJarsWithMetaInfResources();
 		List<URL> resourceJarUrls = new ArrayList<>();
-		List<ResourceManager> resourceManagers = new ArrayList<>();
-		ResourceManager rootResourceManager = docBase.isDirectory()
-				? new FileResourceManager(docBase, 0) : new JarResourceManager(docBase);
-		resourceManagers.add(root == null ? rootResourceManager
-				: new LoaderHidingResourceManager(rootResourceManager));
+		List<ResourceManager> managers = new ArrayList<>();
+		ResourceManager rootManager = (docBase.isDirectory()
+				? new FileResourceManager(docBase, 0) : new JarResourceManager(docBase));
+		if (root != null) {
+			rootManager = new LoaderHidingResourceManager(rootManager);
+		}
+		managers.add(rootManager);
 		for (URL url : metaInfResourceUrls) {
 			if ("file".equals(url.getProtocol())) {
 				try {
@@ -367,7 +369,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 						resourceJarUrls.add(new URL("jar:" + url + "!/"));
 					}
 					else {
-						resourceManagers.add(new FileResourceManager(
+						managers.add(new FileResourceManager(
 								new File(file, "META-INF/resources"), 0));
 					}
 				}
@@ -379,18 +381,17 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				resourceJarUrls.add(url);
 			}
 		}
-		resourceManagers.add(new MetaInfResourcesResourceManager(resourceJarUrls));
-		return new CompositeResourceManager(
-				resourceManagers.toArray(new ResourceManager[0]));
+		managers.add(new MetaInfResourcesResourceManager(resourceJarUrls));
+		return new CompositeResourceManager(managers.toArray(new ResourceManager[0]));
 	}
 
 	private File getCanonicalDocumentRoot(File docBase) {
 		try {
-			File root = docBase != null ? docBase : createTempDir("undertow-docbase");
+			File root = (docBase != null ? docBase : createTempDir("undertow-docbase"));
 			return root.getCanonicalFile();
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Cannot get canonical document root", e);
+		catch (IOException ex) {
+			throw new IllegalStateException("Cannot get canonical document root", ex);
 		}
 	}
 

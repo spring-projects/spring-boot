@@ -54,9 +54,9 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 
 	@Override
 	protected List<String> getArguments(File archive) {
-		String mainClass = archive.getName().endsWith(".war")
+		String mainClass = (archive.getName().endsWith(".war")
 				? "org.springframework.boot.loader.WarLauncher"
-				: "org.springframework.boot.loader.JarLauncher";
+				: "org.springframework.boot.loader.JarLauncher");
 		try {
 			explodeArchive(archive);
 			return Arrays.asList("-cp", this.exploded.getAbsolutePath(), mainClass);

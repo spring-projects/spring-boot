@@ -175,13 +175,13 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
 	private KeyStore loadKeyStore(String type, String resource, String password)
 			throws Exception {
-		type = (type == null ? "JKS" : type);
+		type = (type != null ? type : "JKS");
 		if (resource == null) {
 			return null;
 		}
 		KeyStore store = KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password == null ? null : password.toCharArray());
+		store.load(url.openStream(), password != null ? password.toCharArray() : null);
 		return store;
 	}
 

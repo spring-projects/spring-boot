@@ -434,8 +434,9 @@ public class PropertiesLauncher extends Launcher {
 				return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
 			}
 		}
-		return defaultValue == null ? defaultValue
-				: SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue);
+		return (defaultValue != null
+				? SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue)
+				: defaultValue);
 	}
 
 	@Override

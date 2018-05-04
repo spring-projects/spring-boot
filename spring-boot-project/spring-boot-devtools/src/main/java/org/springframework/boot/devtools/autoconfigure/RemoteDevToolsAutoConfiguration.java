@@ -85,8 +85,8 @@ public class RemoteDevToolsAutoConfiguration {
 	public HandlerMapper remoteDevToolsHealthCheckHandlerMapper() {
 		Handler handler = new HttpStatusHandler();
 		return new UrlHandlerMapper(
-				(this.serverProperties.getServlet().getContextPath() == null ? ""
-						: this.serverProperties.getServlet().getContextPath())
+				(this.serverProperties.getServlet().getContextPath() != null
+						? this.serverProperties.getServlet().getContextPath() : "")
 						+ this.properties.getRemote().getContextPath(),
 				handler);
 	}
@@ -127,8 +127,8 @@ public class RemoteDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteRestartHandlerMapper")
 		public UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server) {
-			String url = (this.serverProperties.getServlet().getContextPath() == null ? ""
-					: this.serverProperties.getServlet().getContextPath())
+			String url = (this.serverProperties.getServlet().getContextPath() != null
+					? this.serverProperties.getServlet().getContextPath() : "")
 					+ this.properties.getRemote().getContextPath() + "/restart";
 			logger.warn("Listening for remote restart updates on " + url);
 			Handler handler = new HttpRestartServerHandler(server);
