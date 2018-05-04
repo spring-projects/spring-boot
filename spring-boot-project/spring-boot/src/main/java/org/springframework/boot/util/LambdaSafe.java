@@ -367,7 +367,7 @@ public final class LambdaSafe {
 	 * The result of a callback which may be a value, {@code null} or absent entirely if
 	 * the callback wasn't suitable. Similar in design to {@link Optional} but allows for
 	 * {@code null} as a valid value.
-	 * 
+	 *
 	 * @param <R> The result type
 	 */
 	public static final class InvocationResult<R> {

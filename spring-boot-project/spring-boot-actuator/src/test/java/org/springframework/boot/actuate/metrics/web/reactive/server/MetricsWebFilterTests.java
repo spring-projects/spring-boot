@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricsWebFilter}
- * 
+ *
  * @author Brian Clozel
  */
 public class MetricsWebFilterTests {
