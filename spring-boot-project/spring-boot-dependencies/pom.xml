@@ -86,7 +86,7 @@
 		<javax-json.version>1.1.2</javax-json.version>
 		<javax-jsonb.version>1.0</javax-jsonb.version>
 		<javax-mail.version>1.6.1</javax-mail.version>
-		<javax-money.version>1.0.1</javax-money.version>
+		<javax-money.version>1.0.3</javax-money.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<javax-validation.version>2.0.1.Final</javax-validation.version>
 		<jaxen.version>1.1.6</jaxen.version>
