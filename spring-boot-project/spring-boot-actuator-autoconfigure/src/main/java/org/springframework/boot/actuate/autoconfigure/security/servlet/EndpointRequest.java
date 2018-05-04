@@ -33,6 +33,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -40,6 +41,7 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Factory that can be used to create a {@link RequestMatcher} for actuator endpoint
@@ -114,7 +116,7 @@ public final class EndpointRequest {
 	 * The request matcher used to match against {@link Endpoint actuator endpoints}.
 	 */
 	public static final class EndpointRequestMatcher
-			extends ApplicationContextRequestMatcher<PathMappedEndpoints> {
+			extends ApplicationContextRequestMatcher<WebApplicationContext> {
 
 		private final List<Object> includes;
 
@@ -140,7 +142,7 @@ public final class EndpointRequest {
 
 		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes,
 				boolean includeLinks) {
-			super(PathMappedEndpoints.class);
+			super(WebApplicationContext.class);
 			this.includes = includes;
 			this.excludes = excludes;
 			this.includeLinks = includeLinks;
@@ -163,32 +165,40 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(Supplier<PathMappedEndpoints> pathMappedEndpoints) {
-			this.delegate = createDelegate(pathMappedEndpoints);
+		protected void initialized(
+				Supplier<WebApplicationContext> webApplicationContext) {
+			this.delegate = createDelegate(webApplicationContext);
 		}
 
 		private RequestMatcher createDelegate(
-				Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+				Supplier<WebApplicationContext> webApplicationContext) {
 			try {
-				return createDelegate(pathMappedEndpoints.get());
+				WebApplicationContext context = webApplicationContext.get();
+				PathMappedEndpoints pathMappedEndpoints = context
+						.getBean(PathMappedEndpoints.class);
+				DispatcherServletPathProvider pathProvider = context
+						.getBean(DispatcherServletPathProvider.class);
+				return createDelegate(pathMappedEndpoints, pathProvider.getServletPath());
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return EMPTY_MATCHER;
 			}
 		}
 
-		private RequestMatcher createDelegate(PathMappedEndpoints pathMappedEndpoints) {
+		private RequestMatcher createDelegate(PathMappedEndpoints pathMappedEndpoints,
+				String servletPath) {
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
 				paths.addAll(pathMappedEndpoints.getAllPaths());
 			}
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
-			List<RequestMatcher> delegateMatchers = getDelegateMatchers(paths);
+			List<RequestMatcher> delegateMatchers = getDelegateMatchers(servletPath,
+					paths);
 			if (this.includeLinks
 					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(
-						new AntPathRequestMatcher(pathMappedEndpoints.getBasePath()));
+				delegateMatchers.add(new AntPathRequestMatcher(
+						servletPath + pathMappedEndpoints.getBasePath()));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
@@ -216,14 +226,16 @@ public final class EndpointRequest {
 			return annotation.id();
 		}
 
-		private List<RequestMatcher> getDelegateMatchers(Set<String> paths) {
-			return paths.stream().map((path) -> new AntPathRequestMatcher(path + "/**"))
+		private List<RequestMatcher> getDelegateMatchers(String servletPath,
+				Set<String> paths) {
+			return paths.stream()
+					.map((path) -> new AntPathRequestMatcher(servletPath + path + "/**"))
 					.collect(Collectors.toList());
 		}
 
 		@Override
 		protected boolean matches(HttpServletRequest request,
-				Supplier<PathMappedEndpoints> context) {
+				Supplier<WebApplicationContext> context) {
 			return this.delegate.matches(request);
 		}
 
@@ -233,29 +245,41 @@ public final class EndpointRequest {
 	 * The request matcher used to match against the links endpoint.
 	 */
 	public static final class LinksRequestMatcher
-			extends ApplicationContextRequestMatcher<WebEndpointProperties> {
+			extends ApplicationContextRequestMatcher<WebApplicationContext> {
 
 		private RequestMatcher delegate;
 
 		private LinksRequestMatcher() {
-			super(WebEndpointProperties.class);
+			super(WebApplicationContext.class);
 		}
 
 		@Override
-		protected void initialized(Supplier<WebEndpointProperties> properties) {
-			this.delegate = createDelegate(properties.get());
+		protected void initialized(
+				Supplier<WebApplicationContext> webApplicationContext) {
+			try {
+				WebApplicationContext context = webApplicationContext.get();
+				WebEndpointProperties properties = context
+						.getBean(WebEndpointProperties.class);
+				DispatcherServletPathProvider pathProvider = context
+						.getBean(DispatcherServletPathProvider.class);
+				this.delegate = createDelegate(pathProvider.getServletPath(), properties);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				this.delegate = EMPTY_MATCHER;
+			}
 		}
 
-		private RequestMatcher createDelegate(WebEndpointProperties properties) {
+		private RequestMatcher createDelegate(String path,
+				WebEndpointProperties properties) {
 			if (StringUtils.hasText(properties.getBasePath())) {
-				return new AntPathRequestMatcher(properties.getBasePath());
+				return new AntPathRequestMatcher(path + properties.getBasePath());
 			}
 			return EMPTY_MATCHER;
 		}
 
 		@Override
 		protected boolean matches(HttpServletRequest request,
-				Supplier<WebEndpointProperties> context) {
+				Supplier<WebApplicationContext> context) {
 			return this.delegate.matches(request);
 		}
 

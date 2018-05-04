@@ -87,21 +87,24 @@ public class QuartzAutoConfigurationTests {
 
 	@Test
 	public void withDataSourceUseMemoryByDefault() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(
-				DataSourceAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class)).run((context) -> {
-			assertThat(context).hasSingleBean(Scheduler.class);
-			Scheduler scheduler = context.getBean(Scheduler.class);
-			assertThat(scheduler.getMetaData().getJobStoreClass())
-					.isAssignableFrom(RAMJobStore.class);
-		});
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class,
+								DataSourceTransactionManagerAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Scheduler.class);
+					Scheduler scheduler = context.getBean(Scheduler.class);
+					assertThat(scheduler.getMetaData().getJobStoreClass())
+							.isAssignableFrom(RAMJobStore.class);
+				});
 	}
 
 	@Test
 	public void withDataSource() {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class))
+				.withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class,
+								DataSourceTransactionManagerAutoConfiguration.class))
 				.withPropertyValues("spring.quartz.job-store-type=jdbc")
 				.run(assertDataSourceJobStore("dataSource"));
 	}
@@ -109,8 +112,8 @@ public class QuartzAutoConfigurationTests {
 	@Test
 	public void withDataSourceNoTransactionManager() {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(
-						DataSourceAutoConfiguration.class))
+				.withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.quartz.job-store-type=jdbc")
 				.run(assertDataSourceJobStore("dataSource"));
 	}
@@ -131,13 +134,13 @@ public class QuartzAutoConfigurationTests {
 			Scheduler scheduler = context.getBean(Scheduler.class);
 			assertThat(scheduler.getMetaData().getJobStoreClass())
 					.isAssignableFrom(LocalDataSourceJobStore.class);
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(
-					datasourceName, DataSource.class));
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(
+					context.getBean(datasourceName, DataSource.class));
 			assertThat(jdbcTemplate.queryForObject(
 					"SELECT COUNT(*) FROM QRTZ_JOB_DETAILS", Integer.class)).isEqualTo(2);
 			assertThat(jdbcTemplate.queryForObject(
 					"SELECT COUNT(*) FROM QRTZ_SIMPLE_TRIGGERS", Integer.class))
-					.isEqualTo(0);
+							.isEqualTo(0);
 		};
 	}
 
@@ -185,8 +188,9 @@ public class QuartzAutoConfigurationTests {
 
 	@Test
 	public void withQuartzProperties() {
-		this.contextRunner.withPropertyValues(
-				"spring.quartz.properties.org.quartz.scheduler.instanceId=FOO")
+		this.contextRunner
+				.withPropertyValues(
+						"spring.quartz.properties.org.quartz.scheduler.instanceId=FOO")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
 					Scheduler scheduler = context.getBean(Scheduler.class);
@@ -203,8 +207,6 @@ public class QuartzAutoConfigurationTests {
 					assertThat(scheduler.getSchedulerName()).isEqualTo("fooScheduler");
 				});
 	}
-
-
 
 	@Import(ComponentThatUsesScheduler.class)
 	@Configuration

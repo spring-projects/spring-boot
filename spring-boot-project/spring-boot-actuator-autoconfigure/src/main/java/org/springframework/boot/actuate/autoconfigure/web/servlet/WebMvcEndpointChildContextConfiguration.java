@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -90,6 +91,11 @@ class WebMvcEndpointChildContextConfiguration {
 			RequestContextFilter.class })
 	public RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
+	}
+
+	@Bean
+	public DispatcherServletPathProvider childDispatcherServletPathProvider() {
+		return () -> "";
 	}
 
 }

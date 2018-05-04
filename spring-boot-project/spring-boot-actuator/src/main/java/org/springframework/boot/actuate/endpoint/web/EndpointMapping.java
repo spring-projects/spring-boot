@@ -30,7 +30,6 @@ public class EndpointMapping {
 
 	/**
 	 * Creates a new {@code EndpointMapping} using the given {@code path}.
-	 *
 	 * @param path the path
 	 */
 	public EndpointMapping(String path) {

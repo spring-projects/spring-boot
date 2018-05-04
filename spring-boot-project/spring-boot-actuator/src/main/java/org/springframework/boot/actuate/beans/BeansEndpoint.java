@@ -44,7 +44,6 @@ public class BeansEndpoint {
 	/**
 	 * Creates a new {@code BeansEndpoint} that will describe the beans in the given
 	 * {@code context} and all of its ancestors.
-	 *
 	 * @param context the application context
 	 * @see ConfigurableApplicationContext#getParent()
 	 */

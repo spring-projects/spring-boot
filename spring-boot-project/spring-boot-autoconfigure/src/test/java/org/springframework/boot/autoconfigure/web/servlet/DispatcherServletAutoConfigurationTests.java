@@ -107,6 +107,8 @@ public class DispatcherServletAutoConfigurationTests {
 					assertThat(registration.getUrlMappings().toString())
 							.isEqualTo("[/spring/*]");
 					assertThat(registration.getMultipartConfig()).isNull();
+					assertThat(context.getBean(DispatcherServletPathProvider.class)
+							.getServletPath()).isEqualTo("/spring");
 				});
 	}
 

@@ -829,12 +829,13 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void contentNegotiationStrategySkipsPathExtension() throws Exception {
 		ContentNegotiationStrategy delegate = mock(ContentNegotiationStrategy.class);
-		ContentNegotiationStrategy strategy = new WebMvcAutoConfiguration
-				.OptionalPathExtensionContentNegotiationStrategy(delegate);
+		ContentNegotiationStrategy strategy = new WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy(
+				delegate);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setAttribute(PathExtensionContentNegotiationStrategy.class
-				.getName() + ".SKIP", Boolean.TRUE);
+		request.setAttribute(
+				PathExtensionContentNegotiationStrategy.class.getName() + ".SKIP",
+				Boolean.TRUE);
 		ServletWebRequest webRequest = new ServletWebRequest(request);
 		List<MediaType> mediaTypes = strategy.resolveMediaTypes(webRequest);
 		assertThat(mediaTypes).containsOnly(MediaType.ALL);

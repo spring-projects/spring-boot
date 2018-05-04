@@ -61,18 +61,17 @@ public class MetricsWebFilter implements WebFilter {
 	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {
 		long start = System.nanoTime();
 		ServerHttpResponse response = exchange.getResponse();
-		return call.doOnSuccess((done) -> success(exchange, start))
-				.doOnError((cause) -> {
-					if (response.isCommitted()) {
-						error(exchange, start, cause);
-					}
-					else {
-						response.beforeCommit(() -> {
-							error(exchange, start, cause);
-							return Mono.empty();
-						});
-					}
+		return call.doOnSuccess((done) -> success(exchange, start)).doOnError((cause) -> {
+			if (response.isCommitted()) {
+				error(exchange, start, cause);
+			}
+			else {
+				response.beforeCommit(() -> {
+					error(exchange, start, cause);
+					return Mono.empty();
 				});
+			}
+		});
 	}
 
 	private void success(ServerWebExchange exchange, long start) {

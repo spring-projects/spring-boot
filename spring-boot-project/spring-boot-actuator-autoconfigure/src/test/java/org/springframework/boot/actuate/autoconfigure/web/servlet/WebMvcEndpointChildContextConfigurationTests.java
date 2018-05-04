@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -60,6 +61,15 @@ public class WebMvcEndpointChildContextConfigurationTests {
 					assertThat(context)
 							.doesNotHaveBean(OrderedRequestContextFilter.class);
 				});
+	}
+
+	@Test
+	public void contextShouldConfigureDispatcherServletPathProviderWithEmptyPath() {
+		this.contextRunner
+				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
+				.run((context) -> assertThat(context
+						.getBean(DispatcherServletPathProvider.class).getServletPath())
+								.isEmpty());
 	}
 
 	static class ExistingConfig {

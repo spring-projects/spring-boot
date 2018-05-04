@@ -167,6 +167,7 @@ public final class PropertyMapper {
 
 	/**
 	 * A source that is in the process of being mapped.
+	 *
 	 * @param <T> the source type
 	 */
 	public static final class Source<T> {

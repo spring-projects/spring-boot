@@ -419,6 +419,7 @@ public class ApplicationContextAssertTests {
 	}
 
 	private static class Foo {
+
 	}
 
 }

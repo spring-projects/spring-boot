@@ -582,6 +582,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				return null;
 			}
 		}
+
 	}
 
 	/**
@@ -603,6 +604,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 				initializer.onStartup(servletContext);
 			}
 		}
+
 	}
 
 	private static final class LoaderHidingResourceManager implements ResourceManager {

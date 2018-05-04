@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package sample.data.jpa.domain;
+package org.springframework.boot.autoconfigure.web.servlet;
 
-public interface HotelSummary {
+import org.springframework.web.servlet.DispatcherServlet;
 
-	City getCity();
+/**
+ * Interface that provides the path of the {@link DispatcherServlet} in an application
+ * context.
+ *
+ * @author Madhura Bhave
+ * @since 2.0.2
+ */
+@FunctionalInterface
+public interface DispatcherServletPathProvider {
 
-	String getName();
-
-	Double getAverageRating();
-
-	default Integer getAverageRatingRounded() {
-		return (getAverageRating() != null ? (int) Math.round(getAverageRating()) : null);
-	}
+	String getServletPath();
 
 }

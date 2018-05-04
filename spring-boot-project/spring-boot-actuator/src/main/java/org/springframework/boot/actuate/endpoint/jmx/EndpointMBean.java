@@ -107,8 +107,8 @@ public class EndpointMBean implements DynamicMBean {
 			return this.responseMapper.mapResponse(result);
 		}
 		catch (InvalidEndpointRequestException ex) {
-			throw new ReflectionException(new IllegalArgumentException(
-					ex.getMessage()), ex.getMessage());
+			throw new ReflectionException(new IllegalArgumentException(ex.getMessage()),
+					ex.getMessage());
 		}
 		catch (Exception ex) {
 			throw new MBeanException(translateIfNecessary(ex), ex.getMessage());

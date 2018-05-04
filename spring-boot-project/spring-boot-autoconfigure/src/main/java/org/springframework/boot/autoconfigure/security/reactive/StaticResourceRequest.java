@@ -142,6 +142,7 @@ public final class StaticResourceRequest {
 					getDelegateMatchers());
 			return matcher.matches(exchange);
 		}
+
 	}
 
 }

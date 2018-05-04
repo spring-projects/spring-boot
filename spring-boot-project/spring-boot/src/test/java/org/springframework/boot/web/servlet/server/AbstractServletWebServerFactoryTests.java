@@ -866,8 +866,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer();
 		Map<String, String> configuredMimeMappings = getActualMimeMappings();
 		Collection<MimeMappings.Mapping> expectedMimeMappings = getExpectedMimeMappings();
-		configuredMimeMappings.forEach((key, value) -> assertThat(expectedMimeMappings).
-				contains(new MimeMappings.Mapping(key, value)));
+		configuredMimeMappings.forEach((key, value) -> assertThat(expectedMimeMappings)
+				.contains(new MimeMappings.Mapping(key, value)));
 		for (MimeMappings.Mapping mapping : expectedMimeMappings) {
 			assertThat(configuredMimeMappings).containsEntry(mapping.getExtension(),
 					mapping.getMimeType());

@@ -831,6 +831,7 @@ public class ConfigurationPropertiesTests {
 		public NonValidatedJsr303Properties properties() {
 			return new NonValidatedJsr303Properties();
 		}
+
 	}
 
 	@Configuration
@@ -1374,6 +1375,7 @@ public class ConfigurationPropertiesTests {
 	interface InterfaceForValidatedImplementation {
 
 		String getFoo();
+
 	}
 
 	@ConfigurationProperties("test")
@@ -1687,6 +1689,7 @@ public class ConfigurationPropertiesTests {
 			String[] content = StringUtils.split(source, " ");
 			return new Person(content[0], content[1]);
 		}
+
 	}
 
 	static class GenericPersonConverter implements GenericConverter {
@@ -1704,6 +1707,7 @@ public class ConfigurationPropertiesTests {
 			String[] content = StringUtils.split((String) source, " ");
 			return new Person(content[0], content[1]);
 		}
+
 	}
 
 	static class PersonPropertyEditor extends PropertyEditorSupport {

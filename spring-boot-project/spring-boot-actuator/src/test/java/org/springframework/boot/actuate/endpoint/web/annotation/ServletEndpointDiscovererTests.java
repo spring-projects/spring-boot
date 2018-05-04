@@ -67,15 +67,16 @@ public class ServletEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.run(assertDiscoverer((discoverer)
-						-> assertThat(discoverer.getEndpoints()).isEmpty()));
+				.run(assertDiscoverer(
+						(discoverer) -> assertThat(discoverer.getEndpoints()).isEmpty()));
 	}
 
 	@Test
 	public void getEndpointsShouldIncludeServletEndpoints() {
 		this.contextRunner.withUserConfiguration(TestServletEndpoint.class)
 				.run(assertDiscoverer((discoverer) -> {
-					Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
+					Collection<ExposableServletEndpoint> endpoints = discoverer
+							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableServletEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getId()).isEqualTo("testservlet");
@@ -87,9 +88,11 @@ public class ServletEndpointDiscovererTests {
 	@Test
 	public void getEndpointsShouldDiscoverProxyServletEndpoints() {
 		this.contextRunner.withUserConfiguration(TestProxyServletEndpoint.class)
-				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
+				.withConfiguration(
+						AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.run(assertDiscoverer((discoverer) -> {
-					Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
+					Collection<ExposableServletEndpoint> endpoints = discoverer
+							.getEndpoints();
 					assertThat(endpoints).hasSize(1);
 					ExposableServletEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getId()).isEqualTo("testservlet");
@@ -102,7 +105,8 @@ public class ServletEndpointDiscovererTests {
 	public void getEndpointsShouldNotDiscoverRegularEndpoints() {
 		this.contextRunner.withUserConfiguration(WithRegularEndpointConfiguration.class)
 				.run(assertDiscoverer((discoverer) -> {
-					Collection<ExposableServletEndpoint> endpoints = discoverer.getEndpoints();
+					Collection<ExposableServletEndpoint> endpoints = discoverer
+							.getEndpoints();
 					List<String> ids = endpoints.stream().map(ExposableEndpoint::getId)
 							.collect(Collectors.toList());
 					assertThat(ids).containsOnly("testservlet");
@@ -114,7 +118,8 @@ public class ServletEndpointDiscovererTests {
 		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class)
 				.run(assertDiscoverer((discoverer) -> {
 					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage("ServletEndpoints must not declare operations");
+					this.thrown.expectMessage(
+							"ServletEndpoints must not declare operations");
 					discoverer.getEndpoints();
 				}));
 	}

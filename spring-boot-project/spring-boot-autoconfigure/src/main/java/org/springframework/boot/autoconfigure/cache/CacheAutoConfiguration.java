@@ -75,8 +75,7 @@ public class CacheAutoConfiguration {
 
 	@Bean
 	public CacheManagerValidator cacheAutoConfigurationValidator(
-			CacheProperties cacheProperties,
-			ObjectProvider<CacheManager> cacheManager) {
+			CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
 		return new CacheManagerValidator(cacheProperties, cacheManager);
 	}
 

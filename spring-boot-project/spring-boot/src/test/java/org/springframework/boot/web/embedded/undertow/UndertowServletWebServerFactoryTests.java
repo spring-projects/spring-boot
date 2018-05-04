@@ -221,8 +221,8 @@ public class UndertowServletWebServerFactoryTests
 
 	@Test
 	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
-		this.thrown.expect(anyOf(instanceOf(SSLException.class),
-				instanceOf(SocketException.class)));
+		this.thrown.expect(
+				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
 				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
 	}
@@ -241,8 +241,8 @@ public class UndertowServletWebServerFactoryTests
 
 	@Test
 	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
-		this.thrown.expect(anyOf(instanceOf(SSLException.class),
-				instanceOf(SocketException.class)));
+		this.thrown.expect(
+				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
 		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
 	}

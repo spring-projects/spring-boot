@@ -36,6 +36,7 @@ public class UserServiceAutoConfigurationTests {
 	// tag::runner[]
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(UserServiceAutoConfiguration.class));
+
 	// end::runner[]
 
 	// tag::test-env[]

@@ -173,6 +173,7 @@ public class MetricsEndpoint {
 		public Set<String> getNames() {
 			return this.names;
 		}
+
 	}
 
 	/**
@@ -228,6 +229,7 @@ public class MetricsEndpoint {
 		public Set<String> getValues() {
 			return this.values;
 		}
+
 	}
 
 	/**

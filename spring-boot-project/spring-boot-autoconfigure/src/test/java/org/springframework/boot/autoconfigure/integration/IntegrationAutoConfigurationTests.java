@@ -80,16 +80,16 @@ public class IntegrationAutoConfigurationTests {
 				.withUserConfiguration(CustomIntegrationComponentScanConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TestGateway.class);
-					assertThat(context).doesNotHaveBean(
-							IntegrationComponentScanConfiguration.class);
+					assertThat(context)
+							.doesNotHaveBean(IntegrationComponentScanConfiguration.class);
 				});
 	}
 
 	@Test
 	public void noMBeanServerAvailable() {
 		ApplicationContextRunner contextRunnerWithoutJmx = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(
-						IntegrationAutoConfiguration.class));
+				.withConfiguration(
+						AutoConfigurations.of(IntegrationAutoConfiguration.class));
 		contextRunnerWithoutJmx.run((context) -> {
 			assertThat(context).hasSingleBean(TestGateway.class);
 			assertThat(context)

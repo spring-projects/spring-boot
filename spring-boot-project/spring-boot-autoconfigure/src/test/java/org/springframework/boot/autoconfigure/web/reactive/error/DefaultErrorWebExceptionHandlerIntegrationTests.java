@@ -311,6 +311,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 			public String bodyValidation(@Valid @RequestBody DummyBody body) {
 				return body.getContent();
 			}
+
 		}
 
 	}

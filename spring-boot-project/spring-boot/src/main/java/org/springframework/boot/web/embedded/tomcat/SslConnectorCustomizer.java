@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,8 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		try {
 			if (sslStoreProvider.getKeyStore() != null) {
 				protocol.setKeystorePass("");
-				protocol.setKeystoreFile(SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
+				protocol.setKeystoreFile(
+						SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
 			}
 			if (sslStoreProvider.getTrustStore() != null) {
 				protocol.setTruststoreFile(
@@ -122,8 +123,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 			}
 		}
 		catch (Exception ex) {
-			throw new WebServerException("Could not load store: " + ex.getMessage(),
-					ex);
+			throw new WebServerException("Could not load store: " + ex.getMessage(), ex);
 		}
 	}
 

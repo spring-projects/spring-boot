@@ -104,10 +104,10 @@ class ApplicationBuilder {
 		context.put("bootVersion", Versions.getBootVersion());
 		context.put("resourcesJarPath", resourcesJar.getAbsolutePath());
 		try (FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
-				FileReader templateReader = new FileReader("src/test/resources/pom-template.xml")) {
-			Mustache.compiler().escapeHTML(false)
-					.compile(templateReader)
-					.execute(context, out);
+				FileReader templateReader = new FileReader(
+						"src/test/resources/pom-template.xml")) {
+			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context,
+					out);
 		}
 	}
 
@@ -120,10 +120,10 @@ class ApplicationBuilder {
 		context.put("repository", repository);
 		File settingsXml = new File(appFolder, "settings.xml");
 		try (FileWriter out = new FileWriter(settingsXml);
-				FileReader templateReader = new FileReader("src/test/resources/settings-template.xml")) {
-			Mustache.compiler().escapeHTML(false)
-					.compile(templateReader)
-					.execute(context, out);
+				FileReader templateReader = new FileReader(
+						"src/test/resources/settings-template.xml")) {
+			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context,
+					out);
 		}
 		return settingsXml;
 	}
