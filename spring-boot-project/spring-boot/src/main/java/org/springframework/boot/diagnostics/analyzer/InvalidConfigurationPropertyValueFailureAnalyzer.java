@@ -74,8 +74,8 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
-		Iterable<PropertySource<?>> sources = (this.environment == null
-				? Collections.emptyList() : this.environment.getPropertySources());
+		Iterable<PropertySource<?>> sources = (this.environment != null
+				? this.environment.getPropertySources() : Collections.emptyList());
 		return StreamSupport.stream(sources.spliterator(), false)
 				.filter((source) -> !ConfigurationPropertySources
 						.isAttachedConfigurationPropertySource(source));

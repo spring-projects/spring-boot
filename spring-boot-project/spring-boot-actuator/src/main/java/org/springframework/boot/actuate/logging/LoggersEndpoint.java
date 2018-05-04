@@ -73,7 +73,7 @@ public class LoggersEndpoint {
 		Assert.notNull(name, "Name must not be null");
 		LoggerConfiguration configuration = this.loggingSystem
 				.getLoggerConfiguration(name);
-		return (configuration == null ? null : new LoggerLevels(configuration));
+		return (configuration != null ? new LoggerLevels(configuration) : null);
 	}
 
 	@WriteOperation

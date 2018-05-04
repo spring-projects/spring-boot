@@ -89,7 +89,7 @@ public final class BindResult<T> {
 	 */
 	public <U> BindResult<U> map(Function<? super T, ? extends U> mapper) {
 		Assert.notNull(mapper, "Mapper must not be null");
-		return of(this.value == null ? null : mapper.apply(this.value));
+		return of(this.value != null ? mapper.apply(this.value) : null);
 	}
 
 	/**

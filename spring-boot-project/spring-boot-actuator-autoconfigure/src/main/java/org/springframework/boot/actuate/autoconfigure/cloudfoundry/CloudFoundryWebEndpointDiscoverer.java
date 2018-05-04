@@ -72,7 +72,7 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(extensionBean.getClass(),
 						EndpointWebExtension.class);
-		Class<?> endpoint = (attributes == null ? null : attributes.getClass("endpoint"));
+		Class<?> endpoint = (attributes != null ? attributes.getClass("endpoint") : null);
 		return (endpoint != null && HealthEndpoint.class.isAssignableFrom(endpoint));
 	}
 

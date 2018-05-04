@@ -57,8 +57,8 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 		Assert.notNull(indicators, "Indicators must not be null");
 		this.indicators = new LinkedHashMap<>(indicators);
 		this.healthAggregator = healthAggregator;
-		this.timeoutCompose = (mono) -> this.timeout != null ? mono.timeout(
-				Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono;
+		this.timeoutCompose = (mono) -> (this.timeout != null ? mono.timeout(
+				Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono);
 	}
 
 	/**

@@ -36,9 +36,9 @@ public class DefaultRestTemplateExchangeTagsProvider
 	@Override
 	public Iterable<Tag> getTags(String urlTemplate, HttpRequest request,
 			ClientHttpResponse response) {
-		Tag uriTag = StringUtils.hasText(urlTemplate)
+		Tag uriTag = (StringUtils.hasText(urlTemplate)
 				? RestTemplateExchangeTags.uri(urlTemplate)
-				: RestTemplateExchangeTags.uri(request);
+				: RestTemplateExchangeTags.uri(request));
 		return Arrays.asList(RestTemplateExchangeTags.method(request), uriTag,
 				RestTemplateExchangeTags.status(response),
 				RestTemplateExchangeTags.clientName(request));

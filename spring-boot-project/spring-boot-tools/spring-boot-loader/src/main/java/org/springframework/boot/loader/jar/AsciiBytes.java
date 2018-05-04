@@ -141,7 +141,7 @@ final class AsciiBytes {
 	public boolean matches(CharSequence name, char suffix) {
 		int charIndex = 0;
 		int nameLen = name.length();
-		int totalLen = (nameLen + (suffix == 0 ? 0 : 1));
+		int totalLen = (nameLen + (suffix != 0 ? 1 : 0));
 		for (int i = this.offset; i < this.offset + this.length; i++) {
 			int b = this.bytes[i];
 			int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
@@ -250,7 +250,7 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(int hash, char suffix) {
-		return (suffix == 0 ? hash : (31 * hash + suffix));
+		return (suffix != 0 ? (31 * hash + suffix) : hash);
 	}
 
 }

@@ -50,15 +50,17 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 	}
 
 	public ServletContext getServletContext() {
-		return getWebServer() == null ? null : getWebServer().getServletContext();
+		return (getWebServer() != null ? getWebServer().getServletContext() : null);
 	}
 
 	public RegisteredServlet getRegisteredServlet(int index) {
-		return getWebServer() == null ? null : getWebServer().getRegisteredServlet(index);
+		return (getWebServer() != null ? getWebServer().getRegisteredServlet(index)
+				: null);
 	}
 
 	public RegisteredFilter getRegisteredFilter(int index) {
-		return getWebServer() == null ? null : getWebServer().getRegisteredFilters(index);
+		return (getWebServer() != null ? getWebServer().getRegisteredFilters(index)
+				: null);
 	}
 
 	public static class MockServletWebServer

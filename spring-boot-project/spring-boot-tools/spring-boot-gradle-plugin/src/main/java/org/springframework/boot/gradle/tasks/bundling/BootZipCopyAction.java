@@ -284,8 +284,8 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private long getTime(FileCopyDetails details) {
-			return this.preserveFileTimestamps ? details.getLastModified()
-					: CONSTANT_TIME_FOR_ZIP_ENTRIES;
+			return (this.preserveFileTimestamps ? details.getLastModified()
+					: CONSTANT_TIME_FOR_ZIP_ENTRIES);
 		}
 
 	}

@@ -278,8 +278,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 					"%nExpecting:%n <%s>%nsingle bean of type:%n <%s>%nbut found:%n <%s>",
 					getApplicationContext(), type, names));
 		}
-		T bean = (names.length == 0 ? null
-				: getApplicationContext().getBean(names[0], type));
+		T bean = (names.length != 0 ? getApplicationContext().getBean(names[0], type)
+				: null);
 		return Assertions.assertThat(bean).as("Bean of type <%s> from <%s>", type,
 				getApplicationContext());
 	}

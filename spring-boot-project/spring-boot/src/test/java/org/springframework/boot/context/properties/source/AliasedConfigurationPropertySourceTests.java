@@ -114,7 +114,7 @@ public class AliasedConfigurationPropertySourceTests {
 	private Object getValue(ConfigurationPropertySource source, String name) {
 		ConfigurationProperty property = source
 				.getConfigurationProperty(ConfigurationPropertyName.of(name));
-		return (property == null ? null : property.getValue());
+		return (property != null ? property.getValue() : null);
 	}
 
 }

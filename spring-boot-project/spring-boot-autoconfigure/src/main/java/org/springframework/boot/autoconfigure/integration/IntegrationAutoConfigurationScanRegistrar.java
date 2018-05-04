@@ -56,9 +56,9 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 	@Override
 	protected Collection<String> getBasePackages(
 			AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		return AutoConfigurationPackages.has(this.beanFactory)
+		return (AutoConfigurationPackages.has(this.beanFactory)
 				? AutoConfigurationPackages.get(this.beanFactory)
-				: Collections.emptyList();
+				: Collections.emptyList());
 	}
 
 	@IntegrationComponentScan

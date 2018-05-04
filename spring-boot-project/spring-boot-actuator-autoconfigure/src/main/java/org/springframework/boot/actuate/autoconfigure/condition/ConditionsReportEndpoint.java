@@ -125,8 +125,8 @@ public class ConditionsReportEndpoint {
 			this.unconditionalClasses = report.getUnconditionalClasses();
 			report.getConditionAndOutcomesBySource().forEach(
 					(source, conditionAndOutcomes) -> add(source, conditionAndOutcomes));
-			this.parentId = context.getParent() == null ? null
-					: context.getParent().getId();
+			this.parentId = (context.getParent() != null ? context.getParent().getId()
+					: null);
 		}
 
 		private void add(String source, ConditionAndOutcomes conditionAndOutcomes) {

@@ -961,8 +961,8 @@ public class SpringApplication {
 	 */
 	@Deprecated
 	public void setWebEnvironment(boolean webEnvironment) {
-		this.webApplicationType = webEnvironment ? WebApplicationType.SERVLET
-				: WebApplicationType.NONE;
+		this.webApplicationType = (webEnvironment ? WebApplicationType.SERVLET
+				: WebApplicationType.NONE);
 	}
 
 	/**
