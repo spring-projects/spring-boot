@@ -776,8 +776,8 @@ public class CacheAutoConfigurationTests {
 	public void autoConfiguredCacheManagerCanBeSwapped() {
 		load(CacheManagerPostProcessorConfiguration.class, "spring.cache.type=caffeine");
 		validateCacheManager(SimpleCacheManager.class);
-		CacheManagerPostProcessor postProcessor = this.context.getBean(
-				CacheManagerPostProcessor.class);
+		CacheManagerPostProcessor postProcessor = this.context
+				.getBean(CacheManagerPostProcessor.class);
 		assertThat(postProcessor.cacheManagers).hasSize(1);
 		assertThat(postProcessor.cacheManagers.get(0))
 				.isInstanceOf(CaffeineCacheManager.class);
@@ -1193,14 +1193,14 @@ public class CacheAutoConfigurationTests {
 		private final List<CacheManager> cacheManagers = new ArrayList<CacheManager>();
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean,
-				String beanName) throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName)
+				throws BeansException {
 			return bean;
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean,
-				String beanName) throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName)
+				throws BeansException {
 			if (bean instanceof CacheManager) {
 				this.cacheManagers.add((CacheManager) bean);
 				return new SimpleCacheManager();

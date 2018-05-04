@@ -54,8 +54,8 @@ import org.springframework.validation.Validator;
  * @param <T> the target type
  * @author Dave Syer
  */
-public class PropertiesConfigurationFactory<T>
-		implements FactoryBean<T>, ApplicationContextAware, MessageSourceAware, InitializingBean {
+public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
+		ApplicationContextAware, MessageSourceAware, InitializingBean {
 
 	private static final char[] EXACT_DELIMITERS = { '_', '.', '[' };
 

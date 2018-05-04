@@ -554,6 +554,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	interface ValidatedProperties {
 
 		String getFoo();
+
 	}
 
 	@ConfigurationProperties("test")
@@ -890,6 +891,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			}
 			return null;
 		}
+
 	}
 
 }

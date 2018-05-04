@@ -117,5 +117,7 @@ public class JsonComponentModuleTests {
 		static class ConcreteSerializer extends AbstractSerializer {
 
 		}
+
 	}
+
 }

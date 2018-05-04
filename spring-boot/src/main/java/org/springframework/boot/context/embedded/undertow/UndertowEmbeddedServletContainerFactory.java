@@ -701,6 +701,7 @@ public class UndertowEmbeddedServletContainerFactory
 				return null;
 			}
 		}
+
 	}
 
 	/**
@@ -722,6 +723,7 @@ public class UndertowEmbeddedServletContainerFactory
 				initializer.onStartup(servletContext);
 			}
 		}
+
 	}
 
 	/**

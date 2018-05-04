@@ -360,7 +360,8 @@ class ProjectGenerationRequest {
 			return builder.build();
 		}
 		catch (URISyntaxException ex) {
-			throw new ReportableException("Invalid service URL (" + ex.getMessage() + ")");
+			throw new ReportableException(
+					"Invalid service URL (" + ex.getMessage() + ")");
 		}
 	}
 

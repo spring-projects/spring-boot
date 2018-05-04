@@ -234,6 +234,7 @@ public class ResourceServerTokenServicesConfiguration {
 		public TokenStore jwkTokenStore() {
 			return new JwkTokenStore(this.resource.getJwk().getKeySetUri());
 		}
+
 	}
 
 	@Configuration
@@ -415,6 +416,7 @@ public class ResourceServerTokenServicesConfiguration {
 		static class HasJwkConfiguration {
 
 		}
+
 	}
 
 	static class AcceptJsonRequestInterceptor implements ClientHttpRequestInterceptor {

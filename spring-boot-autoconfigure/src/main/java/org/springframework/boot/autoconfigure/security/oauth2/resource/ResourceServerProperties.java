@@ -292,6 +292,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 		public void setKeySetUri(String keySetUri) {
 			this.keySetUri = keySetUri;
 		}
+
 	}
 
 }

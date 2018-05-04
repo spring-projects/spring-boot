@@ -185,6 +185,7 @@ public class OAuth2RestOperationsConfiguration {
 
 		@Conditional(ClientCredentialsCondition.class)
 		static class ClientCredentialsActivated {
+
 		}
 
 	}
@@ -200,10 +201,12 @@ public class OAuth2RestOperationsConfiguration {
 
 		@ConditionalOnProperty(prefix = "security.oauth2.client", name = "grant-type", havingValue = "client_credentials", matchIfMissing = false)
 		static class ClientCredentialsConfigured {
+
 		}
 
 		@ConditionalOnNotWebApplication
 		static class NoWebApplication {
+
 		}
 
 	}

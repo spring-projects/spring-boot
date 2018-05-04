@@ -130,7 +130,6 @@ public abstract class AbstractEmbeddedServletContainerFactory
 
 	/**
 	 * Converts the given {@code url} into a decoded file path.
-	 *
 	 * @param url the url to convert
 	 * @return the file path
 	 * @deprecated Since 1.5.13 in favor of {@link File#File(java.net.URI)}

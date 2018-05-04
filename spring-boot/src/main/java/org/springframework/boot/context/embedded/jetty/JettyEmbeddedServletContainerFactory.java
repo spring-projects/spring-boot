@@ -102,7 +102,6 @@ import org.springframework.util.StringUtils;
  * @author Venil Noronha
  * @author Henri Kerola
  * @author Henrich Krämer
- *
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer

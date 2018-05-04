@@ -277,4 +277,5 @@ public class HealthMvcEndpointTests {
 		Health health = ((ResponseEntity<Health>) result).getBody();
 		assertThat(health.getStatus() == Status.DOWN).isTrue();
 	}
+
 }

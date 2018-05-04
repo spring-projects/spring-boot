@@ -344,6 +344,7 @@ public class ConfigurationPropertiesReportEndpoint
 			}
 			super.serializeAsField(pojo, jgen, provider, writer);
 		}
+
 	}
 
 	/**
@@ -395,4 +396,5 @@ public class ConfigurationPropertiesReportEndpoint
 		}
 
 	}
+
 }

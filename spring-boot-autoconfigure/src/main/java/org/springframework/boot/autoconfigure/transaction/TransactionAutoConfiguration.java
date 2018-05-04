@@ -75,6 +75,7 @@ public class TransactionAutoConfiguration {
 		public TransactionTemplate transactionTemplate() {
 			return new TransactionTemplate(this.transactionManager);
 		}
+
 	}
 
 	@Configuration

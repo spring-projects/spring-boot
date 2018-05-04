@@ -77,6 +77,7 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 			}
 			return attributes;
 		}
+
 	}
 
 	@IntegrationComponentScan

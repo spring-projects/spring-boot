@@ -42,8 +42,8 @@ public class AnsiOutputApplicationListener
 				event.getEnvironment(), "spring.output.ansi.");
 		if (resolver.containsProperty("enabled")) {
 			String enabled = resolver.getProperty("enabled");
-			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class,
-					enabled.toUpperCase(Locale.ENGLISH)));
+			AnsiOutput.setEnabled(
+					Enum.valueOf(Enabled.class, enabled.toUpperCase(Locale.ENGLISH)));
 		}
 
 		if (resolver.containsProperty("console-available")) {

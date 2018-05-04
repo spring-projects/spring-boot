@@ -73,6 +73,7 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 	public static class FlywayReport {
 
 		private final String name;
+
 		private final List<FlywayMigration> migrations;
 
 		public FlywayReport(String name, List<FlywayMigration> migrations) {

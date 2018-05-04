@@ -112,6 +112,7 @@ public class Jetty8JettyEmbeddedServletContainerFactoryTests {
 			resp.getWriter().print("An error occurred");
 			resp.flushBuffer();
 		}
+
 	}
 
 }

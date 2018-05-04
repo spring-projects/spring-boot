@@ -325,6 +325,7 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 		TestMetricsMvcEndpoint(MetricsEndpoint delegate) {
 			super(delegate);
 		}
+
 	}
 
 	static class TestAuditEventsMvcEndpoint extends AuditEventsMvcEndpoint {
@@ -332,6 +333,7 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 		TestAuditEventsMvcEndpoint(AuditEventRepository auditEventRepository) {
 			super(auditEventRepository);
 		}
+
 	}
 
 	static class TestShutdownMvcEndpoint extends ShutdownMvcEndpoint {
@@ -339,6 +341,7 @@ public class EndpointWebMvcManagementContextConfigurationTests {
 		TestShutdownMvcEndpoint(ShutdownEndpoint delegate) {
 			super(delegate);
 		}
+
 	}
 
 }

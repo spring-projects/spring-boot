@@ -160,6 +160,7 @@ public final class Layouts {
 
 	/**
 	 * Module layout (designed to be used as a "plug-in").
+	 * 
 	 * @deprecated as of 1.5 in favor of a custom {@link LayoutFactory}
 	 */
 	@Deprecated

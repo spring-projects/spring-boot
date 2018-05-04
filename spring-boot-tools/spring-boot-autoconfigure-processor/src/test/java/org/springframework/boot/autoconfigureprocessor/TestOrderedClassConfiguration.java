@@ -29,4 +29,5 @@ import java.io.OutputStream;
 @TestConditionalOnClass(name = "java.io.InputStream", value = OutputStream.class)
 @TestAutoConfigureOrder(123)
 public class TestOrderedClassConfiguration {
+
 }

@@ -142,6 +142,7 @@ public class MvcEndpointSecurityInterceptor extends HandlerInterceptorAdapter {
 			}
 			return false;
 		}
+
 	}
 
 }

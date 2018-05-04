@@ -115,8 +115,8 @@ public class CassandraDataAutoConfiguration {
 		session.setKeyspaceName(this.properties.getKeyspaceName());
 		String name = this.propertyResolver.getProperty("schemaAction",
 				SchemaAction.NONE.name());
-		SchemaAction schemaAction = SchemaAction.valueOf(
-				name.toUpperCase(Locale.ENGLISH));
+		SchemaAction schemaAction = SchemaAction
+				.valueOf(name.toUpperCase(Locale.ENGLISH));
 		session.setSchemaAction(schemaAction);
 		return session;
 	}
