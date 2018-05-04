@@ -284,7 +284,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			collectBeanNamesForAnnotation(names, beanFactory, annotationType,
 					considerHierarchy);
 		}
-		catch (ClassNotFoundException ex) {
+		catch (ClassNotFoundException e) {
 			// Continue
 		}
 		return StringUtils.toStringArray(names);

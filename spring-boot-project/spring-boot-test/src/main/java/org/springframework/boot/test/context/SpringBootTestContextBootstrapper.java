@@ -164,8 +164,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				WebAppConfiguration webAppConfiguration = AnnotatedElementUtils
 						.findMergedAnnotation(mergedConfig.getTestClass(),
 								WebAppConfiguration.class);
-				String resourceBasePath = (webAppConfiguration != null
-						? webAppConfiguration.value() : "src/main/webapp");
+				String resourceBasePath = (webAppConfiguration == null ? "src/main/webapp"
+						: webAppConfiguration.value());
 				mergedConfig = new WebMergedContextConfiguration(mergedConfig,
 						resourceBasePath);
 			}
@@ -313,17 +313,17 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 */
 	protected WebEnvironment getWebEnvironment(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
-		return (annotation != null ? annotation.webEnvironment() : null);
+		return (annotation == null ? null : annotation.webEnvironment());
 	}
 
 	protected Class<?>[] getClasses(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
-		return (annotation != null ? annotation.classes() : null);
+		return (annotation == null ? null : annotation.classes());
 	}
 
 	protected String[] getProperties(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
-		return (annotation != null ? annotation.properties() : null);
+		return (annotation == null ? null : annotation.properties());
 	}
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {

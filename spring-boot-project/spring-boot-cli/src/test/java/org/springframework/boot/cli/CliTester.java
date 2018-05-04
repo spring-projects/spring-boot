@@ -154,7 +154,7 @@ public class CliTester implements TestRule {
 				}
 			}
 			else {
-				sources[i] = (new File(arg).isAbsolute() ? arg : this.prefix + arg);
+				sources[i] = new File(arg).isAbsolute() ? arg : this.prefix + arg;
 			}
 		}
 		return sources;

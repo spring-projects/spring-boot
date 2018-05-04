@@ -126,13 +126,13 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private KeyStore loadKeyStore(String type, String resource, String password)
 			throws Exception {
-		type = (type != null ? type : "JKS");
+		type = (type == null ? "JKS" : type);
 		if (resource == null) {
 			return null;
 		}
 		KeyStore store = KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password != null ? password.toCharArray() : null);
+		store.load(url.openStream(), password == null ? null : password.toCharArray());
 		return store;
 	}
 

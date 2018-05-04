@@ -75,8 +75,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			MultiValueMap<String, Object> attributes = metadata
 					.getAllAnnotationAttributes(
 							EnableConfigurationProperties.class.getName(), false);
-			return collectClasses(attributes != null ? attributes.get("value")
-					: Collections.emptyList());
+			return collectClasses(attributes == null ? Collections.emptyList()
+					: attributes.get("value"));
 		}
 
 		private List<Class<?>> collectClasses(List<?> values) {

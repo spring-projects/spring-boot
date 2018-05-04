@@ -249,7 +249,7 @@ public class OriginTrackedPropertiesLoaderTests {
 	}
 
 	private Object getValue(OriginTrackedValue value) {
-		return (value != null ? value.getValue() : null);
+		return (value == null ? null : value.getValue());
 	}
 
 	private String getLocation(OriginTrackedValue value) {

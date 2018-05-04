@@ -86,7 +86,7 @@ public class HttpExchangeTracer {
 	}
 
 	private <T> T getIfIncluded(Include include, Supplier<T> valueSupplier) {
-		return (this.includes.contains(include) ? valueSupplier.get() : null);
+		return this.includes.contains(include) ? valueSupplier.get() : null;
 	}
 
 	private <T> void setIfIncluded(Include include, Supplier<T> supplier,

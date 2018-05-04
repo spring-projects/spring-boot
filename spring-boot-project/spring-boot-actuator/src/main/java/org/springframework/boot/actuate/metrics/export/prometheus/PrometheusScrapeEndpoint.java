@@ -50,10 +50,10 @@ public class PrometheusScrapeEndpoint {
 			TextFormat.write004(writer, this.collectorRegistry.metricFamilySamples());
 			return writer.toString();
 		}
-		catch (IOException ex) {
+		catch (IOException e) {
 			// This actually never happens since StringWriter::write() doesn't throw any
 			// IOException
-			throw new RuntimeException("Writing metrics failed", ex);
+			throw new RuntimeException("Writing metrics failed", e);
 		}
 	}
 

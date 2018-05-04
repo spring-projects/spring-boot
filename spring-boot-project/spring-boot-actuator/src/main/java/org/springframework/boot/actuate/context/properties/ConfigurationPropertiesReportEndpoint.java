@@ -118,7 +118,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 					prefix, sanitize(prefix, safeSerialize(mapper, bean, prefix))));
 		});
 		return new ContextConfigurationProperties(beanDescriptors,
-				context.getParent() != null ? context.getParent().getId() : null);
+				context.getParent() == null ? null : context.getParent().getId());
 	}
 
 	private ConfigurationBeanFactoryMetadata getBeanFactoryMetadata(

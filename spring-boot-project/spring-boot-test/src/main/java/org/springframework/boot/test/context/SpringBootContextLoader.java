@@ -44,7 +44,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextLoader;
@@ -110,11 +109,11 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			setActiveProfiles(environment, config.getActiveProfiles());
 		}
-		ResourceLoader resourceLoader = (application.getResourceLoader() != null
-				? application.getResourceLoader()
-				: new DefaultResourceLoader(getClass().getClassLoader()));
 		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment,
-				resourceLoader, config.getPropertySourceLocations());
+				application.getResourceLoader() == null
+						? new DefaultResourceLoader(getClass().getClassLoader())
+						: application.getResourceLoader(),
+				config.getPropertySourceLocations());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,
 				getInlinedProperties(config));
 		application.setEnvironment(environment);

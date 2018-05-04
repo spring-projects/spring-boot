@@ -49,9 +49,8 @@ public final class LambdaSafe {
 
 	static {
 		CLASS_GET_MODULE = ReflectionUtils.findMethod(Class.class, "getModule");
-		MODULE_GET_NAME = (CLASS_GET_MODULE != null
-				? ReflectionUtils.findMethod(CLASS_GET_MODULE.getReturnType(), "getName")
-				: null);
+		MODULE_GET_NAME = (CLASS_GET_MODULE == null ? null : ReflectionUtils
+				.findMethod(CLASS_GET_MODULE.getReturnType(), "getName"));
 	}
 
 	private LambdaSafe() {
@@ -78,8 +77,8 @@ public final class LambdaSafe {
 	}
 
 	/**
-	 * Start a call to callback instances, dealing with common generic type concerns and
-	 * exceptions.
+	 * Start a call to callback instances, dealing with common generic type
+	 * concerns and exceptions.
 	 * @param callbackType the callback type (a {@link FunctionalInterface functional
 	 * interface})
 	 * @param callbackInstances the callback instances (elements may be lambdas)
@@ -142,9 +141,9 @@ public final class LambdaSafe {
 		}
 
 		/**
-		 * Use a specific filter to determine when a callback should apply. If no explicit
-		 * filter is set filter will be attempted using the generic type on the callback
-		 * type.
+		 * Use a specific filter to determine when a callback should apply. If no
+		 * explicit filter is set filter will be attempted using the generic type on the
+		 * callback type.
 		 * @param filter the filter to use
 		 * @return this instance
 		 */
@@ -206,8 +205,9 @@ public final class LambdaSafe {
 			if (this.logger.isDebugEnabled()) {
 				Class<?> expectedType = ResolvableType.forClass(this.callbackType)
 						.resolveGeneric();
-				String message = "Non-matching " + (expectedType != null
-						? ClassUtils.getShortName(expectedType) + " type" : "type")
+				String message = "Non-matching "
+						+ (expectedType == null ? "type"
+								: ClassUtils.getShortName(expectedType) + " type")
 						+ " for callback " + ClassUtils.getShortName(this.callbackType)
 						+ ": " + callback;
 				this.logger.debug(message, ex);
@@ -286,11 +286,12 @@ public final class LambdaSafe {
 		 * @param invoker the invoker used to invoke the callback
 		 */
 		public void invoke(Consumer<C> invoker) {
-			this.callbackInstances.forEach((callbackInstance) -> {
-				invoke(callbackInstance, () -> {
-					invoker.accept(callbackInstance);
-					return null;
-				});
+			Function<C, InvocationResult<Void>> mapper = (callbackInstance) -> invoke(
+					callbackInstance, () -> {
+						invoker.accept(callbackInstance);
+						return null;
+					});
+			this.callbackInstances.stream().map(mapper).forEach((result) -> {
 			});
 		}
 
@@ -403,7 +404,7 @@ public final class LambdaSafe {
 		 * @return the result of the invocation or the fallback
 		 */
 		public R get(R fallback) {
-			return (this != NONE ? this.value : fallback);
+			return (this == NONE ? fallback : this.value);
 		}
 
 		/**

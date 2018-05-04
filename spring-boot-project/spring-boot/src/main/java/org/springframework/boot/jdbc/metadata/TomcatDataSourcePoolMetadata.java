@@ -35,7 +35,7 @@ public class TomcatDataSourcePoolMetadata
 	@Override
 	public Integer getActive() {
 		ConnectionPool pool = getDataSource().getPool();
-		return (pool != null ? pool.getActive() : 0);
+		return (pool == null ? 0 : pool.getActive());
 	}
 
 	@Override

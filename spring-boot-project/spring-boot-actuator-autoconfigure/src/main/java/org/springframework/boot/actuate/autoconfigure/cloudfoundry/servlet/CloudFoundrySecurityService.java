@@ -111,7 +111,7 @@ class CloudFoundrySecurityService {
 			return extractTokenKeys(this.restTemplate
 					.getForObject(getUaaUrl() + "/token_keys", Map.class));
 		}
-		catch (HttpStatusCodeException ex) {
+		catch (HttpStatusCodeException e) {
 			throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 					"UAA not reachable");
 		}

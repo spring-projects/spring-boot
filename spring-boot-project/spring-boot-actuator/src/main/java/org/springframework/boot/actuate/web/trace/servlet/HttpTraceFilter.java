@@ -86,9 +86,8 @@ public class HttpTraceFilter extends OncePerRequestFilter implements Ordered {
 		}
 		finally {
 			TraceableHttpServletResponse traceableResponse = new TraceableHttpServletResponse(
-					status != response.getStatus()
-							? new CustomStatusResponseWrapper(response, status)
-							: response);
+					status == response.getStatus() ? response
+							: new CustomStatusResponseWrapper(response, status));
 			this.tracer.sendingResponse(trace, traceableResponse,
 					request::getUserPrincipal, () -> getSessionId(request));
 			this.repository.add(trace);
@@ -97,7 +96,7 @@ public class HttpTraceFilter extends OncePerRequestFilter implements Ordered {
 
 	private String getSessionId(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
-		return (session != null ? session.getId() : null);
+		return session == null ? null : session.getId();
 	}
 
 	private static final class CustomStatusResponseWrapper

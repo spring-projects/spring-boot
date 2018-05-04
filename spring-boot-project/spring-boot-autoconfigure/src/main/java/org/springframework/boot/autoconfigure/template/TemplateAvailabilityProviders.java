@@ -76,7 +76,7 @@ public class TemplateAvailabilityProviders {
 	 * @param applicationContext the source application context
 	 */
 	public TemplateAvailabilityProviders(ApplicationContext applicationContext) {
-		this(applicationContext != null ? applicationContext.getClassLoader() : null);
+		this(applicationContext == null ? null : applicationContext.getClassLoader());
 	}
 
 	/**
@@ -143,12 +143,12 @@ public class TemplateAvailabilityProviders {
 		if (provider == null) {
 			synchronized (this.cache) {
 				provider = findProvider(view, environment, classLoader, resourceLoader);
-				provider = (provider != null ? provider : NONE);
+				provider = (provider == null ? NONE : provider);
 				this.resolved.put(view, provider);
 				this.cache.put(view, provider);
 			}
 		}
-		return (provider != NONE ? provider : null);
+		return (provider == NONE ? null : provider);
 	}
 
 	private TemplateAvailabilityProvider findProvider(String view,

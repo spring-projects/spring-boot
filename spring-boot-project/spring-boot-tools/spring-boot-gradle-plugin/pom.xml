@@ -310,9 +310,9 @@
 			</build>
 		</profile>
 		<profile>
-			<id>java9</id>
+			<id>java10</id>
 			<activation>
-				<jdk>[9,)</jdk>
+				<jdk>10</jdk>
 			</activation>
 			<properties>
 				<skip.gradle.build>true</skip.gradle.build>
