@@ -113,18 +113,55 @@ public final class EndpointRequest {
 	}
 
 	/**
+	 * Base class for supported request matchers.
+	 */
+	private static abstract class AbstractRequestMatcher
+			extends ApplicationContextRequestMatcher<WebApplicationContext> {
+
+		private volatile RequestMatcher delegate;
+
+		public AbstractRequestMatcher() {
+			super(WebApplicationContext.class);
+		}
+
+		@Override
+		protected final void initialized(Supplier<WebApplicationContext> context) {
+			this.delegate = createDelegate(context.get());
+		}
+
+		@Override
+		protected final boolean matches(HttpServletRequest request,
+				Supplier<WebApplicationContext> context) {
+			return this.delegate.matches(request);
+		}
+
+		private RequestMatcher createDelegate(WebApplicationContext context) {
+			try {
+				RequestMatcherFactory requestMatcherFactory = new RequestMatcherFactory(
+						context.getBean(DispatcherServletPathProvider.class)
+								.getServletPath());
+				return createDelegate(context, requestMatcherFactory);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return EMPTY_MATCHER;
+			}
+		}
+
+		protected abstract RequestMatcher createDelegate(WebApplicationContext context,
+				RequestMatcherFactory requestMatcherFactory);
+
+	}
+
+	/**
 	 * The request matcher used to match against {@link Endpoint actuator endpoints}.
 	 */
-	public static final class EndpointRequestMatcher
-			extends ApplicationContextRequestMatcher<WebApplicationContext> {
+	public static final class EndpointRequestMatcher extends AbstractRequestMatcher {
 
 		private final List<Object> includes;
 
 		private final List<Object> excludes;
 
 		private final boolean includeLinks;
-
-		private volatile RequestMatcher delegate;
 
 		private EndpointRequestMatcher(boolean includeLinks) {
 			this(Collections.emptyList(), Collections.emptyList(), includeLinks);
@@ -142,7 +179,6 @@ public final class EndpointRequest {
 
 		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes,
 				boolean includeLinks) {
-			super(WebApplicationContext.class);
 			this.includes = includes;
 			this.excludes = excludes;
 			this.includeLinks = includeLinks;
@@ -165,40 +201,22 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected void initialized(
-				Supplier<WebApplicationContext> webApplicationContext) {
-			this.delegate = createDelegate(webApplicationContext);
-		}
-
-		private RequestMatcher createDelegate(
-				Supplier<WebApplicationContext> webApplicationContext) {
-			try {
-				WebApplicationContext context = webApplicationContext.get();
-				PathMappedEndpoints pathMappedEndpoints = context
-						.getBean(PathMappedEndpoints.class);
-				DispatcherServletPathProvider pathProvider = context
-						.getBean(DispatcherServletPathProvider.class);
-				return createDelegate(pathMappedEndpoints, pathProvider.getServletPath());
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				return EMPTY_MATCHER;
-			}
-		}
-
-		private RequestMatcher createDelegate(PathMappedEndpoints pathMappedEndpoints,
-				String servletPath) {
+		protected RequestMatcher createDelegate(WebApplicationContext context,
+				RequestMatcherFactory requestMatcherFactory) {
+			PathMappedEndpoints pathMappedEndpoints = context
+					.getBean(PathMappedEndpoints.class);
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
 				paths.addAll(pathMappedEndpoints.getAllPaths());
 			}
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
-			List<RequestMatcher> delegateMatchers = getDelegateMatchers(servletPath,
-					paths);
+			List<RequestMatcher> delegateMatchers = getDelegateMatchers(
+					requestMatcherFactory, paths);
 			if (this.includeLinks
 					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(new AntPathRequestMatcher(
-						computePath(servletPath, pathMappedEndpoints.getBasePath())));
+				delegateMatchers.add(
+						requestMatcherFactory.antPath(pathMappedEndpoints.getBasePath()));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
@@ -226,24 +244,11 @@ public final class EndpointRequest {
 			return annotation.id();
 		}
 
-		private List<RequestMatcher> getDelegateMatchers(String servletPath,
-				Set<String> paths) {
+		private List<RequestMatcher> getDelegateMatchers(
+				RequestMatcherFactory requestMatcherFactory, Set<String> paths) {
 			return paths.stream()
-					.map((path) -> new AntPathRequestMatcher(computePath(servletPath, path) + "/**"))
+					.map((path) -> requestMatcherFactory.antPath(path, "/**"))
 					.collect(Collectors.toList());
-		}
-
-		private String computePath(String servletPath, String path) {
-			if (servletPath.equals("/")) {
-				return path;
-			}
-			return servletPath + path;
-		}
-
-		@Override
-		protected boolean matches(HttpServletRequest request,
-				Supplier<WebApplicationContext> context) {
-			return this.delegate.matches(request);
 		}
 
 	}
@@ -251,50 +256,38 @@ public final class EndpointRequest {
 	/**
 	 * The request matcher used to match against the links endpoint.
 	 */
-	public static final class LinksRequestMatcher
-			extends ApplicationContextRequestMatcher<WebApplicationContext> {
-
-		private RequestMatcher delegate;
-
-		private LinksRequestMatcher() {
-			super(WebApplicationContext.class);
-		}
+	public static final class LinksRequestMatcher extends AbstractRequestMatcher {
 
 		@Override
-		protected void initialized(
-				Supplier<WebApplicationContext> webApplicationContext) {
-			try {
-				WebApplicationContext context = webApplicationContext.get();
-				WebEndpointProperties properties = context
-						.getBean(WebEndpointProperties.class);
-				DispatcherServletPathProvider pathProvider = context
-						.getBean(DispatcherServletPathProvider.class);
-				this.delegate = createDelegate(pathProvider.getServletPath(), properties);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				this.delegate = EMPTY_MATCHER;
-			}
-		}
-
-		private RequestMatcher createDelegate(String path,
-				WebEndpointProperties properties) {
+		protected RequestMatcher createDelegate(WebApplicationContext context,
+				RequestMatcherFactory requestMatcherFactory) {
+			WebEndpointProperties properties = context
+					.getBean(WebEndpointProperties.class);
 			if (StringUtils.hasText(properties.getBasePath())) {
-				return new AntPathRequestMatcher(computePath(path, properties.getBasePath()));
+				return requestMatcherFactory.antPath(properties.getBasePath());
 			}
 			return EMPTY_MATCHER;
 		}
 
-		private String computePath(String servletPath, String path) {
-			if (servletPath.equals("/")) {
-				return path;
-			}
-			return servletPath + path;
+	}
+
+	/**
+	 * Factory used to create a {@link RequestMatcher}.
+	 */
+	private static class RequestMatcherFactory {
+
+		private final String servletPath;
+
+		RequestMatcherFactory(String servletPath) {
+			this.servletPath = servletPath;
 		}
 
-		@Override
-		protected boolean matches(HttpServletRequest request,
-				Supplier<WebApplicationContext> context) {
-			return this.delegate.matches(request);
+		public RequestMatcher antPath(String... parts) {
+			String pattern = (this.servletPath.equals("/") ? "" : this.servletPath);
+			for (String part : parts) {
+				pattern += part;
+			}
+			return new AntPathRequestMatcher(pattern);
 		}
 
 	}
