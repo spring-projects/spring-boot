@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -84,10 +85,6 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
-	private final PhysicalNamingStrategy physicalNamingStrategy;
-
-	private final ImplicitNamingStrategy implicitNamingStrategy;
-
 	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
@@ -104,10 +101,23 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				providers.getIfAvailable(Collections::emptyList));
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
 				metadataProviders.getIfAvailable());
-		this.physicalNamingStrategy = physicalNamingStrategy.getIfAvailable();
-		this.implicitNamingStrategy = implicitNamingStrategy.getIfAvailable();
-		this.hibernatePropertiesCustomizers = hibernatePropertiesCustomizers
-				.getIfAvailable(() -> Collections.emptyList());
+		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
+				physicalNamingStrategy.getIfAvailable(),
+				implicitNamingStrategy.getIfAvailable(),
+				hibernatePropertiesCustomizers.getIfAvailable(Collections::emptyList));
+	}
+
+	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
+			PhysicalNamingStrategy physicalNamingStrategy,
+			ImplicitNamingStrategy implicitNamingStrategy,
+			List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
+		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
+			LinkedList<HibernatePropertiesCustomizer> customizers = new LinkedList<>(hibernatePropertiesCustomizers);
+			customizers.addFirst(new NamingStrategiesHibernatePropertiesCustomizer(
+					physicalNamingStrategy, implicitNamingStrategy));
+			return customizers;
+		}
+		return hibernatePropertiesCustomizers;
 	}
 
 	@Override
@@ -121,8 +131,6 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				.getDefaultDdlAuto(getDataSource());
 		return new LinkedHashMap<>(getProperties()
 				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlMode)
-						.implicitNamingStrategy(this.implicitNamingStrategy)
-						.physicalNamingStrategy(this.physicalNamingStrategy)
 						.hibernatePropertiesCustomizers(
 								this.hibernatePropertiesCustomizers)));
 	}
@@ -230,6 +238,34 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			}
 		}
 		throw new IllegalStateException("Could not configure JTA platform");
+	}
+
+	private static class NamingStrategiesHibernatePropertiesCustomizer
+			implements HibernatePropertiesCustomizer {
+
+		private final PhysicalNamingStrategy physicalNamingStrategy;
+
+		private final ImplicitNamingStrategy implicitNamingStrategy;
+
+		NamingStrategiesHibernatePropertiesCustomizer(
+				PhysicalNamingStrategy physicalNamingStrategy,
+				ImplicitNamingStrategy implicitNamingStrategy) {
+			this.physicalNamingStrategy = physicalNamingStrategy;
+			this.implicitNamingStrategy = implicitNamingStrategy;
+		}
+
+		@Override
+		public void customize(Map<String, Object> hibernateProperties) {
+			if (this.physicalNamingStrategy != null) {
+				hibernateProperties.put("hibernate.physical_naming_strategy",
+						this.physicalNamingStrategy);
+			}
+			if (this.implicitNamingStrategy != null) {
+				hibernateProperties.put("hibernate.implicit_naming_strategy",
+						this.implicitNamingStrategy);
+			}
+		}
+
 	}
 
 }
