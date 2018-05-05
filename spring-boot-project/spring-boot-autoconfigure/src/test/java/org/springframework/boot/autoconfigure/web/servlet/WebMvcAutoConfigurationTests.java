@@ -831,7 +831,6 @@ public class WebMvcAutoConfigurationTests {
 		ContentNegotiationStrategy delegate = mock(ContentNegotiationStrategy.class);
 		ContentNegotiationStrategy strategy = new WebMvcAutoConfiguration.OptionalPathExtensionContentNegotiationStrategy(
 				delegate);
-
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute(
 				PathExtensionContentNegotiationStrategy.class.getName() + ".SKIP",

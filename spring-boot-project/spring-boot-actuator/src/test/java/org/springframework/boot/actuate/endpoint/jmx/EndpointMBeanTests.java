@@ -130,10 +130,12 @@ public class EndpointMBeanTests {
 	public void invokeWhenOperationIsInvalidShouldThrowException()
 			throws MBeanException, ReflectionException {
 		TestJmxOperation operation = new TestJmxOperation() {
+
 			@Override
 			public Object invoke(InvocationContext context) {
 				throw new InvalidEndpointRequestException("test failure", "test");
 			}
+
 		};
 		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(operation);
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
