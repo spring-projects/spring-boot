@@ -75,26 +75,30 @@ public class RestTemplateMetricsAutoConfigurationTests {
 
 	@Test
 	public void afterMaxUrisReachedFurtherUrisAreDenied() {
-		this.contextRunner.run((context) -> {
-			MetricsProperties properties = context.getBean(MetricsProperties.class);
-			int maxUriTags = properties.getWeb().getClient().getMaxUriTags();
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class)
-					.build();
-			MockRestServiceServer server = MockRestServiceServer
-					.createServer(restTemplate);
-			for (int i = 0; i < maxUriTags + 10; i++) {
-				server.expect(requestTo("/test/" + i))
-						.andRespond(withStatus(HttpStatus.OK));
-			}
-			for (int i = 0; i < maxUriTags + 10; i++) {
-				restTemplate.getForObject("/test/" + i, String.class);
-			}
-			assertThat(registry.get("http.client.requests").meters()).hasSize(maxUriTags);
-			assertThat(this.out.toString())
-					.contains("Reached the maximum number of URI tags "
-							+ "for 'http.client.requests'");
-		});
+		this.contextRunner
+				.withPropertyValues("management.metrics.web.client.max-uri-tags=10")
+				.run((context) -> {
+					MetricsProperties properties = context
+							.getBean(MetricsProperties.class);
+					int maxUriTags = properties.getWeb().getClient().getMaxUriTags();
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class)
+							.build();
+					MockRestServiceServer server = MockRestServiceServer
+							.createServer(restTemplate);
+					for (int i = 0; i < maxUriTags + 10; i++) {
+						server.expect(requestTo("/test/" + i))
+								.andRespond(withStatus(HttpStatus.OK));
+					}
+					for (int i = 0; i < maxUriTags + 10; i++) {
+						restTemplate.getForObject("/test/" + i, String.class);
+					}
+					assertThat(registry.get("http.client.requests").meters())
+							.hasSize(maxUriTags);
+					assertThat(this.out.toString())
+							.contains("Reached the maximum number of URI tags "
+									+ "for 'http.client.requests'");
+				});
 	}
 
 	private void validateRestTemplate(RestTemplate restTemplate, MeterRegistry registry) {

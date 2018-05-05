@@ -86,7 +86,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * Name of the generated archive.
 	 * @since 1.0
 	 */
-	@Parameter(defaultValue = "${project.build.finalName}", required = true)
+	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
 	private String finalName;
 
 	/**
