@@ -35,7 +35,7 @@ import org.springframework.lang.Nullable;
 /**
  * {@link Endpoint} to expose available {@link Cache caches}.
  *
- * @author Johannes Edmeuer
+ * @author Johannes Edmeier
  * @author Stephane Nicoll
  * @since 2.1.0
  */
