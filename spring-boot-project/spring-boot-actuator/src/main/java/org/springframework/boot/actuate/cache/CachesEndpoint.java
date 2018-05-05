@@ -35,7 +35,7 @@ import org.springframework.lang.Nullable;
 /**
  * {@link Endpoint} to expose available {@link Cache caches}.
  *
- * @author Johannes Edmeuer
+ * @author Johannes Edmeier
  * @author Stephane Nicoll
  * @since 2.1.0
  */
@@ -60,10 +60,9 @@ public class CachesEndpoint {
 	public CachesReport caches() {
 		Map<String, Map<String, CacheDescriptor>> descriptors = new LinkedHashMap<>();
 		getCacheEntries((name) -> true, (cacheManager) -> true).forEach((entry) -> {
-			Map<String, CacheDescriptor> cmDescriptors = descriptors.computeIfAbsent(
+			Map<String, CacheDescriptor> cacheDescriptors = descriptors.computeIfAbsent(
 					entry.getCacheManager(), (key) -> new LinkedHashMap<>());
-			String cache = entry.getName();
-			cmDescriptors.put(cache, new CacheDescriptor(entry.getTarget()));
+			cacheDescriptors.put(entry.getName(), new CacheDescriptor(entry.getTarget()));
 		});
 		return new CachesReport(descriptors);
 	}
