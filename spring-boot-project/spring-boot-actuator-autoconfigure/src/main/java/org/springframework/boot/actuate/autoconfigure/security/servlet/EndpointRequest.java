@@ -198,7 +198,7 @@ public final class EndpointRequest {
 			if (this.includeLinks
 					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
 				delegateMatchers.add(new AntPathRequestMatcher(
-						servletPath + pathMappedEndpoints.getBasePath()));
+						computePath(servletPath, pathMappedEndpoints.getBasePath())));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
@@ -229,8 +229,15 @@ public final class EndpointRequest {
 		private List<RequestMatcher> getDelegateMatchers(String servletPath,
 				Set<String> paths) {
 			return paths.stream()
-					.map((path) -> new AntPathRequestMatcher(servletPath + path + "/**"))
+					.map((path) -> new AntPathRequestMatcher(computePath(servletPath, path) + "/**"))
 					.collect(Collectors.toList());
+		}
+
+		private String computePath(String servletPath, String path) {
+			if (servletPath.equals("/")) {
+				return path;
+			}
+			return servletPath + path;
 		}
 
 		@Override
@@ -272,9 +279,16 @@ public final class EndpointRequest {
 		private RequestMatcher createDelegate(String path,
 				WebEndpointProperties properties) {
 			if (StringUtils.hasText(properties.getBasePath())) {
-				return new AntPathRequestMatcher(path + properties.getBasePath());
+				return new AntPathRequestMatcher(computePath(path, properties.getBasePath()));
 			}
 			return EMPTY_MATCHER;
+		}
+
+		private String computePath(String servletPath, String path) {
+			if (servletPath.equals("/")) {
+				return path;
+			}
+			return servletPath + path;
 		}
 
 		@Override

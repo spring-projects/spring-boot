@@ -52,9 +52,9 @@ public class EndpointRequestTests {
 	@Test
 	public void toAnyEndpointShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
-		assertMatcher(matcher).matches("/actuator/foo");
-		assertMatcher(matcher).matches("/actuator/bar");
-		assertMatcher(matcher).matches("/actuator");
+		assertMatcher(matcher, "/actuator", "/").matches("/actuator/foo");
+		assertMatcher(matcher, "/actuator", "/").matches("/actuator/bar");
+		assertMatcher(matcher, "/actuator", "/").matches("/actuator");
 	}
 
 	@Test
