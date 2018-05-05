@@ -115,12 +115,12 @@ public final class EndpointRequest {
 	/**
 	 * Base class for supported request matchers.
 	 */
-	private static abstract class AbstractRequestMatcher
+	private abstract static class AbstractRequestMatcher
 			extends ApplicationContextRequestMatcher<WebApplicationContext> {
 
 		private volatile RequestMatcher delegate;
 
-		public AbstractRequestMatcher() {
+		AbstractRequestMatcher() {
 			super(WebApplicationContext.class);
 		}
 
