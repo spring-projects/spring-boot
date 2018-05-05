@@ -39,7 +39,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of
  * {@link org.springframework.web.reactive.function.client.WebClient}.
- *
  * <p>
  * This is reusing the {@link io.micrometer.core.instrument.config.MeterFilter} defined in
  * {@link RestTemplateMetricsAutoConfiguration} for limiting the cardinality of "uri"

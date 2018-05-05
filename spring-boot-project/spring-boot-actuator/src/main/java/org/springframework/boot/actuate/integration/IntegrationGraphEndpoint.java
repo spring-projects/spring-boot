@@ -34,8 +34,9 @@ public class IntegrationGraphEndpoint {
 	private final IntegrationGraphServer graphServer;
 
 	/**
-	 * Create a new {@code IntegrationGraphEndpoint} that exposes a graph containing all
-	 * the Spring Integration components in the given {@link IntegrationGraphServer}.
+	 * Create a new {@code IntegrationGraphEndpoint} instance that exposes a graph
+	 * containing all the Spring Integration components in the given
+	 * {@link IntegrationGraphServer}.
 	 * @param graphServer the integration graph server
 	 */
 	public IntegrationGraphEndpoint(IntegrationGraphServer graphServer) {

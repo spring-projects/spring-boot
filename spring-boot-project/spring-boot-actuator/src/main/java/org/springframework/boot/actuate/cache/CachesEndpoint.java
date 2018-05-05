@@ -59,11 +59,13 @@ public class CachesEndpoint {
 	@ReadOperation
 	public CachesReport caches() {
 		Map<String, Map<String, CacheDescriptor>> descriptors = new LinkedHashMap<>();
-		getCacheEntries((name) -> true, (cacheManager) -> true).forEach((entry) -> {
-			Map<String, CacheDescriptor> cmDescriptors = descriptors.computeIfAbsent(
-					entry.getCacheManager(), (key) -> new LinkedHashMap<>());
-			String cache = entry.getName();
-			cmDescriptors.put(cache, new CacheDescriptor(entry.getTarget()));
+		getCacheEntries(matchAll(), matchAll()).forEach((entry) -> {
+			String cacheName = entry.getName();
+			String cacheManager = entry.getCacheManager();
+			Map<String, CacheDescriptor> cacheManagerDescriptors = descriptors
+					.computeIfAbsent(cacheManager, (key) -> new LinkedHashMap<>());
+			cacheManagerDescriptors.put(cacheName,
+					new CacheDescriptor(entry.getTarget()));
 		});
 		return new CachesReport(descriptors);
 	}
@@ -79,7 +81,7 @@ public class CachesEndpoint {
 	@ReadOperation
 	public CacheEntry cache(@Selector String cache, @Nullable String cacheManager) {
 		return extractUniqueCacheEntry(cache,
-				getCacheEntries((name) -> name.equals(cache), safeEqual(cacheManager)));
+				getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
 	}
 
 	/**
@@ -87,14 +89,13 @@ public class CachesEndpoint {
 	 */
 	@DeleteOperation
 	public void clearCaches() {
-		getCacheEntries((name) -> true, (cacheManagerName) -> true)
-				.forEach(this::clearCache);
+		getCacheEntries(matchAll(), matchAll()).forEach(this::clearCache);
 	}
 
 	/**
 	 * Clear the specific {@link Cache}.
 	 * @param cache then name of the cache
-	 * @param cacheManager the name of the cacheManager (can be {@code null}
+	 * @param cacheManager the name of the cacheManager (can be {@code null} to match all)
 	 * @return {@code true} if the cache was cleared or {@code false} if no such cache
 	 * exists
 	 * @throws NonUniqueCacheException if more than one cache with that name exist and no
@@ -102,7 +103,7 @@ public class CachesEndpoint {
 	@DeleteOperation
 	public boolean clearCache(@Selector String cache, @Nullable String cacheManager) {
 		CacheEntry entry = extractUniqueCacheEntry(cache,
-				getCacheEntries((name) -> name.equals(cache), safeEqual(cacheManager)));
+				getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
 		return (entry != null && clearCache(entry));
 	}
 
@@ -131,12 +132,13 @@ public class CachesEndpoint {
 					entries.stream().map(CacheEntry::getCacheManager).distinct()
 							.collect(Collectors.toList()));
 		}
-		return (entries.isEmpty() ? null : entries.get(0));
+		return (!entries.isEmpty() ? entries.get(0) : null);
 	}
 
 	private boolean clearCache(CacheEntry entry) {
 		String cacheName = entry.getName();
-		Cache cache = this.cacheManagers.get(entry.getCacheManager()).getCache(cacheName);
+		String cacheManager = entry.getCacheManager();
+		Cache cache = this.cacheManagers.get(cacheManager).getCache(cacheName);
 		if (cache != null) {
 			cache.clear();
 			return true;
@@ -144,9 +146,12 @@ public class CachesEndpoint {
 		return false;
 	}
 
-	private Predicate<String> safeEqual(String name) {
-		return (name != null ? ((requested) -> requested.equals(name))
-				: ((requested) -> true));
+	private Predicate<String> isNameMatch(String name) {
+		return (name != null ? ((requested) -> requested.equals(name)) : matchAll());
+	}
+
+	private Predicate<String> matchAll() {
+		return (name) -> true;
 	}
 
 	/**

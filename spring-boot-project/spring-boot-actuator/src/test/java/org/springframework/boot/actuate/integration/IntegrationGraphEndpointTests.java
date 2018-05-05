@@ -26,9 +26,9 @@ import org.springframework.integration.support.management.graph.Graph;
 import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link IntegrationGraphEndpoint}.
@@ -51,8 +51,7 @@ public class IntegrationGraphEndpointTests {
 	@Test
 	public void readOperationShouldReturnGraph() {
 		Graph mockedGraph = mock(Graph.class);
-		when(this.integrationGraphServer.getGraph()).thenReturn(mockedGraph);
-
+		given(this.integrationGraphServer.getGraph()).willReturn(mockedGraph);
 		Graph graph = this.integrationGraphEndpoint.graph();
 		verify(this.integrationGraphServer).getGraph();
 		assertThat(graph).isEqualTo(mockedGraph);
