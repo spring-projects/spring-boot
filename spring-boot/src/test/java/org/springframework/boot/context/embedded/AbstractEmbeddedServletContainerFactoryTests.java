@@ -629,9 +629,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public void sslWithCustomSslStoreProvider() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		Ssl ssl = new Ssl();
-		ssl.setClientAuth(ClientAuth.NEED);
+		Ssl ssl = getSsl(Ssl.ClientAuth.NEED, "password", "src/test/resources/test.jks", "src/test/resources/test.jks",
+				null, null);
 		ssl.setKeyPassword("password");
+		ssl.setKeyStorePassword("password");
+		ssl.setTrustStorePassword("password");
 		factory.setSsl(ssl);
 		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
 		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
