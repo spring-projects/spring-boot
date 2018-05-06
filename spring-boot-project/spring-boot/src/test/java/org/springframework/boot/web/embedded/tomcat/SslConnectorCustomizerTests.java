@@ -170,6 +170,7 @@ public class SslConnectorCustomizerTests {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStorePassword("secret");
+		ssl.setTrustStorePassword("trustStoreSecret");
 		SslStoreProvider sslStoreProvider = mock(SslStoreProvider.class);
 		given(sslStoreProvider.getTrustStore()).willReturn(loadStore());
 		given(sslStoreProvider.getKeyStore()).willReturn(loadStore());
