@@ -285,7 +285,8 @@ public class SpringApplication {
 	private Class<?> deduceMainApplicationClass() {
 		try {
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
-			for (StackTraceElement stackTraceElement : stackTrace) {
+			for (int i = stackTrace.length - 1; i >= 0; i--) {
+				StackTraceElement stackTraceElement = stackTrace[i];
 				if ("main".equals(stackTraceElement.getMethodName())) {
 					return Class.forName(stackTraceElement.getClassName());
 				}
