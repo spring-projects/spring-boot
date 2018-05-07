@@ -18,11 +18,9 @@ package org.springframework.boot.testsupport.web.servlet;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
@@ -93,7 +91,7 @@ public abstract class MockServletWebServer {
 			given(this.servletContext.getInitParameter(anyString())).willAnswer(
 					(invocation) -> initParameters.get(invocation.getArgument(0)));
 			given(this.servletContext.getAttributeNames())
-					.willReturn(MockServletWebServer.emptyEnumeration());
+					.willReturn(Collections.emptyEnumeration());
 			given(this.servletContext.getNamedDispatcher("default"))
 					.willReturn(mock(RequestDispatcher.class));
 			for (Initializer initializer : this.initializers) {
@@ -140,27 +138,6 @@ public abstract class MockServletWebServer {
 
 	public int getPort() {
 		return this.port;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> Enumeration<T> emptyEnumeration() {
-		return (Enumeration<T>) EmptyEnumeration.EMPTY_ENUMERATION;
-	}
-
-	private static class EmptyEnumeration<E> implements Enumeration<E> {
-
-		static final MockServletWebServer.EmptyEnumeration<Object> EMPTY_ENUMERATION = new MockServletWebServer.EmptyEnumeration<>();
-
-		@Override
-		public boolean hasMoreElements() {
-			return false;
-		}
-
-		@Override
-		public E nextElement() {
-			throw new NoSuchElementException();
-		}
-
 	}
 
 	/**
