@@ -213,6 +213,12 @@
       ]
     },
     {
+      "name": "spring.elasticsearch.rest.uris",
+      "defaultValue": [
+        "http://localhost:9200"
+      ]
+    },
+    {
       "name": "spring.info.build.location",
       "defaultValue": "classpath:META-INF/build-info.properties"
     },

@@ -4221,14 +4221,45 @@ https://projects.spring.io/spring-data-solr/[reference documentation].
 
 [[boot-features-elasticsearch]]
 === Elasticsearch
-http://www.elasticsearch.org/[Elasticsearch] is an open source, distributed, real-time
-search and analytics engine. Spring Boot offers basic auto-configuration for
-Elasticsearch and the abstractions on top of it provided by
-https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch].
-There is a `spring-boot-starter-data-elasticsearch` "`Starter`" for collecting the
-dependencies in a convenient way. Spring Boot also supports
-https://github.com/searchbox-io/Jest[Jest].
+https://www.elastic.co/products/elasticsearch[Elasticsearch] is an open source,
+distributed, RESTful search and analytics engine. Spring Boot offers basic
+auto-configuration for Elasticsearch.
 
+Spring Boot supports several HTTP clients:
+
+* The official Java "Low Level" and "High Level" REST clients
+* https://github.com/searchbox-io/Jest[Jest]
+
+The transport client is still being used by
+https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch],
+which you can start using with the `spring-boot-starter-data-elasticsearch` "`Starter`".
+
+
+[[boot-features-connecting-to-elasticsearch-rest]]
+==== Connecting to Elasticsearch by REST clients
+Elasticsearch ships
+https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients]
+that you can use to query a cluster: the "Low Level" client and the "High Level" client.
+
+If you have the `org.elasticsearch.client:elasticsearch-rest-client` dependency on the
+classpath, Spring Boot will auto-configure and register a `RestClient` bean that
+by default targets `http://localhost:9200`.
+You can further tune how `RestClient` is configured, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.elasticsearch.rest.uris=http://search.example.com:9200
+	spring.elasticsearch.rest.username=user
+	spring.elasticsearch.rest.password=secret
+----
+
+You can also register an arbitrary number of beans that implement
+`RestClientBuilderCustomizer` for more advanced customizations.
+To take full control over the registration, define a `RestClient` bean.
+
+If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` dependency
+on the classpath, Spring Boot will auto-configure a `RestHighLevelClient`, which wraps
+any existing `RestClient` bean, reusing its HTTP configuration.
 
 
 [[boot-features-connecting-to-elasticsearch-jest]]
