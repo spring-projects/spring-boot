@@ -266,7 +266,7 @@ behalf. The algorithm used to determine a `WebEnvironmentType` is fairly simple:
 * If Spring MVC is present, an `AnnotationConfigServletWebServerApplicationContext` is
 used
 * If Spring MVC is not present and Spring WebFlux is present, an
-`AnnotationConfigReactiveWebApplicationContext` is used
+`AnnotationConfigReactiveWebServerApplicationContext` is used
 * Otherwise, `AnnotationConfigApplicationContext` is used
 
 This means that if you are using Spring MVC and the new `WebClient` from Spring WebFlux in

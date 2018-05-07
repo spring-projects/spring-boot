@@ -57,7 +57,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 
 	@Test
 	public void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
-		ServerWebExchange exchange = createHttpWebHandlerAdapter();
+		ServerWebExchange exchange = createExchange();
 		StaticApplicationContext context = (StaticApplicationContext) exchange
 				.getApplicationContext();
 		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(
@@ -67,7 +67,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 
 	@Test
 	public void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
-		ServerWebExchange exchange = createHttpWebHandlerAdapter();
+		ServerWebExchange exchange = createExchange();
 		StaticApplicationContext context = (StaticApplicationContext) exchange
 				.getApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
@@ -79,7 +79,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 
 	@Test
 	public void matchesWhenContextClassIsMissingBeanShouldProvideException() {
-		ServerWebExchange exchange = createHttpWebHandlerAdapter();
+		ServerWebExchange exchange = createExchange();
 		Supplier<ExistingBean> supplier = new TestApplicationContextServerWebExchangeMatcher<>(
 				ExistingBean.class).callMatchesAndReturnProvidedContext(exchange);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -96,7 +96,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 				.callMatchesAndReturnProvidedContext(exchange);
 	}
 
-	private ServerWebExchange createHttpWebHandlerAdapter() {
+	private ServerWebExchange createExchange() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestHttpWebHandlerAdapter adapter = new TestHttpWebHandlerAdapter(
 				mock(WebHandler.class));
