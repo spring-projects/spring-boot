@@ -55,9 +55,10 @@ public class WarPackagingTests {
 					"jetty-servlets", "jetty-webapp-", "websocket-api",
 					"javax.annotation-api", "jetty-plus", "javax-websocket-server-impl-",
 					"apache-el", "asm-", "javax.websocket-api-", "asm-tree-",
-					"asm-commons-", "websocket-common-", "jetty-annotations-",
-					"javax-websocket-client-impl-", "websocket-client-",
-					"websocket-server-", "jetty-xml-", "websocket-servlet-"));
+					"asm-analysis-", "asm-commons-", "websocket-common-",
+					"jetty-annotations-", "javax-websocket-client-impl-",
+					"websocket-client-", "websocket-server-", "jetty-xml-",
+					"websocket-servlet-"));
 
 	private static final String BOOT_VERSION = Versions.getBootVersion();
 
