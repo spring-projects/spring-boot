@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.jet.JetInstance;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,18 +27,29 @@ import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hazelcast. Creates a
- * {@link HazelcastInstance} based on explicit configuration or when a default
- * configuration file is found in the environment.
+ * {@link HazelcastInstance} and {@link JetInstance} based on explicit configuration
+ * or when the relevant default configuration files are found in the environment.
+ * <p>
+ * Check {@link JetInstance} before {@link HazelcastInstance} as the former includes
+ * the latter. Creating a {@link JetInstance} {@code @Bean} also exposes the
+ * {@link HazelcastInstance} {@code @Bean}, which in turn de-activates
+ * {@link HazelcastClientConfiguration} and {@link HazelcastServerConfiguration}.
+ * </p>
+ * <p>The name "<i>Hazelcast</i>" is usually used to mean Hazelcast's In-Memory
+ * Data Grid (IMDG) rather than Hazelcast's Jet data streaming engine.
+ * </p>
  *
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Neil Stevenson
  * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
 @Configuration
 @ConditionalOnClass(HazelcastInstance.class)
 @EnableConfigurationProperties(HazelcastProperties.class)
-@Import({ HazelcastClientConfiguration.class, HazelcastServerConfiguration.class })
+@Import({ HazelcastJetConfiguration.class, HazelcastClientConfiguration.class,
+	HazelcastServerConfiguration.class })
 public class HazelcastAutoConfiguration {
 
 }
