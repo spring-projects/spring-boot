@@ -115,7 +115,7 @@
 		<junit-platform.version>1.1.0</junit-platform.version>
 		<kafka.version>1.0.1</kafka.version>
 		<kotlin.version>1.2.41</kotlin.version>
-		<lettuce.version>5.0.3.RELEASE</lettuce.version>
+		<lettuce.version>5.0.4.RELEASE</lettuce.version>
 		<liquibase.version>3.5.5</liquibase.version>
 		<log4j2.version>2.10.0</log4j2.version>
 		<logback.version>1.2.3</logback.version>
