@@ -69,7 +69,7 @@ public class HttpMessageConvertersAutoConfiguration {
 	@ConditionalOnMissingBean
 	public HttpMessageConverters messageConverters() {
 		return new HttpMessageConverters(
-				this.converters == null ? Collections.emptyList() : this.converters);
+				this.converters != null ? this.converters : Collections.emptyList());
 	}
 
 	@Configuration

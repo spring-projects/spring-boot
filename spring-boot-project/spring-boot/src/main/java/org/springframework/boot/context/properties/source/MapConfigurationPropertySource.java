@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class MapConfigurationPropertySource
 	 * @param value the value
 	 */
 	public void put(Object name, Object value) {
-		this.source.put((name == null ? null : name.toString()), value);
+		this.source.put((name != null ? name.toString() : null), value);
 	}
 
 	@Override

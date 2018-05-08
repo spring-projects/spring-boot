@@ -69,7 +69,7 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 			TypeDescriptor targetType) {
 		Delimiter delimiter = targetType.getAnnotation(Delimiter.class);
 		String[] elements = getElements(source,
-				(delimiter == null ? "," : delimiter.value()));
+				(delimiter != null ? delimiter.value() : ","));
 		TypeDescriptor elementDescriptor = targetType.getElementTypeDescriptor();
 		Collection<Object> target = createCollection(targetType, elementDescriptor,
 				elements.length);

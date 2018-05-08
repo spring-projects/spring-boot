@@ -126,7 +126,7 @@ public class JmxMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public JmxConfig customConfig() {
-			return k -> null;
+			return (key) -> null;
 		}
 
 	}

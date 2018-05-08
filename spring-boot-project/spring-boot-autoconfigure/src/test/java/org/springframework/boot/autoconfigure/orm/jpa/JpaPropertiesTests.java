@@ -19,15 +19,12 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
-import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
-import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,81 +94,6 @@ public class JpaPropertiesTests {
 									"com.example.Implicit"),
 							entry("hibernate.physical_naming_strategy",
 									"com.example.Physical"));
-					assertThat(hibernateProperties)
-							.doesNotContainKeys("hibernate.ejb.naming_strategy");
-				}));
-	}
-
-	@Test
-	public void namingStrategyInstancesCanBeUsed() {
-		this.contextRunner.run(assertJpaProperties((properties) -> {
-			ImplicitNamingStrategy implicitStrategy = mock(ImplicitNamingStrategy.class);
-			PhysicalNamingStrategy physicalStrategy = mock(PhysicalNamingStrategy.class);
-			Map<String, Object> hibernateProperties = properties.getHibernateProperties(
-					new HibernateSettings().implicitNamingStrategy(implicitStrategy)
-							.physicalNamingStrategy(physicalStrategy));
-			assertThat(hibernateProperties).contains(
-					entry("hibernate.implicit_naming_strategy", implicitStrategy),
-					entry("hibernate.physical_naming_strategy", physicalStrategy));
-			assertThat(hibernateProperties)
-					.doesNotContainKeys("hibernate.ejb.naming_strategy");
-		}));
-	}
-
-	@Test
-	public void namingStrategyInstancesTakePrecedenceOverNamingStrategyProperties() {
-		this.contextRunner.withPropertyValues(
-				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
-				.run(assertJpaProperties((properties) -> {
-					ImplicitNamingStrategy implicitStrategy = mock(
-							ImplicitNamingStrategy.class);
-					PhysicalNamingStrategy physicalStrategy = mock(
-							PhysicalNamingStrategy.class);
-					Map<String, Object> hibernateProperties = properties
-							.getHibernateProperties(new HibernateSettings()
-									.implicitNamingStrategy(implicitStrategy)
-									.physicalNamingStrategy(physicalStrategy));
-					assertThat(hibernateProperties).contains(
-							entry("hibernate.implicit_naming_strategy", implicitStrategy),
-							entry("hibernate.physical_naming_strategy",
-									physicalStrategy));
-					assertThat(hibernateProperties)
-							.doesNotContainKeys("hibernate.ejb.naming_strategy");
-				}));
-	}
-
-	@Test
-	public void hibernatePropertiesCustomizerTakePrecedenceOverStrategyInstancesAndNamingStrategyProperties() {
-		this.contextRunner.withPropertyValues(
-				"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
-				.run(assertJpaProperties((properties) -> {
-					ImplicitNamingStrategy implicitStrategy = mock(
-							ImplicitNamingStrategy.class);
-					PhysicalNamingStrategy physicalStrategy = mock(
-							PhysicalNamingStrategy.class);
-					ImplicitNamingStrategy effectiveImplicitStrategy = mock(
-							ImplicitNamingStrategy.class);
-					PhysicalNamingStrategy effectivePhysicalStrategy = mock(
-							PhysicalNamingStrategy.class);
-					HibernatePropertiesCustomizer customizer = (hibernateProperties) -> {
-						hibernateProperties.put("hibernate.implicit_naming_strategy",
-								effectiveImplicitStrategy);
-						hibernateProperties.put("hibernate.physical_naming_strategy",
-								effectivePhysicalStrategy);
-					};
-					Map<String, Object> hibernateProperties = properties
-							.getHibernateProperties(new HibernateSettings()
-									.implicitNamingStrategy(implicitStrategy)
-									.physicalNamingStrategy(physicalStrategy)
-									.hibernatePropertiesCustomizers(
-											Collections.singleton(customizer)));
-					assertThat(hibernateProperties).contains(
-							entry("hibernate.implicit_naming_strategy",
-									effectiveImplicitStrategy),
-							entry("hibernate.physical_naming_strategy",
-									effectivePhysicalStrategy));
 					assertThat(hibernateProperties)
 							.doesNotContainKeys("hibernate.ejb.naming_strategy");
 				}));
@@ -307,7 +229,7 @@ public class JpaPropertiesTests {
 			given(connection.getMetaData()).willReturn(metadata);
 			given(ds.getConnection()).willReturn(connection);
 		}
-		catch (SQLException e) {
+		catch (SQLException ex) {
 			// Do nothing
 		}
 		return ds;

@@ -137,14 +137,15 @@ public class ConditionEvaluationReportMessage {
 
 	private Map<String, ConditionAndOutcomes> orderByName(
 			Map<String, ConditionAndOutcomes> outcomes) {
-		MultiValueMap<String, String> map = mapShortNameToFullyQualifiedNames(outcomes.keySet());
+		MultiValueMap<String, String> map = mapToFullyQualifiedNames(outcomes.keySet());
 		List<String> shortNames = new ArrayList<>(map.keySet());
 		Collections.sort(shortNames);
 		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<>();
 		for (String shortName : shortNames) {
 			List<String> fullyQualifiedNames = map.get(shortName);
 			if (fullyQualifiedNames.size() > 1) {
-				fullyQualifiedNames.forEach(k -> result.put(k, outcomes.get(k)));
+				fullyQualifiedNames.forEach((fullyQualifiedName) -> result
+						.put(fullyQualifiedName, outcomes.get(fullyQualifiedName)));
 			}
 			else {
 				result.put(shortName, outcomes.get(fullyQualifiedNames.get(0)));
@@ -153,9 +154,10 @@ public class ConditionEvaluationReportMessage {
 		return result;
 	}
 
-	private MultiValueMap<String, String> mapShortNameToFullyQualifiedNames(Set<String> keySet) {
+	private MultiValueMap<String, String> mapToFullyQualifiedNames(Set<String> keySet) {
 		LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-		keySet.forEach(k -> map.add(ClassUtils.getShortName(k), k));
+		keySet.forEach((fullyQualifiedName) -> map
+				.add(ClassUtils.getShortName(fullyQualifiedName), fullyQualifiedName));
 		return map;
 	}
 

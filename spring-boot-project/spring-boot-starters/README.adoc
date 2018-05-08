@@ -34,6 +34,9 @@ do as they were designed before this was clarified.
 | http://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
+| http://www.axonframework.org/[Axon Framework]
+| https://github.com/AxonFramework/AxonFramework
+
 | https://azure.microsoft.com/[Azure]
 | https://github.com/Microsoft/azure-spring-boot-starters
 
@@ -61,11 +64,17 @@ do as they were designed before this was clarified.
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
 | https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
 
+| https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
+| https://github.com/jliu666/docker-api-spring-boot
+
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
 
 | http://ff4j.org/[Feature Flipping For Java (FF4J)]
 | https://github.com/clun/ff4j/
+
+| https://www.flowable.org/[Flowable]
+| https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters
 
 | https://www.google.com/recaptcha[Google's reCAPTCHA]
 | https://github.com/mkopylec/recaptcha-spring-boot-starter
@@ -97,10 +106,13 @@ do as they were designed before this was clarified.
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/spring-boot-starter-jade4j
 
+| https://github.com/javamelody/javamelody/wiki[JavaMelody] monitoring
+| https://github.com/javamelody/javamelody/wiki/SpringBootStarter
+
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
 
-| JSF (http://primefaces.org/[PrimeFaces], http://primefaces-extensions.github.io/[PrimeFaces Extensions], http://bootsfaces.net/[BootsFaces], http://butterfaces.org/[ButterFaces], http://omnifaces.org/[OmniFaces], http://angularfaces.net/[AngularFaces], https://javaserverfaces.java.net/[Mojarra] and http://myfaces.apache.org[MyFaces])
+| JSF integration for various libraries
 | http://joinfaces.org
 
 | http://www.liquigraph.org/[Liquigraph]

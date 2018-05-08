@@ -250,8 +250,8 @@ public class WebMvcMetricsFilterTests {
 				result.set(this.mvc.perform(get("/api/c1/completableFuture/{id}", 1))
 						.andExpect(request().asyncStarted()).andReturn());
 			}
-			catch (Exception e) {
-				fail("Failed to execute async request", e);
+			catch (Exception ex) {
+				fail("Failed to execute async request", ex);
 			}
 		});
 		backgroundRequest.start();

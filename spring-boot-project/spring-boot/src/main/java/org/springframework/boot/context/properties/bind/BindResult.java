@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public final class BindResult<T> {
 	 */
 	public <U> BindResult<U> map(Function<? super T, ? extends U> mapper) {
 		Assert.notNull(mapper, "Mapper must not be null");
-		return of(this.value == null ? null : mapper.apply(this.value));
+		return of(this.value != null ? mapper.apply(this.value) : null);
 	}
 
 	/**

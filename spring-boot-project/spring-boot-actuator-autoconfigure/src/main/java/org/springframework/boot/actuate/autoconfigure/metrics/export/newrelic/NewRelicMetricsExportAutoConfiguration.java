@@ -59,9 +59,9 @@ public class NewRelicMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig config,
+	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig,
 			Clock clock) {
-		return new NewRelicMeterRegistry(config, clock);
+		return new NewRelicMeterRegistry(newRelicConfig, clock);
 	}
 
 }

@@ -54,7 +54,7 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 		List<PropertySource<?>> propertySources = new ArrayList<>(loaded.size());
 		for (int i = 0; i < loaded.size(); i++) {
 			propertySources.add(new OriginTrackedMapPropertySource(
-					name + (loaded.size() == 1 ? "" : " (document #" + i + ")"),
+					name + (loaded.size() != 1 ? " (document #" + i + ")" : ""),
 					loaded.get(i)));
 		}
 		return propertySources;

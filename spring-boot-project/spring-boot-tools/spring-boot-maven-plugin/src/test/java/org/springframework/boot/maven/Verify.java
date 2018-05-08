@@ -140,13 +140,11 @@ public final class Verify {
 		}
 
 		private ZipEntry getEntryStartingWith(String entryName) {
-			for (Map.Entry<String, ZipEntry> entry : this.content.entrySet()) {
-				if (entry.getKey().startsWith(entryName)) {
-					return entry.getValue();
-				}
-			}
-			throw new IllegalStateException(
-					"Unable to find entry starting with " + entryName);
+			return this.content.entrySet().stream()
+					.filter((entry) -> entry.getKey().startsWith(entryName))
+					.map(Map.Entry::getValue).findFirst()
+					.orElseThrow(() -> new IllegalStateException(
+							"Unable to find entry starting with " + entryName));
 		}
 
 		public boolean hasEntry(String entry) {

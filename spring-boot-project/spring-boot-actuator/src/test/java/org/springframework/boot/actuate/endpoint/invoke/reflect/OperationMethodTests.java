@@ -81,4 +81,5 @@ public class OperationMethodTests {
 	String example(String name) {
 		return name;
 	}
+
 }

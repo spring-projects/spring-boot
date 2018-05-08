@@ -69,4 +69,5 @@ public class WebFluxSecurityConfigurationTests {
 		}
 
 	}
+
 }

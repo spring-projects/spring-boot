@@ -123,30 +123,21 @@ public class ConditionsReportEndpoint {
 			this.negativeMatches = new LinkedHashMap<>();
 			this.exclusions = report.getExclusions();
 			this.unconditionalClasses = report.getUnconditionalClasses();
-			for (Map.Entry<String, ConditionAndOutcomes> entry : report
-					.getConditionAndOutcomesBySource().entrySet()) {
-				if (entry.getValue().isFullMatch()) {
-					add(this.positiveMatches, entry.getKey(), entry.getValue());
-				}
-				else {
-					add(this.negativeMatches, entry.getKey(), entry.getValue());
-				}
+			report.getConditionAndOutcomesBySource().forEach(
+					(source, conditionAndOutcomes) -> add(source, conditionAndOutcomes));
+			this.parentId = (context.getParent() != null ? context.getParent().getId()
+					: null);
+		}
+
+		private void add(String source, ConditionAndOutcomes conditionAndOutcomes) {
+			String name = ClassUtils.getShortName(source);
+			if (conditionAndOutcomes.isFullMatch()) {
+				conditionAndOutcomes.forEach((conditionAndOutcome) -> this.positiveMatches
+						.add(name, new MessageAndCondition(conditionAndOutcome)));
 			}
-			this.parentId = context.getParent() == null ? null
-					: context.getParent().getId();
-		}
-
-		private void add(Map<String, MessageAndConditions> map, String source,
-				ConditionAndOutcomes conditionAndOutcomes) {
-			String name = ClassUtils.getShortName(source);
-			map.put(name, new MessageAndConditions(conditionAndOutcomes));
-		}
-
-		private void add(MultiValueMap<String, MessageAndCondition> map, String source,
-				ConditionAndOutcomes conditionAndOutcomes) {
-			String name = ClassUtils.getShortName(source);
-			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-				map.add(name, new MessageAndCondition(conditionAndOutcome));
+			else {
+				this.negativeMatches.put(name,
+						new MessageAndConditions(conditionAndOutcomes));
 			}
 		}
 
@@ -184,8 +175,8 @@ public class ConditionsReportEndpoint {
 
 		public MessageAndConditions(ConditionAndOutcomes conditionAndOutcomes) {
 			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-				List<MessageAndCondition> target = conditionAndOutcome.getOutcome()
-						.isMatch() ? this.matched : this.notMatched;
+				List<MessageAndCondition> target = (conditionAndOutcome.getOutcome()
+						.isMatch() ? this.matched : this.notMatched);
 				target.add(new MessageAndCondition(conditionAndOutcome));
 			}
 		}

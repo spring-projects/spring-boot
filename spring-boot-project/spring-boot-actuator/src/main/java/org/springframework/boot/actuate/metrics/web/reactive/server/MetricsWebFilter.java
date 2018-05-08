@@ -25,15 +25,16 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
 /**
- * Intercepts incoming HTTP requests modeled with the Webflux annotation-based programming
- * model.
+ * Intercepts incoming HTTP requests handled by Spring WebFlux handlers.
  *
  * @author Jon Schneider
+ * @author Brian Clozel
  * @since 2.0.0
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
@@ -59,8 +60,18 @@ public class MetricsWebFilter implements WebFilter {
 
 	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {
 		long start = System.nanoTime();
-		return call.doOnSuccess((done) -> success(exchange, start))
-				.doOnError((cause) -> error(exchange, start, cause));
+		ServerHttpResponse response = exchange.getResponse();
+		return call.doOnSuccess((done) -> success(exchange, start)).doOnError((cause) -> {
+			if (response.isCommitted()) {
+				error(exchange, start, cause);
+			}
+			else {
+				response.beforeCommit(() -> {
+					error(exchange, start, cause);
+					return Mono.empty();
+				});
+			}
+		});
 	}
 
 	private void success(ServerWebExchange exchange, long start) {

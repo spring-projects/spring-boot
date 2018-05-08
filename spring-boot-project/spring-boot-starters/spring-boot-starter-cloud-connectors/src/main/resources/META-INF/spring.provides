@@ -1,1 +1,0 @@
-provides: spring-cloud-spring-service-connector,spring-cloud-cloudfoundry-connector,spring-cloud-heroku-connector,spring-cloud-localconfig-connector

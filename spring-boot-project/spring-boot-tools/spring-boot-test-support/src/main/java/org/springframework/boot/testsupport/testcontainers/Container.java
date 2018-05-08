@@ -64,7 +64,7 @@ class Container implements TestRule {
 		try {
 			DockerClientFactory.instance().client();
 		}
-		catch (Throwable t) {
+		catch (Throwable ex) {
 			return new SkipStatement();
 		}
 		this.container = this.containerFactory.get();

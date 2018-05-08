@@ -178,7 +178,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 				String type = instance.toString();
 				type = type.substring(DURATION_OF.length(), type.indexOf('('));
 				String suffix = DURATION_SUFFIX.get(type);
-				return (suffix == null ? null : factoryValue + suffix);
+				return (suffix != null ? factoryValue + suffix : null);
 			}
 			return factoryValue;
 		}

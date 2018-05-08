@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.Servlet;
@@ -236,9 +235,7 @@ public class WebMvcAutoConfiguration {
 			}
 			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentnegotiation()
 					.getMediaTypes();
-			for (Entry<String, MediaType> mediaType : mediaTypes.entrySet()) {
-				configurer.mediaType(mediaType.getKey(), mediaType.getValue());
-			}
+			mediaTypes.forEach(configurer::mediaType);
 		}
 
 		@Bean
@@ -341,7 +338,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		private Integer getSeconds(Duration cachePeriod) {
-			return (cachePeriod == null ? null : (int) cachePeriod.getSeconds());
+			return (cachePeriod != null ? (int) cachePeriod.getSeconds() : null);
 		}
 
 		@Bean
@@ -656,7 +653,7 @@ public class WebMvcAutoConfiguration {
 			Object skip = webRequest.getAttribute(SKIP_ATTRIBUTE,
 					RequestAttributes.SCOPE_REQUEST);
 			if (skip != null && Boolean.parseBoolean(skip.toString())) {
-				return Collections.emptyList();
+				return MEDIA_TYPE_ALL_LIST;
 			}
 			return this.delegate.resolveMediaTypes(webRequest);
 		}

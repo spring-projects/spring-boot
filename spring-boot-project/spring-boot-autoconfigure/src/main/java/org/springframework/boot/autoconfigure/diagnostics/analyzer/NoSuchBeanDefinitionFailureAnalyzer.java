@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 				cause);
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%s required %s that could not be found.%n",
-				description == null ? "A component" : description,
+				(description != null ? description : "A component"),
 				getBeanDescription(cause)));
 		if (!autoConfigurationResults.isEmpty()) {
 			for (AutoConfigurationResult provider : autoConfigurationResults) {
@@ -124,19 +124,23 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 	private void collectReportedConditionOutcomes(NoSuchBeanDefinitionException cause,
 			List<AutoConfigurationResult> results) {
-		for (Map.Entry<String, ConditionAndOutcomes> entry : this.report
-				.getConditionAndOutcomesBySource().entrySet()) {
-			Source source = new Source(entry.getKey());
-			ConditionAndOutcomes conditionAndOutcomes = entry.getValue();
-			if (!conditionAndOutcomes.isFullMatch()) {
-				BeanMethods methods = new BeanMethods(source, cause);
-				for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-					if (!conditionAndOutcome.getOutcome().isMatch()) {
-						for (MethodMetadata method : methods) {
-							results.add(new AutoConfigurationResult(method,
-									conditionAndOutcome.getOutcome(), source.isMethod()));
-						}
-					}
+		this.report.getConditionAndOutcomesBySource().forEach(
+				(source, sourceOutcomes) -> collectReportedConditionOutcomes(cause,
+						new Source(source), sourceOutcomes, results));
+	}
+
+	private void collectReportedConditionOutcomes(NoSuchBeanDefinitionException cause,
+			Source source, ConditionAndOutcomes sourceOutcomes,
+			List<AutoConfigurationResult> results) {
+		if (sourceOutcomes.isFullMatch()) {
+			return;
+		}
+		BeanMethods methods = new BeanMethods(source, cause);
+		for (ConditionAndOutcome conditionAndOutcome : sourceOutcomes) {
+			if (!conditionAndOutcome.getOutcome().isMatch()) {
+				for (MethodMetadata method : methods) {
+					results.add(new AutoConfigurationResult(method,
+							conditionAndOutcome.getOutcome(), source.isMethod()));
 				}
 			}
 		}
@@ -165,7 +169,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 		Source(String source) {
 			String[] tokens = source.split("#");
 			this.className = (tokens.length > 1 ? tokens[0] : source);
-			this.methodName = (tokens.length == 2 ? tokens[1] : null);
+			this.methodName = (tokens.length != 2 ? null : tokens[1]);
 		}
 
 		public String getClassName() {
@@ -225,8 +229,8 @@ class NoSuchBeanDefinitionFailureAnalyzer
 		private boolean hasName(MethodMetadata methodMetadata, String name) {
 			Map<String, Object> attributes = methodMetadata
 					.getAnnotationAttributes(Bean.class.getName());
-			String[] candidates = (attributes == null ? null
-					: (String[]) attributes.get("name"));
+			String[] candidates = (attributes != null ? (String[]) attributes.get("name")
+					: null);
 			if (candidates != null) {
 				for (String candidate : candidates) {
 					if (candidate.equals(name)) {

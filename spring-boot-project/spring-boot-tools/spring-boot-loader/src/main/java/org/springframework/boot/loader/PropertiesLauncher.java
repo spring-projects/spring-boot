@@ -434,8 +434,9 @@ public class PropertiesLauncher extends Launcher {
 				return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
 			}
 		}
-		return defaultValue == null ? defaultValue
-				: SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue);
+		return (defaultValue != null
+				? SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue)
+				: defaultValue);
 	}
 
 	@Override
@@ -460,7 +461,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private List<Archive> getClassPathArchives(String path) throws Exception {
 		String root = cleanupPath(handleUrl(path));
-		List<Archive> lib = new ArrayList<Archive>();
+		List<Archive> lib = new ArrayList<>();
 		File file = new File(root);
 		if (!"/".equals(root)) {
 			if (!isAbsolutePath(root)) {

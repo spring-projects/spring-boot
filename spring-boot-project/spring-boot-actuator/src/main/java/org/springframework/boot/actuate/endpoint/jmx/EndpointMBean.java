@@ -93,21 +93,34 @@ public class EndpointMBean implements DynamicMBean {
 		return invoke(operation, params);
 	}
 
-	private Object invoke(JmxOperation operation, Object[] params) {
+	private Object invoke(JmxOperation operation, Object[] params)
+			throws MBeanException, ReflectionException {
 		try {
 			String[] parameterNames = operation.getParameters().stream()
 					.map(JmxOperationParameter::getName).toArray(String[]::new);
 			Map<String, Object> arguments = getArguments(parameterNames, params);
-			Object result = operation
-					.invoke(new InvocationContext(SecurityContext.NONE, arguments));
+			InvocationContext context = new InvocationContext(SecurityContext.NONE,
+					arguments);
+			Object result = operation.invoke(context);
 			if (REACTOR_PRESENT) {
 				result = ReactiveHandler.handle(result);
 			}
 			return this.responseMapper.mapResponse(result);
 		}
 		catch (InvalidEndpointRequestException ex) {
-			throw new IllegalArgumentException(ex.getMessage(), ex);
+			throw new ReflectionException(new IllegalArgumentException(ex.getMessage()),
+					ex.getMessage());
 		}
+		catch (Exception ex) {
+			throw new MBeanException(translateIfNecessary(ex), ex.getMessage());
+		}
+	}
+
+	private Exception translateIfNecessary(Exception exception) {
+		if (exception.getClass().getName().startsWith("java.")) {
+			return exception;
+		}
+		return new IllegalStateException(exception.getMessage());
 	}
 
 	private Map<String, Object> getArguments(String[] parameterNames, Object[] params) {

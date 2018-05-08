@@ -60,7 +60,7 @@ public class WavefrontPropertiesConfigAdapter
 	}
 
 	private String getUriAsString(WavefrontProperties properties) {
-		return properties.getUri() == null ? null : properties.getUri().toString();
+		return (properties.getUri() != null ? properties.getUri().toString() : null);
 	}
 
 }

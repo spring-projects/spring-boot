@@ -59,7 +59,7 @@ public class FlywayEndpoint {
 					.put(name, new FlywayDescriptor(flyway.info().all())));
 			ApplicationContext parent = target.getParent();
 			contextFlywayBeans.put(target.getId(), new ContextFlywayBeans(flywayBeans,
-					parent == null ? null : parent.getId()));
+					parent != null ? parent.getId() : null));
 			target = parent;
 		}
 		return new ApplicationFlywayBeans(contextFlywayBeans);
@@ -170,7 +170,7 @@ public class FlywayEndpoint {
 		}
 
 		private String nullSafeToString(Object obj) {
-			return (obj == null ? null : obj.toString());
+			return (obj != null ? obj.toString() : null);
 		}
 
 		public MigrationType getType() {

@@ -62,7 +62,7 @@ public class ApplicationPid {
 
 	@Override
 	public String toString() {
-		return (this.pid == null ? "???" : this.pid);
+		return (this.pid != null ? this.pid : "???");
 	}
 
 	@Override

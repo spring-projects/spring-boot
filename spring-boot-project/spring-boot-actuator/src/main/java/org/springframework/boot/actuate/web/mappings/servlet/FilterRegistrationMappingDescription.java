@@ -40,7 +40,6 @@ public class FilterRegistrationMappingDescription
 
 	/**
 	 * Returns the servlet name mappings for the registered filter.
-	 *
 	 * @return the mappings
 	 */
 	public Collection<String> getServletNameMappings() {
@@ -49,7 +48,6 @@ public class FilterRegistrationMappingDescription
 
 	/**
 	 * Returns the URL pattern mappings for the registered filter.
-	 *
 	 * @return the mappings
 	 */
 	public Collection<String> getUrlPatternMappings() {

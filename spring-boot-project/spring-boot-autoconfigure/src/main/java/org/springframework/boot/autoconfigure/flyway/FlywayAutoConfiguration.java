@@ -94,7 +94,7 @@ public class FlywayAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(Flyway.class)
-	@EnableConfigurationProperties(FlywayProperties.class)
+	@EnableConfigurationProperties({ DataSourceProperties.class, FlywayProperties.class })
 	public static class FlywayConfiguration {
 
 		private final FlywayProperties properties;
@@ -157,7 +157,7 @@ public class FlywayAutoConfiguration {
 		private String getProperty(Supplier<String> property,
 				Supplier<String> defaultValue) {
 			String value = property.get();
-			return (value == null ? defaultValue.get() : value);
+			return (value != null ? value : defaultValue.get());
 		}
 
 		private void checkLocationExists(String... locations) {

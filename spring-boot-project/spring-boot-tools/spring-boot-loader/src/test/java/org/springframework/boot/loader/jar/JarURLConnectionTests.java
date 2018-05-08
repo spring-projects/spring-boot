@@ -135,6 +135,21 @@ public class JarURLConnectionTests {
 	}
 
 	@Test
+	public void connectionToEntryWithSpaceNestedEntry() throws Exception {
+		URL url = new URL("jar:file:" + getRelativePath() + "!/space nested.jar!/3.dat");
+		assertThat(JarURLConnection.get(url, this.jarFile).getInputStream())
+				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
+	public void connectionToEntryWithEncodedSpaceNestedEntry() throws Exception {
+		URL url = new URL(
+				"jar:file:" + getRelativePath() + "!/space%20nested.jar!/3.dat");
+		assertThat(JarURLConnection.get(url, this.jarFile).getInputStream())
+				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
 	public void getContentLengthReturnsLengthOfUnderlyingEntry() throws Exception {
 		URL url = new URL(new URL("jar", null, -1,
 				"file:" + getAbsolutePath() + "!/nested.jar!/", new Handler()), "/3.dat");

@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
-import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
-
 /**
  * Settings to apply when configuring Hibernate.
  *
@@ -32,10 +29,6 @@ import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 public class HibernateSettings {
 
 	private Supplier<String> ddlAuto;
-
-	private ImplicitNamingStrategy implicitNamingStrategy;
-
-	private PhysicalNamingStrategy physicalNamingStrategy;
 
 	private Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
@@ -58,26 +51,6 @@ public class HibernateSettings {
 
 	public String getDdlAuto() {
 		return (this.ddlAuto != null ? this.ddlAuto.get() : null);
-	}
-
-	public HibernateSettings implicitNamingStrategy(
-			ImplicitNamingStrategy implicitNamingStrategy) {
-		this.implicitNamingStrategy = implicitNamingStrategy;
-		return this;
-	}
-
-	public ImplicitNamingStrategy getImplicitNamingStrategy() {
-		return this.implicitNamingStrategy;
-	}
-
-	public HibernateSettings physicalNamingStrategy(
-			PhysicalNamingStrategy physicalNamingStrategy) {
-		this.physicalNamingStrategy = physicalNamingStrategy;
-		return this;
-	}
-
-	public PhysicalNamingStrategy getPhysicalNamingStrategy() {
-		return this.physicalNamingStrategy;
 	}
 
 	public HibernateSettings hibernatePropertiesCustomizers(

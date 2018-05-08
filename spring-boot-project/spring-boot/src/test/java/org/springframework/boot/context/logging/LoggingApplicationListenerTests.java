@@ -215,8 +215,10 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+		String existingOutput = this.outputCapture.toString();
 		logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
+		String output = this.outputCapture.toString().substring(existingOutput.length())
+				.trim();
 		assertThat(output).startsWith("target/foo.log");
 	}
 
@@ -240,8 +242,10 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+		String existingOutput = this.outputCapture.toString();
 		logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
+		String output = this.outputCapture.toString().substring(existingOutput.length())
+				.trim();
 		assertThat(output).startsWith("target/foo/spring.log");
 	}
 

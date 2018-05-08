@@ -247,16 +247,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>java10</id>
-			<activation>
-				<jdk>10</jdk>
-			</activation>
-			<properties>
-				<maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
-				<maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
-			</properties>
-		</profile>
-	</profiles>
 </project>

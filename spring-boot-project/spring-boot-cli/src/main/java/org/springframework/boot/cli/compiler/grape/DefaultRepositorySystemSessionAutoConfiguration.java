@@ -51,8 +51,9 @@ public class DefaultRepositorySystemSessionAutoConfiguration
 		ProxySelector existing = session.getProxySelector();
 		if (existing == null || !(existing instanceof CompositeProxySelector)) {
 			JreProxySelector fallback = new JreProxySelector();
-			ProxySelector selector = existing == null ? fallback
-					: new CompositeProxySelector(Arrays.asList(existing, fallback));
+			ProxySelector selector = (existing != null
+					? new CompositeProxySelector(Arrays.asList(existing, fallback))
+					: fallback);
 			session.setProxySelector(selector);
 		}
 	}

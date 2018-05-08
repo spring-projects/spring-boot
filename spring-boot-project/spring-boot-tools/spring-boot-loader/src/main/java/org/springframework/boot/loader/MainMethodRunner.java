@@ -38,7 +38,7 @@ public class MainMethodRunner {
 	 */
 	public MainMethodRunner(String mainClass, String[] args) {
 		this.mainClassName = mainClass;
-		this.args = (args == null ? null : args.clone());
+		this.args = (args != null ? args.clone() : null);
 	}
 
 	public void run() throws Exception {

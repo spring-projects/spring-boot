@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -23,9 +24,10 @@ import javax.servlet.DispatcherType;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -98,15 +100,26 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 	}
 
 	@Test
-	public void springSessionTimeoutIsNotAValidProperty() {
-		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-				.withPropertyValues("spring.session.timeout=3000").run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context).getFailure()
-							.isInstanceOf(BeanCreationException.class);
-					assertThat(context).getFailure()
-							.hasMessageContaining("Could not bind");
-				});
+	public void autoConfigWhenSpringSessionTimeoutIsSetShouldUseThat() {
+		this.contextRunner
+				.withUserConfiguration(ServerPropertiesConfiguration.class,
+						SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.servlet.session.timeout=1",
+						"spring.session.timeout=3")
+				.run((context) -> assertThat(
+						context.getBean(SessionProperties.class).getTimeout())
+								.isEqualTo(Duration.ofSeconds(3)));
+	}
+
+	@Test
+	public void autoConfigWhenSpringSessionTimeoutIsNotSetShouldUseServerSessionTimeout() {
+		this.contextRunner
+				.withUserConfiguration(ServerPropertiesConfiguration.class,
+						SessionRepositoryConfiguration.class)
+				.withPropertyValues("server.servlet.session.timeout=3")
+				.run((context) -> assertThat(
+						context.getBean(SessionProperties.class).getTimeout())
+								.isEqualTo(Duration.ofSeconds(3)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -181,6 +194,11 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		public MapSessionRepository mySessionRepository() {
 			return new MapSessionRepository(Collections.emptyMap());
 		}
+
+	}
+
+	@EnableConfigurationProperties(ServerProperties.class)
+	static class ServerPropertiesConfiguration {
 
 	}
 

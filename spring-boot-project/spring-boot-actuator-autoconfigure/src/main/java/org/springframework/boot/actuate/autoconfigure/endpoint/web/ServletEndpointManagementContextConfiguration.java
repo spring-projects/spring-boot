@@ -31,7 +31,6 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- *
  * @since 2.0.0
  */
 @Configuration

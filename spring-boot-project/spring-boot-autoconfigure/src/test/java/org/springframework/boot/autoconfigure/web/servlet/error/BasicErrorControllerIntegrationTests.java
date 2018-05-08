@@ -169,7 +169,6 @@ public class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-exception=true");
 		RequestEntity request = RequestEntity
 				.post(URI.create(createUrl("/bodyValidation")))
-				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON).body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
@@ -188,18 +187,6 @@ public class BasicErrorControllerIntegrationTests {
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
 		assertThat(resp).doesNotContain("org.springframework.validation.BindException");
-	}
-
-	@Test
-	public void testRequestBodyValidationForText() {
-		load();
-		RequestEntity<Void> request = RequestEntity.post(URI.create(createUrl("/")))
-				.accept(MediaType.TEXT_PLAIN).build();
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(request,
-				String.class);
-		String resp = entity.getBody().toString();
-		assertThat(resp).contains("status");
-		assertThat(resp).contains("error");
 	}
 
 	@Test

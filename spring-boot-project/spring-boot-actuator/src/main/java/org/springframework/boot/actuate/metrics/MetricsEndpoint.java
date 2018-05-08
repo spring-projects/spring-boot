@@ -96,10 +96,15 @@ public class MetricsEndpoint {
 	}
 
 	private List<Tag> parseTags(List<String> tags) {
-		return tags == null ? Collections.emptyList() : tags.stream().map((t) -> {
-			String[] tagParts = t.split(":", 2);
-			return Tag.of(tagParts[0], tagParts[1]);
-		}).collect(Collectors.toList());
+		if (tags == null) {
+			return Collections.emptyList();
+		}
+		return tags.stream().map(this::parseTag).collect(Collectors.toList());
+	}
+
+	private Tag parseTag(String tag) {
+		String[] parts = tag.split(":", 2);
+		return Tag.of(parts[0], parts[1]);
 	}
 
 	private void collectMeters(List<Meter> meters, MeterRegistry registry, String name,
@@ -125,7 +130,7 @@ public class MetricsEndpoint {
 	}
 
 	private BiFunction<Double, Double, Double> mergeFunction(Statistic statistic) {
-		return Statistic.MAX.equals(statistic) ? Double::max : Double::sum;
+		return (Statistic.MAX.equals(statistic) ? Double::max : Double::sum);
 	}
 
 	private Map<String, Set<String>> getAvailableTags(List<Meter> meters) {
@@ -168,6 +173,7 @@ public class MetricsEndpoint {
 		public Set<String> getNames() {
 			return this.names;
 		}
+
 	}
 
 	/**
@@ -223,6 +229,7 @@ public class MetricsEndpoint {
 		public Set<String> getValues() {
 			return this.values;
 		}
+
 	}
 
 	/**

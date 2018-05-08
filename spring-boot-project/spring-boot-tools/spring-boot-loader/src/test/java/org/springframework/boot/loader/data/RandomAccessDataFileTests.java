@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.data;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -94,6 +95,41 @@ public class RandomAccessDataFileTests {
 		this.thrown.expectMessage(
 				String.format("File %s must exist", file.getAbsolutePath()));
 		new RandomAccessDataFile(file);
+	}
+
+	@Test
+	public void readWithOffsetAndLengthShouldRead() throws Exception {
+		byte[] read = this.file.read(2, 3);
+		assertThat(read).isEqualTo(new byte[] { 2, 3, 4 });
+	}
+
+	@Test
+	public void readWhenOffsetIsBeyondEOFShouldThrowException() throws Exception {
+		this.thrown.expect(IndexOutOfBoundsException.class);
+		this.file.read(257, 0);
+	}
+
+	@Test
+	public void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException()
+			throws Exception {
+		this.thrown.expect(IndexOutOfBoundsException.class);
+		RandomAccessData subsection = this.file.getSubsection(0, 10);
+		subsection.read(11, 0);
+	}
+
+	@Test
+	public void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException()
+			throws Exception {
+		this.thrown.expect(EOFException.class);
+		this.file.read(256, 1);
+	}
+
+	@Test
+	public void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException()
+			throws Exception {
+		this.thrown.expect(EOFException.class);
+		RandomAccessData subsection = this.file.getSubsection(0, 10);
+		subsection.read(10, 1);
 	}
 
 	@Test

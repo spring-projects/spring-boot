@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -79,10 +78,8 @@ public final class BuildPropertiesWriter {
 					DateTimeFormatter.ISO_INSTANT.format(project.getTime()));
 		}
 		if (project.getAdditionalProperties() != null) {
-			for (Map.Entry<String, String> entry : project.getAdditionalProperties()
-					.entrySet()) {
-				properties.put("build." + entry.getKey(), entry.getValue());
-			}
+			project.getAdditionalProperties()
+					.forEach((name, value) -> properties.put("build." + name, value));
 		}
 		return properties;
 	}
@@ -118,11 +115,11 @@ public final class BuildPropertiesWriter {
 		private static void validateAdditionalProperties(
 				Map<String, String> additionalProperties) {
 			if (additionalProperties != null) {
-				for (Entry<String, String> property : additionalProperties.entrySet()) {
-					if (property.getValue() == null) {
-						throw new NullAdditionalPropertyValueException(property.getKey());
+				additionalProperties.forEach((name, value) -> {
+					if (value == null) {
+						throw new NullAdditionalPropertyValueException(name);
 					}
-				}
+				});
 			}
 		}
 

@@ -168,6 +168,7 @@ public class BindFailureAnalyzerTests {
 		public void setListValue(List<String> listValue) {
 			this.listValue = listValue;
 		}
+
 	}
 
 	@ConfigurationProperties("test.foo")

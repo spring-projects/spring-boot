@@ -282,6 +282,13 @@ public abstract class AbstractServletWebServerFactory
 		return this.staticResourceJars.getUrls();
 	}
 
+	/**
+	 * Converts the given {@code url} into a decoded file path.
+	 * @param url the url to convert
+	 * @return the file path
+	 * @deprecated Since 2.0.2 in favor of {@link File#File(java.net.URI)}
+	 */
+	@Deprecated
 	protected final String getDecodedFile(URL url) {
 		try {
 			return URLDecoder.decode(url.getFile(), "UTF-8");

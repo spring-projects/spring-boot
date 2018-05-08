@@ -85,16 +85,16 @@ class ApplicationBuilder {
 		if (resourcesJar.exists()) {
 			return resourcesJar;
 		}
-		JarOutputStream resourcesJarStream = new JarOutputStream(
-				new FileOutputStream(resourcesJar));
-		resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/"));
-		resourcesJarStream.closeEntry();
-		resourcesJarStream.putNextEntry(
-				new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
-		resourcesJarStream.write("nested".getBytes());
-		resourcesJarStream.closeEntry();
-		resourcesJarStream.close();
-		return resourcesJar;
+		try (JarOutputStream resourcesJarStream = new JarOutputStream(
+				new FileOutputStream(resourcesJar))) {
+			resourcesJarStream.putNextEntry(new ZipEntry("META-INF/resources/"));
+			resourcesJarStream.closeEntry();
+			resourcesJarStream.putNextEntry(
+					new ZipEntry("META-INF/resources/nested-meta-inf-resource.txt"));
+			resourcesJarStream.write("nested".getBytes());
+			resourcesJarStream.closeEntry();
+			return resourcesJar;
+		}
 	}
 
 	private void writePom(File appFolder, File resourcesJar) throws IOException {
@@ -103,11 +103,12 @@ class ApplicationBuilder {
 		context.put("container", this.container);
 		context.put("bootVersion", Versions.getBootVersion());
 		context.put("resourcesJarPath", resourcesJar.getAbsolutePath());
-		FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
-		Mustache.compiler().escapeHTML(false)
-				.compile(new FileReader("src/test/resources/pom-template.xml"))
-				.execute(context, out);
-		out.close();
+		try (FileWriter out = new FileWriter(new File(appFolder, "pom.xml"));
+				FileReader templateReader = new FileReader(
+						"src/test/resources/pom-template.xml")) {
+			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context,
+					out);
+		}
 	}
 
 	private File writeSettingsXml(File appFolder) throws IOException {
@@ -118,10 +119,11 @@ class ApplicationBuilder {
 		Map<String, Object> context = new HashMap<>();
 		context.put("repository", repository);
 		File settingsXml = new File(appFolder, "settings.xml");
-		try (FileWriter out = new FileWriter(settingsXml)) {
-			Mustache.compiler().escapeHTML(false)
-					.compile(new FileReader("src/test/resources/settings-template.xml"))
-					.execute(context, out);
+		try (FileWriter out = new FileWriter(settingsXml);
+				FileReader templateReader = new FileReader(
+						"src/test/resources/settings-template.xml")) {
+			Mustache.compiler().escapeHTML(false).compile(templateReader).execute(context,
+					out);
 		}
 		return settingsXml;
 	}

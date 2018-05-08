@@ -57,11 +57,12 @@ public class GraphiteMetricsExportAutoConfigurationTests {
 	@Test
 	public void autoConfiguresUseTagsAsPrefix() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.graphite.tags-as-prefix=app")
+				.withPropertyValues(
+						"management.metrics.export.graphite.tags-as-prefix=app")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
-					GraphiteMeterRegistry registry = context.getBean(
-							GraphiteMeterRegistry.class);
+					GraphiteMeterRegistry registry = context
+							.getBean(GraphiteMeterRegistry.class);
 					registry.counter("test.count", Tags.of("app", "myapp"));
 					assertThat(registry.getDropwizardRegistry().getMeters())
 							.containsOnlyKeys("myapp.testCount");

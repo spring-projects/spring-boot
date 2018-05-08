@@ -21,11 +21,13 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -48,6 +50,9 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 
 	@LocalManagementPort
 	private int managementPort = 9011;
+
+	@Autowired
+	private Environment environment;
 
 	@Test
 	public void testHome() {
@@ -77,6 +82,17 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\"}");
+	}
+
+	@Test
+	public void testEnvNotFound() {
+		String unknownProperty = "test-does-not-exist";
+		assertThat(this.environment.containsProperty(unknownProperty)).isFalse();
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.withBasicAuth("user", getPassword()).getForEntity(
+				"http://localhost:" + this.managementPort + "/admin/env/" + unknownProperty,
+						String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test

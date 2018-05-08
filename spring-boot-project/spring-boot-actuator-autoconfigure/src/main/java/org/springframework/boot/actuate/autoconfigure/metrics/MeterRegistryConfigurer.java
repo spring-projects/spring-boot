@@ -25,15 +25,14 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.util.LambdaSafe;
 
 /**
- * {@link BeanPostProcessor} to apply {@link MeterRegistryCustomizer customizers},
- * {@link MeterFilter filters}, {@link MeterBinder binders} and {@link Metrics#addRegistry
- * global registration} to {@link MeterRegistry meter registries}. This post processor
- * intentionally skips {@link CompositeMeterRegistry} with the assumptions that the
- * registries it contains are beans and will be customized directly.
+ * Configurer to apply {@link MeterRegistryCustomizer customizers}, {@link MeterFilter
+ * filters}, {@link MeterBinder binders} and {@link Metrics#addRegistry global
+ * registration} to {@link MeterRegistry meter registries}. This configurer intentionally
+ * skips {@link CompositeMeterRegistry} with the assumptions that the registries it
+ * contains are beans and will be customized directly.
  *
  * @author Jon Schneider
  * @author Phillip Webb
@@ -59,9 +58,6 @@ class MeterRegistryConfigurer {
 	}
 
 	void configure(MeterRegistry registry) {
-		if (registry instanceof CompositeMeterRegistry) {
-			return;
-		}
 		// Customizers must be applied before binders, as they may add custom
 		// tags or alter timer or summary configuration.
 		customize(registry);

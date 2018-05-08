@@ -266,7 +266,7 @@ behalf. The algorithm used to determine a `WebEnvironmentType` is fairly simple:
 * If Spring MVC is present, an `AnnotationConfigServletWebServerApplicationContext` is
 used
 * If Spring MVC is not present and Spring WebFlux is present, an
-`AnnotationConfigReactiveWebApplicationContext` is used
+`AnnotationConfigReactiveWebServerApplicationContext` is used
 * Otherwise, `AnnotationConfigApplicationContext` is used
 
 This means that if you are using Spring MVC and the new `WebClient` from Spring WebFlux in
@@ -291,9 +291,9 @@ and `non-option` arguments, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	import org.springframework.boot.*
-	import org.springframework.beans.factory.annotation.*
-	import org.springframework.stereotype.*
+	import org.springframework.boot.*;
+	import org.springframework.beans.factory.annotation.*;
+	import org.springframework.stereotype.*;
 
 	@Component
 	public class MyBean {
@@ -327,8 +327,8 @@ discussed earlier. The following example shows a `CommandLineRunner` with a `run
 
 [source,java,indent=0]
 ----
-	import org.springframework.boot.*
-	import org.springframework.stereotype.*
+	import org.springframework.boot.*;
+	import org.springframework.stereotype.*;
 
 	@Component
 	public class MyBean implements CommandLineRunner {
@@ -433,8 +433,8 @@ property, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	import org.springframework.stereotype.*
-	import org.springframework.beans.factory.annotation.*
+	import org.springframework.stereotype.*;
+	import org.springframework.beans.factory.annotation.*;
 
 	@Component
 	public class MyBean {
@@ -710,7 +710,7 @@ The preceding example would be transformed into these properties:
 	my.servers[1]=another.example.com
 ----
 
-To bind to properties like that by using the Spring `DataBinder` utilities (which is what
+To bind to properties like that by using Spring Boot's `Binder` utilities (which is what
 `@ConfigurationProperties` does), you need to have a property in the target bean of type
 `java.util.List` (or `Set`) and you either need to provide a setter or initialize it with
 a mutable value. For example, the following example binds to the properties shown
@@ -728,15 +728,6 @@ previously:
 		}
 	}
 ----
-
-[NOTE]
-====
-When lists are configured in more than one place, overriding works by replacing the entire
-list. In the preceding example, when `my.servers` is defined in several places, the
-entire list from the `PropertySource` with higher precedence overrides any other
-configuration for that list. Both comma-separated lists and YAML lists can be used for
-completely overriding the contents of the list.
-====
 
 
 
@@ -816,76 +807,6 @@ negated profiles may match.
 ==== YAML Shortcomings
 YAML files cannot be loaded by using the `@PropertySource` annotation. So, in the case
 that you need to load values that way, you need to use a properties file.
-
-
-
-[[boot-features-external-config-complex-type-merge]]
-==== Merging YAML Lists
-As <<boot-features-external-config-loading-yaml,we showed earlier>>, any YAML content is
-ultimately transformed to properties. That process may be counter-intuitive when
-overriding "`list`" properties through a profile.
-
-For example, assume a `MyPojo` object with `name` and `description` attributes that are
-`null` by default. The following example exposes a list of `MyPojo` objects from
-`AcmeProperties`:
-
-[source,java,indent=0]
-----
-	@ConfigurationProperties("acme")
-	public class AcmeProperties {
-
-		private final List<MyPojo> list = new ArrayList<>();
-
-		public List<MyPojo> getList() {
-			return this.list;
-		}
-
-	}
-----
-
-Consider the following configuration:
-
-[source,yaml,indent=0]
-----
-	acme:
-	  list:
-	    - name: my name
-	      description: my description
-	---
-	spring:
-	  profiles: dev
-	acme:
-	  list:
-        - name: my another name
-----
-
-If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry,
-as previously defined. If the `dev` profile is enabled, however, the `list` _still_
-contains only one entry (with a name of `my another name` and a description of `null`).
-This configuration _does not_ add a second `MyPojo` instance to the list, and it does not
-merge the items.
-
-When a collection is specified in multiple profiles, the one with the highest priority
-(and only that one) is used. Consider the following example:
-
-[source,yaml,indent=0]
-----
-	acme:
-	  list:
-		- name: my name
-		  description: my description
-		- name: another name
-		  description: another description
-	---
-	spring:
-	  profiles: dev
-	acme:
-	  list:
-		 - name: my another name
-----
-
-In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains
-_one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
 
 
 
@@ -980,6 +901,9 @@ fly by using its default constructor, you need a setter.
 Some people use Project Lombok to add getters and setters automatically. Make sure that
 Lombok does not generate any particular constructor for such a type, as it is used
 automatically by the container to instantiate the object.
+
+Finally, only standard Java Bean properties are considered and binding on static
+properties are not supported.
 ====
 
 TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value`
@@ -1135,13 +1059,13 @@ In the preceding example, the following properties names can all be used:
 |===
 | Property | Note
 
-|`acme.my-project.person.firstName`
-|Standard camel case syntax.
-
 |`acme.my-project.person.first-name`
 |Kebab case, which is recommended for use in `.properties` and `.yml` files.
 
-|`acme.my-project.person.first_name`
+|`acme.myProject.person.firstName`
+|Standard camel case syntax.
+
+|`acme.my_project.person.first_name`
 |Underscore notation, which is an alternative format for use in `.properties` and `.yml`
 files.
 
@@ -1178,6 +1102,122 @@ property name
 TIP: We recommend that, when possible, properties are stored in lower-case kebab format,
 such as `my.property-name=acme`.
 
+[[boot-features-external-config-complex-type-merge]]
+==== Merging Complex Types
+When lists are configured in more than one place, overriding works by replacing the entire
+list.
+
+For example, assume a `MyPojo` object with `name` and `description` attributes that are
+`null` by default. The following example exposes a list of `MyPojo` objects from
+`AcmeProperties`:
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
+
+		private final List<MyPojo> list = new ArrayList<>();
+
+		public List<MyPojo> getList() {
+			return this.list;
+		}
+
+	}
+----
+
+Consider the following configuration:
+
+[source,yaml,indent=0]
+----
+	acme:
+	  list:
+	    - name: my name
+	      description: my description
+	---
+	spring:
+	  profiles: dev
+	acme:
+	  list:
+	    - name: my another name
+----
+
+If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry,
+as previously defined. If the `dev` profile is enabled, however, the `list` _still_
+contains only one entry (with a name of `my another name` and a description of `null`).
+This configuration _does not_ add a second `MyPojo` instance to the list, and it does not
+merge the items.
+
+When a `List` is specified in multiple profiles, the one with the highest priority
+(and only that one) is used. Consider the following example:
+
+[source,yaml,indent=0]
+----
+	acme:
+	  list:
+	    - name: my name
+	      description: my description
+	    - name: another name
+	      description: another description
+	---
+	spring:
+	  profiles: dev
+	acme:
+	  list:
+	    - name: my another name
+----
+
+In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains
+_one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
+For YAML, both comma-separated lists and YAML lists can be used for
+completely overriding the contents of the list.
+
+For `Map` properties, you can bind with property values drawn from multiple sources. However,
+for the same property in multiple sources, the one with the highest priority is used.
+The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties("acme")
+	public class AcmeProperties {
+
+		private final Map<String, MyPojo> map = new HashMap<>();
+
+		public Map<String, MyPojo> getMap() {
+			return this.map;
+		}
+
+	}
+----
+
+Consider the following configuration:
+
+[source,yaml,indent=0]
+----
+	acme:
+	  map:
+	    key1:
+	      name: my name 1
+	      description: my description 1
+	---
+	spring:
+	  profiles: dev
+	acme:
+	  map:
+	    key1:
+	      name: dev name 1
+	    key2:
+	      name: dev name 2
+	      description: dev description 2
+----
+
+If the `dev` profile is not active, `AcmeProperties.map` contains one entry with key `key1`
+(with a name of `my name 1` and a description of `my description 1`).
+If the `dev` profile is enabled, however, `map` contains two entries with keys `key1`
+(with a name of `dev name 1` and a description of `my description 1`) and
+`key2` (with a name of `dev name 2` and a description of `dev description 2`).
+
+NOTE: The preceding merging rules apply to properties from all property sources and not just
+YAML files.
 
 [[boot-features-external-config-conversion]]
 ==== Properties Conversion
@@ -4181,14 +4221,45 @@ https://projects.spring.io/spring-data-solr/[reference documentation].
 
 [[boot-features-elasticsearch]]
 === Elasticsearch
-http://www.elasticsearch.org/[Elasticsearch] is an open source, distributed, real-time
-search and analytics engine. Spring Boot offers basic auto-configuration for
-Elasticsearch and the abstractions on top of it provided by
-https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch].
-There is a `spring-boot-starter-data-elasticsearch` "`Starter`" for collecting the
-dependencies in a convenient way. Spring Boot also supports
-https://github.com/searchbox-io/Jest[Jest].
+https://www.elastic.co/products/elasticsearch[Elasticsearch] is an open source,
+distributed, RESTful search and analytics engine. Spring Boot offers basic
+auto-configuration for Elasticsearch.
 
+Spring Boot supports several HTTP clients:
+
+* The official Java "Low Level" and "High Level" REST clients
+* https://github.com/searchbox-io/Jest[Jest]
+
+The transport client is still being used by
+https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch],
+which you can start using with the `spring-boot-starter-data-elasticsearch` "`Starter`".
+
+
+[[boot-features-connecting-to-elasticsearch-rest]]
+==== Connecting to Elasticsearch by REST clients
+Elasticsearch ships
+https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients]
+that you can use to query a cluster: the "Low Level" client and the "High Level" client.
+
+If you have the `org.elasticsearch.client:elasticsearch-rest-client` dependency on the
+classpath, Spring Boot will auto-configure and register a `RestClient` bean that
+by default targets `http://localhost:9200`.
+You can further tune how `RestClient` is configured, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.elasticsearch.rest.uris=http://search.example.com:9200
+	spring.elasticsearch.rest.username=user
+	spring.elasticsearch.rest.password=secret
+----
+
+You can also register an arbitrary number of beans that implement
+`RestClientBuilderCustomizer` for more advanced customizations.
+To take full control over the registration, define a `RestClient` bean.
+
+If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` dependency
+on the classpath, Spring Boot will auto-configure a `RestHighLevelClient`, which wraps
+any existing `RestClient` bean, reusing its HTTP configuration.
 
 
 [[boot-features-connecting-to-elasticsearch-jest]]
@@ -4595,7 +4666,7 @@ relevant annotation to its method, as shown in the following example:
 
 [source,java,indent=0]
 ----
-    import org.springframework.cache.annotation.Cacheable
+    import org.springframework.cache.annotation.Cacheable;
 	import org.springframework.stereotype.Component;
 
 	@Component
@@ -5483,7 +5554,7 @@ The following code shows a typical example:
 
 		private final RestTemplate restTemplate;
 
-		public MyBean(RestTemplateBuilder restTemplateBuilder) {
+		public MyService(RestTemplateBuilder restTemplateBuilder) {
 			this.restTemplate = restTemplateBuilder.build();
 		}
 
@@ -5549,7 +5620,7 @@ The following code shows a typical example:
 
 		private final WebClient webClient;
 
-		public MyBean(WebClient.Builder webClientBuilder) {
+		public MyService(WebClient.Builder webClientBuilder) {
 			this.webClient = webClientBuilder.baseUrl("http://example.org").build();
 		}
 
@@ -5876,6 +5947,10 @@ Quartz Scheduler configuration can be customized by using Quartz configuration p
 ()`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans, which allow
 programmatic `SchedulerFactoryBean` customization.
 
+NOTE: In particular, an `Executor` bean is not associated with the scheduler as Quartz
+offers a way to configure the scheduler via `spring.quartz.properties`. If you need
+to customize the task executor, consider implementing `SchedulerFactoryBeanCustomizer`.
+
 Jobs can define setters to inject data map properties. Regular beans can also be injected
 in a similar manner, as shown in the following example:
 
@@ -5950,9 +6025,10 @@ When building a reactive web application, the following stores can be auto-confi
 * Redis
 * MongoDB
 
-If Spring Session is available, you must choose the
-{sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish to
-use to store the sessions. For instance, to use JDBC as the back-end store, you can
+If a single Spring Session module is present on the classpath, Spring Boot uses that store
+implementation automatically. If you have more than one implementation, you must choose
+the {sc-spring-boot-autoconfigure}/session/StoreType.{sc-ext}[`StoreType`] that you wish
+to use to store the sessions. For instance, to use JDBC as the back-end store, you can
 configure your application as follows:
 
 [source,properties,indent=0]
@@ -5970,7 +6046,9 @@ the name of the table for the JDBC store, as shown in the following example:
     spring.session.jdbc.table-name=SESSIONS
 ----
 
-
+For setting the timeout of the session you can use the `spring.session.timeout` property.
+If that property is not set, the auto-configuration falls back to the value of
+`server.servlet.session.timeout`.
 
 [[boot-features-jmx]]
 == Monitoring and Management over JMX
@@ -6050,7 +6128,13 @@ context by default only if you use `SpringApplication` to create it.
 Spring Boot provides a `@SpringBootTest` annotation, which can be used as an alternative
 to the standard `spring-test` `@ContextConfiguration` annotation when you need Spring
 Boot features. The annotation works by creating the `ApplicationContext` used in your
-tests through `SpringApplication`.
+tests through `SpringApplication`. In addition to `@SpringBootTest` a number of other
+annotations are also provided for
+<<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,testing more
+specific slices>> of an application.
+
+TIP: Don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise
+the annotations will be ignored.
 
 You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine how
 your tests run:
@@ -6074,13 +6158,6 @@ test method by default. However, as using this arrangement with either `RANDOM_P
 `DEFINED_PORT` implicitly provides a real servlet environment, the HTTP client and server
 run in separate threads and, thus, in separate transactions. Any transaction initiated on
 the server does not roll back in this case.
-
-NOTE: In addition to `@SpringBootTest`, a number of other annotations are also provided
-for testing more specific slices of an application. You can find more detail throughout
-this chapter.
-
-TIP: Do not forget to add `@RunWith(SpringRunner.class)` to your test. Otherwise, the
-annotations are ignored.
 
 
 
@@ -6195,6 +6272,19 @@ Spring Boot also provides a `TestRestTemplate` facility:
 [source,java,indent=0]
 ----
 include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[tag=test-random-port]
+----
+
+
+
+[[boot-features-testing-spring-boot-applications-jmx]]
+==== Using JMX
+As the test context framework caches context, JMX is disabled by default to prevent
+identical components to register on the same domain. If such test needs access to an
+`MBeanServer`, consider marking it dirty as well:
+
+[source,java,indent=0]
+----
+include::{test-examples}/jmx/SampleJmxTests.java[tag=test]
 ----
 
 
@@ -7765,6 +7855,11 @@ class KotlinExampleProperties {
 
 }
 ----
+
+TIP: To generate
+<<appendix-configuration-metadata#configuration-metadata-annotation-processor,your own
+metadata>> using the annotation processor, {kotlin-documentation}kapt.html[`kapt` should
+be configured] with the `spring-boot-configuration-processor` dependency.
 
 
 [[boot-features-kotlin-testing]]

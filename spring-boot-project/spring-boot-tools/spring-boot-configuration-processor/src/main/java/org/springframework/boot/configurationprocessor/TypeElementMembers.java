@@ -78,13 +78,11 @@ class TypeElementMembers {
 			processField(field);
 		}
 		try {
-			Map<String, Object> fieldValues = this.fieldValuesParser
-					.getFieldValues(element);
-			for (Map.Entry<String, Object> entry : fieldValues.entrySet()) {
-				if (!this.fieldValues.containsKey(entry.getKey())) {
-					this.fieldValues.put(entry.getKey(), entry.getValue());
+			this.fieldValuesParser.getFieldValues(element).forEach((name, value) -> {
+				if (!this.fieldValues.containsKey(name)) {
+					this.fieldValues.put(name, value);
 				}
-			}
+			});
 		}
 		catch (Exception ex) {
 			// continue
@@ -158,8 +156,8 @@ class TypeElementMembers {
 	}
 
 	private String getAccessorName(String methodName) {
-		String name = methodName.startsWith("is") ? methodName.substring(2)
-				: methodName.substring(3);
+		String name = (methodName.startsWith("is") ? methodName.substring(2)
+				: methodName.substring(3));
 		name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 		return name;
 	}

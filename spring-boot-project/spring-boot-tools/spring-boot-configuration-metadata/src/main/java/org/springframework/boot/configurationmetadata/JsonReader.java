@@ -186,7 +186,7 @@ class JsonReader {
 			try {
 				return Deprecation.Level.valueOf(value.toUpperCase(Locale.ENGLISH));
 			}
-			catch (IllegalArgumentException e) {
+			catch (IllegalArgumentException ex) {
 				// let's use the default
 			}
 		}

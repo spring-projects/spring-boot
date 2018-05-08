@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class BindException extends RuntimeException implements OriginProvider {
 			Bindable<?> target) {
 		StringBuilder message = new StringBuilder();
 		message.append("Failed to bind properties");
-		message.append(name == null ? "" : " under '" + name + "'");
+		message.append(name != null ? " under '" + name + "'" : "");
 		message.append(" to ").append(target.getType());
 		return message.toString();
 	}

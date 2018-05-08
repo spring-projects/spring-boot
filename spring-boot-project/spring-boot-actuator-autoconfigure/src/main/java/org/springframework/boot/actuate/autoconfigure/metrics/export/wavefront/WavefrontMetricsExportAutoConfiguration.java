@@ -58,9 +58,9 @@ public class WavefrontMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig config,
+	public WavefrontMeterRegistry wavefrontMeterRegistry(WavefrontConfig wavefrontConfig,
 			Clock clock) {
-		return new WavefrontMeterRegistry(config, clock);
+		return new WavefrontMeterRegistry(wavefrontConfig, clock);
 	}
 
 }

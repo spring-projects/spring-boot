@@ -43,7 +43,7 @@ class VariableTree extends ReflectionWrapper {
 
 	public ExpressionTree getInitializer() throws Exception {
 		Object instance = findMethod("getInitializer").invoke(getInstance());
-		return (instance == null ? null : new ExpressionTree(instance));
+		return (instance != null ? new ExpressionTree(instance) : null);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -53,7 +53,7 @@ public class RestDocsAutoConfiguration {
 	@ConditionalOnClass(MockMvcRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@EnableConfigurationProperties(RestDocsProperties.class)
-	static class RestDocsMockMvcAutoConfiguration {
+	static class RestDocsMockMvcConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -85,7 +85,7 @@ public class RestDocsAutoConfiguration {
 	@ConditionalOnClass({ RequestSpecification.class,
 			RestAssuredRestDocumentation.class })
 	@EnableConfigurationProperties(RestDocsProperties.class)
-	static class RestDocsRestAssuredAutoConfiguration {
+	static class RestDocsRestAssuredConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -114,7 +114,7 @@ public class RestDocsAutoConfiguration {
 	@ConditionalOnClass(WebTestClientRestDocumentation.class)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@EnableConfigurationProperties(RestDocsProperties.class)
-	static class RestDocsWebTestClientAutoConfiguration {
+	static class RestDocsWebTestClientConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean

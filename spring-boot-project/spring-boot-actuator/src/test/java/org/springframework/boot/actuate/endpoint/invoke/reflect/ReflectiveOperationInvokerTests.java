@@ -57,7 +57,7 @@ public class ReflectiveOperationInvokerTests {
 				ReflectionUtils.findMethod(Example.class, "reverse", String.class),
 				OperationType.READ);
 		this.parameterValueMapper = (parameter,
-				value) -> (value == null ? null : value.toString());
+				value) -> (value != null ? value.toString() : null);
 	}
 
 	@Test

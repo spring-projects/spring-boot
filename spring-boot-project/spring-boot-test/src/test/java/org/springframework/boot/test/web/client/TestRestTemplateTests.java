@@ -142,7 +142,7 @@ public class TestRestTemplateTests {
 				.willReturn(new DefaultUriBuilderFactory());
 		RestTemplateBuilder builder = mock(RestTemplateBuilder.class);
 		given(builder.build()).willReturn(delegate);
-		final TestRestTemplate restTemplate = new TestRestTemplate(builder);
+		TestRestTemplate restTemplate = new TestRestTemplate(builder);
 		ReflectionUtils.doWithMethods(RestOperations.class, new MethodCallback() {
 
 			@Override

@@ -12,8 +12,8 @@
 	<description>Spring Boot WildFly Deployment Test</description>
 	<properties>
 		<main.basedir>${basedir}/../../..</main.basedir>
-		<wildfly.version>9.0.2.Final</wildfly.version>
-		<cargo.container.id>wildfly9x</cargo.container.id>
+		<wildfly.version>12.0.0.Final</wildfly.version>
+		<cargo.container.id>wildfly12x</cargo.container.id>
 		<cargo.container.url>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip
 		</cargo.container.url>
 	</properties>
@@ -43,61 +43,53 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<profiles>
-		<profile>
-			<id>jdk8</id>
-			<activation>
-				<jdk>1.8</jdk>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>build-helper-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>reserve-network-port</id>
-								<goals>
-									<goal>reserve-network-port</goal>
-								</goals>
-								<phase>process-resources</phase>
-								<configuration>
-									<portNames>
-										<portName>appserver.port</portName>
-										<portName>appserver.ajp.port</portName>
-										<portName>appserver.transaction.port</portName>
-									</portNames>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.cargo</groupId>
-						<artifactId>cargo-maven2-plugin</artifactId>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>reserve-network-port</id>
+						<goals>
+							<goal>reserve-network-port</goal>
+						</goals>
+						<phase>process-resources</phase>
 						<configuration>
-							<configuration>
-								<properties>
-									<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
-									<cargo.jboss.ajp.port>${appserver.ajp.port}</cargo.jboss.ajp.port>
-									<cargo.jboss.transaction.statusManager.port>
-										${appserver.transaction.port}
-									</cargo.jboss.transaction.statusManager.port>
-									<cargo.jboss.configuration>standalone-full</cargo.jboss.configuration>
-								</properties>
-							</configuration>
+							<portNames>
+								<portName>appserver.port</portName>
+								<portName>appserver.ajp.port</portName>
+								<portName>appserver.transaction.port</portName>
+							</portNames>
 						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<systemPropertyVariables>
-								<port>${appserver.port}</port>
-							</systemPropertyVariables>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<configuration>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
+							<cargo.jboss.ajp.port>${appserver.ajp.port}</cargo.jboss.ajp.port>
+							<cargo.jboss.transaction.statusManager.port>
+								${appserver.transaction.port}
+							</cargo.jboss.transaction.statusManager.port>
+							<cargo.jboss.configuration>standalone-full</cargo.jboss.configuration>
+						</properties>
+					</configuration>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<port>${appserver.port}</port>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

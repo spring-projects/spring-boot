@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -58,9 +57,9 @@ public class BuildInfo extends ConventionTask {
 					new File(getDestinationDir(), "build-info.properties"))
 							.writeBuildProperties(new ProjectDetails(
 									this.properties.getGroup(),
-									this.properties.getArtifact() == null
-											? "unspecified"
-											: this.properties.getArtifact(),
+									this.properties.getArtifact() != null
+											? this.properties.getArtifact()
+											: "unspecified",
 									this.properties.getVersion(),
 									this.properties.getName(), this.properties.getTime(),
 									coerceToStringValues(
@@ -78,8 +77,8 @@ public class BuildInfo extends ConventionTask {
 	 */
 	@OutputDirectory
 	public File getDestinationDir() {
-		return this.destinationDir != null ? this.destinationDir
-				: getProject().getBuildDir();
+		return (this.destinationDir != null ? this.destinationDir
+				: getProject().getBuildDir());
 	}
 
 	/**
@@ -110,9 +109,7 @@ public class BuildInfo extends ConventionTask {
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
 		Map<String, String> output = new HashMap<>();
-		for (Entry<String, Object> entry : input.entrySet()) {
-			output.put(entry.getKey(), entry.getValue().toString());
-		}
+		input.forEach((key, value) -> output.put(key, value.toString()));
 		return output;
 	}
 

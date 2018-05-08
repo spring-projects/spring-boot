@@ -98,7 +98,7 @@ class DocumentRoot {
 
 	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
-			URL location = (codeSource == null ? null : codeSource.getLocation());
+			URL location = (codeSource != null ? codeSource.getLocation() : null);
 			if (location == null) {
 				return null;
 			}

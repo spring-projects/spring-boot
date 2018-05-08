@@ -44,7 +44,6 @@ public class BeansEndpoint {
 	/**
 	 * Creates a new {@code BeansEndpoint} that will describe the beans in the given
 	 * {@code context} and all of its ancestors.
-	 *
 	 * @param context the application context
 	 * @see ConfigurableApplicationContext#getParent()
 	 */
@@ -119,7 +118,7 @@ public class BeansEndpoint {
 			}
 			ConfigurableApplicationContext parent = getConfigurableParent(context);
 			return new ContextBeans(describeBeans(context.getBeanFactory()),
-					parent == null ? null : parent.getId());
+					parent != null ? parent.getId() : null);
 		}
 
 		private static Map<String, BeanDescriptor> describeBeans(
@@ -168,8 +167,8 @@ public class BeansEndpoint {
 		private BeanDescriptor(String[] aliases, String scope, Class<?> type,
 				String resource, String[] dependencies) {
 			this.aliases = aliases;
-			this.scope = StringUtils.hasText(scope) ? scope
-					: BeanDefinition.SCOPE_SINGLETON;
+			this.scope = (StringUtils.hasText(scope) ? scope
+					: BeanDefinition.SCOPE_SINGLETON);
 			this.type = type;
 			this.resource = resource;
 			this.dependencies = dependencies;

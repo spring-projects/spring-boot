@@ -8,7 +8,8 @@
         "key",
         "token",
         ".*credentials.*",
-        "vcap_services"
+        "vcap_services",
+        "sun.java.command"
       ]
     },
     {
@@ -19,7 +20,8 @@
         "key",
         "token",
         ".*credentials.*",
-        "vcap_services"
+        "vcap_services",
+        "sun.java.command"
       ]
     },
     {
@@ -1226,6 +1228,12 @@
         "reason": "The security auto-configuration is no longer customizable. Provide your own WebSecurityConfigurer bean instead.",
         "level": "error"
       }
+    },
+    {
+      "name": "management.server.add-application-context-header",
+      "type": "java.lang.Boolean",
+      "description": "Add the \"X-Application-Context\" HTTP header in each response.",
+      "defaultValue": false
     },
     {
       "name": "management.shell.auth.jaas.domain",

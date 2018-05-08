@@ -199,4 +199,5 @@ public class AsciiBytesTests {
 	private void matchesSameAsString(String input) {
 		assertThat(new AsciiBytes(input).matches(input, NO_SUFFIX)).isTrue();
 	}
+
 }

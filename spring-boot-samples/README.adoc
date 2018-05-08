@@ -120,7 +120,7 @@ The following sample applications are provided:
 | Demonstrates JUnit Jupiter-based testing
 
 | link:spring-boot-sample-kafka[spring-boot-sample-kafka]
-| consumer and producer using Apache Kafka
+| Consumer and producer using Apache Kafka
 
 | link:spring-boot-sample-liquibase[spring-boot-sample-liquibase]
 | Database migrations with Liquibase

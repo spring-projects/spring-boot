@@ -452,8 +452,8 @@ public abstract class MainClassFinder {
 						"Unable to find a single main class from the following candidates "
 								+ matchingMainClasses);
 			}
-			return matchingMainClasses.isEmpty() ? null
-					: matchingMainClasses.iterator().next().getName();
+			return (matchingMainClasses.isEmpty() ? null
+					: matchingMainClasses.iterator().next().getName());
 		}
 
 	}

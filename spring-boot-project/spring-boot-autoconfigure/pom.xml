@@ -157,6 +157,10 @@
 			<optional>true</optional>
 			<exclusions>
 				<exclusion>
+					<groupId>org.glassfish.hk2.external</groupId>
+					<artifactId>bean-validator</artifactId>
+				</exclusion>
+				<exclusion>
 					<groupId>org.hibernate</groupId>
 					<artifactId>hibernate-validator</artifactId>
 				</exclusion>
@@ -299,6 +303,16 @@
 		<dependency>
 			<groupId>org.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

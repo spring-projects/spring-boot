@@ -110,7 +110,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * Verifies that the application context contains a single bean with the given type.
 	 * <p>
 	 * Example: <pre class="code">
-	 * assertThat(context).hasSingleBean(Foo.class); </pre>
+	 * assertThat(context).hasSingleBean(Foo.class, Scope.NO_ANCESTORS); </pre>
 	 * @param type the bean type
 	 * @param scope the scope of the assertion
 	 * @return {@code this} assertion object.
@@ -159,7 +159,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * Verifies that the application context does not contain any beans of the given type.
 	 * <p>
 	 * Example: <pre class="code">
-	 * assertThat(context).doesNotHaveBean(Foo.class); </pre>
+	 * assertThat(context).doesNotHaveBean(Foo.class, Scope.NO_ANCESTORS); </pre>
 	 * @param type the bean type
 	 * @param scope the scope of the assertion
 	 * @return {@code this} assertion object.
@@ -255,8 +255,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * assert on {@code null} is returned.
 	 * <p>
 	 * Example: <pre class="code">
-	 * assertThat(context).getBean(Foo.class).isInstanceOf(DefaultFoo.class);
-	 * assertThat(context).getBean(Bar.class).isNull();</pre>
+	 * assertThat(context).getBean(Foo.class, Scope.NO_ANCESTORS).isInstanceOf(DefaultFoo.class);
+	 * assertThat(context).getBean(Bar.class, Scope.NO_ANCESTORS).isNull();</pre>
 	 * @param <T> the bean type
 	 * @param type the bean type
 	 * @param scope the scope of the assertion
@@ -278,8 +278,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 					"%nExpecting:%n <%s>%nsingle bean of type:%n <%s>%nbut found:%n <%s>",
 					getApplicationContext(), type, names));
 		}
-		T bean = (names.length == 0 ? null
-				: getApplicationContext().getBean(names[0], type));
+		T bean = (names.length != 0 ? getApplicationContext().getBean(names[0], type)
+				: null);
 		return Assertions.assertThat(bean).as("Bean of type <%s> from <%s>", type,
 				getApplicationContext());
 	}
@@ -374,7 +374,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * can be found an assert on an empty {@code map} is returned.
 	 * <p>
 	 * Example: <pre class="code">
-	 * assertThat(context).getBeans(Foo.class).containsKey("foo");
+	 * assertThat(context).getBeans(Foo.class, Scope.NO_ANCESTORS).containsKey("foo");
 	 * </pre>
 	 * @param <T> the bean type
 	 * @param type the bean type

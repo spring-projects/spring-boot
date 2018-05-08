@@ -57,7 +57,7 @@ class BeanCurrentlyInCreationFailureAnalyzer
 				if (index == -1) {
 					beansInCycle.add(beanInCycle);
 				}
-				cycleStart = (cycleStart == -1 ? index : cycleStart);
+				cycleStart = (cycleStart != -1 ? cycleStart : index);
 			}
 			candidate = candidate.getCause();
 		}
@@ -82,7 +82,7 @@ class BeanCurrentlyInCreationFailureAnalyzer
 				String leftSide = (i < cycleStart ? " " : "↑");
 				message.append(String.format("%s     ↓%n", leftSide));
 			}
-			String leftSide = i < cycleStart ? " " : "|";
+			String leftSide = (i < cycleStart ? " " : "|");
 			message.append(String.format("%s  %s%n", leftSide, beanInCycle));
 		}
 		message.append(String.format("└─────┘%n"));

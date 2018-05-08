@@ -62,9 +62,8 @@ class TypeUtils {
 
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
-		for (Map.Entry<TypeKind, Class<?>> entry : PRIMITIVE_WRAPPERS.entrySet()) {
-			primitives.put(entry.getValue().getName(), entry.getKey());
-		}
+		PRIMITIVE_WRAPPERS.forEach(
+				(kind, wrapperClass) -> primitives.put(wrapperClass.getName(), kind));
 		WRAPPER_TO_PRIMITIVE = primitives;
 	}
 
@@ -140,8 +139,8 @@ class TypeUtils {
 	}
 
 	public String getJavaDoc(Element element) {
-		String javadoc = (element == null ? null
-				: this.env.getElementUtils().getDocComment(element));
+		String javadoc = (element != null
+				? this.env.getElementUtils().getDocComment(element) : null);
 		if (javadoc != null) {
 			javadoc = javadoc.trim();
 		}

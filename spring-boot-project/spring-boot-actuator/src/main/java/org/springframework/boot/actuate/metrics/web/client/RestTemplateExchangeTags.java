@@ -64,7 +64,7 @@ public final class RestTemplateExchangeTags {
 	 * @return the uri tag
 	 */
 	public static Tag uri(String uriTemplate) {
-		String uri = StringUtils.hasText(uriTemplate) ? uriTemplate : "none";
+		String uri = (StringUtils.hasText(uriTemplate) ? uriTemplate : "none");
 		return Tag.of("uri", ensureLeadingSlash(stripUri(uri)));
 	}
 

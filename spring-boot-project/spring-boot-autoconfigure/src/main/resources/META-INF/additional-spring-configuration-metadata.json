@@ -213,6 +213,12 @@
       ]
     },
     {
+      "name": "spring.elasticsearch.rest.uris",
+      "defaultValue": [
+        "http://localhost:9200"
+      ]
+    },
+    {
       "name": "spring.info.build.location",
       "defaultValue": "classpath:META-INF/build-info.properties"
     },
@@ -1208,6 +1214,13 @@
         "replacement": "spring.datasource.initialization-mode",
         "level": "error"
       }
+    },
+    {
+      "name": "spring.flyway.locations",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": [
+        "classpath:db/migration"
+      ]
     },
     {
       "name": "spring.flyway.sql-migration-suffix",

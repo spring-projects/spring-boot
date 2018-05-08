@@ -252,7 +252,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private File getTempDirectory() {
 		String temp = System.getProperty("java.io.tmpdir");
-		return (temp == null ? null : new File(temp));
+		return (temp != null ? new File(temp) : null);
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
@@ -260,11 +260,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		File docBase = (root != null ? root : createTempDir("jetty-docbase"));
 		try {
 			List<Resource> resources = new ArrayList<>();
-			Resource rootResource = docBase.isDirectory()
+			Resource rootResource = (docBase.isDirectory()
 					? Resource.newResource(docBase.getCanonicalFile())
-					: JarResource.newJarResource(Resource.newResource(docBase));
+					: JarResource.newJarResource(Resource.newResource(docBase)));
 			resources.add(
-					root == null ? rootResource : new LoaderHidingResource(rootResource));
+					root != null ? new LoaderHidingResource(rootResource) : rootResource);
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				if (resource.exists() && resource.isDirectory()) {
@@ -279,9 +279,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 	}
 
-	private Resource createResource(URL url) throws IOException {
+	private Resource createResource(URL url) throws Exception {
 		if ("file".equals(url.getProtocol())) {
-			File file = new File(getDecodedFile(url));
+			File file = new File(url.toURI());
 			if (file.isFile()) {
 				return Resource.newResource("jar:" + url + "!/META-INF/resources");
 			}

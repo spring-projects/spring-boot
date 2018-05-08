@@ -148,7 +148,7 @@ class PropertiesMigrationReport {
 		}
 
 		private <T> List<T> asNewList(List<T> source) {
-			return (source == null ? Collections.emptyList() : new ArrayList<>(source));
+			return (source != null ? new ArrayList<>(source) : Collections.emptyList());
 		}
 
 		public List<PropertyMigration> getRenamed() {

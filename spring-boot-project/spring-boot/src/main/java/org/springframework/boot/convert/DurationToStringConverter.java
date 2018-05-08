@@ -47,8 +47,8 @@ final class DurationToStringConverter implements GenericConverter {
 		}
 		DurationFormat format = sourceType.getAnnotation(DurationFormat.class);
 		DurationUnit unit = sourceType.getAnnotation(DurationUnit.class);
-		return convert((Duration) source, (format == null ? null : format.value()),
-				(unit == null ? null : unit.value()));
+		return convert((Duration) source, (format != null ? format.value() : null),
+				(unit != null ? unit.value() : null));
 	}
 
 	private String convert(Duration source, DurationStyle style, ChronoUnit unit) {

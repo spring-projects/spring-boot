@@ -150,8 +150,8 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					createWorker(), this.accessLogDirectory, prefix, this.accessLogSuffix,
 					this.accessLogRotate);
-			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
-					: "common";
+			String formatString = (this.accessLogPattern != null ? this.accessLogPattern
+					: "common");
 			return new AccessLogHandler(handler, accessLogReceiver, formatString,
 					Undertow.class.getClassLoader());
 		}

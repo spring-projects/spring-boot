@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -39,14 +40,14 @@ public class WebMvcEndpointChildContextConfigurationTests {
 	public void contextShouldConfigureRequestContextFilter() {
 		this.contextRunner
 				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
-				.run(context -> assertThat(context).hasSingleBean(OrderedRequestContextFilter.class));
+				.run((context) -> assertThat(context)
+						.hasSingleBean(OrderedRequestContextFilter.class));
 	}
 
 	@Test
 	public void contextShouldNotConfigureRequestContextFilterWhenPresent() {
-		this.contextRunner
-				.withUserConfiguration(ExistingConfig.class, WebMvcEndpointChildContextConfiguration.class)
-				.run(context -> {
+		this.contextRunner.withUserConfiguration(ExistingConfig.class,
+				WebMvcEndpointChildContextConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(RequestContextFilter.class);
 					assertThat(context).hasBean("testRequestContextFilter");
 				});
@@ -54,13 +55,21 @@ public class WebMvcEndpointChildContextConfigurationTests {
 
 	@Test
 	public void contextShouldNotConfigureRequestContextFilterWhenRequestContextListenerPresent() {
-		this.contextRunner
-				.withUserConfiguration(RequestContextListenerConfig.class,
-						WebMvcEndpointChildContextConfiguration.class)
-				.run(context -> {
+		this.contextRunner.withUserConfiguration(RequestContextListenerConfig.class,
+				WebMvcEndpointChildContextConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(RequestContextListener.class);
-					assertThat(context).doesNotHaveBean(OrderedRequestContextFilter.class);
+					assertThat(context)
+							.doesNotHaveBean(OrderedRequestContextFilter.class);
 				});
+	}
+
+	@Test
+	public void contextShouldConfigureDispatcherServletPathProviderWithEmptyPath() {
+		this.contextRunner
+				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
+				.run((context) -> assertThat(context
+						.getBean(DispatcherServletPathProvider.class).getServletPath())
+								.isEmpty());
 	}
 
 	static class ExistingConfig {

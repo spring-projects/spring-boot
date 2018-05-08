@@ -86,7 +86,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * Name of the generated archive.
 	 * @since 1.0
 	 */
-	@Parameter(defaultValue = "${project.build.finalName}", required = true)
+	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
 	private String finalName;
 
 	/**
@@ -144,9 +144,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
-	 * Specify each library as a <code>&lt;dependency&gt;</code> with a
-	 * <code>&lt;groupId&gt;</code> and a <code>&lt;artifactId&gt;</code> and they will be
-	 * unpacked at runtime.
+	 * Specify each library as a {@code <dependency>} with a {@code <groupId>} and a
+	 * {@code <artifactId>} and they will be unpacked at runtime.
 	 * @since 1.1
 	 */
 	@Parameter
@@ -157,10 +156,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * jar.
 	 * <p>
 	 * Currently, some tools do not accept this format so you may not always be able to
-	 * use this technique. For example, <code>jar -xf</code> may silently fail to extract
-	 * a jar or war that has been made fully-executable. It is recommended that you only
-	 * enable this option if you intend to execute it directly, rather than running it
-	 * with <code>java -jar</code> or deploying it to a servlet container.
+	 * use this technique. For example, {@code jar -xf} may silently fail to extract a jar
+	 * or war that has been made fully-executable. It is recommended that you only enable
+	 * this option if you intend to execute it directly, rather than running it with
+	 * {@code java -jar} or deploying it to a servlet container.
 	 * @since 1.3
 	 */
 	@Parameter(defaultValue = "false")
@@ -227,7 +226,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private File getTargetFile() {
-		String classifier = (this.classifier == null ? "" : this.classifier.trim());
+		String classifier = (this.classifier != null ? this.classifier.trim() : "");
 		if (!classifier.isEmpty() && !classifier.startsWith("-")) {
 			classifier = "-" + classifier;
 		}
@@ -288,7 +287,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private String removeLineBreaks(String description) {
-		return (description == null ? null : description.replaceAll("\\s+", " "));
+		return (description != null ? description.replaceAll("\\s+", " ") : null);
 	}
 
 	private void putIfMissing(Properties properties, String key,

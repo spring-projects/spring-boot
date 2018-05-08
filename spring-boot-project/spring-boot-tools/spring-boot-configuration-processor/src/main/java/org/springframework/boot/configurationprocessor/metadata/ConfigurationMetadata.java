@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,11 +145,15 @@ public class ConfigurationMetadata {
 	}
 
 	private ItemMetadata findMatchingItemMetadata(ItemMetadata metadata) {
-		List<ItemMetadata> candidates = this.items.get(metadata.getName());
-		if (candidates == null || candidates.isEmpty()) {
+		List<ItemMetadata> candidates = getCandidates(metadata.getName());
+		if (candidates.isEmpty()) {
 			return null;
 		}
 		candidates.removeIf((itemMetadata) -> !itemMetadata.hasSameType(metadata));
+		if (candidates.size() > 1 && metadata.getType() != null) {
+			candidates.removeIf(
+					(itemMetadata) -> !metadata.getType().equals(itemMetadata.getType()));
+		}
 		if (candidates.size() == 1) {
 			return candidates.get(0);
 		}
@@ -161,6 +165,11 @@ public class ConfigurationMetadata {
 		return null;
 	}
 
+	private List<ItemMetadata> getCandidates(String name) {
+		List<ItemMetadata> candidates = this.items.get(name);
+		return (candidates != null ? new ArrayList<>(candidates) : new ArrayList<>());
+	}
+
 	private boolean nullSafeEquals(Object o1, Object o2) {
 		if (o1 == o2) {
 			return true;
@@ -169,7 +178,7 @@ public class ConfigurationMetadata {
 	}
 
 	public static String nestedPrefix(String prefix, String name) {
-		String nestedPrefix = (prefix == null ? "" : prefix);
+		String nestedPrefix = (prefix != null ? prefix : "");
 		String dashedName = toDashedCase(name);
 		nestedPrefix += ("".equals(nestedPrefix) ? dashedName : "." + dashedName);
 		return nestedPrefix;

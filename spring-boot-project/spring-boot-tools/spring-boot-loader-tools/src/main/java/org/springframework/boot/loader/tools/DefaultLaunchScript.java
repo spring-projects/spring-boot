@@ -109,8 +109,8 @@ public class DefaultLaunchScript implements LaunchScript {
 				}
 			}
 			else {
-				value = (defaultValue == null ? matcher.group(0)
-						: defaultValue.substring(1));
+				value = (defaultValue != null ? defaultValue.substring(1)
+						: matcher.group(0));
 			}
 			matcher.appendReplacement(expanded, value.replace("$", "\\$"));
 		}

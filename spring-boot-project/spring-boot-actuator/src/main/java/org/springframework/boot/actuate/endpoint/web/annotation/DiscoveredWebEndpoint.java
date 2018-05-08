@@ -44,4 +44,5 @@ class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation>
 	public String getRootPath() {
 		return this.rootPath;
 	}
+
 }

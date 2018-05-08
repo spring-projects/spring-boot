@@ -61,7 +61,7 @@ public final class ConditionMessage {
 
 	@Override
 	public String toString() {
-		return (this.message == null ? "" : this.message);
+		return (this.message != null ? this.message : "");
 	}
 
 	@Override
@@ -358,7 +358,7 @@ public final class ConditionMessage {
 		 * @return a built {@link ConditionMessage}
 		 */
 		public ConditionMessage items(Style style, Object... items) {
-			return items(style, items == null ? null : Arrays.asList(items));
+			return items(style, items != null ? Arrays.asList(items) : null);
 		}
 
 		/**
@@ -415,7 +415,7 @@ public final class ConditionMessage {
 		QUOTE {
 			@Override
 			protected String applyToItem(Object item) {
-				return (item == null ? null : "'" + item + "'");
+				return (item != null ? "'" + item + "'" : null);
 			}
 		};
 

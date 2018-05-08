@@ -29,6 +29,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.FatalBeanException;
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
+import org.springframework.boot.actuate.endpoint.InvocationContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mockito.Mockito.mock;
@@ -85,6 +89,34 @@ public class EndpointMBeanTests {
 	}
 
 	@Test
+	public void invokeWhenOperationFailedShouldTranslateException()
+			throws MBeanException, ReflectionException {
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
+				new TestJmxOperation((arguments) -> {
+					throw new FatalBeanException("test failure");
+				}));
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
+		this.thrown.expect(MBeanException.class);
+		this.thrown.expectCause(instanceOf(IllegalStateException.class));
+		this.thrown.expectMessage("test failure");
+		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+	}
+
+	@Test
+	public void invokeWhenOperationFailedWithJdkExceptionShouldReuseException()
+			throws MBeanException, ReflectionException {
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
+				new TestJmxOperation((arguments) -> {
+					throw new UnsupportedOperationException("test failure");
+				}));
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
+		this.thrown.expect(MBeanException.class);
+		this.thrown.expectCause(instanceOf(UnsupportedOperationException.class));
+		this.thrown.expectMessage("test failure");
+		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+	}
+
+	@Test
 	public void invokeWhenActionNameIsNotAnOperationShouldThrowException()
 			throws MBeanException, ReflectionException {
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, this.endpoint);
@@ -92,6 +124,25 @@ public class EndpointMBeanTests {
 		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
 		this.thrown.expectMessage("no operation named missingOperation");
 		bean.invoke("missingOperation", NO_PARAMS, NO_SIGNATURE);
+	}
+
+	@Test
+	public void invokeWhenOperationIsInvalidShouldThrowException()
+			throws MBeanException, ReflectionException {
+		TestJmxOperation operation = new TestJmxOperation() {
+
+			@Override
+			public Object invoke(InvocationContext context) {
+				throw new InvalidEndpointRequestException("test failure", "test");
+			}
+
+		};
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(operation);
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
+		this.thrown.expect(ReflectionException.class);
+		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
+		this.thrown.expectMessage("test failure");
+		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
 	}
 
 	@Test

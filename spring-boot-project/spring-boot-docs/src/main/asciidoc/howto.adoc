@@ -276,15 +276,12 @@ configuration by setting properties in `+spring.main.*+`. For example, in
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.main.web-environment=false
+	spring.main.web-application-type=none
 	spring.main.banner-mode=off
 ----
 
-Then the Spring Boot banner is not printed on startup, and the application is
-not a web application.
-
-NOTE: The preceding example also demonstrates how flexible binding allows the use of
-underscores (`_`) as well as dashes (`-`) in property names.
+Then the Spring Boot banner is not printed on startup, and the application is not starting
+an embedded web server.
 
 Properties defined in external configuration override the values specified with the Java
 API, with the notable exception of the sources used to create the `ApplicationContext`.
@@ -516,9 +513,6 @@ includes Tomcat by including `spring-boot-starter-tomcat`, but you can use
 `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`,
 `spring-boot-starter-jetty`, or `spring-boot-starter-undertow` instead.
 
-NOTE: Many starters support only Spring MVC, so they transitively bring
-`spring-boot-starter-web` into your application classpath.
-
 If you need to use a different HTTP server, you need to exclude the default dependencies
 and include the one you need. Spring Boot provides separate starters for
 HTTP servers to help make this process as easy as possible.
@@ -566,6 +560,19 @@ WebFlux:
 NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` class, so
 you may need to keep a dependency on Netty even when you need to include a different HTTP
 server.
+
+
+
+[[howto-disable-web-server]]
+=== Disabling the Web Server
+If your classpath contains the necessary bits to start a web server, Spring Boot will
+automatically start it. To disable this behaviour configure the `WebApplicationType` in
+your `application.properties`, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.main.web-application-type=none
+----
 
 
 
@@ -2557,7 +2564,7 @@ plugin, as shown in the following example:
 [source,groovy,indent=0]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "1.4.17"
+		id "com.gorylenko.gradle-git-properties" version "1.4.21"
 	}
 ----
 
@@ -2568,7 +2575,6 @@ to be controlled by Jackson's date serialization configuration settings.
 
 
 
-[[howto-customize-dependency-versions-with-maven]]
 [[howto-customize-dependency-versions]]
 === Customize Dependency Versions
 If you use a Maven build that inherits directly or indirectly from
@@ -2594,7 +2600,8 @@ the artifact yourself instead of overriding the property.
 WARNING: Each Spring Boot release is designed and tested against this specific set of
 third-party dependencies. Overriding versions may cause compatibility issues.
 
-
+To override dependency versions in Gradle, see {spring-boot-gradle-plugin-reference}/#managing-dependencies-customizing[this section]
+of the Gradle plugin's documentation.
 
 [[howto-create-an-executable-jar-with-maven]]
 === Create an Executable JAR with Maven
