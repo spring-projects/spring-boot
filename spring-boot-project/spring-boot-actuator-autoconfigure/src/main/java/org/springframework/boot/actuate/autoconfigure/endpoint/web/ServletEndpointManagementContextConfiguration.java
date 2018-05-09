@@ -39,6 +39,14 @@ import org.springframework.core.env.Environment;
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class ServletEndpointManagementContextConfiguration {
+	
+	@Bean
+	public ExposeExcludePropertyEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
+			WebEndpointProperties properties) {
+		WebEndpointProperties.Exposure exposure = properties.getExposure();
+		return new ExposeExcludePropertyEndpointFilter<>(ExposableServletEndpoint.class,
+				exposure.getInclude(), exposure.getExclude());
+	}
 
 	@Configuration
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
@@ -68,13 +76,4 @@ public class ServletEndpointManagementContextConfiguration {
 					servletEndpointsSupplier.getEndpoints());
 		}
 	}
-
-	@Bean
-	public ExposeExcludePropertyEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
-			WebEndpointProperties properties) {
-		WebEndpointProperties.Exposure exposure = properties.getExposure();
-		return new ExposeExcludePropertyEndpointFilter<>(ExposableServletEndpoint.class,
-				exposure.getInclude(), exposure.getExclude());
-	}
-
 }
