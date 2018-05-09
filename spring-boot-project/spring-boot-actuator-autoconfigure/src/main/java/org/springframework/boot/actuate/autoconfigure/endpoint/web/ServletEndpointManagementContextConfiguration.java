@@ -61,8 +61,9 @@ public class ServletEndpointManagementContextConfiguration {
 				WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier) {
 			String servletPath = environment.getProperty("server.servlet.path");
-			if (servletPath.endsWith("/") && properties.getBasePath().startsWith("/"))
+			if (servletPath.endsWith("/") && properties.getBasePath().startsWith("/")) {
 				servletPath = servletPath.substring(0, servletPath.length() - 1);
+			}
 			return new ServletEndpointRegistrar(servletPath != null ? servletPath + properties.getBasePath() : properties.getBasePath(),
 					servletEndpointsSupplier.getEndpoints());
 		}
