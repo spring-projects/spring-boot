@@ -67,7 +67,10 @@ public class CachesEndpoint {
 			cacheManagerDescriptors.put(cacheName,
 					new CacheDescriptor(entry.getTarget()));
 		});
-		return new CachesReport(descriptors);
+		Map<String, CacheManagerDescriptor> cacheManagerDescriptors = new LinkedHashMap<>();
+		descriptors.forEach((name, entries) ->
+				cacheManagerDescriptors.put(name, new CacheManagerDescriptor(entries)));
+		return new CachesReport(cacheManagerDescriptors);
 	}
 
 	/**
@@ -160,14 +163,32 @@ public class CachesEndpoint {
 	 */
 	public static final class CachesReport {
 
-		private final Map<String, Map<String, CacheDescriptor>> cacheManagers;
+		private final Map<String, CacheManagerDescriptor> cacheManagers;
 
-		public CachesReport(Map<String, Map<String, CacheDescriptor>> cacheManagers) {
+		public CachesReport(Map<String, CacheManagerDescriptor> cacheManagers) {
 			this.cacheManagers = cacheManagers;
 		}
 
-		public Map<String, Map<String, CacheDescriptor>> getCacheManagers() {
+		public Map<String, CacheManagerDescriptor> getCacheManagers() {
 			return this.cacheManagers;
+		}
+
+	}
+
+	/**
+	 * Description of a {@link CacheManager}, primarily intended for serialization to
+	 * JSON.
+	 */
+	public static final class CacheManagerDescriptor {
+
+		private final Map<String, CacheDescriptor> caches;
+
+		public CacheManagerDescriptor(Map<String, CacheDescriptor> caches) {
+			this.caches = caches;
+		}
+
+		public Map<String, CacheDescriptor> getCaches() {
+			return this.caches;
 		}
 
 	}
