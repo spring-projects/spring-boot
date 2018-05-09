@@ -118,7 +118,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		}
 		else {
 			this.path = findApplicationPath(AnnotationUtils
-					.findAnnotation(this.config.getClass(), ApplicationPath.class));
+					.findAnnotation(this.config.getApplication().getClass(), ApplicationPath.class));
 		}
 	}
 
