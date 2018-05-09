@@ -278,10 +278,11 @@ public class HibernateJpaAutoConfigurationTests
 		contextRunner()
 				.withUserConfiguration(TestPhysicalNamingStrategyConfiguration.class)
 				.run((context) -> {
-					Map<String, Object> hibernateProperties = context.getBean(
-							HibernateJpaConfiguration.class).getVendorProperties();
-					assertThat(hibernateProperties).contains(
-							entry("hibernate.physical_naming_strategy",
+					Map<String, Object> hibernateProperties = context
+							.getBean(HibernateJpaConfiguration.class)
+							.getVendorProperties();
+					assertThat(hibernateProperties)
+							.contains(entry("hibernate.physical_naming_strategy",
 									context.getBean("testPhysicalNamingStrategy")));
 					assertThat(hibernateProperties)
 							.doesNotContainKeys("hibernate.ejb.naming_strategy");
@@ -293,10 +294,11 @@ public class HibernateJpaAutoConfigurationTests
 		contextRunner()
 				.withUserConfiguration(TestImplicitNamingStrategyConfiguration.class)
 				.run((context) -> {
-					Map<String, Object> hibernateProperties = context.getBean(
-							HibernateJpaConfiguration.class).getVendorProperties();
-					assertThat(hibernateProperties).contains(
-							entry("hibernate.implicit_naming_strategy",
+					Map<String, Object> hibernateProperties = context
+							.getBean(HibernateJpaConfiguration.class)
+							.getVendorProperties();
+					assertThat(hibernateProperties)
+							.contains(entry("hibernate.implicit_naming_strategy",
 									context.getBean("testImplicitNamingStrategy")));
 					assertThat(hibernateProperties)
 							.doesNotContainKeys("hibernate.ejb.naming_strategy");
@@ -312,8 +314,9 @@ public class HibernateJpaAutoConfigurationTests
 						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical",
 						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit")
 				.run((context) -> {
-					Map<String, Object> hibernateProperties = context.getBean(
-							HibernateJpaConfiguration.class).getVendorProperties();
+					Map<String, Object> hibernateProperties = context
+							.getBean(HibernateJpaConfiguration.class)
+							.getVendorProperties();
 					assertThat(hibernateProperties).contains(
 							entry("hibernate.physical_naming_strategy",
 									context.getBean("testPhysicalNamingStrategy")),
@@ -335,10 +338,12 @@ public class HibernateJpaAutoConfigurationTests
 						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical",
 						"spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit")
 				.run((context) -> {
-					Map<String, Object> hibernateProperties = context.getBean(
-							HibernateJpaConfiguration.class).getVendorProperties();
-					TestHibernatePropertiesCustomizerConfiguration configuration = context.getBean(
-							TestHibernatePropertiesCustomizerConfiguration.class);
+					Map<String, Object> hibernateProperties = context
+							.getBean(HibernateJpaConfiguration.class)
+							.getVendorProperties();
+					TestHibernatePropertiesCustomizerConfiguration configuration = context
+							.getBean(
+									TestHibernatePropertiesCustomizerConfiguration.class);
 					assertThat(hibernateProperties).contains(
 							entry("hibernate.physical_naming_strategy",
 									configuration.physicalNamingStrategy),
@@ -348,7 +353,6 @@ public class HibernateJpaAutoConfigurationTests
 							.doesNotContainKeys("hibernate.ejb.naming_strategy");
 				});
 	}
-
 
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)
