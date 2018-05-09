@@ -68,10 +68,13 @@ public class ServletEndpointManagementContextConfiguration {
 				WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier) {
 			String servletPath = environment.getProperty("server.servlet.path");
-			if (servletPath.endsWith("/") && properties.getBasePath().startsWith("/")) {
+			if (servletPath == null) {
+				servletPath = "";
+			}
+			else if (servletPath.endsWith("/")) {
 				servletPath = servletPath.substring(0, servletPath.length() - 1);
 			}
-			return new ServletEndpointRegistrar(servletPath != null ? servletPath + properties.getBasePath() : properties.getBasePath(),
+			return new ServletEndpointRegistrar(servletPath + properties.getBasePath(),
 					servletEndpointsSupplier.getEndpoints());
 		}
 	}
