@@ -121,7 +121,7 @@
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.16.20</lombok.version>
 		<mariadb.version>2.2.3</mariadb.version>
-		<micrometer.version>1.0.3</micrometer.version>
+		<micrometer.version>1.0.4</micrometer.version>
 		<mockito.version>2.15.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.7.1</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.6.3</mongodb.version>
@@ -156,7 +156,7 @@
 		<spring-cloud-connectors.version>2.0.1.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Kay-SR7</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.24.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.0.5.BUILD-SNAPSHOT</spring-integration.version>
+		<spring-integration.version>5.0.5.RELEASE</spring-integration.version>
 		<spring-kafka.version>2.2.0.BUILD-SNAPSHOT</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
