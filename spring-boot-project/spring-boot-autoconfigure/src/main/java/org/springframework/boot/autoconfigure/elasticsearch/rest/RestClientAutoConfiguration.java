@@ -39,8 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-Configuration}
- * for Elasticseach REST clients.
+ * {@link EnableAutoConfiguration Auto-Configuration} for Elasticseach REST clients.
  *
  * @author Brian Clozel
  * @since 2.1.0
@@ -50,7 +49,6 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(RestClientProperties.class)
 public class RestClientAutoConfiguration {
 
-
 	private final RestClientProperties properties;
 
 	private final List<RestClientBuilderCustomizer> builderCustomizers;
@@ -58,7 +56,8 @@ public class RestClientAutoConfiguration {
 	public RestClientAutoConfiguration(RestClientProperties properties,
 			ObjectProvider<List<RestClientBuilderCustomizer>> builderCustomizers) {
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers.getIfAvailable(Collections::emptyList);
+		this.builderCustomizers = builderCustomizers
+				.getIfAvailable(Collections::emptyList);
 	}
 
 	@Bean(destroyMethod = "close")
@@ -69,8 +68,8 @@ public class RestClientAutoConfiguration {
 	}
 
 	protected RestClientBuilder configureBuilder() {
-		HttpHost[] hosts = this.properties.getUris().stream()
-				.map(HttpHost::create).toArray(HttpHost[]::new);
+		HttpHost[] hosts = this.properties.getUris().stream().map(HttpHost::create)
+				.toArray(HttpHost[]::new);
 		RestClientBuilder builder = RestClient.builder(hosts);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.properties::getUsername).whenHasText().to((username) -> {
@@ -78,8 +77,8 @@ public class RestClientAutoConfiguration {
 			Credentials credentials = new UsernamePasswordCredentials(
 					this.properties.getUsername(), this.properties.getPassword());
 			credentialsProvider.setCredentials(AuthScope.ANY, credentials);
-			builder.setHttpClientConfigCallback(httpClientBuilder ->
-					httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+			builder.setHttpClientConfigCallback((httpClientBuilder) -> httpClientBuilder
+					.setDefaultCredentialsProvider(credentialsProvider));
 		});
 		this.builderCustomizers.forEach((customizer) -> customizer.customize(builder));
 		return builder;

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch.rest;
 
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,26 +48,21 @@ public class RestClientAutoConfigurationTests {
 
 	@Test
 	public void configureShouldCreateBothRestClientVariants() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(RestClient.class)
-					.hasSingleBean(RestHighLevelClient.class);
-		});
+		this.contextRunner
+				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
+						.hasSingleBean(RestHighLevelClient.class));
 	}
 
 	@Test
 	public void configureWhenCustomClientShouldBackOff() {
-		this.contextRunner
-				.withUserConfiguration(CustomRestClientConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(RestClient.class)
-							.hasBean("customRestClient");
-				});
+		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(RestClient.class)
+						.hasBean("customRestClient"));
 	}
 
 	@Test
 	public void configureWhenBuilderCustomizerShouldApply() {
-		this.contextRunner
-				.withUserConfiguration(BuilderCustomizerConfiguration.class)
+		this.contextRunner.withUserConfiguration(BuilderCustomizerConfiguration.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RestClient.class);
 					RestClient restClient = context.getBean(RestClient.class);
@@ -86,7 +80,8 @@ public class RestClientAutoConfigurationTests {
 				.withPropertyValues("spring.elasticsearch.rest.uris=http://localhost:"
 						+ node.getHttpPort())
 				.run((context) -> {
-					RestHighLevelClient client = context.getBean(RestHighLevelClient.class);
+					RestHighLevelClient client = context
+							.getBean(RestHighLevelClient.class);
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");
@@ -112,7 +107,7 @@ public class RestClientAutoConfigurationTests {
 
 		@Bean
 		public RestClientBuilderCustomizer myCustomizer() {
-			return builder -> builder.setMaxRetryTimeoutMillis(42);
+			return (builder) -> builder.setMaxRetryTimeoutMillis(42);
 		}
 	}
 
