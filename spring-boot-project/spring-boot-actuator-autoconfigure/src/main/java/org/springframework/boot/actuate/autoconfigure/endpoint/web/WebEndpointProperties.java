@@ -38,7 +38,7 @@ public class WebEndpointProperties {
 	private final Exposure exposure = new Exposure();
 
 	/**
-	 * Base path for Web endpoints. Relative to server.servlet.context-path or
+	 * Base path for Web endpoints. Relative to server.servlet.context-path and server.servlet.path, or
 	 * management.server.servlet.context-path if management.server.port is configured.
 	 */
 	private String basePath = "/actuator";

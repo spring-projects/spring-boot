@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
@@ -25,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * {@link ManagementContextConfiguration} for servlet endpoints.
@@ -36,15 +39,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class ServletEndpointManagementContextConfiguration {
-
-	@Bean
-	public ServletEndpointRegistrar servletEndpointRegistrar(
-			WebEndpointProperties properties,
-			ServletEndpointsSupplier servletEndpointsSupplier) {
-		return new ServletEndpointRegistrar(properties.getBasePath(),
-				servletEndpointsSupplier.getEndpoints());
-	}
-
 	@Bean
 	public ExposeExcludePropertyEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
 			WebEndpointProperties properties) {
@@ -53,4 +47,35 @@ public class ServletEndpointManagementContextConfiguration {
 				exposure.getInclude(), exposure.getExclude());
 	}
 
+	@Configuration
+	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+	static class DifferentContextServletEndpointManagementContextConfiguration {
+		@Bean
+		public ServletEndpointRegistrar servletEndpointRegistrar(
+				WebEndpointProperties properties,
+				ServletEndpointsSupplier servletEndpointsSupplier) {
+			return new ServletEndpointRegistrar(properties.getBasePath(),
+					servletEndpointsSupplier.getEndpoints());
+		}
+	}
+
+	@Configuration
+	@ConditionalOnManagementPort(ManagementPortType.SAME)
+	static class SameContextServletEndpointManagementContextConfiguration {
+		@Bean
+		public ServletEndpointRegistrar servletEndpointRegistrar(
+				Environment environment,
+				WebEndpointProperties properties,
+				ServletEndpointsSupplier servletEndpointsSupplier) {
+			String servletPath = environment.getProperty("server.servlet.path");
+			if (servletPath == null) {
+				servletPath = "";
+			}
+			else if (servletPath.endsWith("/")) {
+				servletPath = servletPath.substring(0, servletPath.length() - 1);
+			}
+			return new ServletEndpointRegistrar(servletPath + properties.getBasePath(),
+					servletEndpointsSupplier.getEndpoints());
+		}
+	}
 }
