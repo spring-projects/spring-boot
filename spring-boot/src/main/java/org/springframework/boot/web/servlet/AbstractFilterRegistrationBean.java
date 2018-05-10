@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,8 +157,8 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Return a mutable collection of URL patterns that the filter will be registered
-	 * against.
+	 * Return a mutable collection of URL patterns, as defined in the Servlet
+	 * specification, that the filter will be registered against.
 	 * @return the URL patterns
 	 */
 	public Collection<String> getUrlPatterns() {
@@ -166,7 +166,8 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Add URL patterns that the filter will be registered against.
+	 * Add URL patterns, as defined in the Servlet specification, that the filter will be
+	 * registered against.
 	 * @param urlPatterns the URL patterns
 	 */
 	public void addUrlPatterns(String... urlPatterns) {

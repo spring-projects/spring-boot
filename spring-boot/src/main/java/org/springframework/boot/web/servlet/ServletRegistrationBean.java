@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Return a mutable collection of the URL mappings for the servlet.
+	 * Return a mutable collection of the URL mappings, as defined in the Servlet
+	 * specification, for the servlet.
 	 * @return the urlMappings
 	 */
 	public Collection<String> getUrlMappings() {
@@ -136,7 +137,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Add URL mappings for the servlet.
+	 * Add URL mappings, as defined in the Servlet specification, for the servlet.
 	 * @param urlMappings the mappings to add
 	 * @see #setUrlMappings(Collection)
 	 */
