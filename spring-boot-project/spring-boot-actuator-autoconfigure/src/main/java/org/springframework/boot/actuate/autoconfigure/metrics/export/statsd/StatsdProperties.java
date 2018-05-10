@@ -21,6 +21,7 @@ import java.time.Duration;
 import io.micrometer.statsd.StatsdFlavor;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties} for configuring StatsD metrics export.
@@ -122,10 +123,13 @@ public class StatsdProperties {
 		this.pollingFrequency = pollingFrequency;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "No longer configurable and an unbounded queue will always be used")
 	public Integer getQueueSize() {
 		return this.queueSize;
 	}
 
+	@Deprecated
 	public void setQueueSize(Integer queueSize) {
 		this.queueSize = queueSize;
 	}

@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -117,8 +118,14 @@ public class EndpointRequestTests {
 	@Test
 	public void excludeByClassShouldNotMatchExcluded() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint()
-				.excluding(FooEndpoint.class);
-		assertMatcher(matcher).doesNotMatch("/actuator/foo");
+				.excluding(FooEndpoint.class, BazServletEndpoint.class);
+		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
+		endpoints.add(mockEndpoint("foo", "foo"));
+		endpoints.add(mockEndpoint("bar", "bar"));
+		endpoints.add(mockEndpoint("baz", "baz"));
+		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints("/actuator", () -> endpoints);
+		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/foo");
+		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/baz");
 		assertMatcher(matcher).matches("/actuator/bar");
 		assertMatcher(matcher).matches("/actuator");
 	}
@@ -277,6 +284,11 @@ public class EndpointRequestTests {
 
 	@Endpoint(id = "foo")
 	private static class FooEndpoint {
+
+	}
+
+	@ServletEndpoint(id = "baz")
+	private static class BazServletEndpoint {
 
 	}
 

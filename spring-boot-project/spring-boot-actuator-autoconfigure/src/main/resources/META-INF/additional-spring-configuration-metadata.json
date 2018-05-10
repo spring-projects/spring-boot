@@ -280,7 +280,10 @@
     },
     {
       "name": "management.metrics.export.statsd.queue-size",
-      "defaultValue": 2147483647
+      "defaultValue": 2147483647,
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "management.trace.http.enabled",

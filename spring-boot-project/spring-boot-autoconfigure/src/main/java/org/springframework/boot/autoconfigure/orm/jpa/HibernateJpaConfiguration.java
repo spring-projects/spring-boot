@@ -112,7 +112,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			ImplicitNamingStrategy implicitNamingStrategy,
 			List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
-			LinkedList<HibernatePropertiesCustomizer> customizers = new LinkedList<>(hibernatePropertiesCustomizers);
+			LinkedList<HibernatePropertiesCustomizer> customizers = new LinkedList<>(
+					hibernatePropertiesCustomizers);
 			customizers.addFirst(new NamingStrategiesHibernatePropertiesCustomizer(
 					physicalNamingStrategy, implicitNamingStrategy));
 			return customizers;
@@ -129,9 +130,9 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	protected Map<String, Object> getVendorProperties() {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider
 				.getDefaultDdlAuto(getDataSource());
-		return new LinkedHashMap<>(getProperties()
-				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlMode)
-						.hibernatePropertiesCustomizers(
+		return new LinkedHashMap<>(
+				getProperties().getHibernateProperties(new HibernateSettings()
+						.ddlAuto(defaultDdlMode).hibernatePropertiesCustomizers(
 								this.hibernatePropertiesCustomizers)));
 	}
 

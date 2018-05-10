@@ -400,9 +400,13 @@ identifier for you and also sets up HTTP routes. Add a Java app to the project a
 it empty and then use the https://cloud.google.com/sdk/downloads[Google Cloud SDK] to
 push your Spring Boot app into that slot from the command line or CI build.
 
-App Engine needs you to create an `app.yaml` file to describe the resources your app
-requires. Normally, you put this file in `src/main/appengine`, and it should resemble the
-following file:
+App Engine Standard requires you to use WAR packaging. Follow
+https://github.com/GoogleCloudPlatform/getting-started-java/blob/master/appengine-standard-java8/springboot-appengine-standard/README.md[these steps]
+to deploy App Engine Standard application to Google Cloud.
+
+Alternatively, App Engine Flex requires you to create an `app.yaml` file to describe
+the resources your app requires. Normally, you put this file in `src/main/appengine`,
+and it should resemble the following file:
 
 [source,yaml,indent=0]
 ----
@@ -445,10 +449,6 @@ build configuration, as shown in the following example:
 
 Then deploy with `mvn appengine:deploy` (if you need to authenticate first, the build
 fails).
-
-NOTE: Google App Engine Classic is tied to the Servlet 2.5 API, so you cannot deploy a
-Spring Application there without some modifications. See the
-<<howto.adoc#howto-servlet-2-5,Servlet 2.5 section>> of this guide.
 
 
 

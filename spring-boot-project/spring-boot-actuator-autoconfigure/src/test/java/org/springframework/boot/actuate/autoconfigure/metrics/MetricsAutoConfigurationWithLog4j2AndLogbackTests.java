@@ -43,9 +43,8 @@ public class MetricsAutoConfigurationWithLog4j2AndLogbackTests {
 
 	@Test
 	public void doesNotConfigureLogbackMetrics() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).doesNotHaveBean(LogbackMetrics.class);
-		});
+		this.contextRunner.run(
+				(context) -> assertThat(context).doesNotHaveBean(LogbackMetrics.class));
 	}
 
 }

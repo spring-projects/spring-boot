@@ -49,13 +49,13 @@ public class CachesEndpointWebIntegrationTests {
 	@Test
 	public void allCaches() {
 		client.get().uri("/actuator/caches").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("cacheManagers.one.a.target")
+				.jsonPath("cacheManagers.one.caches.a.target")
 				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.one.b.target")
+				.jsonPath("cacheManagers.one.caches.b.target")
 				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.a.target")
+				.jsonPath("cacheManagers.two.caches.a.target")
 				.isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.c.target")
+				.jsonPath("cacheManagers.two.caches.c.target")
 				.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 

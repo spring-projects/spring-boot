@@ -26,8 +26,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.actuate.cache.CachesEndpoint.CacheDescriptor;
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntry;
+import org.springframework.boot.actuate.cache.CachesEndpoint.CacheManagerDescriptor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -53,14 +53,14 @@ public class CachesEndpointTests {
 	public void allCachesWithSingleCacheManager() {
 		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap("test",
 				new ConcurrentMapCacheManager("a", "b")));
-		Map<String, Map<String, CacheDescriptor>> allDescriptors = endpoint.caches()
+		Map<String, CacheManagerDescriptor> allDescriptors = endpoint.caches()
 				.getCacheManagers();
 		assertThat(allDescriptors).containsOnlyKeys("test");
-		Map<String, CacheDescriptor> descriptors = allDescriptors.get("test");
-		assertThat(descriptors).containsOnlyKeys("a", "b");
-		assertThat(descriptors.get("a").getTarget())
+		CacheManagerDescriptor descriptors = allDescriptors.get("test");
+		assertThat(descriptors.getCaches()).containsOnlyKeys("a", "b");
+		assertThat(descriptors.getCaches().get("a").getTarget())
 				.isEqualTo(ConcurrentHashMap.class.getName());
-		assertThat(descriptors.get("b").getTarget())
+		assertThat(descriptors.getCaches().get("b").getTarget())
 				.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
@@ -70,11 +70,11 @@ public class CachesEndpointTests {
 		cacheManagers.put("test", new ConcurrentMapCacheManager("a", "b"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("a", "c"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-		Map<String, Map<String, CacheDescriptor>> allDescriptors = endpoint.caches()
+		Map<String, CacheManagerDescriptor> allDescriptors = endpoint.caches()
 				.getCacheManagers();
 		assertThat(allDescriptors).containsOnlyKeys("test", "another");
-		assertThat(allDescriptors.get("test")).containsOnlyKeys("a", "b");
-		assertThat(allDescriptors.get("another")).containsOnlyKeys("a", "c");
+		assertThat(allDescriptors.get("test").getCaches()).containsOnlyKeys("a", "b");
+		assertThat(allDescriptors.get("another").getCaches()).containsOnlyKeys("a", "c");
 	}
 
 	@Test
