@@ -33,7 +33,7 @@ class RunArguments {
 
 	private static final String[] NO_ARGS = {};
 
-	private final LinkedList<String> args = new LinkedList<>();
+	private final Deque<String> args = new LinkedList<>();
 
 	RunArguments(String arguments) {
 		this(parseArgs(arguments));

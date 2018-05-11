@@ -289,9 +289,9 @@ public class RepackagerTests {
 	public void libraries() throws Exception {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
-		final File libJarFile = libJar.getFile();
-		final File libJarFileToUnpack = libJar.getFile();
-		final File libNonJarFile = this.temporaryFolder.newFile();
+		File libJarFile = libJar.getFile();
+		File libJarFileToUnpack = libJar.getFile();
+		File libNonJarFile = this.temporaryFolder.newFile();
 		FileCopyUtils.copy(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, libNonJarFile);
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		this.testJarFile.addFile("BOOT-INF/lib/" + libJarFileToUnpack.getName(),
@@ -319,7 +319,7 @@ public class RepackagerTests {
 	public void duplicateLibraries() throws Exception {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
-		final File libJarFile = libJar.getFile();
+		File libJarFile = libJar.getFile();
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -335,12 +335,12 @@ public class RepackagerTests {
 	public void customLayout() throws Exception {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
-		final File libJarFile = libJar.getFile();
+		File libJarFile = libJar.getFile();
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		Layout layout = mock(Layout.class);
-		final LibraryScope scope = mock(LibraryScope.class);
+		LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
 		given(layout.getLibraryDestination(anyString(), eq(scope))).willReturn("test/");
 		given(layout.getLibraryDestination(anyString(), eq(LibraryScope.COMPILE)))
@@ -359,12 +359,12 @@ public class RepackagerTests {
 	public void customLayoutNoBootLib() throws Exception {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
-		final File libJarFile = libJar.getFile();
+		File libJarFile = libJar.getFile();
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		Layout layout = mock(Layout.class);
-		final LibraryScope scope = mock(LibraryScope.class);
+		LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
 		repackager.setLayout(layout);
 		repackager.repackage(
@@ -625,12 +625,12 @@ public class RepackagerTests {
 	public void layoutCanOmitLibraries() throws IOException {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
-		final File libJarFile = libJar.getFile();
+		File libJarFile = libJar.getFile();
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		Layout layout = mock(Layout.class);
-		final LibraryScope scope = mock(LibraryScope.class);
+		LibraryScope scope = mock(LibraryScope.class);
 		repackager.setLayout(layout);
 		repackager.repackage(
 				(callback) -> callback.library(new Library(libJarFile, scope)));
