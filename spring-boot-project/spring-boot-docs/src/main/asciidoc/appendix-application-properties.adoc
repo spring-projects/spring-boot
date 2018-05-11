@@ -1420,7 +1420,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.statsd.polling-frequency=10s # How often gauges will be polled. When a gauge is polled, its value is recalculated and if the value has changed (or publishUnchangedMeters is true), it is sent to the StatsD server.
 	management.metrics.export.statsd.port=8125 # Port of the StatsD server to receive exported metrics.
 	management.metrics.export.statsd.publish-unchanged-meters=true # Whether to send unchanged meters to the StatsD server.
-	management.metrics.export.statsd.queue-size=2147483647 # Maximum size of the queue of items waiting to be sent to the StatsD server.
 	management.metrics.export.wavefront.api-token= # API token used when publishing metrics directly to the Wavefront API host.
 	management.metrics.export.wavefront.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.wavefront.connect-timeout=1s # Connection timeout for requests to this backend.

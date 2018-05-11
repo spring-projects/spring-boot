@@ -55,7 +55,7 @@ public class DispatcherServletAutoConfigurationTests {
 			assertThat(context.getBean(DispatcherServlet.class)).isNotNull();
 			ServletRegistrationBean<?> registration = context
 					.getBean(ServletRegistrationBean.class);
-			assertThat(registration.getUrlMappings().toString()).isEqualTo("[/]");
+			assertThat(registration.getUrlMappings()).containsExactly("/");
 		});
 	}
 
@@ -72,11 +72,11 @@ public class DispatcherServletAutoConfigurationTests {
 	// from the default one, we're registering one anyway
 	@Test
 	public void registrationOverrideWithDispatcherServletWrongName() {
-		this.contextRunner.withUserConfiguration(CustomDispatcherServletWrongName.class)
+		this.contextRunner.withUserConfiguration(CustomDispatcherServletDifferentName.class)
 				.run((context) -> {
 					ServletRegistrationBean<?> registration = context
 							.getBean(ServletRegistrationBean.class);
-					assertThat(registration.getUrlMappings().toString()).isEqualTo("[/]");
+					assertThat(registration.getUrlMappings()).containsExactly("/");
 					assertThat(registration.getServletName())
 							.isEqualTo("dispatcherServlet");
 					assertThat(context).getBeanNames(DispatcherServlet.class).hasSize(2);
@@ -89,8 +89,8 @@ public class DispatcherServletAutoConfigurationTests {
 				.run((context) -> {
 					ServletRegistrationBean<?> registration = context
 							.getBean(ServletRegistrationBean.class);
-					assertThat(registration.getUrlMappings().toString())
-							.isEqualTo("[/foo]");
+					assertThat(registration.getUrlMappings())
+							.containsExactly("/foo");
 					assertThat(registration.getServletName())
 							.isEqualTo("customDispatcher");
 					assertThat(context).hasSingleBean(DispatcherServlet.class);
@@ -104,8 +104,8 @@ public class DispatcherServletAutoConfigurationTests {
 					assertThat(context.getBean(DispatcherServlet.class)).isNotNull();
 					ServletRegistrationBean<?> registration = context
 							.getBean(ServletRegistrationBean.class);
-					assertThat(registration.getUrlMappings().toString())
-							.isEqualTo("[/spring/*]");
+					assertThat(registration.getUrlMappings())
+							.containsExactly("/spring/*");
 					assertThat(registration.getMultipartConfig()).isNull();
 					assertThat(context.getBean(DispatcherServletPathProvider.class)
 							.getServletPath()).isEqualTo("/spring");
@@ -189,7 +189,7 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class CustomDispatcherServletWrongName {
+	protected static class CustomDispatcherServletDifferentName {
 
 		@Bean
 		public DispatcherServlet customDispatcherServlet() {
