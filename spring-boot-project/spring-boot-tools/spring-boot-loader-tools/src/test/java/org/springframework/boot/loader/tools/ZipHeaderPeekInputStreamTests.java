@@ -42,7 +42,7 @@ public class ZipHeaderPeekInputStreamTests {
 	}
 
 	@Test
-	public void hasZipHeaderReturnsFalseWheStreamDoesNotStartWithZipHeader()
+	public void hasZipHeaderReturnsFalseWhenStreamDoesNotStartWithZipHeader()
 			throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 0, 1, 2, 3, 4, 5 }))) {
