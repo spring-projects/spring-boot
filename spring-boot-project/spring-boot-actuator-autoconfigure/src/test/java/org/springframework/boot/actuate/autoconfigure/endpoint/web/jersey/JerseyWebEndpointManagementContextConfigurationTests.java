@@ -31,30 +31,29 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link JerseyWebEndpointManagementContextConfiguration}.
+ *
  * @author Michael Simons
  */
 public class JerseyWebEndpointManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner runner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WebEndpointAutoConfiguration.class, JerseyWebEndpointManagementContextConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(WebEndpointAutoConfiguration.class,
+					JerseyWebEndpointManagementContextConfiguration.class));
 
 	@Test
-	public void contextShouldContainSingleResourceConfig() {
-		this.runner
-			.withUserConfiguration(WebEndpointsSupplierConfig.class)
-			.run(context -> assertThat(context).hasSingleBean(ResourceConfig.class));
+	public void resourceConfigIsAutoConfiguredWhenNeeded() {
+		this.runner.withUserConfiguration(WebEndpointsSupplierConfig.class).run(
+				(context) -> assertThat(context).hasSingleBean(ResourceConfig.class));
 	}
 
 	@Test
-	public void contextWhenResourceConfigExistsShouldContainSingleResourceConfig() {
-		this.runner
-			.withUserConfiguration(
-				WebEndpointsSupplierConfig.class,
-				ConfigWithResourceConfig.class)
-			.run(context -> {
-				assertThat(context).hasSingleBean(ResourceConfig.class);
-				assertThat(context).hasBean("customResourceConfig");
-		});
+	public void existingResourceConfigIsUsedWhenAvailable() {
+		this.runner.withUserConfiguration(WebEndpointsSupplierConfig.class,
+				ConfigWithResourceConfig.class).run((context) -> {
+					assertThat(context).hasSingleBean(ResourceConfig.class);
+					assertThat(context).hasBean("customResourceConfig");
+				});
 	}
 
 	@Configuration
@@ -64,6 +63,7 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 		public WebEndpointsSupplier webEndpointsSupplier() {
 			return () -> Collections.emptyList();
 		}
+
 	}
 
 	@Configuration
@@ -73,5 +73,7 @@ public class JerseyWebEndpointManagementContextConfigurationTests {
 		public ResourceConfig customResourceConfig() {
 			return new ResourceConfig();
 		}
+
 	}
+
 }
