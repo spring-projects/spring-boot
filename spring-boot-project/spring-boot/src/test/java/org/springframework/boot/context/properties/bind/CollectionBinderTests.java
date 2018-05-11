@@ -364,6 +364,19 @@ public class CollectionBinderTests {
 	}
 
 	@Test
+	public void bindToNestedCollectionWhenEmptyStringShouldReturnEmptyCollection() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.value", "one");
+		source.put("foo.foos", "");
+		this.sources.add(source);
+		Bindable<BeanWithNestedCollection> target = Bindable
+				.of(BeanWithNestedCollection.class);
+		BeanWithNestedCollection foo = this.binder.bind("foo", target).get();
+		assertThat(foo.getValue()).isEqualTo("one");
+		assertThat(foo.getFoos()).isEmpty();
+	}
+
+	@Test
 	public void bindToCollectionShouldUsePropertyEditor() {
 		// gh-12166
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();

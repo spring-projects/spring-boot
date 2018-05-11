@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Supplier;
@@ -32,6 +33,7 @@ import org.springframework.boot.context.properties.source.IterableConfigurationP
 import org.springframework.core.ResolvableType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class for {@link AggregateBinder AggregateBinders} that read a sequential run of
@@ -81,11 +83,17 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			ResolvableType aggregateType, ResolvableType elementType) {
 		ConfigurationProperty property = source.getConfigurationProperty(root);
 		if (property != null) {
-			Object aggregate = convert(property.getValue(), aggregateType,
-					target.getAnnotations());
-			ResolvableType collectionType = ResolvableType
-					.forClassWithGenerics(collection.get().getClass(), elementType);
-			Collection<Object> elements = convert(aggregate, collectionType);
+			Collection<Object> elements;
+			Object value = property.getValue();
+			if (value instanceof String && !StringUtils.hasText((String) value)) {
+				elements = Collections.emptyList();
+			}
+			else {
+				Object aggregate = convert(value, aggregateType, target.getAnnotations());
+				ResolvableType collectionType = ResolvableType
+						.forClassWithGenerics(collection.get().getClass(), elementType);
+				elements = convert(aggregate, collectionType);
+			}
 			collection.get().addAll(elements);
 		}
 		else {
