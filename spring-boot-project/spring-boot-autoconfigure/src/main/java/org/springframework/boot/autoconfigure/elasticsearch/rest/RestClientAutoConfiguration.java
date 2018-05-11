@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-Configuration} for Elasticseach REST clients.
+ * {@link EnableAutoConfiguration Auto-Configuration} for Elasticsearch REST clients.
  *
  * @author Brian Clozel
  * @since 2.1.0
