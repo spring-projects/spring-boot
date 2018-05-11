@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -120,7 +121,6 @@ public class LdapAutoConfigurationTests {
 							"urls");
 					assertThat(urls).containsExactly("ldap://localhost:389");
 					assertThat(contextSource.isAnonymousReadOnly()).isFalse();
-					context.getBean(PooledContextSource.class);
 				});
 	}
 
@@ -128,6 +128,7 @@ public class LdapAutoConfigurationTests {
 	static class PooledContextSourceConfig {
 
 		@Bean
+		@Primary
 		public PooledContextSource pooledContextSource(
 				LdapContextSource ldapContextSource) {
 			PooledContextSource pooledContextSource = new PooledContextSource(
