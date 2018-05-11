@@ -20,9 +20,13 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.pool2.factory.PoolConfig;
+import org.springframework.ldap.pool2.factory.PooledContextSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +58,8 @@ public class LdapAutoConfigurationTests {
 	public void contextSourceWithSingleUrl() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123")
 				.run((context) -> {
-					ContextSource contextSource = context.getBean(ContextSource.class);
+					ContextSource contextSource = context
+							.getBean(LdapContextSource.class);
 					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
 							"urls");
 					assertThat(urls).containsExactly("ldap://localhost:123");
@@ -67,7 +72,8 @@ public class LdapAutoConfigurationTests {
 				.withPropertyValues(
 						"spring.ldap.urls:ldap://localhost:123,ldap://mycompany:123")
 				.run((context) -> {
-					ContextSource contextSource = context.getBean(ContextSource.class);
+					ContextSource contextSource = context
+							.getBean(LdapContextSource.class);
 					LdapProperties ldapProperties = context.getBean(LdapProperties.class);
 					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
 							"urls");
@@ -102,6 +108,34 @@ public class LdapAutoConfigurationTests {
 	public void templateExists() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
 				.run(context -> assertThat(context).hasSingleBean(LdapTemplate.class));
+	}
+
+	@Test
+	public void contextSourceWithUserProvidedPooledContextSource() {
+		this.contextRunner.withUserConfiguration(PooledContextSourceConfig.class)
+				.run((context) -> {
+					LdapContextSource contextSource = context
+							.getBean(LdapContextSource.class);
+					String[] urls = (String[]) ReflectionTestUtils.getField(contextSource,
+							"urls");
+					assertThat(urls).containsExactly("ldap://localhost:389");
+					assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+					context.getBean(PooledContextSource.class);
+				});
+	}
+
+	@Configuration
+	static class PooledContextSourceConfig {
+
+		@Bean
+		public PooledContextSource pooledContextSource(
+				LdapContextSource ldapContextSource) {
+			PooledContextSource pooledContextSource = new PooledContextSource(
+					new PoolConfig());
+			pooledContextSource.setContextSource(ldapContextSource);
+			return pooledContextSource;
+		}
+
 	}
 
 }
