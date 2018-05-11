@@ -20,7 +20,7 @@ content into your application. Rather, pick only the properties that you need.
 	# COMMON SPRING BOOT PROPERTIES
 	#
 	# This sample file is provided as a guideline. Do NOT copy it in its
-	# entirety to your own application.			   ^^^
+	# entirety to your own application.               ^^^
 	# ===================================================================
 
 
@@ -1106,7 +1106,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.simple.retry.enabled=false # Whether publishing retries are enabled.
 	spring.rabbitmq.listener.simple.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.simple.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
-	spring.rabbitmq.listener.simple.retry.max-interval=10000ms #  Maximum duration between attempts.
+	spring.rabbitmq.listener.simple.retry.max-interval=10000ms # Maximum duration between attempts.
 	spring.rabbitmq.listener.simple.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.listener.simple.retry.stateless=true # Whether retries are stateless or stateful.
 	spring.rabbitmq.listener.simple.transaction-size= # Number of messages to be processed in a transaction. That is, the number of messages between acks. For best results, it should be less than or equal to the prefetch count.

@@ -51,14 +51,14 @@ public class AutoConfigurationImportSelectorIntegrationTests {
 	}
 
 	@Test
-	public void multipleSelectorShouldMergeAndSortCorrectly() {
+	public void multipleSelectorsShouldMergeAndSortCorrectly() {
 		this.contextRunner.withUserConfiguration(Config.class, AnotherConfig.class)
 				.run((context) -> assertThat(getImportedConfigBeans(context))
 						.containsExactly("ConfigA", "ConfigB", "ConfigC", "ConfigD"));
 	}
 
 	@Test
-	public void multipleSelectorWithRedundantImportsShouldMergeAndSortCorrectly() {
+	public void multipleSelectorsWithRedundantImportsShouldMergeAndSortCorrectly() {
 		this.contextRunner
 				.withUserConfiguration(SingleConfig.class, Config.class,
 						AnotherConfig.class)

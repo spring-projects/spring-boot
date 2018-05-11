@@ -94,7 +94,7 @@ public class DelimitedStringToArrayConverterTests {
 	}
 
 	@Test
-	public void convertWhenHasDelimiterOfNoneShouldReturnTrimmedStringElement() {
+	public void convertWhenHasDelimiterOfNoneShouldReturnWholeString() {
 		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
 		TypeDescriptor targetType = TypeDescriptor
 				.nested(ReflectionUtils.findField(Values.class, "delimiterNone"), 0);

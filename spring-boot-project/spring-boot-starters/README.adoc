@@ -136,7 +136,7 @@ do as they were designed before this was clarified.
 | https://www.mulesoft.com/platform/soa/mule-esb-open-source-esb[Mule ESB]
 | https://github.com/denschu/mule-spring-boot-starter
 
-| http://mybatis.org/mybatis-3/[Mybatis]
+| http://mybatis.org/mybatis-3/[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
 | https://github.com/facebook/nifty[Nifty] (Thrift on Netty)
