@@ -36,7 +36,7 @@ public class ZipHeaderPeekInputStreamTests {
 	public void hasZipHeaderReturnsTrueWhenStreamStartsWithZipHeader()
 			throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
-				new ByteArrayInputStream(new byte[] { 0x50, 0x4b, 0x03, 0x04, 5, 6 }));) {
+				new ByteArrayInputStream(new byte[] { 0x50, 0x4b, 0x03, 0x04, 5, 6 }))) {
 			assertThat(in.hasZipHeader()).isTrue();
 		}
 	}
