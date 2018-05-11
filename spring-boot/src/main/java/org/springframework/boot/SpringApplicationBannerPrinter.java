@@ -56,7 +56,7 @@ class SpringApplicationBannerPrinter {
 	}
 
 	public Banner print(Environment environment, Class<?> sourceClass, Log logger) {
-		Banner banner = getBanner(environment, this.fallbackBanner);
+		Banner banner = getBanner(environment);
 		try {
 			logger.info(createStringFromBanner(banner, environment, sourceClass));
 		}
@@ -67,12 +67,12 @@ class SpringApplicationBannerPrinter {
 	}
 
 	public Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
-		Banner banner = getBanner(environment, this.fallbackBanner);
+		Banner banner = getBanner(environment);
 		banner.printBanner(environment, sourceClass, out);
 		return new PrintedBanner(banner, sourceClass);
 	}
 
-	private Banner getBanner(Environment environment, Banner definedBanner) {
+	private Banner getBanner(Environment environment) {
 		Banners banners = new Banners();
 		banners.addIfNotNull(getImageBanner(environment));
 		banners.addIfNotNull(getTextBanner(environment));

@@ -41,7 +41,7 @@ public class RelaxedConversionServiceTests {
 			Locale.setDefault(new Locale("tr"));
 			TestEnum result = this.conversionService
 					.convert("accept-case-insensitive-properties", TestEnum.class);
-			assertThat(result.equals(TestEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES));
+			assertThat(result).isEqualTo(TestEnum.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
 		}
 		finally {
 			Locale.setDefault(defaultLocale);

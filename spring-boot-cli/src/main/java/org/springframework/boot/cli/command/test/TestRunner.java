@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,8 @@ public class TestRunner {
 	 * Create a new {@link TestRunner} instance.
 	 * @param configuration the configuration
 	 * @param sources the sources
-	 * @param args the args
 	 */
-	TestRunner(TestRunnerConfiguration configuration, String[] sources, String[] args) {
+	TestRunner(TestRunnerConfiguration configuration, String[] sources) {
 		this.sources = sources.clone();
 		this.compiler = new GroovyCompiler(configuration);
 	}
@@ -97,12 +96,11 @@ public class TestRunner {
 			if (sources.length != 0 && sources[0] instanceof Class) {
 				setContextClassLoader(((Class<?>) sources[0]).getClassLoader());
 			}
-			this.spockSpecificationClass = loadSpockSpecificationClass(
-					getContextClassLoader());
+			this.spockSpecificationClass = loadSpockSpecificationClass();
 			this.testClasses = getTestClasses(sources);
 		}
 
-		private Class<?> loadSpockSpecificationClass(ClassLoader contextClassLoader) {
+		private Class<?> loadSpockSpecificationClass() {
 			try {
 				return getContextClassLoader().loadClass("spock.lang.Specification");
 			}

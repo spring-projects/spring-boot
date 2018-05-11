@@ -115,7 +115,7 @@ public class ConfigurationPropertiesReportEndpoint
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
 			Map<String, Object> root = new HashMap<String, Object>();
-			String prefix = extractPrefix(context, beanFactoryMetaData, beanName, bean);
+			String prefix = extractPrefix(context, beanFactoryMetaData, beanName);
 			root.put("prefix", prefix);
 			root.put("properties", sanitize(prefix, safeSerialize(mapper, bean, prefix)));
 			result.put(beanName, root);
@@ -204,12 +204,10 @@ public class ConfigurationPropertiesReportEndpoint
 	 * @param context the application context
 	 * @param beanFactoryMetaData the bean factory meta-data
 	 * @param beanName the bean name
-	 * @param bean the bean
 	 * @return the prefix
 	 */
 	private String extractPrefix(ApplicationContext context,
-			ConfigurationBeanFactoryMetaData beanFactoryMetaData, String beanName,
-			Object bean) {
+			ConfigurationBeanFactoryMetaData beanFactoryMetaData, String beanName) {
 		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
 				ConfigurationProperties.class);
 		if (beanFactoryMetaData != null) {
