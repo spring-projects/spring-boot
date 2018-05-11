@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package org.springframework.boot.liquibase;
 
 import liquibase.logging.LogLevel;
+import liquibase.logging.LogType;
 import liquibase.logging.Logger;
 import liquibase.logging.core.AbstractLogger;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Liquibase {@link Logger} that delegates to an Apache Commons {@link Log}.
@@ -32,107 +32,109 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CommonsLoggingLiquibaseLogger extends AbstractLogger {
 
-	/**
-	 * The priority for the {@link CommonsLoggingLiquibaseLogger}.
-	 */
-	public static final int PRIORITY = 10;
-
 	private Log logger;
 
-	@Override
-	public void setName(String name) {
-		this.logger = createLogger(name);
-	}
-
-	/**
-	 * Factory method used to create the logger.
-	 * @param name the name of the logger
-	 * @return a {@link Log} instance
-	 */
-	protected Log createLogger(String name) {
-		return LogFactory.getLog(name);
-	}
-
-	@Override
-	public void setLogLevel(String logLevel, String logFile) {
-		super.setLogLevel(logLevel);
+	public CommonsLoggingLiquibaseLogger(Log logger) {
+		this.logger = logger;
 	}
 
 	@Override
 	public void severe(String message) {
 		if (isEnabled(LogLevel.SEVERE)) {
-			this.logger.error(buildMessage(message));
+			this.logger.error(message);
+		}
+	}
+
+	@Override
+	public void severe(LogType logType, String message) {
+		if (isEnabled(LogLevel.SEVERE)) {
+			this.logger.error(message);
+		}
+	}
+
+	@Override
+	public void severe(LogType logType, String message, Throwable e) {
+		if (isEnabled(LogLevel.SEVERE)) {
+			this.logger.error((message), e);
 		}
 	}
 
 	@Override
 	public void severe(String message, Throwable e) {
 		if (isEnabled(LogLevel.SEVERE)) {
-			this.logger.error(buildMessage(message), e);
+			this.logger.error((message), e);
 		}
 	}
 
 	@Override
 	public void warning(String message) {
 		if (isEnabled(LogLevel.WARNING)) {
-			this.logger.warn(buildMessage(message));
+			this.logger.warn(message);
 		}
 	}
 
 	@Override
 	public void warning(String message, Throwable e) {
 		if (isEnabled(LogLevel.WARNING)) {
-			this.logger.warn(buildMessage(message), e);
+			this.logger.warn(message, e);
 		}
 	}
 
 	@Override
-	public void info(String message) {
+	public void warning(LogType logType, String message) {
+		if (isEnabled(LogLevel.WARNING)) {
+			this.logger.warn(message);
+		}
+	}
+
+	@Override
+	public void warning(LogType logType, String message, Throwable e) {
+		if (isEnabled(LogLevel.WARNING)) {
+			this.logger.warn(message, e);
+		}
+	}
+
+	@Override
+	public void info(LogType logType, String message) {
 		if (isEnabled(LogLevel.INFO)) {
-			this.logger.info(buildMessage(message));
+			this.logger.info(message);
 		}
 	}
 
 	@Override
-	public void info(String message, Throwable e) {
+	public void info(LogType logType, String message, Throwable e) {
 		if (isEnabled(LogLevel.INFO)) {
-			this.logger.info(buildMessage(message), e);
+			this.logger.info(message, e);
 		}
 	}
 
 	@Override
-	public void debug(String message) {
+	public void debug(LogType logType, String message) {
 		if (isEnabled(LogLevel.DEBUG)) {
-			this.logger.debug(buildMessage(message));
+			this.logger.debug(message);
 		}
 	}
 
 	@Override
-	public void debug(String message, Throwable e) {
+	public void debug(LogType logType, String message, Throwable e) {
 		if (isEnabled(LogLevel.DEBUG)) {
-			this.logger.debug(buildMessage(message), e);
+			this.logger.debug(message, e);
 		}
-	}
-
-	@Override
-	public int getPriority() {
-		return PRIORITY;
 	}
 
 	private boolean isEnabled(LogLevel level) {
 		if (this.logger != null) {
 			switch (level) {
-			case DEBUG:
-				return this.logger.isDebugEnabled();
-			case INFO:
-				return this.logger.isInfoEnabled();
-			case WARNING:
-				return this.logger.isWarnEnabled();
-			case SEVERE:
-				return this.logger.isErrorEnabled();
+				case DEBUG:
+					return this.logger.isDebugEnabled();
+				case INFO:
+					return this.logger.isInfoEnabled();
+				case WARNING:
+					return this.logger.isWarnEnabled();
+				case SEVERE:
+					return this.logger.isErrorEnabled();
 			}
 		}
 		return false;
 	}
-
 }
