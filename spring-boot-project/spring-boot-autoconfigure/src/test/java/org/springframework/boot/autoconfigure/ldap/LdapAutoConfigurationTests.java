@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 public class LdapAutoConfigurationTests {
 
@@ -94,6 +96,12 @@ public class LdapAutoConfigurationTests {
 					assertThat(ldapProperties.getBaseEnvironment()).containsEntry(
 							"java.naming.security.authentication", "DIGEST-MD5");
 				});
+	}
+
+	@Test
+	public void templateExists() {
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
+				.run(context -> assertThat(context).hasSingleBean(LdapTemplate.class));
 	}
 
 }
