@@ -203,7 +203,7 @@ public class BindFailureAnalyzerTests {
 
 	enum Fruit {
 
-		APPLE, BANANA, ORANGE;
+		APPLE, BANANA, ORANGE
 
 	}
 
