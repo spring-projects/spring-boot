@@ -53,7 +53,7 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ContextSource ldapContextSource() {
+	public LdapContextSource ldapContextSource() {
 		LdapContextSource source = new LdapContextSource();
 		source.setUserDn(this.properties.getUsername());
 		source.setPassword(this.properties.getPassword());
