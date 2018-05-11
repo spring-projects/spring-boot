@@ -57,7 +57,7 @@ class SpringConfigurationPropertySources
 
 	private ConfigurationPropertySource adapt(PropertySource<?> source) {
 		ConfigurationPropertySource result = this.cache.get(source);
-		// Most PropertySource test quality only using the source name, we need to
+		// Most PropertySources test equality only using the source name, so we need to
 		// check the actual source hasn't also changed.
 		if (result != null && result.getUnderlyingSource() == source) {
 			return result;
@@ -70,7 +70,7 @@ class SpringConfigurationPropertySources
 	private static class SourcesIterator
 			implements Iterator<ConfigurationPropertySource> {
 
-		private Deque<Iterator<PropertySource<?>>> iterators;
+		private final Deque<Iterator<PropertySource<?>>> iterators;
 
 		private ConfigurationPropertySource next;
 
@@ -91,10 +91,10 @@ class SpringConfigurationPropertySources
 		@Override
 		public ConfigurationPropertySource next() {
 			ConfigurationPropertySource next = fetchNext();
-			this.next = null;
 			if (next == null) {
 				throw new NoSuchElementException();
 			}
+			this.next = null;
 			return next;
 		}
 
