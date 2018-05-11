@@ -101,8 +101,7 @@ public class LdapAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
-				.run(context -> assertThat(
-						context.getBeanNamesForType(LdapTemplate.class)).hasSize(1));
+				.run(context -> assertThat(context).hasSingleBean(LdapTemplate.class));
 	}
 
 }
