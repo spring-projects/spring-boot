@@ -256,17 +256,19 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @see #enableForkByDefault()
 	 */
 	protected void logDisabledFork() {
-		if (hasAgent()) {
-			getLog().warn("Fork mode disabled, ignoring agent");
-		}
-		if (hasJvmArgs()) {
-			RunArguments runArguments = resolveJvmArguments();
-			getLog().warn("Fork mode disabled, ignoring JVM argument(s) [" + Arrays
-					.stream(runArguments.asArray()).collect(Collectors.joining(" "))
-					+ "]");
-		}
-		if (hasWorkingDirectorySet()) {
-			getLog().warn("Fork mode disabled, ignoring working directory configuration");
+		if (getLog().isWarnEnabled()) {
+			if (hasAgent()) {
+				getLog().warn("Fork mode disabled, ignoring agent");
+			}
+			if (hasJvmArgs()) {
+				RunArguments runArguments = resolveJvmArguments();
+				getLog().warn("Fork mode disabled, ignoring JVM argument(s) [" + Arrays
+						.stream(runArguments.asArray()).collect(Collectors.joining(" "))
+						+ "]");
+			}
+			if (hasWorkingDirectorySet()) {
+				getLog().warn("Fork mode disabled, ignoring working directory configuration");
+			}
 		}
 	}
 
@@ -338,7 +340,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return a {@link RunArguments} defining the JVM arguments
 	 */
 	protected RunArguments resolveJvmArguments() {
-		final StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder();
 		if (this.systemPropertyVariables != null) {
 			stringBuilder.append(this.systemPropertyVariables.entrySet().stream()
 					.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
@@ -358,7 +360,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void addAgents(List<String> args) {
 		if (this.agent != null) {
-			getLog().info("Attaching agents: " + Arrays.asList(this.agent));
+			if (getLog().isInfoEnabled()) {
+				getLog().info("Attaching agents: " + Arrays.asList(this.agent));
+			}
 			for (File agent : this.agent) {
 				args.add("-javaagent:" + agent);
 			}
@@ -390,7 +394,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 						.append((classpath.length() > 0 ? File.pathSeparator : "")
 								+ new File(ele.toURI()));
 			}
-			getLog().debug("Classpath for forked process: " + classpath);
+			if (getLog().isDebugEnabled()) {
+				getLog().debug("Classpath for forked process: " + classpath);
+			}
 			args.add("-cp");
 			args.add(classpath.toString());
 		}
@@ -468,11 +474,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void logArguments(String message, String[] args) {
-		StringBuilder sb = new StringBuilder(message);
-		for (String arg : args) {
-			sb.append(arg).append(" ");
+		if (getLog().isDebugEnabled()) {
+			getLog().debug(Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
 		}
-		getLog().debug(sb.toString().trim());
 	}
 
 	private static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
@@ -569,11 +573,11 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	static class SystemPropertyFormatter {
 
-		public static String format(Object key, Object value) {
+		public static String format(String key, String value) {
 			if (key == null) {
 				return "";
 			}
-			if (value == null || String.valueOf(value).isEmpty()) {
+			if (value == null || value.isEmpty()) {
 				return String.format("-D%s", key);
 			}
 			return String.format("-D%s=\"%s\"", key, value);

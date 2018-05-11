@@ -49,7 +49,7 @@ public class SystemPropertyFormatterTests {
 	}
 
 	@Test
-	public void parseKeyWithOnlySpace() {
+	public void parseKeyWithOnlySpaces() {
 		assertThat(SystemPropertyFormatter.format("key1", "   "))
 				.isEqualTo("-Dkey1=\"   \"");
 	}
