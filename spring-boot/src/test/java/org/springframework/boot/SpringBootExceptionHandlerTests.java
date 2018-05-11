@@ -16,17 +16,13 @@
 
 package org.springframework.boot;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
-
-import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -34,48 +30,42 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Tests for {@link SpringBootExceptionHandler}.
  *
  * @author Henri Tremblay
+ * @author Andy Wilkinson
  */
-public class SpringBootExceptionHandlerTest {
+public class SpringBootExceptionHandlerTests {
 
-	@Rule
-	public MockitoRule rule = MockitoJUnit.rule();
+	private final UncaughtExceptionHandler parent = mock(UncaughtExceptionHandler.class);
 
-	@Mock
-	private Thread.UncaughtExceptionHandler parent;
-
-	@InjectMocks
-	private SpringBootExceptionHandler handler;
+	private final SpringBootExceptionHandler handler = new SpringBootExceptionHandler(
+			this.parent);
 
 	@Test
-	public void uncaughtException_shouldNotForwardLoggedErrorToParent() {
+	public void uncaughtExceptionDoesNotForwardLoggedErrorToParent() {
 		Thread thread = Thread.currentThread();
 		Exception ex = new Exception();
 		this.handler.registerLoggedException(ex);
-
 		this.handler.uncaughtException(thread, ex);
-
 		verifyZeroInteractions(this.parent);
 	}
 
 	@Test
-	public void uncaughtException_shouldForwardLogConfigurationErrorToParent() {
+	public void uncaughtExceptionForwardsLogConfigurationErrorToParent() {
 		Thread thread = Thread.currentThread();
-		Exception ex = new Exception("[stuff] Logback configuration error detected [stuff]");
+		Exception ex = new Exception(
+				"[stuff] Logback configuration error detected [stuff]");
 		this.handler.registerLoggedException(ex);
-
 		this.handler.uncaughtException(thread, ex);
-
 		verify(this.parent).uncaughtException(same(thread), same(ex));
 	}
 
 	@Test
-	public void uncaughtException_shouldForwardLogConfigurationErrorToParentEvenWhenWrapped() {
+	public void uncaughtExceptionForwardsWrappedLogConfigurationErrorToParent() {
 		Thread thread = Thread.currentThread();
-		Exception ex = new InvocationTargetException(new Exception("[stuff] Logback configuration error detected [stuff]", new Exception()));
+		Exception ex = new InvocationTargetException(new Exception(
+				"[stuff] Logback configuration error detected [stuff]", new Exception()));
 		this.handler.registerLoggedException(ex);
-
 		this.handler.uncaughtException(thread, ex);
-
 		verify(this.parent).uncaughtException(same(thread), same(ex));
 	}
+
 }
