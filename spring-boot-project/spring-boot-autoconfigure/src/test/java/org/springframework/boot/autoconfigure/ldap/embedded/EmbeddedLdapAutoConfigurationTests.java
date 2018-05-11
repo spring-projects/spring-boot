@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.ldap.LdapDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -129,8 +128,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 	public void testQueryEmbeddedLdap() {
 		this.contextRunner
 				.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
-				.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class,
-						LdapDataAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context.getBeanNamesForType(LdapTemplate.class).length)
 							.isEqualTo(1);

@@ -42,6 +42,6 @@ public enum RepositoryType {
 	/**
 	 * Enables reactive repositories.
 	 */
-	REACTIVE;
+	REACTIVE
 
 }

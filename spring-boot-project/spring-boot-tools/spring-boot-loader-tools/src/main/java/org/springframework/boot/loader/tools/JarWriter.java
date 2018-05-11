@@ -339,26 +339,34 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	/**
 	 * {@link InputStream} that can peek ahead at zip header bytes.
 	 */
-	private static class ZipHeaderPeekInputStream extends FilterInputStream {
+	static class ZipHeaderPeekInputStream extends FilterInputStream {
 
 		private static final byte[] ZIP_HEADER = new byte[] { 0x50, 0x4b, 0x03, 0x04 };
 
 		private final byte[] header;
+
+		private final int headerLength;
+
+		private int position;
 
 		private ByteArrayInputStream headerStream;
 
 		protected ZipHeaderPeekInputStream(InputStream in) throws IOException {
 			super(in);
 			this.header = new byte[4];
-			int len = in.read(this.header);
-			this.headerStream = new ByteArrayInputStream(this.header, 0, len);
+			this.headerLength = in.read(this.header);
+			this.headerStream = new ByteArrayInputStream(this.header, 0,
+					this.headerLength);
 		}
 
 		@Override
 		public int read() throws IOException {
 			int read = (this.headerStream != null ? this.headerStream.read() : -1);
 			if (read != -1) {
-				this.headerStream = null;
+				this.position++;
+				if (this.position >= this.headerLength) {
+					this.headerStream = null;
+				}
 				return read;
 			}
 			return super.read();
@@ -373,11 +381,20 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		public int read(byte[] b, int off, int len) throws IOException {
 			int read = (this.headerStream != null ? this.headerStream.read(b, off, len)
 					: -1);
-			if (read != -1) {
-				this.headerStream = null;
-				return read;
+			if (read > 0) {
+				this.position += read;
 			}
-			return super.read(b, off, len);
+			else {
+				read = 0;
+			}
+			if (read < len) {
+				read += super.read(b, off + read, len - read);
+				this.position += read;
+			}
+			if (this.position >= this.headerLength) {
+				this.headerStream = null;
+			}
+			return read;
 		}
 
 		public boolean hasZipHeader() {
