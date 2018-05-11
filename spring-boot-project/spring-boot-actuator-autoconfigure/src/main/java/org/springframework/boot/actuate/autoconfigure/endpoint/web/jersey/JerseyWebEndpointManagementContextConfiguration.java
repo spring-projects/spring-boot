@@ -49,13 +49,20 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Michael Simons
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(ResourceConfig.class)
-@ConditionalOnBean({ ResourceConfig.class, WebEndpointsSupplier.class })
+@ConditionalOnBean(WebEndpointsSupplier.class)
 @ConditionalOnMissingBean(type = "org.springframework.web.servlet.DispatcherServlet")
 class JerseyWebEndpointManagementContextConfiguration {
+
+	@ConditionalOnMissingBean(ResourceConfig.class)
+	@Bean
+	public ResourceConfig resourceConfig() {
+		return new ResourceConfig();
+	}
 
 	@Bean
 	public ResourceConfigCustomizer webEndpointRegistrar(
