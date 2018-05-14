@@ -240,17 +240,11 @@ public class JpaProperties {
 
 		private String determineDdlAuto(Map<String, String> existing,
 				Supplier<String> defaultDdlAuto) {
-			if (!existing.containsKey("hibernate.hbm2ddl.auto")) {
-				String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
-						: defaultDdlAuto.get());
-				if (!"none".equals(ddlAuto)) {
-					return ddlAuto;
-				}
+			String ddlAuto = existing.get("hibernate.hbm2ddl.auto");
+			if (ddlAuto != null) {
+				return ddlAuto;
 			}
-			if (existing.containsKey("hibernate.hbm2ddl.auto")) {
-				return existing.get("hibernate.hbm2ddl.auto");
-			}
-			return "none";
+			return this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto.get();
 		}
 
 	}
