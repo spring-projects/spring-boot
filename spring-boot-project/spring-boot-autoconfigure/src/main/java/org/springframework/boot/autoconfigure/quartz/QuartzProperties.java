@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,11 @@ public class QuartzProperties {
 		 */
 		private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
 
+		/**
+		 * Prefix for single-line comments in SQL initialization scripts.
+		 */
+		private String commentPrefix = "--";
+
 		public String getSchema() {
 			return this.schema;
 		}
@@ -89,6 +94,14 @@ public class QuartzProperties {
 
 		public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
+		}
+
+		public String getCommentPrefix() {
+			return this.commentPrefix;
+		}
+
+		public void setCommentPrefix(String commentPrefix) {
+			this.commentPrefix = commentPrefix;
 		}
 
 	}
