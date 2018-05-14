@@ -179,6 +179,18 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
+	public void overrideTestRollbackOnUpdate() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.liquibase.test-rollback-on-update:true")
+				.run((context) -> {
+					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+					assertThat(liquibase.isTestRollbackOnUpdate()).isTrue();
+				});
+	}
+
+
+	@Test
 	public void changeLogDoesNotExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues(
@@ -235,17 +247,6 @@ public class LiquibaseAutoConfigurationTests {
 					assertThat(actualFile).isEqualTo(file).exists();
 					String content = new String(FileCopyUtils.copyToByteArray(file));
 					assertThat(content).contains("DROP TABLE PUBLIC.customer;");
-				});
-	}
-
-	@Test
-	public void testRollbackOnUpdate() throws IOException {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues(
-						"spring.liquibase.test-rollback-on-update:true")
-				.run((context) -> {
-					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
-					assertThat(liquibase.isTestRollbackOnUpdate());
 				});
 	}
 

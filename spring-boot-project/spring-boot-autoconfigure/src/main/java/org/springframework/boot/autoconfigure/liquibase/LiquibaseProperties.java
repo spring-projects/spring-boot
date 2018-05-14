@@ -203,4 +203,5 @@ public class LiquibaseProperties {
 	public void setTestRollbackOnUpdate(boolean testRollbackOnUpdate) {
 		this.testRollbackOnUpdate = testRollbackOnUpdate;
 	}
+
 }
