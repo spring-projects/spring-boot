@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,6 +93,11 @@ public class LiquibaseProperties {
 	 * File to which rollback SQL is written when an update is performed.
 	 */
 	private File rollbackFile;
+
+	/**
+	 * Whether rollback should be tested before update is performed.
+	 */
+	private boolean testRollbackOnUpdate;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -189,6 +194,14 @@ public class LiquibaseProperties {
 
 	public void setRollbackFile(File rollbackFile) {
 		this.rollbackFile = rollbackFile;
+	}
+
+	public boolean isTestRollbackOnUpdate() {
+		return this.testRollbackOnUpdate;
+	}
+
+	public void setTestRollbackOnUpdate(boolean testRollbackOnUpdate) {
+		this.testRollbackOnUpdate = testRollbackOnUpdate;
 	}
 
 }

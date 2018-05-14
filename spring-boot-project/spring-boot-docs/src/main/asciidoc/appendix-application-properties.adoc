@@ -567,6 +567,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.liquibase.parameters.*= # Change log parameters.
 	spring.liquibase.password= # Login password of the database to migrate.
 	spring.liquibase.rollback-file= # File to which rollback SQL is written when an update is performed.
+	spring.liquibase.test-rollback-on-update=false # Whether rollback should be tested before update is performed.
 	spring.liquibase.url= # JDBC URL of the database to migrate. If not set, the primary configured data source is used.
 	spring.liquibase.user= # Login user of the database to migrate.
 
