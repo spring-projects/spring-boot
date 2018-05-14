@@ -68,6 +68,7 @@
 		<hazelcast.version>3.9.4</hazelcast.version>
 		<hazelcast-hibernate5.version>1.2.3</hazelcast-hibernate5.version>
 		<hibernate.version>5.2.17.Final</hibernate.version>
+		<hibernate-jpa-2.1-api.version>1.0.2.Final</hibernate-jpa-2.1-api.version>
 		<hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
 		<hikaricp.version>2.7.9</hikaricp.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
@@ -1929,6 +1930,11 @@
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-testing</artifactId>
 				<version>${hibernate.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate.javax.persistence</groupId>
+				<artifactId>hibernate-jpa-2.1-api</artifactId>
+				<version>${hibernate-jpa-2.1-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate.validator</groupId>
