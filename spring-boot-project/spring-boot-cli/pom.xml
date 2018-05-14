@@ -333,9 +333,9 @@
 										<expandproperties />
 									</filterchain>
 								</copy>
-								<attachartifact file="${project.build.directory}/homebrew/springboot.rb"
-									classifier="homebrew" type="rb" />
-							</target>
+									<attachartifact file="${project.build.directory}/homebrew/springboot.rb"
+										classifier="homebrew" type="rb" />
+									</target>
 						</configuration>
 					</execution>
 					<execution>
@@ -351,24 +351,24 @@
 								<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
 								<var name="scoop-version" value="${project.version}" />
 								<propertyregex property="scoop-version" override="true"
-											   input="${scoop-version}" regexp="(.*)\..*" replace="\1" />
+									input="${scoop-version}" regexp="(.*)\..*" replace="\1" />
 								<var name="version-type" value="${project.version}" />
 								<propertyregex property="version-type" override="true"
-											   input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+									input="${version-type}" regexp=".*\.(.*)" replace="\1" />
 								<propertyregex property="version-type" override="true"
-											   input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+									input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
 								<propertyregex property="version-type" override="true"
-											   input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+									input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
 								<propertyregex property="version-type" override="true"
-											   input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+									input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
 								<stringutil string="${version-type}" property="repo">
 									<lowercase />
 								</stringutil>
 								<checksum algorithm="sha-256"
-										  file="${project.build.directory}/spring-boot-cli-${project.version}-bin.zip"
-										  property="hash" />
+									file="${project.build.directory}/spring-boot-cli-${project.version}-bin.zip"
+									property="hash" />
 								<echo
-										message="Customizing scoop for ${project.version} with hash ${hash} in ${repo} repo" />
+									message="Customizing scoop for ${project.version} with hash ${hash} in ${repo} repo" />
 								<copy file="${basedir}/src/main/scoop/springboot.json"
 									  tofile="${project.build.directory}/scoop/springboot.json" overwrite="true">
 									<filterchain>
