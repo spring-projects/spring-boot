@@ -414,7 +414,7 @@ public class CollectionBinderTests {
 		this.sources.add(source);
 		Bindable<ClonedArrayBean> target = Bindable.of(ClonedArrayBean.class);
 		ClonedArrayBean bean = this.binder.bind("foo", target).get();
-		assertThat(bean.getBar()).contains("hello");
+		assertThat(bean.getBar()).containsExactly("hello");
 	}
 
 	public static class ExampleCollectionBean {

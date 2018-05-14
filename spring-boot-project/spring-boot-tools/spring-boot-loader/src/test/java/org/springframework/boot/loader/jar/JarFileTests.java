@@ -496,7 +496,7 @@ public class JarFileTests {
 					.openConnection().getInputStream().close();
 			this.thrown.expect(FileNotFoundException.class);
 			new URL(context, "jar:" + this.rootJarFile.toURI() + "!/no.dat")
-					.openConnection().getInputStream().close();
+					.openConnection().getInputStream();
 		}
 		finally {
 			JarURLConnection.setUseFastExceptions(false);
