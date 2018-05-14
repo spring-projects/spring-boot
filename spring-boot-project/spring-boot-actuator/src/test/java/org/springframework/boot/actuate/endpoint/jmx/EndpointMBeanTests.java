@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
@@ -32,6 +35,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -124,6 +128,18 @@ public class EndpointMBeanTests {
 		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
 		this.thrown.expectMessage("no operation named missingOperation");
 		bean.invoke("missingOperation", NO_PARAMS, NO_SIGNATURE);
+	}
+
+	@Test
+	public void invokeShouldInvokeJmxOperationWithBeanClassLoader()
+			throws ReflectionException, MBeanException {
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
+				new TestJmxOperation((arguments) -> ClassUtils.getDefaultClassLoader()));
+		URLClassLoader beanClassLoader = new URLClassLoader(new URL[]{}, getClass().getClassLoader());
+		EndpointMBean bean = new EndpointMBean(this.responseMapper, endpoint);
+		bean.setBeanClassLoader(beanClassLoader);
+		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+		assertThat(result).isEqualTo(beanClassLoader);
 	}
 
 	@Test
