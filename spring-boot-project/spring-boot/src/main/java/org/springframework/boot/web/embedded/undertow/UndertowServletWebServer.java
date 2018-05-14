@@ -304,6 +304,7 @@ public class UndertowServletWebServer implements WebServer {
 			this.started = false;
 			try {
 				this.manager.stop();
+				this.manager.undeploy();
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
