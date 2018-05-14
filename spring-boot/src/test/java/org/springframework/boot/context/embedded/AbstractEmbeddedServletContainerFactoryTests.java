@@ -55,6 +55,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -110,6 +112,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -1033,6 +1036,26 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		File codeSourceFile = this.temporaryFolder.newFile("test.war");
 		File documentRoot = factory.getExplodedWarFileDocumentRoot(codeSourceFile);
 		assertThat(documentRoot).isNull();
+	}
+
+	@Test
+	public void servletContextListenerContextDestroyedIsCalledWhenContainerIsStopped()
+			throws Exception {
+		final ServletContextListener listener = mock(ServletContextListener.class);
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletContextInitializer() {
+
+					@Override
+					public void onStartup(ServletContext servletContext)
+							throws ServletException {
+						servletContext.addListener(listener);
+					}
+
+				});
+		this.container.start();
+		this.container.stop();
+		verify(listener).contextDestroyed(any(ServletContextEvent.class));
 	}
 
 	protected abstract void addConnector(int port,

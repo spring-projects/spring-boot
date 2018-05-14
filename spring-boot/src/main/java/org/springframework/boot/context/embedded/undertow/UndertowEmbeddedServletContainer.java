@@ -333,6 +333,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			this.started = false;
 			try {
 				this.manager.stop();
+				this.manager.undeploy();
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
