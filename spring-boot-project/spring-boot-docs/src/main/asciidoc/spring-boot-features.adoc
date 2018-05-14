@@ -7667,7 +7667,9 @@ such as Spring Framework, Spring Data, and Reactor. See the
 {spring-reference}languages.html#kotlin[Spring Framework Kotlin support documentation]
 for more information.
 
-The easiest way to start with Spring Boot and Kotlin is to create a project via
+The easiest way to start with Spring Boot and Kotlin is to follow
+https://spring.io/guides/tutorials/spring-boot-kotlin/[this comprehensive tutorial]. You
+can create new Kotlin projects via
 https://start.spring.io/#!language=kotlin[start.spring.io]. Feel free to join the #spring
 channel of http://slack.kotlinlang.org/[Kotlin Slack] or ask a question with `spring`
 and `kotlin` tags on https://stackoverflow.com/questions/tagged/spring+kotlin[Stack
@@ -7861,6 +7863,7 @@ instance lifecycle to "per-class"].
 * https://try.kotlinlang.org/[Try Kotlin in your browser]
 * https://blog.jetbrains.com/kotlin/[Kotlin blog]
 * https://kotlin.link/[Awesome Kotlin]
+* https://spring.io/guides/tutorials/spring-boot-kotlin/[Tutorial: building web applications with Spring Boot and Kotlin ]
 * https://spring.io/blog/2016/02/15/developing-spring-boot-applications-with-kotlin[Developing Spring Boot applications with Kotlin]
 * https://spring.io/blog/2016/03/20/a-geospatial-messenger-with-kotlin-spring-boot-and-postgresql[A Geospatial Messenger with Kotlin, Spring Boot and PostgreSQL]
 * https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0[Introducing Kotlin support in Spring Framework 5.0]
