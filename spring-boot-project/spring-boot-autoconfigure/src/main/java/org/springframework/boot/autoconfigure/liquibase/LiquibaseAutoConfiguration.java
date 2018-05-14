@@ -129,6 +129,7 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setLabels(this.properties.getLabels());
 			liquibase.setChangeLogParameters(this.properties.getParameters());
 			liquibase.setRollbackFile(this.properties.getRollbackFile());
+			liquibase.setTestRollbackOnUpdate(this.properties.isTestRollbackOnUpdate());
 			return liquibase;
 		}
 

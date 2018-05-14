@@ -239,6 +239,17 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRollbackOnUpdate() throws IOException {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.liquibase.test-rollback-on-update:true")
+				.run((context) -> {
+					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+					assertThat(liquibase.isTestRollbackOnUpdate());
+				});
+	}
+
+	@Test
 	public void liquibaseDataSource() {
 		this.contextRunner.withUserConfiguration(LiquibaseDataSourceConfiguration.class,
 				EmbeddedDataSourceConfiguration.class).run((context) -> {
