@@ -43,7 +43,8 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class JmxEndpointExporter implements InitializingBean, DisposableBean, BeanClassLoaderAware {
+public class JmxEndpointExporter
+		implements InitializingBean, DisposableBean, BeanClassLoaderAware {
 
 	private static final Log logger = LogFactory.getLog(JmxEndpointExporter.class);
 
@@ -96,8 +97,8 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		try {
 			ObjectName name = this.objectNameFactory.getObjectName(endpoint);
-			EndpointMBean mbean = new EndpointMBean(this.responseMapper, endpoint);
-			mbean.setBeanClassLoader(this.classLoader);
+			EndpointMBean mbean = new EndpointMBean(this.responseMapper, this.classLoader,
+					endpoint);
 			this.mBeanServer.registerMBean(mbean, name);
 			return name;
 		}
