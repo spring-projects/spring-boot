@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 
+import org.springframework.boot.junit.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.junit.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -67,6 +70,8 @@ import static org.mockito.Mockito.verify;
  * @author Ben Hale
  * @author Madhura Bhave
  */
+@RunWith(ModifiedClassPathRunner.class)
+@ClassPathExclusions("log4j-*.jar")
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
@@ -132,13 +137,15 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	public void testNonDefaultConfigLocation() throws Exception {
+	public void testNonDefaultConfigLocation() {
+		int existingOutputLength = this.output.toString().length();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:logback-nondefault.xml",
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
+		assertThat(output.substring(existingOutputLength)).doesNotContain("DEBUG");
 		assertThat(output).contains("Hello world").contains(tmpDir() + "/tmp.log");
 		assertThat(output).endsWith("BOOTBOOT");
 		assertThat(new File(tmpDir() + "/tmp.log").exists()).isFalse();
