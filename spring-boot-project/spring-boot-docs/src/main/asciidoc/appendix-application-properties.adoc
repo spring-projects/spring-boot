@@ -140,6 +140,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.profiles.include= # Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML).
 
 	# QUARTZ SCHEDULER ({sc-spring-boot-autoconfigure}/quartz/QuartzProperties.{sc-ext}[QuartzProperties])
+	spring.quartz.jdbc.comment-prefix=-- # Prefix for single-line comments in SQL initialization scripts.
 	spring.quartz.jdbc.initialize-schema=embedded # Database schema initialization mode.
 	spring.quartz.jdbc.schema=classpath:org/quartz/impl/jdbcjobstore/tables_@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.quartz.job-store-type=memory # Quartz job store type.
