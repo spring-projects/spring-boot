@@ -42,10 +42,9 @@ categorized under "hints", as shown in the following example:
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
 		},
 		{
-			"name": "server.servlet.path",
-			"type": "java.lang.String",
-			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
-			"defaultValue": "/"
+			"name": "server.address",
+			"type": "java.net.InetAddress",
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
 		},
 		{
 			  "name": "spring.jpa.hibernate.ddl-auto",
@@ -84,18 +83,18 @@ categorized under "hints", as shown in the following example:
 ----
 
 Each "`property`" is a configuration item that the user specifies with a given value.
-For example, `server.port` and `server.servlet.path` might be specified in
+For example, `server.port` and `server.address` might be specified in
 `application.properties`, as follows:
 
 [source,properties,indent=0]
 ----
 	server.port=9090
-	server.servlet.path=/home
+	server.address=127.0.0.1
 ----
 
 The "`groups`" are higher level items that do not themselves specify a value but instead
 provide a contextual grouping for properties. For example, the `server.port` and
-`server.servlet.path` properties are part of the `server` group.
+`server.address` properties are part of the `server` group.
 
 NOTE: It is not required that every "`property`" has a "`group`". Some properties might
 exist in their own right.
@@ -163,7 +162,7 @@ in the following table:
 |`name`
 | String
 | The full name of the property. Names are in lower-case period-separated form (for
-  example, `server.servlet.path`). This attribute is mandatory.
+  example, `server.address`). This attribute is mandatory.
 
 |`type`
 | String
@@ -287,7 +286,7 @@ following table:
 |`name`
 | String
 | The full name of the property to which this hint refers. Names are in lower-case
-  period-separated form (such as `server.servlet.path`). If the property refers to a map
+  period-separated form (such as `spring.mvc.servlet.path`). If the property refers to a map
   (such as `system.contexts`), the hint either applies to the _keys_ of the map
   (`system.context.keys`) or the _values_ (`system.context.values`) of the map. This
   attribute is mandatory.

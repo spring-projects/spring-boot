@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -96,14 +96,14 @@ public final class StaticResourceRequest {
 	 * Locations}.
 	 */
 	public static final class StaticResourceRequestMatcher
-			extends ApplicationContextRequestMatcher<ServerProperties> {
+			extends ApplicationContextRequestMatcher<WebMvcProperties> {
 
 		private final Set<StaticResourceLocation> locations;
 
 		private volatile RequestMatcher delegate;
 
 		private StaticResourceRequestMatcher(Set<StaticResourceLocation> locations) {
-			super(ServerProperties.class);
+			super(WebMvcProperties.class);
 			this.locations = locations;
 		}
 
@@ -134,25 +134,25 @@ public final class StaticResourceRequest {
 		}
 
 		@Override
-		protected void initialized(Supplier<ServerProperties> serverProperties) {
+		protected void initialized(Supplier<WebMvcProperties> serverProperties) {
 			this.delegate = new OrRequestMatcher(
 					getDelegateMatchers(serverProperties.get()));
 		}
 
 		private List<RequestMatcher> getDelegateMatchers(
-				ServerProperties serverProperties) {
+				WebMvcProperties serverProperties) {
 			return getPatterns(serverProperties).map(AntPathRequestMatcher::new)
 					.collect(Collectors.toList());
 		}
 
-		private Stream<String> getPatterns(ServerProperties serverProperties) {
+		private Stream<String> getPatterns(WebMvcProperties serverProperties) {
 			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns)
 					.map(serverProperties.getServlet()::getPath);
 		}
 
 		@Override
 		protected boolean matches(HttpServletRequest request,
-				Supplier<ServerProperties> context) {
+				Supplier<WebMvcProperties> context) {
 			return this.delegate.matches(request);
 		}
 

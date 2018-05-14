@@ -196,7 +196,6 @@ content into your application. Rather, pick only the properties that you need.
 	server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
 	server.servlet.jsp.init-parameters.*= # Init parameters used to configure the JSP servlet.
 	server.servlet.jsp.registered=true # Whether the JSP servlet is registered.
-	server.servlet.path=/ # Path of the main dispatcher servlet.
 	server.servlet.session.cookie.comment= # Comment for the session cookie.
 	server.servlet.session.cookie.domain= # Domain for the session cookie.
 	server.servlet.session.cookie.http-only= # "HttpOnly" flag for the session cookie.
@@ -414,6 +413,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.mvc.pathmatch.use-registered-suffix-pattern=false # Whether suffix pattern matching should work only against extensions registered with "spring.mvc.contentnegotiation.media-types.*".
 	spring.mvc.pathmatch.use-suffix-pattern=false # Whether to use suffix pattern match (".*") when matching patterns to requests.
 	spring.mvc.servlet.load-on-startup=-1 # Load on startup priority of the dispatcher servlet.
+	spring.mvc.servlet.path=/ # Path of the dispatcher servlet.
 	spring.mvc.static-path-pattern=/** # Path pattern used for static resources.
 	spring.mvc.throw-exception-if-no-handler-found=false # Whether a "NoHandlerFoundException" should be thrown if no Handler was found to process a request.
 	spring.mvc.view.prefix= # Spring MVC view prefix.
