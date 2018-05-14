@@ -1846,6 +1846,21 @@ all meter IDs beginning with `com.example`, you can do the following:
 include::{code-examples}/actuate/metrics/MetricsFilterBeanExample.java[tag=configuration]
 ----
 
+[[production-ready-metrics-common-tags]]
+==== Common tags
+Common tag are generally used for dimensional drill-down on the operating environment like
+host, instance, region, stack, etc. Commons tags applied to all meters and can be
+configured as shown in the following example:
+
+[source,properties,indent=0]
+----
+	management.metrics.tags.region=us-east-1
+	management.metrics.tags.stack=prod
+----
+
+The example above adds a `region` and `stack` tags to all meters with a value of
+`us-east-1` and `prod` respectively.
+
 
 
 ==== Per-meter properties

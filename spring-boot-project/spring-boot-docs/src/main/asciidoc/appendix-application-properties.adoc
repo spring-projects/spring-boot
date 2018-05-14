@@ -1432,6 +1432,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.wavefront.step=10s # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.wavefront.uri=https://longboard.wavefront.com # URI to ship metrics to.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
+	management.metrics.tags.*= # Common tags that are applied to every meter.
 	management.metrics.web.client.max-uri-tags=100 # Maximum number of unique URI tag values allowed. After the max number of tag values is reached, metrics with additional tag values are denied by filter.
 	management.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
