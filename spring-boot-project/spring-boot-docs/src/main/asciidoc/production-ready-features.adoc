@@ -1861,6 +1861,10 @@ configured as shown in the following example:
 The example above adds a `region` and `stack` tags to all meters with a value of
 `us-east-1` and `prod` respectively.
 
+NOTE: The order of common tags is important if you are using Graphite. As the order of
+common tags cannot be guaranteed using this approach, Graphite users are advised to define
+a custom `MeterFilter` instead.
+
 
 
 ==== Per-meter properties
