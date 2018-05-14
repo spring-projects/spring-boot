@@ -2960,6 +2960,11 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.ws</groupId>
+				<artifactId>spring-xml</artifactId>
+				<version>${spring-ws.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.xerial</groupId>
 				<artifactId>sqlite-jdbc</artifactId>
 				<version>${sqlite-jdbc.version}</version>
