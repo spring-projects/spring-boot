@@ -62,12 +62,13 @@ public class RestClientAutoConfiguration {
 
 	@Bean(destroyMethod = "close")
 	@ConditionalOnMissingBean
-	public RestClient restClient() {
-		RestClientBuilder builder = configureBuilder();
+	public RestClient restClient(RestClientBuilder builder) {
 		return builder.build();
 	}
 
-	protected RestClientBuilder configureBuilder() {
+	@Bean
+	@ConditionalOnMissingBean
+	public RestClientBuilder restClientBuilder() {
 		HttpHost[] hosts = this.properties.getUris().stream().map(HttpHost::create)
 				.toArray(HttpHost[]::new);
 		RestClientBuilder builder = RestClient.builder(hosts);
@@ -90,8 +91,9 @@ public class RestClientAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RestHighLevelClient restHighLevelClient(RestClient restClient) {
-			return new RestHighLevelClient(restClient);
+		public RestHighLevelClient restHighLevelClient(
+				RestClientBuilder restClientBuilder) {
+			return new RestHighLevelClient(restClientBuilder);
 		}
 
 	}
