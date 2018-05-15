@@ -47,6 +47,10 @@ import org.springframework.boot.configurationsample.endpoint.incremental.Increme
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
+import org.springframework.boot.configurationsample.lombok.LombokAccessLevelOverwriteDataProperties;
+import org.springframework.boot.configurationsample.lombok.LombokAccessLevelOverwriteDefaultProperties;
+import org.springframework.boot.configurationsample.lombok.LombokAccessLevelOverwriteExplicitProperties;
+import org.springframework.boot.configurationsample.lombok.LombokAccessLevelProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassProperties;
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassWithGetterProperties;
@@ -96,6 +100,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Kris De Volder
+ * @author Jonas Keßler
  */
 public class ConfigurationMetadataAnnotationProcessorTests {
 
@@ -535,6 +540,40 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void lombokSimpleProperties() {
 		ConfigurationMetadata metadata = compile(LombokSimpleProperties.class);
 		assertSimpleLombokProperties(metadata, LombokSimpleProperties.class, "simple");
+	}
+
+	@Test
+	public void lombokAccessLevelOverwriteDataProperties() {
+		ConfigurationMetadata metadata = compile(
+				LombokAccessLevelOverwriteDataProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata,
+				LombokAccessLevelOverwriteDataProperties.class,
+				"accesslevel.overwrite.data");
+	}
+
+	@Test
+	public void lombokAccessLevelOverwriteExplicitProperties() {
+		ConfigurationMetadata metadata = compile(
+				LombokAccessLevelOverwriteExplicitProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata,
+				LombokAccessLevelOverwriteExplicitProperties.class,
+				"accesslevel.overwrite.explicit");
+	}
+
+	@Test
+	public void lombokAccessLevelOverwriteDefaultProperties() {
+		ConfigurationMetadata metadata = compile(
+				LombokAccessLevelOverwriteDefaultProperties.class);
+		assertAccessLevelOverwriteLombokProperties(metadata,
+				LombokAccessLevelOverwriteDefaultProperties.class,
+				"accesslevel.overwrite.default");
+	}
+
+	@Test
+	public void lombokAccessLevelProperties() {
+		ConfigurationMetadata metadata = compile(LombokAccessLevelProperties.class);
+		assertAccessLevelLombokProperties(metadata, LombokAccessLevelProperties.class,
+				"accesslevel", 2, 20);
 	}
 
 	@Test
@@ -998,6 +1037,26 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(source).withDefaultValue(0).withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".items"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".ignored"));
+	}
+
+	private void assertAccessLevelOverwriteLombokProperties(
+			ConfigurationMetadata metadata, Class<?> source, String prefix) {
+		assertAccessLevelLombokProperties(metadata, source, prefix, 7, 15);
+	}
+
+	private void assertAccessLevelLombokProperties(ConfigurationMetadata metadata,
+			Class<?> source, String prefix, int countNameFields, int countIgnoredFields) {
+		assertThat(metadata).has(Metadata.withGroup(prefix).fromSource(source));
+		assertThat(metadata.getItems()).hasSize(countNameFields + 1);
+		for (int i = 0; i < countNameFields; i++) {
+			assertThat(metadata)
+					.has(Metadata.withProperty(prefix + ".name" + i, String.class));
+		}
+
+		for (int i = 0; i < countIgnoredFields; i++) {
+			assertThat(metadata)
+					.doesNotHave(Metadata.withProperty(prefix + ".ignored" + i));
+		}
 	}
 
 	private ConfigurationMetadata compile(Class<?>... types) {
