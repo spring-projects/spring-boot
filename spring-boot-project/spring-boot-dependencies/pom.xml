@@ -150,7 +150,7 @@
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.19</snakeyaml.version>
-		<solr.version>6.6.3</solr.version>
+		<solr.version>7.2.1</solr.version>
 		<spring.version>5.0.6.RELEASE</spring.version>
 		<spring-amqp.version>2.0.3.RELEASE</spring-amqp.version>
 		<spring-batch.version>4.0.1.RELEASE</spring-batch.version>
@@ -1529,6 +1529,11 @@
 			<dependency>
 				<groupId>org.apache.solr</groupId>
 				<artifactId>solr-langid</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-ltr</artifactId>
 				<version>${solr.version}</version>
 			</dependency>
 			<dependency>
