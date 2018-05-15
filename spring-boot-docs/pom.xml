@@ -790,7 +790,7 @@
 										<link>http://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
 										<link>http://docs.spring.io/autorepo/docs/spring-security/${spring-security.version}/apidocs/</link>
 										<link>http://tomcat.apache.org/tomcat-8.0-doc/api/</link>
-										<link>http://download.eclipse.org/jetty/stable-9/apidocs/</link>
+										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}/</link>
 										<link>http://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
 									</links>
 								</configuration>
