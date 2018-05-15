@@ -98,12 +98,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private boolean skip;
 
 	/**
-	 * Classifier to add to the artifact generated. If given, the artifact will be
-	 * attached with that classifier and the main artifact will be deployed as the main
-	 * artifact. If an artifact with the classifier already exists, it will be used as source.
-	 * If a classifier is not given (default), it will replace the main artifact and
-	 * only the repackaged artifact will be deployed. Attaching the artifact allows to
-	 * deploy it alongside to the original one, see <a href=
+	 * Classifier to add to the repackaged archive. If not given, the main artifact will
+	 * be replaced by the repackaged archive. If given, the classifier will also be used
+	 * to determine the source archive to repackage: if an artifact with that classifier
+	 * already exists, it will be used as source and replaced. If no such artifact exists,
+	 * the main artifact will be used as source and the repackaged archive will be
+	 * attached as a supplemental artifact with that classifier. Attaching the artifact
+	 * allows to deploy it alongside to the original one, see <a href=
 	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
 	 * > the maven documentation for more details</a>.
 	 * @since 1.0
@@ -210,9 +211,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void repackage() throws MojoExecutionException {
-		File source = getSourceFile();
+		Artifact source = getSourceArtifact();
 		File target = getTargetFile();
-		Repackager repackager = getRepackager(source);
+		Repackager repackager = getRepackager(source.getFile());
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				getFilters(getAdditionalFilters()));
 		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
@@ -227,19 +228,26 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		updateArtifact(source, target, repackager.getBackupFile());
 	}
 
-	private File getSourceFile() {
-		Artifact sourceArtifact = this.project.getArtifact();
+	/**
+	 * Return the source {@link Artifact} to repackage. If a classifier is specified
+	 * and an artifact with that classifier exists, it is used. Otherwise, the main
+	 * artifact is used.
+	 * @return the source artifact to repackage
+	 */
+	private Artifact getSourceArtifact() {
+		Artifact sourceArtifact = getArtifact(this.classifier);
+		return (sourceArtifact != null ? sourceArtifact : this.project.getArtifact());
+	}
 
-		if (this.classifier != null) {
+	private Artifact getArtifact(String classifier) {
+		if (classifier != null) {
 			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
-				if (this.classifier.equals(attachedArtifact.getClassifier())) {
-					sourceArtifact = attachedArtifact;
-					break;
+				if (classifier.equals(attachedArtifact.getClassifier())) {
+					return attachedArtifact;
 				}
 			}
 		}
-
-		return sourceArtifact.getFile();
+		return null;
 	}
 
 	private File getTargetFile() {
@@ -250,16 +258,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-		return new File(this.outputDirectory, this.finalName + getClassifier() + "."
+		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getArtifact().getArtifactHandler().getExtension());
-	}
-
-	private String getClassifier() {
-		String classifier = (this.classifier == null ? "" : this.classifier.trim());
-		if (classifier.length() > 0 && !classifier.startsWith("-")) {
-			classifier = "-" + classifier;
-		}
-		return classifier;
 	}
 
 	private Repackager getRepackager(File source) {
@@ -327,26 +327,28 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void updateArtifact(File source, File repackaged, File original) {
+	private void updateArtifact(Artifact source, File target, File original) {
 		if (this.attach) {
-			attachArtifact(source, repackaged);
+			attachArtifact(source, target);
 		}
-		else if (source.equals(repackaged)) {
+		else if (source.getFile().equals(target)) {
+			getLog().info("Updating artifact " + source.getFile() + " to " + original);
 			this.project.getArtifact().setFile(original);
-			getLog().info("Updating main artifact " + source + " to " + original);
 		}
 	}
 
-	private void attachArtifact(File source, File repackaged) {
-		if (this.classifier != null) {
-			getLog().info("Attaching archive: " + repackaged + ", with classifier: "
+	private void attachArtifact(Artifact source, File target) {
+		if (this.classifier != null && !source.getFile().equals(target)) {
+			getLog().info("Attaching archive " + target + " with classifier "
 					+ this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
-					this.classifier, repackaged);
+					this.classifier, target);
 		}
-		else if (!source.equals(repackaged)) {
-			this.project.getArtifact().setFile(repackaged);
-			getLog().info("Replacing main artifact " + source + " to " + repackaged);
+		else {
+			String artifactId = this.classifier != null
+					? "artifact with classifier " + this.classifier : "main artifact";
+			getLog().info(String.format("Replacing %s %s", artifactId, source.getFile()));
+			source.setFile(target);
 		}
 	}
 
