@@ -1485,6 +1485,30 @@ that is compatible with Thymeleaf 3.0.
 
 
 
+[[howto-jersey]]
+== Jersey
+
+
+
+[[howto-jersey-spring-security]]
+=== Secure Jersey endpoints with Spring Security
+Spring Security can be used to secure a Jersey-based web application in much the same
+way as it can be used to secure a Spring MVC-based web application. However, if you want
+to use Spring Security's method-level security with Jersey, you must configure Jersey to
+use `setStatus(int)` rather `sendError(int)`. This prevents Jersey from committing the
+response before Spring Security has had an opportunity to report an authentication or
+authorization failure to the client.
+
+The `jersey.config.server.response.setStatusOverSendError` must be set to `true` on the
+application's `ResourceConfig` bean, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/jersey/JerseySetStatusOverSendErrorExample.java[tag=resource-config]
+----
+
+
+
 [[howto-http-clients]]
 == HTTP clients
 
