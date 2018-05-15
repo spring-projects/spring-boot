@@ -142,7 +142,6 @@ public class CouchbaseProperties {
 			return this.keyValue;
 		}
 
-		@Deprecated
 		public void setKeyValue(int keyValue) {
 			this.keyValue = keyValue;
 		}
