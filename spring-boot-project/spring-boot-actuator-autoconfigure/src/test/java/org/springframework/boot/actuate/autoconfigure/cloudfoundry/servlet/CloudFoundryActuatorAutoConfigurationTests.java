@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -270,7 +271,8 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 						"vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:http://my-cloud-controller.com")
 				.withConfiguration(
-						AutoConfigurations.of(HealthEndpointAutoConfiguration.class))
+						AutoConfigurations.of(HealthIndicatorAutoConfiguration.class,
+								HealthEndpointAutoConfiguration.class))
 				.run((context) -> {
 					Collection<ExposableWebEndpoint> endpoints = context
 							.getBean("cloudFoundryWebEndpointServletHandlerMapping",
