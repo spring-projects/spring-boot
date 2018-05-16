@@ -94,7 +94,7 @@ public class ConfigFileApplicationListenerYamlProfileNegationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		String configName = "--spring.config.name=cascadingprofiles";
 		this.context = application.run(configName);
-		assertVersionProperty(this.context, "E", "A", "B", "C", "E", "D");
+		assertVersionProperty(this.context, "D", "A", "C", "E", "B", "D");
 		assertThat(this.context.getEnvironment().getProperty("not-a")).isNull();
 		assertThat(this.context.getEnvironment().getProperty("not-b")).isNull();
 		assertThat(this.context.getEnvironment().getProperty("not-c")).isNull();

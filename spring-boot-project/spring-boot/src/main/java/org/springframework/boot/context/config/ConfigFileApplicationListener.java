@@ -328,6 +328,9 @@ public class ConfigFileApplicationListener
 			initializeProfiles();
 			while (!this.profiles.isEmpty()) {
 				Profile profile = this.profiles.poll();
+				if (profile != null && !profile.isDefaultProfile()) {
+					addProfileToEnvironment(profile.getName());
+				}
 				load(profile, this::getPositiveProfileFilter,
 						addToLoaded(MutablePropertySources::addLast, false));
 				this.processedProfiles.add(profile);
@@ -347,15 +350,13 @@ public class ConfigFileApplicationListener
 			// first so that it is processed first and has lowest priority.
 			this.profiles.add(null);
 			Set<Profile> activatedViaProperty = getProfilesActivatedViaProperty();
-			processOtherActiveProfiles(activatedViaProperty);
+			this.profiles.addAll(getOtherActiveProfiles(activatedViaProperty));
 			// Any pre-existing active profiles set via property sources (e.g.
-			// System
-			// properties) take precedence over those added in config files.
+			// System properties) take precedence over those added in config files.
 			addActiveProfiles(activatedViaProperty);
 			if (this.profiles.size() == 1) { // only has null profile
 				for (String defaultProfileName : this.environment.getDefaultProfiles()) {
-					ConfigFileApplicationListener.Profile defaultProfile = new ConfigFileApplicationListener.Profile(
-							defaultProfileName, true);
+					Profile defaultProfile = new Profile(defaultProfileName, true);
 					this.profiles.add(defaultProfile);
 				}
 			}
@@ -373,32 +374,28 @@ public class ConfigFileApplicationListener
 			return activeProfiles;
 		}
 
-		private void processOtherActiveProfiles(Set<Profile> activatedViaProperty) {
-			List<Profile> otherActiveProfiles = Arrays
-					.stream(this.environment.getActiveProfiles()).map(Profile::new)
-					.filter((o) -> !activatedViaProperty.contains(o))
+		private List<Profile> getOtherActiveProfiles(Set<Profile> activatedViaProperty) {
+			return Arrays.stream(this.environment.getActiveProfiles()).map(Profile::new)
+					.filter((profile) -> !activatedViaProperty.contains(profile))
 					.collect(Collectors.toList());
-			this.profiles.addAll(otherActiveProfiles);
 		}
 
 		void addActiveProfiles(Set<Profile> profiles) {
-			if (this.activatedProfiles || profiles.isEmpty()) {
+			if (profiles.isEmpty()) {
 				return;
 			}
-			addProfiles(profiles);
+			if (this.activatedProfiles) {
+				this.logger.debug("Profiles already activated, '" + profiles
+						+ "' will not be applied");
+				return;
+			}
+			this.profiles.addAll(profiles);
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug("Activated activeProfiles "
 						+ StringUtils.collectionToCommaDelimitedString(profiles));
 			}
 			this.activatedProfiles = true;
 			removeUnprocessedDefaultProfiles();
-		}
-
-		void addProfiles(Set<Profile> profiles) {
-			for (Profile profile : profiles) {
-				this.profiles.add(profile);
-				addProfileToEnvironment(profile.getName());
-			}
 		}
 
 		private void removeUnprocessedDefaultProfiles() {
@@ -526,7 +523,7 @@ public class ConfigFileApplicationListener
 				for (Document document : documents) {
 					if (filter.match(document)) {
 						addActiveProfiles(document.getActiveProfiles());
-						addProfiles(document.getIncludeProfiles());
+						addIncludedProfiles(document.getIncludeProfiles());
 						loaded.add(document);
 					}
 				}
@@ -540,6 +537,13 @@ public class ConfigFileApplicationListener
 				throw new IllegalStateException("Failed to load property "
 						+ "source from location '" + location + "'", ex);
 			}
+		}
+
+		private void addIncludedProfiles(Set<Profile> includeProfiles) {
+			LinkedList<Profile> existingProfiles = new LinkedList<>(this.profiles);
+			this.profiles.clear();
+			this.profiles.addAll(includeProfiles);
+			this.profiles.addAll(existingProfiles);
 		}
 
 		private List<Document> loadDocuments(PropertySourceLoader loader, String name,
