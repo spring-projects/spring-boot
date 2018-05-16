@@ -77,10 +77,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String LOMBOK_SETTER_ANNOTATION = "lombok.Setter";
 
-	private static final String LOMBOK_ACCESS_LEVEL = "lombok.AccessLevel";
-
-	private static final String LOMBOK_ACCESS_LEVEL_PUBLIC = LOMBOK_ACCESS_LEVEL
-			+ ".PUBLIC";
+	static final String LOMBOK_ACCESS_LEVEL_PUBLIC = "PUBLIC";
 
 	private MetadataStore metadataStore;
 
@@ -308,35 +305,44 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private boolean isLombokField(VariableElement field, TypeElement element) {
-		return hasLombokPublicMethod(field, element, LOMBOK_GETTER_ANNOTATION);
+		return hasLombokPublicAccessor(field, element, true);
 	}
 
 	private boolean hasLombokSetter(VariableElement field, TypeElement element) {
 		return !field.getModifiers().contains(Modifier.FINAL)
-				&& hasLombokPublicMethod(field, element, LOMBOK_SETTER_ANNOTATION);
+				&& hasLombokPublicAccessor(field, element, false);
 	}
 
-	private boolean hasLombokPublicMethod(VariableElement field, TypeElement element,
-			String lombokMethodAnnotation) {
-		AnnotationMirror lombokMethodAnnotationOnField = getAnnotation(field,
-				lombokMethodAnnotation);
+	/**
+	 * Determine if the specified {@link VariableElement field} defines a public accessor
+	 * using lombok annotations.
+	 * @param field the field to inspect
+	 * @param element the parent element of the field (i.e. its holding class)
+	 * @param getter {@code true} to look for the read accessor, {@code false} for the
+	 * write accessor
+	 * @return {@code true} if this field is a public accessor of the specified type
+	 */
+	private boolean hasLombokPublicAccessor(VariableElement field, TypeElement element,
+			boolean getter) {
+		String annotation = (getter ? LOMBOK_GETTER_ANNOTATION
+				: LOMBOK_SETTER_ANNOTATION);
+		AnnotationMirror lombokMethodAnnotationOnField = getAnnotation(field, annotation);
 		if (lombokMethodAnnotationOnField != null) {
-			return isLombokPublic(lombokMethodAnnotationOnField);
+			return isAccessLevelPublic(lombokMethodAnnotationOnField);
 		}
-
 		AnnotationMirror lombokMethodAnnotationOnElement = getAnnotation(element,
-				lombokMethodAnnotation);
+				annotation);
 		if (lombokMethodAnnotationOnElement != null) {
-			return isLombokPublic(lombokMethodAnnotationOnElement);
+			return isAccessLevelPublic(lombokMethodAnnotationOnElement);
 		}
-
 		return hasAnnotation(element, LOMBOK_DATA_ANNOTATION);
 	}
 
-	private boolean isLombokPublic(AnnotationMirror lombokAnnotation) {
-		return lombokAnnotation.getElementValues().values().stream()
-				.noneMatch(e -> e.toString().startsWith(LOMBOK_ACCESS_LEVEL)
-						&& !e.toString().equals(LOMBOK_ACCESS_LEVEL_PUBLIC));
+
+	private boolean isAccessLevelPublic(AnnotationMirror lombokAnnotation) {
+		Map<String, Object> values = getAnnotationElementValues(lombokAnnotation);
+		Object value = values.get("value");
+		return (value == null || value.toString().equals(LOMBOK_ACCESS_LEVEL_PUBLIC));
 	}
 
 	private void processNestedType(String prefix, TypeElement element,

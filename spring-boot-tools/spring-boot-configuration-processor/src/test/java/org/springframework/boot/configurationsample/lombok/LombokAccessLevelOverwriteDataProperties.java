@@ -60,63 +60,64 @@ public class LombokAccessLevelOverwriteDataProperties {
 	 */
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
-	private String ignored0;
+	private String ignoredAccessLevelNone;
 
 	@Getter(AccessLevel.NONE)
-	private String ignored1;
+	private String ignoredGetterAccessLevelNone;
 
 	@Setter(AccessLevel.NONE)
-	private String ignored2;
+	private String ignoredSetterAccessLevelNone;
 
 	/*
 	 * AccessLevel.PRIVATE
 	 */
 	@Getter(AccessLevel.PRIVATE)
 	@Setter(AccessLevel.PRIVATE)
-	private String ignored3;
+	private String ignoredAccessLevelPrivate;
 
 	@Getter(AccessLevel.PRIVATE)
-	private String ignored4;
+	private String ignoredGetterAccessLevelPrivate;
 
 	@Setter(AccessLevel.PRIVATE)
-	private String ignored5;
+	private String ignoredSetterAccessLevelPrivate;
 
 	/*
 	 * AccessLevel.PACKAGE
 	 */
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
-	private String ignored6;
+	private String ignoredAccessLevelPackage;
 
 	@Getter(AccessLevel.PACKAGE)
-	private String ignored7;
+	private String ignoredGetterAccessLevelPackage;
 
 	@Setter(AccessLevel.PACKAGE)
-	private String ignored8;
+	private String ignoredSetterAccessLevelPackage;
 
 	/*
 	 * AccessLevel.PROTECTED
 	 */
 	@Getter(AccessLevel.PROTECTED)
 	@Setter(AccessLevel.PROTECTED)
-	private String ignored9;
+	private String ignoredAccessLevelProtected;
 
 	@Getter(AccessLevel.PROTECTED)
-	private String ignored10;
+	private String ignoredGetterAccessLevelProtected;
 
 	@Setter(AccessLevel.PROTECTED)
-	private String ignored11;
+	private String ignoredSetterAccessLevelProtected;
 
 	/*
 	 * AccessLevel.MODULE
 	 */
 	@Getter(AccessLevel.MODULE)
 	@Setter(AccessLevel.MODULE)
-	private String ignored12;
+	private String ignoredAccessLevelModule;
 
 	@Getter(AccessLevel.MODULE)
-	private String ignored13;
+	private String ignoredGetterAccessLevelModule;
 
 	@Setter(AccessLevel.MODULE)
-	private String ignored14;
+	private String ignoredSetterAccessLevelModule;
+
 }

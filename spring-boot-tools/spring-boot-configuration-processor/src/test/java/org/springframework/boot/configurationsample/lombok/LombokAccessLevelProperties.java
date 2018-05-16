@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,86 +43,43 @@ public class LombokAccessLevelProperties {
 	 */
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
-	private String ignored0;
-
-	@Getter(AccessLevel.NONE)
-	private String ignored1;
-
-	@Setter(AccessLevel.NONE)
-	private String ignored2;
+	private String ignoredAccessLevelNone;
 
 	/*
 	 * AccessLevel.PRIVATE
 	 */
 	@Getter(AccessLevel.PRIVATE)
 	@Setter(AccessLevel.PRIVATE)
-	private String ignored3;
-
-	@Getter(AccessLevel.PRIVATE)
-	private String ignored4;
-
-	@Setter(AccessLevel.PRIVATE)
-	private String ignored5;
+	private String ignoredAccessLevelPrivate;
 
 	/*
 	 * AccessLevel.PACKAGE
 	 */
 	@Getter(AccessLevel.PACKAGE)
 	@Setter(AccessLevel.PACKAGE)
-	private String ignored6;
-
-	@Getter(AccessLevel.PACKAGE)
-	private String ignored7;
-
-	@Setter(AccessLevel.PACKAGE)
-	private String ignored8;
+	private String ignoredAccessLevelPackage;
 
 	/*
 	 * AccessLevel.PROTECTED
 	 */
 	@Getter(AccessLevel.PROTECTED)
 	@Setter(AccessLevel.PROTECTED)
-	private String ignored9;
-
-	@Getter(AccessLevel.PROTECTED)
-	private String ignored10;
-
-	@Setter(AccessLevel.PROTECTED)
-	private String ignored11;
+	private String ignoredAccessLevelProtected;
 
 	/*
 	 * AccessLevel.MODULE
 	 */
 	@Getter(AccessLevel.MODULE)
 	@Setter(AccessLevel.MODULE)
-	private String ignored12;
-
-	@Getter(AccessLevel.MODULE)
-	private String ignored13;
-
-	@Setter(AccessLevel.MODULE)
-	private String ignored14;
-
-	/*
-	 * Nor getter neither setter defined
-	 */
-	private String ignored15;
+	private String ignoredAccessLevelModule;
 
 	/*
 	 * Either PUBLIC getter or setter explicitly defined
 	 */
 	@Getter(AccessLevel.PUBLIC)
-	private String ignored16;
+	private String ignoredOnlyPublicGetter;
 
 	@Setter(AccessLevel.PUBLIC)
-	private String ignored17;
+	private String ignoredOnlyPublicSetter;
 
-	/*
-	 * Either PUBLIC getter or setter implicitly defined
-	 */
-	@Getter
-	private String ignored18;
-
-	@Setter
-	private String ignored19;
 }

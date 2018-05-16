@@ -489,6 +489,21 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
+	public void lombokExplicitProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
+		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class,
+				"explicit");
+		assertThat(metadata.getItems()).hasSize(6);
+	}
+
+	@Test
+	public void lombokAccessLevelProperties() {
+		ConfigurationMetadata metadata = compile(LombokAccessLevelProperties.class);
+		assertAccessLevelLombokProperties(metadata, LombokAccessLevelProperties.class,
+				"accesslevel", 2);
+	}
+
+	@Test
 	public void lombokAccessLevelOverwriteDataProperties() {
 		ConfigurationMetadata metadata = compile(
 				LombokAccessLevelOverwriteDataProperties.class);
@@ -513,20 +528,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertAccessLevelOverwriteLombokProperties(metadata,
 				LombokAccessLevelOverwriteDefaultProperties.class,
 				"accesslevel.overwrite.default");
-	}
-
-	@Test
-	public void lombokAccessLevelProperties() {
-		ConfigurationMetadata metadata = compile(LombokAccessLevelProperties.class);
-		assertAccessLevelLombokProperties(metadata, LombokAccessLevelProperties.class,
-				"accesslevel", 2, 20);
-	}
-
-	@Test
-	public void lombokExplicitProperties() throws Exception {
-		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
-		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class,
-				"explicit");
 	}
 
 	@Test
@@ -830,21 +831,17 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	private void assertAccessLevelOverwriteLombokProperties(
 			ConfigurationMetadata metadata, Class<?> source, String prefix) {
-		assertAccessLevelLombokProperties(metadata, source, prefix, 7, 15);
+		assertAccessLevelLombokProperties(metadata, source, prefix, 7);
 	}
 
 	private void assertAccessLevelLombokProperties(ConfigurationMetadata metadata,
-			Class<?> source, String prefix, int countNameFields, int countIgnoredFields) {
+			Class<?> source, String prefix, int countNameFields) {
 		assertThat(metadata).has(Metadata.withGroup(prefix).fromSource(source));
 		for (int i = 0; i < countNameFields; i++) {
 			assertThat(metadata)
 					.has(Metadata.withProperty(prefix + ".name" + i, String.class));
 		}
-
-		for (int i = 0; i < countIgnoredFields; i++) {
-			assertThat(metadata)
-					.doesNotHave(Metadata.withProperty(prefix + ".ignored" + i));
-		}
+		assertThat(metadata.getItems()).hasSize(1 + countNameFields);
 	}
 
 	private ConfigurationMetadata compile(Class<?>... types) {
