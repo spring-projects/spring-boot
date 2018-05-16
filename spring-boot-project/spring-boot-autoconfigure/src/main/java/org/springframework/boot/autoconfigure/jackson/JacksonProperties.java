@@ -21,7 +21,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -105,6 +107,12 @@ public class JacksonProperties {
 	 */
 	private Locale locale;
 
+	/**
+	 * Jackson visibilities to auto-detect properties.
+	 */
+	private Map<PropertyAccessor, JsonAutoDetect.Visibility> accessor = new EnumMap<>(
+			PropertyAccessor.class);
+
 	public String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -174,4 +182,11 @@ public class JacksonProperties {
 		this.locale = locale;
 	}
 
+	public Map<PropertyAccessor, JsonAutoDetect.Visibility> getAccessor() {
+		return this.accessor;
+	}
+
+	public void setAccessor(Map<PropertyAccessor, JsonAutoDetect.Visibility> accessor) {
+		this.accessor = accessor;
+	}
 }
