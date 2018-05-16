@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.springframework.boot.actuate.health;
 import java.util.Map;
 
 /**
- * Strategy interface used by {@link CompositeHealthIndicator} to aggregate {@link Health}
- * instances into a final one.
+ * Strategy interface used to aggregate {@link Health} instances into a final one.
  * <p>
  * This is especially useful to combine subsystem states expressed through
  * {@link Health#getStatus()} into one state for the entire system. The default

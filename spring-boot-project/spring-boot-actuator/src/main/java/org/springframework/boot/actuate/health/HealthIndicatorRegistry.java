@@ -19,46 +19,48 @@ package org.springframework.boot.actuate.health;
 import java.util.Map;
 
 /**
- * A registry of {@link HealthIndicator}s.
+ * A registry of {@link HealthIndicator HealthIndicators}.
  * <p>
  * Implementations <strong>must</strong> be thread-safe.
  *
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 2.1.0
  */
 public interface HealthIndicatorRegistry {
 
 	/**
-	 * Registers the given {@code healthIndicator}, associating it with the given
-	 * {@code name}.
+	 * Registers the given {@code healthIndicator}, associating it with the
+	 * given {@code name}.
 	 * @param name the name of the indicator
 	 * @param healthIndicator the indicator
-	 * @throws IllegalStateException if an indicator with the given {@code name} is
-	 * already registered.
+	 * @throws IllegalStateException if an indicator with the given {@code name}
+	 * is already registered.
 	 */
 	void register(String name, HealthIndicator healthIndicator);
 
 	/**
-	 * Unregisters the {@code HealthIndicator} previously registered with the given
-	 * {@code name}.
+	 * Unregisters the {@code HealthIndicator} previously registered with the
+	 * given {@code name}.
 	 * @param name the name of the indicator
-	 * @return the unregistered indicator, or {@code null} if no indicator was found in
-	 * the registry for the given {@code name}.
+	 * @return the unregistered indicator, or {@code null} if no indicator was
+	 * found in the registry for the given {@code name}.
 	 */
 	HealthIndicator unregister(String name);
 
 	/**
 	 * Returns the health indicator registered with the given {@code name}.
 	 * @param name the name of the indicator
-	 * @return the health indicator, or {@code null} if no indicator was registered with
-	 * the given {@code name}.
+	 * @return the health indicator, or {@code null} if no indicator was
+	 * registered with the given {@code name}.
 	 */
 	HealthIndicator get(String name);
 
 	/**
-	 * Returns a snapshot of the registered health indicators and their names. The
-	 * contents of the map do not reflect subsequent changes to the registry.
+	 * Returns a snapshot of the registered health indicators and their names.
+	 * The contents of the map do not reflect subsequent changes to the
+	 * registry.
 	 * @return the snapshot of registered health indicators
 	 */
 	Map<String, HealthIndicator> getAll();

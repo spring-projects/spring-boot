@@ -48,7 +48,8 @@ public class JmxEndpointIntegrationTests {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class,
 					EndpointAutoConfiguration.class, JmxEndpointAutoConfiguration.class,
-					HttpTraceAutoConfiguration.class, HealthIndicatorAutoConfiguration.class))
+					HealthIndicatorAutoConfiguration.class,
+					HttpTraceAutoConfiguration.class))
 			.withConfiguration(
 					AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
 

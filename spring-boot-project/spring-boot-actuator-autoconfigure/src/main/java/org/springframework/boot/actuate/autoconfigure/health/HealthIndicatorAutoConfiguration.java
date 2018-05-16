@@ -16,11 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
-import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
@@ -32,7 +28,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
@@ -73,30 +68,7 @@ public class HealthIndicatorAutoConfiguration {
 	@ConditionalOnMissingBean(HealthIndicatorRegistry.class)
 	public HealthIndicatorRegistry healthIndicatorRegistry(
 			ApplicationContext applicationContext) {
-		HealthIndicatorRegistry registry = new DefaultHealthIndicatorRegistry();
-		Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
-		indicators.putAll(applicationContext.getBeansOfType(HealthIndicator.class));
-		if (ClassUtils.isPresent("reactor.core.publisher.Flux", null)) {
-			new ReactiveHealthIndicators().get(applicationContext)
-					.forEach(indicators::putIfAbsent);
-		}
-		indicators.forEach(registry::register);
-		return registry;
-	}
-
-	private static class ReactiveHealthIndicators {
-
-		public Map<String, HealthIndicator> get(ApplicationContext applicationContext) {
-			Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
-			applicationContext.getBeansOfType(ReactiveHealthIndicator.class)
-					.forEach((name, indicator) -> indicators.put(name, adapt(indicator)));
-			return indicators;
-		}
-
-		private HealthIndicator adapt(ReactiveHealthIndicator indicator) {
-			return () -> indicator.health().block();
-		}
-
+		return HealthIndicatorRegistryBeans.get(applicationContext);
 	}
 
 }

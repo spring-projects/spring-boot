@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.util.Assert;
@@ -26,42 +26,68 @@ import org.springframework.util.Assert;
  * Default implementation of {@link HealthIndicatorRegistry}.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 2.1.0
  */
 public class DefaultHealthIndicatorRegistry implements HealthIndicatorRegistry {
 
-	private final Map<String, HealthIndicator> healthIndicators = new HashMap<>();
+	private final Object monitor = new Object();
+
+	private final Map<String, HealthIndicator> healthIndicators;
+
+	/**
+	 * Create a new {@link DefaultHealthIndicatorRegistry}.
+	 */
+	public DefaultHealthIndicatorRegistry() {
+		this(new LinkedHashMap<>());
+	}
+
+	/**
+	 * Create a new {@link DefaultHealthIndicatorRegistry} from the specified
+	 * indicators.
+	 * @param healthIndicators a map of {@link HealthIndicator}s with the key
+	 * being used as an indicator name.
+	 */
+	public DefaultHealthIndicatorRegistry(Map<String, HealthIndicator> healthIndicators) {
+		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
+		this.healthIndicators = new LinkedHashMap<>(healthIndicators);
+	}
 
 	@Override
 	public void register(String name, HealthIndicator healthIndicator) {
 		Assert.notNull(healthIndicator, "HealthIndicator must not be null");
-		synchronized (this.healthIndicators) {
-			if (this.healthIndicators.get(name) != null) {
+		Assert.notNull(name, "Name must not be null");
+		synchronized (this.monitor) {
+			HealthIndicator existing = this.healthIndicators.putIfAbsent(name,
+					healthIndicator);
+			if (existing != null) {
 				throw new IllegalStateException(
 						"HealthIndicator with name '" + name + "' already registered");
 			}
-			this.healthIndicators.put(name, healthIndicator);
 		}
 	}
 
 	@Override
 	public HealthIndicator unregister(String name) {
-		synchronized (this.healthIndicators) {
+		Assert.notNull(name, "Name must not be null");
+		synchronized (this.monitor) {
 			return this.healthIndicators.remove(name);
 		}
 	}
 
 	@Override
 	public HealthIndicator get(String name) {
-		synchronized (this.healthIndicators) {
+		Assert.notNull(name, "Name must not be null");
+		synchronized (this.monitor) {
 			return this.healthIndicators.get(name);
 		}
 	}
 
 	@Override
 	public Map<String, HealthIndicator> getAll() {
-		synchronized (this.healthIndicators) {
-			return Collections.unmodifiableMap(new HashMap<>(this.healthIndicators));
+		synchronized (this.monitor) {
+			return Collections
+					.unmodifiableMap(new LinkedHashMap<>(this.healthIndicators));
 		}
 	}
 
