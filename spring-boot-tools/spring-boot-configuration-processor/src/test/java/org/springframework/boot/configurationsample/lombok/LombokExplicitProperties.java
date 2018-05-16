@@ -62,4 +62,10 @@ public class LombokExplicitProperties {
 	@SuppressWarnings("unused")
 	private String ignored;
 
+	@Getter
+	private String ignoredOnlyGetter;
+
+	@Setter
+	private String ignoredOnlySetter;
+
 }
