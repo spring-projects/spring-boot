@@ -16,23 +16,21 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicatorFactory;
+import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.HealthWebEndpointResponseMapper;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -70,19 +68,16 @@ class HealthEndpointWebExtensionConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	@ConditionalOnSingleCandidate(ReactiveHealthIndicatorRegistry.class)
 	static class ReactiveWebHealthConfiguration {
 
 		private final ReactiveHealthIndicator reactiveHealthIndicator;
 
 		ReactiveWebHealthConfiguration(ObjectProvider<HealthAggregator> healthAggregator,
-				ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators,
-				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
-			this.reactiveHealthIndicator = new CompositeReactiveHealthIndicatorFactory()
-					.createReactiveHealthIndicator(
-							healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
-							reactiveHealthIndicators
-									.getIfAvailable(Collections::emptyMap),
-							healthIndicators.getIfAvailable(Collections::emptyMap));
+				ReactiveHealthIndicatorRegistry registry) {
+			this.reactiveHealthIndicator = new CompositeReactiveHealthIndicator(
+					healthAggregator.getIfAvailable(OrderedHealthAggregator::new),
+					registry);
 		}
 
 		@Bean

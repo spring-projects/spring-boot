@@ -16,13 +16,22 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import java.util.Collections;
+import java.util.Map;
+
+import reactor.core.publisher.Flux;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistryFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -69,6 +78,22 @@ public class HealthIndicatorAutoConfiguration {
 	public HealthIndicatorRegistry healthIndicatorRegistry(
 			ApplicationContext applicationContext) {
 		return HealthIndicatorRegistryBeans.get(applicationContext);
+	}
+
+	@Configuration
+	@ConditionalOnClass(Flux.class)
+	static class ReactiveHealthIndicatorConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
+				ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators,
+				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
+			return new ReactiveHealthIndicatorRegistryFactory().createReactiveHealthIndicatorRegistry(
+					reactiveHealthIndicators.getIfAvailable(Collections::emptyMap),
+					healthIndicators.getIfAvailable(Collections::emptyMap));
+		}
+
 	}
 
 }

@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.health;
 import java.util.Map;
 
 /**
- * A registry of {@link HealthIndicator HealthIndicators}.
+ * A registry of {@link ReactiveHealthIndicator ReactiveHealthIndicators}.
  * <p>
  * Implementations <strong>must</strong> be thread-safe.
  *
@@ -28,34 +28,34 @@ import java.util.Map;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-public interface HealthIndicatorRegistry {
+public interface ReactiveHealthIndicatorRegistry {
 
 	/**
-	 * Registers the given {@link HealthIndicator}, associating it with the
+	 * Registers the given {@link ReactiveHealthIndicator}, associating it with the
 	 * given {@code name}.
 	 * @param name the name of the indicator
 	 * @param healthIndicator the indicator
 	 * @throws IllegalStateException if an indicator with the given {@code name}
 	 * is already registered.
 	 */
-	void register(String name, HealthIndicator healthIndicator);
+	void register(String name, ReactiveHealthIndicator healthIndicator);
 
 	/**
-	 * Unregisters the {@link HealthIndicator} previously registered with the
+	 * Unregisters the {@link ReactiveHealthIndicator} previously registered with the
 	 * given {@code name}.
 	 * @param name the name of the indicator
 	 * @return the unregistered indicator, or {@code null} if no indicator was
 	 * found in the registry for the given {@code name}.
 	 */
-	HealthIndicator unregister(String name);
+	ReactiveHealthIndicator unregister(String name);
 
 	/**
-	 * Returns the {@link HealthIndicator} registered with the given {@code name}.
+	 * Returns the {@link ReactiveHealthIndicator} registered with the given {@code name}.
 	 * @param name the name of the indicator
 	 * @return the health indicator, or {@code null} if no indicator was
 	 * registered with the given {@code name}.
 	 */
-	HealthIndicator get(String name);
+	ReactiveHealthIndicator get(String name);
 
 	/**
 	 * Returns a snapshot of the registered health indicators and their names.
@@ -63,6 +63,6 @@ public interface HealthIndicatorRegistry {
 	 * registry.
 	 * @return the snapshot of registered health indicators
 	 */
-	Map<String, HealthIndicator> getAll();
+	Map<String, ReactiveHealthIndicator> getAll();
 
 }

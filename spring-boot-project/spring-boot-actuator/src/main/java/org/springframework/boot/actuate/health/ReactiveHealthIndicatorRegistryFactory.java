@@ -16,39 +16,37 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
- * Factory to create a {@link CompositeReactiveHealthIndicator}.
+ * Factory to create a {@link HealthIndicatorRegistry}.
  *
  * @author Stephane Nicoll
- * @since 2.0.0
- * @deprecated since 2.1.0 in favor of
- * {@link CompositeReactiveHealthIndicator#CompositeReactiveHealthIndicator(HealthAggregator, ReactiveHealthIndicatorRegistry)}
+ * @since 2.1.0
  */
-@Deprecated
-public class CompositeReactiveHealthIndicatorFactory {
+public class ReactiveHealthIndicatorRegistryFactory {
 
 	private final Function<String, String> healthIndicatorNameFactory;
 
-	public CompositeReactiveHealthIndicatorFactory(
+	public ReactiveHealthIndicatorRegistryFactory(
 			Function<String, String> healthIndicatorNameFactory) {
 		this.healthIndicatorNameFactory = healthIndicatorNameFactory;
 	}
 
-	public CompositeReactiveHealthIndicatorFactory() {
+	public ReactiveHealthIndicatorRegistryFactory() {
 		this(new HealthIndicatorNameFactory());
 	}
 
 	/**
-	 * Create a {@link CompositeReactiveHealthIndicator} based on the specified health
+	 * Create a {@link ReactiveHealthIndicatorRegistry} based on the specified health
 	 * indicators. Each {@link HealthIndicator} are wrapped to a
 	 * {@link HealthIndicatorReactiveAdapter}. If two instances share the same name, the
 	 * reactive variant takes precedence.
-	 * @param healthAggregator the {@link HealthAggregator}
 	 * @param reactiveHealthIndicators the {@link ReactiveHealthIndicator} instances
 	 * mapped by name
 	 * @param healthIndicators the {@link HealthIndicator} instances mapped by name if
@@ -56,18 +54,40 @@ public class CompositeReactiveHealthIndicatorFactory {
 	 * @return a {@link ReactiveHealthIndicator} that delegates to the specified
 	 * {@code reactiveHealthIndicators}.
 	 */
-	public CompositeReactiveHealthIndicator createReactiveHealthIndicator(
-			HealthAggregator healthAggregator,
+	public ReactiveHealthIndicatorRegistry createReactiveHealthIndicatorRegistry(
 			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
 			Map<String, HealthIndicator> healthIndicators) {
-		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(reactiveHealthIndicators,
 				"ReactiveHealthIndicators must not be null");
-		ReactiveHealthIndicatorRegistryFactory factory = new ReactiveHealthIndicatorRegistryFactory(
-				this.healthIndicatorNameFactory);
-		return new CompositeReactiveHealthIndicator(healthAggregator,
-				factory.createReactiveHealthIndicatorRegistry(reactiveHealthIndicators,
-						healthIndicators));
+		return initialize(new DefaultReactiveHealthIndicatorRegistry(),
+				reactiveHealthIndicators, healthIndicators);
+	}
+
+	protected <T extends ReactiveHealthIndicatorRegistry> T initialize(T registry,
+			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
+			Map<String, HealthIndicator> healthIndicators) {
+		merge(reactiveHealthIndicators, healthIndicators)
+				.forEach((beanName, indicator) -> {
+					String name = this.healthIndicatorNameFactory.apply(beanName);
+					registry.register(name, indicator);
+				});
+		return registry;
+	}
+
+	private Map<String, ReactiveHealthIndicator> merge(
+			Map<String, ReactiveHealthIndicator> reactiveHealthIndicators,
+			Map<String, HealthIndicator> healthIndicators) {
+		if (ObjectUtils.isEmpty(healthIndicators)) {
+			return reactiveHealthIndicators;
+		}
+		Map<String, ReactiveHealthIndicator> allIndicators = new LinkedHashMap<>(
+				reactiveHealthIndicators);
+		healthIndicators.forEach((beanName, indicator) -> {
+			String name = this.healthIndicatorNameFactory.apply(beanName);
+			allIndicators.computeIfAbsent(name,
+					(n) -> new HealthIndicatorReactiveAdapter(indicator));
+		});
+		return allIndicators;
 	}
 
 }
