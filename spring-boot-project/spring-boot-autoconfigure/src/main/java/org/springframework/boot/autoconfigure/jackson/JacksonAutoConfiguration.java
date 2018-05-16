@@ -27,7 +27,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -73,6 +75,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Sebastien Deleuze
  * @author Johannes Edmeier
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
@@ -249,6 +252,7 @@ public class JacksonAutoConfiguration {
 				configurePropertyNamingStrategy(builder);
 				configureModules(builder);
 				configureLocale(builder);
+				configureVisibility(builder, this.jacksonProperties.getAccessor());
 			}
 
 			private void configureFeatures(Jackson2ObjectMapperBuilder builder,
@@ -345,6 +349,11 @@ public class JacksonAutoConfiguration {
 				if (locale != null) {
 					builder.locale(locale);
 				}
+			}
+
+			private void configureVisibility(Jackson2ObjectMapperBuilder builder,
+					Map<PropertyAccessor, JsonAutoDetect.Visibility> accessors) {
+				accessors.forEach(builder::visibility);
 			}
 
 			private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
