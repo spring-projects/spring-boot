@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -444,7 +444,8 @@ public class KafkaProperties {
 		private String acks;
 
 		/**
-		 * Number of records to batch before sending.
+		 * Default batch size in bytes. A small batch size will make batching less common
+		 * and may reduce throughput (a batch size of zero disables batching entirely).
 		 */
 		private Integer batchSize;
 
