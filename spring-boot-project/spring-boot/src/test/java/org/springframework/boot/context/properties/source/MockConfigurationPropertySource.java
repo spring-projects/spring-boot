@@ -107,12 +107,6 @@ public class MockConfigurationPropertySource
 			return MockConfigurationPropertySource.this.getConfigurationProperty(name);
 		}
 
-		@Override
-		public ConfigurationPropertyState containsDescendantOf(
-				ConfigurationPropertyName name) {
-			return ConfigurationPropertyState.UNKNOWN;
-		}
-
 	}
 
 }
