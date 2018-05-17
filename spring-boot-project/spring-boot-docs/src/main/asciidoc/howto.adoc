@@ -1365,7 +1365,7 @@ use `setStatus(int)` rather `sendError(int)`. This prevents Jersey from committi
 response before Spring Security has had an opportunity to report an authentication or
 authorization failure to the client.
 
-The `jersey.config.server.response.setStatusOverSendError` proeprty must be set to `true`
+The `jersey.config.server.response.setStatusOverSendError` property must be set to `true`
 on the application's `ResourceConfig` bean, as shown in the following example:
 
 [source,java,indent=0]
