@@ -414,7 +414,8 @@ public class KafkaProperties {
 		private String acks;
 
 		/**
-		 * Number of records to batch before sending.
+		 * Default batch size in bytes. A small batch size will make batching less common
+		 * and may reduce throughput (a batch size of zero disables batching entirely).
 		 */
 		private Integer batchSize;
 

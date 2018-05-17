@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-		"server.servlet.path=/spring" })
+		"spring.mvc.servlet.path=/spring" })
 public class ServletPathSampleActuatorApplicationTests {
 
 	@Autowired

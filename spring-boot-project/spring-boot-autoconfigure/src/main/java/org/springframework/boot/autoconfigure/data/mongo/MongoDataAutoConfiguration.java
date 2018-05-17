@@ -18,8 +18,10 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.util.Collections;
 
+import com.mongodb.ClientSessionOptions;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
 
 import org.springframework.beans.BeanUtils;
@@ -180,6 +182,16 @@ public class MongoDataAutoConfiguration {
 		@Override
 		public DB getLegacyDb() {
 			return this.mongoDbFactory.getLegacyDb();
+		}
+
+		@Override
+		public ClientSession getSession(ClientSessionOptions options) {
+			return this.mongoDbFactory.getSession(options);
+		}
+
+		@Override
+		public MongoDbFactory withSession(ClientSession session) {
+			return this.mongoDbFactory.withSession(session);
 		}
 
 	}

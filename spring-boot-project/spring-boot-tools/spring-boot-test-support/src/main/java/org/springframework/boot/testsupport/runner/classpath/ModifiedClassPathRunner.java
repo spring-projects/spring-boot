@@ -68,7 +68,7 @@ import org.springframework.util.StringUtils;
 public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 
 	private static final Pattern INTELLIJ_CLASSPATH_JAR_PATTERN = Pattern
-			.compile(".*classpath(\\d+)?.jar");
+			.compile(".*classpath(\\d+)?\\.jar");
 
 	public ModifiedClassPathRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);

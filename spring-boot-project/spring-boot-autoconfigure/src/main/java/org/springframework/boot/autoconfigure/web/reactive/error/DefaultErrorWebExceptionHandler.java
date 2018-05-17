@@ -121,18 +121,15 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		HttpStatus errorStatus = getHttpStatus(error);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus)
 				.contentType(MediaType.TEXT_HTML);
-		Flux<ServerResponse> result = Flux
+		return Flux
 				.just("error/" + errorStatus.toString(),
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
-				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error));
-		if (this.errorProperties.getWhitelabel().isEnabled()) {
-			result = result.switchIfEmpty(renderDefaultErrorView(responseBody, error));
-		}
-		else {
-			Throwable ex = getError(request);
-			result = result.switchIfEmpty(Mono.error(ex));
-		}
-		return result.next().doOnNext((response) -> logError(request, errorStatus));
+				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
+				.switchIfEmpty(
+						this.errorProperties.getWhitelabel().isEnabled()
+								? renderDefaultErrorView(responseBody, error)
+								: Mono.error(getError(request)))
+				.next().doOnNext((response) -> logError(request, errorStatus));
 	}
 
 	/**

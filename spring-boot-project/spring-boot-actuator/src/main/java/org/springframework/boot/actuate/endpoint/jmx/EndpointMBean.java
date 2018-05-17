@@ -53,21 +53,25 @@ public class EndpointMBean implements DynamicMBean {
 
 	private final JmxOperationResponseMapper responseMapper;
 
+	private final ClassLoader classLoader;
+
 	private final ExposableJmxEndpoint endpoint;
 
 	private final MBeanInfo info;
 
 	private final Map<String, JmxOperation> operations;
 
-	EndpointMBean(JmxOperationResponseMapper responseMapper,
+	EndpointMBean(JmxOperationResponseMapper responseMapper, ClassLoader classLoader,
 			ExposableJmxEndpoint endpoint) {
 		Assert.notNull(responseMapper, "ResponseMapper must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		this.responseMapper = responseMapper;
+		this.classLoader = classLoader;
 		this.endpoint = endpoint;
 		this.info = new MBeanInfoFactory(responseMapper).getMBeanInfo(endpoint);
 		this.operations = getOperations(endpoint);
 	}
+
 
 	private Map<String, JmxOperation> getOperations(ExposableJmxEndpoint endpoint) {
 		Map<String, JmxOperation> operations = new HashMap<>();
@@ -90,7 +94,25 @@ public class EndpointMBean implements DynamicMBean {
 					+ "' has no operation named " + actionName;
 			throw new ReflectionException(new IllegalArgumentException(message), message);
 		}
-		return invoke(operation, params);
+		ClassLoader previousClassLoader = overrideThreadContextClassLoader(this.classLoader);
+		try {
+			return invoke(operation, params);
+		}
+		finally {
+			overrideThreadContextClassLoader(previousClassLoader);
+		}
+	}
+
+	private ClassLoader overrideThreadContextClassLoader(ClassLoader classLoader) {
+		if (classLoader != null) {
+			try {
+				return ClassUtils.overrideThreadContextClassLoader(classLoader);
+			}
+			catch (SecurityException ex) {
+				// can't set class loader, ignore it and proceed
+			}
+		}
+		return null;
 	}
 
 	private Object invoke(JmxOperation operation, Object[] params)

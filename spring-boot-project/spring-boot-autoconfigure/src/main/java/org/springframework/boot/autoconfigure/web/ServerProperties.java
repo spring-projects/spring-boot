@@ -22,7 +22,6 @@ import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +36,6 @@ import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -214,11 +212,6 @@ public class ServerProperties {
 		 */
 		private String applicationDisplayName = "application";
 
-		/**
-		 * Path of the main dispatcher servlet.
-		 */
-		private String path = "/";
-
 		@NestedConfigurationProperty
 		private final Jsp jsp = new Jsp();
 
@@ -248,15 +241,6 @@ public class ServerProperties {
 			this.applicationDisplayName = displayName;
 		}
 
-		public String getPath() {
-			return this.path;
-		}
-
-		public void setPath(String path) {
-			Assert.notNull(path, "Path must not be null");
-			this.path = path;
-		}
-
 		public Map<String, String> getContextParameters() {
 			return this.contextParameters;
 		}
@@ -267,57 +251,6 @@ public class ServerProperties {
 
 		public Session getSession() {
 			return this.session;
-		}
-
-		public String getServletMapping() {
-			if (this.path.equals("") || this.path.equals("/")) {
-				return "/";
-			}
-			if (this.path.contains("*")) {
-				return this.path;
-			}
-			if (this.path.endsWith("/")) {
-				return this.path + "*";
-			}
-			return this.path + "/*";
-		}
-
-		public String getPath(String path) {
-			String prefix = getServletPrefix();
-			if (!path.startsWith("/")) {
-				path = "/" + path;
-			}
-			return prefix + path;
-		}
-
-		public String getServletPrefix() {
-			String result = this.path;
-			int index = result.indexOf('*');
-			if (index != -1) {
-				result = result.substring(0, index);
-			}
-			if (result.endsWith("/")) {
-				result = result.substring(0, result.length() - 1);
-			}
-			return result;
-		}
-
-		public String[] getPathsArray(Collection<String> paths) {
-			String[] result = new String[paths.size()];
-			int i = 0;
-			for (String path : paths) {
-				result[i++] = getPath(path);
-			}
-			return result;
-		}
-
-		public String[] getPathsArray(String[] paths) {
-			String[] result = new String[paths.length];
-			int i = 0;
-			for (String path : paths) {
-				result[i++] = getPath(path);
-			}
-			return result;
 		}
 
 	}

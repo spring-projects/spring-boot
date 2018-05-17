@@ -196,7 +196,6 @@ content into your application. Rather, pick only the properties that you need.
 	server.servlet.jsp.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet.
 	server.servlet.jsp.init-parameters.*= # Init parameters used to configure the JSP servlet.
 	server.servlet.jsp.registered=true # Whether the JSP servlet is registered.
-	server.servlet.path=/ # Path of the main dispatcher servlet.
 	server.servlet.session.cookie.comment= # Comment for the session cookie.
 	server.servlet.session.cookie.domain= # Domain for the session cookie.
 	server.servlet.session.cookie.http-only= # "HttpOnly" flag for the session cookie.
@@ -414,6 +413,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.mvc.pathmatch.use-registered-suffix-pattern=false # Whether suffix pattern matching should work only against extensions registered with "spring.mvc.contentnegotiation.media-types.*".
 	spring.mvc.pathmatch.use-suffix-pattern=false # Whether to use suffix pattern match (".*") when matching patterns to requests.
 	spring.mvc.servlet.load-on-startup=-1 # Load on startup priority of the dispatcher servlet.
+	spring.mvc.servlet.path=/ # Path of the dispatcher servlet.
 	spring.mvc.static-path-pattern=/** # Path pattern used for static resources.
 	spring.mvc.throw-exception-if-no-handler-found=false # Whether a "NoHandlerFoundException" should be thrown if no Handler was found to process a request.
 	spring.mvc.view.prefix= # Spring MVC view prefix.
@@ -567,6 +567,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.liquibase.parameters.*= # Change log parameters.
 	spring.liquibase.password= # Login password of the database to migrate.
 	spring.liquibase.rollback-file= # File to which rollback SQL is written when an update is performed.
+	spring.liquibase.test-rollback-on-update=false # Whether rollback should be tested before update is performed.
 	spring.liquibase.url= # JDBC URL of the database to migrate. If not set, the primary configured data source is used.
 	spring.liquibase.user= # Login user of the database to migrate.
 
@@ -1047,7 +1048,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.listener.poll-timeout= # Timeout to use when polling the consumer.
 	spring.kafka.listener.type=single # Listener type.
 	spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.
-	spring.kafka.producer.batch-size= # Number of records to batch before sending.
+	spring.kafka.producer.batch-size= # Default batch size in bytes.
 	spring.kafka.producer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
 	spring.kafka.producer.buffer-memory= # Total bytes of memory the producer can use to buffer records waiting to be sent to the server.
 	spring.kafka.producer.client-id= # ID to pass to the server when making requests. Used for server-side logging.
@@ -1432,6 +1433,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.wavefront.step=10s # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.wavefront.uri=https://longboard.wavefront.com # URI to ship metrics to.
 	management.metrics.use-global-registry=true # Whether auto-configured MeterRegistry implementations should be bound to the global static registry on Metrics.
+	management.metrics.tags.*= # Common tags that are applied to every meter.
 	management.metrics.web.client.max-uri-tags=100 # Maximum number of unique URI tag values allowed. After the max number of tag values is reached, metrics with additional tag values are denied by filter.
 	management.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.

@@ -44,6 +44,11 @@ public class MetricsProperties {
 	 */
 	private Map<String, Boolean> enable = new LinkedHashMap<>();
 
+	/**
+	 * Common tags that are applied to every meter.
+	 */
+	private final Map<String, String> tags = new LinkedHashMap<>();
+
 	private final Web web = new Web();
 
 	private final Distribution distribution = new Distribution();
@@ -63,6 +68,10 @@ public class MetricsProperties {
 	public void setEnable(Map<String, Boolean> enable) {
 		Assert.notNull(enable, "enable must not be null");
 		this.enable = enable;
+	}
+
+	public Map<String, String> getTags() {
+		return this.tags;
 	}
 
 	public Web getWeb() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,47 +19,33 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.actuate.health.CompositeHealthIndicator;
-import org.springframework.boot.actuate.health.CompositeHealthIndicatorFactory;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistry;
+import org.springframework.boot.actuate.health.HealthIndicatorRegistryFactory;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 
 /**
- * Creates a {@link CompositeHealthIndicator} from beans in the
- * {@link ApplicationContext}.
+ * Creates a {@link HealthIndicatorRegistry} from beans in the {@link ApplicationContext}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
-final class HealthIndicatorBeansComposite {
+final class HealthIndicatorRegistryBeans {
 
-	private HealthIndicatorBeansComposite() {
+	private HealthIndicatorRegistryBeans() {
 	}
 
-	public static HealthIndicator get(ApplicationContext applicationContext) {
-		HealthAggregator healthAggregator = getHealthAggregator(applicationContext);
+	public static HealthIndicatorRegistry get(ApplicationContext applicationContext) {
 		Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
 		indicators.putAll(applicationContext.getBeansOfType(HealthIndicator.class));
 		if (ClassUtils.isPresent("reactor.core.publisher.Flux", null)) {
 			new ReactiveHealthIndicators().get(applicationContext)
 					.forEach(indicators::putIfAbsent);
 		}
-		CompositeHealthIndicatorFactory factory = new CompositeHealthIndicatorFactory();
-		return factory.createHealthIndicator(healthAggregator, indicators);
-	}
-
-	private static HealthAggregator getHealthAggregator(
-			ApplicationContext applicationContext) {
-		try {
-			return applicationContext.getBean(HealthAggregator.class);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return new OrderedHealthAggregator();
-		}
+		HealthIndicatorRegistryFactory factory = new HealthIndicatorRegistryFactory();
+		return factory.createHealthIndicatorRegistry(indicators);
 	}
 
 	private static class ReactiveHealthIndicators {
