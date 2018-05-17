@@ -284,8 +284,9 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					Collection<ExposableWebEndpoint> endpoints = getHandlerMapping(
 							context).getEndpoints();
 					ExposableWebEndpoint endpoint = endpoints.iterator().next();
-					WebOperation webOperation = endpoint.getOperations().iterator()
-							.next();
+					assertThat(endpoint.getOperations()).hasSize(3);
+					WebOperation webOperation = findOperationWithRequestPath(endpoint,
+							"health");
 					Object invoker = ReflectionTestUtils.getField(webOperation,
 							"invoker");
 					assertThat(ReflectionTestUtils.getField(invoker, "target"))
@@ -344,6 +345,17 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 			ApplicationContext context) {
 		return context.getBean("cloudFoundryWebFluxEndpointHandlerMapping",
 				CloudFoundryWebFluxEndpointHandlerMapping.class);
+	}
+
+	private WebOperation findOperationWithRequestPath(ExposableWebEndpoint endpoint,
+			String requestPath) {
+		for (WebOperation operation : endpoint.getOperations()) {
+			if (operation.getRequestPredicate().getPath().equals(requestPath)) {
+				return operation;
+			}
+		}
+		throw new IllegalStateException("No operation found with request path "
+				+ requestPath + " from " + endpoint.getOperations());
 	}
 
 	@Configuration

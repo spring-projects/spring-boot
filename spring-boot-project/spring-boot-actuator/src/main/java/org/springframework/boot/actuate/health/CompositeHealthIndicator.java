@@ -86,6 +86,15 @@ public class CompositeHealthIndicator implements HealthIndicator {
 		this.registry.register(name, indicator);
 	}
 
+	/**
+	 * Return the {@link HealthIndicatorRegistry} of this instance.
+	 * @return the registry of nested {@link HealthIndicator health indicators}
+	 * @since 2.1.0
+	 */
+	public HealthIndicatorRegistry getRegistry() {
+		return this.registry;
+	}
+
 	@Override
 	public Health health() {
 		Map<String, Health> healths = new LinkedHashMap<>();
