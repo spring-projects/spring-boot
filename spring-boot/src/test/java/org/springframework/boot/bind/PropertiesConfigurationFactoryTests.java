@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.bind;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
@@ -27,7 +28,9 @@ import org.junit.Test;
 
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.boot.context.config.RandomValuePropertySource;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.StaticMessageSource;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -209,6 +212,22 @@ public class PropertiesConfigurationFactoryTests {
 		assertThat(foo.fooDLQBar).isEqualTo(("baz"));
 	}
 
+	@Test
+	public void currentDirectoryCanBeBoundToFileProperty() throws Exception {
+		PropertiesConfigurationFactory<FileProperties> factory = new PropertiesConfigurationFactory<FileProperties>(
+				FileProperties.class);
+		factory.setApplicationContext(new AnnotationConfigApplicationContext());
+		factory.setConversionService(new DefaultConversionService());
+		Properties properties = PropertiesLoaderUtils
+				.loadProperties(new ByteArrayResource("someFile: .".getBytes()));
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addFirst(new PropertiesPropertySource("test", properties));
+		factory.setPropertySources(propertySources);
+		factory.afterPropertiesSet();
+		FileProperties fileProperties = factory.getObject();
+		assertThat(fileProperties.getSomeFile()).isEqualTo(new File("."));
+	}
+
 	private Foo createFoo(final String values) throws Exception {
 		setupFactory();
 		return bindFoo(values);
@@ -294,6 +313,20 @@ public class PropertiesConfigurationFactoryTests {
 
 		public void setFooDLQBar(String fooDLQBar) {
 			this.fooDLQBar = fooDLQBar;
+		}
+
+	}
+
+	public static class FileProperties {
+
+		private File someFile;
+
+		public File getSomeFile() {
+			return this.someFile;
+		}
+
+		public void setSomeFile(File someFile) {
+			this.someFile = someFile;
 		}
 
 	}

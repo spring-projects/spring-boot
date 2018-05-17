@@ -16,6 +16,7 @@
 
 package org.springframework.boot.bind;
 
+import java.beans.PropertyEditor;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.propertyeditors.FileEditor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.env.StandardEnvironment;
@@ -57,6 +59,13 @@ import org.springframework.validation.DataBinder;
  * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
+
+	private static final Set<Class<?>> EXCLUDED_EDITORS;
+	static {
+		Set<Class<?>> excluded = new HashSet<Class<?>>();
+		excluded.add(FileEditor.class);
+		EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
+	}
 
 	private static final Object BLANK = new Object();
 
@@ -451,6 +460,24 @@ public class RelaxedDataBinder extends DataBinder {
 			target = new MapHolder(map);
 		}
 		return target;
+	}
+
+	@Override
+	public void registerCustomEditor(Class<?> requiredType,
+			PropertyEditor propertyEditor) {
+		if (propertyEditor == null
+				|| !EXCLUDED_EDITORS.contains(propertyEditor.getClass())) {
+			super.registerCustomEditor(requiredType, propertyEditor);
+		}
+	}
+
+	@Override
+	public void registerCustomEditor(Class<?> requiredType, String field,
+			PropertyEditor propertyEditor) {
+		if (propertyEditor == null
+				|| !EXCLUDED_EDITORS.contains(propertyEditor.getClass())) {
+			super.registerCustomEditor(requiredType, field, propertyEditor);
+		}
 	}
 
 	/**
