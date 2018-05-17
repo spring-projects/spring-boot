@@ -261,7 +261,7 @@ by implementing `ApplicationContextAware` or, if the listener is a bean, by usin
 [[boot-features-web-environment]]
 === Web Environment
 A `SpringApplication` attempts to create the right type of `ApplicationContext` on your
-behalf. The algorithm used to determine a `WebEnvironmentType` is fairly simple:
+behalf. The algorithm used to determine a `WebApplicationType` is fairly simple:
 
 * If Spring MVC is present, an `AnnotationConfigServletWebServerApplicationContext` is
 used
