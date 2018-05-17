@@ -19,14 +19,19 @@ package org.springframework.boot.actuate.web.mappings.servlet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.Servlet;
+
 import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping;
 import org.springframework.util.ClassUtils;
@@ -44,6 +49,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * DispatcherServlets}.
  *
  * @author Andy Wilkinson
+ * @author Filip Hrisafov
  * @since 2.0.0
  */
 public class DispatcherServletsMappingDescriptionProvider
@@ -81,10 +87,30 @@ public class DispatcherServletsMappingDescriptionProvider
 	private Map<String, List<DispatcherServletMappingDescription>> describeMappings(
 			WebApplicationContext context) {
 		Map<String, List<DispatcherServletMappingDescription>> mappings = new HashMap<>();
+		Set<DispatcherServlet> processedServlets = new HashSet<>();
+
+		context.getBeansOfType(ServletRegistrationBean.class)
+				.values()
+				.forEach((registrationBean) -> {
+					Servlet servlet = registrationBean.getServlet();
+					if (DispatcherServlet.class.isInstance(servlet)) {
+						DispatcherServlet dispatcherServlet = (DispatcherServlet) servlet;
+						processedServlets.add(dispatcherServlet);
+						mappings.put(registrationBean.getServletName(), describeMappings(
+								new DispatcherServletHandlerMappings(
+										registrationBean.getServletName(),
+										dispatcherServlet, context)));
+					}
+				});
+
 		context.getBeansOfType(DispatcherServlet.class)
-				.forEach((name, dispatcherServlet) -> mappings.put(name,
-						describeMappings(new DispatcherServletHandlerMappings(name,
-								dispatcherServlet, context))));
+				.forEach((name, dispatcherServlet) -> {
+					if (!processedServlets.contains(dispatcherServlet)) {
+						mappings.put(name, describeMappings(
+								new DispatcherServletHandlerMappings(name,
+										dispatcherServlet, context)));
+					}
+				});
 		return mappings;
 	}
 

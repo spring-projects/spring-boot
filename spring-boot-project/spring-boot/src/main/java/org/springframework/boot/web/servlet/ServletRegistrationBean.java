@@ -104,7 +104,7 @@ public class ServletRegistrationBean<T extends Servlet>
 	 * Returns the servlet being registered.
 	 * @return the servlet
 	 */
-	protected T getServlet() {
+	public T getServlet() {
 		return this.servlet;
 	}
 
