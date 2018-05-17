@@ -1042,7 +1042,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.listener.poll-timeout= # Timeout to use when polling the consumer.
 	spring.kafka.listener.type=single # Listener type.
 	spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.
-	spring.kafka.producer.batch-size= # Number of records to batch before sending.
+	spring.kafka.producer.batch-size= # Default batch size in bytes.
 	spring.kafka.producer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
 	spring.kafka.producer.buffer-memory= # Total bytes of memory the producer can use to buffer records waiting to be sent to the server.
 	spring.kafka.producer.client-id= # ID to pass to the server when making requests. Used for server-side logging.
