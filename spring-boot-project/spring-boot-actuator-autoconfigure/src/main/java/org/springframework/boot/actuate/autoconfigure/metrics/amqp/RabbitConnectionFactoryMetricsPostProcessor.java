@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Stephane Nicoll
  */
-public class RabbitConnectionFactoryMetricsPostProcessor
+class RabbitConnectionFactoryMetricsPostProcessor
 		implements BeanPostProcessor, Ordered {
 
 	private static final String CONNECTION_FACTORY_SUFFIX = "connectionFactory";
