@@ -51,6 +51,13 @@ public class LocalHostUriTemplateHandlerTests {
 	}
 
 	@Test
+	public void createWhenHandlerIsNullShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Handler must not be null");
+		new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null);
+	}
+
+	@Test
 	public void getRootUriShouldUseLocalServerPort() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("local.server.port", "1234");
