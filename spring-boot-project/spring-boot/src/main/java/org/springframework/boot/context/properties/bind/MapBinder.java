@@ -83,10 +83,9 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	protected Map<Object, Object> merge(Supplier<?> existing,
+	protected Map<Object, Object> merge(Supplier<Map<Object, Object>> existing,
 			Map<Object, Object> additional) {
-		Map<Object, Object> existingMap = (Map<Object, Object>) existing.get();
+		Map<Object, Object> existingMap = existing.get();
 		if (existingMap == null) {
 			return additional;
 		}
