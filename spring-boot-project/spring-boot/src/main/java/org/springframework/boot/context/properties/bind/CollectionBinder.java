@@ -55,10 +55,9 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	protected Collection<Object> merge(Supplier<?> existing,
+	protected Collection<Object> merge(Supplier<Collection<Object>> existing,
 			Collection<Object> additional) {
-		Collection<Object> existingCollection = (Collection<Object>) existing.get();
+		Collection<Object> existingCollection = existing.get();
 		if (existingCollection == null) {
 			return additional;
 		}

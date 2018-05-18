@@ -56,7 +56,7 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 	}
 
 	@Override
-	protected Object merge(Supplier<?> existing, Object additional) {
+	protected Object merge(Supplier<Object> existing, Object additional) {
 		return additional;
 	}
 
