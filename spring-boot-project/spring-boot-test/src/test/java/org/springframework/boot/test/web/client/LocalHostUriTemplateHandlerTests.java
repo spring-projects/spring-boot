@@ -16,12 +16,13 @@
 
 package org.springframework.boot.test.web.client;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.mock.env.MockEnvironment;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LocalHostUriTemplateHandler}.
