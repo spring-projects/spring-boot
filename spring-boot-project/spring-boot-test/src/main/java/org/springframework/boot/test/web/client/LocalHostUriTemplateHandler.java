@@ -64,17 +64,17 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate URIs with the
 	 * given {@code scheme}, use the given {@code environment} to determine the
-	 * context-path and port and delegate to the given template handler.
+	 * context-path and port and delegate to the given template {@code handler}.
 	 * @param environment the environment used to determine the port
 	 * @param scheme the scheme of the root uri
-	 * @param delegateHandler the delegate handler
-	 * @since 2.0.X
+	 * @param handler the delegate handler
+	 * @since 2.0.3
 	 */
-	public LocalHostUriTemplateHandler(Environment environment, String scheme, UriTemplateHandler delegateHandler) {
-		super(delegateHandler);
+	public LocalHostUriTemplateHandler(Environment environment, String scheme, UriTemplateHandler handler) {
+		super(handler);
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(scheme, "Scheme must not be null");
-		Assert.notNull(delegateHandler, "DelegateHandler must not be null");
+		Assert.notNull(handler, "Handler must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
 	}
