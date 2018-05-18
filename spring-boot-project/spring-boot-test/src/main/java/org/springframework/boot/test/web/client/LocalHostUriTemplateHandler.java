@@ -70,11 +70,11 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 * @param handler the delegate handler
 	 * @since 2.0.3
 	 */
-	public LocalHostUriTemplateHandler(Environment environment, String scheme, UriTemplateHandler handler) {
+	public LocalHostUriTemplateHandler(Environment environment, String scheme,
+			UriTemplateHandler handler) {
 		super(handler);
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(scheme, "Scheme must not be null");
-		Assert.notNull(handler, "Handler must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
 	}
