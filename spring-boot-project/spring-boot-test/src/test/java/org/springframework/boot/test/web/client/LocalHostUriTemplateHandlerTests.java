@@ -16,13 +16,12 @@
 
 package org.springframework.boot.test.web.client;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.mock.env.MockEnvironment;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LocalHostUriTemplateHandler}.
@@ -48,6 +47,13 @@ public class LocalHostUriTemplateHandlerTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Scheme must not be null");
 		new LocalHostUriTemplateHandler(new MockEnvironment(), null);
+	}
+
+	@Test
+	public void createWhenHandlerIsNullShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Handler must not be null");
+		new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null);
 	}
 
 	@Test
