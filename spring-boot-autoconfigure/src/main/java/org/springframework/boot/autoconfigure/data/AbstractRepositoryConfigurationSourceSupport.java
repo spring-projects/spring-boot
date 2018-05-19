@@ -65,7 +65,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
 				getConfiguration(), true);
 		return new AnnotationRepositoryConfigurationSource(metadata, getAnnotation(),
-				this.resourceLoader, this.environment, registry) {
+				this.resourceLoader, this.environment) {
 			@Override
 			public java.lang.Iterable<String> getBasePackages() {
 				return AbstractRepositoryConfigurationSourceSupport.this
