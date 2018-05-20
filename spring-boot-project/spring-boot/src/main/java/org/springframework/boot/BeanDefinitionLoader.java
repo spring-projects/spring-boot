@@ -196,14 +196,12 @@ class BeanDefinitionLoader {
 		// Attempt as resources
 		Resource[] resources = findResources(resolvedSource);
 		int loadCount = 0;
-		boolean atLeastOneResourceExists = false;
 		for (Resource resource : resources) {
 			if (isLoadCandidate(resource)) {
-				atLeastOneResourceExists = true;
 				loadCount += load(resource);
 			}
 		}
-		if (atLeastOneResourceExists) {
+		if (0 < loadCount) {
 			return loadCount;
 		}
 		// Attempt as package
