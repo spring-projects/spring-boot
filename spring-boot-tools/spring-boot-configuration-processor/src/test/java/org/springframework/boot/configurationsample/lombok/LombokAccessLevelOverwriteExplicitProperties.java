@@ -31,6 +31,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 @Getter(AccessLevel.PUBLIC)
 @Setter(AccessLevel.PUBLIC)
 @ConfigurationProperties(prefix = "accesslevel.overwrite.explicit")
+@SuppressWarnings("unused")
 public class LombokAccessLevelOverwriteExplicitProperties {
 
 	private String name0;

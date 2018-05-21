@@ -338,7 +338,6 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return hasAnnotation(element, LOMBOK_DATA_ANNOTATION);
 	}
 
-
 	private boolean isAccessLevelPublic(AnnotationMirror lombokAnnotation) {
 		Map<String, Object> values = getAnnotationElementValues(lombokAnnotation);
 		Object value = values.get("value");

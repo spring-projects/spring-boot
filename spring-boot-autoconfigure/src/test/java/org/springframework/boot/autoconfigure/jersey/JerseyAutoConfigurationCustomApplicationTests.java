@@ -43,7 +43,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} when using a custom {@link Application}.
+ * Tests for {@link JerseyAutoConfiguration} when using a custom
+ * {@link Application}.
  *
  * @author Stephane Nicoll
  */
@@ -52,14 +53,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class JerseyAutoConfigurationCustomApplicationTests {
 
-
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test/hello",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/test/hello", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
@@ -79,9 +78,8 @@ public class JerseyAutoConfigurationCustomApplicationTests {
 	}
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, JerseyAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ EmbeddedServletContainerAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Configuration
