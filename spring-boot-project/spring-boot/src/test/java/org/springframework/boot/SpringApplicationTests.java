@@ -1091,7 +1091,7 @@ public class SpringApplicationTests {
 	@Test
 	public void nonWebApplicationConfiguredViaAPropertyHasTheCorrectTypeOfContextAndEnvironment() {
 		ConfigurableApplicationContext context = new SpringApplication(
-				ExampleConfig.class).run("--spring.main.web-application-type=NONE");
+				ExampleConfig.class).run("--spring.main.web-application-type=none");
 		assertThat(context).isNotInstanceOfAny(WebApplicationContext.class,
 				ReactiveWebApplicationContext.class);
 		assertThat(context.getEnvironment())
