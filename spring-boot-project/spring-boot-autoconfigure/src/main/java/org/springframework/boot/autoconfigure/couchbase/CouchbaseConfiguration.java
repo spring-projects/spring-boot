@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.couchbase;
 
 import java.util.List;
-import java.util.function.BiFunction;
 
 import com.couchbase.client.core.env.KeyValueServiceConfig;
 import com.couchbase.client.core.env.QueryServiceConfig;
@@ -29,7 +28,6 @@ import com.couchbase.client.java.cluster.ClusterInfo;
 import com.couchbase.client.java.env.DefaultCouchbaseEnvironment;
 
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Endpoints;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Endpoints.CouchbaseService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -129,25 +127,14 @@ public class CouchbaseConfiguration {
 		return builder;
 	}
 
-	@SuppressWarnings("deprecation")
 	private QueryServiceConfig getQueryServiceConfig(Endpoints endpoints) {
-		return getServiceConfig(endpoints.getQueryservice(), endpoints.getQuery(),
-				QueryServiceConfig::create);
+		return QueryServiceConfig.create(endpoints.getQueryservice().getMinEndpoints(),
+				endpoints.getQueryservice().getMaxEndpoints());
 	}
 
-	@SuppressWarnings("deprecation")
 	private ViewServiceConfig getViewServiceConfig(Endpoints endpoints) {
-		return getServiceConfig(endpoints.getViewservice(), endpoints.getView(),
-				ViewServiceConfig::create);
-	}
-
-	private <T> T getServiceConfig(CouchbaseService service, Integer fallback,
-			BiFunction<Integer, Integer, T> factory) {
-		if (service.getMinEndpoints() != 1 || service.getMaxEndpoints() != 1) {
-			return factory.apply(service.getMinEndpoints(), service.getMaxEndpoints());
-		}
-		int endpoints = (fallback != null ? fallback : 1);
-		return factory.apply(endpoints, endpoints);
+		return ViewServiceConfig.create(endpoints.getViewservice().getMinEndpoints(),
+				endpoints.getViewservice().getMaxEndpoints());
 	}
 
 }

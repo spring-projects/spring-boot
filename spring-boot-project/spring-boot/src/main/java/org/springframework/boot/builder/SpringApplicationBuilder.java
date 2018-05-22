@@ -289,19 +289,6 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Flag to explicitly request a web or non-web environment (auto detected based on
-	 * classpath if not set).
-	 * @param webEnvironment the flag to set
-	 * @return the current builder
-	 * @deprecated since 2.0.0 in favour of {@link #web(WebApplicationType)}
-	 */
-	@Deprecated
-	public SpringApplicationBuilder web(boolean webEnvironment) {
-		this.application.setWebEnvironment(webEnvironment);
-		return this;
-	}
-
-	/**
 	 * Flag to explicitly request a specific type of web application. Auto-detected based
 	 * on the classpath if not set.
 	 * @param webApplicationType the type of web application
