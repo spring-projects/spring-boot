@@ -16,6 +16,9 @@
 
 package org.springframework.boot.cloud;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.springframework.core.env.Environment;
 
 /**
@@ -87,14 +90,11 @@ public enum CloudPlatform {
 	 * @return the {@link CloudPlatform} or {@code null}
 	 */
 	public static CloudPlatform getActive(Environment environment) {
-		if (environment != null) {
-			for (CloudPlatform cloudPlatform : values()) {
-				if (cloudPlatform.isActive(environment)) {
-					return cloudPlatform;
-				}
-			}
-		}
-		return null;
+		return Optional.ofNullable(environment)
+				.flatMap(presentEnvironment -> Arrays.stream(values())
+						.filter(cloudPlatform -> cloudPlatform.isActive(presentEnvironment))
+						.findFirst()
+				).orElse(null);
 	}
-
 }
+
