@@ -46,7 +46,6 @@
 		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jersey</module>
-		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-jetty-jsp</module>
 		<module>spring-boot-sample-jetty-ssl</module>
