@@ -59,7 +59,8 @@ public class ServletEndpointManagementContextConfiguration {
 
 		private final ApplicationContext context;
 
-		public WebMvcServletEndpointManagementContextConfiguration(ApplicationContext context) {
+		public WebMvcServletEndpointManagementContextConfiguration(
+				ApplicationContext context) {
 			this.context = context;
 		}
 
@@ -67,8 +68,12 @@ public class ServletEndpointManagementContextConfiguration {
 		public ServletEndpointRegistrar servletEndpointRegistrar(
 				WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier) {
-			DispatcherServletPathProvider servletPathProvider = this.context.getBean(DispatcherServletPathProvider.class);
-			String servletPath = (servletPathProvider.getServletPath().equals("/") ? "" : servletPathProvider.getServletPath());
+			DispatcherServletPathProvider servletPathProvider = this.context
+					.getBean(DispatcherServletPathProvider.class);
+			String servletPath = servletPathProvider.getServletPath();
+			if (servletPath.equals("/")) {
+				servletPath = "";
+			}
 			return new ServletEndpointRegistrar(servletPath + properties.getBasePath(),
 					servletEndpointsSupplier.getEndpoints());
 		}
