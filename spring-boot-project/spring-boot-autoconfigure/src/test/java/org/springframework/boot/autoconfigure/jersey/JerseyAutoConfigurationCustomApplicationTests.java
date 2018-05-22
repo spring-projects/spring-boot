@@ -51,7 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class JerseyAutoConfigurationCustomApplicationTests {
 
-
 	@Autowired
 	private TestRestTemplate restTemplate;
 
