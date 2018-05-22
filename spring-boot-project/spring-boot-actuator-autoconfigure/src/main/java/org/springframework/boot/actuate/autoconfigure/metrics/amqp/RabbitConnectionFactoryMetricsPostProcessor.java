@@ -30,13 +30,12 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link BeanPostProcessor} that configures RabbitMQ metrics. Such arrangement is
- * necessary because a connection can be eagerly created and cached without a reference
- * to a proper {@link MetricsCollector}.
+ * necessary because a connection can be eagerly created and cached without a reference to
+ * a proper {@link MetricsCollector}.
  *
  * @author Stephane Nicoll
  */
-class RabbitConnectionFactoryMetricsPostProcessor
-		implements BeanPostProcessor, Ordered {
+class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, Ordered {
 
 	private static final String CONNECTION_FACTORY_SUFFIX = "connectionFactory";
 

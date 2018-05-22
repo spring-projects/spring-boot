@@ -72,7 +72,6 @@ public class EndpointMBean implements DynamicMBean {
 		this.operations = getOperations(endpoint);
 	}
 
-
 	private Map<String, JmxOperation> getOperations(ExposableJmxEndpoint endpoint) {
 		Map<String, JmxOperation> operations = new HashMap<>();
 		endpoint.getOperations()
@@ -94,7 +93,8 @@ public class EndpointMBean implements DynamicMBean {
 					+ "' has no operation named " + actionName;
 			throw new ReflectionException(new IllegalArgumentException(message), message);
 		}
-		ClassLoader previousClassLoader = overrideThreadContextClassLoader(this.classLoader);
+		ClassLoader previousClassLoader = overrideThreadContextClassLoader(
+				this.classLoader);
 		try {
 			return invoke(operation, params);
 		}

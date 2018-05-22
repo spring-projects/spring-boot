@@ -33,8 +33,8 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 
 	@Override
 	public final Health aggregate(Map<String, Health> healths) {
-		List<Status> statusCandidates = healths.values().stream()
-				.map(Health::getStatus).collect(Collectors.toList());
+		List<Status> statusCandidates = healths.values().stream().map(Health::getStatus)
+				.collect(Collectors.toList());
 		Status status = aggregateStatus(statusCandidates);
 		Map<String, Object> details = aggregateDetails(healths);
 		return new Health.Builder(status, details).build();

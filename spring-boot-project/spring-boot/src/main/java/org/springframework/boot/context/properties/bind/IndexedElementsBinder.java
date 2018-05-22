@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Supplier;
@@ -83,22 +82,24 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			ResolvableType aggregateType, ResolvableType elementType) {
 		ConfigurationProperty property = source.getConfigurationProperty(root);
 		if (property != null) {
-			Collection<Object> elements;
-			Object value = property.getValue();
-			if (value instanceof String && !StringUtils.hasText((String) value)) {
-				elements = Collections.emptyList();
-			}
-			else {
-				Object aggregate = convert(value, aggregateType, target.getAnnotations());
-				ResolvableType collectionType = ResolvableType
-						.forClassWithGenerics(collection.get().getClass(), elementType);
-				elements = convert(aggregate, collectionType);
-			}
-			collection.get().addAll(elements);
+			bindValue(target, collection.get(), aggregateType, elementType,
+					property.getValue());
 		}
 		else {
 			bindIndexed(source, root, elementBinder, collection, elementType);
 		}
+	}
+
+	private void bindValue(Bindable<?> target, Collection<Object> collection,
+			ResolvableType aggregateType, ResolvableType elementType, Object value) {
+		if (value instanceof String && !StringUtils.hasText((String) value)) {
+			return;
+		}
+		Object aggregate = convert(value, aggregateType, target.getAnnotations());
+		ResolvableType collectionType = ResolvableType
+				.forClassWithGenerics(collection.getClass(), elementType);
+		Collection<Object> elements = convert(aggregate, collectionType);
+		collection.addAll(elements);
 	}
 
 	private void bindIndexed(ConfigurationPropertySource source,

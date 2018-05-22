@@ -238,7 +238,8 @@ public final class EndpointRequest {
 		}
 
 		private String getEndpointId(Class<?> source) {
-			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source, Endpoint.class);
+			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source,
+					Endpoint.class);
 			Assert.state(annotation != null,
 					() -> "Class " + source + " is not annotated with @Endpoint");
 			return annotation.id();

@@ -51,14 +51,13 @@ public class QuartzDataSourceInitializerTests {
 	@Test
 	public void commentPrefixCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues(
-						"spring.quartz.jdbc.comment-prefix=##",
+				.withPropertyValues("spring.quartz.jdbc.comment-prefix=##",
 						"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_@@platform@@.sql")
 				.run((context) -> {
 					JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
 					assertThat(jdbcTemplate.queryForObject(
 							"SELECT COUNT(*) FROM QRTZ_TEST_TABLE", Integer.class))
-							.isEqualTo(0);
+									.isEqualTo(0);
 				});
 	}
 
@@ -69,7 +68,8 @@ public class QuartzDataSourceInitializerTests {
 		@Bean
 		public QuartzDataSourceInitializer initializer(DataSource dataSource,
 				ResourceLoader resourceLoader, QuartzProperties properties) {
-			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
+			return new QuartzDataSourceInitializer(dataSource, resourceLoader,
+					properties);
 		}
 
 	}
