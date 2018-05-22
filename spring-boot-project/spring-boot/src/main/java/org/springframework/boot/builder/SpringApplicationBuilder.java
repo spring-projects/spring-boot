@@ -189,7 +189,7 @@ public class SpringApplicationBuilder {
 		// It's not possible if embedded web server are enabled to support web contexts as
 		// parents because the servlets cannot be initialized at the right point in
 		// lifecycle.
-		web(false);
+		web(WebApplicationType.NONE);
 
 		// Probably not interested in multiple banners
 		bannerMode(Banner.Mode.OFF);
@@ -208,8 +208,9 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder parent(Class<?>... sources) {
 		if (this.parent == null) {
-			this.parent = new SpringApplicationBuilder(sources).web(false)
-					.properties(this.defaultProperties).environment(this.environment);
+			this.parent = new SpringApplicationBuilder(sources)
+					.web(WebApplicationType.NONE).properties(this.defaultProperties)
+					.environment(this.environment);
 		}
 		else {
 			this.parent.sources(sources);
