@@ -12,7 +12,7 @@ unacceptable behavior to spring-code-of-conduct@pivotal.io.
 
 
 
-== Using GitHub issues
+== Using GitHub Issues
 We use GitHub issues to track bugs and enhancements. If you have a general usage question
 please ask on http://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
 broader community monitor the http://stackoverflow.com/tags/spring-boot[`spring-boot`]
@@ -70,7 +70,7 @@ added after the original pull request but before a merge.
 
 
 
-== Working with the code
+== Working with the Code
 If you don't have an IDE preference we would recommend that you use
 https://spring.io/tools/sts[Spring Tools Suite] or
 http://eclipse.org[Eclipse] when working with the code. We use the
@@ -79,13 +79,13 @@ should also work without issue.
 
 
 
-=== Building from source
+=== Building from Source
 To build the source you will need to install
 http://maven.apache.org/run-maven/index.html[Apache Maven] v3.2.3 or above and JDK 1.8.
 
 
 
-==== Default build
+==== Default Build
 The project can be built from the root directory using the standard maven command:
 
 [indent=0]
@@ -150,7 +150,7 @@ to Maven by setting a `MAVEN_OPTS` environment variable with the value
 
 
 
-=== Importing into eclipse
+=== Importing into Eclipse
 You can import the Spring Boot code into any Eclipse Mars based distribution. The easiest
 way to setup a new environment is to use the Eclipse Installer with the provided
 `.setup` file.
@@ -181,7 +181,7 @@ easier to navigate.
 
 
 
-==== Manual installation with m2eclipse
+==== Manual Installation with M2Eclipse
 If you prefer to install Eclipse yourself we recommend that you use the
 http://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
 installed it is available from the "Eclipse marketplace".
@@ -208,7 +208,7 @@ need to import the root `spring-boot` pom and the `spring-boot-samples` pom sepa
 
 
 
-==== Importing into eclipse without m2eclipse
+==== Importing into Eclipse without M2Eclipse
 If you prefer not to use m2eclipse you can generate eclipse project metadata using the
 following command:
 
@@ -222,12 +222,12 @@ from the `file` menu.
 
 
 
-=== Importing into other IDEs
+=== Importing into Other IDEs
 Maven is well supported by most Java IDEs. Refer to your vendor documentation.
 
 
 
-== Integration tests
+== Integration Tests
 The sample applications are used as integration tests during the build (when you
 `mvn install`). Due to the fact that they make use of the `spring-boot-maven-plugin`
 they cannot be called directly, and so instead are launched via the
