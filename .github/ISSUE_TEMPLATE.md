@@ -1,5 +1,6 @@
 <!--
-Thanks for raising a Spring Boot issue. What sort of issue are you raising?
+Thanks for raising a Spring Boot issue. Please take the time to review the following
+categories as some of them do not apply here.
 
 ❓Question
 Please ask questions about how to use something, or to understand why something isn't
