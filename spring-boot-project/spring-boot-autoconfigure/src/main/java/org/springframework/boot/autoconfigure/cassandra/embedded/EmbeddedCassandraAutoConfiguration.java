@@ -99,10 +99,8 @@ public class EmbeddedCassandraAutoConfiguration {
 		Config config = new Config();
 
 		mapper.from(props::getClusterName).whenHasText().to(it -> config.cluster_name = it);
-		mapper.from(props::getPort).as(it -> randomPort(it, ports)).to(it -> {
-			config.native_transport_port = it;
-			config.start_native_transport = true;
-		});
+		mapper.from(props::getPort).as(it -> randomPort(it, ports)).to(it -> config.native_transport_port = it);
+		mapper.from(props::isNativeTransportEnabled).to(it -> config.start_native_transport = it);
 		mapper.from(props::getListenAddress).whenHasText()
 				.to(it -> config.listen_address = it);
 		mapper.from(props::getListenInterface).whenHasText()
@@ -111,10 +109,8 @@ public class EmbeddedCassandraAutoConfiguration {
 				.to(it -> config.listen_interface_prefer_ipv6 = it);
 		mapper.from(props::getPortSsl).whenNonNull().as(it -> randomPort(it, ports))
 				.to(it -> config.native_transport_port_ssl = it);
-		mapper.from(props::getRpcPort).as(it -> randomPort(it, ports)).to(it -> {
-			config.rpc_port = it;
-			config.start_rpc = true;
-		});
+		mapper.from(props::getRpcPort).as(it -> randomPort(it, ports)).to(it -> config.rpc_port = it);
+		mapper.from(props::isRpcTransportEnabled).to(it -> config.start_rpc = it);
 		mapper.from(props::getRpcAddress).whenHasText()
 				.to(it -> config.rpc_address = it);
 		mapper.from(props::getRpcInterface).whenHasText()
@@ -145,7 +141,8 @@ public class EmbeddedCassandraAutoConfiguration {
 		mapper.from(props::getRoleManager).whenNonNull().to(it -> config.role_manager = it.getCanonicalName());
 		mapper.from(props::getInternodeAuthenticator).whenNonNull()
 				.to(it -> config.internode_authenticator = it.getCanonicalName());
-		mapper.from(props::getRequestScheduler).whenNonNull().to(it -> config.request_scheduler = it.getCanonicalName());
+		mapper.from(props::getRequestScheduler).whenNonNull()
+				.to(it -> config.request_scheduler = it.getCanonicalName());
 		mapper.from(props::getSeedProvider).as(this::toParameterizedClass).whenNonNull()
 				.to(it -> config.seed_provider = it);
 		mapper.from(props::getEndpointSnitch).whenNonNull().to(it -> config.endpoint_snitch = it.getCanonicalName());
@@ -154,7 +151,8 @@ public class EmbeddedCassandraAutoConfiguration {
 		mapper.from(props::getInternodeCompression).whenNonNull().to(it -> config.internode_compression = it);
 		mapper.from(props::getDiskAccessMode).whenNonNull().to(it -> config.disk_access_mode = it);
 		mapper.from(props::getCommitFailurePolicy).whenNonNull().to(it -> config.commit_failure_policy = it);
-		mapper.from(props::getUserFunctionTimeoutPolicy).whenNonNull().to(it -> config.user_function_timeout_policy = it);
+		mapper.from(props::getUserFunctionTimeoutPolicy).whenNonNull()
+				.to(it -> config.user_function_timeout_policy = it);
 		mapper.from(props::getRequestSchedulerId).whenNonNull().to(it -> config.request_scheduler_id = it);
 		mapper.from(props::getDiskOptimizationStrategy).whenNonNull().to(it -> config.disk_optimization_strategy = it);
 		mapper.from(props::getRpcType).whenHasText().to(it -> config.rpc_server_type = it);

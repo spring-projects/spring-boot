@@ -961,6 +961,7 @@ content into your application. Rather, pick only the properties that you need.
     spring.cassandra.embedded.permissions-update-interval=2s # Refresh interval for permissions cache (if enabled). After this interval, cache entries become eligible for refresh.
     spring.cassandra.embedded.permissions-validity=2s # Validity period for permissions cache. Will be disabled automatically for AllowAllAuthorizer.
     spring.cassandra.embedded.port=0 # Port for the CQL native transport to listen for clients on.
+    spring.cassandra.embedded.native-transport-enabled=true # Start the native transport or not.
     spring.cassandra.embedded.port-ssl= # Enabling native transport encryption.
     spring.cassandra.embedded.range-request-timeout=10s # How long the coordinator should wait for seq or index scans to complete.
     spring.cassandra.embedded.read-request-timeout=5s # How long the coordinator should wait for read operations to complete.
@@ -975,6 +976,7 @@ content into your application. Rather, pick only the properties that you need.
     spring.cassandra.embedded.rpc-interface-prefer-ipv6=false # If you choose to specify the interface by name and the interface has an ipv4 and an ipv6 address you can specify  which should be chosen using rpcInterfacePreferIpv6. If false the first ipv4 address will be used. If true the first ipv6 address will be used. Defaults to false preferring ipv4. If there is only one address it will be selected regardless of ipv4/ipv6.
     spring.cassandra.embedded.rpc-keepalive=true # Enable or disable keepalive on rpc/native connections.
     spring.cassandra.embedded.rpc-port=0 # port for Thrift to listen for clients on.
+    spring.cassandra.embedded.rpc-transport-enabled=true # Start RPC transport or not.
     spring.cassandra.embedded.rpc-type=sync # Type of RPC server.
     spring.cassandra.embedded.saved-caches-directory= # The directory location where table key and row caches are stored.
     spring.cassandra.embedded.seed-provider.parameters= # Parameters.

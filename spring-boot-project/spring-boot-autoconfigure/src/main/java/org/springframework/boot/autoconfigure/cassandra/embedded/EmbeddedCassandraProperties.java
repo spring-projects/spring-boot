@@ -65,6 +65,10 @@ public class EmbeddedCassandraProperties {
 	 */
 	private int port = 0;
 	/**
+	 * Start the native transport or not.
+	 */
+	private boolean nativeTransportEnabled = true;
+	/**
 	 * Address or interface to bind to and tell other Cassandra nodes to connect to.
 	 * Set listenAddress OR listenInterface, not both.
 	 */
@@ -311,6 +315,10 @@ public class EmbeddedCassandraProperties {
 	 */
 	private int rpcPort = 0;
 	/**
+	 * Start RPC transport or not.
+	 */
+	private boolean rpcTransportEnabled = true;
+	/**
 	 * The address or interface to bind the native transport server to.
 	 * Set rpcAddress OR rpcInterface, not both.
 	 */
@@ -354,6 +362,7 @@ public class EmbeddedCassandraProperties {
 	 * The number of milliseconds Cassandra waits before flushing hints from internal buffers to disk.
 	 */
 	private Duration hintsFlushPeriod = Duration.ofSeconds(10);
+
 	/**
 	 * Working directory.
 	 */
@@ -917,6 +926,22 @@ public class EmbeddedCassandraProperties {
 
 	public void setServerEncryption(ServerEncryption serverEncryption) {
 		this.serverEncryption = serverEncryption;
+	}
+
+	public boolean isNativeTransportEnabled() {
+		return this.nativeTransportEnabled;
+	}
+
+	public void setNativeTransportEnabled(boolean nativeTransportEnabled) {
+		this.nativeTransportEnabled = nativeTransportEnabled;
+	}
+
+	public boolean isRpcTransportEnabled() {
+		return this.rpcTransportEnabled;
+	}
+
+	public void setRpcTransportEnabled(boolean rpcTransportEnabled) {
+		this.rpcTransportEnabled = rpcTransportEnabled;
 	}
 
 	/**

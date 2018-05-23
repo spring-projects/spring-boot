@@ -139,6 +139,8 @@ public class EmbeddedCassandraAutoConfigurationTests {
 		assertThat(config.rpc_keepalive).isTrue();
 		assertThat(config.auto_snapshot).isTrue();
 		assertThat(config.cdc_enabled).isFalse();
+		assertThat(config.start_native_transport).isTrue();
+		assertThat(config.start_rpc).isTrue();
 
 		assertThat(config.server_encryption_options).isNotNull();
 		assertThat(config.server_encryption_options.algorithm).isEqualTo("SunX509");
@@ -176,6 +178,7 @@ public class EmbeddedCassandraAutoConfigurationTests {
 		load("spring.cassandra.embedded.cluster-name=Boot Cluster",
 				"spring.cassandra.embedded.startup-timeout=0s",
 				"spring.cassandra.embedded.port=2000",
+				"spring.cassandra.embedded.native-transport-enabled=false",
 				"spring.cassandra.embedded.listen-address=127.0.0.1",
 				"spring.cassandra.embedded.listen-interface=eth0",
 				"spring.cassandra.embedded.port-ssl=2001",
@@ -234,6 +237,7 @@ public class EmbeddedCassandraAutoConfigurationTests {
 				"spring.cassandra.embedded.listen-on-broadcast-address=true",
 				"spring.cassandra.embedded.rpc-type=sync",
 				"spring.cassandra.embedded.rpc-port=2009",
+				"spring.cassandra.embedded.rpc-transport-enabled=true",
 				"spring.cassandra.embedded.rpc-address=127.0.0.1",
 				"spring.cassandra.embedded.rpc-interface=eth0",
 				"spring.cassandra.embedded.rpc-keepalive=false",
@@ -328,7 +332,7 @@ public class EmbeddedCassandraAutoConfigurationTests {
 		assertThat(config.broadcast_rpc_address).isEqualTo("127.0.0.1");
 		assertThat(config.listen_on_broadcast_address).isTrue();
 		assertThat(config.rpc_server_type).isEqualTo("sync");
-		assertThat(config.start_native_transport).isTrue();
+		assertThat(config.start_native_transport).isFalse();
 		assertThat(config.start_rpc).isTrue();
 		assertThat(config.rpc_interface).isEqualTo("eth0");
 		assertThat(config.rpc_interface_prefer_ipv6).isTrue();

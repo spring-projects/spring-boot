@@ -17,11 +17,14 @@
 package org.springframework.boot.autoconfigure.cassandra.embedded;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
@@ -55,144 +58,150 @@ public class EmbeddedCassandraServerTests {
 
 
 	@Test
-	public void shouldFailInvalidConfig() throws IOException {
-
+	public void invalidConfig() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Cassandra is not started.");
 
-		EmbeddedCassandraServer server = new EmbeddedCassandraServer();
-		server.setConfig(new Config());
-		server.setStartupTimeout(Duration.ofSeconds(15));
-		server.start();
+		EmbeddedCassandraServer cassandra = start(new Config(), null, Duration.ofSeconds(5));
 
 		assertThat(this.outputCapture.toString())
 				.contains("Exception encountered during startup");
-		assertThat(server.isRunning()).isFalse();
 
-
+		assertThat(cassandra.isRunning())
+				.withFailMessage("Cassandra is running. Cassandra should not be started if something wrong with " +
+						"config.")
+				.isFalse();
 	}
 
 	@Test
-	public void timeout() throws IOException {
+	public void timeout() throws Exception {
+
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Cassandra is not started after '1' ms. Please increase startup timeout.");
 
-		EmbeddedCassandraServer server = new EmbeddedCassandraServer();
-		server.setConfig(new Config());
-		server.setStartupTimeout(Duration.ofMillis(1));
-		server.start();
-		assertThat(server.isRunning()).isFalse();
+		EmbeddedCassandraServer cassandra = start(config(), null, Duration.ofMillis(1));
 
-
+		assertThat(cassandra.isRunning())
+				.withFailMessage("Cassandra is running. Timeout method must 'stop' it.")
+				.isFalse();
 
 	}
 
-
 	@Test
-	public void shouldRunWithoutAwait() throws IOException {
-		EmbeddedCassandraServer server = new EmbeddedCassandraServer();
-		server.setConfig(getConfig());
-		server.start();
+	public void withoutAwait() throws Exception {
 
-		assertThat(server.isRunning()).isFalse();
+		EmbeddedCassandraServer cassandra = start(config(), null, null);
+
+		assertThat(cassandra.isRunning())
+				.withFailMessage("Cassandra is running. Cassandra can not be started so fast.")
+				.isFalse();
+
+		assertThat(await(Duration.ofMinutes(2), cassandra::isRunning))
+				.withFailMessage("Cassandra is not running.")
+				.isTrue();
+
 	}
 
 	@Test
-	public void doubleStartFail() throws IOException {
+	public void alreadyStarted() throws Exception {
+
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Cassandra process is already initialized");
-		EmbeddedCassandraServer server = new EmbeddedCassandraServer();
-		server.setConfig(getConfig());
-		server.start();
-		server.start();
-	}
 
-	@Test
-	public void shouldEnableDebugMode() throws IOException, InterruptedException {
-		ServerSocket serverSocket = new ServerSocket(0);
-		int p = serverSocket.getLocalPort();
-		EmbeddedCassandraServer server = new EmbeddedCassandraServer();
-		server.setConfig(getConfig());
-		server.setArgs(Collections.singletonList("-agentlib:jdwp=transport=dt_socket," +
-				"address=" + p + ",server=y,suspend=y"));
-		serverSocket.close();
-		server.start();
-		Thread.sleep(5000);
-		assertThat(this.outputCapture.toString())
-				.contains("Listening for transport dt_socket at address: " + p);
-		assertThat(server.isRunning()).isEqualTo(false);
+		EmbeddedCassandraServer cassandra = start(config(), null, null);
+		cassandra.start();
 
 	}
 
+
 	@Test
-	public void shouldUseCustomDir() throws IOException {
+	public void args() throws Exception {
+
+		ServerSocket ss = new ServerSocket(0);
+		int port = ss.getLocalPort();
+		Config config = config();
+
+		ss.close();
+
+		start(config, null, null, "-agentlib:jdwp=transport=dt_socket,address=" + port + ",server=y,suspend=y");
+
+		assertThat(await(Duration.ofSeconds(5), () -> this.outputCapture.toString()
+				.contains("Listening for transport dt_socket at address: " + port)))
+				.withFailMessage("Debug mode is not running")
+				.isTrue();
+
+
+	}
+
+	@Test
+	public void customDirectory() throws Exception {
+
 		File workingDir = new File("target/cassandra");
 		FileSystemUtils.deleteRecursively(workingDir);
 
-		EmbeddedCassandraServer server = new EmbeddedCassandraServer();
-		server.setConfig(getConfig());
-		server.setStartupTimeout(Duration.ofMinutes(1));
-		server.setWorkingDir(workingDir.toPath());
+		Config config = config();
 
-		server.start();
-		assertThat(server.isRunning()).isTrue();
+		start(config, workingDir.toPath(), Duration.ofMinutes(1));
 
-		createTable(server, "users");
-		server.stop();
+		keyspace("boot", config);
+		table("boot", "user", config);
 
-		assertThat(server.isRunning()).isFalse();
 		assertThat(workingDir).isDirectory();
 		assertThat(workingDir.listFiles()).isNotEmpty();
 
+
 	}
+
 
 	@Test
-	public void startStopLifecycle() throws IOException {
+	public void startStop() throws Exception {
 
-		EmbeddedCassandraServer server = new EmbeddedCassandraServer();
-		server.setConfig(getConfig());
-		server.setStartupTimeout(Duration.ofMinutes(1));
+		Config config = config();
 
-		server.start();
-		assertThat(server.isRunning()).isTrue();
-		createTable(server, "users");
-		server.stop();
-		assertThat(server.isRunning()).isFalse();
+		EmbeddedCassandraServer cassandra = start(config, null, Duration.ofMinutes(1));
 
-		server.start();
-		assertThat(server.isRunning()).isTrue();
-		createTable(server, "UsersUsers");
-		server.stop();
-		assertThat(server.isRunning()).isFalse();
+		assertThat(cassandra.isRunning())
+				.withFailMessage("Cassandra is not running")
+				.isTrue();
+		keyspace("boot", config);
+		table("boot", "user", config);
 
+		cassandra.stop();
 
-	}
+		cassandra.start();
 
-	private void createTable(EmbeddedCassandraServer server, String table) {
-		try (Cluster cluster = Cluster.builder().addContactPoint("localhost")
-				.withPort(server.getConfig().native_transport_port)
-				.build()) {
-			Session session = cluster.connect();
-			session.execute("CREATE KEYSPACE IF NOT EXISTS boot_test"
-					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
+		assertThat(cassandra.isRunning())
+				.withFailMessage("Cassandra is not running")
+				.isTrue();
+		keyspace("boot", config);
+		table("boot", "user", config);
 
-			session.execute("CREATE TABLE IF NOT EXISTS boot_test." + table + " ( " +
-					"  id text PRIMARY KEY, " +
-					"  first_name text," +
-					");");
-		}
+		cassandra.stop();
 
 	}
 
+	private static EmbeddedCassandraServer start(Config config, Path workingDirectory, Duration timeout, String... args)
+			throws Exception {
+		EmbeddedCassandraServer cassandra = new EmbeddedCassandraServer();
+		cassandra.setConfig(config);
+		cassandra.setStartupTimeout(timeout);
+		cassandra.setWorkingDir(workingDirectory);
+		cassandra.setArgs(Arrays.asList(args));
+		cassandra.start();
+		return cassandra;
+	}
 
-	private Config getConfig() {
 
-		Iterator<Integer> iterator = SocketUtils.findAvailableTcpPorts(4).iterator();
+	private static Config config() {
+
 		Config config = new Config();
-		config.native_transport_port = iterator.next();
-		config.rpc_port = iterator.next();
-		config.storage_port = iterator.next();
-		config.ssl_storage_port = iterator.next();
+
+		Iterator<Integer> ports = SocketUtils.findAvailableTcpPorts(4).iterator();
+
+		config.native_transport_port = ports.next();
+		config.rpc_port = ports.next();
+		config.storage_port = ports.next();
+		config.ssl_storage_port = ports.next();
 		config.start_native_transport = true;
 		config.rpc_address = "localhost";
 		config.listen_address = "localhost";
@@ -204,5 +213,48 @@ public class EmbeddedCassandraServerTests {
 				Collections.singletonMap("seeds", "localhost"));
 
 		return config;
+	}
+
+
+	private static boolean await(Duration timeout, Callable<Boolean> callable) throws Exception {
+
+		long startTime = System.nanoTime();
+		long rem = timeout.toNanos();
+		do {
+			Boolean result = callable.call();
+			if (result) {
+				return true;
+			}
+			if (rem > 0) {
+				Thread.sleep(Math.min(TimeUnit.NANOSECONDS.toMillis(rem) + 1, 500));
+			}
+			rem = timeout.toNanos() - (System.nanoTime() - startTime);
+		} while (rem > 0);
+
+		return false;
+	}
+
+
+	private static void keyspace(String keyspace, Config config) {
+		try (Cluster cluster = cluster(config)) {
+			Session session = cluster.connect();
+			session.execute("CREATE KEYSPACE IF NOT EXISTS " + keyspace
+					+ "  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };");
+		}
+	}
+
+	private static void table(String keyspace, String table, Config config) {
+		try (Cluster cluster = cluster(config)) {
+			Session session = cluster.connect();
+			session.execute("CREATE TABLE IF NOT EXISTS " + keyspace + "." + table + " ( " +
+					"  id text PRIMARY KEY )");
+		}
+	}
+
+	private static Cluster cluster(Config config) {
+		return Cluster.builder()
+				.addContactPoint(config.listen_address)
+				.withPort(config.native_transport_port)
+				.build();
 	}
 }
