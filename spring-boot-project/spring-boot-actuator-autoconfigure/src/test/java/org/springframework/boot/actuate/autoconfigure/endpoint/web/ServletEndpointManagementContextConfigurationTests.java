@@ -49,12 +49,11 @@ public class ServletEndpointManagementContextConfigurationTests {
 
 	@Test
 	public void contextShouldContainServletEndpointRegistrar() {
-		FilteredClassLoader classLoader = new FilteredClassLoader(
-				ResourceConfig.class);
+		FilteredClassLoader classLoader = new FilteredClassLoader(ResourceConfig.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
-			assertThat(context)
-					.hasSingleBean(ServletEndpointRegistrar.class);
-			ServletEndpointRegistrar bean = context.getBean(ServletEndpointRegistrar.class);
+			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
+			ServletEndpointRegistrar bean = context
+					.getBean(ServletEndpointRegistrar.class);
 			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
 			assertThat(basePath).isEqualTo("/test/actuator");
 		});
@@ -65,9 +64,9 @@ public class ServletEndpointManagementContextConfigurationTests {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
 				DispatcherServlet.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
-			assertThat(context)
-					.hasSingleBean(ServletEndpointRegistrar.class);
-			ServletEndpointRegistrar bean = context.getBean(ServletEndpointRegistrar.class);
+			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
+			ServletEndpointRegistrar bean = context
+					.getBean(ServletEndpointRegistrar.class);
 			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
 			assertThat(basePath).isEqualTo("/actuator");
 		});

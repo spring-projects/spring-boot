@@ -84,9 +84,6 @@ The following sample applications are provided:
 | Integration application built using Spring Integration and its Java DSL
 
 | link:spring-boot-sample-jersey[spring-boot-sample-jersey]
-| RESTful service built using Jersey 2
-
-| link:spring-boot-sample-jersey1[spring-boot-sample-jersey1]
 | RESTful service built using Jersey
 
 | link:spring-boot-sample-jetty[spring-boot-sample-jetty]

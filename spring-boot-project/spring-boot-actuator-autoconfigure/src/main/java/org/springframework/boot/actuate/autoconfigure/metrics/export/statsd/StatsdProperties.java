@@ -21,7 +21,6 @@ import java.time.Duration;
 import io.micrometer.statsd.StatsdFlavor;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties} for configuring StatsD metrics export.
@@ -64,11 +63,6 @@ public class StatsdProperties {
 	 * StatsD server.
 	 */
 	private Duration pollingFrequency = Duration.ofSeconds(10);
-
-	/**
-	 * Maximum size of the queue of items waiting to be sent to the StatsD server.
-	 */
-	private Integer queueSize = Integer.MAX_VALUE;
 
 	/**
 	 * Whether to send unchanged meters to the StatsD server.
@@ -121,17 +115,6 @@ public class StatsdProperties {
 
 	public void setPollingFrequency(Duration pollingFrequency) {
 		this.pollingFrequency = pollingFrequency;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "No longer configurable and an unbounded queue will always be used")
-	public Integer getQueueSize() {
-		return this.queueSize;
-	}
-
-	@Deprecated
-	public void setQueueSize(Integer queueSize) {
-		this.queueSize = queueSize;
 	}
 
 	public boolean isPublishUnchangedMeters() {

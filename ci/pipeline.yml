@@ -519,6 +519,8 @@ jobs:
   - get: artifactory-repo
     trigger: false
     passed: [promote-release]
+    params:
+      save_build_info: true
   - task: sync-to-maven-central
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/sync-to-maven-central.yml

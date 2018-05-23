@@ -107,8 +107,8 @@ public class LocalHostUriTemplateHandlerTests {
 		URI uri = URI.create("http://www.example.com");
 		given(uriTemplateHandler.expand("https://localhost:8080/", uriVariables))
 				.willReturn(uri);
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(
-				environment, "https", uriTemplateHandler);
+		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(environment,
+				"https", uriTemplateHandler);
 		assertThat(handler.expand("/", uriVariables)).isEqualTo(uri);
 		verify(uriTemplateHandler).expand("https://localhost:8080/", uriVariables);
 	}
