@@ -318,7 +318,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Resolve the environment variables to use.
-	 * @return a {@link EnvVariables} defining the environment variables
+	 * @return an {@link EnvVariables} defining the environment variables
 	 */
 	protected EnvVariables resolveEnvVariables() {
 		return new EnvVariables(this.environmentVariables);

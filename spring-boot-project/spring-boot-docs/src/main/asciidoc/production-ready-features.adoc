@@ -1809,7 +1809,7 @@ Auto-configuration enables the instrumentation of all available Hibernate
 Metrics are also tagged by the name of the `EntityManagerFactory` that is derived from
 the bean name.
 
-To enable statistics, the standardJPA property `hibernate.generate_statistics` must be
+To enable statistics, the standard JPA property `hibernate.generate_statistics` must be
 set to `true`. You can enable that on the auto-configured `EntityManagerFactory` as shown
 in the following example:
 

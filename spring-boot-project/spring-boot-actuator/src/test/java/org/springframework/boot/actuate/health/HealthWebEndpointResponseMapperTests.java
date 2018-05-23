@@ -46,7 +46,7 @@ public class HealthWebEndpointResponseMapperTests {
 
 	private final HealthStatusHttpMapper statusHttpMapper = new HealthStatusHttpMapper();
 
-	private Set<String> autorizedRoles = Collections.singleton("ACTUATOR");
+	private Set<String> authorizedRoles = Collections.singleton("ACTUATOR");
 
 	@Test
 	public void mapDetailsWithDisableDetailsDoesNotInvokeSupplier() {
@@ -122,7 +122,7 @@ public class HealthWebEndpointResponseMapperTests {
 
 	private HealthWebEndpointResponseMapper createMapper(ShowDetails showDetails) {
 		return new HealthWebEndpointResponseMapper(this.statusHttpMapper, showDetails,
-				this.autorizedRoles);
+				this.authorizedRoles);
 	}
 
 }
