@@ -35,7 +35,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Elasticsearch
  * support.
  * <p>
- * Registers a {@link ElasticsearchTemplate} if no other bean of the same type is
+ * Registers an {@link ElasticsearchTemplate} if no other bean of the same type is
  * configured.
  *
  * @author Artur Konczak

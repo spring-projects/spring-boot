@@ -67,7 +67,7 @@ public class PropertySourceOrigin implements Origin {
 	}
 
 	/**
-	 * Get a {@link Origin} for the given {@link PropertySource} and {@code propertyName}.
+	 * Get an {@link Origin} for the given {@link PropertySource} and {@code propertyName}.
 	 * Will either return an {@link OriginLookup} result or a
 	 * {@link PropertySourceOrigin}.
 	 * @param propertySource the origin property source

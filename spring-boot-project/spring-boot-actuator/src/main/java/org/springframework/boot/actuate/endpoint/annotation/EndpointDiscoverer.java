@@ -354,7 +354,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			DiscoveredOperationMethod operationMethod, OperationInvoker invoker);
 
 	/**
-	 * Create a {@link OperationKey} for the given operation.
+	 * Create an {@link OperationKey} for the given operation.
 	 * @param operation the source operation
 	 * @return the operation key
 	 */
