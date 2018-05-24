@@ -153,7 +153,6 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default kafkaConsumerFactory bean.
-	 * 
 	 * @return the consumer properties initialized with the customizations defined
 	 *         on this instance
 	 */
@@ -168,7 +167,6 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default kafkaProducerFactory bean.
-	 * 
 	 * @return the producer properties initialized with the customizations defined
 	 *         on this instance
 	 */
@@ -181,7 +179,8 @@ public class KafkaProperties {
 	private static String resourceToPath(Resource resource) {
 		try {
 			return resource.getFile().getAbsolutePath();
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new IllegalStateException("Resource '" + resource + "' must be on a file system", ex);
 		}
 	}
