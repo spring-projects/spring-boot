@@ -47,12 +47,14 @@ given the ability to merge pull requests.
 None of these is essential for a pull request, but they will all help.  They can also be
 added after the original pull request but before a merge.
 
-* Use the Spring Framework code format conventions. If you use Eclipse and you follow
-  the '`Importing into eclipse`' instructions below you should get project specific
-  formatting automatically. You can also import formatter settings using the
-  `eclipse-code-formatter.xml` file from the `eclipse` folder. If using IntelliJ IDEA, you
-  can use the http://plugins.jetbrains.com/plugin/6546[Eclipse Code Formatter Plugin]
-  to import the same file.
+* We use the https://github.com/spring-io/spring-javaformat/[Spring JavaFormat] project
+  to apply code formatting conventions. If you use Eclipse and you follow the '`Importing
+  into eclipse`' instructions below you should get project specific formatting
+  automatically. You can also install the https://github.com/spring-io/spring-javaformat/#intellij-idea[Spring JavaFormat IntelliJ Plugin]
+  or format the code from the Maven build by running
+  `./mvnw io.spring.javaformat:spring-javaformat-maven-plugin:apply`.
+* The build includes checkstyle rules for many of our code conventions. Run
+  `./mvnw validate` if you want to check you changes are compliant.
 * Make sure all new `.java` files to have a simple Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is
   for.
@@ -80,13 +82,15 @@ should also work without issue.
 
 
 === Building from Source
-To build the source you will need to install
-http://maven.apache.org/run-maven/index.html[Apache Maven] v3.2.3 or above and JDK 1.8.
+Spring Boot source can be build from the command line using
+http://maven.apache.org/run-maven/index.html[Apache Maven] on JDK 1.8 or above.
+We include '`Maven Wrapper`' scripts (`./mvnw` or `mvnw.bat`) that you can run rather
+than needing to install Maven locally.
 
 
 
 ==== Default Build
-The project can be built from the root directory using the standard maven command:
+The project can be built from the root directory using the standard Maven command:
 
 [indent=0]
 ----
@@ -151,9 +155,9 @@ to Maven by setting a `MAVEN_OPTS` environment variable with the value
 
 
 === Importing into Eclipse
-You can import the Spring Boot code into any Eclipse Mars based distribution. The easiest
+You can import the Spring Boot code into any Eclipse Oxygen based distribution. The easiest
 way to setup a new environment is to use the Eclipse Installer with the provided
-`.setup` file.
+`.setup` file (in the `/eclipse` folder).
 
 
 ==== Using the Eclipse Installer
@@ -182,43 +186,26 @@ easier to navigate.
 
 
 ==== Manual Installation with M2Eclipse
-If you prefer to install Eclipse yourself we recommend that you use the
+If you prefer to install Eclipse yourself you should use the
 http://eclipse.org/m2e/[M2Eclipse] eclipse plugin. If you don't already have m2eclipse
 installed it is available from the "Eclipse marketplace".
 
 Spring Boot includes project specific source formatting settings, in order to have these
-work with m2eclipse, we provide additional Eclipse plugins that you can install:
+work with m2eclipse, we provide an additional Eclipse plugin that you can install:
 
-===== Install the m2eclipse-maveneclipse plugin
-* Select "`Help`" -> "`Install New Software`".
-* Add `https://dl.bintray.com/philwebb/m2eclipse-maveneclipse` as a site.
-* Install "Maven Integration for the maven-eclipse-plugin"
+
 
 ===== Install the Spring Formatter plugin
 * Select "`Help`" -> "`Install New Software`".
-* Add `https://dl.bintray.com/philwebb/spring-eclipse-code-formatter/` as a site.
-* Install "Spring Code Formatter"
+* Add `https://dl.bintray.com/spring/javaformat-eclipse/` as a site.
+* Install "Spring Java Format"
 
-NOTE: These plugins are optional. Projects can be imported without the plugins, your code
+NOTE: The plugin is optional. Projects can be imported without the plugins, your code
 changes just won't be automatically formatted.
 
 With the requisite eclipse plugins installed you can select
 `import existing maven projects` from the `file` menu to import the code. You will
 need to import the root `spring-boot` pom and the `spring-boot-samples` pom separately.
-
-
-
-==== Importing into Eclipse without M2Eclipse
-If you prefer not to use m2eclipse you can generate eclipse project metadata using the
-following command:
-
-[indent=0]
-----
-	$ ./mvnw eclipse:eclipse
-----
-
-The generated eclipse projects can be imported by selecting `import existing projects`
-from the `file` menu.
 
 
 
@@ -229,7 +216,7 @@ Maven is well supported by most Java IDEs. Refer to your vendor documentation.
 
 == Integration Tests
 The sample applications are used as integration tests during the build (when you
-`mvn install`). Due to the fact that they make use of the `spring-boot-maven-plugin`
+`./mvnw install`). Due to the fact that they make use of the `spring-boot-maven-plugin`
 they cannot be called directly, and so instead are launched via the
 `maven-invoker-plugin`. If you encounter build failures running the integration tests,
 check the `build.log` file in the appropriate sample directory.
