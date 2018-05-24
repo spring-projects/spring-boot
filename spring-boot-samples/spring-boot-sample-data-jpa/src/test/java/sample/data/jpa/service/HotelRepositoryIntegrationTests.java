@@ -67,4 +67,5 @@ public class HotelRepositoryIntegrationTests {
 		assertThat(counts.get(0).getRating()).isEqualTo(Rating.AVERAGE);
 		assertThat(counts.get(0).getCount()).isGreaterThan(1L);
 	}
+
 }

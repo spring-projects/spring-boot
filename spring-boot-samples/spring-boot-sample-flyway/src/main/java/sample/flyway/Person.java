@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,13 @@ import javax.persistence.Id;
 
 @Entity
 public class Person {
+
 	@Id
 	@GeneratedValue
 	private Long id;
+
 	private String firstName;
+
 	private String lastName;
 
 	public String getFirstName() {
@@ -49,4 +52,5 @@ public class Person {
 		return "Person [firstName=" + this.firstName + ", lastName=" + this.lastName
 				+ "]";
 	}
+
 }

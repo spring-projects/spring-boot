@@ -20,9 +20,13 @@ package samples.websocket.undertow.snake;
 public class Location {
 
 	public int x;
+
 	public int y;
+
 	public static final int GRID_SIZE = 10;
+
 	public static final int PLAYFIELD_HEIGHT = 480;
+
 	public static final int PLAYFIELD_WIDTH = 640;
 
 	public Location(int x, int y) {
@@ -74,4 +78,5 @@ public class Location {
 		result = 31 * result + this.y;
 		return result;
 	}
+
 }

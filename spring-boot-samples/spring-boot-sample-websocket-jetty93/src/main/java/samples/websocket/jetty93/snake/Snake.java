@@ -157,4 +157,5 @@ public class Snake {
 	public String getHexColor() {
 		return this.hexColor;
 	}
+
 }

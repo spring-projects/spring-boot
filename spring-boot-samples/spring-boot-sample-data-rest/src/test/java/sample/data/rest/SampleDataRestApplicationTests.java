@@ -83,4 +83,5 @@ public class SampleDataRestApplicationTests {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("_embedded.cities", hasSize(3)));
 	}
+
 }

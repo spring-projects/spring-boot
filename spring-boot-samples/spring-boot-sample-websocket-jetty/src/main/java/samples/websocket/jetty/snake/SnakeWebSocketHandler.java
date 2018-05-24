@@ -30,13 +30,17 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class SnakeWebSocketHandler extends TextWebSocketHandler {
 
 	public static final int PLAYFIELD_WIDTH = 640;
+
 	public static final int PLAYFIELD_HEIGHT = 480;
+
 	public static final int GRID_SIZE = 10;
 
 	private static final AtomicInteger snakeIds = new AtomicInteger(0);
+
 	private static final Random random = new Random();
 
 	private final int id;
+
 	private Snake snake;
 
 	public static String getRandomHexColor() {
@@ -109,4 +113,5 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 		SnakeTimer.broadcast(
 				String.format("{'type': 'leave', 'id': %d}", Integer.valueOf(this.id)));
 	}
+
 }
