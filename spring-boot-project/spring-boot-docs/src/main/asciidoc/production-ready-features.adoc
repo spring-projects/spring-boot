@@ -662,7 +662,7 @@ authorization checks using its `isUserInRole(String)` method.
 ==== Servlet endpoints
 A `Servlet` can be exposed as an endpoint by implementing a class annotated with
 `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`. Servlet endpoints
-provide deeper integration with the Servlet container but at the expose of portability.
+provide deeper integration with the Servlet container but at the expense of portability.
 They are intended to be used to expose an existing `Servlet` as an endpoint. For new
 endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever
 possible.
