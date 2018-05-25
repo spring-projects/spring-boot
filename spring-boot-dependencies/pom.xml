@@ -648,6 +648,13 @@
 				<groupId>com.googlecode.json-simple</groupId>
 				<artifactId>json-simple</artifactId>
 				<version>${simple-json.version}</version>
+				<exclusions>
+					<!-- Remove compile time dependency on junit, see https://github.com/fangyidong/json-simple/issues/91 -->
+					<exclusion>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>
