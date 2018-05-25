@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/login").setViewName("login");
+		registry.addViewController("/access").setViewName("access");
+	}
+
+	public static void main(String[] args) throws Exception {
+		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
+	}
+
 	@Controller
 	protected static class HomeController {
 
@@ -53,16 +63,6 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 			return "home";
 		}
 
-	}
-
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/login").setViewName("login");
-		registry.addViewController("/access").setViewName("access");
-	}
-
-	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

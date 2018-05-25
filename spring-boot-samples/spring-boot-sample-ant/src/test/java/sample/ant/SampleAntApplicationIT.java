@@ -16,16 +16,17 @@
 
 package sample.ant;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.util.FileCopyUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration Tests for {@code SampleAntApplication}.

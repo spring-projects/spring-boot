@@ -25,7 +25,7 @@ import sample.test.domain.VehicleIdentificationNumber;
  */
 public class VehicleIdentificationNumberNotFoundException extends RuntimeException {
 
-	private VehicleIdentificationNumber vehicleIdentificationNumber;
+	private final VehicleIdentificationNumber vehicleIdentificationNumber;
 
 	public VehicleIdentificationNumberNotFoundException(VehicleIdentificationNumber vin) {
 		this(vin, null);

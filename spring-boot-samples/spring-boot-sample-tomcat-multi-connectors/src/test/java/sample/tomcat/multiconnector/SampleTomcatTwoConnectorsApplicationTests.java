@@ -127,7 +127,7 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 
 		private final HostnameVerifier verifier;
 
-		public MySimpleClientHttpRequestFactory(final HostnameVerifier verifier) {
+		MySimpleClientHttpRequestFactory(final HostnameVerifier verifier) {
 			this.verifier = verifier;
 		}
 
