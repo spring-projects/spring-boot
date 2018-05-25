@@ -157,9 +157,9 @@ public class MetricsProperties {
 	public static class Distribution {
 
 		/**
-		 * Whether meter IDs starting-with the specified name should be publish percentile
-		 * histograms. Monitoring systems that support aggregable percentile calculation
-		 * based on a histogram be set to true. For other systems, this has no effect. The
+		 * Whether meter IDs starting with the specified name should publish percentile
+		 * histograms. For monitoring systems that support aggregable percentile calculation
+		 * based on a histogram, this can be set to true. For other systems, this has no effect. The
 		 * longest match wins, the key `all` can also be used to configure all meters.
 		 */
 		private Map<String, Boolean> percentilesHistogram = new LinkedHashMap<>();
