@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD:spring-boot-samples/spring-boot-sample-quartz/src/main/java/sample/quartz/SampleJob.java
  * Copyright 2012-2017 the original author or authors.
+=======
+ * Copyright 2012-2018 the original author or authors.
+>>>>>>> local15x/1.5.x:spring-boot-samples/spring-boot-sample-hibernate4/src/main/java/sample/hibernate4/service/CitySearchCriteria.java
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
