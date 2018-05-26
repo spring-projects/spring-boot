@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,14 +81,11 @@ public class MessageControllerWebTests {
 	}
 
 	private static class RegexMatcher extends TypeSafeMatcher<String> {
+
 		private final String regex;
 
-		public RegexMatcher(String regex) {
+		RegexMatcher(String regex) {
 			this.regex = regex;
-		}
-
-		public static org.hamcrest.Matcher<java.lang.String> matches(String regex) {
-			return new RegexMatcher(regex);
 		}
 
 		@Override
@@ -106,5 +103,11 @@ public class MessageControllerWebTests {
 			description.appendText("a string that matches regex: ")
 					.appendText(this.regex);
 		}
+
+		public static org.hamcrest.Matcher<java.lang.String> matches(String regex) {
+			return new RegexMatcher(regex);
+		}
+
 	}
+
 }
