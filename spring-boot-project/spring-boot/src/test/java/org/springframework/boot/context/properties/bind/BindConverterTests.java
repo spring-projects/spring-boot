@@ -70,8 +70,7 @@ public class BindConverterTests {
 
 	@Test
 	public void createWhenPropertyEditorInitializerIsNullShouldCreate() {
-		new BindConverter(
-				ApplicationConversionService.getSharedInstance(), null);
+		new BindConverter(ApplicationConversionService.getSharedInstance(), null);
 	}
 
 	@Test

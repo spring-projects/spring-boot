@@ -125,10 +125,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 				.just("error/" + errorStatus.toString(),
 						"error/" + SERIES_VIEWS.get(errorStatus.series()), "error/error")
 				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
-				.switchIfEmpty(
-						this.errorProperties.getWhitelabel().isEnabled()
-								? renderDefaultErrorView(responseBody, error)
-								: Mono.error(getError(request)))
+				.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
+						? renderDefaultErrorView(responseBody, error)
+						: Mono.error(getError(request)))
 				.next().doOnNext((response) -> logError(request, errorStatus));
 	}
 

@@ -145,7 +145,8 @@ public class EndpointRequestTests {
 		endpoints.add(mockEndpoint("foo", "foo"));
 		endpoints.add(mockEndpoint("bar", "bar"));
 		endpoints.add(mockEndpoint("baz", "baz"));
-		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints("/actuator", () -> endpoints);
+		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints("/actuator",
+				() -> endpoints);
 		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/baz");
 		assertMatcher(matcher).matches("/actuator/bar");
