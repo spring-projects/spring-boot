@@ -578,6 +578,11 @@
 				<groupId>io.spring.javaformat</groupId>
 				<artifactId>spring-javaformat-maven-plugin</artifactId>
 				<version>${spring-javaformat.version}</version>
+				<configuration>
+					<excludes>
+						<exclude>**/HelpMojo.java</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>validate</phase>
