@@ -72,7 +72,8 @@ public class DispatcherServletAutoConfigurationTests {
 	// from the default one, we're registering one anyway
 	@Test
 	public void registrationOverrideWithDispatcherServletWrongName() {
-		this.contextRunner.withUserConfiguration(CustomDispatcherServletDifferentName.class)
+		this.contextRunner
+				.withUserConfiguration(CustomDispatcherServletDifferentName.class)
 				.run((context) -> {
 					ServletRegistrationBean<?> registration = context
 							.getBean(ServletRegistrationBean.class);
@@ -89,8 +90,7 @@ public class DispatcherServletAutoConfigurationTests {
 				.run((context) -> {
 					ServletRegistrationBean<?> registration = context
 							.getBean(ServletRegistrationBean.class);
-					assertThat(registration.getUrlMappings())
-							.containsExactly("/foo");
+					assertThat(registration.getUrlMappings()).containsExactly("/foo");
 					assertThat(registration.getServletName())
 							.isEqualTo("customDispatcher");
 					assertThat(context).hasSingleBean(DispatcherServlet.class);

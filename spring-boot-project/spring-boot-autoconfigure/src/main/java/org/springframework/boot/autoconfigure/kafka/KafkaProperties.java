@@ -949,6 +949,7 @@ public class KafkaProperties {
 						"Resource '" + resource + "' must be on a file system", ex);
 			}
 		}
+
 	}
 
 	public static class Jaas {
