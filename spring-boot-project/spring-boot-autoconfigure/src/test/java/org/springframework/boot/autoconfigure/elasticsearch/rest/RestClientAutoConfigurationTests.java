@@ -100,6 +100,7 @@ public class RestClientAutoConfigurationTests {
 		public RestClient customRestClient() {
 			return mock(RestClient.class);
 		}
+
 	}
 
 	@Configuration
@@ -109,6 +110,7 @@ public class RestClientAutoConfigurationTests {
 		public RestClientBuilderCustomizer myCustomizer() {
 			return (builder) -> builder.setMaxRetryTimeoutMillis(42);
 		}
+
 	}
 
 }

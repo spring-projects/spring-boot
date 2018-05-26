@@ -59,8 +59,8 @@ public class HealthEndpointTests {
 
 	@Test
 	public void statusForComponentIsExposed() {
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
-				Collections.singletonMap("test", one)));
+		HealthEndpoint endpoint = new HealthEndpoint(
+				createHealthIndicator(Collections.singletonMap("test", one)));
 		Health health = endpoint.healthForComponent("test");
 		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -69,8 +69,8 @@ public class HealthEndpointTests {
 
 	@Test
 	public void statusForUnknownComponentReturnNull() {
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
-				Collections.emptyMap()));
+		HealthEndpoint endpoint = new HealthEndpoint(
+				createHealthIndicator(Collections.emptyMap()));
 		Health health = endpoint.healthForComponent("does-not-exist");
 		assertThat(health).isNull();
 	}
@@ -79,7 +79,7 @@ public class HealthEndpointTests {
 	public void statusForComponentInstanceIsExposed() {
 		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(
 				new OrderedHealthAggregator(), new DefaultHealthIndicatorRegistry(
-				Collections.singletonMap("sub", () -> Health.down().build())));
+						Collections.singletonMap("sub", () -> Health.down().build())));
 		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
 				Collections.singletonMap("test", compositeIndicator)));
 		Health health = endpoint.healthForComponentInstance("test", "sub");
@@ -92,7 +92,7 @@ public class HealthEndpointTests {
 	public void statusForUnknownComponentInstanceReturnNull() {
 		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(
 				new OrderedHealthAggregator(), new DefaultHealthIndicatorRegistry(
-				Collections.singletonMap("sub", () -> Health.down().build())));
+						Collections.singletonMap("sub", () -> Health.down().build())));
 		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
 				Collections.singletonMap("test", compositeIndicator)));
 		Health health = endpoint.healthForComponentInstance("test", "does-not-exist");

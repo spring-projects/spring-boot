@@ -57,10 +57,12 @@ public class PropertiesMeterFilter implements MeterFilter {
 
 	private static MeterFilter createMapFilter(Map<String, String> tags) {
 		if (tags.isEmpty()) {
-			return new MeterFilter() { };
+			return new MeterFilter() {
+			};
 		}
-		Tags commonTags = Tags.of(tags.entrySet().stream().map((entry) ->
-				Tag.of(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
+		Tags commonTags = Tags.of(tags.entrySet().stream()
+				.map((entry) -> Tag.of(entry.getKey(), entry.getValue()))
+				.collect(Collectors.toList()));
 		return MeterFilter.commonTags(commonTags);
 	}
 

@@ -43,10 +43,9 @@ public class DefaultHealthIndicatorRegistry implements HealthIndicatorRegistry {
 	}
 
 	/**
-	 * Create a new {@link DefaultHealthIndicatorRegistry} from the specified
-	 * indicators.
-	 * @param healthIndicators a map of {@link HealthIndicator}s with the key
-	 * being used as an indicator name.
+	 * Create a new {@link DefaultHealthIndicatorRegistry} from the specified indicators.
+	 * @param healthIndicators a map of {@link HealthIndicator}s with the key being used
+	 * as an indicator name.
 	 */
 	public DefaultHealthIndicatorRegistry(Map<String, HealthIndicator> healthIndicators) {
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");

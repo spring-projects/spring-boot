@@ -57,8 +57,8 @@ public class CompositeHealthIndicatorFactory {
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 		HealthIndicatorRegistryFactory factory = new HealthIndicatorRegistryFactory(
 				this.healthIndicatorNameFactory);
-		return new CompositeHealthIndicator(
-				healthAggregator, factory.createHealthIndicatorRegistry(healthIndicators));
+		return new CompositeHealthIndicator(healthAggregator,
+				factory.createHealthIndicatorRegistry(healthIndicators));
 	}
 
 }

@@ -68,8 +68,8 @@ public class CachesEndpoint {
 					new CacheDescriptor(entry.getTarget()));
 		});
 		Map<String, CacheManagerDescriptor> cacheManagerDescriptors = new LinkedHashMap<>();
-		descriptors.forEach((name, entries) ->
-				cacheManagerDescriptors.put(name, new CacheManagerDescriptor(entries)));
+		descriptors.forEach((name, entries) -> cacheManagerDescriptors.put(name,
+				new CacheManagerDescriptor(entries)));
 		return new CachesReport(cacheManagerDescriptors);
 	}
 

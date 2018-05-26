@@ -47,10 +47,10 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 
 	@Before
 	public void setUp() {
-		given(this.one.health()).willReturn(Mono.just(
-				new Health.Builder().unknown().withDetail("1", "1").build()));
-		given(this.two.health()).willReturn(Mono.just(
-				new Health.Builder().unknown().withDetail("2", "2").build()));
+		given(this.one.health()).willReturn(
+				Mono.just(new Health.Builder().unknown().withDetail("1", "1").build()));
+		given(this.two.health()).willReturn(
+				Mono.just(new Health.Builder().unknown().withDetail("2", "2").build()));
 		this.registry = new DefaultReactiveHealthIndicatorRegistry();
 	}
 

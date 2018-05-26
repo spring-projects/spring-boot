@@ -91,8 +91,8 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	 * @param name the name of the health indicator
 	 * @param indicator the health indicator to add
 	 * @return this instance
-	 * @throws IllegalStateException if an indicator with the given {@code name}
-	 * is already registered.
+	 * @throws IllegalStateException if an indicator with the given {@code name} is
+	 * already registered.
 	 * @deprecated since 2.1.0 in favour of
 	 * {@link ReactiveHealthIndicatorRegistry#register(String, ReactiveHealthIndicator)}
 	 */

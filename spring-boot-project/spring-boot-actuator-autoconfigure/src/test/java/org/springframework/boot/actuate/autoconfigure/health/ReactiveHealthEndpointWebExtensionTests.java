@@ -220,12 +220,11 @@ public class ReactiveHealthEndpointWebExtensionTests {
 
 	@Test
 	public void registryCanBeAltered() {
-		this.contextRunner
-				.withUserConfiguration(HealthIndicatorsConfiguration.class)
+		this.contextRunner.withUserConfiguration(HealthIndicatorsConfiguration.class)
 				.withPropertyValues("management.endpoint.health.show-details=always")
 				.run((context) -> {
-					ReactiveHealthIndicatorRegistry registry = context.getBean(
-							ReactiveHealthIndicatorRegistry.class);
+					ReactiveHealthIndicatorRegistry registry = context
+							.getBean(ReactiveHealthIndicatorRegistry.class);
 					ReactiveHealthEndpointWebExtension extension = context
 							.getBean(ReactiveHealthEndpointWebExtension.class);
 					assertThat(extension.health(null).block().getBody().getDetails())

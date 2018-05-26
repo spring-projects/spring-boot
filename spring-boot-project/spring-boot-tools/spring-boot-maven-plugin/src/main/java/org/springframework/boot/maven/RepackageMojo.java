@@ -229,9 +229,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	/**
-	 * Return the source {@link Artifact} to repackage. If a classifier is specified
-	 * and an artifact with that classifier exists, it is used. Otherwise, the main
-	 * artifact is used.
+	 * Return the source {@link Artifact} to repackage. If a classifier is specified and
+	 * an artifact with that classifier exists, it is used. Otherwise, the main artifact
+	 * is used.
 	 * @return the source artifact to repackage
 	 */
 	private Artifact getSourceArtifact() {
