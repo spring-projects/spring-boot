@@ -101,6 +101,14 @@ public class SampleSecureWebFluxCustomSecurityTests {
 				.expectStatus().isOk();
 	}
 
+	private String getBasicAuth() {
+		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
+	}
+
+	private String getBasicAuthForAdmin() {
+		return new String(Base64.getEncoder().encode(("admin:admin").getBytes()));
+	}
+
 	@Configuration
 	static class SecurityConfiguration {
 
@@ -126,14 +134,6 @@ public class SampleSecureWebFluxCustomSecurityTests {
 					.authenticated().and().httpBasic().and().build();
 		}
 
-	}
-
-	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
-	}
-
-	private String getBasicAuthForAdmin() {
-		return new String(Base64.getEncoder().encode(("admin:admin").getBytes()));
 	}
 
 }

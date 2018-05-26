@@ -81,7 +81,7 @@ public class ServletContextInitializerBeans
 		addAdaptableBeans(beanFactory);
 		List<ServletContextInitializer> sortedInitializers = this.initializers.values()
 				.stream()
-				.flatMap(value -> value.stream()
+				.flatMap((value) -> value.stream()
 						.sorted(AnnotationAwareOrderComparator.INSTANCE))
 				.collect(Collectors.toList());
 		this.sortedList = Collections.unmodifiableList(sortedInitializers);
