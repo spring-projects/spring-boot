@@ -67,7 +67,7 @@ public final class WebClientExchangeTags {
 
 	private static String extractPath(String url) {
 		String path = url.replaceFirst("^https?://[^/]+/", "");
-		return path.startsWith("/") ? path : "/" + path;
+		return (path.startsWith("/") ? path : "/" + path);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public final class WebClientExchangeTags {
 	 * @return the status tag
 	 */
 	public static Tag status(Throwable throwable) {
-		return throwable instanceof IOException ? IO_ERROR : CLIENT_ERROR;
+		return (throwable instanceof IOException ? IO_ERROR : CLIENT_ERROR);
 	}
 
 	/**

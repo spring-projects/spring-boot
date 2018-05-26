@@ -113,7 +113,7 @@ public class HealthWebEndpointResponseMapperTests {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
 		given(securityContext.isUserInRole(anyString()))
-				.will((Answer<Boolean>) invocation -> {
+				.will((Answer<Boolean>) (invocation) -> {
 					String expectedRole = invocation.getArgument(0);
 					return associatedRoles.contains(expectedRole);
 				});
