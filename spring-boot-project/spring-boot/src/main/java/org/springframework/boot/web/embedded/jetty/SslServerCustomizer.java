@@ -204,9 +204,6 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private void configureSslTrustStore(SslContextFactory factory, Ssl ssl) {
-		if (ssl.getTrustStorePassword() != null) {
-			factory.setTrustStorePassword(ssl.getTrustStorePassword());
-		}
 		if (ssl.getTrustStore() != null) {
 			try {
 				URL url = ResourceUtils.getURL(ssl.getTrustStore());
@@ -216,12 +213,28 @@ class SslServerCustomizer implements JettyServerCustomizer {
 				throw new WebServerException(
 						"Could not find trust store '" + ssl.getTrustStore() + "'", ex);
 			}
+			if (ssl.getTrustStorePassword() != null) {
+				factory.setTrustStorePassword(ssl.getTrustStorePassword());
+			}
+			if (ssl.getTrustStoreType() != null) {
+				factory.setTrustStoreType(ssl.getTrustStoreType());
+			}
+			if (ssl.getTrustStoreProvider() != null) {
+				factory.setTrustStoreProvider(ssl.getTrustStoreProvider());
+			}
 		}
-		if (ssl.getTrustStoreType() != null) {
-			factory.setTrustStoreType(ssl.getTrustStoreType());
-		}
-		if (ssl.getTrustStoreProvider() != null) {
-			factory.setTrustStoreProvider(ssl.getTrustStoreProvider());
+		else {
+			// If no trust store is specified, Jetty will try to use the configured
+			// key store as trust store.
+			if (ssl.getKeyStorePassword() != null) {
+				factory.setTrustStorePassword(ssl.getKeyStorePassword());
+			}
+			if (ssl.getKeyStoreType() != null) {
+				factory.setTrustStoreType(ssl.getKeyStoreType());
+			}
+			if (ssl.getKeyStoreProvider() != null) {
+				factory.setTrustStoreProvider(ssl.getKeyStoreProvider());
+			}
 		}
 	}
 
