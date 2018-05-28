@@ -208,7 +208,7 @@ public class IntegrationAutoConfigurationTests {
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.EMBEDDED);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					jdbc.queryForList("select * from INT_MESSAGE").isEmpty();
+					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 				});
 	}
 
