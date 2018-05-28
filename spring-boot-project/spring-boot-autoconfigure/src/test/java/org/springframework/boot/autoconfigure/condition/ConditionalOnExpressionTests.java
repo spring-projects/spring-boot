@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,21 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ConditionalOnExpression}.
@@ -41,15 +49,37 @@ public class ConditionalOnExpressionTests {
 	}
 
 	@Test
-	public void expressionIsFalse() {
+	public void expressionEvaluatesToTrueRegisterBean() {
 		this.contextRunner.withUserConfiguration(MissingConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
-	public void expressionIsNull() {
+	public void expressionEvaluatesToFalseDoesNotRegisterBean() {
 		this.contextRunner.withUserConfiguration(NullConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
+	}
+
+	@Test
+	public void expressionEvaluationWithNoBeanFactoryDoesNotMatch() {
+		OnExpressionCondition condition = new OnExpressionCondition();
+		MockEnvironment environment = new MockEnvironment();
+		ConditionContext conditionContext = mock(ConditionContext.class);
+		given(conditionContext.getEnvironment()).willReturn(environment);
+		ConditionOutcome outcome = condition.getMatchOutcome(conditionContext,
+				mockMetaData("invalid-spel"));
+		assertThat(outcome.isMatch()).isFalse();
+		assertThat(outcome.getMessage()).contains("invalid-spel")
+				.contains("no BeanFactory available");
+	}
+
+	private AnnotatedTypeMetadata mockMetaData(String value) {
+		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
+		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("value", value);
+		given(metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName()))
+				.willReturn(attributes);
+		return metadata;
 	}
 
 	@Configuration
