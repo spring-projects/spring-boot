@@ -1009,6 +1009,7 @@
 									<doctype>book</doctype>
 									<attributes>
 										<docinfo>true</docinfo>
+										<jooq-version>${jooq.version}</jooq-version>
 										<spring-version>${spring.version}</spring-version>
 										<spring-boot-version>${project.version}</spring-boot-version>
 										<spring-boot-docs-version>${project.version}</spring-boot-docs-version>
