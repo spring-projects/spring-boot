@@ -67,6 +67,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :gradle-user-guide: https://docs.gradle.org/4.2.1/userguide
 :hibernate-documentation: https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html
 :jetty-documentation: https://www.eclipse.org/jetty/documentation/9.4.x
+:jooq-manual: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :micrometer-concepts-documentation: https://micrometer.io/docs/concepts
 :micrometer-registry-documentation: http://micrometer.io/docs/registry
 :tomcat-documentation: https://tomcat.apache.org/tomcat-8.5-doc

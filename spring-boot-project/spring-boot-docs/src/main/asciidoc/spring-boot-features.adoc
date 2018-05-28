@@ -3678,11 +3678,11 @@ commercial and open source editions can be used with Spring Boot.
 ==== Code Generation
 In order to use jOOQ type-safe queries, you need to generate Java classes from your
 database schema. You can follow the instructions in the
-http://www.jooq.org/doc/3.6/manual-single-page/#jooq-in-7-steps-step3[jOOQ user manual].
-If you use the `jooq-codegen-maven` plugin and you also use the
-`spring-boot-starter-parent` "`parent POM`", you can safely omit the plugin's `<version>`
-tag. You can also use Spring Boot-defined version variables (such as `h2.version`) to
-declare the plugin's database dependency. The following listing shows an example:
+{jooq-manual}/#jooq-in-7-steps-step3[jOOQ user manual]. If you use the
+`jooq-codegen-maven` plugin and you also use the `spring-boot-starter-parent`
+"`parent POM`", you can safely omit the plugin's `<version>` tag. You can also use Spring
+Boot-defined version variables (such as `h2.version`) to declare the plugin's database
+dependency. The following listing shows an example:
 
 [source,xml,indent=0]
 ----
