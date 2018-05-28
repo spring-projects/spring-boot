@@ -26,7 +26,7 @@ import io.undertow.server.handlers.resource.ResourceChangeListener;
 import io.undertow.server.handlers.resource.ResourceManager;
 
 /**
- * A {@ResourceManager} that delegates to multiple {@code ResourceManager} instances.
+ * A {@link ResourceManager} that delegates to multiple {@code ResourceManager} instances.
  *
  * @author Andy Wilkinson
  */
