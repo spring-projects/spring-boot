@@ -22,7 +22,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@WebTestClientBuilderCustomizer} that configures Spring REST Docs.
+ * A {@link WebTestClientBuilderCustomizer} that configures Spring REST Docs.
  *
  * @author Roman Zaynetdinov
  * @author Andy Wilkinson

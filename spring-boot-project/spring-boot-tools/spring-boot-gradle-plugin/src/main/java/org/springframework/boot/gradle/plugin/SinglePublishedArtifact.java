@@ -22,7 +22,7 @@ import org.gradle.api.artifacts.PublishArtifactSet;
 import org.gradle.api.tasks.TaskDependency;
 
 /**
- * A wrapper for a {@PublishArtifactSet} that ensures that only a single artifact is
+ * A wrapper for a {@link PublishArtifactSet} that ensures that only a single artifact is
  * published, with a war file taking precedence over a jar file.
  *
  * @author Andy Wilkinson
