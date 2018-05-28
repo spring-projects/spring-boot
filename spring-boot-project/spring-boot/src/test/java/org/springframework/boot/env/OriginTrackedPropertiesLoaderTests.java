@@ -92,7 +92,7 @@ public class OriginTrackedPropertiesLoaderTests {
 
 	@Test
 	public void getMalformedUnicodeProperty() throws Exception {
-		// gh-2716
+		// gh-12716
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Malformed \\uxxxx encoding");
 		new OriginTrackedPropertiesLoader(new ClassPathResource(
