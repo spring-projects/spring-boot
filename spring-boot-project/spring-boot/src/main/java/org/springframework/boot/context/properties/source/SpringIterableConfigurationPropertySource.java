@@ -29,7 +29,7 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.ObjectUtils;
 
 /**
- * {@link ConfigurationPropertySource} backed by a {@link EnumerablePropertySource}.
+ * {@link ConfigurationPropertySource} backed by an {@link EnumerablePropertySource}.
  * Extends {@link SpringConfigurationPropertySource} with full "relaxed" mapping support.
  * In order to use this adapter the underlying {@link PropertySource} must be fully
  * enumerable. A security restricted {@link SystemEnvironmentPropertySource} cannot be
