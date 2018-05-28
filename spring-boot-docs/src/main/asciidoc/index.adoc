@@ -52,6 +52,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :test-examples: ../../test/java/org/springframework/boot
 :gradle-user-guide: https://docs.gradle.org/2.14.1/userguide
 :gradle-dsl: https://docs.gradle.org/2.14.1/dsl
+:jooq-manual: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 // ======================================================================================
 
 include::documentation-overview.adoc[]
