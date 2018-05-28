@@ -158,7 +158,7 @@ public class SpringIterableConfigurationPropertySourceTests {
 	}
 
 	/**
-	 * Test {@link PropertySource} that's also a {@link OriginLookup}.
+	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 */
 	private static class OriginCapablePropertySource<T>
 			extends EnumerablePropertySource<T> implements OriginLookup<String> {

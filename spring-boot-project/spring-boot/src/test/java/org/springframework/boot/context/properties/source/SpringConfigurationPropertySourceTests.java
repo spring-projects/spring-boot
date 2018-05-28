@@ -160,7 +160,7 @@ public class SpringConfigurationPropertySourceTests {
 	}
 
 	/**
-	 * Test {@link PropertySource} that's also a {@link OriginLookup}.
+	 * Test {@link PropertySource} that's also an {@link OriginLookup}.
 	 */
 	private static class OriginCapablePropertySource<T> extends PropertySource<T>
 			implements OriginLookup<String> {
