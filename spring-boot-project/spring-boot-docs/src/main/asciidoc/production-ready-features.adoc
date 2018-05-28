@@ -431,7 +431,7 @@ following example:
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
-				.anyRequest().permitAll()
+				.anyRequest().permitAll();
 		}
 
 	}
@@ -674,7 +674,7 @@ authorization checks using its `isUserInRole(String)` method.
 ==== Servlet endpoints
 A `Servlet` can be exposed as an endpoint by implementing a class annotated with
 `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`. Servlet endpoints
-provide deeper integration with the Servlet container but at the expose of portability.
+provide deeper integration with the Servlet container but at the expense of portability.
 They are intended to be used to expose an existing `Servlet` as an endpoint. For new
 endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be preferred whenever
 possible.
@@ -1809,7 +1809,7 @@ Auto-configuration enables the instrumentation of all available Hibernate
 Metrics are also tagged by the name of the `EntityManagerFactory` that is derived from
 the bean name.
 
-To enable statistics, the standardJPA property `hibernate.generate_statistics` must be
+To enable statistics, the standard JPA property `hibernate.generate_statistics` must be
 set to `true`. You can enable that on the auto-configured `EntityManagerFactory` as shown
 in the following example:
 

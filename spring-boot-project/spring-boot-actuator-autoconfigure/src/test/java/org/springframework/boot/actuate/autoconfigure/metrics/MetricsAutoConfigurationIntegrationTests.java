@@ -58,13 +58,12 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Test
 	public void propertyBasedCommonTagsIsAutoConfigured() {
 		this.contextRunner.withPropertyValues("management.metrics.tags.region=test",
-				"management.metrics.tags.origin=local")
-				.run((context) -> {
+				"management.metrics.tags.origin=local").run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					registry.counter("my.counter", "env", "qa");
 					assertThat(registry.find("my.counter").tags("env", "qa")
 							.tags("region", "test").tags("origin", "local").counter())
-							.isNotNull();
+									.isNotNull();
 				});
 	}
 

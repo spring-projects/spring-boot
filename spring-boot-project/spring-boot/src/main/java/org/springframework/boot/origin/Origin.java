@@ -35,7 +35,7 @@ public interface Origin {
 
 	/**
 	 * Find the {@link Origin} that an object originated from. Checks if the source object
-	 * is a {@link OriginProvider} and also searches exception stacks.
+	 * is an {@link OriginProvider} and also searches exception stacks.
 	 * @param source the source object or {@code null}
 	 * @return an optional {@link Origin}
 	 */

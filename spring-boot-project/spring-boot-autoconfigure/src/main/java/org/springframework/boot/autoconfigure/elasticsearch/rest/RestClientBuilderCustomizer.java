@@ -34,4 +34,5 @@ public interface RestClientBuilderCustomizer {
 	 * @param builder the builder to customize
 	 */
 	void customize(RestClientBuilder builder);
+
 }

@@ -41,10 +41,8 @@ public class HealthIndicatorRegistryFactory {
 	}
 
 	/**
-	 * Create a {@link HealthIndicatorRegistry} based on the specified health
-	 * indicators.
-	 * @param healthIndicators the {@link HealthIndicator} instances mapped by
-	 * name
+	 * Create a {@link HealthIndicatorRegistry} based on the specified health indicators.
+	 * @param healthIndicators the {@link HealthIndicator} instances mapped by name
 	 * @return a {@link HealthIndicator} that delegates to the specified
 	 * {@code healthIndicators}.
 	 */

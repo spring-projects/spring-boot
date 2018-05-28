@@ -128,7 +128,7 @@ public class HibernateMetricsAutoConfigurationTests {
 				.withUserConfiguration(
 						NonHibernateEntityManagerFactoryConfiguration.class)
 				.run((context) -> {
-					// ensure EntityManagerFactory is not an Hibernate SessionFactory
+					// ensure EntityManagerFactory is not a Hibernate SessionFactory
 					assertThatThrownBy(() -> context.getBean(EntityManagerFactory.class)
 							.unwrap(SessionFactory.class))
 									.isInstanceOf(PersistenceException.class);
@@ -178,9 +178,8 @@ public class HibernateMetricsAutoConfigurationTests {
 				DataSource ds) {
 			Map<String, String> jpaProperties = new HashMap<>();
 			jpaProperties.put("hibernate.generate_statistics", "true");
-			EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
-					new HibernateJpaVendorAdapter(), jpaProperties, null);
-			return builder.dataSource(ds).packages(PACKAGE_CLASSES).build();
+			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
+					jpaProperties, null).dataSource(ds).packages(PACKAGE_CLASSES).build();
 		}
 
 	}

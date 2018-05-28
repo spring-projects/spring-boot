@@ -56,9 +56,9 @@ public class HealthEndpointWebIntegrationTests {
 		registry.register("charlie", () -> Health.down().build());
 		try {
 			client.get().uri("/actuator/health").exchange().expectStatus()
-					.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
-					.isEqualTo("DOWN").jsonPath("details.alpha.status").isEqualTo("UP")
-					.jsonPath("details.bravo.status").isEqualTo("UP")
+					.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody()
+					.jsonPath("status").isEqualTo("DOWN").jsonPath("details.alpha.status")
+					.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP")
 					.jsonPath("details.charlie.status").isEqualTo("DOWN");
 		}
 		finally {
@@ -71,9 +71,10 @@ public class HealthEndpointWebIntegrationTests {
 		HealthIndicatorRegistry registry = context.getBean(HealthIndicatorRegistry.class);
 		HealthIndicator bravo = registry.unregister("bravo");
 		try {
-			client.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody()
-					.jsonPath("status").isEqualTo("UP").jsonPath("details.alpha.status")
-					.isEqualTo("UP").jsonPath("details.bravo.status").doesNotExist();
+			client.get().uri("/actuator/health").exchange().expectStatus().isOk()
+					.expectBody().jsonPath("status").isEqualTo("UP")
+					.jsonPath("details.alpha.status").isEqualTo("UP")
+					.jsonPath("details.bravo.status").doesNotExist();
 		}
 		finally {
 			registry.register("bravo", bravo);

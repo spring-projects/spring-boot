@@ -65,8 +65,8 @@ public class HealthEndpointWebExtension {
 	public WebEndpointResponse<Health> healthForComponentInstance(
 			SecurityContext securityContext, @Selector String component,
 			@Selector String instance) {
-		Supplier<Health> health = () -> this.delegate.healthForComponentInstance(
-				component, instance);
+		Supplier<Health> health = () -> this.delegate
+				.healthForComponentInstance(component, instance);
 		return this.responseMapper.mapDetails(health, securityContext);
 	}
 

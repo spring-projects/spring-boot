@@ -72,8 +72,8 @@ public class JestAutoConfigurationTests {
 
 	@Test
 	public void jestClientOnLocalhostByDefault() {
-		this.contextRunner.run((context) ->
-				assertThat(context).hasSingleBean(JestClient.class));
+		this.contextRunner
+				.run((context) -> assertThat(context).hasSingleBean(JestClient.class));
 	}
 
 	@Test
@@ -130,11 +130,12 @@ public class JestAutoConfigurationTests {
 					Map<String, String> source = new HashMap<>();
 					source.put("a", "alpha");
 					source.put("b", "bravo");
-					Index index = new Index.Builder(source).index("foo")
-							.type("bar").id("1").build();
+					Index index = new Index.Builder(source).index("foo").type("bar")
+							.id("1").build();
 					execute(client, index);
 					Get getRequest = new Get.Builder("foo", "1").build();
-					assertThat(execute(client, getRequest).getResponseCode()).isEqualTo(200);
+					assertThat(execute(client, getRequest).getResponseCode())
+							.isEqualTo(200);
 				}));
 	}
 

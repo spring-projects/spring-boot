@@ -89,9 +89,11 @@ public class HealthIndicatorAutoConfiguration {
 		public ReactiveHealthIndicatorRegistry reactiveHealthIndicatorRegistry(
 				ObjectProvider<Map<String, ReactiveHealthIndicator>> reactiveHealthIndicators,
 				ObjectProvider<Map<String, HealthIndicator>> healthIndicators) {
-			return new ReactiveHealthIndicatorRegistryFactory().createReactiveHealthIndicatorRegistry(
-					reactiveHealthIndicators.getIfAvailable(Collections::emptyMap),
-					healthIndicators.getIfAvailable(Collections::emptyMap));
+			return new ReactiveHealthIndicatorRegistryFactory()
+					.createReactiveHealthIndicatorRegistry(
+							reactiveHealthIndicators
+									.getIfAvailable(Collections::emptyMap),
+							healthIndicators.getIfAvailable(Collections::emptyMap));
 		}
 
 	}

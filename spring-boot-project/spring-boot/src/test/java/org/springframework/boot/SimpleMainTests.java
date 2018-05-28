@@ -76,10 +76,10 @@ public class SimpleMainTests {
 	}
 
 	private String[] getArgs(String... args) {
-		List<String> list = new ArrayList<>(Arrays.asList(
-				"--spring.main.web-application-type=none",
-				"--spring.main.show-banner=OFF",
-				"--spring.main.register-shutdownHook=false"));
+		List<String> list = new ArrayList<>(
+				Arrays.asList("--spring.main.web-application-type=none",
+						"--spring.main.show-banner=OFF",
+						"--spring.main.register-shutdownHook=false"));
 		if (args.length > 0) {
 			list.add("--spring.main.sources="
 					+ StringUtils.arrayToCommaDelimitedString(args));

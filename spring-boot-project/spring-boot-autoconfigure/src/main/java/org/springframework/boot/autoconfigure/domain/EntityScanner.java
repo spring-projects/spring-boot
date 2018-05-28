@@ -32,7 +32,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * An entity scanner that searches the classpath from a {@link EntityScan @EntityScan}
+ * An entity scanner that searches the classpath from an {@link EntityScan @EntityScan}
  * specified packages.
  *
  * @author Phillip Webb

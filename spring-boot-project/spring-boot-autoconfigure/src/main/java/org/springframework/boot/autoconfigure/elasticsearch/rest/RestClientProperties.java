@@ -47,8 +47,6 @@ public class RestClientProperties {
 	 */
 	private String password;
 
-
-
 	public List<String> getUris() {
 		return this.uris;
 	}
@@ -72,4 +70,5 @@ public class RestClientProperties {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 }

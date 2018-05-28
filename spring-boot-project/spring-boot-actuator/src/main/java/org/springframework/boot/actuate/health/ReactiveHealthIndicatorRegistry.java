@@ -31,12 +31,12 @@ import java.util.Map;
 public interface ReactiveHealthIndicatorRegistry {
 
 	/**
-	 * Registers the given {@link ReactiveHealthIndicator}, associating it with the
-	 * given {@code name}.
+	 * Registers the given {@link ReactiveHealthIndicator}, associating it with the given
+	 * {@code name}.
 	 * @param name the name of the indicator
 	 * @param healthIndicator the indicator
-	 * @throws IllegalStateException if an indicator with the given {@code name}
-	 * is already registered.
+	 * @throws IllegalStateException if an indicator with the given {@code name} is
+	 * already registered.
 	 */
 	void register(String name, ReactiveHealthIndicator healthIndicator);
 
@@ -44,23 +44,22 @@ public interface ReactiveHealthIndicatorRegistry {
 	 * Unregisters the {@link ReactiveHealthIndicator} previously registered with the
 	 * given {@code name}.
 	 * @param name the name of the indicator
-	 * @return the unregistered indicator, or {@code null} if no indicator was
-	 * found in the registry for the given {@code name}.
+	 * @return the unregistered indicator, or {@code null} if no indicator was found in
+	 * the registry for the given {@code name}.
 	 */
 	ReactiveHealthIndicator unregister(String name);
 
 	/**
 	 * Returns the {@link ReactiveHealthIndicator} registered with the given {@code name}.
 	 * @param name the name of the indicator
-	 * @return the health indicator, or {@code null} if no indicator was
-	 * registered with the given {@code name}.
+	 * @return the health indicator, or {@code null} if no indicator was registered with
+	 * the given {@code name}.
 	 */
 	ReactiveHealthIndicator get(String name);
 
 	/**
-	 * Returns a snapshot of the registered health indicators and their names.
-	 * The contents of the map do not reflect subsequent changes to the
-	 * registry.
+	 * Returns a snapshot of the registered health indicators and their names. The
+	 * contents of the map do not reflect subsequent changes to the registry.
 	 * @return the snapshot of registered health indicators
 	 */
 	Map<String, ReactiveHealthIndicator> getAll();

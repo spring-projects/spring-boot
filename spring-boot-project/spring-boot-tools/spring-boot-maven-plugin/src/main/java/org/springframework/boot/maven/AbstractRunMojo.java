@@ -267,7 +267,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 						+ "]");
 			}
 			if (hasWorkingDirectorySet()) {
-				getLog().warn("Fork mode disabled, ignoring working directory configuration");
+				getLog().warn(
+						"Fork mode disabled, ignoring working directory configuration");
 			}
 		}
 	}
@@ -317,7 +318,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Resolve the environment variables to use.
-	 * @return a {@link EnvVariables} defining the environment variables
+	 * @return an {@link EnvVariables} defining the environment variables
 	 */
 	protected EnvVariables resolveEnvVariables() {
 		return new EnvVariables(this.environmentVariables);
@@ -475,7 +476,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void logArguments(String message, String[] args) {
 		if (getLog().isDebugEnabled()) {
-			getLog().debug(Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
+			getLog().debug(
+					Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
 		}
 	}
 

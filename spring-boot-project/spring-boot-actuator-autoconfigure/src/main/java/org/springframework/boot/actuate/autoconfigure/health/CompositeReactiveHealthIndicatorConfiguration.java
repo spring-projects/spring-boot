@@ -44,8 +44,8 @@ public abstract class CompositeReactiveHealthIndicatorConfiguration<H extends Re
 			return createHealthIndicator(beans.values().iterator().next());
 		}
 		ReactiveHealthIndicatorRegistry registry = new DefaultReactiveHealthIndicatorRegistry();
-		beans.forEach((name, source) -> registry.register(name,
-				createHealthIndicator(source)));
+		beans.forEach(
+				(name, source) -> registry.register(name, createHealthIndicator(source)));
 		return new CompositeReactiveHealthIndicator(this.healthAggregator, registry);
 	}
 

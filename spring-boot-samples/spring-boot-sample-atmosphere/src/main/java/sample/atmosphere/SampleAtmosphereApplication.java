@@ -59,6 +59,10 @@ public class SampleAtmosphereApplication {
 		return registration;
 	}
 
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleAtmosphereApplication.class, args);
+	}
+
 	@Configuration
 	static class MvcConfiguration implements WebMvcConfigurer {
 
@@ -77,10 +81,6 @@ public class SampleAtmosphereApplication {
 			onStartup(Collections.emptySet(), servletContext);
 		}
 
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(SampleAtmosphereApplication.class, args);
 	}
 
 }

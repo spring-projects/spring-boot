@@ -24,8 +24,8 @@ import lombok.Setter;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Configuration properties using lombok @Data on element level and overwriting behaviour
- * with @Getter und @Setter at field level.
+ * Configuration properties using Lombok @Data on element level and overwriting behaviour
+ * with @Getter and @Setter at field level.
  *
  * @author Jonas Keßler
  */

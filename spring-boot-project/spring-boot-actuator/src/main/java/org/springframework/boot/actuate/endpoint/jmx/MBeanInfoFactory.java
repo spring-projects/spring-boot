@@ -30,7 +30,7 @@ import javax.management.modelmbean.ModelMBeanOperationInfo;
 import org.springframework.boot.actuate.endpoint.OperationType;
 
 /**
- * Factory to create {@link MBeanInfo} from a {@link ExposableJmxEndpoint}.
+ * Factory to create {@link MBeanInfo} from an {@link ExposableJmxEndpoint}.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb

@@ -89,8 +89,8 @@ public class ManagementPortAndPathSampleActuatorApplicationTests {
 		String unknownProperty = "test-does-not-exist";
 		assertThat(this.environment.containsProperty(unknownProperty)).isFalse();
 		ResponseEntity<String> entity = new TestRestTemplate()
-				.withBasicAuth("user", getPassword()).getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/env/" + unknownProperty,
+				.withBasicAuth("user", getPassword()).getForEntity("http://localhost:"
+						+ this.managementPort + "/admin/env/" + unknownProperty,
 						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}

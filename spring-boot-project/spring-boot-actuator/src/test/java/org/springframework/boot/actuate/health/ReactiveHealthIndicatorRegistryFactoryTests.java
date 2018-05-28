@@ -39,16 +39,18 @@ public class ReactiveHealthIndicatorRegistryFactoryTests {
 
 	@Test
 	public void defaultHealthIndicatorNameFactory() {
-		ReactiveHealthIndicatorRegistry registry = this.factory.createReactiveHealthIndicatorRegistry(
-				Collections.singletonMap("myHealthIndicator", () -> Mono.just(UP)), null);
+		ReactiveHealthIndicatorRegistry registry = this.factory
+				.createReactiveHealthIndicatorRegistry(Collections
+						.singletonMap("myHealthIndicator", () -> Mono.just(UP)), null);
 		assertThat(registry.getAll()).containsOnlyKeys("my");
 	}
 
 	@Test
 	public void healthIndicatorIsAdapted() {
-		ReactiveHealthIndicatorRegistry registry = this.factory.createReactiveHealthIndicatorRegistry(
-				Collections.singletonMap("test", () -> Mono.just(UP)),
-				Collections.singletonMap("regular", () -> DOWN));
+		ReactiveHealthIndicatorRegistry registry = this.factory
+				.createReactiveHealthIndicatorRegistry(
+						Collections.singletonMap("test", () -> Mono.just(UP)),
+						Collections.singletonMap("regular", () -> DOWN));
 		assertThat(registry.getAll()).containsOnlyKeys("test", "regular");
 		StepVerifier.create(registry.get("regular").health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);

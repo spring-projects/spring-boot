@@ -5,8 +5,7 @@
 <suppressions>
 	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
 	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
-	<suppress files="LaunchScriptTestApplication\.java" checks="HideUtilityClassConstructor" />
-	<suppress files="DevToolsTestApplication\.java" checks="HideUtilityClassConstructor" />
+	<suppress files=".+Application\.java" checks="HideUtilityClassConstructor" />
 	<suppress files="SignalUtils\.java" checks="IllegalImport" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
@@ -23,4 +22,8 @@
 	<suppress files="LogLevel\.java" checks="JavadocVariable" />
 	<suppress files="HelpMojo\.java" checks=".*"/>
 	<suppress files="[\\/]org.springframework.boot.configurationprocessor.json[\\/].*\.java$" checks=".*"/>
+	<suppress files="TripType\.java" checks="JavadocVariable" />
+	<suppress files="Rating\.java" checks="JavadocVariable" />
+	<suppress files="Direction\.java" checks="JavadocVariable" />
+	<suppress files="JooqExamples\.java" checks="AvoidStaticImport"/>
 </suppressions>

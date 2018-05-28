@@ -46,8 +46,8 @@ public class DefaultReactiveHealthIndicatorRegistry
 	/**
 	 * Create a new {@link DefaultReactiveHealthIndicatorRegistry} from the specified
 	 * indicators.
-	 * @param healthIndicators a map of {@link HealthIndicator}s with the key
-	 * being used as an indicator name.
+	 * @param healthIndicators a map of {@link HealthIndicator}s with the key being used
+	 * as an indicator name.
 	 */
 	public DefaultReactiveHealthIndicatorRegistry(
 			Map<String, ReactiveHealthIndicator> healthIndicators) {

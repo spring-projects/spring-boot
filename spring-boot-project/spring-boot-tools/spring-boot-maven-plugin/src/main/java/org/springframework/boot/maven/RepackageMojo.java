@@ -229,9 +229,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	/**
-	 * Return the source {@link Artifact} to repackage. If a classifier is specified
-	 * and an artifact with that classifier exists, it is used. Otherwise, the main
-	 * artifact is used.
+	 * Return the source {@link Artifact} to repackage. If a classifier is specified and
+	 * an artifact with that classifier exists, it is used. Otherwise, the main artifact
+	 * is used.
 	 * @return the source artifact to repackage
 	 */
 	private Artifact getSourceArtifact() {
@@ -345,8 +345,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 					this.classifier, target);
 		}
 		else {
-			String artifactId = this.classifier != null
-					? "artifact with classifier " + this.classifier : "main artifact";
+			String artifactId = (this.classifier != null
+					? "artifact with classifier " + this.classifier : "main artifact");
 			getLog().info(String.format("Replacing %s %s", artifactId, source.getFile()));
 			source.setFile(target);
 		}

@@ -73,8 +73,8 @@ public class CloudFoundryWebEndpointDiscovererTests {
 				return operation;
 			}
 		}
-		throw new IllegalStateException("No main read operation found from "
-				+ endpoint.getOperations());
+		throw new IllegalStateException(
+				"No main read operation found from " + endpoint.getOperations());
 	}
 
 	private void load(Class<?> configuration,

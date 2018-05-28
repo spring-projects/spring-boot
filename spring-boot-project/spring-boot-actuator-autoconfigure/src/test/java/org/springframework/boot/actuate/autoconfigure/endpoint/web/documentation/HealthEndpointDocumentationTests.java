@@ -61,8 +61,7 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 			fieldWithPath("status")
 					.description("Status of a specific part of the application"),
 			subsectionWithPath("details").description(
-					"Details of the health of a specific part of the"
-							+ " application."));
+					"Details of the health of a specific part of the" + " application."));
 
 	@Test
 	public void health() throws Exception {
@@ -111,18 +110,17 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		}
 
 		@Bean
-		public DataSourceHealthIndicator dbHealthIndicator(
-				DataSource dataSource) {
+		public DataSourceHealthIndicator dbHealthIndicator(DataSource dataSource) {
 			return new DataSourceHealthIndicator(dataSource);
 		}
 
 		@Bean
 		public CompositeHealthIndicator brokerHealthIndicator() {
 			Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
-			indicators.put("us1", () -> Health.up().withDetail("version", "1.0.2")
-					.build());
-			indicators.put("us2", () -> Health.up().withDetail("version", "1.0.4")
-					.build());
+			indicators.put("us1",
+					() -> Health.up().withDetail("version", "1.0.2").build());
+			indicators.put("us2",
+					() -> Health.up().withDetail("version", "1.0.4").build());
 			return new CompositeHealthIndicator(new OrderedHealthAggregator(),
 					new DefaultHealthIndicatorRegistry(indicators));
 		}

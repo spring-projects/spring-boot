@@ -1,10 +1,9 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2012-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -25,23 +24,26 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sets up the timer for the multi-player snake game WebSocket example.
  */
-public class SnakeTimer {
+public final class SnakeTimer {
 
 	private static final long TICK_DELAY = 100;
 
 	private static final Object MONITOR = new Object();
 
-	private static final Log log = LogFactory.getLog(SnakeTimer.class);
+	private static final Logger log = LoggerFactory.getLogger(SnakeTimer.class);
 
 	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<>();
 
 	private static Timer gameTimer = null;
+
+	private SnakeTimer() {
+	}
 
 	public static void addSnake(Snake snake) {
 		synchronized (MONITOR) {
@@ -112,4 +114,5 @@ public class SnakeTimer {
 			gameTimer.cancel();
 		}
 	}
+
 }
