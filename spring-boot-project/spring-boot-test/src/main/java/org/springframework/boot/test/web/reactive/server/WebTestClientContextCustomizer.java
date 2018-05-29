@@ -65,7 +65,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	private void registerWebTestClient(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry) {
-			registerWebTestClient((BeanDefinitionRegistry) context);
+			registerWebTestClient((BeanDefinitionRegistry) beanFactory);
 		}
 	}
 
