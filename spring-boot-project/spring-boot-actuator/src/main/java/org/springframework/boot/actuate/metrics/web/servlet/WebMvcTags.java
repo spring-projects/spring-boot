@@ -40,6 +40,8 @@ public final class WebMvcTags {
 
 	private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
 
+	private static final Tag URI_ROOT = Tag.of("uri", "root");
+
 	private static final Tag URI_UNKNOWN = Tag.of("uri", "UNKNOWN");
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
@@ -97,7 +99,10 @@ public final class WebMvcTags {
 				}
 			}
 			String pathInfo = getPathInfo(request);
-			return Tag.of("uri", pathInfo.isEmpty() ? "root" : pathInfo);
+			if (pathInfo.isEmpty()) {
+				return URI_ROOT;
+			}
+			return Tag.of("uri", pathInfo);
 		}
 		return URI_UNKNOWN;
 	}
