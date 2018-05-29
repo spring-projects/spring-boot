@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.invoker.cache;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,6 +89,21 @@ public class CachingOperationInvokerTests {
 		parameters.put("something", null);
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class),
 				parameters);
+		given(target.invoke(context)).willReturn(new Object());
+		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
+		invoker.invoke(context);
+		invoker.invoke(context);
+		invoker.invoke(context);
+		verify(target, times(3)).invoke(context);
+	}
+
+	@Test
+	public void targetAlwaysInvokedWithPrincipal() {
+		OperationInvoker target = mock(OperationInvoker.class);
+		Map<String, Object> parameters = new HashMap<>();
+		SecurityContext securityContext = mock(SecurityContext.class);
+		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
+		InvocationContext context = new InvocationContext(securityContext, parameters);
 		given(target.invoke(context)).willReturn(new Object());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, 500L);
 		invoker.invoke(context);
