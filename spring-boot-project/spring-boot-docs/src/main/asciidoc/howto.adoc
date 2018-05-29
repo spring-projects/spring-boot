@@ -523,6 +523,9 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
+	<properties>
+		<servlet-api.version>3.1.0</servlet-api.version>
+	</properties>
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-web</artifactId>
@@ -540,6 +543,9 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 		<artifactId>spring-boot-starter-jetty</artifactId>
 	</dependency>
 ----
+
+NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow
+2.0, Jetty 9.4 does not support Servlet 4.0.
 
 The following Gradle example shows how to exclude Netty and include Undertow for Spring
 WebFlux:
@@ -727,16 +733,16 @@ To enable that support, your application needs to have two additional dependenci
 
 [[howto-configure-http2-tomcat]]
 ==== HTTP/2 with Tomcat
-Spring Boot ships by default with Tomcat 8.5.x. With that version, HTTP/2 is only
-supported if the `libtcnative` library and its dependencies are installed on the host
-operating system.
+Spring Boot ships by default with Tomcat 9.0.x which supports HTTP/2 out of the box when
+using JDK 9 or later. Alternatively, HTTP/2 can be used on JDK 8 if the `libtcnative`
+library and its dependencies are installed on the host operating system.
 
 The library folder must be made available, if not already, to the JVM library path. You
 can do so with a JVM argument such as
 `-Djava.library.path=/usr/local/opt/tomcat-native/lib`. More on this in the
-https://tomcat.apache.org/tomcat-8.5-doc/apr.html[official Tomcat documentation].
+https://tomcat.apache.org/tomcat-9.0-doc/apr.html[official Tomcat documentation].
 
-Starting Tomcat 8.5.x without that native support logs the following error:
+Starting Tomcat 9.0.x on JDK 8 without that native support logs the following error:
 
 [indent=0,subs="attributes"]
 ----
@@ -744,10 +750,6 @@ Starting Tomcat 8.5.x without that native support logs the following error:
 ----
 
 This error is not fatal, and the application still starts with HTTP/1.1 SSL support.
-
-Running your application with Tomcat 9.0.x and JDK9 does not require any native library to
-be installed. To use Tomcat 9, you can override the `tomcat.version` build property with
-the version of your choice.
 
 
 

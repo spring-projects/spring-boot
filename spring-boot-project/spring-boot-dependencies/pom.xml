@@ -147,7 +147,7 @@
 		<selenium.version>3.9.1</selenium.version>
 		<selenium-htmlunit.version>2.29.3</selenium-htmlunit.version>
 		<sendgrid.version>4.1.2</sendgrid.version>
-		<servlet-api.version>3.1.0</servlet-api.version>
+		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.19</snakeyaml.version>
 		<solr.version>7.2.1</solr.version>
@@ -175,9 +175,9 @@
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>8.5.31</tomcat.version>
+		<tomcat.version>9.0.10</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.6</unboundid-ldapsdk.version>
-		<undertow.version>1.4.25.Final</undertow.version>
+		<undertow.version>2.0.9.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator-core.version>0.35</webjars-locator-core.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
