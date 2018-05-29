@@ -1005,10 +1005,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.admin.ssl.keystore-location= # Location of the key store file.
 	spring.kafka.admin.ssl.keystore-password= # Store password for the key store file.
 	spring.kafka.admin.ssl.keystore-type= # Type of the key store.
+	spring.kafka.admin.ssl.protocol= # SSL protocol to use.
 	spring.kafka.admin.ssl.truststore-location= # Location of the trust store file.
 	spring.kafka.admin.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.admin.ssl.truststore-type= # Type of the trust store.
-	spring.kafka.admin.ssl.protocol= # SSL protocol to use.
 	spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
 	spring.kafka.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.consumer.auto-commit-interval= # Frequency with which the consumer offsets are auto-committed to Kafka if 'enable.auto.commit' is set to true.
@@ -1027,10 +1027,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.consumer.ssl.keystore-location= # Location of the key store file.
 	spring.kafka.consumer.ssl.keystore-password= # Store password for the key store file.
 	spring.kafka.consumer.ssl.keystore-type= # Type of the key store.
+	spring.kafka.consumer.ssl.protocol= # SSL protocol to use.
 	spring.kafka.consumer.ssl.truststore-location= # Location of the trust store file.
 	spring.kafka.consumer.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.consumer.ssl.truststore-type= # Type of the trust store.
-	spring.kafka.consumer.ssl.protocol= # SSL protocol to use.
 	spring.kafka.consumer.value-deserializer= # Deserializer class for values.
 	spring.kafka.jaas.control-flag=required # Control flag for login configuration.
 	spring.kafka.jaas.enabled=false # Whether to enable JAAS configuration.
@@ -1060,10 +1060,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.producer.ssl.keystore-location= # Location of the key store file.
 	spring.kafka.producer.ssl.keystore-password= # Store password for the key store file.
 	spring.kafka.producer.ssl.keystore-type= # Type of the key store.
+	spring.kafka.producer.ssl.protocol= # SSL protocol to use.
 	spring.kafka.producer.ssl.truststore-location= # Location of the trust store file.
 	spring.kafka.producer.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.producer.ssl.truststore-type= # Type of the trust store.
-	spring.kafka.producer.ssl.protocol= # SSL protocol to use.
 	spring.kafka.producer.transaction-id-prefix= # When non empty, enables transaction support for producer.
 	spring.kafka.producer.value-serializer= # Serializer class for values.
 	spring.kafka.properties.*= # Additional properties, common to producers and consumers, used to configure the client.
@@ -1071,10 +1071,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.ssl.keystore-location= # Location of the key store file.
 	spring.kafka.ssl.keystore-password= # Store password for the key store file.
 	spring.kafka.ssl.keystore-type= # Type of the key store.
+	spring.kafka.ssl.protocol= # SSL protocol to use.
 	spring.kafka.ssl.truststore-location= # Location of the trust store file.
 	spring.kafka.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.ssl.truststore-type= # Type of the trust store.
-	spring.kafka.ssl.protocol= # SSL protocol to use.
 	spring.kafka.template.default-topic= # Default topic to which messages are sent.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
