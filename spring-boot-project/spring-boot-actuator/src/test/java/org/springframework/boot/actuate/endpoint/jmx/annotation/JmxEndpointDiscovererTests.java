@@ -117,8 +117,7 @@ public class JmxEndpointDiscovererTests {
 			this.thrown.expect(IllegalStateException.class);
 			this.thrown.expectMessage(
 					"Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': "
-							+ "no endpoint found with type '"
-							+ TestEndpoint.class.getName() + "'");
+							+ "no endpoint found with id 'test'");
 			discoverer.getEndpoints();
 		});
 	}
