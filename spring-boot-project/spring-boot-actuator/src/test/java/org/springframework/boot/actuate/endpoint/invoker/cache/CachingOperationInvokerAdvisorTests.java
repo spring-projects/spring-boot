@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
@@ -111,6 +112,14 @@ public class CachingOperationInvokerAdvisorTests {
 		assertAdviseIsApplied(parameters);
 	}
 
+	@Test
+	public void applyWithSecurityContextShouldAddAdvise() {
+		OperationParameters parameters = getParameters("getWithSecurityContext",
+				SecurityContext.class, String.class);
+		given(this.timeToLive.apply(any())).willReturn(100L);
+		assertAdviseIsApplied(parameters);
+	}
+
 	private void assertAdviseIsApplied(OperationParameters parameters) {
 		OperationInvoker advised = this.advisor.apply("foo", OperationType.READ,
 				parameters, this.invoker);
@@ -143,6 +152,11 @@ public class CachingOperationInvokerAdvisorTests {
 		}
 
 		public String getWithAllOptionalParameters(@Nullable String foo,
+				@Nullable String bar) {
+			return "";
+		}
+
+		public String getWithSecurityContext(SecurityContext securityContext,
 				@Nullable String bar) {
 			return "";
 		}
