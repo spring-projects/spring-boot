@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jersey;
+package org.springframework.boot.docs.jersey;
 
 import java.util.Collections;
 
