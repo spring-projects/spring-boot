@@ -823,12 +823,12 @@ public class KafkaProperties {
 		/**
 		 * Location of the key store file.
 		 */
-		private Resource keystoreLocation;
+		private Resource keyStoreLocation;
 
 		/**
 		 * Store password for the key store file.
 		 */
-		private String keystorePassword;
+		private String keyStorePassword;
 
 		/**
 		 * Type of the key store.
@@ -838,12 +838,12 @@ public class KafkaProperties {
 		/**
 		 * Location of the trust store file.
 		 */
-		private Resource truststoreLocation;
+		private Resource trustStoreLocation;
 
 		/**
 		 * Store password for the trust store file.
 		 */
-		private String truststorePassword;
+		private String trustStorePassword;
 
 		/**
 		 * Type of the trust store.
@@ -863,20 +863,20 @@ public class KafkaProperties {
 			this.keyPassword = keyPassword;
 		}
 
-		public Resource getKeystoreLocation() {
-			return this.keystoreLocation;
+		public Resource getKeyStoreLocation() {
+			return this.keyStoreLocation;
 		}
 
-		public void setKeystoreLocation(Resource keystoreLocation) {
-			this.keystoreLocation = keystoreLocation;
+		public void setKeyStoreLocation(Resource keyStoreLocation) {
+			this.keyStoreLocation = keyStoreLocation;
 		}
 
-		public String getKeystorePassword() {
-			return this.keystorePassword;
+		public String getKeyStorePassword() {
+			return this.keyStorePassword;
 		}
 
-		public void setKeystorePassword(String keystorePassword) {
-			this.keystorePassword = keystorePassword;
+		public void setKeyStorePassword(String keyStorePassword) {
+			this.keyStorePassword = keyStorePassword;
 		}
 
 		public String getKeyStoreType() {
@@ -887,20 +887,20 @@ public class KafkaProperties {
 			this.keyStoreType = keyStoreType;
 		}
 
-		public Resource getTruststoreLocation() {
-			return this.truststoreLocation;
+		public Resource getTrustStoreLocation() {
+			return this.trustStoreLocation;
 		}
 
-		public void setTruststoreLocation(Resource truststoreLocation) {
-			this.truststoreLocation = truststoreLocation;
+		public void setTrustStoreLocation(Resource trustStoreLocation) {
+			this.trustStoreLocation = trustStoreLocation;
 		}
 
-		public String getTruststorePassword() {
-			return this.truststorePassword;
+		public String getTrustStorePassword() {
+			return this.trustStorePassword;
 		}
 
-		public void setTruststorePassword(String truststorePassword) {
-			this.truststorePassword = truststorePassword;
+		public void setTrustStorePassword(String trustStorePassword) {
+			this.trustStorePassword = trustStorePassword;
 		}
 
 		public String getTrustStoreType() {
@@ -924,15 +924,15 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getKeyPassword)
 					.to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
-			map.from(this::getKeystoreLocation).as(this::resourceToPath)
+			map.from(this::getKeyStoreLocation).as(this::resourceToPath)
 					.to(properties.in(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG));
-			map.from(this::getKeystorePassword)
+			map.from(this::getKeyStorePassword)
 					.to(properties.in(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG));
 			map.from(this::getKeyStoreType)
 					.to(properties.in(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG));
-			map.from(this::getTruststoreLocation).as(this::resourceToPath)
+			map.from(this::getTrustStoreLocation).as(this::resourceToPath)
 					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG));
-			map.from(this::getTruststorePassword)
+			map.from(this::getTrustStorePassword)
 					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
 			map.from(this::getTrustStoreType)
 					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
