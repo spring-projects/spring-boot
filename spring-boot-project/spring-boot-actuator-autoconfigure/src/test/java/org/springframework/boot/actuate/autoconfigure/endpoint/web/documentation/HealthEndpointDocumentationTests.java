@@ -27,7 +27,6 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
-import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -122,7 +121,7 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 			indicators.put("us2",
 					() -> Health.up().withDetail("version", "1.0.4").build());
 			return new CompositeHealthIndicator(new OrderedHealthAggregator(),
-					new DefaultHealthIndicatorRegistry(indicators));
+					indicators);
 		}
 
 	}
