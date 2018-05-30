@@ -167,9 +167,9 @@ public class HazelcastJetConfiguration {
 	 * </p>
 	 * <p>
 	 * If either of the Jet server configuration files are given, no client configuration,
-	 * create a Jet server with that file. If a config file override is given, this
-	 * needs to be for the Jet config file ("{@code hazelcast-jet.xml}") not for
-	 * the IMDG config file ("{@code hazelcast.xml}").
+	 * create a Jet server with that file. If a config file override is given, this needs
+	 * to be for the Jet config file ("{@code hazelcast-jet.xml}") not for the IMDG config
+	 * file ("{@code hazelcast.xml}").
 	 * </p>
 	 */
 	@Configuration
