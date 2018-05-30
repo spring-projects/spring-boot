@@ -26,7 +26,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
-		<spring-javaformat.version>0.0.1</spring-javaformat.version>
+		<spring-javaformat.version>0.0.2</spring-javaformat.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -506,11 +506,6 @@
 				<groupId>io.spring.javaformat</groupId>
 				<artifactId>spring-javaformat-maven-plugin</artifactId>
 				<version>${spring-javaformat.version}</version>
-				<configuration>
-					<excludes>
-						<exclude>**/HelpMojo.java</exclude>
-					</excludes>
-				</configuration>
 				<executions>
 					<execution>
 						<phase>validate</phase>
