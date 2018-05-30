@@ -32,6 +32,8 @@ import javax.servlet.SessionTrackingMode;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
@@ -732,6 +734,18 @@ public class ServerPropertiesTests {
 		assertThat(container.getTldSkipPatterns()).contains(expectedJars);
 		assertThat(container.getTldSkipPatterns()).contains("junit-*.jar",
 				"spring-boot-*.jar");
+	}
+
+	@Test
+	public void customTomcatHttpOnlyCookie() throws Exception {
+		this.properties.getSession().getCookie().setHttpOnly(false);
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+		EmbeddedServletContainer container = factory.getEmbeddedServletContainer();
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) container).getTomcat();
+		StandardContext context = (StandardContext) tomcat.getHost().findChildren()[0];
+		assertThat(context.getUseHttpOnly()).isFalse();
+		container.stop();
 	}
 
 	@Test

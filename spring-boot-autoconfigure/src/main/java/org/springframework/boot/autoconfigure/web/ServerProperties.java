@@ -864,6 +864,17 @@ public class ServerProperties
 					.getIncludeStacktrace() == ErrorProperties.IncludeStacktrace.NEVER) {
 				customizeErrorReportValve(factory);
 			}
+			Cookie cookie = serverProperties.getSession().getCookie();
+			if (cookie.getHttpOnly() != null) {
+				factory.addContextCustomizers(new TomcatContextCustomizer() {
+
+					@Override
+					public void customize(Context context) {
+						context.setUseHttpOnly(cookie.getHttpOnly());
+					}
+
+				});
+			}
 		}
 
 		private void customizeErrorReportValve(
