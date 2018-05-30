@@ -28,6 +28,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.catalina.connector.ClientAbortException;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -148,6 +149,25 @@ public class ErrorPageFilterTests {
 				.isEqualTo(400);
 		assertThat(this.response.getForwardedUrl()).isNull();
 		assertThat(this.response.isCommitted()).isTrue();
+	}
+
+	@Test
+	public void responseCommittedWhenFromClientAbortException() throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		this.response.setCommitted(true);
+		this.chain = new MockFilterChain() {
+
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				throw new ClientAbortException();
+			}
+
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.response.isCommitted()).isTrue();
+		assertThat(this.output.toString()).doesNotContain("Cannot forward");
 	}
 
 	@Test
