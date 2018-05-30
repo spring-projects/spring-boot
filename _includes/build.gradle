@@ -1,3 +1,0 @@
-dependencies {
-    compile("{@= groupId @}:spring-boot-starter-web:{@= version @}")
-}
