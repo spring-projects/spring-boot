@@ -581,6 +581,9 @@
 				<executions>
 					<execution>
 						<phase>validate</phase>
+						<configuration>
+							<skip>${disable.checks}</skip>
+						</configuration>
 						<goals>
 							<goal>validate</goal>
 						</goals>
@@ -595,6 +598,7 @@
 						<id>checkstyle-validation</id>
 						<phase>validate</phase>
 						<configuration>
+							<skip>${disable.checks}</skip>
 							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
 							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
 							<includeTestSourceDirectory>true</includeTestSourceDirectory>
