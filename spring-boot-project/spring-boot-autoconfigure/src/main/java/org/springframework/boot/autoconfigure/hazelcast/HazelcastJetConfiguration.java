@@ -167,7 +167,9 @@ public class HazelcastJetConfiguration {
 	 * </p>
 	 * <p>
 	 * If either of the Jet server configuration files are given, no client configuration,
-	 * create a Jet server with that file.
+	 * create a Jet server with that file. If a config file override is given, this
+	 * needs to be for the Jet config file ("{@code hazelcast-jet.xml}") not for
+	 * the IMDG config file ("{@code hazelcast.xml}").
 	 * </p>
 	 */
 	@Configuration
@@ -178,9 +180,8 @@ public class HazelcastJetConfiguration {
 		@Bean
 		public JetInstance jetInstance(HazelcastProperties hazelcastProperties)
 				throws IOException {
-			// TODO Split for hazelcast.xml v hazelcast-jet.xml
 			Resource config = hazelcastProperties.resolveConfigLocation();
-			logger.info(
+			logger.trace(
 					"JetServerFileBasedConfiguration.JetInstance, resource=" + config);
 			if (config != null && config.isFile()) {
 				JetConfig jetConfig = JetConfig.loadFromStream(config.getInputStream());
