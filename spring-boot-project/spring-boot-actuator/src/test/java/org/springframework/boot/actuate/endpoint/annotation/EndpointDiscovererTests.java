@@ -234,6 +234,25 @@ public class EndpointDiscovererTests {
 	}
 
 	@Test
+	public void getEndpointShouldFindParentExtension() {
+		load(SubSpecializedEndpointsConfiguration.class, (context) -> {
+			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(
+					context);
+			Map<String, SpecializedExposableEndpoint> endpoints = mapEndpoints(
+					discoverer.getEndpoints());
+			Map<Method, SpecializedOperation> operations = mapOperations(
+					endpoints.get("specialized"));
+			assertThat(operations).containsKeys(
+					ReflectionUtils.findMethod(SpecializedTestEndpoint.class, "getAll"));
+			assertThat(operations).containsKeys(ReflectionUtils.findMethod(
+					SubSpecializedTestEndpoint.class, "getSpecialOne", String.class));
+			assertThat(operations).containsKeys(
+					ReflectionUtils.findMethod(SpecializedExtension.class, "getSpecial"));
+			assertThat(operations).hasSize(3);
+		});
+	}
+
+	@Test
 	public void getEndpointsShouldApplyFilters() {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			EndpointFilter<SpecializedExposableEndpoint> filter = (endpoint) -> {
@@ -371,6 +390,12 @@ public class EndpointDiscovererTests {
 
 	}
 
+	@Import({ TestEndpoint.class, SubSpecializedTestEndpoint.class,
+			SpecializedExtension.class })
+	static class SubSpecializedEndpointsConfiguration {
+
+	}
+
 	@Endpoint(id = "test")
 	static class TestEndpoint {
 
@@ -444,6 +469,15 @@ public class EndpointDiscovererTests {
 
 		@ReadOperation
 		public Object getAll() {
+			return null;
+		}
+
+	}
+
+	static class SubSpecializedTestEndpoint extends SpecializedTestEndpoint {
+
+		@ReadOperation
+		public Object getSpecialOne(@Selector String id) {
 			return null;
 		}
 

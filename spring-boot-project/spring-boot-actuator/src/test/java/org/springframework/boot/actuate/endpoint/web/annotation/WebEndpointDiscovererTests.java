@@ -82,8 +82,8 @@ public class WebEndpointDiscovererTests {
 		load(TestWebEndpointExtensionConfiguration.class, (discoverer) -> {
 			this.thrown.expect(IllegalStateException.class);
 			this.thrown.expectMessage(
-					"Invalid extension 'endpointExtension': no endpoint found with type '"
-							+ TestEndpoint.class.getName() + "'");
+					"Invalid extension 'endpointExtension': no endpoint found with id '"
+							+ "test'");
 			discoverer.getEndpoints();
 		});
 	}
