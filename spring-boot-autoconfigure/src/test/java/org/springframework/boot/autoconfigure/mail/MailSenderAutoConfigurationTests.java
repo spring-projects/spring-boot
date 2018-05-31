@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,6 +176,36 @@ public class MailSenderAutoConfigurationTests {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("Unable to find Session in JNDI location foo");
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
+	}
+
+	@Test
+	public void jndiSessionTakesPrecedenceOverProperties() throws NamingException {
+		Session session = configureJndiSession("foo");
+		load(EmptyConfig.class, "spring.mail.jndi-name:foo",
+				"spring.mail.host:localhost");
+		Session sessionBean = this.context.getBean(Session.class);
+		assertThat(sessionBean).isEqualTo(session);
+		assertThat(this.context.getBean(JavaMailSenderImpl.class).getSession())
+				.isEqualTo(sessionBean);
+	}
+
+	@Test
+	public void defaultEncodingWithProperties() {
+		load(EmptyConfig.class, "spring.mail.host:localhost",
+				"spring.mail.default-encoding:UTF-16");
+		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
+				.getBean(JavaMailSender.class);
+		assertThat(bean.getDefaultEncoding()).isEqualTo("UTF-16");
+	}
+
+	@Test
+	public void defaultEncodingWithJndi() throws NamingException {
+		configureJndiSession("foo");
+		load(EmptyConfig.class, "spring.mail.jndi-name:foo",
+				"spring.mail.default-encoding:UTF-16");
+		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
+				.getBean(JavaMailSender.class);
+		assertThat(bean.getDefaultEncoding()).isEqualTo("UTF-16");
 	}
 
 	@Test

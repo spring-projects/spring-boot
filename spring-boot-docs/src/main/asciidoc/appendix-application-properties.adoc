@@ -96,10 +96,10 @@ content into your application; rather pick only the properties that you need.
 	# Email ({sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[MailProperties])
 	spring.mail.default-encoding=UTF-8 # Default MimeMessage encoding.
 	spring.mail.host= # SMTP server host. For instance `smtp.example.com`
-	spring.mail.jndi-name= # Session JNDI name. When set, takes precedence to others mail settings.
+	spring.mail.jndi-name= # Session JNDI name. When set, takes precedence to others Session settings.
 	spring.mail.password= # Login password of the SMTP server.
 	spring.mail.port= # SMTP server port.
-	spring.mail.properties.*= # Additional JavaMail session properties.
+	spring.mail.properties.*= # Additional JavaMail Session properties.
 	spring.mail.protocol=smtp # Protocol used by the SMTP server.
 	spring.mail.test-connection=false # Test that the mail server is available on startup.
 	spring.mail.username= # Login user of the SMTP server.

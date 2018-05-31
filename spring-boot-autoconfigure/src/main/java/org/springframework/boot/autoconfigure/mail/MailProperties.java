@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,12 +66,12 @@ public class MailProperties {
 	private Charset defaultEncoding = DEFAULT_CHARSET;
 
 	/**
-	 * Additional JavaMail session properties.
+	 * Additional JavaMail Session properties.
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	/**
-	 * Session JNDI name. When set, takes precedence to others mail settings.
+	 * Session JNDI name. When set, takes precedence to others Session settings.
 	 */
 	private String jndiName;
 

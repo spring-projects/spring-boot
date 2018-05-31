@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,9 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
-import java.util.Map;
-import java.util.Properties;
-
 import javax.activation.MimeType;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -31,12 +26,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration.MailSenderCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.MailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
  * {@link EnableAutoConfiguration Auto configuration} for email support.
@@ -47,60 +40,16 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @since 1.2.0
  */
 @Configuration
-@ConditionalOnClass({ MimeMessage.class, MimeType.class })
+@ConditionalOnClass({ MimeMessage.class, MimeType.class, MailSender.class })
 @ConditionalOnMissingBean(MailSender.class)
 @Conditional(MailSenderCondition.class)
 @EnableConfigurationProperties(MailProperties.class)
-@Import(JndiSessionConfiguration.class)
+@Import({ MailSenderJndiConfiguration.class, MailSenderPropertiesConfiguration.class })
 public class MailSenderAutoConfiguration {
 
-	private final MailProperties properties;
-
-	private final Session session;
-
-	public MailSenderAutoConfiguration(MailProperties properties,
-			ObjectProvider<Session> session) {
-		this.properties = properties;
-		this.session = session.getIfAvailable();
-	}
-
-	@Bean
-	public JavaMailSenderImpl mailSender() {
-		JavaMailSenderImpl sender = new JavaMailSenderImpl();
-		if (this.session != null) {
-			sender.setSession(this.session);
-		}
-		else {
-			applyProperties(sender);
-		}
-		return sender;
-	}
-
-	private void applyProperties(JavaMailSenderImpl sender) {
-		sender.setHost(this.properties.getHost());
-		if (this.properties.getPort() != null) {
-			sender.setPort(this.properties.getPort());
-		}
-		sender.setUsername(this.properties.getUsername());
-		sender.setPassword(this.properties.getPassword());
-		sender.setProtocol(this.properties.getProtocol());
-		if (this.properties.getDefaultEncoding() != null) {
-			sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
-		}
-		if (!this.properties.getProperties().isEmpty()) {
-			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
-		}
-	}
-
-	private Properties asProperties(Map<String, String> source) {
-		Properties properties = new Properties();
-		properties.putAll(source);
-		return properties;
-	}
-
 	/**
-	 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks in if
-	 * either the host or jndi name property is set.
+	 * Condition to trigger the creation of a {@link MailSender}. This kicks in if either
+	 * the host or jndi name property is set.
 	 */
 	static class MailSenderCondition extends AnyNestedCondition {
 

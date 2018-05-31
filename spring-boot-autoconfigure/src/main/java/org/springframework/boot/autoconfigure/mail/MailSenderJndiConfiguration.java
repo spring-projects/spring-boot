@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jndi.JndiLocatorDelegate;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
- * Auto-configure a {@link Session} available on JNDI.
+ * Auto-configure a {@link MailSender} based on a {@link Session} available on JNDI.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
@@ -37,12 +39,20 @@ import org.springframework.jndi.JndiLocatorDelegate;
 @ConditionalOnClass(Session.class)
 @ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
 @ConditionalOnJndi
-class JndiSessionConfiguration {
+class MailSenderJndiConfiguration {
 
 	private final MailProperties properties;
 
-	JndiSessionConfiguration(MailProperties properties) {
+	MailSenderJndiConfiguration(MailProperties properties) {
 		this.properties = properties;
+	}
+
+	@Bean
+	public JavaMailSenderImpl mailSender(Session session) {
+		JavaMailSenderImpl sender = new JavaMailSenderImpl();
+		sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
+		sender.setSession(session);
+		return sender;
 	}
 
 	@Bean
