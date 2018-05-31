@@ -78,8 +78,8 @@ public class HealthEndpointTests {
 	@Test
 	public void statusForComponentInstanceIsExposed() {
 		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(
-				new OrderedHealthAggregator(), new DefaultHealthIndicatorRegistry(
-						Collections.singletonMap("sub", () -> Health.down().build())));
+				new OrderedHealthAggregator(),
+				Collections.singletonMap("sub", () -> Health.down().build()));
 		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
 				Collections.singletonMap("test", compositeIndicator)));
 		Health health = endpoint.healthForComponentInstance("test", "sub");
@@ -91,8 +91,8 @@ public class HealthEndpointTests {
 	@Test
 	public void statusForUnknownComponentInstanceReturnNull() {
 		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(
-				new OrderedHealthAggregator(), new DefaultHealthIndicatorRegistry(
-						Collections.singletonMap("sub", () -> Health.down().build())));
+				new OrderedHealthAggregator(),
+				Collections.singletonMap("sub", () -> Health.down().build()));
 		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(
 				Collections.singletonMap("test", compositeIndicator)));
 		Health health = endpoint.healthForComponentInstance("test", "does-not-exist");
@@ -110,7 +110,7 @@ public class HealthEndpointTests {
 	private HealthIndicator createHealthIndicator(
 			Map<String, HealthIndicator> healthIndicators) {
 		return new CompositeHealthIndicator(new OrderedHealthAggregator(),
-				new DefaultHealthIndicatorRegistry(healthIndicators));
+				healthIndicators);
 	}
 
 }

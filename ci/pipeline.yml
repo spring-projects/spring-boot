@@ -4,10 +4,6 @@ resource_types:
   source:
     repository: springio/artifactory-resource
     tag: 0.0.3
-- name: email
-  type: docker-image
-  source:
-    repository: pcfseceng/email-resource
 - name: pull-request
   type: docker-image
   source:
@@ -72,16 +68,6 @@ resources:
     username: ((artifactory-username))
     password: ((artifactory-password))
     build_name: ((build-name))
-- name: email-notification
-  type: email
-  source:
-    smtp:
-      host: ((email-server))
-      port: "25"
-      anonymous: true
-      skip_ssl_validation: true
-    from: ((email-from))
-    to: ((email-to))
 - name: repo-status-build
   type: github-status-resource
   source:
@@ -153,41 +139,14 @@ jobs:
       do:
       - put: repo-status-build
         params: { state: "failure", commit: "git-repo" }
-      - task: determine-email-body
-        image: spring-boot-ci-image
-        file: git-repo/ci/tasks/determine-email-body.yml
-        params:
-          STATE: failure
-          BUILD_PIPELINE_NAME: ((pipeline-name))
-          BUILD_JOB_NAME: build
-          CONCOURSE_URL: ((concourse-url))
-          ACCESS_TOKEN: ((github-access-token))
-      - put: email-notification
-        params:
-          subject: email-details/subject
-          body: email-details/body
       - put: slack-alert
         params:
           text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
           silent: true
           icon_emoji: ":concourse:"
           username: concourse-ci
-  - do:
-    - task: determine-email-body
-      image: spring-boot-ci-image
-      file: git-repo/ci/tasks/determine-email-body.yml
-      params:
-        STATE: success
-        BUILD_PIPELINE_NAME: ((pipeline-name))
-        BUILD_JOB_NAME: build
-        CONCOURSE_URL: ((concourse-url))
-        ACCESS_TOKEN: ((github-access-token))
   - put: repo-status-build
     params: { state: "success", commit: "git-repo" }
-  - put: email-notification
-    params:
-      subject: email-details/subject
-      body: email-details/body
   - put: slack-alert
     params:
       text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
@@ -283,41 +242,14 @@ jobs:
       do:
       - put: repo-status-jdk9-build
         params: { state: "failure", commit: "git-repo" }
-      - task: determine-email-body
-        image: spring-boot-jdk9-ci-image
-        file: git-repo/ci/tasks/determine-email-body.yml
-        params:
-          STATE: failure
-          BUILD_PIPELINE_NAME: ((pipeline-name))
-          BUILD_JOB_NAME: jdk9-build
-          CONCOURSE_URL: ((concourse-url))
-          ACCESS_TOKEN: ((github-access-token))
-      - put: email-notification
-        params:
-          subject: email-details/subject
-          body: email-details/body
       - put: slack-alert
         params:
           text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
           silent: true
           icon_emoji: ":concourse:"
           username: concourse-ci
-  - do:
-    - task: determine-email-body
-      image: spring-boot-jdk9-ci-image
-      file: git-repo/ci/tasks/determine-email-body.yml
-      params:
-        STATE: success
-        BUILD_PIPELINE_NAME: ((pipeline-name))
-        BUILD_JOB_NAME: jdk9-build
-        CONCOURSE_URL: ((concourse-url))
-        ACCESS_TOKEN: ((github-access-token))
   - put: repo-status-jdk9-build
     params: { state: "success", commit: "git-repo" }
-  - put: email-notification
-    params:
-      subject: email-details/subject
-      body: email-details/body
   - put: slack-alert
     params:
       text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
@@ -356,41 +288,14 @@ jobs:
       do:
       - put: repo-status-jdk10-build
         params: { state: "failure", commit: "git-repo" }
-      - task: determine-email-body
-        image: spring-boot-jdk10-ci-image
-        file: git-repo/ci/tasks/determine-email-body.yml
-        params:
-          STATE: failure
-          BUILD_PIPELINE_NAME: ((pipeline-name))
-          BUILD_JOB_NAME: jdk10-build
-          CONCOURSE_URL: ((concourse-url))
-          ACCESS_TOKEN: ((github-access-token))
-      - put: email-notification
-        params:
-          subject: email-details/subject
-          body: email-details/body
       - put: slack-alert
         params:
           text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
           silent: true
           icon_emoji: ":concourse:"
           username: concourse-ci
-  - do:
-    - task: determine-email-body
-      image: spring-boot-jdk10-ci-image
-      file: git-repo/ci/tasks/determine-email-body.yml
-      params:
-        STATE: success
-        BUILD_PIPELINE_NAME: ((pipeline-name))
-        BUILD_JOB_NAME: jdk10-build
-        CONCOURSE_URL: ((concourse-url))
-        ACCESS_TOKEN: ((github-access-token))
   - put: repo-status-jdk10-build
     params: { state: "success", commit: "git-repo" }
-  - put: email-notification
-    params:
-      subject: email-details/subject
-      body: email-details/body
   - put: slack-alert
     params:
       text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"

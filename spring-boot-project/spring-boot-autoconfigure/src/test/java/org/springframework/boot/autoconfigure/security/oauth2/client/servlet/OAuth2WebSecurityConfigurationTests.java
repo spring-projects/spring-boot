@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.client;
+package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 
 import java.util.ArrayList;
 import java.util.List;

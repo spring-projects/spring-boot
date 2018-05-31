@@ -167,4 +167,46 @@ public class StringSequenceTests {
 		assertThat(a).isEqualTo(b).isNotEqualTo(c);
 	}
 
+	@Test
+	public void startsWithWhenExactMatch() {
+		assertThat(new StringSequence("abc").startsWith("abc")).isTrue();
+	}
+
+	@Test
+	public void startsWithWhenLongerAndStartsWith() {
+		assertThat(new StringSequence("abcd").startsWith("abc")).isTrue();
+	}
+
+	@Test
+	public void startsWithWhenLongerAndDoesNotStartWith() {
+		assertThat(new StringSequence("abcd").startsWith("abx")).isFalse();
+	}
+
+	@Test
+	public void startsWithWhenShorterAndDoesNotStartWith() {
+		assertThat(new StringSequence("ab").startsWith("abc")).isFalse();
+		assertThat(new StringSequence("ab").startsWith("c")).isFalse();
+	}
+
+	@Test
+	public void startsWithOffsetWhenExactMatch() {
+		assertThat(new StringSequence("xabc").startsWith("abc", 1)).isTrue();
+	}
+
+	@Test
+	public void startsWithOffsetWhenLongerAndStartsWith() {
+		assertThat(new StringSequence("xabcd").startsWith("abc", 1)).isTrue();
+	}
+
+	@Test
+	public void startsWithOffsetWhenLongerAndDoesNotStartWith() {
+		assertThat(new StringSequence("xabcd").startsWith("abx", 1)).isFalse();
+	}
+
+	@Test
+	public void startsWithOffsetWhenShorterAndDoesNotStartWith() {
+		assertThat(new StringSequence("xab").startsWith("abc", 1)).isFalse();
+		assertThat(new StringSequence("xab").startsWith("c", 1)).isFalse();
+	}
+
 }

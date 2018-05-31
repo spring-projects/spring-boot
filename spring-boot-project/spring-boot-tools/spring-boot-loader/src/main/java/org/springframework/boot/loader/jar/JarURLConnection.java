@@ -255,6 +255,10 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
 		StringSequence spec = new StringSequence(url.getFile());
 		int index = indexOfRootSpec(spec, jarFile.getPathFromRoot());
+		if (index == -1) {
+			return (Boolean.TRUE.equals(useFastExceptions.get()) ? NOT_FOUND_CONNECTION
+					: new JarURLConnection(url, null, EMPTY_JAR_ENTRY_NAME));
+		}
 		int separator;
 		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
 			JarEntryName entryName = JarEntryName.get(spec.subSequence(index, separator));
@@ -275,7 +279,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private static int indexOfRootSpec(StringSequence file, String pathFromRoot) {
 		int separatorIndex = file.indexOf(SEPARATOR);
-		if (separatorIndex < 0) {
+		if (separatorIndex < 0 || !file.startsWith(pathFromRoot, separatorIndex)) {
 			return -1;
 		}
 		return separatorIndex + SEPARATOR.length() + pathFromRoot.length();

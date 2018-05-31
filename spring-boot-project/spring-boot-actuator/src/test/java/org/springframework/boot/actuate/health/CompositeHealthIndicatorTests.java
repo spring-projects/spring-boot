@@ -63,7 +63,7 @@ public class CompositeHealthIndicatorTests {
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, new DefaultHealthIndicatorRegistry(indicators));
+				this.healthAggregator, indicators);
 		Health result = composite.health();
 		assertThat(result.getDetails()).hasSize(2);
 		assertThat(result.getDetails()).containsEntry("one",
@@ -78,10 +78,9 @@ public class CompositeHealthIndicatorTests {
 		indicators.put("db1", this.one);
 		indicators.put("db2", this.two);
 		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(
-				this.healthAggregator, new DefaultHealthIndicatorRegistry(indicators));
+				this.healthAggregator, indicators);
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
-				this.healthAggregator, new DefaultHealthIndicatorRegistry(
-						Collections.singletonMap("db", innerComposite)));
+				this.healthAggregator, Collections.singletonMap("db", innerComposite));
 		Health result = composite.health();
 		ObjectMapper mapper = new ObjectMapper();
 		assertThat(mapper.writeValueAsString(result)).isEqualTo(

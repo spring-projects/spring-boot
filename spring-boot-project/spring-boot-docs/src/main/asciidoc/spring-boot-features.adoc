@@ -3151,7 +3151,8 @@ Spring.
 ==== Client
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of
 some auto-configuration to make it easy to set up an OAuth2 Client. This configuration
-makes use of the properties under `OAuth2ClientProperties`.
+makes use of the properties under `OAuth2ClientProperties`. The same properties are applicable
+for both servlet and reactive applications.
 
 You can register multiple OAuth2 clients and providers under the
 `spring.security.oauth2.client` prefix, as shown in the following example:
@@ -3186,7 +3187,7 @@ You can register multiple OAuth2 clients and providers under the
 By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes URLs
 matching `/login/oauth2/code/*`. If you want to customize the `redirect-uri-template` to
 use a different pattern, you need to provide configuration to process that custom pattern.
-For example, you can add your own `WebSecurityConfigurerAdapter` that resembles the
+For example, for servlet applications, you can add your own `WebSecurityConfigurerAdapter` that resembles the
 following:
 
 [source,java,indent=0]

@@ -18,11 +18,13 @@ package org.springframework.boot.loader.jar;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
@@ -41,6 +43,9 @@ public class JarURLConnectionTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder(new File("target"));
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private File rootJarFile;
 
@@ -147,6 +152,16 @@ public class JarURLConnectionTests {
 				"jar:file:" + getRelativePath() + "!/space%20nested.jar!/3.dat");
 		assertThat(JarURLConnection.get(url, this.jarFile).getInputStream())
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
+	}
+
+	@Test
+	public void connectionToEntryUsingWrongAbsoluteUrlForEntryFromNestedJarFile()
+			throws Exception {
+		URL url = new URL("jar:file:" + getAbsolutePath() + "!/w.jar!/3.dat");
+		JarFile nested = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
+		this.thrown.expect(FileNotFoundException.class);
+		JarURLConnection.get(url, nested).getInputStream();
 	}
 
 	@Test

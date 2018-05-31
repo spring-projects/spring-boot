@@ -49,10 +49,7 @@ public class CompositeHealthIndicator implements HealthIndicator {
 	 * @param healthAggregator the health aggregator
 	 * @param indicators a map of {@link HealthIndicator HealthIndicators} with the key
 	 * being used as an indicator name.
-	 * @deprecated since 2.1.0 in favour of
-	 * {@link #CompositeHealthIndicator(HealthAggregator, HealthIndicatorRegistry)}
 	 */
-	@Deprecated
 	public CompositeHealthIndicator(HealthAggregator healthAggregator,
 			Map<String, HealthIndicator> indicators) {
 		this(healthAggregator, new DefaultHealthIndicatorRegistry(indicators));

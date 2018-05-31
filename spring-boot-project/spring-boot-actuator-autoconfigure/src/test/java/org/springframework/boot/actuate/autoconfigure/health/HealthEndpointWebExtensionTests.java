@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
-import org.springframework.boot.actuate.health.DefaultHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -436,7 +435,7 @@ public class HealthEndpointWebExtensionTests {
 			nestedIndicators.put("one", simpleHealthIndicator());
 			nestedIndicators.put("two", () -> Health.up().build());
 			return new CompositeHealthIndicator(new OrderedHealthAggregator(),
-					new DefaultHealthIndicatorRegistry(nestedIndicators));
+					nestedIndicators);
 		}
 
 	}
