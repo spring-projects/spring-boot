@@ -179,6 +179,36 @@ public class MailSenderAutoConfigurationTests {
 	}
 
 	@Test
+	public void jndiSessionTakesPrecedenceOverProperties() {
+		Session session = configureJndiSession("foo");
+		load(EmptyConfig.class, "spring.mail.jndi-name:foo",
+				"spring.mail.host:localhost");
+		Session sessionBean = this.context.getBean(Session.class);
+		assertThat(sessionBean).isEqualTo(session);
+		assertThat(this.context.getBean(JavaMailSenderImpl.class).getSession())
+				.isEqualTo(sessionBean);
+	}
+
+	@Test
+	public void defaultEncodingWithProperties() {
+		load(EmptyConfig.class, "spring.mail.host:localhost",
+				"spring.mail.default-encoding:UTF-16");
+		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
+				.getBean(JavaMailSender.class);
+		assertThat(bean.getDefaultEncoding()).isEqualTo("UTF-16");
+	}
+
+	@Test
+	public void defaultEncodingWithJndi() {
+		configureJndiSession("foo");
+		load(EmptyConfig.class, "spring.mail.jndi-name:foo",
+				"spring.mail.default-encoding:UTF-16");
+		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
+				.getBean(JavaMailSender.class);
+		assertThat(bean.getDefaultEncoding()).isEqualTo("UTF-16");
+	}
+
+	@Test
 	public void connectionOnStartup() throws MessagingException {
 		load(MockMailConfiguration.class, "spring.mail.host:10.0.0.23",
 				"spring.mail.test-connection:true");
