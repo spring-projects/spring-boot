@@ -2763,13 +2763,13 @@ does so, the orders shown in the following table will be used:
 [[boot-features-jersey]]
 === JAX-RS and Jersey
 If you prefer the JAX-RS programming model for REST endpoints, you can use one of the
-available implementations instead of Spring MVC. https://jersey.github.io/[Jersey] 1.x and
-http://cxf.apache.org/[Apache CXF] work quite well out of the box if you register their
-`Servlet` or `Filter` as a `@Bean` in your application context. Jersey 2.x has some native
-Spring support, so we also provide auto-configuration support for it in Spring Boot,
-together with a starter.
+available implementations instead of Spring MVC. https://jersey.github.io/[Jersey] and
+http://cxf.apache.org/[Apache CXF] work quite well out of the box. CXF requires you to
+register its `Servlet` or `Filter` as a `@Bean` in your application context. Jersey has
+some native Spring support, so we also provide auto-configuration support for it in
+Spring Boot, together with a starter.
 
-To get started with Jersey 2.x, include the `spring-boot-starter-jersey` as a dependency
+To get started with Jersey, include the `spring-boot-starter-jersey` as a dependency
 and then you need one `@Bean` of type `ResourceConfig` in which you register all the
 endpoints, as shown in the following example:
 
@@ -2828,12 +2828,7 @@ the filter registrations can be given init parameters by using `spring.jersey.in
 specify a map of properties.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-jersey[Jersey sample] so
-that you can see how to set things up. There is also a
-{github-code}/spring-boot-samples/spring-boot-sample-jersey1[Jersey 1.x sample]. Note
-that, in the Jersey 1.x sample, the spring-boot maven plugin has been configured to
-unpack some Jersey jars so that they can be scanned by the JAX-RS implementation (because
-the sample asks for them to be scanned in its `Filter` registration). If any of your
-JAX-RS resources are packaged as nested jars, you may need to do the same.
+that you can see how to set things up.
 
 
 
@@ -3156,7 +3151,8 @@ Spring.
 ==== Client
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of
 some auto-configuration to make it easy to set up an OAuth2 Client. This configuration
-makes use of the properties under `OAuth2ClientProperties`.
+makes use of the properties under `OAuth2ClientProperties`. The same properties are applicable
+for both servlet and reactive applications.
 
 You can register multiple OAuth2 clients and providers under the
 `spring.security.oauth2.client` prefix, as shown in the following example:
@@ -3191,7 +3187,7 @@ You can register multiple OAuth2 clients and providers under the
 By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes URLs
 matching `/login/oauth2/code/*`. If you want to customize the `redirect-uri-template` to
 use a different pattern, you need to provide configuration to process that custom pattern.
-For example, you can add your own `WebSecurityConfigurerAdapter` that resembles the
+For example, for servlet applications, you can add your own `WebSecurityConfigurerAdapter` that resembles the
 following:
 
 [source,java,indent=0]
@@ -4221,14 +4217,45 @@ https://projects.spring.io/spring-data-solr/[reference documentation].
 
 [[boot-features-elasticsearch]]
 === Elasticsearch
-http://www.elasticsearch.org/[Elasticsearch] is an open source, distributed, real-time
-search and analytics engine. Spring Boot offers basic auto-configuration for
-Elasticsearch and the abstractions on top of it provided by
-https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch].
-There is a `spring-boot-starter-data-elasticsearch` "`Starter`" for collecting the
-dependencies in a convenient way. Spring Boot also supports
-https://github.com/searchbox-io/Jest[Jest].
+https://www.elastic.co/products/elasticsearch[Elasticsearch] is an open source,
+distributed, RESTful search and analytics engine. Spring Boot offers basic
+auto-configuration for Elasticsearch.
 
+Spring Boot supports several HTTP clients:
+
+* The official Java "Low Level" and "High Level" REST clients
+* https://github.com/searchbox-io/Jest[Jest]
+
+The transport client is still being used by
+https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch],
+which you can start using with the `spring-boot-starter-data-elasticsearch` "`Starter`".
+
+
+[[boot-features-connecting-to-elasticsearch-rest]]
+==== Connecting to Elasticsearch by REST clients
+Elasticsearch ships
+https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients]
+that you can use to query a cluster: the "Low Level" client and the "High Level" client.
+
+If you have the `org.elasticsearch.client:elasticsearch-rest-client` dependency on the
+classpath, Spring Boot will auto-configure and register a `RestClient` bean that
+by default targets `http://localhost:9200`.
+You can further tune how `RestClient` is configured, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.elasticsearch.rest.uris=http://search.example.com:9200
+	spring.elasticsearch.rest.username=user
+	spring.elasticsearch.rest.password=secret
+----
+
+You can also register an arbitrary number of beans that implement
+`RestClientBuilderCustomizer` for more advanced customizations.
+To take full control over the registration, define a `RestClient` bean.
+
+If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` dependency
+on the classpath, Spring Boot will auto-configure a `RestHighLevelClient`, which wraps
+any existing `RestClient` bean, reusing its HTTP configuration.
 
 
 [[boot-features-connecting-to-elasticsearch-jest]]
@@ -4507,6 +4534,11 @@ URLs of your server in your application.properties, as shown in the following ex
 
 If you need to customize connection settings, you can use the `spring.ldap.base` and
 `spring.ldap.base-environment` properties.
+
+A `LdapContextSource` is auto-configured based on these settings. If you need to customize
+it, for instance to use a `PooledContextSource`, you can still inject the auto-configured
+`LdapContextSource`. Make sure to flag your customized `ContextSource` as `@Primary` so
+that the auto-configured `LdapTemplate` uses it.
 
 
 
@@ -5867,6 +5899,16 @@ client by checking the following configuration options:
 * A configuration file defined by the `spring.hazelcast.config` property.
 * The presence of the `hazelcast.client.config` system property.
 * A `hazelcast-client.xml` in the working directory or at the root of the classpath.
+
+If https://jet.hazelcast.org/[Hazelcast Jet] is on the classpath, Spring Boot auto-configures
+a `JetInstance` for your application. This includes a `HazelcastInstance`.
+
+Here Spring Boot will look for the following:
+
+* The presence of a `com.hazelcast.client.config.ClientConfig` bean.
+* The presence of a `com.hazelcast.jet.config.JetConfig` bean.
+* The `hazelcast.jet.config` system property.
+* `hazelcast-jet.xml` in the working directory or the root of the classpath.
 
 NOTE: Spring Boot also has
 <<boot-features-caching-provider-hazelcast,explicit caching support for Hazelcast>>. If

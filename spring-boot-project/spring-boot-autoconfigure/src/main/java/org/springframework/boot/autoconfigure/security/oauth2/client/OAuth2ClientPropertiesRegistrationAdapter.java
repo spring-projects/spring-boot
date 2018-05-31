@@ -37,8 +37,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Thiago Hirata
+ * @since 2.1.0
  */
-final class OAuth2ClientPropertiesRegistrationAdapter {
+public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private OAuth2ClientPropertiesRegistrationAdapter() {
 	}

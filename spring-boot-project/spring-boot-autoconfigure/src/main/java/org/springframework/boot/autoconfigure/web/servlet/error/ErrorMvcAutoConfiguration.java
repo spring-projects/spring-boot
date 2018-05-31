@@ -50,6 +50,7 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
@@ -89,16 +90,21 @@ import org.springframework.web.util.HtmlUtils;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 // Load before the main WebMvcAutoConfiguration so that the error View is available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties({ ServerProperties.class, ResourceProperties.class })
+@EnableConfigurationProperties({ ServerProperties.class, ResourceProperties.class,
+		WebMvcProperties.class })
 public class ErrorMvcAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
+	private final WebMvcProperties webMvcProperties;
+
 	private final List<ErrorViewResolver> errorViewResolvers;
 
 	public ErrorMvcAutoConfiguration(ServerProperties serverProperties,
+			WebMvcProperties webMvcProperties,
 			ObjectProvider<List<ErrorViewResolver>> errorViewResolversProvider) {
 		this.serverProperties = serverProperties;
+		this.webMvcProperties = webMvcProperties;
 		this.errorViewResolvers = errorViewResolversProvider.getIfAvailable();
 	}
 
@@ -118,7 +124,7 @@ public class ErrorMvcAutoConfiguration {
 
 	@Bean
 	public ErrorPageCustomizer errorPageCustomizer() {
-		return new ErrorPageCustomizer(this.serverProperties);
+		return new ErrorPageCustomizer(this.serverProperties, this.webMvcProperties);
 	}
 
 	@Bean
@@ -325,17 +331,21 @@ public class ErrorMvcAutoConfiguration {
 	 */
 	private static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 
-		private final ServerProperties properties;
+		private final ServerProperties serverProperties;
 
-		protected ErrorPageCustomizer(ServerProperties properties) {
-			this.properties = properties;
+		private final WebMvcProperties webMvcProperties;
+
+		protected ErrorPageCustomizer(ServerProperties serverProperties,
+				WebMvcProperties webMvcProperties) {
+			this.serverProperties = serverProperties;
+			this.webMvcProperties = webMvcProperties;
 		}
 
 		@Override
 		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
 			ErrorPage errorPage = new ErrorPage(
-					this.properties.getServlet().getServletPrefix()
-							+ this.properties.getError().getPath());
+					this.webMvcProperties.getServlet().getServletPrefix()
+							+ this.serverProperties.getError().getPath());
 			errorPageRegistry.addErrorPages(errorPage);
 		}
 

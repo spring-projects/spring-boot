@@ -79,20 +79,6 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-	public void testServletPathAsMapping() {
-		bind("server.servlet.path", "/foo/*");
-		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
-		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
-	}
-
-	@Test
-	public void testServletPathAsPrefix() {
-		bind("server.servlet.path", "/foo");
-		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
-		assertThat(this.properties.getServlet().getServletPrefix()).isEqualTo("/foo");
-	}
-
-	@Test
 	public void testTomcatBinding() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.tomcat.accesslog.pattern", "%h %t '%r' %s %b");

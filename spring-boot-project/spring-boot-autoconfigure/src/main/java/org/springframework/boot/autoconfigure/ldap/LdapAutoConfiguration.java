@@ -26,12 +26,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.LdapOperations;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for LDAP.
  *
  * @author Eddú Meléndez
+ * @author Vedran Pavic
  * @since 1.5.0
  */
 @Configuration
@@ -50,7 +53,7 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ContextSource ldapContextSource() {
+	public LdapContextSource ldapContextSource() {
 		LdapContextSource source = new LdapContextSource();
 		source.setUserDn(this.properties.getUsername());
 		source.setPassword(this.properties.getPassword());
@@ -60,6 +63,12 @@ public class LdapAutoConfiguration {
 		source.setBaseEnvironmentProperties(
 				Collections.unmodifiableMap(this.properties.getBaseEnvironment()));
 		return source;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(LdapOperations.class)
+	public LdapTemplate ldapTemplate(ContextSource contextSource) {
+		return new LdapTemplate(contextSource);
 	}
 
 }

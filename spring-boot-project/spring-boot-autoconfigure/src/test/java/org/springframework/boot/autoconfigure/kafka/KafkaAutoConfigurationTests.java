@@ -43,7 +43,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.AbstractMessageListenerContainer.AckMode;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
@@ -75,12 +75,12 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.properties.baz=qux",
 						"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
 						"spring.kafka.ssl.key-password=p1",
-						"spring.kafka.ssl.keystore-location=classpath:ksLoc",
-						"spring.kafka.ssl.keystore-password=p2",
-						"spring.kafka.ssl.keystore-type=PKCS12",
-						"spring.kafka.ssl.truststore-location=classpath:tsLoc",
-						"spring.kafka.ssl.truststore-password=p3",
-						"spring.kafka.ssl.truststore-type=PKCS12",
+						"spring.kafka.ssl.key-store-location=classpath:ksLoc",
+						"spring.kafka.ssl.key-store-password=p2",
+						"spring.kafka.ssl.key-store-type=PKCS12",
+						"spring.kafka.ssl.trust-store-location=classpath:tsLoc",
+						"spring.kafka.ssl.trust-store-password=p3",
+						"spring.kafka.ssl.trust-store-type=PKCS12",
 						"spring.kafka.ssl.protocol=TLSv1.2",
 						"spring.kafka.consumer.auto-commit-interval=123",
 						"spring.kafka.consumer.max-poll-records=42",
@@ -166,12 +166,12 @@ public class KafkaAutoConfigurationTests {
 						"spring.kafka.producer.retries=2",
 						"spring.kafka.producer.properties.fiz.buz=fix.fox",
 						"spring.kafka.producer.ssl.key-password=p4",
-						"spring.kafka.producer.ssl.keystore-location=classpath:ksLocP",
-						"spring.kafka.producer.ssl.keystore-password=p5",
-						"spring.kafka.producer.ssl.keystore-type=PKCS12",
-						"spring.kafka.producer.ssl.truststore-location=classpath:tsLocP",
-						"spring.kafka.producer.ssl.truststore-password=p6",
-						"spring.kafka.producer.ssl.truststore-type=PKCS12",
+						"spring.kafka.producer.ssl.key-store-location=classpath:ksLocP",
+						"spring.kafka.producer.ssl.key-store-password=p5",
+						"spring.kafka.producer.ssl.key-store-type=PKCS12",
+						"spring.kafka.producer.ssl.trust-store-location=classpath:tsLocP",
+						"spring.kafka.producer.ssl.trust-store-password=p6",
+						"spring.kafka.producer.ssl.trust-store-type=PKCS12",
 						"spring.kafka.producer.ssl.protocol=TLSv1.2",
 						"spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.IntegerSerializer")
 				.run((context) -> {
@@ -232,12 +232,12 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.admin.fail-fast=true",
 				"spring.kafka.admin.properties.fiz.buz=fix.fox",
 				"spring.kafka.admin.ssl.key-password=p4",
-				"spring.kafka.admin.ssl.keystore-location=classpath:ksLocP",
-				"spring.kafka.admin.ssl.keystore-password=p5",
-				"spring.kafka.admin.ssl.keystore-type=PKCS12",
-				"spring.kafka.admin.ssl.truststore-location=classpath:tsLocP",
-				"spring.kafka.admin.ssl.truststore-password=p6",
-				"spring.kafka.admin.ssl.truststore-type=PKCS12",
+				"spring.kafka.admin.ssl.key-store-location=classpath:ksLocP",
+				"spring.kafka.admin.ssl.key-store-password=p5",
+				"spring.kafka.admin.ssl.key-store-type=PKCS12",
+				"spring.kafka.admin.ssl.trust-store-location=classpath:tsLocP",
+				"spring.kafka.admin.ssl.trust-store-password=p6",
+				"spring.kafka.admin.ssl.trust-store-type=PKCS12",
 				"spring.kafka.admin.ssl.protocol=TLSv1.2").run((context) -> {
 					KafkaAdmin admin = context.getBean(KafkaAdmin.class);
 					Map<String, Object> configs = admin.getConfig();

@@ -933,36 +933,12 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Returns whether this {@link SpringApplication} is running within a web environment.
-	 * @return {@code true} if running within a web environment, otherwise {@code false}.
-	 * @see #setWebEnvironment(boolean)
-	 * @deprecated since 2.0.0 in favor of {@link #getWebApplicationType()}
-	 */
-	@Deprecated
-	public boolean isWebEnvironment() {
-		return this.webApplicationType == WebApplicationType.SERVLET;
-	}
-
-	/**
 	 * Returns the type of web application that is being run.
 	 * @return the type of web application
 	 * @since 2.0.0
 	 */
 	public WebApplicationType getWebApplicationType() {
 		return this.webApplicationType;
-	}
-
-	/**
-	 * Sets if this application is running within a web environment. If not specified will
-	 * attempt to deduce the environment based on the classpath.
-	 * @param webEnvironment if the application is running in a web environment
-	 * @deprecated since 2.0.0 in favor of
-	 * {@link #setWebApplicationType(WebApplicationType)}
-	 */
-	@Deprecated
-	public void setWebEnvironment(boolean webEnvironment) {
-		this.webApplicationType = (webEnvironment ? WebApplicationType.SERVLET
-				: WebApplicationType.NONE);
 	}
 
 	/**

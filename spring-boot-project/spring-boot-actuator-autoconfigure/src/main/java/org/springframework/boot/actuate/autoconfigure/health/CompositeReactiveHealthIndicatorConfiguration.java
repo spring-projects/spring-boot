@@ -20,8 +20,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.DefaultReactiveHealthIndicatorRegistry;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -41,11 +43,10 @@ public abstract class CompositeReactiveHealthIndicatorConfiguration<H extends Re
 		if (beans.size() == 1) {
 			return createHealthIndicator(beans.values().iterator().next());
 		}
-		CompositeReactiveHealthIndicator composite = new CompositeReactiveHealthIndicator(
-				this.healthAggregator);
-		beans.forEach((name, source) -> composite.addHealthIndicator(name,
-				createHealthIndicator(source)));
-		return composite;
+		ReactiveHealthIndicatorRegistry registry = new DefaultReactiveHealthIndicatorRegistry();
+		beans.forEach(
+				(name, source) -> registry.register(name, createHealthIndicator(source)));
+		return new CompositeReactiveHealthIndicator(this.healthAggregator, registry);
 	}
 
 	@SuppressWarnings("unchecked")

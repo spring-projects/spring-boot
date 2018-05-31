@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.health;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import reactor.core.publisher.Mono;
@@ -38,13 +41,12 @@ public class CompositeReactiveHealthIndicatorTests {
 
 	private OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
 
-	private CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
-			this.healthAggregator);
-
 	@Test
 	public void singleIndicator() {
-		this.indicator.addHealthIndicator("test", () -> Mono.just(HEALTHY));
-		StepVerifier.create(this.indicator.health()).consumeNextWith((h) -> {
+		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
+				this.healthAggregator, new DefaultReactiveHealthIndicatorRegistry(
+						Collections.singletonMap("test", () -> Mono.just(HEALTHY))));
+		StepVerifier.create(indicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("test");
 			assertThat(h.getDetails().get("test")).isEqualTo(HEALTHY);
@@ -53,11 +55,14 @@ public class CompositeReactiveHealthIndicatorTests {
 
 	@Test
 	public void longHealth() {
+		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
 		for (int i = 0; i < 50; i++) {
-			this.indicator.addHealthIndicator("test" + i,
-					new TimeoutHealth(10000, Status.UP));
+			indicators.put("test" + i, new TimeoutHealth(10000, Status.UP));
 		}
-		StepVerifier.withVirtualTime(this.indicator::health).expectSubscription()
+		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
+				this.healthAggregator,
+				new DefaultReactiveHealthIndicatorRegistry(indicators));
+		StepVerifier.withVirtualTime(indicator::health).expectSubscription()
 				.thenAwait(Duration.ofMillis(10000)).consumeNextWith((h) -> {
 					assertThat(h.getStatus()).isEqualTo(Status.UP);
 					assertThat(h.getDetails()).hasSize(50);
@@ -67,10 +72,14 @@ public class CompositeReactiveHealthIndicatorTests {
 
 	@Test
 	public void timeoutReachedUsesFallback() {
-		this.indicator.addHealthIndicator("slow", new TimeoutHealth(10000, Status.UP))
-				.addHealthIndicator("fast", new TimeoutHealth(10, Status.UP))
-				.timeoutStrategy(100, UNKNOWN_HEALTH);
-		StepVerifier.create(this.indicator.health()).consumeNextWith((h) -> {
+		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
+		indicators.put("slow", new TimeoutHealth(10000, Status.UP));
+		indicators.put("fast", new TimeoutHealth(10, Status.UP));
+		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
+				this.healthAggregator,
+				new DefaultReactiveHealthIndicatorRegistry(indicators))
+						.timeoutStrategy(100, UNKNOWN_HEALTH);
+		StepVerifier.create(indicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");
 			assertThat(h.getDetails().get("slow")).isEqualTo(UNKNOWN_HEALTH);
@@ -80,10 +89,14 @@ public class CompositeReactiveHealthIndicatorTests {
 
 	@Test
 	public void timeoutNotReached() {
-		this.indicator.addHealthIndicator("slow", new TimeoutHealth(10000, Status.UP))
-				.addHealthIndicator("fast", new TimeoutHealth(10, Status.UP))
-				.timeoutStrategy(20000, null);
-		StepVerifier.withVirtualTime(this.indicator::health).expectSubscription()
+		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
+		indicators.put("slow", new TimeoutHealth(10000, Status.UP));
+		indicators.put("fast", new TimeoutHealth(10, Status.UP));
+		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(
+				this.healthAggregator,
+				new DefaultReactiveHealthIndicatorRegistry(indicators))
+						.timeoutStrategy(20000, null);
+		StepVerifier.withVirtualTime(indicator::health).expectSubscription()
 				.thenAwait(Duration.ofMillis(10000)).consumeNextWith((h) -> {
 					assertThat(h.getStatus()).isEqualTo(Status.UP);
 					assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");

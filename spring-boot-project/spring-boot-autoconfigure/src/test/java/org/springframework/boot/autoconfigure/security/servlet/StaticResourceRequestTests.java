@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -74,11 +74,11 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atLocationWhenHasServletPathShouldMatchLocation() {
-		ServerProperties serverProperties = new ServerProperties();
-		serverProperties.getServlet().setPath("/foo");
+		WebMvcProperties webMvcProperties = new WebMvcProperties();
+		webMvcProperties.getServlet().setPath("/foo");
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
-		assertMatcher(matcher, serverProperties).matches("/foo", "/css/file.css");
-		assertMatcher(matcher, serverProperties).doesNotMatch("/foo", "/js/file.js");
+		assertMatcher(matcher, webMvcProperties).matches("/foo", "/css/file.css");
+		assertMatcher(matcher, webMvcProperties).doesNotMatch("/foo", "/js/file.js");
 	}
 
 	@Test
@@ -97,14 +97,14 @@ public class StaticResourceRequestTests {
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
-		context.registerBean(ServerProperties.class);
+		context.registerBean(WebMvcProperties.class);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
-			ServerProperties serverProperties) {
+			WebMvcProperties webMvcProperties) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
-		context.registerBean(ServerProperties.class, () -> serverProperties);
+		context.registerBean(WebMvcProperties.class, () -> webMvcProperties);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 

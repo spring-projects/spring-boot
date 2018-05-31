@@ -99,7 +99,7 @@ public class DispatcherServletAutoConfigurationTests {
 
 	@Test
 	public void servletPath() {
-		this.contextRunner.withPropertyValues("server.servlet.path:/spring")
+		this.contextRunner.withPropertyValues("spring.mvc.servlet.path:/spring")
 				.run((context) -> {
 					assertThat(context.getBean(DispatcherServlet.class)).isNotNull();
 					ServletRegistrationBean<?> registration = context

@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.servlet.path:/spring/*")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.mvc.servlet.path:/spring/*")
 @DirtiesContext
 public class RemappedErrorViewIntegrationTests {
 
@@ -93,7 +93,7 @@ public class RemappedErrorViewIntegrationTests {
 		// For manual testing
 		public static void main(String[] args) {
 			new SpringApplicationBuilder(TestConfiguration.class)
-					.properties("server.servlet.path:spring/*").run(args);
+					.properties("spring.mvc.servlet.path:spring/*").run(args);
 		}
 
 	}
