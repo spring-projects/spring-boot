@@ -70,11 +70,12 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 	}
 
 	private String getMessage(BindException cause) {
-		if (cause.getCause() != null
-				&& StringUtils.hasText(cause.getCause().getMessage())) {
-			return cause.getCause().getMessage();
+		Throwable failure = cause;
+		while (failure.getCause() != null) {
+			failure = failure.getCause();
 		}
-		return cause.getMessage();
+		return (StringUtils.hasText(failure.getMessage()) ? failure.getMessage()
+				: cause.getMessage());
 	}
 
 	private FailureAnalysis getFailureAnalysis(Object description, BindException cause) {
