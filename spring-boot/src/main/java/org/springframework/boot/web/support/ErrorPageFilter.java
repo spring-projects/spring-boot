@@ -84,7 +84,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 
 	private static final Set<Class<?>> CLIENT_ABORT_EXCEPTIONS;
 	static {
-		Set<Class<?>> clientAbortExceptions = new HashSet<>();
+		Set<Class<?>> clientAbortExceptions = new HashSet<Class<?>>();
 		addClassIfPresent(clientAbortExceptions,
 				"org.apache.catalina.connector.ClientAbortException");
 		CLIENT_ABORT_EXCEPTIONS = Collections.unmodifiableSet(clientAbortExceptions);

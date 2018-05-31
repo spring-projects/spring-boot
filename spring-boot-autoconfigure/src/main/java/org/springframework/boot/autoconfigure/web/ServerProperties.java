@@ -864,7 +864,7 @@ public class ServerProperties
 					.getIncludeStacktrace() == ErrorProperties.IncludeStacktrace.NEVER) {
 				customizeErrorReportValve(factory);
 			}
-			Cookie cookie = serverProperties.getSession().getCookie();
+			final Cookie cookie = serverProperties.getSession().getCookie();
 			if (cookie.getHttpOnly() != null) {
 				factory.addContextCustomizers(new TomcatContextCustomizer() {
 
