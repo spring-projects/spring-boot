@@ -154,9 +154,6 @@ The following items are used as "`grab hints`":
 |`@EnableRabbit`
 |RabbitMQ.
 
-|`@EnableReactor`
-|Project Reactor.
-
 |extends `Specification`
 |Spock test.
 
