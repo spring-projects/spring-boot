@@ -106,6 +106,11 @@ public class HazelcastJetConfiguration {
 			return Jet.newJetClient(clientConfig);
 		}
 
+		@Bean
+		public HazelcastInstance hazelcastInstance(JetInstance jetInstance) {
+			return jetInstance.getHazelcastInstance();
+		}
+
 	}
 
 	/**
@@ -126,6 +131,11 @@ public class HazelcastJetConfiguration {
 		public JetInstance jetInstance(JetConfig jetConfig) {
 			logger.trace("JetServerBeanBasedConfiguration.JetInstance");
 			return Jet.newJetInstance(jetConfig);
+		}
+
+		@Bean
+		public HazelcastInstance hazelcastInstance(JetInstance jetInstance) {
+			return jetInstance.getHazelcastInstance();
 		}
 
 	}
@@ -157,6 +167,11 @@ public class HazelcastJetConfiguration {
 				return Jet.newJetClient(clientConfig);
 			}
 			return Jet.newJetClient();
+		}
+
+		@Bean
+		public HazelcastInstance hazelcastInstance(JetInstance jetInstance) {
+			return jetInstance.getHazelcastInstance();
 		}
 
 	}
@@ -191,31 +206,6 @@ public class HazelcastJetConfiguration {
 			return Jet.newJetInstance();
 		}
 
-	}
-
-	/* ----- Hazelcast IMDG ----- */
-
-	/**
-	 * <p>
-	 * To avoid later auto-configuration, make it clear there is a
-	 * {@link HazelcastInstance}. created internally.
-	 * </p>
-	 * <p>
-	 * If the {@link JetInstance} is a server, the {@link HazelcastInstance} will be a
-	 * server. If the {@link JetInstance} is a client, the {@link HazelcastInstance} will
-	 * be a client.
-	 * </p>
-	 */
-	@Configuration
-	static class HazelcastInstanceFromJetInstance {
-
-		/**
-		 * <p>
-		 * Expose inner {@link HazelcastInstance} as a bean.
-		 * </p>
-		 * @param jetInstance Created in this class
-		 * @return {@link HazelcastInstance} inside the {@link JetInstance}
-		 */
 		@Bean
 		public HazelcastInstance hazelcastInstance(JetInstance jetInstance) {
 			return jetInstance.getHazelcastInstance();
