@@ -77,6 +77,14 @@ public class BindFailureAnalyzerTests {
 		}
 	}
 
+	@Test
+	public void bindExceptionWithNestedFailureShouldDisplayNestedMessage() {
+		FailureAnalysis analysis = performAnalysis(NestedFailureConfiguration.class,
+				"test.foo.value=hello");
+		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "hello",
+				"\"test.foo.value\" from property source \"test\"", "This is a failure"));
+	}
+
 	private static String failure(String property, String value, String origin,
 			String reason) {
 		return String.format(
@@ -139,6 +147,11 @@ public class BindFailureAnalyzerTests {
 
 	}
 
+	@EnableConfigurationProperties(NestedFailureProperties.class)
+	static class NestedFailureConfiguration {
+
+	}
+
 	@ConfigurationProperties("test.foo")
 	@Validated
 	static class FieldValidationFailureProperties {
@@ -197,6 +210,21 @@ public class BindFailureAnalyzerTests {
 
 		public void setFruit(Set<Fruit> fruit) {
 			this.fruit = fruit;
+		}
+
+	}
+
+	@ConfigurationProperties("test.foo")
+	static class NestedFailureProperties {
+
+		private String value;
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public void setValue(String value) {
+			throw new RuntimeException("This is a failure");
 		}
 
 	}
