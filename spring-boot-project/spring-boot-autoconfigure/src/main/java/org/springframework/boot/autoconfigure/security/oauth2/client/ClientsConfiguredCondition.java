@@ -31,10 +31,13 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Condition that matches if any {@code spring.security.oauth2.client.registration}
  * properties are defined.
+ *
+ * @author Madhura Bhave
+ * @since 2.1.0
  */
 public class ClientsConfiguredCondition extends SpringBootCondition {
 
-	private static final Bindable<Map<String, OAuth2ClientProperties.Registration>> BINDABLE_REGISTRATION = Bindable
+	private static final Bindable<Map<String, OAuth2ClientProperties.Registration>> STRING_REGISTRATION_MAP = Bindable
 			.mapOf(String.class, OAuth2ClientProperties.Registration.class);
 
 	@Override
@@ -42,8 +45,8 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("OAuth2 Clients Configured Condition");
-		Map<String, OAuth2ClientProperties.Registration> registrations = this
-				.getRegistrations(context.getEnvironment());
+		Map<String, OAuth2ClientProperties.Registration> registrations = getRegistrations(
+				context.getEnvironment());
 		if (!registrations.isEmpty()) {
 			return ConditionOutcome.match(message
 					.foundExactly("registered clients " + registrations.values().stream()
@@ -55,9 +58,8 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 
 	private Map<String, OAuth2ClientProperties.Registration> getRegistrations(
 			Environment environment) {
-		return Binder.get(environment)
-				.bind("spring.security.oauth2.client.registration", BINDABLE_REGISTRATION)
-				.orElse(Collections.emptyMap());
+		return Binder.get(environment).bind("spring.security.oauth2.client.registration",
+				STRING_REGISTRATION_MAP).orElse(Collections.emptyMap());
 	}
 
 }
