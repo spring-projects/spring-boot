@@ -150,12 +150,13 @@ public class JarURLConnectionTests {
 				.hasSameContentAs(new ByteArrayInputStream(new byte[] { 3 }));
 	}
 
-	@Test(expected = FileNotFoundException.class)
+	@Test
 	public void connectionToEntryUsingWrongAbsoluteUrlForEntryFromNestedJarFile()
 			throws Exception {
 		URL url = new URL("jar:file:" + getAbsolutePath() + "!/w.jar!/3.dat");
 		JarFile nested = this.jarFile
 				.getNestedJarFile(this.jarFile.getEntry("nested.jar"));
+		this.thrown.expect(FileNotFoundException.class);
 		JarURLConnection.get(url, nested).getInputStream();
 	}
 
