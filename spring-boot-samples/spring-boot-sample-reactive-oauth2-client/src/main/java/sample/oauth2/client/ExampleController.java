@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Support for Spring Security's OAuth 2 client.
- */
-package org.springframework.boot.autoconfigure.security.oauth2.client;
+package sample.oauth2.client;
+
+import java.security.Principal;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ExampleController {
+
+	@RequestMapping("/")
+	public String email(Principal principal) {
+		return "Hello " + principal.getName();
+	}
+
+}

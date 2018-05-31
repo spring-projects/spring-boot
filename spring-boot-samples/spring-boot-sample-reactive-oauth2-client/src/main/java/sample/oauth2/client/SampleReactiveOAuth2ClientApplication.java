@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Support for Spring Security's OAuth 2 client.
- */
-package org.springframework.boot.autoconfigure.security.oauth2.client;
+package sample.oauth2.client;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SampleReactiveOAuth2ClientApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SampleReactiveOAuth2ClientApplication.class);
+	}
+
+}
