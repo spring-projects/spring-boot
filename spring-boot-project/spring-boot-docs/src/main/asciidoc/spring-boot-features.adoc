@@ -5900,6 +5900,16 @@ client by checking the following configuration options:
 * The presence of the `hazelcast.client.config` system property.
 * A `hazelcast-client.xml` in the working directory or at the root of the classpath.
 
+If https://jet.hazelcast.org/[Hazelcast Jet] is on the classpath, Spring Boot auto-configures
+a `JetInstance` for your application. This includes a `HazelcastInstance`.
+
+Here Spring Boot will look for the following:
+
+* The presence of a `com.hazelcast.client.config.ClientConfig` bean.
+* The presence of a `com.hazelcast.jet.config.JetConfig` bean.
+* The `hazelcast.jet.config` system property.
+* `hazelcast-jet.xml` in the working directory or the root of the classpath.
+
 NOTE: Spring Boot also has
 <<boot-features-caching-provider-hazelcast,explicit caching support for Hazelcast>>. If
 caching is enabled, the `HazelcastInstance` is automatically wrapped in a `CacheManager`
