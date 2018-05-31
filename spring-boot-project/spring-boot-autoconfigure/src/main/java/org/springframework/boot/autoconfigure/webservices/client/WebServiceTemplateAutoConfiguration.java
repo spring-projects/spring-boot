@@ -37,10 +37,10 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link WebServiceTemplate}.
  *
  * @author Dmytro Nosan
+ * @since 2.1.0
  */
 @Configuration
-@ConditionalOnClass({ WebServiceTemplateBuilder.class, WebServiceTemplate.class,
-		Unmarshaller.class, Marshaller.class })
+@ConditionalOnClass({ WebServiceTemplate.class, Unmarshaller.class, Marshaller.class })
 public class WebServiceTemplateAutoConfiguration {
 
 	private final ObjectProvider<List<WebServiceTemplateCustomizer>> webServiceTemplateCustomizers;
@@ -59,7 +59,7 @@ public class WebServiceTemplateAutoConfiguration {
 		if (!CollectionUtils.isEmpty(customizers)) {
 			customizers = new ArrayList<>(customizers);
 			AnnotationAwareOrderComparator.sort(customizers);
-			builder = builder.setCustomizers(customizers);
+			builder = builder.customizers(customizers);
 		}
 		return builder;
 	}

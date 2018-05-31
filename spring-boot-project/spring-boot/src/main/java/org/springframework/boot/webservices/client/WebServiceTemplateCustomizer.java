@@ -22,6 +22,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * Callback interface that can be used to customize a {@link WebServiceTemplate}.
  *
  * @author Dmytro Nosan
+ * @since 2.1.0
  */
 public interface WebServiceTemplateCustomizer {
 

@@ -22,61 +22,52 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebServiceTemplateBuilder}. This test class check that builder will
- * create ClientHttpRequestMessageSender (OkHttp3ClientHttpRequestFactory) if apache
- * client is not present in the classpath
+ * Tests for {@link HttpWebServiceMessageSenderBuilder} when Http Components is not
+ * available.
  *
- * @author Dmytro Nosan
+ * @author Stephane Nicoll
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("httpclient-*.jar")
-public class WebServiceTemplateBuilderOkHttp3ClientHttpRequestFactoryTests {
+public class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 
-	private WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
+	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
 
 	@Test
-	public void build() {
-
-		WebServiceTemplate webServiceTemplate = this.builder.build();
-
-		assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
-		assertThat(webServiceTemplate.getMessageSenders()[0])
-				.isInstanceOf(ClientHttpRequestMessageSender.class);
-
-		ClientHttpRequestMessageSender sender = (ClientHttpRequestMessageSender) webServiceTemplate
-				.getMessageSenders()[0];
-
-		assertThat(sender.getRequestFactory())
-				.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
-
+	public void buildUseOkHttp3ByDefault() {
+		WebServiceMessageSender messageSender = this.builder.build();
+		assertOkHttp3RequestFactory(messageSender);
 	}
 
 	@Test
-	public void setTimeout() {
-		OkHttp3ClientHttpRequestFactory factory = new OkHttp3ClientHttpRequestFactory();
-		ClientHttpRequestMessageSender sender = new ClientHttpRequestMessageSender(
-				new BufferingClientHttpRequestFactory(factory));
-
-		this.builder.setConnectionTimeout(5000).setReadTimeout(2000)
-				.setWebServiceMessageSender(() -> sender).build();
-
+	public void buildWithCustomTimeouts() {
+		WebServiceMessageSender messageSender = this.builder.setConnectionTimeout(5000)
+				.setReadTimeout(2000).build();
+		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(
+				messageSender);
 		OkHttpClient client = (OkHttpClient) ReflectionTestUtils.getField(factory,
 				"client");
-
 		assertThat(client).isNotNull();
-
 		assertThat(client.connectTimeoutMillis()).isEqualTo(5000);
 		assertThat(client.readTimeoutMillis()).isEqualTo(2000);
+	}
 
+	private OkHttp3ClientHttpRequestFactory assertOkHttp3RequestFactory(
+			WebServiceMessageSender messageSender) {
+		assertThat(messageSender).isInstanceOf(ClientHttpRequestMessageSender.class);
+		ClientHttpRequestMessageSender sender = (ClientHttpRequestMessageSender) messageSender;
+		ClientHttpRequestFactory requestFactory = sender.getRequestFactory();
+		assertThat(requestFactory).isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+		return (OkHttp3ClientHttpRequestFactory) requestFactory;
 	}
 
 }
