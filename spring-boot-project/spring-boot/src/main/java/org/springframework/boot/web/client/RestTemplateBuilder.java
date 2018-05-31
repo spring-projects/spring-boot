@@ -72,8 +72,6 @@ public class RestTemplateBuilder {
 				"org.springframework.http.client.HttpComponentsClientHttpRequestFactory");
 		candidates.put("okhttp3.OkHttpClient",
 				"org.springframework.http.client.OkHttp3ClientHttpRequestFactory");
-		candidates.put("com.squareup.okhttp.OkHttpClient",
-				"org.springframework.http.client.OkHttpClientHttpRequestFactory");
 		REQUEST_FACTORY_CANDIDATES = Collections.unmodifiableMap(candidates);
 	}
 
