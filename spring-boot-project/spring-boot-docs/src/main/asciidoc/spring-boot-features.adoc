@@ -5710,6 +5710,15 @@ following example:
 	spring.mail.properties.mail.smtp.writetimeout=5000
 ----
 
+It is also possible to configure a `JavaMailSender` with an existing `Session` from JNDI:
+
+[source,properties,indent=0]
+----
+	spring.mail.jndi-name=mail/Session
+----
+
+When a `jndi-name` is set, it takes precedence over all other Session-related settings.
+
 
 
 [[boot-features-jta]]
