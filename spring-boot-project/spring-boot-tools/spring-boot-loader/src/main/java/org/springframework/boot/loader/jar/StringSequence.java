@@ -95,6 +95,17 @@ final class StringSequence implements CharSequence {
 		return this.source.indexOf(str, this.start + fromIndex) - this.start;
 	}
 
+	public boolean startsWith(CharSequence prefix) {
+		return startsWith(prefix, 0);
+	}
+
+	public boolean startsWith(CharSequence prefix, int toffset) {
+		if (length() - prefix.length() - toffset < 0) {
+			return false;
+		}
+		return subSequence(toffset, toffset + prefix.length()).equals(prefix);
+	}
+
 	@Override
 	public String toString() {
 		return this.source.substring(this.start, this.end);
@@ -117,10 +128,10 @@ final class StringSequence implements CharSequence {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null || getClass() != obj.getClass()) {
+		if (obj == null || !CharSequence.class.isInstance(obj)) {
 			return false;
 		}
-		StringSequence other = (StringSequence) obj;
+		CharSequence other = (CharSequence) obj;
 		int n = length();
 		if (n == other.length()) {
 			int i = 0;
