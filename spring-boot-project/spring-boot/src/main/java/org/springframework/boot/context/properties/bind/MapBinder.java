@@ -90,20 +90,30 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		if (existingMap == null) {
 			return additional;
 		}
-		existingMap.putAll(additional);
-		return copyIfPossible(existingMap);
+		try {
+			existingMap.putAll(additional);
+			return copyIfPossible(existingMap);
+		}
+		catch (UnsupportedOperationException ex) {
+			Map<Object, Object> result = createNewMap(additional.getClass(), existingMap);
+			result.putAll(additional);
+			return result;
+		}
 	}
 
 	private Map<Object, Object> copyIfPossible(Map<Object, Object> map) {
 		try {
-			Map<Object, Object> result = CollectionFactory.createMap(map.getClass(),
-					map.size());
-			result.putAll(map);
-			return result;
+			return createNewMap(map.getClass(), map);
 		}
 		catch (Exception ex) {
 			return map;
 		}
+	}
+
+	private Map<Object, Object> createNewMap(Class<?> mapClass, Map<Object, Object> map) {
+		Map<Object, Object> result = CollectionFactory.createMap(mapClass, map.size());
+		result.putAll(map);
+		return result;
 	}
 
 	private class EntryBinder {

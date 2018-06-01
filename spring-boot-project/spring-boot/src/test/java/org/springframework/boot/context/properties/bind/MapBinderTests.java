@@ -615,6 +615,22 @@ public class MapBinderTests {
 		assertThat(result.getItems()).containsExactly(entry("a", "b"));
 	}
 
+	@Test
+	public void bindToImmutableMapShouldReturnPopulatedCollection() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.values.c", "d");
+		source.put("foo.values.e", "f");
+		this.sources.add(source);
+		Map<String, String> result = this.binder
+				.bind("foo.values",
+						STRING_STRING_MAP
+								.withExistingValue(Collections.singletonMap("a", "b")))
+				.get();
+		assertThat(result).hasSize(3);
+		assertThat(result.entrySet()).containsExactly(entry("a", "b"), entry("c", "d"),
+				entry("e", "f"));
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
 			ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
