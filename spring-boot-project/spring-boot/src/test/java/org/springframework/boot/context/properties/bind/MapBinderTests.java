@@ -631,6 +631,16 @@ public class MapBinderTests {
 				entry("e", "f"));
 	}
 
+	@Test
+	public void bindToBeanWithExceptionInGetterForExistingValue() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.values.a", "b");
+		this.sources.add(source);
+		BeanWithGetterException result = this.binder
+				.bind("foo", Bindable.of(BeanWithGetterException.class)).get();
+		assertThat(result.getValues()).containsExactly(entry("a", "b"));
+	}
+
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric,
 			ResolvableType valueType) {
 		ResolvableType keyType = ResolvableType.forClass(keyGeneric);
@@ -733,6 +743,20 @@ public class MapBinderTests {
 
 	public static class MyCustomWithDefaultConstructorMap
 			extends HashMap<String, String> {
+
+	}
+
+	public static class BeanWithGetterException {
+
+		private Map<String, String> values;
+
+		public void setValues(Map<String, String> values) {
+			this.values = values;
+		}
+
+		public Map<String, String> getValues() {
+			return Collections.unmodifiableMap(this.values);
+		}
 
 	}
 
