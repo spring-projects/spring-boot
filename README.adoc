@@ -67,7 +67,8 @@ Having trouble with Spring Boot? We'd like to help!
 * If you are upgrading, read the https://github.com/spring-projects/spring-boot/wiki[release notes]
   for upgrade instructions and "new and noteworthy" features.
 * Ask a question - we monitor https://stackoverflow.com[stackoverflow.com] for questions
-  tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
+  tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`]. You can also chat
+  with the community on https://gitter.im/spring-projects/spring-boot[Gitter].
 * Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues[github.com/spring-projects/spring-boot/issues].
 
 
