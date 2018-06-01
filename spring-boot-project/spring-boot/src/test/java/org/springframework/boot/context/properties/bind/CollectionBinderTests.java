@@ -417,6 +417,16 @@ public class CollectionBinderTests {
 		assertThat(bean.getBar()).containsExactly("hello");
 	}
 
+	@Test
+	public void bindToBeanWithExceptionInGetterForExistingValue() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.values", "a,b,c");
+		this.sources.add(source);
+		BeanWithGetterException result = this.binder
+				.bind("foo", Bindable.of(BeanWithGetterException.class)).get();
+		assertThat(result.getValues()).containsExactly("a", "b", "c");
+	}
+
 	public static class ExampleCollectionBean {
 
 		private List<String> items = new ArrayList<>();
@@ -517,6 +527,20 @@ public class CollectionBinderTests {
 
 		public void setBar(String[] bar) {
 			this.bar = bar;
+		}
+
+	}
+
+	public static class BeanWithGetterException {
+
+		private List<String> values;
+
+		public void setValues(List<String> values) {
+			this.values = values;
+		}
+
+		public List<String> getValues() {
+			return Collections.unmodifiableList(this.values);
 		}
 
 	}

@@ -57,7 +57,7 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 	@Override
 	protected Collection<Object> merge(Supplier<Collection<Object>> existing,
 			Collection<Object> additional) {
-		Collection<Object> existingCollection = existing.get();
+		Collection<Object> existingCollection = getExistingIfPossible(existing);
 		if (existingCollection == null) {
 			return additional;
 		}
@@ -68,6 +68,15 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 		}
 		catch (UnsupportedOperationException ex) {
 			return createNewCollection(additional);
+		}
+	}
+
+	private Collection<Object> getExistingIfPossible(Supplier<Collection<Object>> existing) {
+		try {
+			return existing.get();
+		}
+		catch (Exception ex) {
+			return null;
 		}
 	}
 

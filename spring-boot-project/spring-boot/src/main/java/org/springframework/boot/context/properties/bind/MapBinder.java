@@ -85,24 +85,43 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	@Override
 	protected Map<Object, Object> merge(Supplier<Map<Object, Object>> existing,
 			Map<Object, Object> additional) {
-		Map<Object, Object> existingMap = existing.get();
+		Map<Object, Object> existingMap = getExistingIfPossible(existing);
 		if (existingMap == null) {
 			return additional;
 		}
-		existingMap.putAll(additional);
-		return copyIfPossible(existingMap);
+		try {
+			existingMap.putAll(additional);
+			return copyIfPossible(existingMap);
+		}
+		catch (UnsupportedOperationException ex) {
+			Map<Object, Object> result = createNewMap(additional.getClass(), existingMap);
+			result.putAll(additional);
+			return result;
+		}
+	}
+
+	private Map<Object, Object> getExistingIfPossible(Supplier<Map<Object, Object>> existing) {
+		try {
+			return existing.get();
+		}
+		catch (Exception ex) {
+			return null;
+		}
 	}
 
 	private Map<Object, Object> copyIfPossible(Map<Object, Object> map) {
 		try {
-			Map<Object, Object> result = CollectionFactory.createMap(map.getClass(),
-					map.size());
-			result.putAll(map);
-			return result;
+			return createNewMap(map.getClass(), map);
 		}
 		catch (Exception ex) {
 			return map;
 		}
+	}
+
+	private Map<Object, Object> createNewMap(Class<?> mapClass, Map<Object, Object> map) {
+		Map<Object, Object> result = CollectionFactory.createMap(mapClass, map.size());
+		result.putAll(map);
+		return result;
 	}
 
 	private class EntryBinder {
