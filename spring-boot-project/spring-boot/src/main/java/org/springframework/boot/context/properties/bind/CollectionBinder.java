@@ -71,7 +71,8 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 		}
 	}
 
-	private Collection<Object> getExistingIfPossible(Supplier<Collection<Object>> existing) {
+	private Collection<Object> getExistingIfPossible(
+			Supplier<Collection<Object>> existing) {
 		try {
 			return existing.get();
 		}

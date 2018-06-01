@@ -100,7 +100,8 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 	}
 
-	private Map<Object, Object> getExistingIfPossible(Supplier<Map<Object, Object>> existing) {
+	private Map<Object, Object> getExistingIfPossible(
+			Supplier<Map<Object, Object>> existing) {
 		try {
 			return existing.get();
 		}
