@@ -134,7 +134,9 @@ public class Restarter {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
-		this.logger.debug("Creating new Restarter for thread " + thread);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Creating new Restarter for thread " + thread);
+		}
 		SilentExitExceptionHandler.setup(thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
 		this.initialUrls = initializer.getInitialUrls(thread);
@@ -360,7 +362,10 @@ public class Restarter {
 			clear(Class.forName(className), fieldName);
 		}
 		catch (Exception ex) {
-			this.logger.debug("Unable to clear field " + className + " " + fieldName, ex);
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Unable to clear field " + className + " " + fieldName,
+						ex);
+			}
 		}
 	}
 
@@ -377,15 +382,15 @@ public class Restarter {
 			}
 		}
 		catch (Exception ex) {
-			this.logger.debug("Unable to clear field " + type + " " + fieldName, ex);
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Unable to clear field " + type + " " + fieldName, ex);
+			}
 		}
 	}
 
 	private boolean isFromRestartClassLoader(Object object) {
-		if (object instanceof Class) {
-			return ((Class<?>) object).getClassLoader() instanceof RestartClassLoader;
-		}
-		return false;
+		return (object instanceof Class
+				&& ((Class<?>) object).getClassLoader() instanceof RestartClassLoader);
 	}
 
 	/**

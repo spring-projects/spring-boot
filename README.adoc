@@ -224,7 +224,7 @@ This module contains core items and annotations that can be helpful when testing
 
 
 === spring-boot-test-autoconfigure
-Like other Spring Boot Auto-Configuration modules, spring-boot-test-autoconfigure, provides auto-configuration
+Like other Spring Boot auto-configuration modules, spring-boot-test-autoconfigure, provides auto-configuration
 for tests based on the classpath. It includes a number of annotations that can be used to automatically
 configure a slice of your application that needs to be tested.
 
