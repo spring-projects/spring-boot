@@ -24,6 +24,7 @@ import org.jooq.ExecuteListenerProvider;
 import org.jooq.RecordListenerProvider;
 import org.jooq.RecordMapperProvider;
 import org.jooq.RecordUnmapperProvider;
+import org.jooq.TransactionListenerProvider;
 import org.jooq.TransactionProvider;
 import org.jooq.VisitListenerProvider;
 import org.jooq.conf.Settings;
@@ -51,6 +52,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  *
  * @author Andreas Ahlenstorf
  * @author Michael Simons
+ * @author Dmytro Nosan
  * @since 1.3.0
  */
 @Configuration
@@ -105,6 +107,8 @@ public class JooqAutoConfiguration {
 
 		private final VisitListenerProvider[] visitListenerProviders;
 
+		private final TransactionListenerProvider[] transactionListenerProviders;
+
 		public DslContextConfiguration(JooqProperties properties,
 				ConnectionProvider connectionProvider, DataSource dataSource,
 				ObjectProvider<TransactionProvider> transactionProvider,
@@ -113,7 +117,8 @@ public class JooqAutoConfiguration {
 				ObjectProvider<Settings> settings,
 				ObjectProvider<RecordListenerProvider[]> recordListenerProviders,
 				ExecuteListenerProvider[] executeListenerProviders,
-				ObjectProvider<VisitListenerProvider[]> visitListenerProviders) {
+				ObjectProvider<VisitListenerProvider[]> visitListenerProviders,
+				ObjectProvider<TransactionListenerProvider[]> transactionListenerProviders) {
 			this.properties = properties;
 			this.connection = connectionProvider;
 			this.dataSource = dataSource;
@@ -124,6 +129,8 @@ public class JooqAutoConfiguration {
 			this.recordListenerProviders = recordListenerProviders.getIfAvailable();
 			this.executeListenerProviders = executeListenerProviders;
 			this.visitListenerProviders = visitListenerProviders.getIfAvailable();
+			this.transactionListenerProviders = transactionListenerProviders
+					.getIfAvailable();
 		}
 
 		@Bean
@@ -152,6 +159,8 @@ public class JooqAutoConfiguration {
 			configuration.set(this.recordListenerProviders);
 			configuration.set(this.executeListenerProviders);
 			configuration.set(this.visitListenerProviders);
+			configuration
+					.setTransactionListenerProvider(this.transactionListenerProviders);
 			return configuration;
 		}
 
