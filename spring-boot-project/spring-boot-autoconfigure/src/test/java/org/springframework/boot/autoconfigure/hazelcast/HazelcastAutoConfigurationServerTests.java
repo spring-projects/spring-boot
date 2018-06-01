@@ -40,9 +40,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HazelcastAutoConfiguration} when the client library is not present.
  *
  * @author Stephane Nicoll
+ * @author Neil Stevenson
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions("hazelcast-client-*.jar")
+@ClassPathExclusions({ "hazelcast-client-*.jar", "hazelcast-jet-*.jar" })
 public class HazelcastAutoConfigurationServerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

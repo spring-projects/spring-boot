@@ -32,9 +32,11 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -73,7 +75,10 @@ import org.springframework.core.io.Resource;
 @AutoConfigureBefore({ HazelcastClientConfiguration.class,
 		HazelcastServerConfiguration.class })
 @ConditionalOnClass(JetInstance.class)
-@ConditionalOnMissingBean({ HazelcastInstance.class, JetInstance.class })
+@ConditionalOnExpression("'${spring.cache.type:_notset_}' != 'hazelcast'"
+		+ "&& '${spring.cache.type:_notset_}' != 'jcache'")
+@ConditionalOnMissingBean({ CacheManager.class, HazelcastInstance.class,
+		JetInstance.class })
 public class HazelcastJetConfiguration {
 
 	private static final Log logger = LogFactory.getLog(HazelcastJetConfiguration.class);
