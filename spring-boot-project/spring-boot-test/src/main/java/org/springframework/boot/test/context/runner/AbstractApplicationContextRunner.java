@@ -196,9 +196,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	/**
-	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should use.
-	 * Customizing the {@link ClassLoader} is an effective manner to hide resources from
-	 * the classpath.
+	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should use
+	 * for resource loading and bean class loading.
 	 * @param classLoader the classloader to use (can be null to use the default)
 	 * @return a new instance with the updated class loader
 	 * @see FilteredClassLoader
@@ -274,13 +273,32 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	@SuppressWarnings("unchecked")
 	public SELF run(ContextConsumer<? super A> consumer) {
-		this.systemProperties.applyToSystemProperties(() -> {
-			try (A context = createAssertableContext()) {
-				accept(consumer, context);
-			}
-			return null;
+		withContextClassLoader(this.classLoader, () -> {
+			this.systemProperties.applyToSystemProperties(() -> {
+				try (A context = createAssertableContext()) {
+					accept(consumer, context);
+				}
+				return null;
+			});
 		});
 		return (SELF) this;
+	}
+
+	private void withContextClassLoader(ClassLoader classLoader, Runnable action) {
+		if (classLoader == null) {
+			action.run();
+		}
+		else {
+			Thread currentThread = Thread.currentThread();
+			ClassLoader previous = currentThread.getContextClassLoader();
+			currentThread.setContextClassLoader(classLoader);
+			try {
+				action.run();
+			}
+			finally {
+				currentThread.setContextClassLoader(previous);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
