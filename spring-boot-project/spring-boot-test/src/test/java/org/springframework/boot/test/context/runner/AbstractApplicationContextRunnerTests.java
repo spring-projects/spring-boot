@@ -30,8 +30,12 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.ApplicationContextAssertProvider;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -150,7 +154,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 	}
 
 	@Test
-	public void runWithClassLoaderShouldSetClassLoader() {
+	public void runWithClassLoaderShouldSetClassLoaderOnContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
 				.run((context) -> {
 					try {
@@ -162,6 +166,14 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 						// expected
 					}
 				});
+	}
+
+	@Test
+	public void runWithClassLoaderShouldSetClassLoaderOnConditionContext() {
+		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
+				.withUserConfiguration(ConditionalConfig.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ConditionalConfig.class));
 	}
 
 	@Test
@@ -205,6 +217,21 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 		@Bean
 		public String bar() {
 			return "bar";
+		}
+
+	}
+
+	@Configuration
+	@Conditional(FilteredClassLoaderCondition.class)
+	static class ConditionalConfig {
+
+	}
+
+	static class FilteredClassLoaderCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return context.getClassLoader() instanceof FilteredClassLoader;
 		}
 
 	}
