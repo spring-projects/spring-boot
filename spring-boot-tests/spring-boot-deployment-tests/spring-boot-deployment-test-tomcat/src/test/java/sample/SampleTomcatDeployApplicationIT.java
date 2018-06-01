@@ -58,62 +58,49 @@ public class SampleTomcatDeployApplicationIT {
 	@Test
 	public void errorFromExceptionForRequestAcceptingAnythingProducesAJsonResponse()
 			throws Exception {
-		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.ALL,
+		assertThatPathProducesExpectedResponse("/bootapp/exception", MediaType.ALL,
 				MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void errorFromExceptionForRequestAcceptingJsonProducesAJsonResponse()
 			throws Exception {
-		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.APPLICATION_JSON,
-				MediaType.APPLICATION_JSON);
+		assertThatPathProducesExpectedResponse("/bootapp/exception",
+				MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void errorFromExceptionForRequestAcceptingHtmlProducesAnHtmlResponse()
 			throws Exception {
-		assertThatErrorFromExceptionProducesExpectedResponse(MediaType.TEXT_HTML,
+		assertThatPathProducesExpectedResponse("/bootapp/exception", MediaType.TEXT_HTML,
 				MediaType.TEXT_HTML);
 	}
 
 	@Test
 	public void sendErrorForRequestAcceptingAnythingProducesAJsonResponse()
 			throws Exception {
-		assertThatSendErrorProducesExpectedResponse(MediaType.ALL,
+		assertThatPathProducesExpectedResponse("/bootapp/send-error", MediaType.ALL,
 				MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void sendErrorForRequestAcceptingJsonProducesAJsonResponse() throws Exception {
-		assertThatSendErrorProducesExpectedResponse(MediaType.APPLICATION_JSON,
-				MediaType.APPLICATION_JSON);
+		assertThatPathProducesExpectedResponse("/bootapp/send-error",
+				MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void sendErrorForRequestAcceptingHtmlProducesAnHtmlResponse()
 			throws Exception {
-		assertThatSendErrorProducesExpectedResponse(MediaType.TEXT_HTML,
+		assertThatPathProducesExpectedResponse("/bootapp/send-error", MediaType.TEXT_HTML,
 				MediaType.TEXT_HTML);
 	}
 
-	private void assertThatSendErrorProducesExpectedResponse(MediaType accept,
+	private void assertThatPathProducesExpectedResponse(String path, MediaType accept,
 			MediaType contentType) {
 		RequestEntity<Void> request = RequestEntity
-				.get(URI.create("http://localhost:" + this.port + "/bootapp/send-error"))
-				.accept(accept).build();
-		ResponseEntity<String> response = this.rest.exchange(request, String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat(contentType.isCompatibleWith(response.getHeaders().getContentType()))
-				.as("%s is compatible with %s", contentType,
-						response.getHeaders().getContentType())
-				.isTrue();
-	}
-
-	private void assertThatErrorFromExceptionProducesExpectedResponse(MediaType accept,
-			MediaType contentType) {
-		RequestEntity<Void> request = RequestEntity
-				.get(URI.create("http://localhost:" + this.port + "/bootapp/exception"))
-				.accept(accept).build();
+				.get(URI.create("http://localhost:" + this.port + path)).accept(accept)
+				.build();
 		ResponseEntity<String> response = this.rest.exchange(request, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		assertThat(contentType.isCompatibleWith(response.getHeaders().getContentType()))

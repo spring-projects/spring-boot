@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * {@link EnableAutoConfiguration Auto-Configuration} for Elasticsearch REST clients.
+ * {@link EnableAutoConfiguration Auto-configuration} for Elasticsearch REST clients.
  *
  * @author Brian Clozel
  * @since 2.1.0
@@ -60,7 +60,7 @@ public class RestClientAutoConfiguration {
 				.getIfAvailable(Collections::emptyList);
 	}
 
-	@Bean(destroyMethod = "close")
+	@Bean
 	@ConditionalOnMissingBean
 	public RestClient restClient(RestClientBuilder builder) {
 		return builder.build();

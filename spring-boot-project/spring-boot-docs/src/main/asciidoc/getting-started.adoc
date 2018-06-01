@@ -662,7 +662,7 @@ that you have added. Since `spring-boot-starter-web` added Tomcat and Spring MVC
 auto-configuration assumes that you are developing a web application and sets up Spring
 accordingly.
 
-.Starters and Auto-Configuration
+.Starters and Auto-configuration
 ****
 Auto-configuration is designed to work well with "`Starters`", but the two concepts are
 not directly tied. You are free to pick and choose jar dependencies outside of the

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -301,7 +302,7 @@ public class ConfigFileApplicationListener
 
 		private final List<PropertySourceLoader> propertySourceLoaders;
 
-		private LinkedList<Profile> profiles;
+		private Deque<Profile> profiles;
 
 		private List<Profile> processedProfiles;
 
@@ -345,9 +346,9 @@ public class ConfigFileApplicationListener
 			// The default profile for these purposes is represented as null. We add it
 			// first so that it is processed first and has lowest priority.
 			this.profiles.add(null);
-			Set<Profile> activatedViaProperty = getProfilesActivatedViaActiveProfileProperty();
+			Set<Profile> activatedViaProperty = getProfilesActivatedViaProperty();
 			processOtherActiveProfiles(activatedViaProperty);
-			// Any pre-existing active activeProfiles set via property sources (e.g.
+			// Any pre-existing active profiles set via property sources (e.g.
 			// System
 			// properties) take precedence over those added in config files.
 			addActiveProfiles(activatedViaProperty);
@@ -360,7 +361,7 @@ public class ConfigFileApplicationListener
 			}
 		}
 
-		private Set<Profile> getProfilesActivatedViaActiveProfileProperty() {
+		private Set<Profile> getProfilesActivatedViaProperty() {
 			if (!this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)
 					&& !this.environment.containsProperty(INCLUDE_PROFILES_PROPERTY)) {
 				return Collections.emptySet();
@@ -385,8 +386,10 @@ public class ConfigFileApplicationListener
 				return;
 			}
 			addProfiles(profiles);
-			this.logger.debug("Activated activeProfiles "
-					+ StringUtils.collectionToCommaDelimitedString(profiles));
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Activated activeProfiles "
+						+ StringUtils.collectionToCommaDelimitedString(profiles));
+			}
 			this.activatedProfiles = true;
 			removeUnprocessedDefaultProfiles();
 		}
