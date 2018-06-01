@@ -2064,7 +2064,7 @@ directory locations). The root Servlet context path, `"/"`, is automatically add
 location as well.
 
 In addition to the "`standard`" static resource locations mentioned earlier, a special
-case is made for http://www.webjars.org/[Webjars content]. Any resources with a path in
+case is made for https://www.webjars.org/[Webjars content]. Any resources with a path in
 `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
 
 TIP: Do not use the `src/main/webapp` directory if your application is packaged as a jar.
@@ -2625,7 +2625,7 @@ custom locations. So, if there is an `index.html` in any of your locations on st
 is the home page of the application.
 
 In addition to the "`standard`" static resource locations listed earlier, a special case
-is made for http://www.webjars.org/[Webjars content]. Any resources with a path in
+is made for https://www.webjars.org/[Webjars content]. Any resources with a path in
 `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
 
 TIP: Spring WebFlux applications do not strictly depend on the Servlet API, so they
@@ -7227,7 +7227,7 @@ which auto-configures one for you.
 
 
 
-[[boot-features-environment-test-utilities]]
+[[boot-features-test-property-values]]
 ==== TestPropertyValues
 `TestPropertyValues` lets you quickly add properties to a
 `ConfigurableEnvironment` or `ConfigurableApplicationContext`. You can call it with
