@@ -99,11 +99,11 @@ final class StringSequence implements CharSequence {
 		return startsWith(prefix, 0);
 	}
 
-	public boolean startsWith(CharSequence prefix, int toffset) {
-		if (length() - prefix.length() - toffset < 0) {
+	public boolean startsWith(CharSequence prefix, int offset) {
+		if (length() - prefix.length() - offset < 0) {
 			return false;
 		}
-		return subSequence(toffset, toffset + prefix.length()).equals(prefix);
+		return subSequence(offset, offset + prefix.length()).equals(prefix);
 	}
 
 	@Override

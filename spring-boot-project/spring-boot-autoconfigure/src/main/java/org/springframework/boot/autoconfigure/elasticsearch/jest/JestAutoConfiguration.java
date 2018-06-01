@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 
 /**
- * {@link EnableAutoConfiguration Auto-Configuration} for Jest.
+ * {@link EnableAutoConfiguration Auto-configuration} for Jest.
  *
  * @author Stephane Nicoll
  * @since 1.4.0
