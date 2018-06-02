@@ -116,9 +116,9 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 				.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
 			return cachingProvider.getCacheManager(configLocation.getURI(),
-					beanClassLoader, properties);
+					this.beanClassLoader, properties);
 		}
-		return cachingProvider.getCacheManager(null, beanClassLoader, properties);
+		return cachingProvider.getCacheManager(null, this.beanClassLoader, properties);
 	}
 
 	private CachingProvider getCachingProvider(String cachingProviderFqn) {
