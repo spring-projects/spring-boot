@@ -26,6 +26,7 @@ import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -61,7 +62,7 @@ import org.springframework.util.StringUtils;
 @Conditional({ CacheCondition.class,
 		JCacheCacheConfiguration.JCacheAvailableCondition.class })
 @Import(HazelcastJCacheCustomizationConfiguration.class)
-class JCacheCacheConfiguration {
+class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
 	private final CacheProperties cacheProperties;
 
@@ -72,6 +73,8 @@ class JCacheCacheConfiguration {
 	private final List<JCacheManagerCustomizer> cacheManagerCustomizers;
 
 	private final List<JCachePropertiesCustomizer> cachePropertiesCustomizers;
+
+	private ClassLoader beanClassLoader;
 
 	JCacheCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
@@ -113,9 +116,9 @@ class JCacheCacheConfiguration {
 				.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
 			return cachingProvider.getCacheManager(configLocation.getURI(),
-					cachingProvider.getDefaultClassLoader(), properties);
+					this.beanClassLoader, properties);
 		}
-		return cachingProvider.getCacheManager(null, null, properties);
+		return cachingProvider.getCacheManager(null, this.beanClassLoader, properties);
 	}
 
 	private CachingProvider getCachingProvider(String cachingProviderFqn) {
@@ -149,6 +152,11 @@ class JCacheCacheConfiguration {
 				customizer.customize(cacheManager);
 			}
 		}
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
 	}
 
 	/**
