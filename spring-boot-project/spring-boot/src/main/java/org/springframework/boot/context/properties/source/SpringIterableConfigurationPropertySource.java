@@ -142,9 +142,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private Object getCacheKey() {
-		if (getPropertySource() instanceof MapPropertySource) {
-			return ((MapPropertySource) getPropertySource()).getSource().keySet();
-		}
+		// gh-13344
 		return getPropertySource().getPropertyNames();
 	}
 
