@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.util.CollectionUtils;
 
@@ -39,8 +38,7 @@ class AliasedIterableConfigurationPropertySource
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		return StreamSupport.stream(getSource().spliterator(), false)
-				.flatMap(this::addAliases);
+		return getSource().stream().flatMap(this::addAliases);
 	}
 
 	private Stream<ConfigurationPropertyName> addAliases(ConfigurationPropertyName name) {
