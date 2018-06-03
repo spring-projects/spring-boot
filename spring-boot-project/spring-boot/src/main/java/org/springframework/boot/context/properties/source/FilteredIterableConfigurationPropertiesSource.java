@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * A filtered {@link IterableConfigurationPropertySource}.
@@ -38,7 +37,7 @@ class FilteredIterableConfigurationPropertiesSource
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		return StreamSupport.stream(getSource().spliterator(), false).filter(getFilter());
+		return getSource().stream().filter(getFilter());
 	}
 
 	@Override

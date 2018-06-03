@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.util.CollectionUtils;
 
@@ -39,7 +38,7 @@ class AliasedIterableConfigurationPropertySource
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		return StreamSupport.stream(getSource().spliterator(), false)
+		return getSource().stream()
 				.flatMap(this::addAliases);
 	}
 
