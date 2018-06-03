@@ -21,7 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.junit.Test;
 
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -55,7 +54,7 @@ public class SpringBootExceptionHandlerTests {
 				"[stuff] Logback configuration error detected [stuff]");
 		this.handler.registerLoggedException(ex);
 		this.handler.uncaughtException(thread, ex);
-		verify(this.parent).uncaughtException(same(thread), same(ex));
+		verify(this.parent).uncaughtException(thread, ex);
 	}
 
 	@Test
@@ -65,7 +64,7 @@ public class SpringBootExceptionHandlerTests {
 				"[stuff] Logback configuration error detected [stuff]", new Exception()));
 		this.handler.registerLoggedException(ex);
 		this.handler.uncaughtException(thread, ex);
-		verify(this.parent).uncaughtException(same(thread), same(ex));
+		verify(this.parent).uncaughtException(thread, ex);
 	}
 
 }
