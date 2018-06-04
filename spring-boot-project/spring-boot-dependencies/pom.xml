@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -82,6 +83,7 @@
 		<janino.version>3.0.8</janino.version>
 		<javax-annotation.version>1.3.2</javax-annotation.version>
 		<javax-cache.version>1.1.0</javax-cache.version>
+		<javax-jaxws.version>2.3.0</javax-jaxws.version>
 		<javax-jaxb.version>2.3.0</javax-jaxb.version>
 		<javax-jms.version>2.0.1</javax-jms.version>
 		<javax-json.version>1.1.2</javax-json.version>
@@ -169,6 +171,7 @@
 		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
+		<saaj-impl.version>1.4.0</saaj-impl.version>
 		<thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
@@ -718,6 +721,11 @@
 				<version>${sun-mail.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.sun.xml.messaging.saaj</groupId>
+				<artifactId>saaj-impl</artifactId>
+				<version>${saaj-impl.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.timgroup</groupId>
 				<artifactId>java-statsd-client</artifactId>
 				<version>${statsd-client.version}</version>
@@ -1062,6 +1070,11 @@
 				<groupId>javax.xml.bind</groupId>
 				<artifactId>jaxb-api</artifactId>
 				<version>${javax-jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.xml.ws</groupId>
+				<artifactId>jaxws-api</artifactId>
+				<version>${javax-jaxws.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jaxen</groupId>
