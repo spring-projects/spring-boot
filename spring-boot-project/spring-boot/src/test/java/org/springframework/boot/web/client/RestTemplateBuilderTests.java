@@ -32,6 +32,7 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
@@ -495,6 +496,38 @@ public class RestTemplateBuilderTests {
 				.build();
 		assertThat(template.getRequestFactory())
 				.isInstanceOf(BufferingClientHttpRequestFactory.class);
+	}
+
+	@Test
+	public void customizerShouldBeAppliedInTheEnd() {
+
+		ClientHttpRequestInterceptor interceptor = this.interceptor;
+		HttpMessageConverter<Object> messageConverter = this.messageConverter;
+		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
+
+		this.builder.interceptors(interceptor).messageConverters(messageConverter)
+				.rootUri("http://localhost:8080").errorHandler(errorHandler)
+				.basicAuthorization("spring", "boot")
+				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
+				.customizers((restTemplate) -> {
+					ClientHttpRequestFactory requestFactory = restTemplate
+							.getRequestFactory();
+					assertThat(restTemplate.getInterceptors()).hasSize(2)
+							.contains(interceptor).anyMatch(
+									(ic) -> ic instanceof BasicAuthorizationInterceptor);
+					assertThat(restTemplate.getMessageConverters())
+							.contains(messageConverter);
+					assertThat(restTemplate.getUriTemplateHandler())
+							.isInstanceOf(RootUriTemplateHandler.class);
+					assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
+					assertThat(requestFactory)
+							.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+					assertThat(ReflectionTestUtils.getField(requestFactory,
+							"requestFactory")).isInstanceOf(
+									HttpComponentsClientHttpRequestFactory.class);
+
+				}).build();
+
 	}
 
 	public static class RestTemplateSubclass extends RestTemplate {

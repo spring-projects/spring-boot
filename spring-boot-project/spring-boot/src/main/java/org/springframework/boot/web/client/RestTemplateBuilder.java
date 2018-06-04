@@ -531,12 +531,13 @@ public class RestTemplateBuilder {
 		if (this.basicAuthorization != null) {
 			restTemplate.getInterceptors().add(this.basicAuthorization);
 		}
+		restTemplate.getInterceptors().addAll(this.interceptors);
+
 		if (!CollectionUtils.isEmpty(this.restTemplateCustomizers)) {
 			for (RestTemplateCustomizer customizer : this.restTemplateCustomizers) {
 				customizer.customize(restTemplate);
 			}
 		}
-		restTemplate.getInterceptors().addAll(this.interceptors);
 		return restTemplate;
 	}
 
