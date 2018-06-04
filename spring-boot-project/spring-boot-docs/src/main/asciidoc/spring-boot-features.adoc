@@ -7360,7 +7360,7 @@ include::{test-examples}/web/client/SampleWebClientTests.java[tag=test]
 [[boot-features-websockets]]
 == WebSockets
 Spring Boot provides WebSockets auto-configuration for embedded Tomcat 8.5, Jetty
-9, and Undertow. If you deploy a war file to a standalone container, Spring Boot assumes
+9, and Undertow 2. If you deploy a war file to a standalone container, Spring Boot assumes
 that the container is responsible for the configuration of its WebSocket support.
 
 Spring Framework provides {spring-reference}web.html#websocket[rich WebSocket support]
