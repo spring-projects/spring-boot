@@ -18,4 +18,7 @@ STOP!! Please don't raise security vulnerabilities here. Head over to https://pi
 🎁 Enhancement
 Please start by describing the problem that you are trying to solve. There may already
 be a solution, or there may be a way to solve it that you hadn't considered.
+
+🙅 Managed dependency upgrade
+You DO NOT need to raise an issue for a managed dependency version upgrade as there's a semi-automatic process for checking managed dependencies for new versions before a release. But pull requests for upgrades that are more involved than just a version property change are still most welcome.
 -->
