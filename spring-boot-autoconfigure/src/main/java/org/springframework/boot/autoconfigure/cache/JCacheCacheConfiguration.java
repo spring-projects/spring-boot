@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,6 +88,11 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 		this.cachePropertiesCustomizers = cachePropertiesCustomizers.getIfAvailable();
 	}
 
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
+	}
+
 	@Bean
 	public JCacheCacheManager cacheManager(CacheManager jCacheCacheManager) {
 		JCacheCacheManager cacheManager = new JCacheCacheManager(jCacheCacheManager);
@@ -152,11 +157,6 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 				customizer.customize(cacheManager);
 			}
 		}
-	}
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
 	}
 
 	/**
