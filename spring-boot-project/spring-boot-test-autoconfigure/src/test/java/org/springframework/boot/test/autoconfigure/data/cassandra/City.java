@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,41 @@
  * limitations under the License.
  */
 
-package sample.data.cassandra;
+package org.springframework.boot.test.autoconfigure.data.cassandra;
 
-import java.util.UUID;
+import com.datastax.driver.core.DataType.Name;
 
-import org.springframework.data.cassandra.core.mapping.Indexed;
+import org.springframework.data.cassandra.core.mapping.CassandraType;
+import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-@Table
-public class Customer {
+
+@Table("mycity")
+public class City {
 
 	@PrimaryKey
-	private UUID id;
+	@CassandraType(type = Name.BIGINT)
+	private Long id;
 
-	@Indexed
-	private String firstName;
+	@Column
+	private String name;
 
-	@Indexed
-	private String lastName;
 
-	public Customer() {
+	public Long getId() {
+		return this.id;
 	}
 
-	public Customer(UUID id, String firstName, String lastName) {
+	public void setId(Long id) {
 		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
 	}
 
-	@Override
-	public String toString() {
-		return String.format("Customer[id=%s, firstName='%s', lastName='%s']", this.id,
-				this.firstName, this.lastName);
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

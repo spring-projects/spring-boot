@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PoolingOptions;
+import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 
@@ -33,6 +34,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
@@ -50,12 +52,14 @@ import org.springframework.util.StringUtils;
 public class CassandraAutoConfiguration {
 
 	private final CassandraProperties properties;
+	private final Environment environment;
 
 	private final List<ClusterBuilderCustomizer> builderCustomizers;
 
 	public CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizers) {
+			Environment environment, ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizers) {
 		this.properties = properties;
+		this.environment = environment;
 		this.builderCustomizers = builderCustomizers.getIfAvailable();
 	}
 
@@ -66,7 +70,7 @@ public class CassandraAutoConfiguration {
 		CassandraProperties properties = this.properties;
 		Cluster.Builder builder = Cluster.builder()
 				.withClusterName(properties.getClusterName())
-				.withPort(properties.getPort());
+				.withPort(getPort(properties.getPort()));
 		map.from(properties::getUsername).whenNonNull().to((username) -> builder
 				.withCredentials(username, properties.getPassword()));
 		map.from(properties::getCompression).whenNonNull().to(builder::withCompression);
@@ -81,7 +85,7 @@ public class CassandraAutoConfiguration {
 		map.from(properties::isSsl).whenTrue().toCall(builder::withSSL);
 		map.from(this::getPoolingOptions).to(builder::withPoolingOptions);
 		map.from(properties::getContactPoints)
-				.as((list) -> StringUtils.toStringArray(list))
+				.as(StringUtils::toStringArray)
 				.to(builder::addContactPoints);
 		customize(builder);
 		return builder.build();
@@ -94,6 +98,19 @@ public class CassandraAutoConfiguration {
 			}
 		}
 	}
+
+
+	private int getPort(Integer port) {
+		if (port == null || port == 0) {
+			String localPort = this.environment.getProperty("local.cassandra.port");
+			if (localPort != null) {
+				return Integer.valueOf(localPort);
+			}
+			return ProtocolOptions.DEFAULT_PORT;
+		}
+		return port;
+	}
+
 
 	private QueryOptions getQueryOptions() {
 		PropertyMapper map = PropertyMapper.get();

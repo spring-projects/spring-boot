@@ -39,6 +39,7 @@ public class CassandraAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class));
 
+
 	@Test
 	public void createClusterWithDefault() {
 		this.contextRunner.run((context) -> {
@@ -114,6 +115,19 @@ public class CassandraAutoConfigurationTests {
 					assertThat(poolingOptions.getMaxQueueSize()).isEqualTo(72);
 				});
 	}
+
+
+	@Test
+	public void useLocalPort() {
+		this.contextRunner
+				.withPropertyValues("local.cassandra.port=5050")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Cluster.class);
+					assertThat(context.getBean(Cluster.class).getConfiguration().getProtocolOptions().getPort())
+							.isEqualTo(5050);
+				});
+	}
+
 
 	@Configuration
 	static class MockCustomizerConfig {

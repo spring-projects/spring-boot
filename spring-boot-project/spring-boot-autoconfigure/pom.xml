@@ -27,6 +27,23 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.cassandra</groupId>
+			<artifactId>cassandra-all</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<!--conflict with current version of hibernate. maybe it should be excluded on the top level-->
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-validator</artifactId>
+				</exclusion>
+				<!--conflict with elastic-->
+				<exclusion>
+					<groupId>com.carrotsearch</groupId>
+					<artifactId>hppc</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jta</artifactId>
 			<optional>true</optional>
@@ -777,7 +794,7 @@
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-			<scope>test</scope>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 </project>
