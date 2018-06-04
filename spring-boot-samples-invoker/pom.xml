@@ -21,12 +21,9 @@
 				<!-- We use invoker so that the spring-boot-maven-plugin can be used -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-invoker-plugin</artifactId>
-				<!-- Downgrade due to https://issues.apache.org/jira/browse/MINVOKER-224 -->
-				<version>2.0.0</version>
 				<inherited>false</inherited>
 				<configuration>
 					<projectsDirectory>${main.basedir}/spring-boot-samples</projectsDirectory>
-					<cloneProjectsTo />
 					<skipInvocation>${skipTests}</skipInvocation>
 					<streamLogs>true</streamLogs>
 					<pomIncludes>
