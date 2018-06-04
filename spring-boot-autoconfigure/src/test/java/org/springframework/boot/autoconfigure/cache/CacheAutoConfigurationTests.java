@@ -375,6 +375,16 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	public void jCacheCacheUseBeanClassLoader() {
+		String cachingProviderFqn = MockCachingProvider.class.getName();
+		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
+				"spring.cache.jcache.provider=" + cachingProviderFqn);
+		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+		assertThat(cacheManager.getCacheManager().getClassLoader())
+				.isEqualTo(this.context.getClassLoader());
+	}
+
+	@Test
 	public void ehcacheCacheWithCaches() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache");
 		EhCacheCacheManager cacheManager = validateCacheManager(

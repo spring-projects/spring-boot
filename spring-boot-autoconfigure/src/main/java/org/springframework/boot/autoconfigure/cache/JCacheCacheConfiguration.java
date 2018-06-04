@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -61,7 +62,7 @@ import org.springframework.util.StringUtils;
 @Conditional({ CacheCondition.class,
 		JCacheCacheConfiguration.JCacheAvailableCondition.class })
 @Import(HazelcastJCacheCustomizationConfiguration.class)
-class JCacheCacheConfiguration {
+class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
 	private final CacheProperties cacheProperties;
 
@@ -73,6 +74,8 @@ class JCacheCacheConfiguration {
 
 	private final List<JCachePropertiesCustomizer> cachePropertiesCustomizers;
 
+	private ClassLoader beanClassLoader;
+
 	JCacheCacheConfiguration(CacheProperties cacheProperties,
 			CacheManagerCustomizers customizers,
 			ObjectProvider<javax.cache.configuration.Configuration<?, ?>> defaultCacheConfiguration,
@@ -83,6 +86,11 @@ class JCacheCacheConfiguration {
 		this.defaultCacheConfiguration = defaultCacheConfiguration.getIfAvailable();
 		this.cacheManagerCustomizers = cacheManagerCustomizers.getIfAvailable();
 		this.cachePropertiesCustomizers = cachePropertiesCustomizers.getIfAvailable();
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
 	}
 
 	@Bean
@@ -113,9 +121,9 @@ class JCacheCacheConfiguration {
 				.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
 			return cachingProvider.getCacheManager(configLocation.getURI(),
-					cachingProvider.getDefaultClassLoader(), properties);
+					this.beanClassLoader, properties);
 		}
-		return cachingProvider.getCacheManager(null, null, properties);
+		return cachingProvider.getCacheManager(null, this.beanClassLoader, properties);
 	}
 
 	private CachingProvider getCachingProvider(String cachingProviderFqn) {
