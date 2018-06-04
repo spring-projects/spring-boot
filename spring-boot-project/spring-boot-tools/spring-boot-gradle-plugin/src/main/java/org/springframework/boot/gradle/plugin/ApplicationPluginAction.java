@@ -77,6 +77,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 				() -> new File(project.getBuildDir(), "bootScripts"));
 		bootStartScripts.getConventionMapping().map("applicationName",
 				applicationConvention::getApplicationName);
+		bootStartScripts.getConventionMapping().map("defaultJvmOpts",
+				applicationConvention::getApplicationDefaultJvmArgs);
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0x755);
 		distribution.getContents().with(binCopySpec);

@@ -74,6 +74,14 @@ public class ApplicationPluginActionIntegrationTests {
 	}
 
 	@Test
+	public void createsBootStartScriptsTaskUsesApplicationPluginsDefaultJvmOpts() {
+		assertThat(this.gradleBuild
+				.build("startScriptsDefaultJvmOpts", "-PapplyApplicationPlugin")
+				.getOutput()).contains(
+						"bootStartScripts defaultJvmOpts = [-Dcom.example.a=alpha, -Dcom.example.b=bravo]");
+	}
+
+	@Test
 	public void zipDistributionForJarCanBeBuilt() throws IOException {
 		assertThat(
 				this.gradleBuild.build("bootDistZip").task(":bootDistZip").getOutcome())
