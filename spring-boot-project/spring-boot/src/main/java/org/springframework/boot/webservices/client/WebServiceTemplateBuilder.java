@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.xml.transform.TransformerFactory;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.util.Assert;
@@ -76,9 +77,17 @@ public class WebServiceTemplateBuilder {
 	private final WebServiceMessageFactory messageFactory;
 
 	public WebServiceTemplateBuilder(WebServiceTemplateCustomizer... customizers) {
-		this(true, Collections.emptySet(), Collections.emptySet(),
-				append(Collections.<WebServiceTemplateCustomizer>emptySet(), customizers),
-				new WebServiceMessageSenders(), null, null, null, null, null);
+		this.detectHttpMessageSender = true;
+		this.interceptors = null;
+		this.internalCustomizers = null;
+		this.customizers = Collections
+				.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(customizers)));
+		this.messageSenders = new WebServiceMessageSenders();
+		this.marshaller = null;
+		this.unmarshaller = null;
+		this.destinationProvider = null;
+		this.transformerFactoryClass = null;
+		this.messageFactory = null;
 	}
 
 	private WebServiceTemplateBuilder(boolean detectHttpMessageSender,
@@ -89,11 +98,11 @@ public class WebServiceTemplateBuilder {
 			Unmarshaller unmarshaller, DestinationProvider destinationProvider,
 			Class<? extends TransformerFactory> transformerFactoryClass,
 			WebServiceMessageFactory messageFactory) {
+		this.detectHttpMessageSender = detectHttpMessageSender;
 		this.interceptors = interceptors;
 		this.internalCustomizers = internalCustomizers;
 		this.customizers = customizers;
 		this.messageSenders = messageSenders;
-		this.detectHttpMessageSender = detectHttpMessageSender;
 		this.marshaller = marshaller;
 		this.unmarshaller = unmarshaller;
 		this.destinationProvider = destinationProvider;
@@ -357,7 +366,7 @@ public class WebServiceTemplateBuilder {
 	 **/
 	public WebServiceTemplateBuilder setWebServiceMessageFactory(
 			WebServiceMessageFactory messageFactory) {
-		Assert.notNull(messageFactory, "messageFactory must not be null");
+		Assert.notNull(messageFactory, "MessageFactory must not be null");
 		return new WebServiceTemplateBuilder(this.detectHttpMessageSender,
 				this.interceptors, this.internalCustomizers, this.customizers,
 				this.messageSenders, this.marshaller, this.unmarshaller,
@@ -425,7 +434,6 @@ public class WebServiceTemplateBuilder {
 
 	/**
 	 * Set the default URI to be used on operations that do not have a URI parameter.
-	 * <p>
 	 * Typically, either this property is set, or
 	 * {@link #setDestinationProvider(DestinationProvider)}, but not both.
 	 * @param defaultUri the destination provider URI to be used on operations that do not
@@ -439,10 +447,8 @@ public class WebServiceTemplateBuilder {
 	}
 
 	/**
-	 * Set the {@link DestinationProvider} to use
-	 * <p>
-	 * Typically, either this property is set, or {@link #setDefaultUri(String)}, but not
-	 * both.
+	 * Set the {@link DestinationProvider} to use. Typically, either this property is set,
+	 * or {@link #setDefaultUri(String)}, but not both.
 	 * @param destinationProvider the destination provider to be used on operations that
 	 * do not have a URI parameter.
 	 * @return a new builder instance.
@@ -450,7 +456,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder setDestinationProvider(
 			DestinationProvider destinationProvider) {
-		Assert.notNull(destinationProvider, "destinationProvider must not be null");
+		Assert.notNull(destinationProvider, "DestinationProvider must not be null");
 		return new WebServiceTemplateBuilder(this.detectHttpMessageSender,
 				this.interceptors, this.internalCustomizers, this.customizers,
 				this.messageSenders, this.marshaller, this.unmarshaller,
@@ -492,49 +498,45 @@ public class WebServiceTemplateBuilder {
 	 * @see #build(Class)
 	 */
 	public <T extends WebServiceTemplate> T configure(T webServiceTemplate) {
-		Assert.notNull(webServiceTemplate, "webServiceTemplate must not be null");
+		Assert.notNull(webServiceTemplate, "WebServiceTemplate must not be null");
 		configureMessageSenders(webServiceTemplate);
-		if (!CollectionUtils.isEmpty(this.internalCustomizers)) {
-			for (WebServiceTemplateCustomizer internalCustomizer : this.internalCustomizers) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		applyCustomizers(webServiceTemplate, this.internalCustomizers);
+		map.from(() -> this.marshaller).to(webServiceTemplate::setMarshaller);
+		map.from(() -> this.unmarshaller).to(webServiceTemplate::setUnmarshaller);
+		map.from(() -> this.destinationProvider)
+				.to(webServiceTemplate::setDestinationProvider);
+		map.from(() -> this.transformerFactoryClass)
+				.to(webServiceTemplate::setTransformerFactoryClass);
+		map.from(() -> this.messageFactory).to(webServiceTemplate::setMessageFactory);
+		if (!CollectionUtils.isEmpty(this.interceptors)) {
+			Set<ClientInterceptor> merged = new LinkedHashSet<>(this.interceptors);
+			if (webServiceTemplate.getInterceptors() != null) {
+				merged.addAll(Arrays.asList(webServiceTemplate.getInterceptors()));
+			}
+			webServiceTemplate.setInterceptors(merged.toArray(new ClientInterceptor[0]));
+		}
+		applyCustomizers(webServiceTemplate, this.customizers);
+		return webServiceTemplate;
+	}
+
+	private void applyCustomizers(WebServiceTemplate webServiceTemplate,
+			Set<WebServiceTemplateCustomizer> customizers) {
+		if (!CollectionUtils.isEmpty(customizers)) {
+			for (WebServiceTemplateCustomizer internalCustomizer : customizers) {
 				internalCustomizer.customize(webServiceTemplate);
 			}
 		}
-		if (this.marshaller != null) {
-			webServiceTemplate.setMarshaller(this.marshaller);
-		}
-		if (this.unmarshaller != null) {
-			webServiceTemplate.setUnmarshaller(this.unmarshaller);
-		}
-		if (this.destinationProvider != null) {
-			webServiceTemplate.setDestinationProvider(this.destinationProvider);
-		}
-		if (this.transformerFactoryClass != null) {
-			webServiceTemplate.setTransformerFactoryClass(this.transformerFactoryClass);
-		}
-		if (this.messageFactory != null) {
-			webServiceTemplate.setMessageFactory(this.messageFactory);
-		}
-		if (!CollectionUtils.isEmpty(this.interceptors)) {
-			webServiceTemplate.setInterceptors(
-					append(this.interceptors, webServiceTemplate.getInterceptors())
-							.toArray(new ClientInterceptor[0]));
-		}
-		if (!CollectionUtils.isEmpty(this.customizers)) {
-			for (WebServiceTemplateCustomizer customizer : this.customizers) {
-				customizer.customize(webServiceTemplate);
-			}
-		}
-		return webServiceTemplate;
 	}
 
 	private <T extends WebServiceTemplate> void configureMessageSenders(
 			T webServiceTemplate) {
 		if (this.messageSenders.isOnlyAdditional() && this.detectHttpMessageSender) {
-			Set<WebServiceMessageSender> mergedMessageSenders = append(
+			Set<WebServiceMessageSender> merged = append(
 					this.messageSenders.getMessageSenders(),
 					new HttpWebServiceMessageSenderBuilder().build());
-			webServiceTemplate.setMessageSenders(
-					mergedMessageSenders.toArray(new WebServiceMessageSender[0]));
+			webServiceTemplate
+					.setMessageSenders(merged.toArray(new WebServiceMessageSender[0]));
 		}
 		else if (!CollectionUtils.isEmpty(this.messageSenders.getMessageSenders())) {
 			webServiceTemplate.setMessageSenders(this.messageSenders.getMessageSenders()
@@ -542,15 +544,8 @@ public class WebServiceTemplateBuilder {
 		}
 	}
 
-	private static <T> Set<T> append(Set<T> set, T[] additions) {
-		return append(set, additions != null
-				? new LinkedHashSet<>(Arrays.asList(additions)) : Collections.emptySet());
-	}
-
-	private static <T> Set<T> append(Set<T> set, T addition) {
-		Set<T> result = new LinkedHashSet<>(set != null ? set : Collections.emptySet());
-		result.add(addition);
-		return Collections.unmodifiableSet(result);
+	private <T> Set<T> append(Set<T> set, T addition) {
+		return append(set, Collections.singleton(addition));
 	}
 
 	private static <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
