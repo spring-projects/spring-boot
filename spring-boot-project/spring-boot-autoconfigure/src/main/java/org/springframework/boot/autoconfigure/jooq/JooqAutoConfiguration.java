@@ -116,7 +116,7 @@ public class JooqAutoConfiguration {
 				ObjectProvider<RecordUnmapperProvider> recordUnmapperProvider,
 				ObjectProvider<Settings> settings,
 				ObjectProvider<RecordListenerProvider[]> recordListenerProviders,
-				ObjectProvider<ExecuteListenerProvider[]> executeListenerProviders,
+				ExecuteListenerProvider[] executeListenerProviders,
 				ObjectProvider<VisitListenerProvider[]> visitListenerProviders,
 				ObjectProvider<TransactionListenerProvider[]> transactionListenerProviders) {
 			this.properties = properties;
@@ -127,7 +127,7 @@ public class JooqAutoConfiguration {
 			this.recordUnmapperProvider = recordUnmapperProvider.getIfAvailable();
 			this.settings = settings.getIfAvailable();
 			this.recordListenerProviders = recordListenerProviders.getIfAvailable();
-			this.executeListenerProviders = executeListenerProviders.getIfAvailable();
+			this.executeListenerProviders = executeListenerProviders;
 			this.visitListenerProviders = visitListenerProviders.getIfAvailable();
 			this.transactionListenerProviders = transactionListenerProviders
 					.getIfAvailable();
