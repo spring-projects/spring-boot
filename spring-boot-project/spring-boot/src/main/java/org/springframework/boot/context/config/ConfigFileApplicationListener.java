@@ -543,6 +543,7 @@ public class ConfigFileApplicationListener
 			LinkedList<Profile> existingProfiles = new LinkedList<>(this.profiles);
 			this.profiles.clear();
 			this.profiles.addAll(includeProfiles);
+			this.profiles.removeAll(this.processedProfiles);
 			this.profiles.addAll(existingProfiles);
 		}
 

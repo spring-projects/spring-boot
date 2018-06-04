@@ -892,6 +892,17 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(this.environment.getProperty("value")).isNull();
 	}
 
+	@Test
+	public void includeLoop() {
+		// gh-13361
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run("--spring.config.name=applicationloop");
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		assertThat(environment.acceptsProfiles("loop")).isTrue();
+
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final String sourceName) {
 		return new Condition<ConfigurableEnvironment>(
