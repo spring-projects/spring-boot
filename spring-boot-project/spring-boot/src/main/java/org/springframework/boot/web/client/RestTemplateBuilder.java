@@ -23,9 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -33,11 +31,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -63,17 +59,6 @@ import org.springframework.web.util.UriTemplateHandler;
  * @since 1.4.0
  */
 public class RestTemplateBuilder {
-
-	private static final Map<String, String> REQUEST_FACTORY_CANDIDATES;
-
-	static {
-		Map<String, String> candidates = new LinkedHashMap<>();
-		candidates.put("org.apache.http.client.HttpClient",
-				"org.springframework.http.client.HttpComponentsClientHttpRequestFactory");
-		candidates.put("okhttp3.OkHttpClient",
-				"org.springframework.http.client.OkHttp3ClientHttpRequestFactory");
-		REQUEST_FACTORY_CANDIDATES = Collections.unmodifiableMap(candidates);
-	}
 
 	private final boolean detectRequestFactory;
 
@@ -561,7 +546,7 @@ public class RestTemplateBuilder {
 			requestFactory = this.requestFactorySupplier.get();
 		}
 		else if (this.detectRequestFactory) {
-			requestFactory = detectRequestFactory();
+			requestFactory = new ClientHttpRequestFactorySupplier().get();
 		}
 		if (requestFactory != null) {
 			ClientHttpRequestFactory unwrappedRequestFactory = unwrapRequestFactoryIfNecessary(
@@ -588,20 +573,6 @@ public class RestTemplateBuilder {
 		}
 		while (unwrappedRequestFactory instanceof AbstractClientHttpRequestFactoryWrapper);
 		return unwrappedRequestFactory;
-	}
-
-	private ClientHttpRequestFactory detectRequestFactory() {
-		for (Map.Entry<String, String> candidate : REQUEST_FACTORY_CANDIDATES
-				.entrySet()) {
-			ClassLoader classLoader = getClass().getClassLoader();
-			if (ClassUtils.isPresent(candidate.getKey(), classLoader)) {
-				Class<?> factoryClass = ClassUtils.resolveClassName(candidate.getValue(),
-						classLoader);
-				return (ClientHttpRequestFactory) BeanUtils
-						.instantiateClass(factoryClass);
-			}
-		}
-		return new SimpleClientHttpRequestFactory();
 	}
 
 	private <T> Set<T> append(Set<T> set, T addition) {
