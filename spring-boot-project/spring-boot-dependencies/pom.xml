@@ -939,13 +939,6 @@
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
-			<!-- https://github.com/reactor/reactor/pull/646 -->
-			<dependency>
-				<groupId>io.projectreactor.netty</groupId>
-				<artifactId>reactor-netty</artifactId>
-				<version>0.8.0.BUILD-SNAPSHOT</version>
-				<scope>compile</scope>
-			</dependency>
 			<dependency>
 				<groupId>io.reactivex</groupId>
 				<artifactId>rxjava</artifactId>
