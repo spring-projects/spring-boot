@@ -70,8 +70,10 @@ applied to a project, the Spring Boot plugin will automatically import the
 When Gradle's {application-plugin}[`application` plugin] is applied to a project, the
 Spring Boot plugin:
 
-1. Creates a `CreateStartScripts` task named `bootStartScripts` that will creates scripts
-   that launch the artifact in the `bootArchives` configuration using `java -jar`.
+1. Creates a `CreateStartScripts` task named `bootStartScripts` that will create scripts
+   that launch the artifact in the `bootArchives` configuration using `java -jar`. The
+   task is configured to use the `applicationDefaultJvmArgs` property as a convention
+   for its `defaultJvmOpts` property.
 2. Creates a new distribution named `boot` and configures it to contain the artifact in
    the `bootArchives` configuration in its `lib` directory and the start scripts in its
    `bin` directory.
