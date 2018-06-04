@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -95,7 +94,6 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	@RequestMapping
-	@ResponseBody
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
 		Map<String, Object> body = getErrorAttributes(request,
 				isIncludeStackTrace(request, MediaType.ALL));

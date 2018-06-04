@@ -19,13 +19,14 @@ package org.springframework.boot.web.embedded.netty;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContextBuilder;
-import reactor.ipc.netty.http.server.HttpServerOptions;
+import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
@@ -49,28 +50,34 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	@Override
-	public void customize(HttpServerOptions.Builder builder) {
-		SslContextBuilder sslBuilder = SslContextBuilder
-				.forServer(getKeyManagerFactory(this.ssl, this.sslStoreProvider))
-				.trustManager(getTrustManagerFactory(this.ssl, this.sslStoreProvider));
-		if (this.ssl.getEnabledProtocols() != null) {
-			sslBuilder.protocols(this.ssl.getEnabledProtocols());
-		}
-		if (this.ssl.getCiphers() != null) {
-			sslBuilder = sslBuilder.ciphers(Arrays.asList(this.ssl.getCiphers()));
-		}
-		if (this.ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
-			sslBuilder = sslBuilder.clientAuth(ClientAuth.REQUIRE);
-		}
-		else if (this.ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
-			sslBuilder = sslBuilder.clientAuth(ClientAuth.OPTIONAL);
-		}
+	public HttpServer apply(HttpServer server) {
 		try {
-			builder.sslContext(sslBuilder.build());
+			return server.secure((contextSpec) -> contextSpec.forServer()
+					.sslContext(getContextBuilderConsumer()));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	protected Consumer<SslContextBuilder> getContextBuilderConsumer() {
+		return (builder) -> {
+			builder.keyManager(getKeyManagerFactory(this.ssl, this.sslStoreProvider))
+					.trustManager(
+							getTrustManagerFactory(this.ssl, this.sslStoreProvider));
+			if (this.ssl.getEnabledProtocols() != null) {
+				builder.protocols(this.ssl.getEnabledProtocols());
+			}
+			if (this.ssl.getCiphers() != null) {
+				builder.ciphers(Arrays.asList(this.ssl.getCiphers()));
+			}
+			if (this.ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
+				builder.clientAuth(ClientAuth.REQUIRE);
+			}
+			else if (this.ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
+				builder.clientAuth(ClientAuth.OPTIONAL);
+			}
+		};
 	}
 
 	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl,

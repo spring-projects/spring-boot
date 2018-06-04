@@ -169,6 +169,7 @@ public class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-exception=true");
 		RequestEntity request = RequestEntity
 				.post(URI.create(createUrl("/bodyValidation")))
+				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON).body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
