@@ -470,6 +470,20 @@ public class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationT
 	}
 
 	@Test
+	public void jCacheCacheUseBeanClassLoader() {
+		String cachingProviderFqn = MockCachingProvider.class.getName();
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+				.withPropertyValues("spring.cache.type=jcache",
+						"spring.cache.jcache.provider=" + cachingProviderFqn)
+				.run((context) -> {
+					JCacheCacheManager cacheManager = getCacheManager(context,
+							JCacheCacheManager.class);
+					assertThat(cacheManager.getCacheManager().getClassLoader())
+							.isEqualTo(context.getClassLoader());
+				});
+	}
+
+	@Test
 	public void hazelcastCacheExplicit() {
 		this.contextRunner
 				.withConfiguration(
