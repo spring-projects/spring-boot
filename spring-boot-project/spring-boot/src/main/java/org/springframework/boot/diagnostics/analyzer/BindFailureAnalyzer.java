@@ -70,6 +70,12 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 	}
 
 	private String getMessage(BindException cause) {
+		ConversionFailedException conversionFailure = findCause(cause,
+				ConversionFailedException.class);
+		if (conversionFailure != null) {
+			return "failed to convert " + conversionFailure.getSourceType() + " to "
+					+ conversionFailure.getTargetType();
+		}
 		Throwable failure = cause;
 		while (failure.getCause() != null) {
 			failure = failure.getCause();
