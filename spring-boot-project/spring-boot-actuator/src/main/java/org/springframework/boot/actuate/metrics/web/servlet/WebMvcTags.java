@@ -77,8 +77,9 @@ public final class WebMvcTags {
 	/**
 	 * Creates a {@code uri} tag based on the URI of the given {@code request}. Uses the
 	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
-	 * available, falling back to the request's {@link HttpServletRequest#getPathInfo()
-	 * path info} if necessary.
+	 * available. Falling back to {@code REDIRECTION} for 3xx responses, {@code NOT_FOUND}
+	 * for 404 responses, {@code root} for requests with no path info, and {@code UNKNOWN}
+	 * for all other requests.
 	 * @param request the request
 	 * @param response the response
 	 * @return the uri tag derived from the request
@@ -102,7 +103,6 @@ public final class WebMvcTags {
 			if (pathInfo.isEmpty()) {
 				return URI_ROOT;
 			}
-			return Tag.of("uri", pathInfo);
 		}
 		return URI_UNKNOWN;
 	}

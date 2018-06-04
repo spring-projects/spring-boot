@@ -39,18 +39,29 @@ public class WebMvcTagsTests {
 	private final MockHttpServletResponse response = new MockHttpServletResponse();
 
 	@Test
-	public void uriTrailingSlashesAreSuppressed() {
-		this.request.setPathInfo("//spring/");
-		assertThat(WebMvcTags.uri(this.request, null).getValue()).isEqualTo("/spring");
-	}
-
-	@Test
 	public void uriTagValueIsBestMatchingPatternWhenAvailable() {
 		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
 				"/spring");
 		this.response.setStatus(301);
 		Tag tag = WebMvcTags.uri(this.request, this.response);
 		assertThat(tag.getValue()).isEqualTo("/spring");
+	}
+
+	@Test
+	public void uriTagValueIsRootWhenRequestHasNoPatternOrPathInfo() {
+		assertThat(WebMvcTags.uri(this.request, null).getValue()).isEqualTo("root");
+	}
+
+	@Test
+	public void uriTagValueIsRootWhenRequestHasNoPatternAndSlashPathInfo() {
+		this.request.setPathInfo("/");
+		assertThat(WebMvcTags.uri(this.request, null).getValue()).isEqualTo("root");
+	}
+
+	@Test
+	public void uriTagValueIsUnknownWhenRequestHasNoPatternAndNonRootPathInfo() {
+		this.request.setPathInfo("/example");
+		assertThat(WebMvcTags.uri(this.request, null).getValue()).isEqualTo("UNKNOWN");
 	}
 
 	@Test
