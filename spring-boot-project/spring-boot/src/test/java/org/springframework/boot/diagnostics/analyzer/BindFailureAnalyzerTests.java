@@ -62,10 +62,10 @@ public class BindFailureAnalyzerTests {
 	@Test
 	public void bindExceptionDueToOtherFailure() {
 		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
-				"test.foo.value=${BAR}");
-		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "${BAR}",
+				"test.foo.value=alpha");
+		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "alpha",
 				"\"test.foo.value\" from property source \"test\"",
-				"Could not resolve placeholder 'BAR' in value \"${BAR}\""));
+				"failed to convert java.lang.String to int"));
 	}
 
 	@Test
@@ -187,13 +187,13 @@ public class BindFailureAnalyzerTests {
 	@ConfigurationProperties("test.foo")
 	static class GenericFailureProperties {
 
-		private String value;
+		private int value;
 
-		public String getValue() {
+		public int getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		public void setValue(int value) {
 			this.value = value;
 		}
 

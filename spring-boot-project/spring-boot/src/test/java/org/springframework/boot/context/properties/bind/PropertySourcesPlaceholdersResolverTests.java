@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,12 +67,10 @@ public class PropertySourcesPlaceholdersResolverTests {
 	}
 
 	@Test
-	public void resolveIfPlaceholderAbsentAndNoDefaultShouldThrowException() {
+	public void resolveIfPlaceholderAbsentAndNoDefaultUsesPlaceholder() {
 		this.resolver = new PropertySourcesPlaceholdersResolver((PropertySources) null);
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown
-				.expectMessage("Could not resolve placeholder 'FOO' in value \"${FOO}\"");
-		this.resolver.resolvePlaceholders("${FOO}");
+		Object resolved = this.resolver.resolvePlaceholders("${FOO}");
+		assertThat(resolved).isEqualTo("${FOO}");
 	}
 
 	@Test
