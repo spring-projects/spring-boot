@@ -49,7 +49,7 @@ public class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 
 	@Test
 	public void buildWithCustomTimeouts() {
-		WebServiceMessageSender messageSender = this.builder.setConnectionTimeout(5000)
+		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(5000)
 				.setReadTimeout(2000).build();
 		SimpleClientHttpRequestFactory requestFactory = assertSimpleClientRequestFactory(
 				messageSender);

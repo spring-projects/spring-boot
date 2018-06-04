@@ -451,9 +451,9 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Sets the connect timeout in milliseconds on the underlying
+	 * Sets the connection timeout in milliseconds on the underlying
 	 * {@link ClientHttpRequestFactory}.
-	 * @param connectTimeout the connect timeout in milliseconds
+	 * @param connectTimeout the connection timeout in milliseconds
 	 * @return a new builder instance.
 	 */
 	public RestTemplateBuilder setConnectTimeout(int connectTimeout) {
@@ -641,7 +641,7 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * {@link RequestFactoryCustomizer} to set the connect timeout.
+	 * {@link RequestFactoryCustomizer} to set the connection timeout.
 	 */
 	private static class ConnectTimeoutRequestFactoryCustomizer
 			extends TimeoutRequestFactoryCustomizer {

@@ -35,7 +35,7 @@ import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
  */
 public class HttpWebServiceMessageSenderBuilder {
 
-	private Integer connectionTimeout;
+	private Integer connectTimeout;
 
 	private Integer readTimeout;
 
@@ -43,12 +43,11 @@ public class HttpWebServiceMessageSenderBuilder {
 
 	/**
 	 * Set the connection timeout in milliseconds.
-	 * @param connectionTimeout the connection timeout in milliseconds
+	 * @param connectTimeout the connection timeout in milliseconds
 	 * @return a new builder instance
 	 */
-	public HttpWebServiceMessageSenderBuilder setConnectionTimeout(
-			int connectionTimeout) {
-		this.connectionTimeout = connectionTimeout;
+	public HttpWebServiceMessageSenderBuilder setConnectTimeout(int connectTimeout) {
+		this.connectTimeout = connectTimeout;
 		return this;
 	}
 
@@ -80,9 +79,9 @@ public class HttpWebServiceMessageSenderBuilder {
 		ClientHttpRequestFactory requestFactory = (this.requestFactorySupplier != null
 				? this.requestFactorySupplier.get()
 				: new ClientHttpRequestFactorySupplier().get());
-		if (this.connectionTimeout != null) {
-			new TimeoutRequestFactoryCustomizer(this.connectionTimeout,
-					"setConnectTimeout").customize(requestFactory);
+		if (this.connectTimeout != null) {
+			new TimeoutRequestFactoryCustomizer(this.connectTimeout, "setConnectTimeout")
+					.customize(requestFactory);
 		}
 		if (this.readTimeout != null) {
 			new TimeoutRequestFactoryCustomizer(this.readTimeout, "setReadTimeout")

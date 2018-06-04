@@ -7428,7 +7428,7 @@ can also customize read and connection timeouts as follows:
 	@Bean
 	public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
 		return builder.messageSenders(new HttpWebServiceMessageSenderBuilder()
-				.setReadTimeout(5000).setConnectionTimeout(2000).build()).build();
+				.setConnectTimeout(5000).setReadTimeout(2000).build()).build();
 	}
 ----
 

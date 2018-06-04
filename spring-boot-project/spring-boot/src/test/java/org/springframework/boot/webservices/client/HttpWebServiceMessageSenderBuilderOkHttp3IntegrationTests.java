@@ -50,7 +50,7 @@ public class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 
 	@Test
 	public void buildWithCustomTimeouts() {
-		WebServiceMessageSender messageSender = this.builder.setConnectionTimeout(5000)
+		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(5000)
 				.setReadTimeout(2000).build();
 		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(
 				messageSender);
