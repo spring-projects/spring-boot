@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.web.trace.servlet;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.actuate.trace.http.TraceableRequest;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriUtils;
 
 /**
  * An adapter that exposes an {@link HttpServletRequest} as a {@link TraceableRequest}.
@@ -48,12 +51,26 @@ final class TraceableHttpServletRequest implements TraceableRequest {
 
 	@Override
 	public URI getUri() {
-		StringBuffer urlBuffer = this.request.getRequestURL();
-		if (StringUtils.hasText(this.request.getQueryString())) {
-			urlBuffer.append("?");
-			urlBuffer.append(this.request.getQueryString());
+		String queryString = this.request.getQueryString();
+		if (!StringUtils.hasText(queryString)) {
+			return URI.create(this.request.getRequestURL().toString());
 		}
-		return URI.create(urlBuffer.toString());
+		try {
+			StringBuffer urlBuffer = appendQueryString(queryString);
+			return new URI(urlBuffer.toString());
+		}
+		catch (URISyntaxException ex) {
+			String encoded = UriUtils.encode(queryString, StandardCharsets.UTF_8);
+			StringBuffer urlBuffer = appendQueryString(encoded);
+			return URI.create(urlBuffer.toString());
+		}
+	}
+
+	private StringBuffer appendQueryString(String queryString) {
+		StringBuffer urlBuffer = this.request.getRequestURL();
+		urlBuffer.append("?");
+		urlBuffer.append(queryString);
+		return urlBuffer;
 	}
 
 	@Override
