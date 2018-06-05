@@ -21,6 +21,7 @@ import java.util.Locale;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -32,6 +33,9 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.DelegatingMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -218,6 +222,43 @@ public class MessageSourceAutoConfigurationTests {
 				.run((context) -> assertThat(
 						context.getMessage("foo", null, "Foo message", Locale.UK))
 								.isEqualTo("bar")));
+	}
+
+	@Test
+	public void testDefaultReloadableValueMessageSource() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
+				.run((context) -> assertThat(getDeclaredMessageSource(context))
+						.isInstanceOf(ResourceBundleMessageSource.class));
+	}
+
+	@Test
+	public void testNotReloadableMessageSource() {
+		this.contextRunner
+				.withPropertyValues("spring.messages.basename:test/messages",
+						"spring.messages.reloadable:false")
+				.run((context) -> assertThat(getDeclaredMessageSource(context))
+						.isInstanceOf(ResourceBundleMessageSource.class));
+	}
+
+	@Test
+	public void testReloadableMessageSource() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages",
+				"spring.messages.reloadable:true").run((context) -> {
+					assertThat(getDeclaredMessageSource(context))
+							.isInstanceOf(ReloadableResourceBundleMessageSource.class);
+					assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
+							.isEqualTo("bar");
+				});
+	}
+
+	private MessageSource getDeclaredMessageSource(AssertableApplicationContext context)
+			throws BeansException {
+		MessageSource messageSource = context.getBean(MessageSource.class);
+		if (messageSource instanceof DelegatingMessageSource) {
+			messageSource = ((DelegatingMessageSource) messageSource)
+					.getParentMessageSource();
+		}
+		return messageSource;
 	}
 
 	@Configuration

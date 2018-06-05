@@ -71,6 +71,12 @@ public class MessageSourceProperties {
 	 */
 	private boolean useCodeAsDefaultMessage = false;
 
+	/**
+	 * Whether to use a "ReloadableResourceBundleMessageSource" rather than the default
+	 * "ResourceBundleMessageSource". Recommended during development only.
+	 */
+	private boolean reloadable = false;
+
 	public String getBasename() {
 		return this.basename;
 	}
@@ -117,6 +123,14 @@ public class MessageSourceProperties {
 
 	public void setUseCodeAsDefaultMessage(boolean useCodeAsDefaultMessage) {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
+	}
+
+	public boolean isReloadable() {
+		return this.reloadable;
+	}
+
+	public void setReloadable(boolean reloadable) {
+		this.reloadable = reloadable;
 	}
 
 }

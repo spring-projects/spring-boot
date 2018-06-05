@@ -133,6 +133,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.messages.cache-duration= # Loaded resource bundle files cache duration. When not set, bundles are cached forever. If a duration suffix is not specified, seconds will be used.
 	spring.messages.encoding=UTF-8 # Message bundles encoding.
 	spring.messages.fallback-to-system-locale=true # Whether to fall back to the system Locale if no files for a specific Locale have been found.
+	spring.messages.reloadable=false # Whether to use a ReloadableResourceBundleMessageSource instead of the default ResourceBundleMessageSource. Recommended during development only.
 	spring.messages.use-code-as-default-message=false # Whether to use the message code as the default message instead of throwing a "NoSuchMessageException". Recommended during development only.
 
 	# OUTPUT
