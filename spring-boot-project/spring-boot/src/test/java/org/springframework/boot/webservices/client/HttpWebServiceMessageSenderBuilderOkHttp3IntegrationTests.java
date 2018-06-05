@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webservices.client;
 
+import java.time.Duration;
+
 import okhttp3.OkHttpClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,8 +52,9 @@ public class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 
 	@Test
 	public void buildWithCustomTimeouts() {
-		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(5000)
-				.setReadTimeout(2000).build();
+		WebServiceMessageSender messageSender = this.builder
+				.setConnectTimeout(Duration.ofSeconds(5))
+				.setReadTimeout(Duration.ofSeconds(2)).build();
 		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(
 				messageSender);
 		OkHttpClient client = (OkHttpClient) ReflectionTestUtils.getField(factory,
