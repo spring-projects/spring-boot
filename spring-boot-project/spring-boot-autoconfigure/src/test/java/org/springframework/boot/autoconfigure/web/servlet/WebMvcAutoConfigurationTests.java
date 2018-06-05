@@ -90,8 +90,8 @@ import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
 import org.springframework.web.servlet.resource.ContentVersionStrategy;
 import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
+import org.springframework.web.servlet.resource.EncodedResourceResolver;
 import org.springframework.web.servlet.resource.FixedVersionStrategy;
-import org.springframework.web.servlet.resource.GzipResourceResolver;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
@@ -276,21 +276,21 @@ public class WebMvcAutoConfigurationTests {
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js",
 				"spring.resources.chain.html-application-cache:true",
-				"spring.resources.chain.gzipped:true").run((context) -> {
+				"spring.resources.chain.compressed:true").run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 					assertThat(getResourceTransformers(context, "/webjars/**"))
 							.hasSize(2);
 					assertThat(getResourceResolvers(context, "/**"))
 							.extractingResultOf("getClass")
-							.containsOnly(VersionResourceResolver.class,
-									GzipResourceResolver.class,
+							.containsOnly(EncodedResourceResolver.class,
+									VersionResourceResolver.class,
 									PathResourceResolver.class);
 					assertThat(getResourceTransformers(context, "/**"))
 							.extractingResultOf("getClass")
 							.containsOnly(CssLinkResourceTransformer.class,
 									AppCacheManifestTransformer.class);
 					VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
-							context, "/**").get(0);
+							context, "/**").get(1);
 					Map<String, VersionStrategy> strategyMap = resolver.getStrategyMap();
 					assertThat(strategyMap.get("/*.png"))
 							.isInstanceOf(ContentVersionStrategy.class);

@@ -64,7 +64,7 @@ import org.springframework.web.reactive.config.ViewResolverRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.resource.AppCacheManifestTransformer;
-import org.springframework.web.reactive.resource.GzipResourceResolver;
+import org.springframework.web.reactive.resource.EncodedResourceResolver;
 import org.springframework.web.reactive.resource.ResourceResolver;
 import org.springframework.web.reactive.resource.VersionResourceResolver;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
@@ -275,11 +275,11 @@ public class WebFluxAutoConfiguration {
 		private void configureResourceChain(ResourceProperties.Chain properties,
 				ResourceChainRegistration chain) {
 			ResourceProperties.Strategy strategy = properties.getStrategy();
+			if (properties.isCompressed()) {
+				chain.addResolver(new EncodedResourceResolver());
+			}
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
-			}
-			if (properties.isGzipped()) {
-				chain.addResolver(new GzipResourceResolver());
 			}
 			if (properties.isHtmlApplicationCache()) {
 				chain.addTransformer(new AppCacheManifestTransformer());

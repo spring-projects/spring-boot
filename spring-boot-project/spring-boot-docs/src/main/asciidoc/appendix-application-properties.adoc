@@ -435,8 +435,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.resources.cache.cachecontrol.stale-while-revalidate= # Maximum time the response can be served after it becomes stale, in seconds if no duration suffix is not specified.
 	spring.resources.cache.period= # Cache period for the resources served by the resource handler. If a duration suffix is not specified, seconds will be used.
 	spring.resources.chain.cache=true # Whether to enable caching in the Resource chain.
+	spring.resources.chain.compressed=false # Whether to enable resolution of already compressed resources (gzip, brotli).
 	spring.resources.chain.enabled= # Whether to enable the Spring Resource Handling chain. By default, disabled unless at least one strategy has been enabled.
-	spring.resources.chain.gzipped=false # Whether to enable resolution of already gzipped resources.
 	spring.resources.chain.html-application-cache=false # Whether to enable HTML5 application cache manifest rewriting.
 	spring.resources.chain.strategy.content.enabled=false # Whether to enable the content Version Strategy.
 	spring.resources.chain.strategy.content.paths=/** # Comma-separated list of patterns to apply to the content Version Strategy.

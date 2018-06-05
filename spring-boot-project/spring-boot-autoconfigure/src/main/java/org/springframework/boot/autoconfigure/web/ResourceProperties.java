@@ -112,10 +112,10 @@ public class ResourceProperties {
 		private boolean htmlApplicationCache = false;
 
 		/**
-		 * Whether to enable resolution of already gzipped resources. Checks for a
-		 * resource name variant with the "*.gz" extension.
+		 * Whether to enable resolution of already compressed resources. Checks for a
+		 * resource name with the '.gz' or '.br' file extensions.
 		 */
-		private boolean gzipped = false;
+		private boolean compressed = false;
 
 		private final Strategy strategy = new Strategy();
 
@@ -154,12 +154,12 @@ public class ResourceProperties {
 			this.htmlApplicationCache = htmlApplicationCache;
 		}
 
-		public boolean isGzipped() {
-			return this.gzipped;
+		public boolean isCompressed() {
+			return this.compressed;
 		}
 
-		public void setGzipped(boolean gzipped) {
-			this.gzipped = gzipped;
+		public void setCompressed(boolean compressed) {
+			this.compressed = compressed;
 		}
 
 		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
