@@ -32,6 +32,7 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
@@ -386,6 +387,32 @@ public class RestTemplateBuilderTests {
 				.additionalCustomizers(customizer2).build();
 		verify(customizer1).customize(template);
 		verify(customizer2).customize(template);
+	}
+
+	@Test
+	public void customizerShouldBeAppliedInTheEnd() {
+		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
+		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+		this.builder.interceptors(this.interceptor)
+				.messageConverters(this.messageConverter).rootUri("http://localhost:8080")
+				.errorHandler(errorHandler).basicAuthorization("spring", "boot")
+				.requestFactory(() -> requestFactory).customizers((restTemplate) -> {
+					assertThat(restTemplate.getInterceptors()).hasSize(2)
+							.contains(this.interceptor).anyMatch(
+									(ic) -> ic instanceof BasicAuthorizationInterceptor);
+					assertThat(restTemplate.getMessageConverters())
+							.contains(this.messageConverter);
+					assertThat(restTemplate.getUriTemplateHandler())
+							.isInstanceOf(RootUriTemplateHandler.class);
+					assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
+					ClientHttpRequestFactory actualRequestFactory = restTemplate
+							.getRequestFactory();
+					assertThat(actualRequestFactory)
+							.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+					assertThat(ReflectionTestUtils.getField(actualRequestFactory,
+							"requestFactory")).isSameAs(requestFactory);
+				}).build();
+
 	}
 
 	@Test
