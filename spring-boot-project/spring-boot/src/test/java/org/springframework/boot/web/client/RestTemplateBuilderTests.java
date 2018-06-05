@@ -392,7 +392,7 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	public void customizerShouldBeAppliedAtTheEnd() {
+	public void customizerShouldBeAppliedInTheEnd() {
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		this.builder.interceptors(this.interceptor)
@@ -435,6 +435,26 @@ public class RestTemplateBuilderTests {
 		this.builder.configure(template);
 		assertThat(template.getRequestFactory())
 				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+	}
+
+	@Test
+	public void connectTimeoutCanBeNullToUseDefault() {
+		ClientHttpRequestFactory requestFactory = this.builder
+				.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setConnectTimeout(Duration.ofSeconds(5)).setConnectTimeout(null).build()
+				.getRequestFactory();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
+				.isEqualTo(-1);
+	}
+
+	@Test
+	public void readTimeoutCanBeNullToUseDefault() {
+		ClientHttpRequestFactory requestFactory = this.builder
+				.requestFactory(SimpleClientHttpRequestFactory.class)
+				.setReadTimeout(Duration.ofSeconds(5)).setReadTimeout(null).build()
+				.getRequestFactory();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
+				.isEqualTo(-1);
 	}
 
 	@Test
@@ -528,17 +548,7 @@ public class RestTemplateBuilderTests {
 
 	@Test
 	@SuppressWarnings("deprecation")
-	public void deprecatedReadTimeout() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(1234)
-				.build().getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(1234);
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	public void deprecatedConnectTimeout() {
+	public void connectTimeoutCanBeSetWithInteger() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
 				.setConnectTimeout(1234).build().getRequestFactory();
@@ -547,23 +557,13 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	public void readTimeoutShouldBeIgnored() {
+	@SuppressWarnings("deprecation")
+	public void readTimeoutCanBeSetWithInteger() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class)
-				.setReadTimeout(Duration.ofSeconds(5)).setReadTimeout(null).build()
-				.getRequestFactory();
+				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(1234)
+				.build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
-				.isEqualTo(-1);
-	}
-
-	@Test
-	public void connectionTimeoutShouldBeIgnored() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class)
-				.setConnectTimeout(Duration.ofSeconds(5)).setConnectTimeout(null).build()
-				.getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
-				.isEqualTo(-1);
+				.isEqualTo(1234);
 	}
 
 	public static class RestTemplateSubclass extends RestTemplate {
