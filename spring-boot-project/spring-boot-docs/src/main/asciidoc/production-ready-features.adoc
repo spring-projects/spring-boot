@@ -1494,10 +1494,17 @@ server] to use can be provided using:
 ==== JMX
 Micrometer provides a hierarchical mapping to
 {micrometer-registry-documentation}/jmx[JMX], primarily as a cheap and portable way to
-view metrics locally. Micrometer provides a default `HierarchicalNameMapper` that governs
-how a dimensional meter id is
-{micrometer-registry-documentation}/jmx#_hierarchical_name_mapping[mapped to flat
-hierarchical names].
+view metrics locally.By default, metrics are exported to the `metrics` JMX domain. The
+domain to use can be provided provided using:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.jmx.domain=com.example.app.metrics
+----
+
+Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional
+meter id is {micrometer-registry-documentation}/jmx#_hierarchical_name_mapping[mapped to
+flat hierarchical names].
 
 TIP: To take control over this behaviour, define your `JmxMeterRegistry` and supply your
 own `HierarchicalNameMapper`. An auto-configured `JmxConfig` and `Clock` beans are
