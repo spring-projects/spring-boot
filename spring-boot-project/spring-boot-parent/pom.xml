@@ -26,7 +26,6 @@
 		<aether.version>1.0.2.v20150114</aether.version>
 		<maven.version>3.1.1</maven.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
-		<spring-javaformat.version>0.0.2</spring-javaformat.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -306,23 +305,6 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.0.0</version>
-					<dependencies>
-						<dependency>
-							<groupId>com.puppycrawl.tools</groupId>
-							<artifactId>checkstyle</artifactId>
-							<version>8.8</version>
-						</dependency>
-						<dependency>
-							<groupId>io.spring.javaformat</groupId>
-							<artifactId>spring-javaformat-checkstyle</artifactId>
-							<version>${spring-javaformat.version}</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
 					<executions>
 						<execution>
@@ -571,41 +553,6 @@
 								<repositories>remove</repositories>
 							</pomElements>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>io.spring.javaformat</groupId>
-				<artifactId>spring-javaformat-maven-plugin</artifactId>
-				<version>${spring-javaformat.version}</version>
-				<executions>
-					<execution>
-						<phase>validate</phase>
-						<configuration>
-							<skip>${disable.checks}</skip>
-						</configuration>
-						<goals>
-							<goal>validate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>checkstyle-validation</id>
-						<phase>validate</phase>
-						<configuration>
-							<skip>${disable.checks}</skip>
-							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
-							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
-							<includeTestSourceDirectory>true</includeTestSourceDirectory>
-						</configuration>
-						<goals>
-							<goal>check</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
