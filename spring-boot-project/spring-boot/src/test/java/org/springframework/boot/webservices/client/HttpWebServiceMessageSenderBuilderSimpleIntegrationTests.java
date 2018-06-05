@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webservices.client;
 
+import java.time.Duration;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -49,8 +51,9 @@ public class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 
 	@Test
 	public void buildWithCustomTimeouts() {
-		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(5000)
-				.setReadTimeout(2000).build();
+		WebServiceMessageSender messageSender = this.builder
+				.setConnectTimeout(Duration.ofSeconds(5))
+				.setReadTimeout(Duration.ofSeconds(2)).build();
 		SimpleClientHttpRequestFactory requestFactory = assertSimpleClientRequestFactory(
 				messageSender);
 		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
