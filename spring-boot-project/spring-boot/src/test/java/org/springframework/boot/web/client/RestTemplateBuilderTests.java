@@ -392,7 +392,7 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
-	public void customizerShouldBeAppliedInTheEnd() {
+	public void customizerShouldBeAppliedAtTheEnd() {
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		this.builder.interceptors(this.interceptor)
