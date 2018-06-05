@@ -2977,8 +2977,7 @@ If you need to programmatically configure your embedded servlet container, you c
 register a Spring bean that implements the `WebServerFactoryCustomizer` interface.
 `WebServerFactoryCustomizer` provides access to the
 `ConfigurableServletWebServerFactory`, which includes numerous customization setter
-methods. Dedicated variants exist for Tomcat, Jetty, and Undertow. The following example
-shows programmatically setting the port:
+methods. The following example shows programmatically setting the port:
 
 [source,java,indent=0]
 ----
@@ -2997,7 +2996,9 @@ shows programmatically setting the port:
 	}
 ----
 
-
+NOTE: `TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory`
+are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods
+for Tomcat, Jetty and Undertow respectively.
 
 [[boot-features-customizing-configurableservletwebserverfactory-directly]]
 ===== Customizing ConfigurableServletWebServerFactory Directly
