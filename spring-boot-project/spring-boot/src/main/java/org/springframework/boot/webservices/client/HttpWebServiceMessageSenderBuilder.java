@@ -17,6 +17,7 @@
 package org.springframework.boot.webservices.client;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
@@ -35,28 +36,28 @@ import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
  */
 public class HttpWebServiceMessageSenderBuilder {
 
-	private Integer connectTimeout;
+	private Duration connectTimeout;
 
-	private Integer readTimeout;
+	private Duration readTimeout;
 
 	private Supplier<ClientHttpRequestFactory> requestFactorySupplier;
 
 	/**
-	 * Set the connection timeout in milliseconds.
-	 * @param connectTimeout the connection timeout in milliseconds
+	 * Set the connection timeout.
+	 * @param connectTimeout the connection timeout
 	 * @return a new builder instance
 	 */
-	public HttpWebServiceMessageSenderBuilder setConnectTimeout(int connectTimeout) {
+	public HttpWebServiceMessageSenderBuilder setConnectTimeout(Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
 		return this;
 	}
 
 	/**
-	 * Set the read timeout in milliseconds.
-	 * @param readTimeout the read timeout in milliseconds
+	 * Set the read timeout.
+	 * @param readTimeout the read timeout
 	 * @return a new builder instance
 	 */
-	public HttpWebServiceMessageSenderBuilder setReadTimeout(int readTimeout) {
+	public HttpWebServiceMessageSenderBuilder setReadTimeout(Duration readTimeout) {
 		this.readTimeout = readTimeout;
 		return this;
 	}
@@ -95,17 +96,18 @@ public class HttpWebServiceMessageSenderBuilder {
 	 */
 	private static class TimeoutRequestFactoryCustomizer {
 
-		private final int timeout;
+		private final Duration timeout;
 
 		private final String methodName;
 
-		TimeoutRequestFactoryCustomizer(int timeout, String methodName) {
+		TimeoutRequestFactoryCustomizer(Duration timeout, String methodName) {
 			this.timeout = timeout;
 			this.methodName = methodName;
 		}
 
 		public void customize(ClientHttpRequestFactory factory) {
-			ReflectionUtils.invokeMethod(findMethod(factory), factory, this.timeout);
+			ReflectionUtils.invokeMethod(findMethod(factory), factory,
+					Math.toIntExact(this.timeout.toMillis()));
 		}
 
 		private Method findMethod(ClientHttpRequestFactory factory) {
