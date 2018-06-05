@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Rui Figueira
  * @author Stephane Nicoll
+ * @since 2.1.0
  */
 @Configuration
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
