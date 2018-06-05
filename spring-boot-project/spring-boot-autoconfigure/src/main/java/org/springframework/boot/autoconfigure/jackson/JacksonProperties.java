@@ -62,6 +62,13 @@ public class JacksonProperties {
 	private String propertyNamingStrategy;
 
 	/**
+	 * Jackson visibility thresholds that can be used to limit which methods (and fields)
+	 * are auto-detected.
+	 */
+	private Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(
+			PropertyAccessor.class);
+
+	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
 	 */
 	private Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
@@ -107,12 +114,6 @@ public class JacksonProperties {
 	 */
 	private Locale locale;
 
-	/**
-	 * Jackson visibilities to auto-detect properties.
-	 */
-	private Map<PropertyAccessor, JsonAutoDetect.Visibility> accessor = new EnumMap<>(
-			PropertyAccessor.class);
-
 	public String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -135,6 +136,10 @@ public class JacksonProperties {
 
 	public void setPropertyNamingStrategy(String propertyNamingStrategy) {
 		this.propertyNamingStrategy = propertyNamingStrategy;
+	}
+
+	public Map<PropertyAccessor, JsonAutoDetect.Visibility> getVisibility() {
+		return this.visibility;
 	}
 
 	public Map<SerializationFeature, Boolean> getSerialization() {
@@ -182,11 +187,4 @@ public class JacksonProperties {
 		this.locale = locale;
 	}
 
-	public Map<PropertyAccessor, JsonAutoDetect.Visibility> getAccessor() {
-		return this.accessor;
-	}
-
-	public void setAccessor(Map<PropertyAccessor, JsonAutoDetect.Visibility> accessor) {
-		this.accessor = accessor;
-	}
 }

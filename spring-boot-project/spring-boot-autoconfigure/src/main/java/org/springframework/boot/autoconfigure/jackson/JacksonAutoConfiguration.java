@@ -243,6 +243,7 @@ public class JacksonAutoConfiguration {
 					builder.timeZone(this.jacksonProperties.getTimeZone());
 				}
 				configureFeatures(builder, FEATURE_DEFAULTS);
+				configureVisibility(builder, this.jacksonProperties.getVisibility());
 				configureFeatures(builder, this.jacksonProperties.getDeserialization());
 				configureFeatures(builder, this.jacksonProperties.getSerialization());
 				configureFeatures(builder, this.jacksonProperties.getMapper());
@@ -252,7 +253,6 @@ public class JacksonAutoConfiguration {
 				configurePropertyNamingStrategy(builder);
 				configureModules(builder);
 				configureLocale(builder);
-				configureVisibility(builder, this.jacksonProperties.getAccessor());
 			}
 
 			private void configureFeatures(Jackson2ObjectMapperBuilder builder,
@@ -267,6 +267,11 @@ public class JacksonAutoConfiguration {
 						}
 					}
 				});
+			}
+
+			private void configureVisibility(Jackson2ObjectMapperBuilder builder,
+					Map<PropertyAccessor, JsonAutoDetect.Visibility> accessors) {
+				accessors.forEach(builder::visibility);
 			}
 
 			private void configureDateFormat(Jackson2ObjectMapperBuilder builder) {
@@ -349,11 +354,6 @@ public class JacksonAutoConfiguration {
 				if (locale != null) {
 					builder.locale(locale);
 				}
-			}
-
-			private void configureVisibility(Jackson2ObjectMapperBuilder builder,
-					Map<PropertyAccessor, JsonAutoDetect.Visibility> accessors) {
-				accessors.forEach(builder::visibility);
 			}
 
 			private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,

@@ -461,15 +461,14 @@ public class JacksonAutoConfigurationTests {
 
 	@Test
 	public void writeWithVisibility() {
-		this.contextRunner.withPropertyValues("spring.jackson.accessor.getter:NONE",
-				"spring.jackson.accessor.field:ANY")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.jackson.visibility.getter:none",
+				"spring.jackson.visibility.field:any").run((context) -> {
 					ObjectMapper mapper = context.getBean(ObjectMapper.class);
 					String json = mapper.writeValueAsString(new VisibilityBean());
 					assertThat(json).contains("property1");
 					assertThat(json).contains("property2");
 					assertThat(json).doesNotContain("property3");
-		});
+				});
 	}
 
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode,
@@ -636,6 +635,7 @@ public class JacksonAutoConfigurationTests {
 		public String getProperty3() {
 			return null;
 		}
+
 	}
 
 }
