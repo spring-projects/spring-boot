@@ -1440,6 +1440,8 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
 	management.metrics.web.server.requests-metric-name=http.server.requests # Name of the metric for received requests.
+	management.metrics.web-services.client.requests-metric-name=webservices.client.requests # Name of the metric for sent requests.
+
 
 
 	# ----------------------------------------
