@@ -329,6 +329,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.servlet.multipart.resolve-lazily=false # Whether to resolve the multipart request lazily at the time of file or parameter access.
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
+	spring.jackson.accessor.*= # Jackson visibilities to auto-detect properties.
 	spring.jackson.date-format= # Date format string or a fully-qualified date format class name. For instance, `yyyy-MM-dd HH:mm:ss`.
 	spring.jackson.default-property-inclusion= # Controls the inclusion of properties during serialization. Configured with one of the values in Jackson's JsonInclude.Include enumeration.
 	spring.jackson.deserialization.*= # Jackson on/off features that affect the way Java objects are deserialized.
