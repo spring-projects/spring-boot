@@ -532,7 +532,6 @@ public class RestTemplateBuilder {
 			restTemplate.getInterceptors().add(this.basicAuthorization);
 		}
 		restTemplate.getInterceptors().addAll(this.interceptors);
-
 		if (!CollectionUtils.isEmpty(this.restTemplateCustomizers)) {
 			for (RestTemplateCustomizer customizer : this.restTemplateCustomizers) {
 				customizer.customize(restTemplate);

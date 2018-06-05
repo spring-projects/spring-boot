@@ -390,6 +390,32 @@ public class RestTemplateBuilderTests {
 	}
 
 	@Test
+	public void customizerShouldBeAppliedInTheEnd() {
+		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
+		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+		this.builder.interceptors(this.interceptor)
+				.messageConverters(this.messageConverter).rootUri("http://localhost:8080")
+				.errorHandler(errorHandler).basicAuthorization("spring", "boot")
+				.requestFactory(() -> requestFactory).customizers((restTemplate) -> {
+					assertThat(restTemplate.getInterceptors()).hasSize(2)
+							.contains(this.interceptor).anyMatch(
+									(ic) -> ic instanceof BasicAuthorizationInterceptor);
+					assertThat(restTemplate.getMessageConverters())
+							.contains(this.messageConverter);
+					assertThat(restTemplate.getUriTemplateHandler())
+							.isInstanceOf(RootUriTemplateHandler.class);
+					assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
+					ClientHttpRequestFactory actualRequestFactory = restTemplate
+							.getRequestFactory();
+					assertThat(actualRequestFactory)
+							.isInstanceOf(InterceptingClientHttpRequestFactory.class);
+					assertThat(ReflectionTestUtils.getField(actualRequestFactory,
+							"requestFactory")).isSameAs(requestFactory);
+				}).build();
+
+	}
+
+	@Test
 	public void buildShouldReturnRestTemplate() {
 		RestTemplate template = this.builder.build();
 		assertThat(template.getClass()).isEqualTo(RestTemplate.class);
@@ -496,38 +522,6 @@ public class RestTemplateBuilderTests {
 				.build();
 		assertThat(template.getRequestFactory())
 				.isInstanceOf(BufferingClientHttpRequestFactory.class);
-	}
-
-	@Test
-	public void customizerShouldBeAppliedInTheEnd() {
-
-		ClientHttpRequestInterceptor interceptor = this.interceptor;
-		HttpMessageConverter<Object> messageConverter = this.messageConverter;
-		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
-
-		this.builder.interceptors(interceptor).messageConverters(messageConverter)
-				.rootUri("http://localhost:8080").errorHandler(errorHandler)
-				.basicAuthorization("spring", "boot")
-				.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-				.customizers((restTemplate) -> {
-					ClientHttpRequestFactory requestFactory = restTemplate
-							.getRequestFactory();
-					assertThat(restTemplate.getInterceptors()).hasSize(2)
-							.contains(interceptor).anyMatch(
-									(ic) -> ic instanceof BasicAuthorizationInterceptor);
-					assertThat(restTemplate.getMessageConverters())
-							.contains(messageConverter);
-					assertThat(restTemplate.getUriTemplateHandler())
-							.isInstanceOf(RootUriTemplateHandler.class);
-					assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
-					assertThat(requestFactory)
-							.isInstanceOf(InterceptingClientHttpRequestFactory.class);
-					assertThat(ReflectionTestUtils.getField(requestFactory,
-							"requestFactory")).isInstanceOf(
-									HttpComponentsClientHttpRequestFactory.class);
-
-				}).build();
-
 	}
 
 	public static class RestTemplateSubclass extends RestTemplate {
