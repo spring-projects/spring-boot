@@ -22,7 +22,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<spring-javaformat.version>0.0.2</spring-javaformat.version>
+				<spring-javaformat.version>0.0.3</spring-javaformat.version>
 			</properties>
 			<build>
 				<plugins>
