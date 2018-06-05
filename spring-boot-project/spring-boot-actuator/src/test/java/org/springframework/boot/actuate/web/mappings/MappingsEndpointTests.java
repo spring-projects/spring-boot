@@ -51,9 +51,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.reactive.config.EnableWebFlux;
-import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -61,6 +59,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 /**
  * Tests for {@link MappingsEndpoint}.
@@ -166,11 +167,8 @@ public class MappingsEndpointTests {
 
 		@Bean
 		public RouterFunction<ServerResponse> routerFunction() {
-			return RouterFunctions
-					.route(RequestPredicates.GET("/one"),
-							(request) -> ServerResponse.ok().build())
-					.andRoute(RequestPredicates.POST("/two"),
-							(request) -> ServerResponse.ok().build());
+			return route(GET("/one"), (request) -> ServerResponse.ok().build())
+					.andRoute(POST("/two"), (request) -> ServerResponse.ok().build());
 		}
 
 		@RequestMapping("/three")

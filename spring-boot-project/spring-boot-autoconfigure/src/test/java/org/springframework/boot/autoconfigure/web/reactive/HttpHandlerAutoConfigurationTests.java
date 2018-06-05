@@ -23,12 +23,12 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 /**
  * Tests for {@link HttpHandlerAutoConfiguration}.
@@ -69,8 +69,7 @@ public class HttpHandlerAutoConfigurationTests {
 
 		@Bean
 		public RouterFunction<ServerResponse> routerFunction() {
-			return RouterFunctions.route(RequestPredicates.GET("/test"),
-					(serverRequest) -> null);
+			return route(GET("/test"), (serverRequest) -> null);
 		}
 
 	}
