@@ -1375,6 +1375,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.influx.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.influx.uri=http://localhost:8086 # URI of the Influx server.
 	management.metrics.export.influx.user-name= # Login user of the Influx server.
+	management.metrics.export.jmx.domain=metrics # Metrics JMX domain name.
 	management.metrics.export.jmx.enabled=true # Whether exporting of metrics to JMX is enabled.
 	management.metrics.export.jmx.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.newrelic.account-id= # New Relic account ID.
