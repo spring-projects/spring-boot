@@ -21,7 +21,6 @@ import java.util.Collections;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlersMappingDescriptionProvider;
@@ -45,7 +44,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ManagementContextConfiguration
+@Configuration
 public class MappingsEndpointAutoConfiguration {
 
 	@Bean
@@ -92,8 +91,7 @@ public class MappingsEndpointAutoConfiguration {
 	static class ReactiveWebConfiguration {
 
 		@Bean
-		public DispatcherHandlersMappingDescriptionProvider dispatcherHandlerMappingDescriptionProvider(
-				ApplicationContext applicationContext) {
+		public DispatcherHandlersMappingDescriptionProvider dispatcherHandlerMappingDescriptionProvider() {
 			return new DispatcherHandlersMappingDescriptionProvider();
 		}
 
