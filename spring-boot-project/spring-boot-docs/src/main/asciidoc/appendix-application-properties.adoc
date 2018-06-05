@@ -340,6 +340,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jackson.property-naming-strategy= # One of the constants on Jackson's PropertyNamingStrategy. Can also be a fully-qualified class name of a PropertyNamingStrategy subclass.
 	spring.jackson.serialization.*= # Jackson on/off features that affect the way Java objects are serialized.
 	spring.jackson.time-zone= #  Time zone used when formatting dates. For instance, "America/Los_Angeles" or "GMT+10".
+	spring.jackson.visibility.*= # Jackson visibility thresholds that can be used to limit which methods (and fields) are auto-detected.
 
 	# GSON ({sc-spring-boot-autoconfigure}/gson/GsonProperties.{sc-ext}[GsonProperties])
 	spring.gson.date-format= # Format to use when serializing Date objects.

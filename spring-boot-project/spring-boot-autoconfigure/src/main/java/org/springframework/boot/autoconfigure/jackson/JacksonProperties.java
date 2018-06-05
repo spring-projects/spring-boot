@@ -21,7 +21,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -58,6 +60,13 @@ public class JacksonProperties {
 	 * fully-qualified class name of a PropertyNamingStrategy subclass.
 	 */
 	private String propertyNamingStrategy;
+
+	/**
+	 * Jackson visibility thresholds that can be used to limit which methods (and fields)
+	 * are auto-detected.
+	 */
+	private Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(
+			PropertyAccessor.class);
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
@@ -127,6 +136,10 @@ public class JacksonProperties {
 
 	public void setPropertyNamingStrategy(String propertyNamingStrategy) {
 		this.propertyNamingStrategy = propertyNamingStrategy;
+	}
+
+	public Map<PropertyAccessor, JsonAutoDetect.Visibility> getVisibility() {
+		return this.visibility;
 	}
 
 	public Map<SerializationFeature, Boolean> getSerialization() {
