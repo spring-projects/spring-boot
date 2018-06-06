@@ -6176,12 +6176,20 @@ class annotated with `@SpringBootApplication` or `@SpringBootConfiguration`. As 
 you <<using-boot-structuring-your-code, structured your code>> in a sensible way, your
 main configuration is usually found.
 
-NOTE: If you use a
+[NOTE]
+====
+If you use a
 <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests, test
 annotation to test a more specific slice of your application>>, you should avoid adding
 configuration settings that are specific to a particular area on the
 <<boot-features-testing-spring-boot-applications-testing-user-configuration, main
 method's application class>>.
+
+The underlying component scan configuration of `@SpringBootApplication` defines exclude
+filters that are used to make sure slicing works as expected. If you are using an explicit
+`@ComponentScan` directive on your `@SpringBootApplication`-annoted class, be aware that
+those filters will be disabled. If you are using slicing, you should define them again.
+====
 
 If you want to customize the primary configuration, you can use a nested
 `@TestConfiguration` class. Unlike a nested `@Configuration` class, which would be used
@@ -7643,6 +7651,41 @@ customize how the components are initialized.
 TIP: You should mark the dependencies to the library as optional so that you can include
 the `autoconfigure` module in your projects more easily. If you do it that way, the
 library is not provided and, by default, Spring Boot backs off.
+
+Spring Boot uses an annotation processor to collect the conditions on auto-configurations
+in a metadata file (`META-INF/spring-autoconfigure-metadata.json`). If that file is
+present, it is used to eagerly filter auto-configurations that do not match, which will
+improve startup time. It is recommended to add the following dependency in a module that
+contains auto-configurations:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-autoconfigure-processor</artifactId>
+		<optional>true</optional>
+	</dependency>
+----
+
+With Gradle 4.5 and earlier, the dependency should be declared in the `compileOnly`
+configuration, as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	dependencies {
+		compileOnly "org.springframework.boot:spring-boot-autoconfigure-processor"
+	}
+----
+
+With Gradle 4.6 and later, the dependency should be declared in the `annotationProcessor`
+configuration, as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	dependencies {
+		annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+	}
+----
 
 
 
