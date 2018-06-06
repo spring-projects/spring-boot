@@ -59,6 +59,9 @@ abstract class TomcatResources {
 					}
 					addJar(jar);
 				}
+				else if ("jar".equals(url.getProtocol())) {
+					addJar(url.toString());
+				}
 				else {
 					addDir(new File(url.toURI()).getAbsolutePath(), url);
 				}
