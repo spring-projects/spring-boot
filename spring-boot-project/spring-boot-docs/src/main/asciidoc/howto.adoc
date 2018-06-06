@@ -506,15 +506,17 @@ configure the embedded server. This section answers those questions.
 
 [[howto-use-another-web-server]]
 === Use Another Web Server
-Many Spring Boot starters include default embedded containers. `spring-boot-starter-web`
-includes Tomcat by including `spring-boot-starter-tomcat`, but you can use
-`spring-boot-starter-jetty` or  `spring-boot-starter-undertow` instead.
-`spring-boot-starter-webflux` includes  Reactor Netty by including
-`spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`,
+Many Spring Boot starters include default embedded containers.
+
+* For servlet stack applications, the `spring-boot-starter-web` includes Tomcat by including
+`spring-boot-starter-tomcat`, but you can use `spring-boot-starter-jetty` or
+`spring-boot-starter-undertow` instead.
+* For reactive stack applications, the `spring-boot-starter-webflux` includes  Reactor Netty
+by including `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`,
 `spring-boot-starter-jetty`, or `spring-boot-starter-undertow` instead.
 
-If you need to use a different HTTP server, you need to exclude the default dependencies
-and include the one you need. Spring Boot provides separate starters for
+When switching to a different HTTP server, you need to exclude the default dependencies
+in addition to including the one you need. Spring Boot provides separate starters for
 HTTP servers to help make this process as easy as possible.
 
 The following Maven example shows how to exclude Tomcat and include Jetty for Spring MVC:
@@ -768,7 +770,7 @@ You can declare such a component and get access to the server factory relevant t
 choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty,
 Undertow) and the chosen web stack (Servlet or Reactive).
 
-In the following example, we're using Tomcat in a Servlet-based web application:
+The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stack):
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -783,12 +785,30 @@ In the following example, we're using Tomcat in a Servlet-based web application:
 	}
 ----
 
-Spring Boot currently provides:
+In addition Spring Boot provides:
 
-* `TomcatServletWebServerFactory` and `TomcatReactiveWebServerFactory` for Tomcat
-* `JettyServletWebServerFactory` and `JettyReactiveWebServerFactory` for Jetty
-* `UndertowServletWebServerFactory` and `UndertowReactiveWebServerFactory` for Undertow
-* `NettyReactiveWebServerFactory` for Reactor Netty
+[[howto-configure-webserver-customizers]]
+[cols="1,2,2", options="header"]
+|===
+| Server | Servlet stack | Reactive stack
+
+| Tomcat
+| `TomcatServletWebServerFactory`
+| `TomcatReactiveWebServerFactory`
+
+| Jetty
+| `JettyServletWebServerFactory`
+| `JettyReactiveWebServerFactory`
+
+| Undertow
+| `UndertowServletWebServerFactory`
+| `UndertowReactiveWebServerFactory`
+
+| Reactor
+| N/A
+| `NettyReactiveWebServerFactory`
+
+|===
 
 Once you've got access to a `WebServerFactory`, you can often add customizers to it to
 configure specific parts, like connectors, server resources, or the server itself - all
@@ -801,9 +821,10 @@ properties in the `server` namespace anymore.
 
 
 [[howto-add-a-servlet-filter-or-listener]]
-=== Add a Servlet, Filter, or Listener to an Application
-There are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other
-listeners supported by the Servlet spec to your application:
+=== Add a Servlet, Filter, or Listener to a Application
+In a servlet stack application, i.e. with the `spring-boot-starter-web`, there are two
+ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners
+supported by the Servlet API to your application:
 
 * <<howto-add-a-servlet-filter-or-listener-as-spring-bean>>
 * <<howto-add-a-servlet-filter-or-listener-using-scanning>>
