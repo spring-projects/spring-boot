@@ -626,6 +626,7 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
+	@SuppressWarnings("unused")
 	private static class VisibilityBean {
 
 		private String property1;

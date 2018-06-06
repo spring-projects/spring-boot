@@ -414,7 +414,6 @@ public class RestTemplateBuilderTests {
 					assertThat(ReflectionTestUtils.getField(actualRequestFactory,
 							"requestFactory")).isSameAs(requestFactory);
 				}).build();
-
 	}
 
 	@Test
