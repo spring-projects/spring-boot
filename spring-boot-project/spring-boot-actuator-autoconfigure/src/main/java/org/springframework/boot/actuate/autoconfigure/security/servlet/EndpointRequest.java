@@ -137,13 +137,24 @@ public final class EndpointRequest {
 
 		private RequestMatcher createDelegate(WebApplicationContext context) {
 			try {
-				RequestMatcherFactory requestMatcherFactory = new RequestMatcherFactory(
-						context.getBean(DispatcherServletPathProvider.class)
-								.getServletPath());
+				String servletPath = getServletPath(context);
+				RequestMatcherFactory requestMatcherFactory = (StringUtils
+						.hasText(servletPath) ? new RequestMatcherFactory(servletPath)
+								: RequestMatcherFactory.withEmptyServletPath());
 				return createDelegate(context, requestMatcherFactory);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return EMPTY_MATCHER;
+			}
+		}
+
+		private String getServletPath(WebApplicationContext context) {
+			try {
+				return context.getBean(DispatcherServletPathProvider.class)
+						.getServletPath();
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return "";
 			}
 		}
 
@@ -279,16 +290,23 @@ public final class EndpointRequest {
 
 		private final String servletPath;
 
+		private static final RequestMatcherFactory EMPTY_SERVLET_PATH = new RequestMatcherFactory(
+				"");
+
 		RequestMatcherFactory(String servletPath) {
 			this.servletPath = servletPath;
 		}
 
-		public RequestMatcher antPath(String... parts) {
+		RequestMatcher antPath(String... parts) {
 			String pattern = (this.servletPath.equals("/") ? "" : this.servletPath);
 			for (String part : parts) {
 				pattern += part;
 			}
 			return new AntPathRequestMatcher(pattern);
+		}
+
+		static RequestMatcherFactory withEmptyServletPath() {
+			return EMPTY_SERVLET_PATH;
 		}
 
 	}
