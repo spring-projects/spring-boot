@@ -279,6 +279,16 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 				});
 	}
 
+	@Test
+	public void invalidAcceptMediaType() {
+		this.contextRunner.run((context) -> {
+			WebTestClient client = WebTestClient.bindToApplicationContext(context)
+					.build();
+			client.get().uri("/notfound").header("Accept", "v=3.0").exchange()
+					.expectStatus().isEqualTo(HttpStatus.NOT_FOUND);
+		});
+	}
+
 	@Configuration
 	public static class Application {
 
