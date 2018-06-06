@@ -5421,12 +5421,20 @@ The search algorithm works up from the package that contains the test until it f
 <<using-boot-structuring-your-code, structured your code>> in a sensible way your main
 configuration is usually found.
 
-NOTE: If you use a
+[NOTE]
+====
+If you use a
 <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests, test
 annotation to test a more specific slice of your application>> with such setup, you should
 avoid adding configuration that are specific to a particular area on the
 <<boot-features-testing-spring-boot-applications-testing-user-configuration, main's
 application class>>.
+
+The underlying component scan configuration of `@SpringBootApplication` defines exclude
+filters that are used to make sure slicing works as expected. If you are using an explicit
+`@ComponentScan` directive on your `@SpringBootApplication`-annoted class, be aware that
+those filters will be disabled. If you are using slicing, you should define them again.
+====
 
 If you want to customize the primary configuration, you can use a nested
 `@TestConfiguration` class. Unlike a nested `@Configuration` class which would be used
