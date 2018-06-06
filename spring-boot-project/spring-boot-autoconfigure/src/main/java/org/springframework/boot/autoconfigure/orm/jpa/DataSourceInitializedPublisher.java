@@ -48,7 +48,9 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	private DataSource dataSource;
 
-	private JpaProperties properties;
+	private JpaProperties jpaProperties;
+
+	private HibernateProperties hibernateProperties;
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
@@ -64,7 +66,10 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 			this.dataSource = (DataSource) bean;
 		}
 		if (bean instanceof JpaProperties) {
-			this.properties = (JpaProperties) bean;
+			this.jpaProperties = (JpaProperties) bean;
+		}
+		if (bean instanceof HibernateProperties) {
+			this.hibernateProperties = (HibernateProperties) bean;
 		}
 		if (bean instanceof EntityManagerFactory) {
 			publishEventIfRequired((EntityManagerFactory) bean);
@@ -88,13 +93,14 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	}
 
 	private boolean isInitializingDatabase(DataSource dataSource) {
-		if (this.properties == null) {
+		if (this.jpaProperties == null || this.hibernateProperties == null) {
 			return true; // better safe than sorry
 		}
 		Supplier<String> defaultDdlAuto = () -> (EmbeddedDatabaseConnection
 				.isEmbedded(dataSource) ? "create-drop" : "none");
-		Map<String, Object> hibernate = this.properties
-				.getHibernateProperties(new HibernateSettings().ddlAuto(defaultDdlAuto));
+		Map<String, Object> hibernate = this.hibernateProperties
+				.determineHibernateProperties(this.jpaProperties.getProperties(),
+						new HibernateSettings().ddlAuto(defaultDdlAuto));
 		if (hibernate.containsKey("hibernate.hbm2ddl.auto")) {
 			return true;
 		}

@@ -34,6 +34,7 @@ import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.SchemaManagementProvider;
 import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
@@ -57,6 +58,7 @@ import org.springframework.util.ClassUtils;
  * @since 2.0.0
  */
 @Configuration
+@EnableConfigurationProperties(HibernateProperties.class)
 @ConditionalOnSingleCandidate(DataSource.class)
 class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
@@ -81,6 +83,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform" };
 
+	private final HibernateProperties hibernateProperties;
+
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
@@ -90,6 +94,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	HibernateJpaConfiguration(DataSource dataSource, JpaProperties jpaProperties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
+			HibernateProperties hibernateProperties,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
 			ObjectProvider<List<SchemaManagementProvider>> providers,
 			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
@@ -97,6 +102,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			ObjectProvider<List<HibernatePropertiesCustomizer>> hibernatePropertiesCustomizers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
+		this.hibernateProperties = hibernateProperties;
 		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
 				providers.getIfAvailable(Collections::emptyList));
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
@@ -130,9 +136,10 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	protected Map<String, Object> getVendorProperties() {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider
 				.getDefaultDdlAuto(getDataSource());
-		return new LinkedHashMap<>(
-				getProperties().getHibernateProperties(new HibernateSettings()
-						.ddlAuto(defaultDdlMode).hibernatePropertiesCustomizers(
+		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(
+				getProperties().getProperties(),
+				new HibernateSettings().ddlAuto(defaultDdlMode)
+						.hibernatePropertiesCustomizers(
 								this.hibernatePropertiesCustomizers)));
 	}
 
