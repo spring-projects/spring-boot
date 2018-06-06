@@ -87,6 +87,15 @@ public class EndpointRequestTests {
 	}
 
 	@Test
+	public void toAnyEndpointWhenDispatcherServletPathProviderNotAvailableUsesEmptyPath() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
+		assertMatcher(matcher, "/actuator", null).matches("/actuator/foo");
+		assertMatcher(matcher, "/actuator", null).matches("/actuator/bar");
+		assertMatcher(matcher, "/actuator", null).matches("/actuator");
+		assertMatcher(matcher, "/actuator", null).doesNotMatch("/actuator/baz");
+	}
+
+	@Test
 	public void toEndpointClassShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.to(FooEndpoint.class);
 		assertMatcher(matcher).matches("/actuator/foo");
@@ -245,8 +254,10 @@ public class EndpointRequestTests {
 				properties.setBasePath(pathMappedEndpoints.getBasePath());
 			}
 		}
-		DispatcherServletPathProvider pathProvider = () -> servletPath;
-		context.registerBean(DispatcherServletPathProvider.class, () -> pathProvider);
+		if (servletPath != null) {
+			DispatcherServletPathProvider pathProvider = () -> servletPath;
+			context.registerBean(DispatcherServletPathProvider.class, () -> pathProvider);
+		}
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
