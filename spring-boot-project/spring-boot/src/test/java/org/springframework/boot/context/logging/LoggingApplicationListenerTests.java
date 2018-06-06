@@ -76,6 +76,7 @@ import static org.hamcrest.Matchers.not;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Ben Hale
+ * @author Fahim Farook
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("log4j*.jar")
@@ -501,11 +502,22 @@ public class LoggingApplicationListenerTests {
 	public void environmentPropertiesIgnoreUnresolvablePlaceholders() {
 		// gh-7719
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"logging.pattern.console=console ${doesnotexist}");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
+				.isEqualTo("console ${doesnotexist}");
+	}
+
+	@Test
+	public void environmentPropertiesResolvePlaceholders() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.pattern.console=console ${pid}");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
-				.isEqualTo("console ${pid}");
+				.isEqualTo(this.context.getEnvironment()
+						.getProperty("logging.pattern.console"));
 	}
 
 	@Test
