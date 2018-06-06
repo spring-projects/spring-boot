@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Fahim Farook
  */
 public class SpringIterableConfigurationPropertySourceTests {
 
@@ -155,6 +156,20 @@ public class SpringIterableConfigurationPropertySourceTests {
 				.isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("fof")))
 				.isEqualTo(ConfigurationPropertyState.ABSENT);
+	}
+
+	@Test
+	public void propertySourceKeyDataChangeInvalidatesCache() {
+		// gh-13344
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("key1", "value1");
+		map.put("key2", "value2");
+		EnumerablePropertySource<?> source = new MapPropertySource("test", map);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				source, DefaultPropertyMapper.INSTANCE);
+		assertThat(adapter.stream().count()).isEqualTo(2);
+		map.put("key3", "value3");
+		assertThat(adapter.stream().count()).isEqualTo(3);
 	}
 
 	/**
