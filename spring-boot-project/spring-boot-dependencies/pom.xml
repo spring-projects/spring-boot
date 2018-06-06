@@ -33,9 +33,9 @@
 	</developers>
 	<properties>
 		<!-- Dependency versions -->
-		<activemq.version>5.15.3</activemq.version>
+		<activemq.version>5.15.4</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<appengine-sdk.version>1.9.63</appengine-sdk.version>
+		<appengine-sdk.version>1.9.64</appengine-sdk.version>
 		<artemis.version>2.4.0</artemis.version>
 		<aspectj.version>1.9.0</aspectj.version>
 		<assertj.version>3.9.1</assertj.version>
@@ -70,9 +70,9 @@
 		<hazelcast-hibernate5.version>1.2.3</hazelcast-hibernate5.version>
 		<hibernate.version>5.2.17.Final</hibernate.version>
 		<hibernate-jpa-2.1-api.version>1.0.2.Final</hibernate-jpa-2.1-api.version>
-		<hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
+		<hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
 		<hikaricp.version>2.7.9</hikaricp.version>
-		<hsqldb.version>2.4.0</hsqldb.version>
+		<hsqldb.version>2.4.1</hsqldb.version>
 		<htmlunit.version>2.29</htmlunit.version>
 		<httpasyncclient.version>4.1.3</httpasyncclient.version>
 		<httpclient.version>4.5.5</httpclient.version>
@@ -122,18 +122,18 @@
 		<liquibase.version>3.6.1</liquibase.version>
 		<log4j2.version>2.10.0</log4j2.version>
 		<logback.version>1.2.3</logback.version>
-		<lombok.version>1.16.20</lombok.version>
-		<mariadb.version>2.2.3</mariadb.version>
+		<lombok.version>1.16.22</lombok.version>
+		<mariadb.version>2.2.5</mariadb.version>
 		<micrometer.version>1.0.4</micrometer.version>
 		<mockito.version>2.18.3</mockito.version>
 		<mongo-driver-reactivestreams.version>1.9.0-beta1</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.8.0-beta2</mongodb.version>
 		<mssql-jdbc.version>6.2.2.jre8</mssql-jdbc.version>
 		<mysql.version>5.1.46</mysql.version>
-		<narayana.version>5.8.1.Final</narayana.version>
+		<narayana.version>5.8.2.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.1.0</neo4j-ogm.version>
-		<netty.version>4.1.24.Final</netty.version>
+		<netty.version>4.1.25.Final</netty.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<postgresql.version>42.2.2</postgresql.version>
 		<quartz.version>2.3.0</quartz.version>
@@ -144,7 +144,7 @@
 		<reactive-streams.version>1.0.2</reactive-streams.version>
 		<rxjava.version>1.3.8</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
-		<rxjava2.version>2.1.13</rxjava2.version>
+		<rxjava2.version>2.1.14</rxjava2.version>
 		<selenium.version>3.9.1</selenium.version>
 		<selenium-htmlunit.version>2.29.3</selenium-htmlunit.version>
 		<sendgrid.version>4.1.2</sendgrid.version>
@@ -178,7 +178,7 @@
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
 		<tomcat.version>8.5.31</tomcat.version>
-		<unboundid-ldapsdk.version>4.0.5</unboundid-ldapsdk.version>
+		<unboundid-ldapsdk.version>4.0.6</unboundid-ldapsdk.version>
 		<undertow.version>1.4.25.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
 		<webjars-locator-core.version>0.35</webjars-locator-core.version>
