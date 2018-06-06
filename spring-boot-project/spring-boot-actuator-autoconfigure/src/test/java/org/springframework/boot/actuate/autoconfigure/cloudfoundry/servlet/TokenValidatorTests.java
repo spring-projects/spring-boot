@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -248,7 +247,8 @@ public class TokenValidatorTests {
 				+ "J/OOn5zOs8yf26os0q3+JUM=\n-----END PRIVATE KEY-----";
 		String privateKey = signingKey.replace("-----BEGIN PRIVATE KEY-----\n", "");
 		privateKey = privateKey.replace("-----END PRIVATE KEY-----", "");
-		byte[] pkcs8EncodedBytes = Base64.decodeBase64(privateKey);
+		privateKey = privateKey.replace("\n", "");
+		byte[] pkcs8EncodedBytes = Base64Utils.decodeFromString(privateKey);
 		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		return keyFactory.generatePrivate(keySpec);
