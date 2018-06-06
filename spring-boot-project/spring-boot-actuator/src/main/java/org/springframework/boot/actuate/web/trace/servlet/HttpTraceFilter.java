@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.web.trace.servlet;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -76,6 +78,10 @@ public class HttpTraceFilter extends OncePerRequestFilter implements Ordered {
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		if (!isRequestValid(request)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 		TraceableHttpServletRequest traceableRequest = new TraceableHttpServletRequest(
 				request);
 		HttpTrace trace = this.tracer.receivedRequest(traceableRequest);
@@ -92,6 +98,16 @@ public class HttpTraceFilter extends OncePerRequestFilter implements Ordered {
 			this.tracer.sendingResponse(trace, traceableResponse,
 					request::getUserPrincipal, () -> getSessionId(request));
 			this.repository.add(trace);
+		}
+	}
+
+	private boolean isRequestValid(HttpServletRequest request) {
+		try {
+			new URI(request.getRequestURL().toString());
+			return true;
+		}
+		catch (URISyntaxException ex) {
+			return false;
 		}
 	}
 
