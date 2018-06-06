@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.hazelcast;
 
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.client.impl.HazelcastClientProxy;
 import com.hazelcast.config.Config;
+import com.hazelcast.core.Client;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.assertj.core.api.Condition;
@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,7 +40,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Neil Stevenson
  */
+@ClassPathExclusions("hazelcast-jet-*.jar")
 public class HazelcastAutoConfigurationClientTests {
 
 	/**
@@ -69,8 +72,7 @@ public class HazelcastAutoConfigurationClientTests {
 						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
 						+ "hazelcast-client-specific.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastInstance.class)
-						.has(nameStartingWith("hz.client_")));
+						.is(clientInstance()).has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
@@ -80,8 +82,7 @@ public class HazelcastAutoConfigurationClientTests {
 						"spring.hazelcast.config=org/springframework/boot/autoconfigure/"
 								+ "hazelcast/hazelcast-client-specific.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastClientProxy.class)
-						.has(nameStartingWith("hz.client_")));
+						.is(clientInstance()).has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
@@ -90,8 +91,7 @@ public class HazelcastAutoConfigurationClientTests {
 				.withPropertyValues(
 						"spring.hazelcast.config=hazelcast-client-default.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastClientProxy.class)
-						.has(nameStartingWith("hz.client_")));
+						.is(clientInstance()).has(nameStartingWith("hz.client_")));
 	}
 
 	@Test
@@ -108,7 +108,12 @@ public class HazelcastAutoConfigurationClientTests {
 		this.contextRunner.withUserConfiguration(HazelcastServerAndClientConfig.class)
 				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.isInstanceOf(HazelcastClientProxy.class));
+						.is(clientInstance()));
+	}
+
+	private Condition<HazelcastInstance> clientInstance() {
+		return new Condition<>((o) -> o.getLocalEndpoint() instanceof Client,
+				"Client instance");
 	}
 
 	private Condition<HazelcastInstance> nameStartingWith(String prefix) {

@@ -19,9 +19,12 @@ package org.springframework.boot.autoconfigure.hazelcast;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HazelcastAutoConfiguration} with full classpath.
  *
  * @author Stephane Nicoll
+ * @author Neil Stevenson
  */
+@RunWith(ModifiedClassPathRunner.class)
+@ClassPathExclusions("hazelcast-jet-*.jar")
 public class HazelcastAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

@@ -91,6 +91,8 @@ content into your application. Rather, pick only the properties that you need.
 
 	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
+	spring.hazelcast.client.config= # The location of the configuration file to use to initialize Hazelcast client.
+	spring.hazelcast.jet.config= # The location of the configuration file to use to initialize Hazelcast Jet.
 
 	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
 	spring.info.build.location=classpath:META-INF/build-info.properties # Location of the generated build-info.properties file.
