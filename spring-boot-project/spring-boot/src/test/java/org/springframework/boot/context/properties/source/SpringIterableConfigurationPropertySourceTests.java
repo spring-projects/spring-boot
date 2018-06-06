@@ -158,21 +158,17 @@ public class SpringIterableConfigurationPropertySourceTests {
 				.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
-	public void propertySourceChangeReflects() {
+	public void propertySourceKeyDataChangeInvalidatesCache() {
 		// gh-13344
-		final Map<String, Object> source = new LinkedHashMap<>();
-		source.put("key1", "value1");
-		source.put("key2", "value2");
-		final EnumerablePropertySource<?> propertySource = new MapPropertySource("test",
-				source);
-		final SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
-				propertySource, DefaultPropertyMapper.INSTANCE);
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("key1", "value1");
+		map.put("key2", "value2");
+		EnumerablePropertySource<?> source = new MapPropertySource("test", map);
+		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
+				source, DefaultPropertyMapper.INSTANCE);
 		assertThat(adapter.stream().count()).isEqualTo(2);
-
-		((Map<String, Object>) adapter.getPropertySource().getSource()).put("key3",
-				"value3");
+		map.put("key3", "value3");
 		assertThat(adapter.stream().count()).isEqualTo(3);
 	}
 
