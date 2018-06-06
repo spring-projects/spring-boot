@@ -5066,7 +5066,7 @@ ActiveMQ configuration is controlled by external configuration properties in
 ----
 
 You can also pool JMS resources by adding a dependency to
-`org.apache.activemq:activemq-pool` and configuring the `PooledConnectionFactory`
+`org.apache.activemq:activemq-jms-pool` and configuring the `PooledConnectionFactory`
 accordingly, as shown in the following example:
 
 [source,properties,indent=0]
@@ -5121,6 +5121,16 @@ list to create them with the default options, or you can define bean(s) of type
 `org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration` or
 `org.apache.activemq.artemis.jms.server.config.TopicConfiguration`, for advanced queue
 and topic configurations, respectively.
+
+You can also pool JMS resources by adding a dependency to
+`org.apache.activemq:activemq-jms-pool` and configuring the `PooledConnectionFactory`
+accordingly, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.artemis.pool.enabled=true
+	spring.artemis.pool.max-connections=50
+----
 
 See
 {sc-spring-boot-autoconfigure}/jms/artemis/ArtemisProperties.{sc-ext}[`ArtemisProperties`]

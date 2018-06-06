@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ import java.util.List;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
+import org.apache.commons.pool2.PooledObject;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -54,7 +55,7 @@ class ActiveMQConnectionFactoryConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(PooledConnectionFactory.class)
+	@ConditionalOnClass({ PooledConnectionFactory.class, PooledObject.class })
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
@@ -62,38 +63,12 @@ class ActiveMQConnectionFactoryConfiguration {
 		public PooledConnectionFactory pooledJmsConnectionFactory(
 				ActiveMQProperties properties,
 				ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
-			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory(
-					new ActiveMQConnectionFactoryFactory(properties,
-							factoryCustomizers.getIfAvailable()).createConnectionFactory(
-									ActiveMQConnectionFactory.class));
-			ActiveMQProperties.Pool pool = properties.getPool();
-			pooledConnectionFactory.setBlockIfSessionPoolIsFull(pool.isBlockIfFull());
-			if (pool.getBlockIfFullTimeout() != null) {
-				pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(
-						pool.getBlockIfFullTimeout().toMillis());
-			}
-			pooledConnectionFactory
-					.setCreateConnectionOnStartup(pool.isCreateConnectionOnStartup());
-			if (pool.getExpiryTimeout() != null) {
-				pooledConnectionFactory
-						.setExpiryTimeout(pool.getExpiryTimeout().toMillis());
-			}
-			if (pool.getIdleTimeout() != null) {
-				pooledConnectionFactory
-						.setIdleTimeout((int) pool.getIdleTimeout().toMillis());
-			}
-			pooledConnectionFactory.setMaxConnections(pool.getMaxConnections());
-			pooledConnectionFactory.setMaximumActiveSessionPerConnection(
-					pool.getMaximumActiveSessionPerConnection());
-			pooledConnectionFactory
-					.setReconnectOnException(pool.isReconnectOnException());
-			if (pool.getTimeBetweenExpirationCheck() != null) {
-				pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
-						pool.getTimeBetweenExpirationCheck().toMillis());
-			}
-			pooledConnectionFactory
-					.setUseAnonymousProducers(pool.isUseAnonymousProducers());
-			return pooledConnectionFactory;
+			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
+					properties, factoryCustomizers.getIfAvailable())
+							.createConnectionFactory(ActiveMQConnectionFactory.class);
+			return new PooledConnectionFactoryFactory(properties.getPool())
+					.createPooledConnectionFactory(connectionFactory);
+
 		}
 
 	}
