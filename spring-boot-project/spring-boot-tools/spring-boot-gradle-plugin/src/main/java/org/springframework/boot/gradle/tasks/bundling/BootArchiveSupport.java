@@ -76,7 +76,12 @@ class BootArchiveSupport {
 	void configureManifest(Jar jar, String mainClassName) {
 		Attributes attributes = jar.getManifest().getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
-		attributes.putIfAbsent("Start-Class", mainClassName);
+		if (mainClassName == null && attributes.get("Start-Class") == null) {
+			throw new ManifestException("No main class could be resolved");
+		}
+		else {
+			attributes.putIfAbsent("Start-Class", mainClassName);
+		}
 	}
 
 	CopyAction createCopyAction(Jar jar) {
