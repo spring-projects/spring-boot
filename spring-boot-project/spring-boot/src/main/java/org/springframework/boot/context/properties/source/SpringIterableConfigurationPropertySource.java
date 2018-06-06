@@ -18,8 +18,10 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.springframework.core.env.EnumerablePropertySource;
@@ -129,7 +131,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private Cache getCache() {
-		Object cacheKey = getCacheKey();
+		CacheKey cacheKey = CacheKey.get(getPropertySource());
 		if (cacheKey == null) {
 			return null;
 		}
@@ -137,15 +139,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return this.cache;
 		}
 		this.cache = new Cache();
-		this.cacheKey = cacheKey;
+		this.cacheKey = cacheKey.copy();
 		return this.cache;
-	}
-
-	private Object getCacheKey() {
-		if (getPropertySource() instanceof MapPropertySource) {
-			return ((MapPropertySource) getPropertySource()).getSource().keySet();
-		}
-		return getPropertySource().getPropertyNames();
 	}
 
 	@Override
@@ -173,6 +168,50 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		public void setMappings(PropertyMapping[] mappings) {
 			this.mappings = mappings;
+		}
+
+	}
+
+	private static final class CacheKey {
+
+		private Object key;
+
+		private CacheKey(Object key) {
+			this.key = key;
+		}
+
+		public CacheKey copy() {
+			return new CacheKey(copyKey(this.key));
+		}
+
+		private Object copyKey(Object key) {
+			if (key instanceof Set) {
+				return new HashSet<Object>((Set<?>) key);
+			}
+			return ((String[]) key).clone();
+		}
+
+		@Override
+		public int hashCode() {
+			return this.key.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			return ObjectUtils.nullSafeEquals(this.key, ((CacheKey) obj).key);
+		}
+
+		public static CacheKey get(EnumerablePropertySource<?> source) {
+			if (source instanceof MapPropertySource) {
+				return new CacheKey(((MapPropertySource) source).getSource().keySet());
+			}
+			return new CacheKey(source.getPropertyNames());
 		}
 
 	}
