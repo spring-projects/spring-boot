@@ -17,6 +17,7 @@
 package org.springframework.boot.webservices.client;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -523,18 +524,19 @@ public class WebServiceTemplateBuilder {
 	private void applyCustomizers(WebServiceTemplate webServiceTemplate,
 			Set<WebServiceTemplateCustomizer> customizers) {
 		if (!CollectionUtils.isEmpty(customizers)) {
-			for (WebServiceTemplateCustomizer internalCustomizer : customizers) {
-				internalCustomizer.customize(webServiceTemplate);
+			for (WebServiceTemplateCustomizer customizer : customizers) {
+				customizer.customize(webServiceTemplate);
 			}
 		}
 	}
 
-	private <T extends WebServiceTemplate> void configureMessageSenders(
-			T webServiceTemplate) {
+	private void configureMessageSenders(WebServiceTemplate webServiceTemplate) {
 		if (this.messageSenders.isOnlyAdditional() && this.detectHttpMessageSender) {
 			Set<WebServiceMessageSender> merged = append(
 					this.messageSenders.getMessageSenders(),
-					new HttpWebServiceMessageSenderBuilder().build());
+					new HttpWebServiceMessageSenderBuilder()
+							.setReadTimeout(Duration.ofMinutes(1))
+							.setConnectTimeout(Duration.ofMinutes(1)).build());
 			webServiceTemplate
 					.setMessageSenders(merged.toArray(new WebServiceMessageSender[0]));
 		}
@@ -574,21 +576,21 @@ public class WebServiceTemplateBuilder {
 			this.messageSenders = messageSenders;
 		}
 
-		public boolean isOnlyAdditional() {
+		boolean isOnlyAdditional() {
 			return this.onlyAdditional;
 		}
 
-		public Set<WebServiceMessageSender> getMessageSenders() {
+		Set<WebServiceMessageSender> getMessageSenders() {
 			return this.messageSenders;
 		}
 
-		public WebServiceMessageSenders set(
+		WebServiceMessageSenders set(
 				Collection<? extends WebServiceMessageSender> messageSenders) {
 			return new WebServiceMessageSenders(false,
 					new LinkedHashSet<>(messageSenders));
 		}
 
-		public WebServiceMessageSenders add(
+		WebServiceMessageSenders add(
 				Collection<? extends WebServiceMessageSender> messageSenders) {
 			return new WebServiceMessageSenders(this.onlyAdditional,
 					append(this.messageSenders, messageSenders));

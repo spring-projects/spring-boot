@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.xml.transform.sax.SAXTransformerFactory;
 
+import org.apache.http.client.config.RequestConfig;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ws.WebServiceMessageFactory;
 import org.springframework.ws.client.core.FaultMessageResolver;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -375,6 +377,11 @@ public class WebServiceTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = sender.getRequestFactory();
 		assertThat(requestFactory)
 				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+		RequestConfig requestConfig = (RequestConfig) ReflectionTestUtils
+				.getField(requestFactory, "requestConfig");
+		assertThat(requestConfig).isNotNull();
+		assertThat(requestConfig.getConnectTimeout()).isEqualTo(60000);
+		assertThat(requestConfig.getSocketTimeout()).isEqualTo(60000);
 	}
 
 }
