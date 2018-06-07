@@ -70,6 +70,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -158,8 +159,19 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		Tomcat tomcat = new Tomcat();
-		File baseDir = (this.baseDirectory != null ? this.baseDirectory
-				: createTempDir("tomcat"));
+		File baseDir;
+		if (this.baseDirectory != null) {
+			baseDir = this.baseDirectory;
+		}
+		else {
+			baseDir = createTempDir("tomcat");
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					FileSystemUtils.deleteRecursively(baseDir);
+				}
+			});
+		}
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
@@ -184,14 +196,23 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File documentRoot = getValidDocumentRoot();
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
+		File docBase;
 		if (documentRoot != null) {
 			context.setResources(new LoaderHidingResourceRoot(context));
+			docBase = documentRoot;
+		}
+		else {
+			docBase = createTempDir("tomcat-docbase");
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					FileSystemUtils.deleteRecursively(docBase);
+				}
+			});
 		}
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
-		File docBase = (documentRoot != null ? documentRoot
-				: createTempDir("tomcat-docbase"));
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
 		context.setParentClassLoader(
