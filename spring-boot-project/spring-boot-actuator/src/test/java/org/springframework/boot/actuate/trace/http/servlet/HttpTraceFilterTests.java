@@ -127,4 +127,13 @@ public class HttpTraceFilterTests {
 		}
 	}
 
+	@Test
+	public void filterRejectsInvalidRequests() throws ServletException, IOException {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setServerName("<script>alert(document.domain)</script>");
+		this.filter.doFilter(request, new MockHttpServletResponse(),
+				new MockFilterChain());
+		assertThat(this.repository.findAll()).hasSize(0);
+	}
+
 }
