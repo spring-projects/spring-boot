@@ -70,9 +70,9 @@ public class ActiveMQProperties {
 	 */
 	private Duration sendTimeout = Duration.ofMillis(0);
 
-	private Pool pool = new Pool();
+	private final Pool pool = new Pool();
 
-	private Packages packages = new Packages();
+	private final Packages packages = new Packages();
 
 	public String getBrokerUrl() {
 		return this.brokerUrl;
@@ -132,10 +132,6 @@ public class ActiveMQProperties {
 
 	public Pool getPool() {
 		return this.pool;
-	}
-
-	public void setPool(Pool pool) {
-		this.pool = pool;
 	}
 
 	public Packages getPackages() {
