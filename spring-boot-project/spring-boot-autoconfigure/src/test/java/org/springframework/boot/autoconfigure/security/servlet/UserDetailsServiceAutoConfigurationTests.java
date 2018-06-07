@@ -93,7 +93,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 					UserDetailsService userDetailsService = context
 							.getBean(UserDetailsService.class);
 					assertThat(this.outputCapture.toString())
-							.doesNotContain("Using default security password: ");
+							.doesNotContain("Using generated security password: ");
 					assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
 				});
 	}
@@ -106,7 +106,7 @@ public class UserDetailsServiceAutoConfigurationTests {
 					AuthenticationProvider provider = context
 							.getBean(AuthenticationProvider.class);
 					assertThat(this.outputCapture.toString())
-							.doesNotContain("Using default security password: ");
+							.doesNotContain("Using generated security password: ");
 					TestingAuthenticationToken token = new TestingAuthenticationToken(
 							"foo", "bar");
 					assertThat(provider.authenticate(token)).isNotNull();
