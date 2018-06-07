@@ -5065,7 +5065,16 @@ ActiveMQ configuration is controlled by external configuration properties in
 	spring.activemq.password=secret
 ----
 
-You can also pool JMS resources by adding a dependency to
+By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with
+sensible settings that you can control by external configuration properties in
+`+spring.jms.*+`:
+
+[source,properties,indent=0]
+----
+	spring.jms.cache.session-cache-size=5
+----
+
+If you'd rather use native pooling, you can do so by adding a dependency to
 `org.apache.activemq:activemq-jms-pool` and configuring the `PooledConnectionFactory`
 accordingly, as shown in the following example:
 
@@ -5122,7 +5131,16 @@ list to create them with the default options, or you can define bean(s) of type
 `org.apache.activemq.artemis.jms.server.config.TopicConfiguration`, for advanced queue
 and topic configurations, respectively.
 
-You can also pool JMS resources by adding a dependency to
+By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with
+sensible settings that you can control by external configuration properties in
+`+spring.jms.*+`:
+
+[source,properties,indent=0]
+----
+	spring.jms.cache.session-cache-size=5
+----
+
+If you'd rather use native pooling, you can do so by adding a dependency to
 `org.apache.activemq:activemq-jms-pool` and configuring the `PooledConnectionFactory`
 accordingly, as shown in the following example:
 

@@ -995,6 +995,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.integration.jdbc.schema=classpath:org/springframework/integration/jdbc/schema-@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
+	spring.jms.cache.consumers=false # Whether to cache message consumers.
+	spring.jms.cache.enabled=true # Whether to cache sessions.
+	spring.jms.cache.producers=true # Whether to cache message producers.
+	spring.jms.cache.session-cache-size=1 # Size of the session cache (per JMS Session type).
 	spring.jms.jndi-name= # Connection factory JNDI name. When set, takes precedence to others connection factory auto-configurations.
 	spring.jms.listener.acknowledge-mode= # Acknowledge mode of the container. By default, the listener is transacted with automatic acknowledgment.
 	spring.jms.listener.auto-startup=true # Start the container automatically on startup.

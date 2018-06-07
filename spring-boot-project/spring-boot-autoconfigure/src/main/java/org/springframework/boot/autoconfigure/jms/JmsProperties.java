@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,8 @@ public class JmsProperties {
 	 */
 	private String jndiName;
 
+	private final Cache cache = new Cache();
+
 	private final Listener listener = new Listener();
 
 	private final Template template = new Template();
@@ -61,12 +63,72 @@ public class JmsProperties {
 		this.jndiName = jndiName;
 	}
 
+	public Cache getCache() {
+		return this.cache;
+	}
+
 	public Listener getListener() {
 		return this.listener;
 	}
 
 	public Template getTemplate() {
 		return this.template;
+	}
+
+	public static class Cache {
+
+		/**
+		 * Whether to cache sessions.
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * Whether to cache message consumers.
+		 */
+		private boolean consumers = false;
+
+		/**
+		 * Whether to cache message producers.
+		 */
+		private boolean producers = true;
+
+		/**
+		 * Size of the session cache (per JMS Session type).
+		 */
+		private int sessionCacheSize = 1;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public boolean isConsumers() {
+			return this.consumers;
+		}
+
+		public void setConsumers(boolean consumers) {
+			this.consumers = consumers;
+		}
+
+		public boolean isProducers() {
+			return this.producers;
+		}
+
+		public void setProducers(boolean producers) {
+			this.producers = producers;
+		}
+
+		public int getSessionCacheSize() {
+			return this.sessionCacheSize;
+		}
+
+		public void setSessionCacheSize(int sessionCacheSize) {
+			this.sessionCacheSize = sessionCacheSize;
+		}
+
 	}
 
 	public static class Listener {

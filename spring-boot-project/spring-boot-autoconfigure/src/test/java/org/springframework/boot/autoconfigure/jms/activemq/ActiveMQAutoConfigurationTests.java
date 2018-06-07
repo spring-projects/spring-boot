@@ -27,6 +27,8 @@ import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,10 +52,13 @@ public class ActiveMQAutoConfigurationTests {
 	public void brokerIsEmbeddedByDefault() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.run((context) -> {
-					assertThat(context).getBean(ConnectionFactory.class)
+					assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+					CachingConnectionFactory cachingConnectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					assertThat(cachingConnectionFactory.getTargetConnectionFactory())
 							.isInstanceOf(ActiveMQConnectionFactory.class);
-					assertThat(context.getBean(ActiveMQConnectionFactory.class)
-							.getBrokerURL())
+					assertThat(((ActiveMQConnectionFactory) cachingConnectionFactory
+							.getTargetConnectionFactory()).getBrokerURL())
 									.isEqualTo("vm://localhost?broker.persistent=false");
 				});
 	}
@@ -68,10 +73,46 @@ public class ActiveMQAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultConnectionFactoryIsApplied() {
+	public void connectionFactoryIsCachedByDefault() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.activemq.pool.enabled=false")
 				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class);
+					assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					assertThat(connectionFactory.getTargetConnectionFactory())
+							.isInstanceOf(ActiveMQConnectionFactory.class);
+					assertThat(ReflectionTestUtils.getField(connectionFactory,
+							"cacheConsumers")).isEqualTo(false);
+					assertThat(ReflectionTestUtils.getField(connectionFactory,
+							"cacheProducers")).isEqualTo(true);
+					assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(1);
+				});
+	}
+
+	@Test
+	public void connectionFactoryCachingCanBeCustomized() {
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.jms.cache.consumers=true",
+						"spring.jms.cache.producers=false",
+						"spring.jms.cache.session-cache-size=10")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class);
+					assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+					CachingConnectionFactory connectionFactory = context
+							.getBean(CachingConnectionFactory.class);
+					assertThat(ReflectionTestUtils.getField(connectionFactory,
+							"cacheConsumers")).isEqualTo(true);
+					assertThat(ReflectionTestUtils.getField(connectionFactory,
+							"cacheProducers")).isEqualTo(false);
+					assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(10);
+				});
+	}
+
+	@Test
+	public void connectionFactoryCachingCanBeDisabled() {
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.jms.cache.enabled=false").run((context) -> {
 					assertThat(context.getBeansOfType(ActiveMQConnectionFactory.class))
 							.hasSize(1);
 					ActiveMQConnectionFactory connectionFactory = context
@@ -99,7 +140,7 @@ public class ActiveMQAutoConfigurationTests {
 	@Test
 	public void customConnectionFactoryIsApplied() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.activemq.pool.enabled=false",
+				.withPropertyValues("spring.jms.cache.enabled=false",
 						"spring.activemq.brokerUrl=vm://localhost?useJmx=false&broker.persistent=false",
 						"spring.activemq.user=foo", "spring.activemq.password=bar",
 						"spring.activemq.closeTimeout=500",
