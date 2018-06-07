@@ -7730,7 +7730,7 @@ the `autoconfigure` module in your projects more easily. If you do it that way, 
 library is not provided and, by default, Spring Boot backs off.
 
 Spring Boot uses an annotation processor to collect the conditions on auto-configurations
-in a metadata file (`META-INF/spring-autoconfigure-metadata.json`). If that file is
+in a metadata file (`META-INF/spring-autoconfigure-metadata.properties`). If that file is
 present, it is used to eagerly filter auto-configurations that do not match, which will
 improve startup time. It is recommended to add the following dependency in a module that
 contains auto-configurations:
