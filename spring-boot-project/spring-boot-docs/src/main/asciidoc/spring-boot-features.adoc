@@ -3029,12 +3029,9 @@ code documentation] for details.
 When running a Spring Boot application that uses an embedded servlet container (and is
 packaged as an executable archive), there are some limitations in the JSP support.
 
-* With Tomcat, it should work if you use war packaging. That is, an executable war works
-and is also deployable to a standard container (not limited to, but including Tomcat).
-An executable jar does not work because of a hard-coded file pattern in Tomcat.
-
-* With Jetty, it should work if you use war packaging. That is, an executable war works,
-and is also deployable to any standard container.
+* With Jetty and Tomcat, it should work if you use war packaging. An executable war will
+  work when launched with `java -jar`, and will also be deployable to any standard
+  container. JSPs are not supported when using an executable jar.
 
 * Undertow does not support JSPs.
 
