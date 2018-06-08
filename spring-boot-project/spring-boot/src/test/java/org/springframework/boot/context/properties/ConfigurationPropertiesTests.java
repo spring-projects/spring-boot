@@ -323,12 +323,11 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenBindingToMapKeyWithForwardSlashShouldBind() {
-		load(MapProperties.class, "mymap[/test1]:test1", "mymap[/test2]:test2", "mymap[/test3/test31]:test31");
+		load(MapProperties.class, "mymap[/test1]:test1", "mymap[/test2]:test2",
+				"mymap[/test3/test31]:test31");
 		MapProperties bean = this.context.getBean(MapProperties.class);
-		assertThat(bean.mymap).containsOnly(
-				entry("/test1", "test1"),
-				entry("/test2", "test2"),
-				entry("/test3/test31", "test31"));
+		assertThat(bean.mymap).containsOnly(entry("/test1", "test1"),
+				entry("/test2", "test2"), entry("/test3/test31", "test31"));
 	}
 
 	@Test
