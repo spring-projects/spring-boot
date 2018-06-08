@@ -30,6 +30,7 @@ import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.java.archives.Attributes;
+import org.gradle.api.java.archives.ManifestException;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
@@ -76,7 +77,12 @@ class BootArchiveSupport {
 	void configureManifest(Jar jar, String mainClassName) {
 		Attributes attributes = jar.getManifest().getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
-		attributes.putIfAbsent("Start-Class", mainClassName);
+		if (mainClassName == null && attributes.get("Start-Class") == null) {
+			throw new ManifestException("No main class could be resolved");
+		}
+		else {
+			attributes.putIfAbsent("Start-Class", mainClassName);
+		}
 	}
 
 	CopyAction createCopyAction(Jar jar) {
