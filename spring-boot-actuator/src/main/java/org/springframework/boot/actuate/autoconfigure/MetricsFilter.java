@@ -152,6 +152,11 @@ final class MetricsFilter extends OncePerRequestFilter {
 		if (bestMatchingPattern != null) {
 			return fixSpecialCharacters(bestMatchingPattern.toString());
 		}
+		//TODO static final somewhere
+		bestMatchingPattern = request.getAttribute("JERSEY_TEMPLATE");
+		if (bestMatchingPattern != null) {
+			return fixSpecialCharacters(bestMatchingPattern.toString());
+		}
 		Series series = getSeries(status);
 		if (Series.CLIENT_ERROR.equals(series) || Series.SERVER_ERROR.equals(series)
 				|| Series.REDIRECTION.equals(series)) {

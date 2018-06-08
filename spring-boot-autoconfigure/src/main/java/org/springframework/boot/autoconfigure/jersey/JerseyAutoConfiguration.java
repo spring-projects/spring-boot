@@ -16,19 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jersey;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.ext.ContextResolver;
-
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
@@ -38,20 +25,16 @@ import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.internal.routing.UriRoutingContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
-
+import org.glassfish.jersey.uri.UriTemplate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -69,6 +52,21 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.filter.RequestContextFilter;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.DispatcherType;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Jersey.
@@ -95,34 +93,20 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	private final ResourceConfig config;
 
+	private final JerseyPathResolver pathResolver;
+
 	private final List<ResourceConfigCustomizer> customizers;
 
-	private String path;
-
 	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
-			ObjectProvider<List<ResourceConfigCustomizer>> customizers) {
+								   JerseyPathResolver pathResolver, ObjectProvider<List<ResourceConfigCustomizer>> customizers) {
 		this.jersey = jersey;
 		this.config = config;
+		this.pathResolver = pathResolver;
 		this.customizers = customizers.getIfAvailable();
 	}
 
 	@PostConstruct
-	public void path() {
-		resolveApplicationPath();
-		customize();
-	}
-
-	private void resolveApplicationPath() {
-		if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
-			this.path = parseApplicationPath(this.jersey.getApplicationPath());
-		}
-		else {
-			this.path = findApplicationPath(AnnotationUtils.findAnnotation(
-					this.config.getApplication().getClass(), ApplicationPath.class));
-		}
-	}
-
-	private void customize() {
+	public void customize() {
 		if (this.customizers != null) {
 			AnnotationAwareOrderComparator.sort(this.customizers);
 			for (ResourceConfigCustomizer customizer : this.customizers) {
@@ -147,10 +131,10 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	public FilterRegistrationBean jerseyFilterRegistration() {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 		registration.setFilter(new ServletContainer(this.config));
-		registration.setUrlPatterns(Arrays.asList(this.path));
+		registration.setUrlPatterns(Collections.singletonList(this.pathResolver.getPath()));
 		registration.setOrder(this.jersey.getFilter().getOrder());
 		registration.addInitParameter(ServletProperties.FILTER_CONTEXT_PATH,
-				stripPattern(this.path));
+				stripPattern(this.pathResolver.getPath()));
 		addInitParameters(registration);
 		registration.setName("jerseyFilter");
 		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
@@ -169,7 +153,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
 	public ServletRegistrationBean jerseyServletRegistration() {
 		ServletRegistrationBean registration = new ServletRegistrationBean(
-				new ServletContainer(this.config), this.path);
+				new ServletContainer(this.config), this.pathResolver.getPath());
 		addInitParameters(registration);
 		registration.setName(getServletRegistrationName());
 		registration.setLoadOnStartup(this.jersey.getServlet().getLoadOnStartup());
@@ -229,6 +213,77 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			servletContext.setInitParameter("contextConfigLocation", "<NONE>");
 		}
 
+	}
+
+
+	@Configuration
+	static class JerseyPathResolver {
+		private final JerseyProperties jersey;
+
+		private final ResourceConfig config;
+
+		private String path;
+
+		JerseyPathResolver(JerseyProperties jersey, ResourceConfig config) {
+			this.jersey = jersey;
+			this.config = config;
+		}
+
+		public String getPath() {
+			return path;
+		}
+
+		@PostConstruct
+		public void resolveApplicationPath() {
+			if (StringUtils.hasLength(this.jersey.getApplicationPath())) {
+				this.path = parseApplicationPath(this.jersey.getApplicationPath());
+			}
+			else {
+				this.path = findApplicationPath(AnnotationUtils.findAnnotation(
+						this.config.getApplication().getClass(), ApplicationPath.class));
+			}
+		}
+	}
+
+	@Configuration
+//	@ConditionalOnBean(CounterService.class) //TODO some Conditional or always for Jersey?
+	static class MetricsResourceConfigCustomizer {
+		private final String path;
+
+		MetricsResourceConfigCustomizer(JerseyPathResolver pathResolver) {
+			String path = pathResolver.getPath();
+			if(path.endsWith("/*")){
+				path = path.substring(0, path.lastIndexOf("/"));
+			}
+			this.path = path;
+		}
+
+		@Bean
+		public ResourceConfigCustomizer resourceConfigCustomizer() {
+			return new ResourceConfigCustomizer() {
+				@Override
+				public void customize(ResourceConfig config) {
+					config.register(pathTemplateRequestFilter());
+				}
+			};
+		}
+
+		@Bean
+		public ContainerRequestFilter pathTemplateRequestFilter() {
+			return new ContainerRequestFilter() {
+				@Override
+				public void filter(ContainerRequestContext requestContext) {
+					UriInfo uriInfo = requestContext.getUriInfo();
+					if (uriInfo instanceof UriRoutingContext) {
+						List<UriTemplate> templates = ((UriRoutingContext) uriInfo).getMatchedTemplates();
+						if (templates.size() == 1) {
+							//TODO static final somewhere
+							requestContext.setProperty("JERSEY_TEMPLATE", path + templates.get(0).getTemplate());
+						}
+					}
+				}
+			};
+		}
 	}
 
 	@ConditionalOnClass(JacksonFeature.class)
