@@ -42,9 +42,9 @@ public class BootJar extends Jar implements BootArchive {
 
 	private final CopySpec bootInf;
 
-	private FileCollection classpath;
-
 	private String mainClassName;
+
+	private FileCollection classpath;
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -76,6 +76,13 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public String getMainClassName() {
+		if (this.mainClassName == null) {
+			String manifestStartClass = (String) getManifest().getAttributes()
+					.get("Start-Class");
+			if (manifestStartClass != null) {
+				setMainClassName(manifestStartClass);
+			}
+		}
 		return this.mainClassName;
 	}
 
