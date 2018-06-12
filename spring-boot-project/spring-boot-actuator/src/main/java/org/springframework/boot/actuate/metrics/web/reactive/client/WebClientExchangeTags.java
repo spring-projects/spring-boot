@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.web.reactive.client;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import io.micrometer.core.instrument.Tag;
 
@@ -40,6 +41,9 @@ public final class WebClientExchangeTags {
 	private static final Tag IO_ERROR = Tag.of("status", "IO_ERROR");
 
 	private static final Tag CLIENT_ERROR = Tag.of("status", "CLIENT_ERROR");
+
+	private static final Pattern PATTERN_BEFORE_PATH = Pattern
+			.compile("^https?://[^/]+/");
 
 	private WebClientExchangeTags() {
 	}
@@ -66,7 +70,7 @@ public final class WebClientExchangeTags {
 	}
 
 	private static String extractPath(String url) {
-		String path = url.replaceFirst("^https?://[^/]+/", "");
+		String path = PATTERN_BEFORE_PATH.matcher(url).replaceFirst("");
 		return (path.startsWith("/") ? path : "/" + path);
 	}
 
