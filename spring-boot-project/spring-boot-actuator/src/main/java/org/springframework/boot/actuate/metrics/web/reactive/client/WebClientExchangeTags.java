@@ -45,6 +45,8 @@ public final class WebClientExchangeTags {
 	private static final Pattern PATTERN_BEFORE_PATH = Pattern
 			.compile("^https?://[^/]+/");
 
+	private static final Tag CLIENT_NAME_NONE = Tag.of("clientName", "none");
+
 	private WebClientExchangeTags() {
 	}
 
@@ -104,7 +106,7 @@ public final class WebClientExchangeTags {
 	public static Tag clientName(ClientRequest request) {
 		String host = request.url().getHost();
 		if (host == null) {
-			host = "none";
+			return CLIENT_NAME_NONE;
 		}
 		return Tag.of("clientName", host);
 	}
