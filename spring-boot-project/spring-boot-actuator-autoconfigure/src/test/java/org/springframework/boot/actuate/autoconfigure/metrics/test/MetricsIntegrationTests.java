@@ -61,7 +61,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -81,8 +80,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsIntegrationTests.MetricsApp.class)
-@TestPropertySource(properties = "management.metrics.use-global-registry=false")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = MetricsIntegrationTests.MetricsApp.class, properties = "management.metrics.use-global-registry=false")
 public class MetricsIntegrationTests {
 
 	@Autowired
