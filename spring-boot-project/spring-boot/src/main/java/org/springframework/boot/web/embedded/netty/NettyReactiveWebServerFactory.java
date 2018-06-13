@@ -44,6 +44,8 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private Duration lifecycleTimeout;
 
+	private boolean useForwardHeaders;
+
 	public NettyReactiveWebServerFactory() {
 	}
 
@@ -97,6 +99,14 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		this.lifecycleTimeout = lifecycleTimeout;
 	}
 
+	/**
+	 * Set if x-forward-* headers should be processed.
+	 * @param useForwardHeaders if x-forward headers should be used
+	 */
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.useForwardHeaders = useForwardHeaders;
+	}
+
 	private HttpServer createHttpServer() {
 		HttpServer server = HttpServer.create().tcpConfiguration(
 				(tcpServer) -> tcpServer.addressSupplier(() -> getListenAddress()));
@@ -110,6 +120,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 					getCompression());
 			server = compressionCustomizer.apply(server);
 		}
+		server = (this.useForwardHeaders ? server.forwarded() : server.noForwarded());
 		return applyCustomizers(server);
 	}
 

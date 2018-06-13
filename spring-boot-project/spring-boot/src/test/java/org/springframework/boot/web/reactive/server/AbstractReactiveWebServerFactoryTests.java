@@ -47,6 +47,7 @@ import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -318,6 +319,14 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		assertThat(response.getHeaders().keySet()).doesNotContain("X-Test-Compressed");
 	}
 
+	protected void assertForwardHeaderIsUsed(AbstractReactiveWebServerFactory factory) {
+		this.webServer = factory.getWebServer(new XForwardedHandler());
+		this.webServer.start();
+		String body = getWebClient().build().get().header("X-Forwarded-Proto", "https")
+				.retrieve().bodyToMono(String.class).block();
+		assertThat(body).isEqualTo("https");
+	}
+
 	protected static class EchoHandler implements HttpHandler {
 
 		public EchoHandler() {
@@ -370,6 +379,19 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			response.getHeaders().setContentType(this.mediaType);
 			response.getHeaders().setContentLength(this.bytes.readableByteCount());
 			return response.writeWith(Mono.just(this.bytes));
+		}
+
+	}
+
+	protected static class XForwardedHandler implements HttpHandler {
+
+		@Override
+		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
+			String scheme = request.getURI().getScheme();
+			DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+			DataBuffer buffer = bufferFactory
+					.wrap(scheme.getBytes(StandardCharsets.UTF_8));
+			return response.writeWith(Mono.just(buffer));
 		}
 
 	}

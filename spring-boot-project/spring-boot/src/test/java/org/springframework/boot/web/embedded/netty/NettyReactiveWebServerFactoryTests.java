@@ -74,4 +74,11 @@ public class NettyReactiveWebServerFactoryTests
 		}
 	}
 
+	@Test
+	public void useForwardedHeaders() {
+		NettyReactiveWebServerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertForwardHeaderIsUsed(factory);
+	}
+
 }

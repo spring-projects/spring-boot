@@ -23,6 +23,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
+import org.apache.catalina.valves.RemoteIpValve;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -131,6 +132,15 @@ public class TomcatReactiveWebServerFactoryTests
 		for (TomcatConnectorCustomizer listener : listeners) {
 			ordered.verify(listener).customize(any(Connector.class));
 		}
+	}
+
+	@Test
+	public void useForwardedHeaders() {
+		TomcatReactiveWebServerFactory factory = getFactory();
+		RemoteIpValve valve = new RemoteIpValve();
+		valve.setProtocolHeader("X-Forwarded-Proto");
+		factory.addEngineValves(valve);
+		assertForwardHeaderIsUsed(factory);
 	}
 
 }

@@ -93,4 +93,11 @@ public class JettyReactiveWebServerFactoryTests
 				.isEqualTo(localhost.getHostAddress());
 	}
 
+	@Test
+	public void useForwardedHeaders() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertForwardHeaderIsUsed(factory);
+	}
+
 }
