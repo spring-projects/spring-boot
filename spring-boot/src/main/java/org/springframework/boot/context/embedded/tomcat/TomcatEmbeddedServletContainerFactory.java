@@ -405,6 +405,8 @@ public class TomcatEmbeddedServletContainerFactory
 					.getInstance();
 			instance.addUserFactory(
 					new SslStoreProviderUrlStreamHandlerFactory(getSslStoreProvider()));
+			protocol.setKeystorePass("");
+			protocol.setTruststorePass("");
 			protocol.setKeystoreFile(
 					SslStoreProviderUrlStreamHandlerFactory.KEY_STORE_URL);
 			protocol.setTruststoreFile(
