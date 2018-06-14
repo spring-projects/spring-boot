@@ -159,14 +159,14 @@
 		<spring-cloud-connectors.version>2.0.2.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Lovelace-M3</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.24.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.0.5.RELEASE</spring-integration.version>
+		<spring-integration.version>5.0.6.RELEASE</spring-integration.version>
 		<spring-kafka.version>2.2.0.BUILD-SNAPSHOT</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.1.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.2.RELEASE</spring-retry.version>
 		<spring-security.version>5.1.0.M1</spring-security.version>
-		<spring-session-bom.version>Apple-SR2</spring-session-bom.version>
+		<spring-session-bom.version>Apple-SR3</spring-session-bom.version>
 		<spring-ws.version>3.0.1.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
@@ -628,6 +628,12 @@
 				<groupId>com.googlecode.json-simple</groupId>
 				<artifactId>json-simple</artifactId>
 				<version>${simple-json.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>junit</groupId>
+						<artifactId>junit</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>
