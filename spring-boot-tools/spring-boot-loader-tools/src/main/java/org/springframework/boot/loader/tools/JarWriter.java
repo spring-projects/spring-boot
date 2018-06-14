@@ -364,8 +364,9 @@ public class JarWriter implements LoaderClassesWriter {
 				read = 0;
 			}
 			if (read < len) {
-				read += super.read(b, off + read, len - read);
-				this.position += read;
+				int readFromParent = super.read(b, off + read, len - read);
+				read += readFromParent;
+				this.position += readFromParent;
 			}
 			if (this.position >= this.headerLength) {
 				this.headerStream = null;
