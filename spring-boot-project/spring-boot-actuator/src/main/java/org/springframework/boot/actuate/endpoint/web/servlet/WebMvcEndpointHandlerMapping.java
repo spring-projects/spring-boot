@@ -67,8 +67,11 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 	@ResponseBody
 	protected Map<String, Map<String, Link>> links(HttpServletRequest request,
 			HttpServletResponse response) {
-		String requestUrl = ServletUriComponentsBuilder.fromRequest(request).build().toString();
-		return Collections.singletonMap("_links", this.linksResolver.resolveLinks(requestUrl));
+        String requestUrl = ServletUriComponentsBuilder.fromRequest(request)
+                .build()
+                .toString();
+        return Collections.singletonMap("_links", 
+                this.linksResolver.resolveLinks(requestUrl));
 	}
 
 }
