@@ -63,10 +63,10 @@ public class HibernatePropertiesTests {
 			assertThat(hibernateProperties)
 					.doesNotContainKeys("hibernate.ejb.naming_strategy");
 			assertThat(hibernateProperties).containsEntry(
-					"hibernate.physical_naming_strategy",
+					AvailableSettings.PHYSICAL_NAMING_STRATEGY,
 					SpringPhysicalNamingStrategy.class.getName());
 			assertThat(hibernateProperties).containsEntry(
-					"hibernate.implicit_naming_strategy",
+					AvailableSettings.IMPLICIT_NAMING_STRATEGY,
 					SpringImplicitNamingStrategy.class.getName());
 		}));
 	}
@@ -78,9 +78,9 @@ public class HibernatePropertiesTests {
 				"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
 				.run(assertHibernateProperties((hibernateProperties) -> {
 					assertThat(hibernateProperties).contains(
-							entry("hibernate.implicit_naming_strategy",
+							entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY,
 									"com.example.Implicit"),
-							entry("hibernate.physical_naming_strategy",
+							entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY,
 									"com.example.Physical"));
 					assertThat(hibernateProperties)
 							.doesNotContainKeys("hibernate.ejb.naming_strategy");
@@ -95,9 +95,9 @@ public class HibernatePropertiesTests {
 				.run(assertHibernateProperties((hibernateProperties) -> {
 					// You can override them as we don't provide any default
 					assertThat(hibernateProperties).contains(
-							entry("hibernate.implicit_naming_strategy",
+							entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY,
 									"com.example.Implicit"),
-							entry("hibernate.physical_naming_strategy",
+							entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY,
 									"com.example.Physical"));
 					assertThat(hibernateProperties)
 							.doesNotContainKeys("hibernate.ejb.naming_strategy");
@@ -139,7 +139,7 @@ public class HibernatePropertiesTests {
 	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(
 			String expectedDdlAuto) {
 		return assertHibernateProperties((hibernateProperties) -> {
-			assertThat(hibernateProperties).containsEntry("hibernate.hbm2ddl.auto",
+			assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO,
 					expectedDdlAuto);
 			verify(this.ddlAutoSupplier, never()).get();
 		});

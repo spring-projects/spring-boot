@@ -21,7 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.hibernate.cfg.AvailableSettings;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
+import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -35,9 +39,6 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties("spring.jpa.hibernate")
 public class HibernateProperties {
-
-	private static final String USE_NEW_ID_GENERATOR_MAPPINGS = "hibernate.id."
-			+ "new_generator_mappings";
 
 	private final Naming naming = new Naming();
 
@@ -97,10 +98,10 @@ public class HibernateProperties {
 		getNaming().applyNamingStrategies(result);
 		String ddlAuto = determineDdlAuto(existing, settings::getDdlAuto);
 		if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
-			result.put("hibernate.hbm2ddl.auto", ddlAuto);
+			result.put(AvailableSettings.HBM2DDL_AUTO, ddlAuto);
 		}
 		else {
-			result.remove("hibernate.hbm2ddl.auto");
+			result.remove(AvailableSettings.HBM2DDL_AUTO);
 		}
 		Collection<HibernatePropertiesCustomizer> customizers = settings
 				.getHibernatePropertiesCustomizers();
@@ -112,17 +113,17 @@ public class HibernateProperties {
 
 	private void applyNewIdGeneratorMappings(Map<String, Object> result) {
 		if (this.useNewIdGeneratorMappings != null) {
-			result.put(USE_NEW_ID_GENERATOR_MAPPINGS,
+			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS,
 					this.useNewIdGeneratorMappings.toString());
 		}
-		else if (!result.containsKey(USE_NEW_ID_GENERATOR_MAPPINGS)) {
-			result.put(USE_NEW_ID_GENERATOR_MAPPINGS, "true");
+		else if (!result.containsKey(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS)) {
+			result.put(AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
 		}
 	}
 
 	private String determineDdlAuto(Map<String, String> existing,
 			Supplier<String> defaultDdlAuto) {
-		String ddlAuto = existing.get("hibernate.hbm2ddl.auto");
+		String ddlAuto = existing.get(AvailableSettings.HBM2DDL_AUTO);
 		if (ddlAuto != null) {
 			return ddlAuto;
 		}
@@ -130,10 +131,6 @@ public class HibernateProperties {
 	}
 
 	public static class Naming {
-
-		private static final String DEFAULT_PHYSICAL_STRATEGY = "org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy";
-
-		private static final String DEFAULT_IMPLICIT_STRATEGY = "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy";
 
 		/**
 		 * Fully qualified name of the implicit naming strategy.
@@ -162,10 +159,10 @@ public class HibernateProperties {
 		}
 
 		private void applyNamingStrategies(Map<String, Object> properties) {
-			applyNamingStrategy(properties, "hibernate.implicit_naming_strategy",
-					this.implicitStrategy, DEFAULT_IMPLICIT_STRATEGY);
-			applyNamingStrategy(properties, "hibernate.physical_naming_strategy",
-					this.physicalStrategy, DEFAULT_PHYSICAL_STRATEGY);
+			applyNamingStrategy(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY,
+					this.implicitStrategy, SpringImplicitNamingStrategy.class.getName());
+			applyNamingStrategy(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY,
+					this.physicalStrategy, SpringPhysicalNamingStrategy.class.getName());
 		}
 
 		private void applyNamingStrategy(Map<String, Object> properties, String key,
