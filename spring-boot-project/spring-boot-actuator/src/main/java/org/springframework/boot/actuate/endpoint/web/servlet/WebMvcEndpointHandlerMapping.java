@@ -70,7 +70,7 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 		String requestUrl = ServletUriComponentsBuilder.fromRequest(request)
 				.build()
 				.toString();
-		return Collections.singletonMap("_links", 
+		return Collections.singletonMap("_links",
 				this.linksResolver.resolveLinks(requestUrl));
 	}
 
