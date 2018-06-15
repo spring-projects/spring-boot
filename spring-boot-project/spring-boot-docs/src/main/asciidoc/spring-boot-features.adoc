@@ -756,15 +756,25 @@ example:
 		address: 127.0.0.1
 	---
 	spring:
-		profiles: production
+		profiles: production & eu-central
 	server:
 		address: 192.168.1.120
 ----
 
 In the preceding example, if the `development` profile is active, the `server.address`
-property is `127.0.0.1`. Similarly, if the `production` profile is active, the
-`server.address` property is `192.168.1.120`. If the `development` and `production`
-profiles are *not* enabled, then the value for the property is `192.168.1.100`.
+property is `127.0.0.1`. Similarly, if the `production` *and* `eu-central` profiles are
+active, the `server.address` property is `192.168.1.120`. If the `development` and
+`production` and `eu-central` profiles are *not* enabled, then the value for the property
+is `192.168.1.100`.
+
+[NOTE]
+====
+`spring.profiles` can therefore contains a simple profile name (for example `production`)
+or a profile expression. A profile expression allows for more complicated profile logic
+to be expressed, for example `production & (eu-central | eu-west)`. Check the
+{spring-reference}core.html#beans-definition-profiles-java[reference guide] for more
+details.
+====
 
 If none are explicitly active when the application context starts, the default profiles
 are activated. So, in the following YAML, we set a value for `spring.security.user.password`

@@ -57,6 +57,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -411,14 +412,15 @@ public class ConfigFileApplicationListener
 				}
 				return ObjectUtils.containsElement(document.getProfiles(),
 						profile.getName())
-						&& this.environment.acceptsProfiles(document.getProfiles());
+						&& this.environment
+								.acceptsProfiles(Profiles.of(document.getProfiles()));
 			};
 		}
 
 		private DocumentFilter getNegativeProfileFilter(Profile profile) {
 			return (Document document) -> (profile == null
-					&& !ObjectUtils.isEmpty(document.getProfiles())
-					&& this.environment.acceptsProfiles(document.getProfiles()));
+					&& !ObjectUtils.isEmpty(document.getProfiles()) && this.environment
+							.acceptsProfiles(Profiles.of(document.getProfiles())));
 		}
 
 		private DocumentConsumer addToLoaded(

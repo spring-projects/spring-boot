@@ -83,6 +83,7 @@ import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
@@ -525,7 +526,7 @@ public class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		this.context = application.run();
-		assertThat(environment.acceptsProfiles("foo")).isTrue();
+		assertThat(environment.acceptsProfiles(Profiles.of("foo"))).isTrue();
 	}
 
 	@Test

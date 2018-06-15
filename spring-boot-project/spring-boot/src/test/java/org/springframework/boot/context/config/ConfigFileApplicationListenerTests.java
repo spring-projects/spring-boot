@@ -54,6 +54,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ByteArrayResource;
@@ -505,6 +506,29 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void yamlProfileExpressionsAnd() {
+		assertProfileExpression("devandother", "dev", "other");
+	}
+
+	@Test
+	public void yamlProfileExpressionsComplex() {
+		assertProfileExpression("devorotherandanother", "dev", "another");
+	}
+
+	@Test
+	public void yamlProfileExpressionsNoMatch() {
+		assertProfileExpression("fromyamlfile", "dev");
+	}
+
+	private void assertProfileExpression(String value, String... activeProfiles) {
+		this.environment.setActiveProfiles(activeProfiles);
+		this.initializer.setSearchNames("testprofileexpression");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property).isEqualTo(value);
+	}
+
+	@Test
 	public void yamlNegatedProfiles() {
 		// gh-8011
 		this.initializer.setSearchNames("testnegatedprofiles");
@@ -827,7 +851,7 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(environment.containsProperty("customprofile")).isTrue();
 		assertThat(environment.containsProperty("customprofile-specific")).isTrue();
 		assertThat(environment.containsProperty("customprofile-customdefault")).isTrue();
-		assertThat(environment.acceptsProfiles("customdefault")).isTrue();
+		assertThat(environment.acceptsProfiles(Profiles.of("customdefault"))).isTrue();
 	}
 
 	@Test
@@ -899,7 +923,7 @@ public class ConfigFileApplicationListenerTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.config.name=applicationloop");
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		assertThat(environment.acceptsProfiles("loop")).isTrue();
+		assertThat(environment.acceptsProfiles(Profiles.of("loop"))).isTrue();
 	}
 
 	@Test
@@ -909,8 +933,8 @@ public class ConfigFileApplicationListenerTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--spring.config.name=applicationmultiprofiles");
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		assertThat(environment.acceptsProfiles("test")).isTrue();
-		assertThat(environment.acceptsProfiles("another-test")).isTrue();
+		assertThat(environment.acceptsProfiles(Profiles.of("test"))).isTrue();
+		assertThat(environment.acceptsProfiles(Profiles.of("another-test"))).isTrue();
 		assertThat(environment.getProperty("message")).isEqualTo("multiprofile");
 	}
 
@@ -932,7 +956,7 @@ public class ConfigFileApplicationListenerTests {
 
 			@Override
 			public boolean matches(ConfigurableEnvironment value) {
-				return value.acceptsProfiles(profile);
+				return value.acceptsProfiles(Profiles.of(profile));
 			}
 
 		};
