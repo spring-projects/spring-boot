@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.cache;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,21 +111,19 @@ public class CachesEndpoint {
 
 	private List<CacheEntry> getCacheEntries(Predicate<String> cacheNamePredicate,
 			Predicate<String> cacheManagerNamePredicate) {
-		List<CacheEntry> entries = new ArrayList<>();
-		this.cacheManagers.keySet().stream().filter(cacheManagerNamePredicate)
-				.forEach((cacheManagerName) -> entries
-						.addAll(getCacheEntries(cacheManagerName, cacheNamePredicate)));
-		return entries;
+		return this.cacheManagers.keySet().stream().filter(cacheManagerNamePredicate)
+				.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName,
+						cacheNamePredicate).stream())
+				.collect(Collectors.toList());
 	}
 
 	private List<CacheEntry> getCacheEntries(String cacheManagerName,
 			Predicate<String> cacheNamePredicate) {
 		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
-		List<CacheEntry> entries = new ArrayList<>();
-		cacheManager.getCacheNames().stream().filter(cacheNamePredicate)
+		return cacheManager.getCacheNames().stream().filter(cacheNamePredicate)
 				.map(cacheManager::getCache).filter(Objects::nonNull)
-				.forEach((cache) -> entries.add(new CacheEntry(cache, cacheManagerName)));
-		return entries;
+				.map((cache) -> new CacheEntry(cache, cacheManagerName))
+				.collect(Collectors.toList());
 	}
 
 	private CacheEntry extractUniqueCacheEntry(String cache, List<CacheEntry> entries) {
