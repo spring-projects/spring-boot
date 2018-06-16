@@ -39,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 
 /**
@@ -77,6 +79,7 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 		assertThat(new File(defaultSnippetsDir, "http-request.md"))
 				.has(contentContaining("api.example.com"));
 		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
+		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
 
 	private Condition<File> contentContaining(String toContain) {
@@ -90,6 +93,18 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 		@Override
 		public void customize(RestAssuredRestDocumentationConfigurer configurer) {
 			configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
+		}
+
+	}
+
+	@TestConfiguration
+	public static class CustomizationConfiguration2
+			implements RestDocsRestAssuredConfigurationCustomizer {
+
+		@Override
+		public void customize(RestAssuredRestDocumentationConfigurer configurer) {
+			configurer.snippets().withAdditionalDefaults(
+					responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
 	}
