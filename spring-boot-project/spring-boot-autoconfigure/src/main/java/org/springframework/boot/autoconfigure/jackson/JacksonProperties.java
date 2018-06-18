@@ -65,36 +65,36 @@ public class JacksonProperties {
 	 * Jackson visibility thresholds that can be used to limit which methods (and fields)
 	 * are auto-detected.
 	 */
-	private Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(
+	private final Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(
 			PropertyAccessor.class);
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
 	 */
-	private Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
+	private final Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
 			SerializationFeature.class);
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are deserialized.
 	 */
-	private Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(
+	private final Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(
 			DeserializationFeature.class);
 
 	/**
 	 * Jackson general purpose on/off features.
 	 */
-	private Map<MapperFeature, Boolean> mapper = new EnumMap<>(MapperFeature.class);
+	private final Map<MapperFeature, Boolean> mapper = new EnumMap<>(MapperFeature.class);
 
 	/**
 	 * Jackson on/off features for parsers.
 	 */
-	private Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(
+	private final Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(
 			JsonParser.Feature.class);
 
 	/**
 	 * Jackson on/off features for generators.
 	 */
-	private Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(
+	private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(
 			JsonGenerator.Feature.class);
 
 	/**
