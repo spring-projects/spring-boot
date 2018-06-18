@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * A custom {@link HandlerMapping} that makes web endpoints available over HTTP using
@@ -66,8 +67,11 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 	@ResponseBody
 	protected Map<String, Map<String, Link>> links(HttpServletRequest request,
 			HttpServletResponse response) {
+		String requestUrl = ServletUriComponentsBuilder.fromRequest(request)
+				.build()
+				.toString();
 		return Collections.singletonMap("_links",
-				this.linksResolver.resolveLinks(request.getRequestURL().toString()));
+				this.linksResolver.resolveLinks(requestUrl));
 	}
 
 }
