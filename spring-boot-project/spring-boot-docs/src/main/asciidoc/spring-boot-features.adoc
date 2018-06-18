@@ -1820,8 +1820,12 @@ ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action f
 The `<springProfile>` tag lets you optionally include or exclude sections of
 configuration based on the active Spring profiles. Profile sections are supported
 anywhere within the `<configuration>` element. Use the `name` attribute to specify which
-profile accepts the configuration. Multiple profiles can be specified with a
-comma-separated list. The following listing shows three sample profiles:
+profile accepts the configuration. The `<springProfile> tag can contains a simple profile
+name (for example `staging`) or a profile expression. A profile expression allows for more
+complicated profile logic to be expressed, for example
+`production & (eu-central | eu-west)`. Check the
+{spring-reference}core.html#beans-definition-profiles-java[reference guide] for more
+details. The following listing shows three sample profiles:
 
 [source,xml,indent=0]
 ----
@@ -1829,7 +1833,7 @@ comma-separated list. The following listing shows three sample profiles:
 		<!-- configuration to be enabled when the "staging" profile is active -->
 	</springProfile>
 
-	<springProfile name="dev, staging">
+	<springProfile name="dev | staging">
 		<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
 	</springProfile>
 

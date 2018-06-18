@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import ch.qos.logback.core.util.OptionHelper;
 import org.xml.sax.Attributes;
 
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -74,7 +75,7 @@ class SpringProfileAction extends Action implements InPlayListener {
 				OptionHelper.substVars(profileName, ic, this.context);
 			}
 			return this.environment != null
-					&& this.environment.acceptsProfiles(profileNames);
+					&& this.environment.acceptsProfiles(Profiles.of(profileNames));
 		}
 		return false;
 	}
