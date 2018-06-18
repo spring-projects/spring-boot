@@ -387,8 +387,10 @@ public class ConfigFileApplicationListener
 				return;
 			}
 			if (this.activatedProfiles) {
-				this.logger.debug("Profiles already activated, '" + profiles
-						+ "' will not be applied");
+				if (this.logger.isDebugEnabled()) {
+					this.logger.debug("Profiles already activated, '" + profiles
+							+ "' will not be applied");
+				}
 				return;
 			}
 			this.profiles.addAll(profiles);
@@ -503,23 +505,28 @@ public class ConfigFileApplicationListener
 				DocumentFilter filter, DocumentConsumer consumer) {
 			try {
 				Resource resource = this.resourceLoader.getResource(location);
-				String description = getDescription(location, resource);
-				if (profile != null) {
-					description = description + " for profile " + profile;
-				}
 				if (resource == null || !resource.exists()) {
-					this.logger.trace("Skipped missing config " + description);
+					if (this.logger.isTraceEnabled()) {
+						this.logger.trace("Skipped missing config "
+								+ getDescription(location, resource, profile));
+					}
 					return;
 				}
 				if (!StringUtils.hasText(
 						StringUtils.getFilenameExtension(resource.getFilename()))) {
-					this.logger.trace("Skipped empty config extension " + description);
+					if (this.logger.isTraceEnabled()) {
+						this.logger.trace("Skipped empty config extension "
+								+ getDescription(location, resource, profile));
+					}
 					return;
 				}
 				String name = "applicationConfig: [" + location + "]";
 				List<Document> documents = loadDocuments(loader, name, resource);
 				if (CollectionUtils.isEmpty(documents)) {
-					this.logger.trace("Skipped unloaded config " + description);
+					if (this.logger.isTraceEnabled()) {
+						this.logger.trace("Skipped unloaded config "
+								+ getDescription(location, resource, profile));
+					}
 					return;
 				}
 				List<Document> loaded = new ArrayList<>();
@@ -533,7 +540,10 @@ public class ConfigFileApplicationListener
 				Collections.reverse(loaded);
 				if (!loaded.isEmpty()) {
 					loaded.forEach((document) -> consumer.accept(profile, document));
-					this.logger.debug("Loaded config file " + description);
+					if (this.logger.isDebugEnabled()) {
+						this.logger.debug("Loaded config file "
+								+ getDescription(location, resource, profile));
+					}
 				}
 			}
 			catch (Exception ex) {
@@ -576,6 +586,13 @@ public class ConfigFileApplicationListener
 						getProfiles(binder, ACTIVE_PROFILES_PROPERTY),
 						getProfiles(binder, INCLUDE_PROFILES_PROPERTY));
 			}).collect(Collectors.toList());
+		}
+
+		private String getDescription(String location, Resource resource,
+				Profile profile) {
+			String description = getDescription(location, resource);
+			return (profile != null ? description + " for profile " + profile
+					: description);
 		}
 
 		private String getDescription(String location, Resource resource) {
