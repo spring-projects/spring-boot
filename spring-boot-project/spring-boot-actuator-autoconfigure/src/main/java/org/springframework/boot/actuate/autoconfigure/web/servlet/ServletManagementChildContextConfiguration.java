@@ -59,7 +59,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * @author Eddú Meléndez
  * @author Phillip Webb
  */
-@Configuration
 @ManagementContextConfiguration(ManagementContextType.CHILD)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 class ServletManagementChildContextConfiguration {

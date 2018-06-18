@@ -42,7 +42,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link ManagementContextConfiguration} for Jersey {@link Endpoint} concerns.
@@ -51,7 +50,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Phillip Webb
  * @author Michael Simons
  */
-@Configuration
+@ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(ResourceConfig.class)
 @ConditionalOnBean(WebEndpointsSupplier.class)
