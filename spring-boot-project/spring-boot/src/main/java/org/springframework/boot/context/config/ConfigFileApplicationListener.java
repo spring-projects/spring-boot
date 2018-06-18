@@ -370,8 +370,8 @@ public class ConfigFileApplicationListener
 			}
 			Binder binder = Binder.get(this.environment);
 			Set<Profile> activeProfiles = new LinkedHashSet<>();
-			activeProfiles.addAll(getProfiles(binder, ACTIVE_PROFILES_PROPERTY));
 			activeProfiles.addAll(getProfiles(binder, INCLUDE_PROFILES_PROPERTY));
+			activeProfiles.addAll(getProfiles(binder, ACTIVE_PROFILES_PROPERTY));
 			return activeProfiles;
 		}
 
