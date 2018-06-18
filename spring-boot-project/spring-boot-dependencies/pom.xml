@@ -148,7 +148,6 @@
 		<selenium-htmlunit.version>2.29.3</selenium-htmlunit.version>
 		<sendgrid.version>4.1.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
-		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.19</snakeyaml.version>
 		<solr.version>7.2.1</solr.version>
@@ -622,17 +621,6 @@
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>${gson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.googlecode.json-simple</groupId>
-				<artifactId>json-simple</artifactId>
-				<version>${simple-json.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>
