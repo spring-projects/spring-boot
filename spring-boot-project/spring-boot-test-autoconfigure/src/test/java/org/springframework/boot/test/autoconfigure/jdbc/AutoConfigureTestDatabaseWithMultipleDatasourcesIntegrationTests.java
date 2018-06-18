@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,14 +38,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * datasources.
  *
  * @author Greg Potter
+ * @author Eric Bussieres
  */
 @RunWith(SpringRunner.class)
 @JdbcTest
-@AutoConfigureTestDatabase
 public class AutoConfigureTestDatabaseWithMultipleDatasourcesIntegrationTests {
 
 	@Autowired
 	private DataSource dataSource;
+
+	@Autowired
+	@Qualifier("secondaryDataSource")
+	private DataSource secondaryDataSource;
 
 	@Test
 	public void replacesDefinedDataSourceWithExplicit() throws Exception {
@@ -52,6 +57,21 @@ public class AutoConfigureTestDatabaseWithMultipleDatasourcesIntegrationTests {
 		String product = this.dataSource.getConnection().getMetaData()
 				.getDatabaseProductName();
 		assertThat(product).startsWith("H2");
+
+		String secondaryProduct = this.secondaryDataSource.getConnection().getMetaData()
+				.getDatabaseProductName();
+		assertThat(secondaryProduct).startsWith("H2");
+	}
+
+	@Test
+	public void createEmbeddedDatabaseForEachDatasource() throws Exception {
+		String dataSourceUrl = this.dataSource.getConnection().getMetaData().getURL();
+		String secondaryDataSourceUrl = this.secondaryDataSource.getConnection()
+				.getMetaData().getURL();
+
+		assertThat(dataSourceUrl).isNotEmpty();
+		assertThat(secondaryDataSourceUrl).isNotEmpty();
+		assertThat(dataSourceUrl).isNotEqualTo(secondaryDataSourceUrl);
 	}
 
 	@Configuration
