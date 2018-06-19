@@ -104,6 +104,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Override
 	@After
 	public void clear() {
+		super.clear();
 		this.loggingSystem.cleanUp();
 	}
 

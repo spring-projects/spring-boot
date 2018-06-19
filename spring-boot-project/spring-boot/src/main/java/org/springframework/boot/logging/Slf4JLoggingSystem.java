@@ -48,7 +48,10 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void cleanUp() {
-		removeJdkLoggingBridgeHandler();
+		if (isBridgeHandlerAvailable()) {
+			removeJdkLoggingBridgeHandler();
+			reinstateConsoleHandlerIfNecessary();
+		}
 	}
 
 	@Override
@@ -62,7 +65,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
 	private void configureJdkLoggingBridgeHandler() {
 		try {
-			if (isBridgeHandlerAvailable()) {
+			if (isBridgeJulIntoSlf4j()) {
 				removeJdkLoggingBridgeHandler();
 				SLF4JBridgeHandler.install();
 			}
@@ -72,16 +75,24 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
+	protected final boolean isBridgeJulIntoSlf4j() {
+		return isBridgeHandlerAvailable() && isJulUsingItsDefaultConfiguration();
+	}
+
 	protected final boolean isBridgeHandlerAvailable() {
 		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
+	private boolean isJulUsingItsDefaultConfiguration() {
+		Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		return handlers.length == 1 && handlers[0] instanceof ConsoleHandler;
+	}
+
 	private void removeJdkLoggingBridgeHandler() {
 		try {
-			if (isBridgeHandlerAvailable()) {
-				removeDefaultRootHandler();
-				SLF4JBridgeHandler.uninstall();
-			}
+			removeDefaultRootHandler();
+			SLF4JBridgeHandler.uninstall();
 		}
 		catch (Throwable ex) {
 			// Ignore and continue
@@ -98,6 +109,13 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 		catch (Throwable ex) {
 			// Ignore and continue
+		}
+	}
+
+	private void reinstateConsoleHandlerIfNecessary() {
+		Logger rootLogger = LogManager.getLogManager().getLogger("");
+		if (rootLogger.getHandlers().length == 0) {
+			rootLogger.addHandler(new ConsoleHandler());
 		}
 	}
 
