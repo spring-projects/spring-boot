@@ -150,8 +150,18 @@ public class MailSenderAutoConfigurationTests {
 
 	@Test
 	public void jndiSessionAvailable() {
-		Session session = configureJndiSession("foo");
-		this.contextRunner.withPropertyValues("spring.mail.jndi-name:foo")
+		Session session = configureJndiSession("java:comp/env/foo");
+		testJndiSessionLookup(session, "java:comp/env/foo");
+	}
+
+	@Test
+	public void jndiSessionAvailableWithResourceRef() {
+		Session session = configureJndiSession("java:comp/env/foo");
+		testJndiSessionLookup(session, "foo");
+	}
+
+	private void testJndiSessionLookup(Session session, String jndiName) {
+		this.contextRunner.withPropertyValues("spring.mail.jndi-name:" + jndiName)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Session.class);
 					Session sessionBean = context.getBean(Session.class);

@@ -93,7 +93,16 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 
 	@Test
 	public void jndiNamePropertySet() {
-		ConnectionFactory connectionFactory = configureConnectionFactory("myCF");
+		ConnectionFactory connectionFactory = configureConnectionFactory(
+				"java:comp/env/myCF");
+		this.contextRunner.withPropertyValues("spring.jms.jndi-name=java:comp/env/myCF")
+				.run(assertConnectionFactory(connectionFactory));
+	}
+
+	@Test
+	public void jndiNamePropertySetWithResourceRef() {
+		ConnectionFactory connectionFactory = configureConnectionFactory(
+				"java:comp/env/myCF");
 		this.contextRunner.withPropertyValues("spring.jms.jndi-name=myCF")
 				.run(assertConnectionFactory(connectionFactory));
 	}

@@ -60,7 +60,8 @@ class MailSenderJndiConfiguration {
 	public Session session() {
 		String jndiName = this.properties.getJndiName();
 		try {
-			return new JndiLocatorDelegate().lookup(jndiName, Session.class);
+			return JndiLocatorDelegate.createDefaultResourceRefLocator().lookup(jndiName,
+					Session.class);
 		}
 		catch (NamingException ex) {
 			throw new IllegalStateException(
