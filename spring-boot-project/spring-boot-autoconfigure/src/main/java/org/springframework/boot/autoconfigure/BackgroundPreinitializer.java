@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -173,7 +172,6 @@ public class BackgroundPreinitializer
 		@Override
 		public void run() {
 			StandardCharsets.UTF_8.name();
-			Charset.availableCharsets();
 		}
 
 	}
