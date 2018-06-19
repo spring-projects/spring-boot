@@ -83,7 +83,7 @@ public final class WebClientExchangeTags {
 	 * @return the status tag
 	 */
 	public static Tag status(ClientResponse response) {
-		return Tag.of("status", response.statusCode().toString());
+		return Tag.of("status", String.valueOf(response.statusCode().value()));
 	}
 
 	/**

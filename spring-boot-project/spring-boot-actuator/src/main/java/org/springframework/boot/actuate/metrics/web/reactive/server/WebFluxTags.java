@@ -69,7 +69,7 @@ public final class WebFluxTags {
 		if (status == null) {
 			status = HttpStatus.OK;
 		}
-		return Tag.of("status", status.toString());
+		return Tag.of("status", String.valueOf(status.value()));
 	}
 
 	/**
