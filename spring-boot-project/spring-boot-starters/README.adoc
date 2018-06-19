@@ -67,8 +67,8 @@ do as they were designed before this was clarified.
 | https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
 | https://github.com/jliu666/docker-api-spring-boot
 
-| https://github.com/DozerMapper/dozer[Dozer]
-| https://github.com/DozerMapper/dozer/blob/master/docs/asciidoc/documentation/springBootIntegration.adoc
+| https://dozermapper.github.io/[Dozer]
+| https://github.com/DozerMapper/dozer
 
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
