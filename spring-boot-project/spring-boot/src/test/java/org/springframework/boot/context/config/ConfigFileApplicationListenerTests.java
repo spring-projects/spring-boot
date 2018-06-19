@@ -402,6 +402,18 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void profilesAddedToEnvironmentViaActiveAndIncludeProperty() {
+		// Active profile property takes precedence
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.profiles.active=dev", "spring.profiles.include=other");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
+		assertThat(this.environment.getProperty("my.property"))
+				.isEqualTo("fromdevpropertiesfile");
+		validateProfilePrecedence(null, "other", "dev");
+	}
+
+	@Test
 	public void profilesAddedToEnvironmentAndViaPropertyDuplicate() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev,other");
