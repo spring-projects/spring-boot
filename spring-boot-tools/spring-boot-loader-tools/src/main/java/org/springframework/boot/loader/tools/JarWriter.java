@@ -357,15 +357,15 @@ public class JarWriter implements LoaderClassesWriter {
 		public int read(byte[] b, int off, int len) throws IOException {
 			int read = (this.headerStream != null ? this.headerStream.read(b, off, len)
 					: -1);
-			if (read > 0) {
-				this.position += read;
+			if (read <= 0) {
+				return readRemainder(b, off, len);
 			}
-			else {
-				read = 0;
-			}
+			this.position += read;
 			if (read < len) {
-				read += super.read(b, off + read, len - read);
-				this.position += read;
+				int remainderRead = readRemainder(b, off + read, len - read);
+				if (remainderRead > 0) {
+					read += remainderRead;
+				}
 			}
 			if (this.position >= this.headerLength) {
 				this.headerStream = null;
@@ -375,6 +375,14 @@ public class JarWriter implements LoaderClassesWriter {
 
 		public boolean hasZipHeader() {
 			return Arrays.equals(this.header, ZIP_HEADER);
+		}
+
+		private int readRemainder(byte[] b, int off, int len) throws IOException {
+			int read = super.read(b, off, len);
+			if (read > 0) {
+				this.position += read;
+			}
+			return read;
 		}
 
 	}

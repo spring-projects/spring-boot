@@ -142,4 +142,56 @@ public class ZipHeaderPeekInputStreamTests {
 		}
 	}
 
+	@Test
+	public void readMoreThanEntireStreamWhenStreamLengthIsLessThanZipHeaderLength()
+			throws IOException {
+		ZipHeaderPeekInputStream in = null;
+		try {
+			in = new ZipHeaderPeekInputStream(
+					new ByteArrayInputStream(new byte[] { 10 }));
+			byte[] bytes = new byte[8];
+			assertThat(in.read(bytes)).isEqualTo(1);
+			assertThat(bytes).containsExactly(10, 0, 0, 0, 0, 0, 0, 0);
+		}
+		finally {
+			if (in != null) {
+				in.close();
+			}
+		}
+	}
+
+	@Test
+	public void readMoreThanEntireStreamWhenStreamLengthIsSameAsHeaderLength()
+			throws IOException {
+		ZipHeaderPeekInputStream in = null;
+		try {
+			in = new ZipHeaderPeekInputStream(
+					new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 }));
+			byte[] bytes = new byte[8];
+			assertThat(in.read(bytes)).isEqualTo(4);
+			assertThat(bytes).containsExactly(1, 2, 3, 4, 0, 0, 0, 0);
+		}
+		finally {
+			if (in != null) {
+				in.close();
+			}
+		}
+	}
+
+	@Test
+	public void readMoreThanEntireStreamWhenStreamLengthIsZero() throws IOException {
+		ZipHeaderPeekInputStream in = null;
+		try {
+			in = new ZipHeaderPeekInputStream(new ByteArrayInputStream(new byte[0]));
+			byte[] bytes = new byte[8];
+			assertThat(in.read(bytes)).isEqualTo(-1);
+			assertThat(bytes).containsExactly(0, 0, 0, 0, 0, 0, 0, 0);
+		}
+		finally {
+			if (in != null) {
+				in.close();
+			}
+		}
+	}
+
 }
