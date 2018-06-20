@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.net.BindException;
 import java.net.InetSocketAddress;
@@ -56,6 +57,8 @@ public class UndertowWebServer implements WebServer {
 
 	private final boolean autoStart;
 
+	private final Closeable closeable;
+
 	private Undertow undertow;
 
 	private volatile boolean started = false;
@@ -66,8 +69,21 @@ public class UndertowWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart) {
+		this(builder, autoStart, null);
+	}
+
+	/**
+	 * Create a new {@link UndertowWebServer} instance.
+	 * @param builder the builder
+	 * @param autoStart if the server should be started
+	 * @param closeable called when the server is stopped
+	 * @since 2.0.4
+	 */
+	public UndertowWebServer(Undertow.Builder builder, boolean autoStart,
+			Closeable closeable) {
 		this.builder = builder;
 		this.autoStart = autoStart;
+		this.closeable = closeable;
 	}
 
 	@Override
@@ -112,6 +128,7 @@ public class UndertowWebServer implements WebServer {
 		try {
 			if (this.undertow != null) {
 				this.undertow.stop();
+				this.closeable.close();
 			}
 		}
 		catch (Exception ex) {
@@ -214,6 +231,9 @@ public class UndertowWebServer implements WebServer {
 			this.started = false;
 			try {
 				this.undertow.stop();
+				if (this.closeable != null) {
+					this.closeable.close();
+				}
 			}
 			catch (Exception ex) {
 				throw new WebServerException("Unable to stop undertow", ex);
