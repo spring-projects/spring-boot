@@ -68,7 +68,7 @@ import org.springframework.core.env.Environment;
  *
  * <pre class="code">
  * &#064;EndpointWebExtension(endpoint = MyEndpoint.class)
- * class MyEndpointWebExtension {
+ * public class MyEndpointWebExtension {
  *
  * }</pre>
  * <p>

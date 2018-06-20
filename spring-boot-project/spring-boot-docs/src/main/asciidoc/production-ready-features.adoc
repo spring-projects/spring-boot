@@ -1867,8 +1867,8 @@ include::{code-examples}/actuate/metrics/MetricsFilterBeanExample.java[tag=confi
 
 [[production-ready-metrics-common-tags]]
 ==== Common tags
-Common tag are generally used for dimensional drill-down on the operating environment like
-host, instance, region, stack, etc. Commons tags applied to all meters and can be
+Common tags are generally used for dimensional drill-down on the operating environment like
+host, instance, region, stack, etc. Commons tags are applied to all meters and can be
 configured as shown in the following example:
 
 [source,properties,indent=0]
@@ -1877,7 +1877,7 @@ configured as shown in the following example:
 	management.metrics.tags.stack=prod
 ----
 
-The example above adds a `region` and `stack` tags to all meters with a value of
+The example above adds `region` and `stack` tags to all meters with a value of
 `us-east-1` and `prod` respectively.
 
 NOTE: The order of common tags is important if you are using Graphite. As the order of
