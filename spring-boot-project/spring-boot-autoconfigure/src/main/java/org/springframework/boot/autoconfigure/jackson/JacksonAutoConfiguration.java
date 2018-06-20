@@ -270,8 +270,8 @@ public class JacksonAutoConfiguration {
 			}
 
 			private void configureVisibility(Jackson2ObjectMapperBuilder builder,
-					Map<PropertyAccessor, JsonAutoDetect.Visibility> accessors) {
-				accessors.forEach(builder::visibility);
+					Map<PropertyAccessor, JsonAutoDetect.Visibility> visibilities) {
+				visibilities.forEach(builder::visibility);
 			}
 
 			private void configureDateFormat(Jackson2ObjectMapperBuilder builder) {

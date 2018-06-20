@@ -80,7 +80,7 @@ public class HibernateProperties {
 	 * Determine the configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory based on standard JPA properties and
 	 * {@link HibernateSettings}.
-	 * @param jpaProperties standard jpa properties
+	 * @param jpaProperties standard JPA properties
 	 * @param settings the settings to apply when determining the configuration properties
 	 * @return the Hibernate properties to use
 	 */

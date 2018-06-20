@@ -328,7 +328,7 @@ public class HibernateJpaAutoConfigurationTests
 	}
 
 	@Test
-	public void hibernatePropertiesCustomizerTakePrecedenceOverStrategyInstancesAndNamingStrategyProperties() {
+	public void hibernatePropertiesCustomizerTakesPrecedenceOverStrategyInstancesAndNamingStrategyProperties() {
 		contextRunner()
 				.withUserConfiguration(
 						TestHibernatePropertiesCustomizerConfiguration.class,
