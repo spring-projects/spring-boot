@@ -107,9 +107,8 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless()
 					? RetryInterceptorBuilder.stateless()
 					: RetryInterceptorBuilder.stateful());
-			builder.maxAttempts(retryConfig.getMaxAttempts());
-			builder.backOffOptions(retryConfig.getInitialInterval().toMillis(),
-					retryConfig.getMultiplier(), retryConfig.getMaxInterval().toMillis());
+			builder.retryOperations(
+					new RetryTemplateFactory().createRetryTemplate(retryConfig));
 			MessageRecoverer recoverer = (this.messageRecoverer != null
 					? this.messageRecoverer : new RejectAndDontRequeueRecoverer());
 			builder.recoverer(recoverer);
