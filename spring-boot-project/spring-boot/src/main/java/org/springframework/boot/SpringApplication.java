@@ -183,6 +183,8 @@ public class SpringApplication {
 	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.servlet.DispatcherServlet";
 
+	private static final String JERSEY_WEB_ENVIRONMENT_CLASS = "org.glassfish.jersey.server.ResourceConfig";
+
 	/**
 	 * Default banner location.
 	 */
@@ -271,7 +273,8 @@ public class SpringApplication {
 
 	private WebApplicationType deduceWebApplicationType() {
 		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
-				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)) {
+				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)
+				&& !ClassUtils.isPresent(JERSEY_WEB_ENVIRONMENT_CLASS, null)) {
 			return WebApplicationType.REACTIVE;
 		}
 		for (String className : WEB_ENVIRONMENT_CLASSES) {
