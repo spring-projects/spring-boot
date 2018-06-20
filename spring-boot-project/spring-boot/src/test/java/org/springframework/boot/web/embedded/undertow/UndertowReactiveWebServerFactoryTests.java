@@ -16,15 +16,25 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import io.undertow.Undertow;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -37,6 +47,9 @@ import static org.mockito.Mockito.mock;
  */
 public class UndertowReactiveWebServerFactoryTests
 		extends AbstractReactiveWebServerFactoryTests {
+
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Override
 	protected UndertowReactiveWebServerFactory getFactory() {
@@ -73,6 +86,46 @@ public class UndertowReactiveWebServerFactoryTests
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowBuilderCustomizer customizer : customizers) {
 			ordered.verify(customizer).customize(any(Undertow.Builder.class));
+		}
+	}
+
+	@Test
+	public void accessLogCanBeEnabled()
+			throws IOException, URISyntaxException, InterruptedException {
+		testAccessLog(null, null, "access_log.log");
+	}
+
+	@Test
+	public void accessLogCanBeCustomized()
+			throws IOException, URISyntaxException, InterruptedException {
+		testAccessLog("my_access.", "logz", "my_access.logz");
+	}
+
+	private void testAccessLog(String prefix, String suffix, String expectedFile)
+			throws IOException, URISyntaxException, InterruptedException {
+		UndertowReactiveWebServerFactory factory = getFactory();
+		factory.setAccessLogEnabled(true);
+		factory.setAccessLogPrefix(prefix);
+		factory.setAccessLogSuffix(suffix);
+		File accessLogDirectory = this.temporaryFolder.getRoot();
+		factory.setAccessLogDirectory(accessLogDirectory);
+		assertThat(accessLogDirectory.listFiles()).isEmpty();
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		WebClient client = getWebClient().build();
+		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
+				.body(BodyInserters.fromObject("Hello World")).exchange()
+				.flatMap((response) -> response.bodyToMono(String.class));
+		assertThat(result.block()).isEqualTo("Hello World");
+		File accessLog = new File(accessLogDirectory, expectedFile);
+		awaitFile(accessLog);
+		assertThat(accessLogDirectory.listFiles()).contains(accessLog);
+	}
+
+	private void awaitFile(File file) throws InterruptedException {
+		long end = System.currentTimeMillis() + 10000;
+		while (!file.exists() && System.currentTimeMillis() < end) {
+			Thread.sleep(100);
 		}
 	}
 
