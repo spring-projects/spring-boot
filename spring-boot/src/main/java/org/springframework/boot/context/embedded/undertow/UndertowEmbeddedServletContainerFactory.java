@@ -426,7 +426,7 @@ public class UndertowEmbeddedServletContainerFactory
 			XnioWorker worker = createWorker();
 			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix
 					: "access_log.");
-			DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+			final DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					worker, this.accessLogDirectory, prefix, this.accessLogSuffix,
 					this.accessLogRotate);
 			EventListener listener = new AccessLogShutdownListener(worker,
@@ -450,8 +450,8 @@ public class UndertowEmbeddedServletContainerFactory
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler,
 			AccessLogReceiver accessLogReceiver) {
 		createAccessLogDirectoryIfNecessary();
-		String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
-				: "common";
+		String formatString = ((this.accessLogPattern != null) ? this.accessLogPattern
+				: "common");
 		return new AccessLogHandler(handler, accessLogReceiver, formatString,
 				Undertow.class.getClassLoader());
 	}
