@@ -903,7 +903,7 @@ Lombok does not generate any particular constructor for such a type, as it is us
 automatically by the container to instantiate the object.
 
 Finally, only standard Java Bean properties are considered and binding on static
-properties are not supported.
+properties is not supported.
 ====
 
 TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value`
@@ -4634,7 +4634,7 @@ relevant annotation to its method, as shown in the following example:
 
 [source,java,indent=0]
 ----
-    import org.springframework.cache.annotation.Cacheable;
+	import org.springframework.cache.annotation.Cacheable;
 	import org.springframework.stereotype.Component;
 
 	@Component
@@ -6184,7 +6184,7 @@ method's application class>>.
 
 The underlying component scan configuration of `@SpringBootApplication` defines exclude
 filters that are used to make sure slicing works as expected. If you are using an explicit
-`@ComponentScan` directive on your `@SpringBootApplication`-annoted class, be aware that
+`@ComponentScan` directive on your `@SpringBootApplication`-annotated class, be aware that
 those filters will be disabled. If you are using slicing, you should define them again.
 ====
 
@@ -7914,7 +7914,7 @@ instance lifecycle to "per-class"].
 * https://try.kotlinlang.org/[Try Kotlin in your browser]
 * https://blog.jetbrains.com/kotlin/[Kotlin blog]
 * https://kotlin.link/[Awesome Kotlin]
-* https://spring.io/guides/tutorials/spring-boot-kotlin/[Tutorial: building web applications with Spring Boot and Kotlin ]
+* https://spring.io/guides/tutorials/spring-boot-kotlin/[Tutorial: building web applications with Spring Boot and Kotlin]
 * https://spring.io/blog/2016/02/15/developing-spring-boot-applications-with-kotlin[Developing Spring Boot applications with Kotlin]
 * https://spring.io/blog/2016/03/20/a-geospatial-messenger-with-kotlin-spring-boot-and-postgresql[A Geospatial Messenger with Kotlin, Spring Boot and PostgreSQL]
 * https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0[Introducing Kotlin support in Spring Framework 5.0]

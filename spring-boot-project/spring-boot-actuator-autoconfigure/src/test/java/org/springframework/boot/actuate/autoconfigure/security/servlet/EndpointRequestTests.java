@@ -139,7 +139,7 @@ public class EndpointRequestTests {
 	}
 
 	@Test
-	public void toLinksWhenServletPathNotEmptyShouldNotMatch() {
+	public void toLinksWhenServletPathNotEmptyShouldMatch() {
 		RequestMatcher matcher = EndpointRequest.toLinks();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "/actuator",
 				"/spring");
