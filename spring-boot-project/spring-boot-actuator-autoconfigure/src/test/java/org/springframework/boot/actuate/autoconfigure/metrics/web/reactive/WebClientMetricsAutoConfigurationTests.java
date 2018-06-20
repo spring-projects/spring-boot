@@ -83,7 +83,7 @@ public class WebClientMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class)
 				.run((context) -> assertThat(context)
 						.getBeans(WebClientExchangeTagsProvider.class).hasSize(1)
-						.containsKey("customTagProvider"));
+						.containsKey("customTagsProvider"));
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class WebClientMetricsAutoConfigurationTests {
 	protected static class CustomTagsProviderConfig {
 
 		@Bean
-		public WebClientExchangeTagsProvider customTagProvider() {
+		public WebClientExchangeTagsProvider customTagsProvider() {
 			return mock(WebClientExchangeTagsProvider.class);
 		}
 
