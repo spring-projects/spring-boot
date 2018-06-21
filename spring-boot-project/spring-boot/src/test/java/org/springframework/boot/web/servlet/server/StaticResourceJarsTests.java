@@ -74,6 +74,14 @@ public class StaticResourceJarsTests {
 		assertThat(staticResourceJarUrls).hasSize(0);
 	}
 
+	@Test
+	public void uncPathsAreTolerated() throws Exception {
+		File jarFile = createResourcesJar("test-resources.jar");
+		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(
+				jarFile.toURI().toURL(), new URL("file://unc.example.com/test.jar"));
+		assertThat(staticResourceJarUrls).hasSize(1);
+	}
+
 	private File createResourcesJar(String name) throws IOException {
 		return createJar(name, (output) -> {
 			JarEntry jarEntry = new JarEntry("META-INF/resources");

@@ -78,15 +78,24 @@ class StaticResourceJars {
 			throw new IllegalStateException(
 					"Failed to create File from URL '" + url + "'");
 		}
+		catch (IllegalArgumentException ex) {
+			return null;
+		}
 	}
 
 	private void addUrl(List<URL> urls, URL url) {
 		try {
-			if ("file".equals(url.getProtocol())) {
-				addUrlFile(urls, url, toFile(url));
+			if (!"file".equals(url.getProtocol())) {
+				addUrlConnection(urls, url, url.openConnection());
 			}
 			else {
-				addUrlConnection(urls, url, url.openConnection());
+				File file = toFile(url);
+				if (file != null) {
+					addUrlFile(urls, url, file);
+				}
+				else {
+					addUrlConnection(urls, url, url.openConnection());
+				}
 			}
 		}
 		catch (IOException ex) {
