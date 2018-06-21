@@ -80,7 +80,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.cache.jcache.provider= # Fully qualified name of the CachingProvider implementation to use to retrieve the JSR-107 compliant cache manager. Needed only if more than one JSR-107 implementation is available on the classpath.
 	spring.cache.redis.cache-null-values=true # Allow caching null values.
 	spring.cache.redis.key-prefix= # Key prefix.
-	spring.cache.redis.time-to-live=0ms # Entry expiration. By default the entries never expire.
+	spring.cache.redis.time-to-live= # Entry expiration. By default the entries never expire.
 	spring.cache.redis.use-key-prefix=true # Whether to use the key prefix when writing to Redis.
 	spring.cache.type= # Cache type. By default, auto-detected according to the environment.
 
@@ -499,7 +499,6 @@ content into your application. Rather, pick only the properties that you need.
 	spring.webservices.wsdl-locations= # Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans.
 
 
-	[[common-application-properties-security]]
 	# ----------------------------------------
 	# SECURITY PROPERTIES
 	# ----------------------------------------
@@ -543,7 +542,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.flyway.placeholder-suffix= #
 	spring.flyway.placeholders.*= #
 	spring.flyway.repeatable-sql-migration-prefix= #
-	spring.flyway.schemas= # schemas to update
+	spring.flyway.schemas= # Schemas to update.
 	spring.flyway.skip-default-callbacks= #
 	spring.flyway.skip-default-resolvers= #
 	spring.flyway.sql-migration-prefix=V #
@@ -721,9 +720,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.elasticsearch.jest.username= # Login username.
 
 	# Elasticsearch REST clients ({sc-spring-boot-autoconfigure}/elasticsearch/rest/RestClientProperties.{sc-ext}[RestClientProperties])
-	spring.elasticsearch.rest.password= # Credentials username.
+	spring.elasticsearch.rest.password= # Credentials password.
     spring.elasticsearch.rest.uris=http://localhost:9200 # Comma-separated list of the Elasticsearch instances to use.
-    spring.elasticsearch.rest.username= # Credentials password.
+    spring.elasticsearch.rest.username= # Credentials username.
 
 	# H2 Web Console ({sc-spring-boot-autoconfigure}/h2/H2ConsoleProperties.{sc-ext}[H2ConsoleProperties])
 	spring.h2.console.enabled=false # Whether to enable the console.
@@ -1346,7 +1345,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.binders.logback.enabled=true # Whether to enable Logback metrics.
 	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
 	management.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.
-	management.metrics.distribution.percentiles-histogram.*= # Whether meter IDs starting-with the specified name should be publish percentile histograms.
+	management.metrics.distribution.percentiles-histogram.*= # Whether meter IDs starting with the specified name should publish percentile histograms.
 	management.metrics.distribution.percentiles.*= # Specific computed non-aggregable percentiles to ship to the backend for meter IDs starting-with the specified name.
 	management.metrics.distribution.sla.*= # Specific SLA boundaries for meter IDs starting-with the specified name. The longest match wins, the key `all` can also be used to configure all meters.
 	management.metrics.enable.*= # Whether meter IDs starting-with the specified name should be enabled. The longest match wins, the key `all` can also be used to configure all meters.

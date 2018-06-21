@@ -112,8 +112,8 @@ public class ResourceProperties {
 		private boolean htmlApplicationCache = false;
 
 		/**
-		 * Whether to enable resolution of already compressed resources. Checks for a
-		 * resource name with the '.gz' or '.br' file extensions.
+		 * Whether to enable resolution of already compressed resources (gzip, brotli).
+		 * Checks for a resource name with the '.gz' or '.br' file extensions.
 		 */
 		private boolean compressed = false;
 
