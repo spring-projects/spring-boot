@@ -1572,6 +1572,22 @@ jiggling with excludes. The following example shows how to set up the starters i
 	</dependency>
 ----
 
+And the following example shows one way to set up the starters in Gradle:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	dependencies {
+		compile 'org.springframework.boot:spring-boot-starter-web'
+		compile 'org.springframework.boot:spring-boot-starter-log4j2'
+	}
+
+	configurations {
+		all {
+			exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		}
+	}
+----
+
 NOTE: The Log4j starters gather together the dependencies for common logging
 requirements (such as having Tomcat use `java.util.logging` but configuring the
 output using Log4j 2). See the
