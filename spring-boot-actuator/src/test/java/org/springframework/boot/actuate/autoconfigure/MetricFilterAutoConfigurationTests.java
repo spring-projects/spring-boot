@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,6 +99,8 @@ public class MetricFilterAutoConfigurationTests {
 		Filter filter = context.getBean(Filter.class);
 		final MockHttpServletRequest request = new MockHttpServletRequest("GET",
 				"/test/path");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				"/test/path");
 		final MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);
 		willAnswer(new Answer<Object>() {
@@ -110,6 +113,29 @@ public class MetricFilterAutoConfigurationTests {
 		filter.doFilter(request, response, chain);
 		verify(context.getBean(CounterService.class)).increment("status.200.test.path");
 		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
+				anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void usesUnmappedForInterationsWithNoBestMatchingPattern() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		final MockHttpServletRequest request = new MockHttpServletRequest("GET",
+				"/test/path");
+		final MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
+		willAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				response.setStatus(200);
+				return null;
+			}
+		}).given(chain).doFilter(request, response);
+		filter.doFilter(request, response, chain);
+		verify(context.getBean(CounterService.class)).increment("status.200.unmapped");
+		verify(context.getBean(GaugeService.class)).submit(eq("response.unmapped"),
 				anyDouble());
 		context.close();
 	}
@@ -362,6 +388,8 @@ public class MetricFilterAutoConfigurationTests {
 		Filter filter = context.getBean(Filter.class);
 		final MockHttpServletRequest request = new MockHttpServletRequest("PUT",
 				"/test/path");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+				"/test/path");
 		final MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);
 		willAnswer(new Answer<Object>() {
@@ -418,6 +446,8 @@ public class MetricFilterAutoConfigurationTests {
 		context.refresh();
 		Filter filter = context.getBean(Filter.class);
 		final MockHttpServletRequest request = new MockHttpServletRequest("GET",
+				"/test/path");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
 				"/test/path");
 		final MockHttpServletResponse response = new MockHttpServletResponse();
 		FilterChain chain = mock(FilterChain.class);

@@ -35,11 +35,9 @@ import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatus.Series;
 import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.util.UrlPathHelper;
 
 /**
  * Filter that counts requests and measures processing times.
@@ -100,7 +98,6 @@ final class MetricsFilter extends OncePerRequestFilter {
 			HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 		StopWatch stopWatch = createStopWatchIfNecessary(request);
-		String path = new UrlPathHelper().getPathWithinApplication(request);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		try {
 			chain.doFilter(request, response);
@@ -113,7 +110,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 				}
 				stopWatch.stop();
 				request.removeAttribute(ATTRIBUTE_STOP_WATCH);
-				recordMetrics(request, path, status, stopWatch.getTotalTimeMillis());
+				recordMetrics(request, status, stopWatch.getTotalTimeMillis());
 			}
 		}
 	}
@@ -137,27 +134,20 @@ final class MetricsFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private void recordMetrics(HttpServletRequest request, String path, int status,
-			long time) {
-		String suffix = determineMetricNameSuffix(request, path, status);
+	private void recordMetrics(HttpServletRequest request, int status, long time) {
+		String suffix = determineMetricNameSuffix(request);
 		submitMetrics(MetricsFilterSubmission.MERGED, request, status, time, suffix);
 		submitMetrics(MetricsFilterSubmission.PER_HTTP_METHOD, request, status, time,
 				suffix);
 	}
 
-	private String determineMetricNameSuffix(HttpServletRequest request, String path,
-			int status) {
+	private String determineMetricNameSuffix(HttpServletRequest request) {
 		Object bestMatchingPattern = request
 				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (bestMatchingPattern != null) {
 			return fixSpecialCharacters(bestMatchingPattern.toString());
 		}
-		Series series = getSeries(status);
-		if (Series.CLIENT_ERROR.equals(series) || Series.SERVER_ERROR.equals(series)
-				|| Series.REDIRECTION.equals(series)) {
-			return UNKNOWN_PATH_SUFFIX;
-		}
-		return path;
+		return UNKNOWN_PATH_SUFFIX;
 	}
 
 	private String fixSpecialCharacters(String value) {
@@ -172,15 +162,6 @@ final class MetricsFilter extends OncePerRequestFilter {
 			result = result.substring(1);
 		}
 		return result;
-	}
-
-	private Series getSeries(int status) {
-		try {
-			return HttpStatus.valueOf(status).series();
-		}
-		catch (Exception ex) {
-			return null;
-		}
 	}
 
 	private void submitMetrics(MetricsFilterSubmission submission,
