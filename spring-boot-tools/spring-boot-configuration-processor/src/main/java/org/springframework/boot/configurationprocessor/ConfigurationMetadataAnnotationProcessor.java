@@ -320,7 +320,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	 * @param element the parent element of the field (i.e. its holding class)
 	 * @param getter {@code true} to look for the read accessor, {@code false} for the
 	 * write accessor
-	 * @return {@code true} if this field is a public accessor of the specified type
+	 * @return {@code true} if this field has a public accessor of the specified type
 	 */
 	private boolean hasLombokPublicAccessor(VariableElement field, TypeElement element,
 			boolean getter) {
