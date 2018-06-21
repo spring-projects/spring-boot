@@ -47,7 +47,6 @@ import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -77,24 +76,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(properties = "management.security.enabled=false")
 public class EndpointMvcIntegrationTests {
 
-	@LocalServerPort
-	private int port;
-
 	@Autowired
 	private TestInterceptor interceptor;
 
+	@Autowired
+	private TestRestTemplate testRestTemplate;
+
 	@Test
 	public void envEndpointNotHidden() throws InterruptedException {
-		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port + "/env/user.dir", String.class);
+		String body = testRestTemplate.getForObject("/env/user.dir", String.class);
 		assertThat(body).isNotNull().contains("spring-boot-actuator");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
 	@Test
 	public void healthEndpointNotHidden() throws InterruptedException {
-		String body = new TestRestTemplate()
-				.getForObject("http://localhost:" + this.port + "/health", String.class);
+		String body = testRestTemplate.getForObject("/health", String.class);
 		assertThat(body).isNotNull().contains("status");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
