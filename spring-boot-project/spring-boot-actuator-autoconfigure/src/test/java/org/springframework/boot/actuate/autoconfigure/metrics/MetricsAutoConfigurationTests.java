@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.micrometer.core.instrument.Clock;
@@ -33,6 +34,8 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.info.ApplicationInfoMetrics;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -232,6 +235,29 @@ public class MetricsAutoConfigurationTests {
 						.hasBean("customFileDescriptorMetrics"));
 	}
 
+	@Test
+	public void autoConfiguresApplicationInfoMetrics() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(ApplicationInfoMetrics.class));
+	}
+
+	@Test
+	public void allowsApplicationInfoMetricsToBeDisabled() {
+		this.contextRunner
+				.withPropertyValues("management.metrics.binders.info.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ApplicationInfoMetrics.class));
+	}
+
+	@Test
+	public void allowsCustomApplicationInfoMetricsToBeUsed() {
+		this.contextRunner
+				.withUserConfiguration(CustomApplicationInfoMetricsConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ApplicationInfoMetrics.class)
+						.hasBean("customApplicationInfoMetrics"));
+	}
+
 	@Configuration
 	static class CustomClockConfiguration {
 
@@ -340,6 +366,16 @@ public class MetricsAutoConfigurationTests {
 		@Bean
 		FileDescriptorMetrics customFileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
+		}
+
+	}
+
+	@Configuration
+	static class CustomApplicationInfoMetricsConfiguration {
+
+		@Bean
+		ApplicationInfoMetrics customApplicationInfoMetrics() {
+			return new ApplicationInfoMetrics(Collections.singletonList(mock(InfoContributor.class)));
 		}
 
 	}
