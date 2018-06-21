@@ -1648,7 +1648,7 @@ instead. If you aren't using the starters then you need to provide `jcl-over-slf
 (at least) in addition to Log4j 2.
 
 The simplest path is probably through the starters, even though it requires some
-jiggling with excludes, .e.g. in Maven:
+jiggling with excludes. The following example shows how to set up the starters in Maven:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1671,6 +1671,23 @@ jiggling with excludes, .e.g. in Maven:
 		<artifactId>spring-boot-starter-log4j2</artifactId>
 	</dependency>
 ----
+
+And the following example shows one way to set up the starters in Gradle:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	dependencies {
+		compile 'org.springframework.boot:spring-boot-starter-web'
+		compile 'org.springframework.boot:spring-boot-starter-log4j2'
+	}
+
+	configurations {
+		all {
+			exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		}
+	}
+----
+
 
 NOTE: The use of the Log4j starters gathers together the dependencies for common logging
 requirements (e.g. including having Tomcat use `java.util.logging` but configuring the
