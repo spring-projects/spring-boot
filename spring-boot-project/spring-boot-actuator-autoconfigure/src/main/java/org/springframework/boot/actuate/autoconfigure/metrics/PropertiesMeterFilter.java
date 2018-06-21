@@ -57,14 +57,13 @@ public class PropertiesMeterFilter implements MeterFilter {
 	@Override
 	public DistributionStatisticConfig configure(Meter.Id id,
 			DistributionStatisticConfig config) {
-		DistributionStatisticConfig.Builder builder = DistributionStatisticConfig
-				.builder();
 		Distribution distribution = this.properties.getDistribution();
-		builder.percentilesHistogram(
-				lookup(distribution.getPercentilesHistogram(), id, null));
-		builder.percentiles(lookup(distribution.getPercentiles(), id, null));
-		builder.sla(convertSla(id.getType(), lookup(distribution.getSla(), id, null)));
-		return builder.build().merge(config);
+		return DistributionStatisticConfig.builder()
+				.percentilesHistogram(
+						lookup(distribution.getPercentilesHistogram(), id, null))
+				.percentiles(lookup(distribution.getPercentiles(), id, null))
+				.sla(convertSla(id.getType(), lookup(distribution.getSla(), id, null)))
+				.build().merge(config);
 	}
 
 	private long[] convertSla(Meter.Type meterType, ServiceLevelAgreementBoundary[] sla) {
