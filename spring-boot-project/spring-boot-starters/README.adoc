@@ -85,9 +85,6 @@ do as they were designed before this was clarified.
 | http://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
 | https://github.com/graphql-java/graphql-spring-boot
 
-| http://graphql.org/[GraphQL]
-| https://github.com/merapar/graphql-spring-boot-starter
-
 | http://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
 
@@ -161,7 +158,7 @@ do as they were designed before this was clarified.
 | https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
 
 | http://resteasy.jboss.org/[RESTEasy]
-| https://github.com/paypal/resteasy-spring-boot
+| https://github.com/resteasy/resteasy-spring-boot
 
 | http://restfb.com/[RestFB] Messenger
 | https://github.com/marsbits/restfbmessenger
@@ -187,10 +184,7 @@ do as they were designed before this was clarified.
 | http://www.wiremock.org[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
-| https://code.google.com/p/wro4j/[WRO4J]
-| https://github.com/sbuettner/spring-boot-autoconfigure-wro4j
-
-| http://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
+| http://alexo.github.io/wro4j/[Wro4j]
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
 |===
