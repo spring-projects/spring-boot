@@ -44,10 +44,10 @@ public class SampleWebThymeleafApplicationTests {
 
 	@Test
 	public void testThymeleafTemplate() {
-		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("",
+		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("/",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("Hello, keqi");
+		assertThat(entity.getBody()).contains("Hello, keqi!");
 	}
 
 	@Test
