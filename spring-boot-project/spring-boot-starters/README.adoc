@@ -181,10 +181,7 @@ do as they were designed before this was clarified.
 | http://www.wiremock.org[WireMock] and Spring REST Docs
 | https://github.com/ePages-de/restdocs-wiremock
 
-| https://code.google.com/p/wro4j/[WRO4J]
-| https://github.com/sbuettner/spring-boot-autoconfigure-wro4j
-
-| http://alexo.github.io/wro4j/[Wro4j] (Advanced usage)
+| http://alexo.github.io/wro4j/[Wro4j]
 | https://github.com/michael-simons/wro4j-spring-boot-starter
 
 |===
