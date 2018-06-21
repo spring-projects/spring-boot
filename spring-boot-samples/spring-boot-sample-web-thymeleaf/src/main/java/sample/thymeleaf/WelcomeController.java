@@ -23,13 +23,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class WelcomeController {
-    @Value("${username}")
-    private String username;
+    @Value("${message}")
+    private String message;
 
     @RequestMapping("")
     public ModelAndView welcome(ModelAndView mav) {
         mav.setViewName("welcome");
-        mav.addObject("username", username);
+        mav.addObject("message", message);
         return mav;
     }
 }
