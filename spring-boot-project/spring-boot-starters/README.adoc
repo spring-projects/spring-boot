@@ -82,9 +82,6 @@ do as they were designed before this was clarified.
 | http://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
 | https://github.com/graphql-java/graphql-spring-boot
 
-| http://graphql.org/[GraphQL]
-| https://github.com/merapar/graphql-spring-boot-starter
-
 | http://www.grpc.io/[gRPC]
 | https://github.com/LogNet/grpc-spring-boot-starter
 
