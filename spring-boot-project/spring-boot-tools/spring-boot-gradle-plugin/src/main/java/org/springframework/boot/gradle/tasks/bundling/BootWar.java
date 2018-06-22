@@ -162,7 +162,7 @@ public class BootWar extends War implements BootArchive {
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
 		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
 		if (launchScript == null) {
-			launchScript = new LaunchScriptConfiguration();
+			launchScript = new LaunchScriptConfiguration(this);
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;

@@ -678,69 +678,98 @@ Spring Boot Maven or Gradle plugins.
 
 The following property substitutions are supported with the default script:
 
-[cols="1,6"]
+[cols="1,3,3,3"]
 |===
-|Name |Description
+|Name |Description |Gradle default |Maven default
 
 |`mode`
-|The script mode. Defaults to `auto`.
+|The script mode.
+|`auto`
+|`auto`
 
 |`initInfoProvides`
-|The `Provides` section of "`INIT INFO`". Defaults to `spring-boot-application` for Gradle
- and to `${project.artifactId}` for Maven.
+|The `Provides` section of "`INIT INFO`"
+|`${task.baseName}`
+|`${project.artifactId}`
 
 |`initInfoRequiredStart`
-|The `Required-Start` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
+|`Required-Start` section of "`INIT INFO`".
+|`$remote_fs $syslog $network`
+|`$remote_fs $syslog $network`
 
 |`initInfoRequiredStop`
-|The `Required-Stop` section of "`INIT INFO`". Defaults to `$remote_fs $syslog $network`.
-
+|`Required-Stop` section of "`INIT INFO`".
+|`$remote_fs $syslog $network`
+|`$remote_fs $syslog $network`
 
 |`initInfoDefaultStart`
-|The `Default-Start` section of "`INIT INFO`". Defaults to `2 3 4 5`.
+|`Default-Start` section of "`INIT INFO`".
+|`2 3 4 5`
+|`2 3 4 5`
 
 |`initInfoDefaultStop`
-|The `Default-Stop` section of "`INIT INFO`". Defaults to `0 1 6`.
+|`Default-Stop` section of "`INIT INFO`".
+|`0 1 6`
+|`0 1 6`
 
 |`initInfoShortDescription`
-|The `Short-Description` section of "`INIT INFO`". Defaults to `Spring Boot Application`
-for Gradle and to `${project.name}` for Maven.
+|`Short-Description` section of "`INIT INFO`".
+|Single-line version of `${project.description}` (falling back to `${task.baseName}`)
+|`${project.name}`
 
 |`initInfoDescription`
-|The `Description` section of "`INIT INFO`". Defaults to `Spring Boot Application` for
- Gradle and to `${project.description}` (falling back to `${project.name}`) for Maven.
+|`Description` section of "`INIT INFO`".
+|`${project.description}` (falling back to `${task.baseName}`)
+|`${project.description}` (falling back to `${project.name}`)
 
 |`initInfoChkconfig`
-|The `chkconfig` section of "`INIT INFO`". Defaults to `2345 99 01`.
+|`chkconfig` section of "`INIT INFO`"
+|`2345 99 01`
+|`2345 99 01`
 
 |`confFolder`
-|The default value for `CONF_FOLDER`. Defaults to the folder containing the jar.
+|The default value for `CONF_FOLDER`
+|Folder containing the jar
+|Folder containing the jar
 
 |`inlinedConfScript`
 |Reference to a file script that should be inlined in the default launch script.
  This can be used to set environmental variables such as `JAVA_OPTS` before any external
- config files are loaded.
+ config files are loaded
+|
+|
 
 |`logFolder`
-|The default value for `LOG_FOLDER`. Only valid for an `init.d` service.
+|Default value for `LOG_FOLDER`. Only valid for an `init.d` service
+|
+|
 
 |`logFilename`
-|The default value for `LOG_FILENAME`. Only valid for an `init.d` service.
+|Default value for `LOG_FILENAME`. Only valid for an `init.d` service
+|
+|
 
 |`pidFolder`
-|The default value for `PID_FOLDER`. Only valid for an `init.d` service.
+|Default value for `PID_FOLDER`. Only valid for an `init.d` service
+|
+|
 
 |`pidFilename`
-|The default value for the name of the PID file in `PID_FOLDER`. Only valid for an
- `init.d` service.
+|Default value for the name of the PID file in `PID_FOLDER`. Only valid for an
+ `init.d` service
+|
+|
 
 |`useStartStopDaemon`
 |Whether the `start-stop-daemon` command, when it's available, should be used to control
- the process. Defaults to `true`.
+ the process
+|`true`
+|`true`
 
 |`stopWaitTime`
-|The default value for `STOP_WAIT_TIME`. Only valid for an `init.d` service.
- Defaults to 60 seconds.
+|Default value for `STOP_WAIT_TIME` in seconds. Only valid for an `init.d` service
+|60
+|60
 |===
 
 

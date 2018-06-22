@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gradle.api.Project;
+import org.gradle.api.tasks.bundling.AbstractArchiveTask;
+
 import org.springframework.boot.loader.tools.FileUtils;
 
 /**
@@ -36,6 +39,19 @@ public class LaunchScriptConfiguration implements Serializable {
 	private final Map<String, String> properties = new HashMap<>();
 
 	private File script;
+
+	public LaunchScriptConfiguration() {
+
+	}
+
+	LaunchScriptConfiguration(AbstractArchiveTask archiveTask) {
+		Project project = archiveTask.getProject();
+		putIfMissing(this.properties, "initInfoProvides", archiveTask.getBaseName());
+		putIfMissing(this.properties, "initInfoShortDescription",
+				removeLineBreaks(project.getDescription()), archiveTask.getBaseName());
+		putIfMissing(this.properties, "initInfoDescription",
+				augmentLineBreaks(project.getDescription()), archiveTask.getBaseName());
+	}
 
 	/**
 	 * Returns the properties that are applied to the launch script when it's being
@@ -118,6 +134,26 @@ public class LaunchScriptConfiguration implements Serializable {
 		}
 		catch (IOException ex) {
 			return false;
+		}
+	}
+
+	private String removeLineBreaks(String string) {
+		return (string != null ? string.replaceAll("\\s+", " ") : null);
+	}
+
+	private String augmentLineBreaks(String string) {
+		return (string != null ? string.replaceAll("\n", "\n#  ") : null);
+	}
+
+	private void putIfMissing(Map<String, String> properties, String key,
+			String... valueCandidates) {
+		if (!properties.containsKey(key)) {
+			for (String candidate : valueCandidates) {
+				if (candidate != null && !candidate.isEmpty()) {
+					properties.put(key, candidate);
+					return;
+				}
+			}
 		}
 	}
 
