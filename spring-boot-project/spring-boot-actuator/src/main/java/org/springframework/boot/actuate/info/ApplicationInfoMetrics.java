@@ -16,10 +16,12 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -30,7 +32,7 @@ import org.springframework.util.Assert;
 
 
 /**
- * Makes the data from all InfoContributors available as a metric.
+ * Makes the data from all InfoContributors available as the metric "application.info".
  *
  * @author Tiago Bilou, Florian Stumpf
  * @since 2.0.0
@@ -58,11 +60,28 @@ public class ApplicationInfoMetrics implements MeterBinder {
 		Info build = builder.build();
 
 		final Map<String, Object> details = build.getDetails();
-		final List<Tag> tags = new ArrayList<>(details.size());
-		for (Map.Entry<String, Object> entry : details.entrySet()) {
-			tags.add(Tag.of(entry.getKey(), (String) entry.getValue()));
-		}
+		Map<String, String> flatDetails = new LinkedHashMap<>();
+
+		flattenKeys(details, flatDetails);
+
+		final List<Tag> tags = flatDetails.entrySet().stream()
+				.map(e -> Tag.of(e.getKey(), e.getValue()))
+				.collect(Collectors.toList());
 
 		return tags;
+	}
+
+	private void flattenKeys(Map<String, Object> map, Map<String, String> result) {
+
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			if (!(entry.getValue() instanceof Map)) {
+				result.put(entry.getKey(), String.valueOf(entry.getValue()));
+			} else {
+				final Map<String, Object> remaining = (Map<String, Object>) entry.getValue();
+				remaining.entrySet().stream()
+						.map(e -> Collections.singletonMap(entry.getKey().concat(".").concat(e.getKey()), e.getValue()))
+						.forEach(m -> flattenKeys(m, result));
+			}
+		}
 	}
 }
