@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  * {@link Endpoint} to expose liquibase info.
  *
  * @author Eddú Meléndez
+ * @author Dmitrii Sergeev
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.liquibase")
@@ -65,9 +66,9 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 				DataSource dataSource = entry.getValue().getDataSource();
 				JdbcConnection connection = new JdbcConnection(
 						dataSource.getConnection());
+				Database database = null;
 				try {
-					Database database = factory
-							.findCorrectDatabaseImplementation(connection);
+					database = factory.findCorrectDatabaseImplementation(connection);
 					String defaultSchema = entry.getValue().getDefaultSchema();
 					if (StringUtils.hasText(defaultSchema)) {
 						database.setDefaultSchemaName(defaultSchema);
@@ -76,7 +77,9 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 							service.queryDatabaseChangeLogTable(database)));
 				}
 				finally {
-					connection.close();
+					if (database != null) {
+						database.close();
+					}
 				}
 			}
 			catch (Exception ex) {
