@@ -25,6 +25,7 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -46,14 +47,14 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 				"endpoints.liquibase");
 	}
 
-	@Override
-	protected void configureEnvironment(AnnotationConfigApplicationContext context) {
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.datasource.generate-unique-name=true");
-	}
-
 	@Test
 	public void invoke() throws Exception {
+		this.context.close();
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.generate-unique-name=true");
+		this.context.register(PooledConfig.class);
+		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertThat(getAutoCommit(dataSource)).isTrue();
 		assertThat(getEndpointBean().invoke()).hasSize(1);
@@ -76,19 +77,37 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"liquibase.default-schema=CUSTOMSCHEMA",
+				"spring.datasource.generate-unique-name=true",
 				"spring.datasource.schema=classpath:/db/create-custom-schema.sql");
-		this.context.register(Config.class);
+		this.context.register(PooledConfig.class);
 		this.context.refresh();
 		assertThat(getEndpointBean().invoke()).hasSize(1);
 	}
 
 	@Configuration
-	@Import({ DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class })
+	@Import({ EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class })
 	public static class Config {
 
 		private final SpringLiquibase liquibase;
 
 		public Config(SpringLiquibase liquibase) {
+			this.liquibase = liquibase;
+		}
+
+		@Bean
+		public LiquibaseEndpoint endpoint() {
+			return new LiquibaseEndpoint(this.liquibase);
+		}
+
+	}
+
+	@Configuration
+	@Import({ DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class })
+	public static class PooledConfig {
+
+		private final SpringLiquibase liquibase;
+
+		public PooledConfig(SpringLiquibase liquibase) {
 			this.liquibase = liquibase;
 		}
 
