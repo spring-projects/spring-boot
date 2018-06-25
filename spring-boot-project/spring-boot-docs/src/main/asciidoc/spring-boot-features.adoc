@@ -4675,6 +4675,7 @@ TIP: It is also possible to transparently
 
 
 
+[[boot-features-caching-provider]]
 === Supported Cache Providers
 The cache abstraction does not provide an actual store and relies on abstraction
 materialized by the `org.springframework.cache.Cache` and
