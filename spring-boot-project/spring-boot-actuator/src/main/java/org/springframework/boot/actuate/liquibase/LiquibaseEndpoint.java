@@ -80,8 +80,9 @@ public class LiquibaseEndpoint {
 		try {
 			DataSource dataSource = liquibase.getDataSource();
 			JdbcConnection connection = new JdbcConnection(dataSource.getConnection());
+			Database database = null;
 			try {
-				Database database = factory.findCorrectDatabaseImplementation(connection);
+				database = factory.findCorrectDatabaseImplementation(connection);
 				String defaultSchema = liquibase.getDefaultSchema();
 				if (StringUtils.hasText(defaultSchema)) {
 					database.setDefaultSchemaName(defaultSchema);
@@ -91,7 +92,12 @@ public class LiquibaseEndpoint {
 						.map(ChangeSet::new).collect(Collectors.toList()));
 			}
 			finally {
-				connection.close();
+				if (database != null) {
+					database.close();
+				}
+				else {
+					connection.close();
+				}
 			}
 		}
 		catch (Exception ex) {
