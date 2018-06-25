@@ -46,6 +46,12 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 				"endpoints.liquibase");
 	}
 
+	@Override
+	protected void configureEnvironment(AnnotationConfigApplicationContext context) {
+		EnvironmentTestUtils.addEnvironment(context,
+				"spring.datasource.generate-unique-name=true");
+	}
+
 	@Test
 	public void invoke() throws Exception {
 		DataSource dataSource = this.context.getBean(DataSource.class);
@@ -70,7 +76,6 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"liquibase.default-schema=CUSTOMSCHEMA",
-				"spring.datasource.generate-unique-name=true",
 				"spring.datasource.schema=classpath:/db/create-custom-schema.sql");
 		this.context.register(Config.class);
 		this.context.refresh();
