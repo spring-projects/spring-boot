@@ -378,7 +378,7 @@ public class TomcatServletWebServerFactoryTests
 	}
 
 	@Test
-	public void defaultLocaleCharsetMappingsAreOverriden() {
+	public void defaultLocaleCharsetMappingsAreOverridden() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
 		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
