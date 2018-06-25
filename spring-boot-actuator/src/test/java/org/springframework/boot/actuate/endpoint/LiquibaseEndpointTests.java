@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -44,7 +48,20 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 
 	@Test
 	public void invoke() throws Exception {
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(getAutoCommit(dataSource)).isTrue();
 		assertThat(getEndpointBean().invoke()).hasSize(1);
+		assertThat(getAutoCommit(dataSource)).isTrue();
+	}
+
+	private boolean getAutoCommit(DataSource dataSource) throws SQLException {
+		Connection connection = dataSource.getConnection();
+		try {
+			return connection.getAutoCommit();
+		}
+		finally {
+			connection.close();
+		}
 	}
 
 	@Test
@@ -55,35 +72,18 @@ public class LiquibaseEndpointTests extends AbstractEndpointTests<LiquibaseEndpo
 				"liquibase.default-schema=CUSTOMSCHEMA",
 				"spring.datasource.generate-unique-name=true",
 				"spring.datasource.schema=classpath:/db/create-custom-schema.sql");
-		this.context.register(CustomSchemaConfig.class);
+		this.context.register(Config.class);
 		this.context.refresh();
 		assertThat(getEndpointBean().invoke()).hasSize(1);
 	}
 
 	@Configuration
-	@Import({ EmbeddedDataSourceConfiguration.class, LiquibaseAutoConfiguration.class })
+	@Import({ DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 	public static class Config {
 
 		private final SpringLiquibase liquibase;
 
 		public Config(SpringLiquibase liquibase) {
-			this.liquibase = liquibase;
-		}
-
-		@Bean
-		public LiquibaseEndpoint endpoint() {
-			return new LiquibaseEndpoint(this.liquibase);
-		}
-
-	}
-
-	@Configuration
-	@Import({ DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class })
-	public static class CustomSchemaConfig {
-
-		private final SpringLiquibase liquibase;
-
-		public CustomSchemaConfig(SpringLiquibase liquibase) {
 			this.liquibase = liquibase;
 		}
 

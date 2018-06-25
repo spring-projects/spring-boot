@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  * {@link Endpoint} to expose liquibase info.
  *
  * @author Eddú Meléndez
+ * @author Dmitrii Sergeev
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.liquibase")
@@ -65,9 +66,9 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 				DataSource dataSource = entry.getValue().getDataSource();
 				JdbcConnection connection = new JdbcConnection(
 						dataSource.getConnection());
+				Database database = null;
 				try {
-					Database database = factory
-							.findCorrectDatabaseImplementation(connection);
+					database = factory.findCorrectDatabaseImplementation(connection);
 					String defaultSchema = entry.getValue().getDefaultSchema();
 					if (StringUtils.hasText(defaultSchema)) {
 						database.setDefaultSchemaName(defaultSchema);
@@ -76,7 +77,12 @@ public class LiquibaseEndpoint extends AbstractEndpoint<List<LiquibaseReport>> {
 							service.queryDatabaseChangeLogTable(database)));
 				}
 				finally {
-					connection.close();
+					if (database != null) {
+						database.close();
+					}
+					else {
+						connection.close();
+					}
 				}
 			}
 			catch (Exception ex) {
