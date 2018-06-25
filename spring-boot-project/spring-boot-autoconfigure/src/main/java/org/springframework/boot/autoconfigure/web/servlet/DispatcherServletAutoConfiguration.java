@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -116,12 +117,6 @@ public class DispatcherServletAutoConfiguration {
 			return resolver;
 		}
 
-		@Bean
-		public DispatcherServletPathProvider mainDispatcherServletPathProvider() {
-			return () -> DispatcherServletConfiguration.this.serverProperties.getServlet()
-					.getPath();
-		}
-
 	}
 
 	@Configuration
@@ -159,6 +154,14 @@ public class DispatcherServletAutoConfiguration {
 				registration.setMultipartConfig(this.multipartConfig);
 			}
 			return registration;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(DispatcherServletPathProvider.class)
+		@ConditionalOnSingleCandidate(DispatcherServlet.class)
+		public DispatcherServletPathProvider dispatcherServletPathProvider() {
+			return () -> DispatcherServletRegistrationConfiguration.this.serverProperties
+					.getServlet().getPath();
 		}
 
 	}
