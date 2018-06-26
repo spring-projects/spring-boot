@@ -5997,7 +5997,7 @@ provided with the Quartz library. It is also possible to provide a custom script
 setting the `spring.quartz.jdbc.schema` property.
 
 Quartz Scheduler configuration can be customized by using Quartz configuration properties
-()`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans, which allow
+(`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans, which allow
 programmatic `SchedulerFactoryBean` customization.
 
 NOTE: In particular, an `Executor` bean is not associated with the scheduler as Quartz
@@ -6028,6 +6028,15 @@ in a similar manner, as shown in the following example:
 		}
 
 	}
+----
+
+Jobs created by configuration will not overwrite already registered jobs that have been
+read in from a persistent job store. To enable overwriting existing job definitions set
+`spring.quartz.overwriteExistingJobs` property:
+
+[source,properties,indent=0]
+----
+	spring.quartz.overwriteExistingJobs=true
 ----
 
 

@@ -103,6 +103,8 @@ public class QuartzAutoConfiguration {
 		if (this.triggers != null && this.triggers.length > 0) {
 			schedulerFactoryBean.setTriggers(this.triggers);
 		}
+		schedulerFactoryBean
+				.setOverwriteExistingJobs(this.properties.isOverwriteExistingJobs());
 		customize(schedulerFactoryBean);
 		return schedulerFactoryBean;
 	}
