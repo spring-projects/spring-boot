@@ -3,7 +3,7 @@ Thanks for raising a Spring Boot issue. Please take the time to review the follo
 categories as some of them do not apply here.
 
 ❓Question
-Please ask questions about how to use something, or to understand why something isn't
+STOP!! Please ask questions about how to use something, or to understand why something isn't
 working as you expect it to, on Stack Overflow using the spring-boot tag.
 
 🐞 Bug report
