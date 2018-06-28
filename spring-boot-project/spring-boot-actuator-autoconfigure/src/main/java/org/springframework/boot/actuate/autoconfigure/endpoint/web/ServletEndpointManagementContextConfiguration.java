@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
@@ -31,6 +34,7 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathP
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -70,12 +74,25 @@ public class ServletEndpointManagementContextConfiguration {
 				ServletEndpointsSupplier servletEndpointsSupplier) {
 			DispatcherServletPathProvider servletPathProvider = this.context
 					.getBean(DispatcherServletPathProvider.class);
-			String servletPath = servletPathProvider.getServletPath();
-			if (servletPath.equals("/")) {
-				servletPath = "";
-			}
-			return new ServletEndpointRegistrar(servletPath + properties.getBasePath(),
+			Set<String> cleanedPaths = getServletPaths(properties, servletPathProvider);
+			return new ServletEndpointRegistrar(cleanedPaths,
 					servletEndpointsSupplier.getEndpoints());
+		}
+
+		private Set<String> getServletPaths(WebEndpointProperties properties,
+				DispatcherServletPathProvider servletPathProvider) {
+			Set<String> servletPaths = servletPathProvider.getServletPaths();
+			return servletPaths.stream().map((p) -> {
+				String path = cleanServletPath(p);
+				return path + properties.getBasePath();
+			}).collect(Collectors.toSet());
+		}
+
+		private String cleanServletPath(String servletPath) {
+			if (StringUtils.hasText(servletPath) && servletPath.endsWith("/")) {
+				return servletPath.substring(0, servletPath.length() - 1);
+			}
+			return servletPath;
 		}
 
 	}

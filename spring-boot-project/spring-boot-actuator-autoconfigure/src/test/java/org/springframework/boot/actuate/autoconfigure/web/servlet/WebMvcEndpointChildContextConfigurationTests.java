@@ -68,8 +68,8 @@ public class WebMvcEndpointChildContextConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
 				.run((context) -> assertThat(context
-						.getBean(DispatcherServletPathProvider.class).getServletPath())
-								.isEmpty());
+						.getBean(DispatcherServletPathProvider.class).getServletPaths())
+								.containsExactly(""));
 	}
 
 	static class ExistingConfig {

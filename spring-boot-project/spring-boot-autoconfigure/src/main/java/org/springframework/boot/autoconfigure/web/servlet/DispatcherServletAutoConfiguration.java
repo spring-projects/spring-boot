@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.MultipartConfigElement;
@@ -151,8 +152,9 @@ public class DispatcherServletAutoConfiguration {
 		@ConditionalOnMissingBean(DispatcherServletPathProvider.class)
 		@ConditionalOnSingleCandidate(DispatcherServlet.class)
 		public DispatcherServletPathProvider dispatcherServletPathProvider() {
-			return () -> DispatcherServletRegistrationConfiguration.this.webMvcProperties
-					.getServlet().getPath();
+			return () -> Collections.singleton(
+					DispatcherServletRegistrationConfiguration.this.webMvcProperties
+							.getServlet().getPath());
 		}
 
 	}

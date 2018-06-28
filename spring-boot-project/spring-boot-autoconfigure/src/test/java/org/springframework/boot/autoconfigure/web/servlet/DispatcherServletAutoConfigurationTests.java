@@ -112,7 +112,7 @@ public class DispatcherServletAutoConfigurationTests {
 							.containsExactly("/spring/*");
 					assertThat(registration.getMultipartConfig()).isNull();
 					assertThat(context.getBean(DispatcherServletPathProvider.class)
-							.getServletPath()).isEqualTo("/spring");
+							.getServletPaths()).containsExactly("/spring");
 				});
 	}
 
@@ -129,8 +129,8 @@ public class DispatcherServletAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomDispatcherServletSameName.class)
 				.withPropertyValues("spring.mvc.servlet.path:/spring")
 				.run((context) -> assertThat(context
-						.getBean(DispatcherServletPathProvider.class).getServletPath())
-								.isEqualTo("/spring"));
+						.getBean(DispatcherServletPathProvider.class).getServletPaths())
+								.containsExactly("/spring"));
 	}
 
 	@Test

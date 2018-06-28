@@ -137,10 +137,9 @@ public final class EndpointRequest {
 
 		private RequestMatcher createDelegate(WebApplicationContext context) {
 			try {
-				String servletPath = getServletPath(context);
-				RequestMatcherFactory requestMatcherFactory = (StringUtils
-						.hasText(servletPath) ? new RequestMatcherFactory(servletPath)
-								: RequestMatcherFactory.withEmptyServletPath());
+				Set<String> servletPaths = getServletPaths(context);
+				RequestMatcherFactory requestMatcherFactory = new RequestMatcherFactory(
+						servletPaths);
 				return createDelegate(context, requestMatcherFactory);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
@@ -148,13 +147,13 @@ public final class EndpointRequest {
 			}
 		}
 
-		private String getServletPath(WebApplicationContext context) {
+		private Set<String> getServletPaths(WebApplicationContext context) {
 			try {
 				return context.getBean(DispatcherServletPathProvider.class)
-						.getServletPath();
+						.getServletPaths();
 			}
 			catch (NoSuchBeanDefinitionException ex) {
-				return "";
+				return Collections.singleton("");
 			}
 		}
 
@@ -226,7 +225,7 @@ public final class EndpointRequest {
 					requestMatcherFactory, paths);
 			if (this.includeLinks
 					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(
+				delegateMatchers.addAll(
 						requestMatcherFactory.antPath(pathMappedEndpoints.getBasePath()));
 			}
 			return new OrRequestMatcher(delegateMatchers);
@@ -259,7 +258,8 @@ public final class EndpointRequest {
 		private List<RequestMatcher> getDelegateMatchers(
 				RequestMatcherFactory requestMatcherFactory, Set<String> paths) {
 			return paths.stream()
-					.map((path) -> requestMatcherFactory.antPath(path, "/**"))
+					.flatMap(
+							(path) -> requestMatcherFactory.antPath(path, "/**").stream())
 					.collect(Collectors.toList());
 		}
 
@@ -276,7 +276,9 @@ public final class EndpointRequest {
 			WebEndpointProperties properties = context
 					.getBean(WebEndpointProperties.class);
 			if (StringUtils.hasText(properties.getBasePath())) {
-				return requestMatcherFactory.antPath(properties.getBasePath());
+				List<RequestMatcher> matchers = requestMatcherFactory
+						.antPath(properties.getBasePath());
+				return new OrRequestMatcher(matchers);
 			}
 			return EMPTY_MATCHER;
 		}
@@ -288,25 +290,27 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		private final String servletPath;
+		private final Set<String> servletPaths = new LinkedHashSet<>();
 
-		private static final RequestMatcherFactory EMPTY_SERVLET_PATH = new RequestMatcherFactory(
-				"");
-
-		RequestMatcherFactory(String servletPath) {
-			this.servletPath = servletPath;
+		RequestMatcherFactory(Set<String> servletPaths) {
+			this.servletPaths.addAll(servletPaths);
 		}
 
-		RequestMatcher antPath(String... parts) {
-			String pattern = (this.servletPath.equals("/") ? "" : this.servletPath);
-			for (String part : parts) {
-				pattern += part;
-			}
-			return new AntPathRequestMatcher(pattern);
-		}
-
-		static RequestMatcherFactory withEmptyServletPath() {
-			return EMPTY_SERVLET_PATH;
+		List<RequestMatcher> antPath(String... parts) {
+			List<RequestMatcher> matchers = new ArrayList<>();
+			this.servletPaths.stream().map((p) -> {
+				if (StringUtils.hasText(p)) {
+					return p;
+				}
+				return "";
+			}).distinct().forEach((path) -> {
+				String pattern = (path.equals("/") ? "" : path);
+				for (String part : parts) {
+					pattern += part;
+				}
+				matchers.add(new AntPathRequestMatcher(pattern));
+			});
+			return matchers;
 		}
 
 	}
