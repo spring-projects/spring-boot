@@ -86,7 +86,7 @@ public class RootUriRequestExpectationManagerTests {
 
 	@Test
 	public void expectRequestShouldDelegateToExpectationManager() {
-		ExpectedCount count = mock(ExpectedCount.class);
+		ExpectedCount count = ExpectedCount.once();
 		RequestMatcher requestMatcher = mock(RequestMatcher.class);
 		this.manager.expectRequest(count, requestMatcher);
 		verify(this.delegate).expectRequest(count, requestMatcher);
