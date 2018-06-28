@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.util.Set;
+
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * Interface that provides the path of the {@link DispatcherServlet} in an application
- * context.
+ * Interface that provides the paths that the {@link DispatcherServlet} in an application
+ * context is mapped to.
  *
  * @author Madhura Bhave
  * @since 2.0.2
@@ -28,6 +30,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 @FunctionalInterface
 public interface DispatcherServletPathProvider {
 
-	String getServletPath();
+	Set<String> getServletPaths();
 
 }

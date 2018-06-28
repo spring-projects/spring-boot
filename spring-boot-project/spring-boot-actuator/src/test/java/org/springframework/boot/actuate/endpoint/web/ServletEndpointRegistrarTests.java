@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.Servlet;
@@ -47,6 +49,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link ServletEndpointRegistrar}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class ServletEndpointRegistrarTests {
 
@@ -73,14 +76,14 @@ public class ServletEndpointRegistrarTests {
 	public void createWhenServletEndpointsIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletEndpoints must not be null");
-		new ServletEndpointRegistrar(null, null);
+		new ServletEndpointRegistrar((String) null, null);
 	}
 
 	@Test
 	public void onStartupShouldRegisterServlets() throws Exception {
 		ExposableServletEndpoint endpoint = mockEndpoint(
 				new EndpointServlet(TestServlet.class));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(null,
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar((String) null,
 				Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet(eq("test-actuator-endpoint"),
@@ -100,6 +103,64 @@ public class ServletEndpointRegistrarTests {
 				this.servlet.capture());
 		assertThat(this.servlet.getValue()).isInstanceOf(TestServlet.class);
 		verify(this.dynamic).addMapping("/actuator/test/*");
+	}
+
+	@Test
+	public void onStartupWhenHasMultipleBasePathsShouldIncludeAllBasePaths()
+			throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(
+				new EndpointServlet(TestServlet.class));
+		Set<String> basePaths = new LinkedHashSet<>();
+		basePaths.add("/actuator");
+		basePaths.add("/admin");
+		basePaths.add("/application");
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePaths,
+				Collections.singleton(endpoint));
+		registrar.onStartup(this.servletContext);
+		verify(this.servletContext).addServlet(eq("test-actuator-endpoint"),
+				this.servlet.capture());
+		assertThat(this.servlet.getValue()).isInstanceOf(TestServlet.class);
+		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+		verify(this.dynamic).addMapping(captor.capture());
+		assertThat(captor.getAllValues()).containsExactlyInAnyOrder("/application/test/*",
+				"/admin/test/*", "/actuator/test/*");
+	}
+
+	@Test
+	public void onStartupWhenHasEmptyBasePathsShouldIncludeRoot() throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(
+				new EndpointServlet(TestServlet.class));
+		Set<String> basePaths = Collections.emptySet();
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePaths,
+				Collections.singleton(endpoint));
+		registrar.onStartup(this.servletContext);
+		verify(this.dynamic).addMapping("/test/*");
+	}
+
+	@Test
+	public void onStartupWhenHasBasePathsHasNullValueShouldIncludeRoot()
+			throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(
+				new EndpointServlet(TestServlet.class));
+		Set<String> basePaths = new LinkedHashSet<>();
+		basePaths.add(null);
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePaths,
+				Collections.singleton(endpoint));
+		registrar.onStartup(this.servletContext);
+		verify(this.dynamic).addMapping("/test/*");
+	}
+
+	@Test
+	public void onStartupWhenDuplicateValuesShouldIncludeDistinct() throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(
+				new EndpointServlet(TestServlet.class));
+		Set<String> basePaths = new LinkedHashSet<>();
+		basePaths.add("");
+		basePaths.add(null);
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePaths,
+				Collections.singleton(endpoint));
+		registrar.onStartup(this.servletContext);
+		verify(this.dynamic).addMapping("/test/*");
 	}
 
 	@Test

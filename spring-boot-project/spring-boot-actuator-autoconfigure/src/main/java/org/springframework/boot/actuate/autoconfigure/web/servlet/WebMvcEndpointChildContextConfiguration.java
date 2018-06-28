@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -95,7 +97,7 @@ class WebMvcEndpointChildContextConfiguration {
 
 	@Bean
 	public DispatcherServletPathProvider childDispatcherServletPathProvider() {
-		return () -> "";
+		return () -> Collections.singleton("");
 	}
 
 }
