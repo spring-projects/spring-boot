@@ -60,7 +60,7 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 			ExposableServletEndpoint endpoint) {
 		String name = endpoint.getId() + "-actuator-endpoint";
 		String path = this.basePath + "/" + endpoint.getRootPath();
-		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
+		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
 		EndpointServlet endpointServlet = endpoint.getEndpointServlet();
 		Dynamic registration = servletContext.addServlet(name,
 				endpointServlet.getServlet());
