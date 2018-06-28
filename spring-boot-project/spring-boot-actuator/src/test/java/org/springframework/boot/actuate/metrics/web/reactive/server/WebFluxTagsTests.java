@@ -21,12 +21,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link WebFluxTags}.
@@ -78,6 +82,16 @@ public class WebFluxTagsTests {
 	public void uriTagIsUnknownWhenRequestIsNull() {
 		Tag tag = WebFluxTags.uri(null);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
+
+	@Test
+	public void methodTagToleratesNonStandardHttpMethods() {
+		ServerWebExchange exchange = mock(ServerWebExchange.class);
+		ServerHttpRequest request = mock(ServerHttpRequest.class);
+		given(exchange.getRequest()).willReturn(request);
+		given(request.getMethodValue()).willReturn("CUSTOM");
+		Tag tag = WebFluxTags.method(exchange);
+		assertThat(tag.getValue()).isEqualTo("CUSTOM");
 	}
 
 }
