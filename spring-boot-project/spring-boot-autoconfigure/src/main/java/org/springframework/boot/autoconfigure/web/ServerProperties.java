@@ -52,6 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Aurélien Leboulanger
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Rob Tompkins
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -342,6 +343,11 @@ public class ServerProperties {
 		private Boolean useRelativeRedirects;
 
 		/**
+		 * Whether tomcat WebResource caching is permitted for this web application.
+		 */
+		private Boolean isWebResourceCachingAllowed = Boolean.TRUE;
+
+		/**
 		 * Character encoding to use to decode the URI.
 		 */
 		private Charset uriEncoding;
@@ -461,6 +467,14 @@ public class ServerProperties {
 
 		public void setUseRelativeRedirects(Boolean useRelativeRedirects) {
 			this.useRelativeRedirects = useRelativeRedirects;
+		}
+
+		public Boolean getIsWebResourceCachingAllowed() {
+			return this.isWebResourceCachingAllowed;
+		}
+
+		public void setIsWebResourceCachingAllowed(Boolean isCachingAllowed) {
+			this.isWebResourceCachingAllowed = isCachingAllowed;
 		}
 
 		public String getRemoteIpHeader() {

@@ -19,9 +19,11 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import java.time.Duration;
 
 import org.apache.catalina.Lifecycle;
+import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
@@ -101,6 +103,9 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
+		propertyMapper.from(tomcatProperties::getIsWebResourceCachingAllowed).whenFalse()
+				.to((isWebResourceCachingAllowed) -> customizeCachingAllowed(factory,
+						isWebResourceCachingAllowed));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
 	}
@@ -123,6 +128,18 @@ public class TomcatWebServerFactoryCustomizer implements
 				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
 				protocol.setAcceptCount(acceptCount);
 			}
+		});
+	}
+
+	private void customizeCachingAllowed(ConfigurableTomcatWebServerFactory factory,
+			Boolean isWebResourceCachingAllowed) {
+		factory.addContextCustomizers((context) -> {
+			WebResourceRoot webResourceRoot = context.getResources();
+			if (webResourceRoot == null) {
+				webResourceRoot = new StandardRoot(context);
+			}
+			webResourceRoot.setCachingAllowed(isWebResourceCachingAllowed);
+			context.setResources(webResourceRoot);
 		});
 	}
 
