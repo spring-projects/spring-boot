@@ -81,11 +81,12 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 	}
 
 	private String[] getUrlMappings(String endpointPath, String name) {
-		return this.basePaths.stream()
-				.map((bp) -> (bp != null ? bp + "/" + endpointPath : "/" + endpointPath))
-				.distinct().map((p) -> {
-					logger.info("Registered '" + p + "' to " + name);
-					return (p.endsWith("/") ? p + "*" : p + "/*");
+		return this.basePaths
+				.stream().map((basePath) -> (basePath != null
+						? basePath + "/" + endpointPath : "/" + endpointPath))
+				.distinct().map((path) -> {
+					logger.info("Registered '" + path + "' to " + name);
+					return (path.endsWith("/") ? path + "*" : path + "/*");
 				}).toArray(String[]::new);
 	}
 

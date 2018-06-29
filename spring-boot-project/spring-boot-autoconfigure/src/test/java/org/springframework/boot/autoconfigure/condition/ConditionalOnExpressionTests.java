@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -49,7 +48,7 @@ public class ConditionalOnExpressionTests {
 	}
 
 	@Test
-	public void expressionEvaluatesToTrueRegisterBean() {
+	public void expressionEvaluatesToTrueRegistersBean() {
 		this.contextRunner.withUserConfiguration(MissingConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
@@ -75,10 +74,8 @@ public class ConditionalOnExpressionTests {
 
 	private AnnotatedTypeMetadata mockMetaData(String value) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-		Map<String, Object> attributes = new HashMap<>();
-		attributes.put("value", value);
 		given(metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName()))
-				.willReturn(attributes);
+				.willReturn(Collections.singletonMap("value", value));
 		return metadata;
 	}
 
