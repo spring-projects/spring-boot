@@ -52,6 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Aurélien Leboulanger
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Rob Tompkins
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -266,6 +267,11 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
+		 * Web resource configuration.
+		 */
+		private final WebResource webResource = new WebResource();
+
+		/**
 		 * Regular expression matching trusted IP addresses.
 		 */
 		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
@@ -399,6 +405,10 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
+		public WebResource getWebResource() {
+			return this.webResource;
+		}
+
 		public Duration getBackgroundProcessorDelay() {
 			return this.backgroundProcessorDelay;
 		}
@@ -513,6 +523,26 @@ public class ServerProperties {
 
 		public Resource getResource() {
 			return this.resource;
+		}
+
+		/**
+		 * Tomcat web resource properties.
+		 */
+		public static class WebResource {
+
+			/**
+			 * Whether tomcat WebResource caching is permitted for this web application.
+			 */
+			private Boolean useCaching = Boolean.TRUE;
+
+			public Boolean getUseCaching() {
+				return this.useCaching;
+			}
+
+			public void setUseCaching(Boolean useCaching) {
+				this.useCaching = useCaching;
+			}
+
 		}
 
 		/**
