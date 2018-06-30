@@ -100,7 +100,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	public void turnOffWebResourceCaching() {
-		bind("server.tomcat.is-web-resource-caching-allowed=false");
+		bind("server.tomcat.webresource.use-caching=false");
 		customizeAndRunServer((server) -> {
 			Mapper mapper = server.getTomcat().getService().getMapper();
 			Object contextObjectToContextVersionMap = ReflectionTestUtils.getField(mapper,

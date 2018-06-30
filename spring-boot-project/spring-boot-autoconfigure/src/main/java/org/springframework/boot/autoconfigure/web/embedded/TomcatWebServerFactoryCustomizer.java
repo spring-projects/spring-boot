@@ -72,6 +72,7 @@ public class TomcatWebServerFactoryCustomizer implements
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Tomcat tomcatProperties = properties.getTomcat();
+		ServerProperties.Tomcat.WebResource tomcatWebResourceProperties = tomcatProperties.getWebResource();
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(tomcatProperties::getBasedir).whenNonNull()
 				.to(factory::setBaseDirectory);
@@ -103,8 +104,8 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
-		propertyMapper.from(tomcatProperties::getIsWebResourceCachingAllowed).whenFalse()
-				.to((isWebResourceCachingAllowed) -> customizeCachingAllowed(factory,
+		propertyMapper.from(tomcatWebResourceProperties::getUseCaching).whenFalse()
+				.to((isWebResourceCachingAllowed) -> customizeWebResourceCaching(factory,
 						isWebResourceCachingAllowed));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
@@ -131,14 +132,14 @@ public class TomcatWebServerFactoryCustomizer implements
 		});
 	}
 
-	private void customizeCachingAllowed(ConfigurableTomcatWebServerFactory factory,
-			Boolean isWebResourceCachingAllowed) {
+	private void customizeWebResourceCaching(ConfigurableTomcatWebServerFactory factory,
+			Boolean useWebResourceCaching) {
 		factory.addContextCustomizers((context) -> {
 			WebResourceRoot webResourceRoot = context.getResources();
 			if (webResourceRoot == null) {
 				webResourceRoot = new StandardRoot(context);
 			}
-			webResourceRoot.setCachingAllowed(isWebResourceCachingAllowed);
+			webResourceRoot.setCachingAllowed(useWebResourceCaching);
 			context.setResources(webResourceRoot);
 		});
 	}
