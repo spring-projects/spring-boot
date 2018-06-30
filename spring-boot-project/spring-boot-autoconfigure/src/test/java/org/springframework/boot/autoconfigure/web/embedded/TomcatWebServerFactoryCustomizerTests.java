@@ -48,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author Rob Tompkins
  */
 public class TomcatWebServerFactoryCustomizerTests {
 

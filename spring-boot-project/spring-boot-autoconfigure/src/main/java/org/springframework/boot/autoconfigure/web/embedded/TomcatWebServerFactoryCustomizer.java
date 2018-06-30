@@ -48,6 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Yulin Qin
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Rob Tompkins
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer implements
