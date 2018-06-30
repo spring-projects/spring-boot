@@ -72,7 +72,8 @@ public class TomcatWebServerFactoryCustomizer implements
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Tomcat tomcatProperties = properties.getTomcat();
-		ServerProperties.Tomcat.WebResource tomcatWebResourceProperties = tomcatProperties.getWebResource();
+		ServerProperties.Tomcat.WebResource tomcatWebResourceProperties = tomcatProperties
+				.getWebResource();
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(tomcatProperties::getBasedir).whenNonNull()
 				.to(factory::setBaseDirectory);
