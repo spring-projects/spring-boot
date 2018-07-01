@@ -566,6 +566,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.liquibase.check-change-log-location=true # Whether to check that the change log location exists.
 	spring.liquibase.contexts= # Comma-separated list of runtime contexts to use.
 	spring.liquibase.default-schema= # Default database schema.
+	spring.liquibase.liquibase-schema= # Liquibase database schema.
+  spring.liquibase.liquibase-tablespace= # Liquibase tablespace.
+  spring.liquibase.database-change-log-table= # Database changelog table.
+  spring.liquibase.database-change-log-lock-table= # Database changelog lock table.
 	spring.liquibase.drop-first=false # Whether to first drop the database schema.
 	spring.liquibase.enabled=true # Whether to enable Liquibase support.
 	spring.liquibase.labels= # Comma-separated list of runtime labels to use.

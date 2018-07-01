@@ -54,6 +54,26 @@ public class LiquibaseProperties {
 	private String defaultSchema;
 
 	/**
+	 * Liquibase database schema.
+	 */
+	private String liquibaseSchema;
+
+	/**
+	 * Liquibase tablespace.
+	 */
+	private String liquibaseTablespace;
+
+	/**
+	 * Database changelog table.
+	 */
+	private String databaseChangeLogTable;
+
+	/**
+	 * Database changelog lock table.
+	 */
+	private String databaseChangeLogLockTable;
+
+	/**
 	 * Whether to first drop the database schema.
 	 */
 	private boolean dropFirst;
@@ -130,6 +150,38 @@ public class LiquibaseProperties {
 
 	public void setDefaultSchema(String defaultSchema) {
 		this.defaultSchema = defaultSchema;
+	}
+
+	public String getLiquibaseSchema() {
+		return this.liquibaseSchema;
+	}
+
+	public void setLiquibaseSchema(String liquibaseSchema) {
+		this.liquibaseSchema = liquibaseSchema;
+	}
+
+	public String getLiquibaseTablespace() {
+		return this.liquibaseTablespace;
+	}
+
+	public void setLiquibaseTablespace(String liquibaseTablespace) {
+		this.liquibaseTablespace = liquibaseTablespace;
+	}
+
+	public String getDatabaseChangeLogTable() {
+		return this.databaseChangeLogTable;
+	}
+
+	public void setDatabaseChangeLogTable(String databaseChangeLogTable) {
+		this.databaseChangeLogTable = databaseChangeLogTable;
+	}
+
+	public String getDatabaseChangeLogLockTable() {
+		return this.databaseChangeLogLockTable;
+	}
+
+	public void setDatabaseChangeLogLockTable(String databaseChangeLogLockTable) {
+		this.databaseChangeLogLockTable = databaseChangeLogLockTable;
 	}
 
 	public boolean isDropFirst() {
