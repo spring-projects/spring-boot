@@ -193,7 +193,6 @@
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.0.2</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
 		<maven-enforcer-plugin.version>3.0.0-M1</maven-enforcer-plugin.version>
 		<maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
 		<maven-install-plugin.version>2.5.2</maven-install-plugin.version>
@@ -2911,11 +2910,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>${maven-dependency-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>${maven-eclipse-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
