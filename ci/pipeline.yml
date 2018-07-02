@@ -419,9 +419,8 @@ jobs:
   plan:
   - get: spring-boot-ci-image
   - get: git-repo
-    trigger: true
   - get: artifactory-repo
-    trigger: false
+    trigger: true
     passed: [promote-release]
     params:
       save_build_info: true
