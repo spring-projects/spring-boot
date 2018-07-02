@@ -52,7 +52,7 @@ class FolderSnapshot {
 	 */
 	FolderSnapshot(File folder) {
 		Assert.notNull(folder, "Folder must not be null");
-		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
+		Assert.isTrue(!folder.isFile(), "Folder '" + folder + "' must not be a file");
 		this.folder = folder;
 		this.time = new Date();
 		Set<FileSnapshot> files = new LinkedHashSet<>();
