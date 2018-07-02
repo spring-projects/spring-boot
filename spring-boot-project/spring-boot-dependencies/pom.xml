@@ -1869,11 +1869,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-infinispan</artifactId>
-				<version>${hibernate.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-java8</artifactId>
 				<version>${hibernate.version}</version>
 			</dependency>
@@ -2009,7 +2004,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-hibernate-cache</artifactId>
+				<artifactId>infinispan-hibernate-cache-v53</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
