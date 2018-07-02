@@ -1273,6 +1273,7 @@ read timeout of 500ms can be specified in any of the following form: `500`, `PT0
 You can also use any of the supported unit. These are:
 
 * `ns` for nanoseconds
+* `us` for microseconds
 * `ms` for milliseconds
 * `s` for seconds
 * `m` for minutes

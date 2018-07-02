@@ -72,6 +72,18 @@ public class DurationStyleTests {
 	}
 
 	@Test
+	public void detectAndParseWhenSimpleMicrosShouldReturnDuration() {
+		assertThat(DurationStyle.detectAndParse("10us"))
+				.isEqualTo(Duration.ofNanos(10000));
+		assertThat(DurationStyle.detectAndParse("10US"))
+				.isEqualTo(Duration.ofNanos(10000));
+		assertThat(DurationStyle.detectAndParse("+10us"))
+				.isEqualTo(Duration.ofNanos(10000));
+		assertThat(DurationStyle.detectAndParse("-10us"))
+				.isEqualTo(Duration.ofNanos(-10000));
+	}
+
+	@Test
 	public void detectAndParseWhenSimpleMillisShouldReturnDuration() {
 		assertThat(DurationStyle.detectAndParse("10ms")).isEqualTo(Duration.ofMillis(10));
 		assertThat(DurationStyle.detectAndParse("10MS")).isEqualTo(Duration.ofMillis(10));

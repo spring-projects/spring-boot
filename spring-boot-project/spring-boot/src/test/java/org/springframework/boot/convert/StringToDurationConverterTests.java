@@ -71,6 +71,14 @@ public class StringToDurationConverterTests {
 	}
 
 	@Test
+	public void convertWhenSimpleMicrosShouldReturnDuration() {
+		assertThat(convert("10us")).isEqualTo(Duration.ofNanos(10000));
+		assertThat(convert("10US")).isEqualTo(Duration.ofNanos(10000));
+		assertThat(convert("+10us")).isEqualTo(Duration.ofNanos(10000));
+		assertThat(convert("-10us")).isEqualTo(Duration.ofNanos(-10000));
+	}
+
+	@Test
 	public void convertWhenSimpleMillisShouldReturnDuration() {
 		assertThat(convert("10ms")).isEqualTo(Duration.ofMillis(10));
 		assertThat(convert("10MS")).isEqualTo(Duration.ofMillis(10));
