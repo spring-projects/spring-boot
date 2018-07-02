@@ -125,8 +125,7 @@ public class FileSystemWatcher {
 	 */
 	public void addSourceFolder(File folder) {
 		Assert.notNull(folder, "Folder must not be null");
-		Assert.isTrue(folder.isDirectory(),
-				"Folder '" + folder + "' must exist and must" + " be a directory");
+		Assert.isTrue(!folder.isFile(), "Folder '" + folder + "' must not be a file");
 		synchronized (this.monitor) {
 			checkNotStarted();
 			this.folders.put(folder, null);

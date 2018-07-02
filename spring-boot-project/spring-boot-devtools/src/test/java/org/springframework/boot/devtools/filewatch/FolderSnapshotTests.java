@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,9 +62,17 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void folderMustNotBeFile() throws Exception {
+		File file = this.temporaryFolder.newFile();
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Folder must not be a file");
-		new FolderSnapshot(this.temporaryFolder.newFile());
+		this.thrown.expectMessage("Folder '" + file + "' must not be a file");
+		new FolderSnapshot(file);
+	}
+
+	@Test
+	public void folderDoesNotHaveToExist() throws Exception {
+		File file = new File(this.temporaryFolder.getRoot(), "does/not/exist");
+		FolderSnapshot snapshot = new FolderSnapshot(file);
+		assertThat(snapshot).isEqualTo(new FolderSnapshot(file));
 	}
 
 	@Test
