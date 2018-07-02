@@ -135,7 +135,7 @@ class OriginTrackedPropertiesLoader {
 			reader.read();
 		}
 		Origin origin = new TextResourceOrigin(this.resource, location);
-		return OriginTrackedValue.of(buffer.toString().trim(), origin);
+		return OriginTrackedValue.of(buffer.toString(), origin);
 	}
 
 	/**
