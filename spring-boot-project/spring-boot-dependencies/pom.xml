@@ -166,7 +166,7 @@
 		<spring-security.version>5.1.0.M1</spring-security.version>
 		<spring-session-bom.version>Apple-SR3</spring-session-bom.version>
 		<spring-ws.version>3.0.1.RELEASE</spring-ws.version>
-		<sqlite-jdbc.version>3.21.0.1</sqlite-jdbc.version>
+		<sqlite-jdbc.version>3.23.1</sqlite-jdbc.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<saaj-impl.version>1.4.0</saaj-impl.version>
