@@ -150,7 +150,7 @@
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.19</snakeyaml.version>
-		<solr.version>7.2.1</solr.version>
+		<solr.version>7.4.0</solr.version>
 		<spring.version>5.1.0.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>2.0.4.RELEASE</spring-amqp.version>
 		<spring-batch.version>4.0.1.RELEASE</spring-batch.version>

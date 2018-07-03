@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.solr;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -56,8 +59,8 @@ public class SolrAutoConfiguration {
 
 	private SolrClient createSolrClient() {
 		if (StringUtils.hasText(this.properties.getZkHost())) {
-			return new CloudSolrClient.Builder().withZkHost(this.properties.getZkHost())
-					.build();
+			return new CloudSolrClient.Builder(Arrays.asList(this.properties.getZkHost()),
+					Optional.empty()).build();
 		}
 		return new HttpSolrClient.Builder(this.properties.getHost()).build();
 	}
