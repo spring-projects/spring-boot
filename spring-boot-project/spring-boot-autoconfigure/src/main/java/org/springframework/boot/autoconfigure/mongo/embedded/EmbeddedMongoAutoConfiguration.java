@@ -19,10 +19,8 @@ package org.springframework.boot.autoconfigure.mongo.embedded;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
@@ -37,8 +35,10 @@ import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
+import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import de.flapdoodle.embed.process.distribution.GenericVersion;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
 import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
@@ -65,7 +65,6 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.data.mongodb.core.MongoClientFactoryBean;
 import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
-import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Embedded Mongo.
@@ -126,9 +125,9 @@ public class EmbeddedMongoAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public IMongodConfig embeddedMongoConfiguration() throws IOException {
-		IFeatureAwareVersion featureAwareVersion = new ToStringFriendlyFeatureAwareVersion(
-				this.embeddedProperties.getVersion(),
-				this.embeddedProperties.getFeatures());
+		IFeatureAwareVersion featureAwareVersion = Versions.withFeatures(
+				new GenericVersion(this.embeddedProperties.getVersion()),
+				this.embeddedProperties.getFeatures().toArray(new Feature[0]));
 		MongodConfigBuilder builder = new MongodConfigBuilder()
 				.version(featureAwareVersion);
 		if (this.embeddedProperties.getStorage() != null) {
@@ -238,68 +237,6 @@ public class EmbeddedMongoAutoConfiguration {
 
 		public EmbeddedReactiveMongoDependencyConfiguration() {
 			super("embeddedMongoServer");
-		}
-
-	}
-
-	/**
-	 * A workaround for the lack of a {@code toString} implementation on
-	 * {@code GenericFeatureAwareVersion}.
-	 */
-	private static final class ToStringFriendlyFeatureAwareVersion
-			implements IFeatureAwareVersion {
-
-		private final String version;
-
-		private final Set<Feature> features;
-
-		private ToStringFriendlyFeatureAwareVersion(String version,
-				Set<Feature> features) {
-			Assert.notNull(version, "version must not be null");
-			this.version = version;
-			this.features = (features != null ? features : Collections.emptySet());
-		}
-
-		@Override
-		public String asInDownloadPath() {
-			return this.version;
-		}
-
-		@Override
-		public boolean enabled(Feature feature) {
-			return this.features.contains(feature);
-		}
-
-		@Override
-		public String toString() {
-			return this.version;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + this.features.hashCode();
-			result = prime * result + this.version.hashCode();
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() == obj.getClass()) {
-				ToStringFriendlyFeatureAwareVersion other = (ToStringFriendlyFeatureAwareVersion) obj;
-				boolean equals = true;
-				equals = equals && this.features.equals(other.features);
-				equals = equals && this.version.equals(other.version);
-				return equals;
-			}
-			return super.equals(obj);
 		}
 
 	}

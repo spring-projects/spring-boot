@@ -57,7 +57,7 @@
 		<dropwizard-metrics.version>3.2.6</dropwizard-metrics.version>
 		<ehcache.version>2.10.5</ehcache.version>
 		<ehcache3.version>3.5.2</ehcache3.version>
-		<embedded-mongo.version>2.0.3</embedded-mongo.version>
+		<embedded-mongo.version>2.1.1</embedded-mongo.version>
 		<flyway.version>5.0.7</flyway.version>
 		<freemarker.version>2.3.28</freemarker.version>
 		<elasticsearch.version>6.2.4</elasticsearch.version>
