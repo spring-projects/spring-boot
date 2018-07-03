@@ -191,7 +191,7 @@
 		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-		<maven-dependency-plugin.version>3.0.2</maven-dependency-plugin.version>
+		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
 		<maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
 		<maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
