@@ -36,7 +36,7 @@
 		<activemq.version>5.15.4</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<appengine-sdk.version>1.9.64</appengine-sdk.version>
-		<artemis.version>2.4.0</artemis.version>
+		<artemis.version>2.6.2</artemis.version>
 		<aspectj.version>1.9.0</aspectj.version>
 		<assertj.version>3.9.1</assertj.version>
 		<atomikos.version>4.0.6</atomikos.version>
@@ -1339,7 +1339,12 @@
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>artemis-server</artifactId>
-				<version>${artemis.version}</version>
+				<version>${artemis.version}</version><exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
