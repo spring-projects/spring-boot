@@ -127,7 +127,7 @@
 		<mockito.version>2.18.3</mockito.version>
 		<mongo-driver-reactivestreams.version>1.9.0-beta1</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.8.0-beta2</mongodb.version>
-		<mssql-jdbc.version>6.2.2.jre8</mssql-jdbc.version>
+		<mssql-jdbc.version>6.4.0.jre8</mssql-jdbc.version>
 		<mysql.version>5.1.46</mysql.version>
 		<narayana.version>5.8.2.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
