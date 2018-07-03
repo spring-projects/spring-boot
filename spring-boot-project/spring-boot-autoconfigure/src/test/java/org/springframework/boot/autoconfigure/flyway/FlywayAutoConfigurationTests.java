@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.sql.Connection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +23,11 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.Location;
 import org.flywaydb.core.api.MigrationVersion;
-import org.flywaydb.core.api.callback.FlywayCallback;
+import org.flywaydb.core.api.callback.Callback;
+import org.flywaydb.core.api.callback.Context;
+import org.flywaydb.core.api.callback.Event;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -48,6 +50,7 @@ import org.springframework.stereotype.Component;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -137,7 +140,7 @@ public class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
 					assertThat(flyway.getLocations())
-							.containsExactly("classpath:db/migration");
+							.containsExactly(new Location("classpath:db/migration"));
 				});
 	}
 
@@ -150,7 +153,8 @@ public class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
 					assertThat(flyway.getLocations()).containsExactly(
-							"classpath:db/changelog", "classpath:db/migration");
+							new Location("classpath:db/changelog"),
+							new Location("classpath:db/migration"));
 				});
 	}
 
@@ -163,7 +167,8 @@ public class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
 					assertThat(flyway.getLocations()).containsExactly(
-							"classpath:db/changelog", "classpath:db/migration");
+							new Location("classpath:db/changelog"),
+							new Location("classpath:db/migration"));
 				});
 	}
 
@@ -278,7 +283,8 @@ public class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
 					assertThat(flyway.getLocations()).containsExactlyInAnyOrder(
-							"classpath:db/vendors/h2", "classpath:db/changelog");
+							new Location("classpath:db/vendors/h2"),
+							new Location("classpath:db/changelog"));
 				});
 	}
 
@@ -291,7 +297,7 @@ public class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
 					assertThat(flyway.getLocations())
-							.containsExactly("classpath:db/vendors/h2");
+							.containsExactly(new Location("classpath:db/vendors/h2"));
 				});
 	}
 
@@ -301,18 +307,16 @@ public class FlywayAutoConfigurationTests {
 				CallbackConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
-					FlywayCallback callbackOne = context.getBean("callbackOne",
-							FlywayCallback.class);
-					FlywayCallback callbackTwo = context.getBean("callbackTwo",
-							FlywayCallback.class);
+					Callback callbackOne = context.getBean("callbackOne", Callback.class);
+					Callback callbackTwo = context.getBean("callbackTwo", Callback.class);
 					assertThat(flyway.getCallbacks()).hasSize(2);
 					assertThat(flyway.getCallbacks()).containsExactly(callbackTwo,
 							callbackOne);
 					InOrder orderedCallbacks = inOrder(callbackOne, callbackTwo);
-					orderedCallbacks.verify(callbackTwo)
-							.beforeMigrate(any(Connection.class));
-					orderedCallbacks.verify(callbackOne)
-							.beforeMigrate(any(Connection.class));
+					orderedCallbacks.verify(callbackTwo).supports(eq(Event.BEFORE_MIGRATE),
+							any(Context.class));
+					orderedCallbacks.verify(callbackOne).supports(eq(Event.BEFORE_MIGRATE),
+							any(Context.class));
 				});
 	}
 
@@ -395,14 +399,14 @@ public class FlywayAutoConfigurationTests {
 
 		@Bean
 		@Order(1)
-		public FlywayCallback callbackOne() {
-			return mock(FlywayCallback.class);
+		public Callback callbackOne() {
+			return mock(Callback.class);
 		}
 
 		@Bean
 		@Order(0)
-		public FlywayCallback callbackTwo() {
-			return mock(FlywayCallback.class);
+		public Callback callbackTwo() {
+			return mock(Callback.class);
 		}
 
 	}
