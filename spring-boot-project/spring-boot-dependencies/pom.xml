@@ -72,7 +72,7 @@
 		<hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
 		<hikaricp.version>2.7.9</hikaricp.version>
 		<hsqldb.version>2.4.1</hsqldb.version>
-		<htmlunit.version>2.29</htmlunit.version>
+		<htmlunit.version>2.31</htmlunit.version>
 		<httpasyncclient.version>4.1.3</httpasyncclient.version>
 		<httpclient.version>4.5.5</httpclient.version>
 		<httpcore.version>4.4.10</httpcore.version>
