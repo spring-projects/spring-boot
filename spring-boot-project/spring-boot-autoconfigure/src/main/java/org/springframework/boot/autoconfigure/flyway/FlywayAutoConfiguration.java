@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.FlywayCallback;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -71,6 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Dominic Gunn
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 @Configuration
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
@@ -109,13 +111,16 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
-		private List<FlywayCallback> flywayCallbacks;
+		private final List<Callback> callbacks;
+
+		private final List<FlywayCallback> flywayCallbacks;
 
 		public FlywayConfiguration(FlywayProperties properties,
 				DataSourceProperties dataSourceProperties, ResourceLoader resourceLoader,
 				ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
+				ObjectProvider<List<Callback>> callbacks,
 				ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
 			this.properties = properties;
 			this.dataSourceProperties = dataSourceProperties;
@@ -123,6 +128,7 @@ public class FlywayAutoConfiguration {
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
 			this.migrationStrategy = migrationStrategy.getIfAvailable();
+			this.callbacks = callbacks.getIfAvailable(Collections::emptyList);
 			this.flywayCallbacks = flywayCallbacks.getIfAvailable(Collections::emptyList);
 		}
 
@@ -146,7 +152,20 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
-			flyway.setCallbacks(this.flywayCallbacks.toArray(new FlywayCallback[0]));
+			if (this.flywayCallbacks.isEmpty()) {
+				flyway.setCallbacks(this.callbacks.toArray(new Callback[0]));
+			}
+			else {
+				if (this.callbacks.isEmpty()) {
+					flyway.setCallbacks(
+							this.flywayCallbacks.toArray(new FlywayCallback[0]));
+				}
+				else {
+					throw new IllegalStateException(
+							"Found a mixture of Callback and FlywayCallback beans."
+									+ " One type must be used exclusively.");
+				}
+			}
 			String[] locations = new LocationResolver(flyway.getDataSource())
 					.resolveLocations(this.properties.getLocations());
 			checkLocationExists(locations);
