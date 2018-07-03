@@ -189,7 +189,7 @@
 		<git-commit-id-plugin.version>2.2.4</git-commit-id-plugin.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
 		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
-		<maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
+		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.0.2</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
