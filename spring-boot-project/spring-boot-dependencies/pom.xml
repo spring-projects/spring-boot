@@ -182,7 +182,7 @@
 		<webjars-locator-core.version>0.35</webjars-locator-core.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
-		<xmlunit2.version>2.5.1</xmlunit2.version>
+		<xmlunit2.version>2.6.0</xmlunit2.version>
 		<!-- Plugin versions -->
 		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
