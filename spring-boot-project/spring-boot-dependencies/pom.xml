@@ -199,7 +199,7 @@
 		<maven-invoker-plugin.version>3.1.0</maven-invoker-plugin.version>
 		<maven-help-plugin.version>2.2</maven-help-plugin.version>
 		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-		<maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
 		<maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
 		<maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
 		<maven-site-plugin.version>3.6</maven-site-plugin.version>
