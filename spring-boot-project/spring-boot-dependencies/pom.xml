@@ -146,7 +146,7 @@
 		<rxjava2.version>2.1.16</rxjava2.version>
 		<selenium.version>3.9.1</selenium.version>
 		<selenium-htmlunit.version>2.29.3</selenium-htmlunit.version>
-		<sendgrid.version>4.1.2</sendgrid.version>
+		<sendgrid.version>4.2.1</sendgrid.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.19</snakeyaml.version>
