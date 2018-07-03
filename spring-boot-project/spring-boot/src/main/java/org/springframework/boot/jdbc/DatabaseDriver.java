@@ -67,8 +67,8 @@ public enum DatabaseDriver {
 	/**
 	 * MySQL.
 	 */
-	MYSQL("MySQL", "com.mysql.jdbc.Driver",
-			"com.mysql.jdbc.jdbc2.optional.MysqlXADataSource", "/* ping */ SELECT 1"),
+	MYSQL("MySQL", "com.mysql.cj.jdbc.Driver", "com.mysql.cj.jdbc.MysqlXADataSource",
+			"/* ping */ SELECT 1"),
 
 	/**
 	 * Maria DB.

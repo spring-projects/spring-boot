@@ -43,7 +43,7 @@ public class DataSourcePropertiesTests {
 		properties.setUrl("jdbc:mysql://mydb");
 		assertThat(properties.getDriverClassName()).isNull();
 		assertThat(properties.determineDriverClassName())
-				.isEqualTo("com.mysql.jdbc.Driver");
+				.isEqualTo("com.mysql.cj.jdbc.Driver");
 	}
 
 	@Test
