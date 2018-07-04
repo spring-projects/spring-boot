@@ -76,7 +76,7 @@
 		<httpasyncclient.version>4.1.3</httpasyncclient.version>
 		<httpclient.version>4.5.5</httpclient.version>
 		<httpcore.version>4.4.10</httpcore.version>
-		<infinispan.version>9.1.7.Final</infinispan.version>
+		<infinispan.version>9.3.0.Final</infinispan.version>
 		<influxdb-java.version>2.11</influxdb-java.version>
 		<jackson.version>2.9.6</jackson.version>
 		<janino.version>3.0.8</janino.version>
@@ -1869,11 +1869,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-infinispan</artifactId>
-				<version>${hibernate.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-java8</artifactId>
 				<version>${hibernate.version}</version>
 			</dependency>
@@ -1964,11 +1959,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-cli</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-client-hotrod</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
@@ -1980,6 +1970,11 @@
 			<dependency>
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-clustered-counter</artifactId>
+				<version>${infinispan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-clustered-lock</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
@@ -1999,17 +1994,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-embedded</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-embedded-query</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-hibernate-cache</artifactId>
+				<artifactId>infinispan-hibernate-cache-v53</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
@@ -2060,11 +2045,6 @@
 			<dependency>
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-query-dsl</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-remote</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
