@@ -140,6 +140,14 @@ public class JestAutoConfigurationTests {
 	}
 
 	private JestResult execute(JestClient client, Action<? extends JestResult> action) {
+		for (int i = 0; i < 2; i++) {
+			try {
+				return client.execute(action);
+			}
+			catch (IOException ex) {
+				// Continue
+			}
+		}
 		try {
 			return client.execute(action);
 		}
