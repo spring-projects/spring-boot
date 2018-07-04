@@ -1959,11 +1959,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-cli</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-client-hotrod</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
@@ -1979,6 +1974,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-clustered-lock</artifactId>
+				<version>${infinispan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-commons</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
@@ -1990,16 +1990,6 @@
 			<dependency>
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-directory-provider</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-embedded</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-embedded-query</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
@@ -2055,11 +2045,6 @@
 			<dependency>
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-query-dsl</artifactId>
-				<version>${infinispan.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.infinispan</groupId>
-				<artifactId>infinispan-remote</artifactId>
 				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
