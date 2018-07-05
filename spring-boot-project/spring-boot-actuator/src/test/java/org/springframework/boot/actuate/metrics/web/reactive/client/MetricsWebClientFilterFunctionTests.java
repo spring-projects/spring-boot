@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.metrics.web.reactive.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
@@ -115,6 +117,25 @@ public class MetricsWebClientFilterFunctionTests {
 				.get("http.client.requests").tags("method", "GET", "uri",
 						"/projects/spring-boot", "status", "CLIENT_ERROR")
 				.timer().count()).isEqualTo(1);
+	}
+
+	@Test
+	public void filterWhenExceptionAndRetryShouldNotCumulateRecordTime() {
+		ClientRequest request = ClientRequest.create(HttpMethod.GET,
+				URI.create("http://example.com/projects/spring-boot")).build();
+		ExchangeFunction exchange = (r) -> Mono.error(new IllegalArgumentException())
+				.delaySubscription(Duration.ofMillis(300)).cast(ClientResponse.class);
+		this.filterFunction.filter(request, exchange).retry(1)
+				.onErrorResume(IllegalArgumentException.class, (t) -> Mono.empty())
+				.block();
+		assertThat(this.registry
+				.get("http.client.requests").tags("method", "GET", "uri",
+						"/projects/spring-boot", "status", "CLIENT_ERROR")
+				.timer().count()).isEqualTo(2);
+		assertThat(this.registry.get("http.client.requests")
+				.tags("method", "GET", "uri", "/projects/spring-boot", "status",
+						"CLIENT_ERROR")
+				.timer().max(TimeUnit.MILLISECONDS)).isLessThan(600);
 	}
 
 }

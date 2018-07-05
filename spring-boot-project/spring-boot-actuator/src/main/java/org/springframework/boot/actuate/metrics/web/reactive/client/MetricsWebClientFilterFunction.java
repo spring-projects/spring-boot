@@ -37,6 +37,9 @@ import org.springframework.web.reactive.function.client.ExchangeFunction;
  */
 public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 
+	private static final String METRICS_WEBCLIENT_START_TIME = MetricsWebClientFilterFunction.class
+			.getName() + ".START_TIME";
+
 	private final MeterRegistry meterRegistry;
 
 	private final WebClientExchangeTagsProvider tagProvider;
@@ -53,16 +56,20 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 	@Override
 	public Mono<ClientResponse> filter(ClientRequest clientRequest,
 			ExchangeFunction exchangeFunction) {
-		long startTime = System.nanoTime();
-		return exchangeFunction.exchange(clientRequest)
-				.doOnSuccessOrError((clientResponse, throwable) -> {
-					Iterable<Tag> tags = this.tagProvider.tags(clientRequest,
-							clientResponse, throwable);
-					Timer.builder(this.metricName).tags(tags)
-							.description("Timer of WebClient operation")
-							.register(this.meterRegistry)
-							.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
-				});
+		return exchangeFunction.exchange(clientRequest).doOnEach((signal) -> {
+			if (!signal.isOnComplete()) {
+				Long startTime = signal.getContext().get(METRICS_WEBCLIENT_START_TIME);
+				ClientResponse clientResponse = signal.get();
+				Throwable throwable = signal.getThrowable();
+				Iterable<Tag> tags = this.tagProvider.tags(clientRequest, clientResponse,
+						throwable);
+				Timer.builder(this.metricName).tags(tags)
+						.description("Timer of WebClient operation")
+						.register(this.meterRegistry)
+						.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+			}
+		}).subscriberContext((context) -> context.put(METRICS_WEBCLIENT_START_TIME,
+				System.nanoTime()));
 	}
 
 }
