@@ -42,6 +42,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
@@ -80,7 +81,7 @@ public class TestDatabaseAutoConfiguration {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor();
 	}
 
-	@Order
+	@Order(Ordered.LOWEST_PRECEDENCE)
 	private static class EmbeddedDataSourceBeanFactoryPostProcessor
 			implements BeanDefinitionRegistryPostProcessor {
 
@@ -161,12 +162,12 @@ public class TestDatabaseAutoConfiguration {
 		}
 
 		@Override
-		public void afterPropertiesSet() {
+		public void afterPropertiesSet() throws Exception {
 			this.embeddedDatabase = this.factory.getEmbeddedDatabase();
 		}
 
 		@Override
-		public DataSource getObject() {
+		public DataSource getObject() throws Exception {
 			return this.embeddedDatabase;
 		}
 
@@ -190,7 +191,7 @@ public class TestDatabaseAutoConfiguration {
 			this.environment = environment;
 		}
 
-		EmbeddedDatabase getEmbeddedDatabase() {
+		public EmbeddedDatabase getEmbeddedDatabase() {
 			EmbeddedDatabaseConnection connection = this.environment.getProperty(
 					"spring.test.database.connection", EmbeddedDatabaseConnection.class,
 					EmbeddedDatabaseConnection.NONE);
