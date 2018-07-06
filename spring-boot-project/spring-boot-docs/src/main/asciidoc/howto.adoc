@@ -1199,25 +1199,31 @@ configure various aspects of its processing. These features are described in six
 Jackson) that map onto properties in the environment:
 
 |===
-|Jackson enum|Environment property
+|Enum|Property|Values
 
 |`com.fasterxml.jackson.databind.DeserializationFeature`
-|`spring.jackson.deserialization.<feature_name>=true\|false`
+|`spring.jackson.deserialization.<feature_name>`
+|`true`, `false`
 
 |`com.fasterxml.jackson.core.JsonGenerator.Feature`
-|`spring.jackson.generator.<feature_name>=true\|false`
+|`spring.jackson.generator.<feature_name>`
+|`true`, `false`
 
 |`com.fasterxml.jackson.databind.MapperFeature`
-|`spring.jackson.mapper.<feature_name>=true\|false`
+|`spring.jackson.mapper.<feature_name>`
+|`true`, `false`
 
 |`com.fasterxml.jackson.core.JsonParser.Feature`
-|`spring.jackson.parser.<feature_name>=true\|false`
+|`spring.jackson.parser.<feature_name>`
+|`true`, `false`
 
 |`com.fasterxml.jackson.databind.SerializationFeature`
-|`spring.jackson.serialization.<feature_name>=true\|false`
+|`spring.jackson.serialization.<feature_name>`
+|`true`, `false`
 
 |`com.fasterxml.jackson.annotation.JsonInclude.Include`
-|`spring.jackson.default-property-inclusion=always\|non_null\|non_absent\|non_default\|non_empty`
+|`spring.jackson.default-property-inclusion`
+|`always`, `non_null`, `non_absent`, `non_default`, `non_empty`
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
