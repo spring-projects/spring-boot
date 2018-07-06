@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.stream.StreamSupport;
 
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
@@ -59,8 +58,7 @@ final class FilteredPropertySources implements PropertySources {
 
 	@Override
 	public Iterator<PropertySource<?>> iterator() {
-		return StreamSupport.stream(this.delegate.spliterator(), false)
-				.filter(this::included).iterator();
+		return this.delegate.stream().filter(this::included).iterator();
 	}
 
 	private boolean included(PropertySource<?> propertySource) {

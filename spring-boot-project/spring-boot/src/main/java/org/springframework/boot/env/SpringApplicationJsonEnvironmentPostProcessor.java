@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.StreamSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,9 +91,8 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
 		MutablePropertySources propertySources = environment.getPropertySources();
-		StreamSupport.stream(propertySources.spliterator(), false)
-				.map(JsonPropertyValue::get).filter(Objects::nonNull).findFirst()
-				.ifPresent((v) -> processJson(environment, v));
+		propertySources.stream().map(JsonPropertyValue::get).filter(Objects::nonNull)
+				.findFirst().ifPresent((v) -> processJson(environment, v));
 	}
 
 	private void processJson(ConfigurableEnvironment environment,
