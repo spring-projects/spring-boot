@@ -16,11 +16,9 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -74,9 +72,10 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
-		Iterable<PropertySource<?>> sources = (this.environment != null
-				? this.environment.getPropertySources() : Collections.emptyList());
-		return StreamSupport.stream(sources.spliterator(), false)
+		if (this.environment == null) {
+			return Stream.empty();
+		}
+		return this.environment.getPropertySources().stream()
 				.filter((source) -> !ConfigurationPropertySources
 						.isAttachedConfigurationPropertySource(source));
 	}
