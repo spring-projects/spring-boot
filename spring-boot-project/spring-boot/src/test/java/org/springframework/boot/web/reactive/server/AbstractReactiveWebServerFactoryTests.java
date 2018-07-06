@@ -31,6 +31,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.junit.After;
@@ -135,10 +136,11 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
+		SslContextBuilder builder = SslContextBuilder.forClient()
+				.sslProvider(SslProvider.JDK)
+				.trustManager(InsecureTrustManagerFactory.INSTANCE);
 		HttpClient client = HttpClient.create().wiretap()
-				.secure((sslContextSpec) -> sslContextSpec.forClient()
-						.sslContext((builder) -> builder.sslProvider(SslProvider.JDK)
-								.trustManager(InsecureTrustManagerFactory.INSTANCE)));
+				.secure((sslContextSpec) -> sslContextSpec.sslContext(builder));
 		return new ReactorClientHttpConnector(client);
 	}
 
@@ -171,11 +173,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		KeyManagerFactory clientKeyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		clientKeyManagerFactory.init(clientKeyStore, "password".toCharArray());
+		SslContextBuilder builder = SslContextBuilder.forClient()
+				.sslProvider(SslProvider.JDK)
+				.trustManager(InsecureTrustManagerFactory.INSTANCE)
+				.keyManager(clientKeyManagerFactory);
 		HttpClient client = HttpClient.create().wiretap()
-				.secure((sslContextSpec) -> sslContextSpec.forClient()
-						.sslContext((builder) -> builder.sslProvider(SslProvider.JDK)
-								.trustManager(InsecureTrustManagerFactory.INSTANCE)
-								.keyManager(clientKeyManagerFactory)));
+				.secure((sslContextSpec) -> sslContextSpec.sslContext(builder));
 		return new ReactorClientHttpConnector(client);
 	}
 

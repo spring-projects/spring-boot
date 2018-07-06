@@ -66,13 +66,13 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
-		HttpClient client = HttpClient.create().secure((sslContextSpec) -> sslContextSpec
-				.forClient().sslContext(this::configureSsl));
+		HttpClient client = HttpClient.create().secure(
+				(sslContextSpec) -> sslContextSpec.sslContext(createSslContext()));
 		return new ReactorClientHttpConnector(client);
 	}
 
-	private SslContextBuilder configureSsl(SslContextBuilder builder) {
-		return builder.sslProvider(SslProvider.JDK)
+	private SslContextBuilder createSslContext() {
+		return SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE);
 	}
 

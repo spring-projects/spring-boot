@@ -19,7 +19,6 @@ package org.springframework.boot.web.embedded.netty;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
@@ -52,32 +51,31 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	@Override
 	public HttpServer apply(HttpServer server) {
 		try {
-			return server.secure((contextSpec) -> contextSpec.forServer()
-					.sslContext(getContextBuilderConsumer()));
+			return server
+					.secure((contextSpec) -> contextSpec.sslContext(getContextBuilder()));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	protected Consumer<SslContextBuilder> getContextBuilderConsumer() {
-		return (builder) -> {
-			builder.keyManager(getKeyManagerFactory(this.ssl, this.sslStoreProvider))
-					.trustManager(
-							getTrustManagerFactory(this.ssl, this.sslStoreProvider));
-			if (this.ssl.getEnabledProtocols() != null) {
-				builder.protocols(this.ssl.getEnabledProtocols());
-			}
-			if (this.ssl.getCiphers() != null) {
-				builder.ciphers(Arrays.asList(this.ssl.getCiphers()));
-			}
-			if (this.ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
-				builder.clientAuth(ClientAuth.REQUIRE);
-			}
-			else if (this.ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
-				builder.clientAuth(ClientAuth.OPTIONAL);
-			}
-		};
+	protected SslContextBuilder getContextBuilder() {
+		SslContextBuilder builder = SslContextBuilder
+				.forServer(getKeyManagerFactory(this.ssl, this.sslStoreProvider))
+				.trustManager(getTrustManagerFactory(this.ssl, this.sslStoreProvider));
+		if (this.ssl.getEnabledProtocols() != null) {
+			builder.protocols(this.ssl.getEnabledProtocols());
+		}
+		if (this.ssl.getCiphers() != null) {
+			builder.ciphers(Arrays.asList(this.ssl.getCiphers()));
+		}
+		if (this.ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
+			builder.clientAuth(ClientAuth.REQUIRE);
+		}
+		else if (this.ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
+			builder.clientAuth(ClientAuth.OPTIONAL);
+		}
+		return builder;
 	}
 
 	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl,
