@@ -78,14 +78,15 @@ public class EndpointRequestTests {
 	@Test
 	public void toAnyEndpointWhenServletPathNotEmptyShouldMatch() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
-		assertMatcher(matcher, "/actuator", "/spring", "/admin").matches("/actuator/foo",
-				"/spring", "/admin");
-		assertMatcher(matcher, "/actuator", "/spring", "/admin").matches("/actuator/bar",
-				"/spring", "/admin");
-		assertMatcher(matcher, "/actuator", "/spring").matches("/actuator", "/spring");
-		assertMatcher(matcher, "/actuator", "/spring").doesNotMatch("/actuator/baz",
-				"/spring");
-		assertMatcher(matcher, "/actuator", "/spring").doesNotMatch("/actuator/foo", "");
+		assertMatcher(matcher, "/actuator", "/spring", "/admin")
+				.matches(Arrays.asList("/spring", "/admin"), "/actuator/foo");
+		assertMatcher(matcher, "/actuator", "/spring", "/admin")
+				.matches(Arrays.asList("/spring", "/admin"), "/actuator/bar");
+		assertMatcher(matcher, "/actuator", "/spring").matches(Arrays.asList("/spring"),
+				"/actuator");
+		assertMatcher(matcher, "/actuator", "/spring").doesNotMatch("/spring",
+				"/actuator/baz");
+		assertMatcher(matcher, "/actuator", "/spring").doesNotMatch("", "/actuator/foo");
 	}
 
 	@Test
@@ -279,8 +280,8 @@ public class EndpointRequestTests {
 			matches(mockRequest(servletPath));
 		}
 
-		public void matches(String pathInfo, String... servletPaths) {
-			Arrays.stream(servletPaths).forEach((p) -> matches(mockRequest(p, pathInfo)));
+		public void matches(List<String> servletPaths, String pathInfo) {
+			servletPaths.forEach((p) -> matches(mockRequest(p, pathInfo)));
 		}
 
 		private void matches(HttpServletRequest request) {
