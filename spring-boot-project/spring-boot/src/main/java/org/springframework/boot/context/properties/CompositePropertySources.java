@@ -41,8 +41,7 @@ final class CompositePropertySources implements PropertySources {
 
 	@Override
 	public Iterator<PropertySource<?>> iterator() {
-		return this.propertySources.stream()
-				.flatMap(PropertySources::stream)
+		return this.propertySources.stream().flatMap(PropertySources::stream)
 				.collect(Collectors.toList()).iterator();
 	}
 

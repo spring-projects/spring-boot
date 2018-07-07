@@ -91,9 +91,8 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
 		MutablePropertySources propertySources = environment.getPropertySources();
-		propertySources.stream()
-				.map(JsonPropertyValue::get).filter(Objects::nonNull).findFirst()
-				.ifPresent((v) -> processJson(environment, v));
+		propertySources.stream().map(JsonPropertyValue::get).filter(Objects::nonNull)
+				.findFirst().ifPresent((v) -> processJson(environment, v));
 	}
 
 	private void processJson(ConfigurableEnvironment environment,

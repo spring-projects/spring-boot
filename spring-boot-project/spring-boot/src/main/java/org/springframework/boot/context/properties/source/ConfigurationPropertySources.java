@@ -137,8 +137,7 @@ public final class ConfigurationPropertySources {
 
 	private static Stream<PropertySource<?>> streamPropertySources(
 			PropertySources sources) {
-		return sources.stream()
-				.flatMap(ConfigurationPropertySources::flatten)
+		return sources.stream().flatMap(ConfigurationPropertySources::flatten)
 				.filter(ConfigurationPropertySources::isIncluded);
 	}
 
