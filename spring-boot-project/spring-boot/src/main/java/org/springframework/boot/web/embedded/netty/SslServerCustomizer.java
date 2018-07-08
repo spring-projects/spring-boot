@@ -26,6 +26,7 @@ import javax.net.ssl.TrustManagerFactory;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.server.HttpServer;
+import reactor.netty.tcp.SslProvider.DefaultConfigurationType;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
@@ -52,7 +53,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	public HttpServer apply(HttpServer server) {
 		try {
 			return server
-					.secure((contextSpec) -> contextSpec.sslContext(getContextBuilder()));
+					.secure((contextSpec) -> contextSpec.sslContext(getContextBuilder())
+							.defaultConfiguration(DefaultConfigurationType.NONE));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
