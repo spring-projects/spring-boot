@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link AggregateBinder} for Maps.
@@ -199,8 +198,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		private boolean isScalarValue(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
 			Class<?> resolved = this.valueType.resolve(Object.class);
-			String packageName = ClassUtils.getPackageName(resolved);
-			if (!packageName.startsWith("java.lang") && !resolved.isEnum()) {
+			if (!resolved.getName().startsWith("java.lang") && !resolved.isEnum()) {
 				return false;
 			}
 			ConfigurationProperty property = source.getConfigurationProperty(name);
