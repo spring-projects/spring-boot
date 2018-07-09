@@ -1190,13 +1190,13 @@ content into your application. Rather, pick only the properties that you need.
 	# ENDPOINTS JMX CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/jmx/JmxEndpointProperties.{sc-ext}[JmxEndpointProperties])
 	management.endpoints.jmx.domain=org.springframework.boot # Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
 	management.endpoints.jmx.exposure.include=* # Endpoint IDs that should be included or '*' for all.
-	management.endpoints.jmx.exposure.exclude= # Endpoint IDs that should be excluded.
+	management.endpoints.jmx.exposure.exclude= # Endpoint IDs that should be excluded or '*' for all.
 	management.endpoints.jmx.static-names= # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
 	management.endpoints.jmx.unique-names=false # Whether to ensure that ObjectNames are modified in case of conflict.
 
 	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
 	management.endpoints.web.exposure.include=health,info # Endpoint IDs that should be included or '*' for all.
-	management.endpoints.web.exposure.exclude= # Endpoint IDs that should be excluded.
+	management.endpoints.web.exposure.exclude= # Endpoint IDs that should be excluded or '*' for all.
 	management.endpoints.web.base-path=/actuator # Base path for Web endpoints. Relative to server.servlet.context-path or management.server.servlet.context-path if management.server.port is configured.
 	management.endpoints.web.path-mapping= # Mapping between endpoint IDs and the path that should expose them.
 
