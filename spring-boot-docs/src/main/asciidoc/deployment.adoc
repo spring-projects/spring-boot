@@ -503,7 +503,7 @@ Spring Application there without some modifications. See the
 
 [[deployment-install]]
 == Installing Spring Boot applications
-In additional to running Spring Boot applications using `java -jar` it is also possible
+In addition to running Spring Boot applications using `java -jar` it is also possible
 to make fully executable applications for Unix systems. A fully executable jar can be
 executed like any other executable binary or it can be <<deployment-service,registered
 with `init.d` or `systemd`>>. This makes it very easy to install and manage Spring Boot
