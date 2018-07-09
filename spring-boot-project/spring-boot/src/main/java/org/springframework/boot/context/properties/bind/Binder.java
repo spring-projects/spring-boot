@@ -45,7 +45,6 @@ import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 /**
  * A container object which Binds objects from one or more
@@ -354,8 +353,7 @@ public class Binder {
 		if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
 			return true;
 		}
-		String packageName = ClassUtils.getPackageName(resolved);
-		return packageName.startsWith("java.");
+		return resolved.getName().startsWith("java.");
 	}
 
 	private boolean containsNoDescendantOf(Stream<ConfigurationPropertySource> sources,
