@@ -134,7 +134,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
-			setUpStoredEntryIfNecessary(jarFile, entry);
+			setUpEntry(jarFile, entry);
 			try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(
 					jarFile.getInputStream(entry))) {
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, true);
@@ -146,12 +146,14 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		}
 	}
 
-	private void setUpStoredEntryIfNecessary(JarFile jarFile, JarArchiveEntry entry)
-			throws IOException {
+	private void setUpEntry(JarFile jarFile, JarArchiveEntry entry) throws IOException {
 		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(
 				jarFile.getInputStream(entry))) {
 			if (inputStream.hasZipHeader() && entry.getMethod() != ZipEntry.STORED) {
 				new CrcAndSize(inputStream).setupStoredEntry(entry);
+			}
+			else {
+				entry.setCompressedSize(-1);
 			}
 		}
 	}

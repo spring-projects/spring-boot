@@ -18,6 +18,7 @@ package org.springframework.boot.loader.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
@@ -25,11 +26,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -636,6 +640,28 @@ public class RepackagerTests {
 				(callback) -> callback.library(new Library(libJarFile, scope)));
 		assertThat(getEntryNames(file)).containsExactly("META-INF/",
 				"META-INF/MANIFEST.MF", "a/", "a/b/", "a/b/C.class");
+	}
+
+	@Test
+	public void jarThatUsesCustomCompressionConfigurationCanBeRepackaged()
+			throws IOException {
+		File source = this.temporaryFolder.newFile("source.jar");
+		ZipOutputStream output = new ZipOutputStream(new FileOutputStream(source)) {
+			{
+				this.def = new Deflater(Deflater.NO_COMPRESSION, true);
+			}
+		};
+		byte[] data = new byte[1024 * 1024];
+		new Random().nextBytes(data);
+		ZipEntry entry = new ZipEntry("entry.dat");
+		output.putNextEntry(entry);
+		output.write(data);
+		output.closeEntry();
+		output.close();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		Repackager repackager = new Repackager(source);
+		repackager.setMainClass("com.example.Main");
+		repackager.repackage(dest, NO_LIBRARIES);
 	}
 
 	private File createLibrary() throws IOException {
