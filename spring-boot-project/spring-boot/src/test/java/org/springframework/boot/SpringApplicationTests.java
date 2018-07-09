@@ -45,6 +45,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
@@ -1118,6 +1119,21 @@ public class SpringApplicationTests {
 		assertThat(occurrences).as("Expected single stacktrace").isEqualTo(1);
 	}
 
+	@Test
+	public void beanDefinitionOverridingIsDisabledByDefault() {
+		this.thrown.expect(BeanDefinitionOverrideException.class);
+		new SpringApplication(ExampleConfig.class, OverrideConfig.class).run();
+	}
+
+	@Test
+	public void beanDefinitionOverridingCanBeEnabled() {
+		assertThat(
+				new SpringApplication(ExampleConfig.class, OverrideConfig.class)
+						.run("--spring.main.allow-bean-definition-overriding=true",
+								"--spring.main.web-application-type=none")
+						.getBean("someBean")).isEqualTo("override");
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final Class<?> propertySourceClass, final String name) {
 		return new Condition<ConfigurableEnvironment>("has property source") {
@@ -1227,6 +1243,21 @@ public class SpringApplicationTests {
 
 	@Configuration
 	static class ExampleConfig {
+
+		@Bean
+		public String someBean() {
+			return "test";
+		}
+
+	}
+
+	@Configuration
+	static class OverrideConfig {
+
+		@Bean
+		public String someBean() {
+			return "override";
+		}
 
 	}
 
