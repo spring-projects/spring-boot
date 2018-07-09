@@ -42,10 +42,9 @@ class OnExpressionCondition extends SpringBootCondition {
 				.getAnnotationAttributes(ConditionalOnExpression.class.getName())
 				.get("value");
 		expression = wrapIfNecessary(expression);
-		String rawExpression = expression;
-		expression = context.getEnvironment().resolvePlaceholders(expression);
 		ConditionMessage.Builder messageBuilder = ConditionMessage
-				.forCondition(ConditionalOnExpression.class, "(" + rawExpression + ")");
+				.forCondition(ConditionalOnExpression.class, "(" + expression + ")");
+		expression = context.getEnvironment().resolvePlaceholders(expression);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory != null) {
 			boolean result = evaluateExpression(beanFactory, expression);

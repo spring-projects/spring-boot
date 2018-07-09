@@ -174,7 +174,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private static final class CacheKey {
 
-		private Object key;
+		private final Object key;
 
 		private CacheKey(Object key) {
 			this.key = key;
