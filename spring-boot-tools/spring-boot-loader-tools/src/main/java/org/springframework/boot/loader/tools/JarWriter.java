@@ -140,6 +140,9 @@ public class JarWriter implements LoaderClassesWriter {
 					inputStream = new ZipHeaderPeekInputStream(
 							jarFile.getInputStream(entry));
 				}
+				else {
+					entry.setCompressedSize(-1);
+				}
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, true);
 				JarEntry transformedEntry = entryTransformer.transform(entry);
 				if (transformedEntry != null) {

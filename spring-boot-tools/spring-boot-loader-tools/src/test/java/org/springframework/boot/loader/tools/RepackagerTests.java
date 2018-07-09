@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,19 @@ package org.springframework.boot.loader.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Calendar;
+import java.util.Random;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -611,6 +615,28 @@ public class RepackagerTests {
 		finally {
 			jarFile.close();
 		}
+	}
+
+	@Test
+	public void jarThatUsesCustomCompressionConfigurationCanBeRepackaged()
+			throws IOException {
+		File source = this.temporaryFolder.newFile("source.jar");
+		ZipOutputStream output = new ZipOutputStream(new FileOutputStream(source)) {
+			{
+				this.def = new Deflater(Deflater.NO_COMPRESSION, true);
+			}
+		};
+		byte[] data = new byte[1024 * 1024];
+		new Random().nextBytes(data);
+		ZipEntry entry = new ZipEntry("entry.dat");
+		output.putNextEntry(entry);
+		output.write(data);
+		output.closeEntry();
+		output.close();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		Repackager repackager = new Repackager(source);
+		repackager.setMainClass("com.example.Main");
+		repackager.repackage(dest, NO_LIBRARIES);
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {
