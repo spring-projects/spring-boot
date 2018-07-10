@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -46,7 +47,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -236,7 +236,7 @@ public class BasicErrorControllerIntegrationTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ ServletWebServerFactoryAutoConfiguration.class,
+	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
@@ -246,7 +246,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Configuration
 	@MinimalWebConfiguration
-	@Import(FreeMarkerAutoConfiguration.class)
+	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
 	public static class TestConfiguration {
 
 		// For manual testing
