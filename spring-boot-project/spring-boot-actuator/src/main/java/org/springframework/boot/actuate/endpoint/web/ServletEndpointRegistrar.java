@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -76,18 +77,21 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 		EndpointServlet endpointServlet = endpoint.getEndpointServlet();
 		Dynamic registration = servletContext.addServlet(name,
 				endpointServlet.getServlet());
-		registration.addMapping(getUrlMappings(endpoint.getRootPath(), name));
+		String[] urlMappings = getUrlMappings(endpoint.getRootPath());
+		registration.addMapping(urlMappings);
+		if (logger.isInfoEnabled()) {
+			Arrays.stream(urlMappings).forEach(
+					(mapping) -> logger.info("Registered '" + mapping + "' to " + name));
+		}
 		registration.setInitParameters(endpointServlet.getInitParameters());
 	}
 
-	private String[] getUrlMappings(String endpointPath, String name) {
-		return this.basePaths
-				.stream().map((basePath) -> (basePath != null
-						? basePath + "/" + endpointPath : "/" + endpointPath))
-				.distinct().map((path) -> {
-					logger.info("Registered '" + path + "' to " + name);
-					return (path.endsWith("/") ? path + "*" : path + "/*");
-				}).toArray(String[]::new);
+	private String[] getUrlMappings(String endpointPath) {
+		return this.basePaths.stream()
+				.map((basePath) -> (basePath != null ? basePath + "/" + endpointPath
+						: "/" + endpointPath))
+				.distinct().map((path) -> (path.endsWith("/") ? path + "*" : path + "/*"))
+				.toArray(String[]::new);
 	}
 
 }
