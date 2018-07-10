@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure;
+package org.springframework.boot.test.autoconfigure.override;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor;
+import org.springframework.boot.test.autoconfigure.ExampleTestConfig;
+import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.BootstrapWith;
@@ -31,25 +36,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link OverrideAutoConfiguration} when {@code enabled} is
- * {@code true}.
+ * {@code false}.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@OverrideAutoConfiguration(enabled = true)
+@OverrideAutoConfiguration(enabled = false)
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
 @ImportAutoConfiguration(ExampleTestConfig.class)
-public class OverrideAutoConfigurationEnabledTrueIntegrationTests {
+public class OverrideAutoConfigurationEnabledFalseIntegrationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
 	private ApplicationContext context;
 
 	@Test
-	public void autoConfiguredContext() {
+	public void disabledAutoConfiguration() {
 		ApplicationContext context = this.context;
-		assertThat(context.getBean(ExampleSpringBootApplication.class)).isNotNull();
-		assertThat(context.getBean(ConfigurationPropertiesBindingPostProcessor.class))
-				.isNotNull();
+		assertThat(context.getBean(ExampleTestConfig.class)).isNotNull();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		context.getBean(ConfigurationPropertiesBindingPostProcessor.class);
 	}
 
 }
