@@ -19,14 +19,18 @@ package org.springframework.boot.actuate.web.mappings.servlet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.Servlet;
+
 import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping;
 import org.springframework.util.ClassUtils;
@@ -44,6 +48,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * DispatcherServlets}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 public class DispatcherServletsMappingDescriptionProvider
@@ -81,11 +86,31 @@ public class DispatcherServletsMappingDescriptionProvider
 	private Map<String, List<DispatcherServletMappingDescription>> describeMappings(
 			WebApplicationContext context) {
 		Map<String, List<DispatcherServletMappingDescription>> mappings = new HashMap<>();
-		context.getBeansOfType(DispatcherServlet.class)
-				.forEach((name, dispatcherServlet) -> mappings.put(name,
-						describeMappings(new DispatcherServletHandlerMappings(name,
-								dispatcherServlet, context))));
+		determineDispatcherServlets(context).forEach((name, dispatcherServlet) -> mappings
+				.put(name, describeMappings(new DispatcherServletHandlerMappings(name,
+						dispatcherServlet, context))));
 		return mappings;
+	}
+
+	private Map<String, DispatcherServlet> determineDispatcherServlets(
+			WebApplicationContext context) {
+		Map<String, DispatcherServlet> dispatcherServlets = new LinkedHashMap<>();
+		context.getBeansOfType(ServletRegistrationBean.class).values()
+				.forEach((registration) -> {
+					Servlet servlet = registration.getServlet();
+					if (servlet instanceof DispatcherServlet
+							&& !dispatcherServlets.containsValue(servlet)) {
+						dispatcherServlets.put(registration.getServletName(),
+								(DispatcherServlet) servlet);
+					}
+				});
+		context.getBeansOfType(DispatcherServlet.class)
+				.forEach((name, dispatcherServlet) -> {
+					if (!dispatcherServlets.containsValue(dispatcherServlet)) {
+						dispatcherServlets.put(name, dispatcherServlet);
+					}
+				});
+		return dispatcherServlets;
 	}
 
 	private List<DispatcherServletMappingDescription> describeMappings(
