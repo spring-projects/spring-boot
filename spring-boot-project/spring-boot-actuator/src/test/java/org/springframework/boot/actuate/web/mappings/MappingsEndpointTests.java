@@ -41,6 +41,7 @@ import org.springframework.boot.actuate.web.mappings.servlet.ServletRegistration
 import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,6 +68,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
  * Tests for {@link MappingsEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Filip Hrisafov
  */
 public class MappingsEndpointTests {
 
@@ -99,9 +101,16 @@ public class MappingsEndpointTests {
 							"dispatcherServlets", "servletFilters", "servlets");
 					Map<String, List<DispatcherServletMappingDescription>> dispatcherServlets = mappings(
 							contextMappings, "dispatcherServlets");
-					assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet");
+					assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet",
+							"Registration Double servlet", "Registration Single servlet");
 					List<DispatcherServletMappingDescription> handlerMappings = dispatcherServlets
 							.get("dispatcherServlet");
+					assertThat(handlerMappings).hasSize(1);
+					handlerMappings = dispatcherServlets
+							.get("Registration Double servlet");
+					assertThat(handlerMappings).hasSize(1);
+					handlerMappings = dispatcherServlets
+							.get("Registration Single servlet");
 					assertThat(handlerMappings).hasSize(1);
 					List<ServletRegistrationMappingDescription> servlets = mappings(
 							contextMappings, "servlets");
@@ -204,6 +213,35 @@ public class MappingsEndpointTests {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
 			dispatcherServlet.init(new MockServletConfig());
 			return dispatcherServlet;
+		}
+
+		@Bean
+		public DispatcherServlet registrationDispatcherServlet(
+				WebApplicationContext context) throws ServletException {
+			DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
+			dispatcherServlet.init(new MockServletConfig());
+			return dispatcherServlet;
+		}
+
+		@Bean
+		public ServletRegistrationBean<DispatcherServlet> registrationBeanDouble(
+				DispatcherServlet registrationDispatcherServlet) {
+			ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<>(
+					registrationDispatcherServlet);
+			registrationBean.setName("Registration Double servlet");
+			return registrationBean;
+		}
+
+		@Bean
+		public ServletRegistrationBean<DispatcherServlet> registrationBeanSingle(
+				WebApplicationContext context) throws ServletException {
+			DispatcherServlet servlet = new DispatcherServlet(context);
+			servlet.init(new MockServletConfig());
+			ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<>(
+					servlet);
+			registrationBean.setName("Registration Single servlet");
+
+			return registrationBean;
 		}
 
 		@RequestMapping("/three")
