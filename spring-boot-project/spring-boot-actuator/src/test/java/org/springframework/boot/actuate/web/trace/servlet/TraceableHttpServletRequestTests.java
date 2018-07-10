@@ -50,13 +50,13 @@ public class TraceableHttpServletRequestTests {
 	@Test
 	public void getUriWithSpecialCharactersInQueryStringShouldEncode() {
 		this.request.setQueryString("a=${b}");
-		validate("http://localhost/script?a%3D%24%7Bb%7D");
+		validate("http://localhost/script?a=$%7Bb%7D");
 	}
 
 	@Test
 	public void getUriWithSpecialCharactersEncodedShouldNotDoubleEncode() {
-		this.request.setQueryString("a%3D%24%7Bb%7D");
-		validate("http://localhost/script?a%3D%24%7Bb%7D");
+		this.request.setQueryString("a=$%7Bb%7D");
+		validate("http://localhost/script?a=$%7Bb%7D");
 	}
 
 	private void validate(String expectedUri) {
