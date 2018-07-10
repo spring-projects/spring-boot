@@ -16,12 +16,12 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.EntityLinksConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration.HypermediaConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -91,24 +91,8 @@ public class HypermediaAutoConfigurationTests {
 		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
 				.applyTo(this.context);
 		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
-				ObjectMapper.class);
-		assertThat(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isFalse();
-	}
-
-	@Test
-	public void jacksonConfigurationIsAppliedToTheHalObjectMapper() {
-		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.setServletContext(new MockServletContext());
-		this.context.register(BaseConfig.class);
-		TestPropertyValues.of("spring.jackson.serialization.INDENT_OUTPUT:true")
-				.applyTo(this.context);
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
-				ObjectMapper.class);
-		assertThat(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isTrue();
+		assertThat(this.context.getBeansOfType(HypermediaConfiguration.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(EntityLinksConfiguration.class)).isEmpty();
 	}
 
 	@Test
