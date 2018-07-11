@@ -21,6 +21,8 @@ import javax.sql.DataSource;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -159,6 +161,44 @@ public class JdbcTemplateAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void testDependencyToDataSourceInitialization() {
+		this.contextRunner.withUserConfiguration(DataSourceInitializationValidator.class)
+				.withPropertyValues("spring.datasource.initialization-mode=always")
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context
+							.getBean(DataSourceInitializationValidator.class).count)
+									.isEqualTo(1);
+				});
+	}
+
+	@Test
+	public void testDependencyToFlyway() {
+		this.contextRunner.withUserConfiguration(DataSourceMigrationValidator.class)
+				.withPropertyValues("spring.flyway.locations:classpath:db/city")
+				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(DataSourceMigrationValidator.class).count)
+							.isEqualTo(0);
+				});
+	}
+
+	@Test
+	public void testDependencyToLiquibase() {
+		this.contextRunner.withUserConfiguration(DataSourceMigrationValidator.class)
+				.withPropertyValues(
+						"spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml")
+				.withConfiguration(
+						AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(DataSourceMigrationValidator.class).count)
+							.isEqualTo(0);
+				});
+	}
+
 	@Configuration
 	static class CustomConfiguration {
 
@@ -212,6 +252,28 @@ public class JdbcTemplateAutoConfigurationTests {
 		@Bean
 		public JdbcTemplate test2Template() {
 			return mock(JdbcTemplate.class);
+		}
+
+	}
+
+	static class DataSourceInitializationValidator {
+
+		private final Integer count;
+
+		DataSourceInitializationValidator(JdbcTemplate jdbcTemplate) {
+			this.count = jdbcTemplate.queryForObject("SELECT COUNT(*) from BAR",
+					Integer.class);
+		}
+
+	}
+
+	static class DataSourceMigrationValidator {
+
+		private final Integer count;
+
+		DataSourceMigrationValidator(JdbcTemplate jdbcTemplate) {
+			this.count = jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY",
+					Integer.class);
 		}
 
 	}
