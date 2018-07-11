@@ -176,7 +176,7 @@
       "name": "spring.main.allow-bean-definition-overriding",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.SpringApplication",
-      "description": "Whether bean definition overriding, by registering a definition with the same name as an existing definition, is allowed",
+      "description": "Whether bean definition overriding, by registering a definition with the same name as an existing definition, is allowed.",
       "defaultValue": false
     },
     {
