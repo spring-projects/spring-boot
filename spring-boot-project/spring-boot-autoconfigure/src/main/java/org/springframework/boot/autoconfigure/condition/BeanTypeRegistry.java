@@ -77,7 +77,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 
 	private final Map<String, Class<?>> beanTypes = new HashMap<>();
 
-	private int lastBeanDefinitionCount = 0;
+	private final Map<String, RootBeanDefinition> beanDefinitions = new HashMap<>();
 
 	private BeanTypeRegistry(DefaultListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
@@ -142,7 +142,7 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	public void afterSingletonsInstantiated() {
 		// We're done at this point, free up some memory
 		this.beanTypes.clear();
-		this.lastBeanDefinitionCount = 0;
+		this.beanDefinitions.clear();
 	}
 
 	private void addBeanType(String name) {
@@ -155,9 +155,22 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	}
 
 	private void addBeanTypeForNonAliasDefinition(String name) {
+		addBeanTypeForNonAliasDefinition(name, getBeanDefinition(name));
+	}
+
+	private RootBeanDefinition getBeanDefinition(String name) {
 		try {
-			RootBeanDefinition beanDefinition = (RootBeanDefinition) this.beanFactory
-					.getMergedBeanDefinition(name);
+			return (RootBeanDefinition) this.beanFactory.getMergedBeanDefinition(name);
+		}
+		catch (BeanDefinitionStoreException ex) {
+			logIgnoredError("unresolvable metadata in bean definition", name, ex);
+			return null;
+		}
+	}
+
+	private void addBeanTypeForNonAliasDefinition(String name,
+			RootBeanDefinition beanDefinition) {
+		try {
 			if (!beanDefinition.isAbstract()
 					&& !requiresEagerInit(beanDefinition.getFactoryBeanName())) {
 				String factoryName = BeanFactory.FACTORY_BEAN_PREFIX + name;
@@ -172,14 +185,11 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 					this.beanTypes.put(name, this.beanFactory.getType(name));
 				}
 			}
+			this.beanDefinitions.put(name, beanDefinition);
 		}
 		catch (CannotLoadBeanClassException ex) {
 			// Probably contains a placeholder
 			logIgnoredError("bean class loading failure for bean", name, ex);
-		}
-		catch (BeanDefinitionStoreException ex) {
-			// Probably contains a placeholder
-			logIgnoredError("unresolvable metadata in bean definition", name, ex);
 		}
 	}
 
@@ -195,15 +205,24 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	}
 
 	private void updateTypesIfNecessary() {
-		if (this.lastBeanDefinitionCount != this.beanFactory.getBeanDefinitionCount()) {
-			Iterator<String> names = this.beanFactory.getBeanNamesIterator();
-			while (names.hasNext()) {
-				String name = names.next();
-				if (!this.beanTypes.containsKey(name)) {
-					addBeanType(name);
+		Iterator<String> names = this.beanFactory.getBeanNamesIterator();
+		while (names.hasNext()) {
+			String name = names.next();
+			if (!this.beanTypes.containsKey(name)) {
+				addBeanType(name);
+			}
+			else {
+				if (!this.beanFactory.isAlias(name)
+						&& !this.beanFactory.containsSingleton(name)) {
+					RootBeanDefinition beanDefinition = getBeanDefinition(name);
+					RootBeanDefinition existingDefinition = this.beanDefinitions.put(name,
+							beanDefinition);
+					if (existingDefinition != null
+							&& !beanDefinition.equals(existingDefinition)) {
+						addBeanTypeForNonAliasDefinition(name, beanDefinition);
+					}
 				}
 			}
-			this.lastBeanDefinitionCount = this.beanFactory.getBeanDefinitionCount();
 		}
 	}
 
