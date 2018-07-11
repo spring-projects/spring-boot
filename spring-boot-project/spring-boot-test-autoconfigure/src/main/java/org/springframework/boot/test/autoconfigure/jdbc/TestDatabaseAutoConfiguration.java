@@ -16,6 +16,10 @@
 
 package org.springframework.boot.test.autoconfigure.jdbc;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -50,6 +54,7 @@ import org.springframework.util.ObjectUtils;
  * Auto-configuration for a test database.
  *
  * @author Phillip Webb
+ * @author Eric Bussieres
  * @since 1.4.0
  * @see AutoConfigureTestDatabase
  */
@@ -99,16 +104,22 @@ public class TestDatabaseAutoConfiguration {
 
 		private void process(BeanDefinitionRegistry registry,
 				ConfigurableListableBeanFactory beanFactory) {
-			BeanDefinitionHolder holder = getDataSourceBeanDefinition(beanFactory);
-			if (holder != null) {
-				String beanName = holder.getBeanName();
-				boolean primary = holder.getBeanDefinition().isPrimary();
-				logger.info("Replacing '" + beanName + "' DataSource bean with "
-						+ (primary ? "primary " : "") + "embedded version");
-				registry.removeBeanDefinition(beanName);
-				registry.registerBeanDefinition(beanName,
-						createEmbeddedBeanDefinition(primary));
+			List<BeanDefinitionHolder> holders = this
+					.getDataSourcesBeanDefinition(beanFactory);
+			for (BeanDefinitionHolder holder : holders) {
+				this.overrideBeanDefinition(registry, holder);
 			}
+		}
+
+		private void overrideBeanDefinition(BeanDefinitionRegistry registry,
+				BeanDefinitionHolder holder) {
+			String beanName = holder.getBeanName();
+			boolean primary = holder.getBeanDefinition().isPrimary();
+			logger.debug("Replacing '" + beanName + "' DataSource bean with "
+					+ (primary ? "primary " : "") + "embedded version");
+			registry.removeBeanDefinition(beanName);
+			registry.registerBeanDefinition(beanName,
+					this.createEmbeddedBeanDefinition(primary));
 		}
 
 		private BeanDefinition createEmbeddedBeanDefinition(boolean primary) {
@@ -118,28 +129,22 @@ public class TestDatabaseAutoConfiguration {
 			return beanDefinition;
 		}
 
-		private BeanDefinitionHolder getDataSourceBeanDefinition(
+		private List<BeanDefinitionHolder> getDataSourcesBeanDefinition(
 				ConfigurableListableBeanFactory beanFactory) {
 			String[] beanNames = beanFactory.getBeanNamesForType(DataSource.class);
 			if (ObjectUtils.isEmpty(beanNames)) {
 				logger.warn("No DataSource beans found, "
 						+ "embedded version will not be used");
-				return null;
+				return Collections.emptyList();
 			}
-			if (beanNames.length == 1) {
-				String beanName = beanNames[0];
-				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-				return new BeanDefinitionHolder(beanDefinition, beanName);
-			}
+
+			List<BeanDefinitionHolder> beanDefinitionHolders = new ArrayList<>();
 			for (String beanName : beanNames) {
 				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-				if (beanDefinition.isPrimary()) {
-					return new BeanDefinitionHolder(beanDefinition, beanName);
-				}
+				beanDefinitionHolders
+						.add(new BeanDefinitionHolder(beanDefinition, beanName));
 			}
-			logger.warn("No primary DataSource found, "
-					+ "embedded version will not be used");
-			return null;
+			return beanDefinitionHolders;
 		}
 
 	}
