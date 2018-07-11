@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Yulin Qin
  */
-public class MongoReactiveHealthIndicatorTest {
+public class MongoReactiveHealthIndicatorTests {
 
 	@Test
 	public void testMongoIsUp() {
@@ -65,7 +65,8 @@ public class MongoReactiveHealthIndicatorTest {
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
-			assertThat(h.getDetails().get("error")).isEqualTo("Connection failed");
+			assertThat(h.getDetails().get("error"))
+					.isEqualTo(MongoException.class.getName() + ": Connection failed");
 		}).verifyComplete();
 	}
 

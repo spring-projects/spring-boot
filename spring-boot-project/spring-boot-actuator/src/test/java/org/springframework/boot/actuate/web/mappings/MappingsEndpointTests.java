@@ -73,7 +73,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class MappingsEndpointTests {
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void servletWebMappings() {
 		Supplier<ConfigurableWebApplicationContext> contextSupplier = prepareContextSupplier();
 		new WebApplicationContextRunner(contextSupplier)
@@ -100,7 +99,6 @@ public class MappingsEndpointTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void servletWebMappingsWithAdditionalDispatcherServlets() {
 		Supplier<ConfigurableWebApplicationContext> contextSupplier = prepareContextSupplier();
 		new WebApplicationContextRunner(contextSupplier).withUserConfiguration(
@@ -121,6 +119,7 @@ public class MappingsEndpointTests {
 				});
 	}
 
+	@SuppressWarnings("unchecked")
 	private Supplier<ConfigurableWebApplicationContext> prepareContextSupplier() {
 		ServletContext servletContext = mock(ServletContext.class);
 		given(servletContext.getInitParameterNames())

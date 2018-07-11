@@ -465,10 +465,6 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			return this.id;
 		}
 
-		public Class<?> getType() {
-			return this.bean.getClass();
-		}
-
 		public boolean isEnabledByDefault() {
 			return this.enabledByDefault;
 		}
