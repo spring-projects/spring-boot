@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import org.junit.After;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,23 +34,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MongoReactiveDataAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(
+					PropertyPlaceholderAutoConfiguration.class,
+					MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+					MongoReactiveAutoConfiguration.class,
+					MongoReactiveDataAutoConfiguration.class));
 
 	@Test
 	public void templateExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
-				MongoReactiveDataAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(ReactiveMongoTemplate.class))
-				.hasSize(1);
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(ReactiveMongoTemplate.class));
 	}
 
 }
