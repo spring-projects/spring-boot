@@ -17,10 +17,12 @@
 package org.springframework.boot.autoconfigure.data.mongo;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -36,6 +38,9 @@ public class MongoReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@After
 	public void close() {
 		if (this.context != null) {
@@ -46,11 +51,20 @@ public class MongoReactiveDataAutoConfigurationTests {
 	@Test
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				MongoReactiveAutoConfiguration.class,
 				MongoReactiveDataAutoConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(ReactiveMongoTemplate.class))
 				.hasSize(1);
+	}
+
+	@Test
+	public void backsOffIfMongoClientBeanIsNotPresent() {
+		this.context = new AnnotationConfigApplicationContext(
+				PropertyPlaceholderAutoConfiguration.class,
+				MongoReactiveDataAutoConfiguration.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(MongoReactiveDataAutoConfiguration.class);
 	}
 
 }

@@ -22,9 +22,12 @@ import java.util.Set;
 
 import com.mongodb.MongoClient;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
@@ -59,6 +62,9 @@ import static org.junit.Assert.fail;
 public class MongoDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@After
 	public void close() {
@@ -160,6 +166,15 @@ public class MongoDataAutoConfigurationTests {
 		BasicMongoPersistentEntity<?> entity = context.getPersistentEntity(Sample.class);
 		MongoPersistentProperty dateProperty = entity.getPersistentProperty("date");
 		assertThat(dateProperty.isEntity()).isFalse();
+	}
+
+	@Test
+	public void backsOffIfMongoClientBeanIsNotPresent() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		assertThat(this.context.getBean(MongoDataAutoConfiguration.class)).isNull();
 	}
 
 	public void testFieldNamingStrategy(String strategy,

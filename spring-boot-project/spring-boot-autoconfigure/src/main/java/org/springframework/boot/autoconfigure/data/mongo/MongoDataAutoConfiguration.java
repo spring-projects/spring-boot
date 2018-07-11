@@ -16,30 +16,25 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import java.util.Collections;
-
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
-import org.springframework.data.annotation.Persistent;
-import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -48,7 +43,6 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.util.Assert;
@@ -73,17 +67,15 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass({ MongoClient.class, MongoTemplate.class })
+@ConditionalOnBean(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
+@Import(MongoDataConfiguration.class)
 @AutoConfigureAfter(MongoAutoConfiguration.class)
 public class MongoDataAutoConfiguration {
 
-	private final ApplicationContext applicationContext;
-
 	private final MongoProperties properties;
 
-	public MongoDataAutoConfiguration(ApplicationContext applicationContext,
-			MongoProperties properties) {
-		this.applicationContext = applicationContext;
+	public MongoDataAutoConfiguration(MongoProperties properties) {
 		this.properties = properties;
 	}
 
@@ -114,33 +106,11 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoMappingContext mongoMappingContext(MongoCustomConversions conversions)
-			throws ClassNotFoundException {
-		MongoMappingContext context = new MongoMappingContext();
-		context.setInitialEntitySet(new EntityScanner(this.applicationContext)
-				.scan(Document.class, Persistent.class));
-		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
-		if (strategyClass != null) {
-			context.setFieldNamingStrategy(
-					(FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
-		}
-		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
-		return context;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
 			MongoTemplate mongoTemplate) {
 		return new GridFsTemplate(
 				new GridFsMongoDbFactory(mongoDbFactory, this.properties),
 				mongoTemplate.getConverter());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public MongoCustomConversions mongoCustomConversions() {
-		return new MongoCustomConversions(Collections.emptyList());
 	}
 
 	/**

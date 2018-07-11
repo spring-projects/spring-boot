@@ -24,6 +24,7 @@ import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
 import io.netty.channel.socket.SocketChannel;
+import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -44,7 +45,7 @@ import org.springframework.core.env.Environment;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(MongoClient.class)
+@ConditionalOnClass({ MongoClient.class, Flux.class })
 @EnableConfigurationProperties(MongoProperties.class)
 public class MongoReactiveAutoConfiguration {
 
