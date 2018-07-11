@@ -29,15 +29,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * An opinionated {@link WebApplicationInitializer} to run a {@link SpringApplication}
@@ -104,9 +108,6 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	protected WebApplicationContext createRootApplicationContext(
 			ServletContext servletContext) {
 		SpringApplicationBuilder builder = createSpringApplicationBuilder();
-		StandardServletEnvironment environment = new StandardServletEnvironment();
-		environment.initPropertySources(servletContext, null);
-		builder.environment(environment);
 		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
@@ -119,6 +120,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 				new ServletContextApplicationContextInitializer(servletContext));
 		builder.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		builder = configure(builder);
+		builder.listeners(new WebEnvironmentPropertySourceInitializer(servletContext));
 		SpringApplication application = builder.build();
 		if (application.getSources().isEmpty() && AnnotationUtils
 				.findAnnotation(getClass(), Configuration.class) != null) {
@@ -175,6 +177,32 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 */
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return builder;
+	}
+
+	private static final class WebEnvironmentPropertySourceInitializer
+			implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+
+		private final ServletContext servletContext;
+
+		private WebEnvironmentPropertySourceInitializer(ServletContext servletContext) {
+			this.servletContext = servletContext;
+		}
+
+		@Override
+		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+			ConfigurableEnvironment environment = event.getEnvironment();
+			if (environment instanceof ConfigurableWebEnvironment) {
+				((ConfigurableWebEnvironment) environment)
+						.initPropertySources(this.servletContext, null);
+			}
+
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
 	}
 
 }

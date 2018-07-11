@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collections;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -33,6 +34,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -59,9 +61,18 @@ public class SpringBootServletInitializerTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
+	@Rule
+	public InternalOutputCapture output = new InternalOutputCapture();
+
 	private ServletContext servletContext = new MockServletContext();
 
 	private SpringApplication application;
+
+	@After
+	public void verifyLoggingOutput() {
+		assertThat(this.output.toString())
+				.doesNotContain(StandardServletEnvironment.class.getSimpleName());
+	}
 
 	@Test
 	public void failsWithoutConfigure() throws Exception {
