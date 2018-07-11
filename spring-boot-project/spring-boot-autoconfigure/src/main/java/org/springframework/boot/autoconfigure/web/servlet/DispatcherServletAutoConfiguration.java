@@ -90,12 +90,8 @@ public class DispatcherServletAutoConfiguration {
 
 		private final WebMvcProperties webMvcProperties;
 
-		private final ServerProperties serverProperties;
-
-		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties,
-				ServerProperties serverProperties) {
+		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties) {
 			this.webMvcProperties = webMvcProperties;
-			this.serverProperties = serverProperties;
 		}
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
