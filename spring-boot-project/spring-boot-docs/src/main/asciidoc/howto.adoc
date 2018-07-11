@@ -2669,7 +2669,7 @@ plugin, as shown in the following example:
 [source,groovy,indent=0]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "1.4.21"
+		id "com.gorylenko.gradle-git-properties" version "1.5.1"
 	}
 ----
 
