@@ -118,7 +118,7 @@ public class MetricFilterAutoConfigurationTests {
 	}
 
 	@Test
-	public void usesUnmappedForInterationsWithNoBestMatchingPattern() throws Exception {
+	public void usesUnmappedForInteractionsWithNoBestMatchingPattern() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class, MetricFilterAutoConfiguration.class);
 		Filter filter = context.getBean(Filter.class);
