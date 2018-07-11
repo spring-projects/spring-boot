@@ -6186,8 +6186,10 @@ annotations are also provided for
 <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,testing more
 specific slices>> of an application.
 
-TIP: Don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise
-the annotations will be ignored.
+TIP: If you are using JUnit 4, don't forget to also add `@RunWith(SpringRunner.class)` to
+your test, otherwise the annotations will be ignored. If you are using JUnit 5, there's no
+need to add the equivalent `@ExtendWith(SpringExtension)` as `@SpringBootTest` and the
+other `@…Test` annotations are already annotated with it.
 
 You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine how
 your tests run:
