@@ -191,9 +191,7 @@ public class WebMvcAutoConfigurationTests {
 	public void resourceHandlerMappingDisabled() {
 		this.contextRunner.withPropertyValues("spring.resources.add-mappings:false")
 				.run((context) -> {
-					Map<String, List<Resource>> locations = getResourceMappingLocations(
-							context);
-					assertThat(locations).isEmpty();
+					assertThat(context.getBean("resourceHandlerMapping")).isEqualTo(null);
 				});
 	}
 
