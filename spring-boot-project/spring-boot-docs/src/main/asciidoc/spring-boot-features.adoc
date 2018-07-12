@@ -7845,7 +7845,7 @@ The easiest way to start with Spring Boot and Kotlin is to follow
 https://spring.io/guides/tutorials/spring-boot-kotlin/[this comprehensive tutorial]. You
 can create new Kotlin projects via
 https://start.spring.io/#!language=kotlin[start.spring.io]. Feel free to join the #spring
-channel of http://slack.kotlinlang.org/[Kotlin Slack] or ask a question with `spring`
+channel of http://slack.kotlinlang.org/[Kotlin Slack] or ask a question with the `spring`
 and `kotlin` tags on https://stackoverflow.com/questions/tagged/spring+kotlin[Stack
 Overflow] if you need support.
 
@@ -7899,7 +7899,7 @@ Kotlin types inferred from Spring API but should be used with the knowledge that
 API nullability declaration could evolve even between minor releases and more checks may
 be added in the future).
 
-WARN: Generic type arguments, varargs and array elements nullability are not yet
+WARNING: Generic type arguments, varargs and array elements nullability are not yet
 supported. See https://jira.spring.io/browse/SPR-15942[SPR-15942] for up-to-date
 information. Also be aware that Spring Boot's own API is {github-issues}10712[not yet
 annotated].
