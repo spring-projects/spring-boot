@@ -61,6 +61,8 @@ org.springframework.boot.actuate.autoconfigure.mongo.MongoHealthIndicatorAutoCon
 org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.redis.RedisHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.scheduling.ScheduledTasksEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.session.SessionsEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.solr.SolrHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthIndicatorAutoConfiguration,\
