@@ -405,7 +405,7 @@ public class JSONArray {
 	 * @param index the index to get the value from
 	 * @return the {@code value}
 	 * @throws JSONException if the value at {@code index} doesn't exist or cannot be
-	 * coerced to a int.
+	 * coerced to an int.
 	 */
 	public int getInt(int index) throws JSONException {
 		Object object = get(index);
