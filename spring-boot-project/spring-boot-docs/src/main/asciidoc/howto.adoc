@@ -823,7 +823,7 @@ properties in the `server` namespace anymore.
 
 
 [[howto-add-a-servlet-filter-or-listener]]
-=== Add a Servlet, Filter, or Listener to a Application
+=== Add a Servlet, Filter, or Listener to an Application
 In a servlet stack application, i.e. with the `spring-boot-starter-web`, there are two
 ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners
 supported by the Servlet API to your application:
