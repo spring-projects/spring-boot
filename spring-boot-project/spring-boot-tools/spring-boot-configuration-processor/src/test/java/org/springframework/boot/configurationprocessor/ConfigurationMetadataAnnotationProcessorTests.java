@@ -64,6 +64,7 @@ import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
 import org.springframework.boot.configurationsample.method.SimpleMethodConfig;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
+import org.springframework.boot.configurationsample.simple.DescriptionProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
 import org.springframework.boot.configurationsample.simple.SimpleArrayProperties;
@@ -208,6 +209,20 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 						.fromSource(HierarchicalProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("hierarchical.third", String.class)
 				.fromSource(HierarchicalProperties.class));
+	}
+
+	@Test
+	public void descriptionProperties() {
+		ConfigurationMetadata metadata = compile(DescriptionProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("description")
+				.fromSource(DescriptionProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("description.simple", String.class)
+				.fromSource(DescriptionProperties.class)
+				.withDescription("A simple description."));
+		assertThat(metadata).has(Metadata
+				.withProperty("description.multi-line", String.class)
+				.fromSource(DescriptionProperties.class).withDescription(
+						"This is a lengthy description that spans across multiple lines to showcase that the carriage return is cleaned automatically."));
 	}
 
 	@Test
