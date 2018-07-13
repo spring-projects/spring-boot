@@ -126,6 +126,12 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setChangeLog(this.properties.getChangeLog());
 			liquibase.setContexts(this.properties.getContexts());
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
+			liquibase.setLiquibaseSchema(this.properties.getLiquibaseSchema());
+			liquibase.setLiquibaseTablespace(this.properties.getLiquibaseTablespace());
+			liquibase.setDatabaseChangeLogTable(
+					this.properties.getDatabaseChangeLogTable());
+			liquibase.setDatabaseChangeLogLockTable(
+					this.properties.getDatabaseChangeLogLockTable());
 			liquibase.setDropFirst(this.properties.isDropFirst());
 			liquibase.setShouldRun(this.properties.isEnabled());
 			liquibase.setLabels(this.properties.getLabels());
