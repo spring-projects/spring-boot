@@ -304,11 +304,11 @@ public final class EndpointRequest {
 				}
 				return "";
 			}).distinct().forEach((path) -> {
-				String pattern = path;
+				StringBuilder pattern = new StringBuilder(path);
 				for (String part : parts) {
-					pattern += part;
+					pattern.append(part);
 				}
-				matchers.add(new AntPathRequestMatcher(pattern));
+				matchers.add(new AntPathRequestMatcher(pattern.toString()));
 			});
 			return matchers;
 		}
