@@ -128,6 +128,22 @@ public class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
+	public void defaultValues() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.run(assertLiquibase((liquibase) -> {
+					LiquibaseProperties properties = new LiquibaseProperties();
+					assertThat(liquibase.getDatabaseChangeLogTable())
+							.isEqualTo(properties.getDatabaseChangeLogTable());
+					assertThat(liquibase.getDatabaseChangeLogLockTable())
+							.isEqualTo(properties.getDatabaseChangeLogLockTable());
+					assertThat(liquibase.isDropFirst())
+							.isEqualTo(properties.isDropFirst());
+					assertThat(liquibase.isTestRollbackOnUpdate())
+							.isEqualTo(properties.isTestRollbackOnUpdate());
+				}));
+	}
+
+	@Test
 	public void overrideContexts() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.contexts:test, production")

@@ -66,12 +66,12 @@ public class LiquibaseProperties {
 	/**
 	 * Name of table to use for tracking change history.
 	 */
-	private String databaseChangeLogTable;
+	private String databaseChangeLogTable = "DATABASECHANGELOG";
 
 	/**
 	 * Name of table to use for tracking concurrent Liquibase usage.
 	 */
-	private String databaseChangeLogLockTable;
+	private String databaseChangeLogLockTable = "DATABASECHANGELOGLOCK";
 
 	/**
 	 * Whether to first drop the database schema.

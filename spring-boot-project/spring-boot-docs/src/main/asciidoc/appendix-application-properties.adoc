@@ -568,8 +568,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.liquibase.default-schema= # Default database schema.
 	spring.liquibase.liquibase-schema= # Schema to use for Liquibase objects.
 	spring.liquibase.liquibase-tablespace= # Tablespace to use for Liquibase objects.
-	spring.liquibase.database-change-log-table= # Name of table to use for tracking change history.
-	spring.liquibase.database-change-log-lock-table= # Name of table to use for tracking concurrent Liquibase usage.
+	spring.liquibase.database-change-log-table=DATABASECHANGELOG # Name of table to use for tracking change history.
+	spring.liquibase.database-change-log-lock-table=DATABASECHANGELOGLOCK # Name of table to use for tracking concurrent Liquibase usage.
 	spring.liquibase.drop-first=false # Whether to first drop the database schema.
 	spring.liquibase.enabled=true # Whether to enable Liquibase support.
 	spring.liquibase.labels= # Comma-separated list of runtime labels to use.
