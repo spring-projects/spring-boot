@@ -22,7 +22,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -64,7 +63,6 @@ public class ElasticsearchAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("DATAES-470")
 	public void createTransportClient() {
 		this.context = new AnnotationConfigApplicationContext();
 		new ElasticsearchNodeTemplate().doWithNode((node) -> {
