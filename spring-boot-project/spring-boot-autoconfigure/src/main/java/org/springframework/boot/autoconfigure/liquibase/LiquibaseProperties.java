@@ -54,22 +54,22 @@ public class LiquibaseProperties {
 	private String defaultSchema;
 
 	/**
-	 * Liquibase database schema.
+	 * Schema to use for Liquibase objects.
 	 */
 	private String liquibaseSchema;
 
 	/**
-	 * Liquibase tablespace.
+	 * Tablespace to use for Liquibase objects.
 	 */
 	private String liquibaseTablespace;
 
 	/**
-	 * Database changelog table.
+	 * Name of table to use for tracking change history.
 	 */
 	private String databaseChangeLogTable;
 
 	/**
-	 * Database changelog lock table.
+	 * Name of table to use for tracking concurrent Liquibase usage.
 	 */
 	private String databaseChangeLogLockTable;
 
