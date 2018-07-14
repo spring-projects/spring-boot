@@ -143,12 +143,10 @@ public class ArtemisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
 				.withPropertyValues("spring.artemis.mode:native",
 						"spring.artemis.host:192.168.1.144", "spring.artemis.port:9876")
-				.run((context) -> {
-					assertNettyConnectionFactory(
-							getActiveMQConnectionFactory(
-									context.getBean(ConnectionFactory.class)),
-							"192.168.1.144", 9876);
-				});
+				.run((context) -> assertNettyConnectionFactory(
+						getActiveMQConnectionFactory(
+								context.getBean(ConnectionFactory.class)),
+						"192.168.1.144", 9876));
 	}
 
 	@Test

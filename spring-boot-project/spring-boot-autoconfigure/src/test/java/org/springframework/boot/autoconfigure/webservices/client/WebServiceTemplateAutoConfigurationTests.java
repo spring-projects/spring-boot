@@ -93,9 +93,7 @@ public class WebServiceTemplateAutoConfigurationTests {
 	@Test
 	public void builderShouldBeFreshForEachUse() {
 		this.contextRunner.withUserConfiguration(DirtyWebServiceTemplateConfig.class)
-				.run((context) -> {
-					assertThat(context).hasNotFailed();
-				});
+				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertWebServiceTemplateBuilder(

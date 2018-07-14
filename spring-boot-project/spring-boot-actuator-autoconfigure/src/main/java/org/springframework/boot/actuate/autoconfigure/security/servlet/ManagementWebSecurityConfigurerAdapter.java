@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -32,7 +33,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * configuration.
  *
  * @author Madhura Bhave
- * @since 2.0.1
  */
 @Configuration
 class ManagementWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {

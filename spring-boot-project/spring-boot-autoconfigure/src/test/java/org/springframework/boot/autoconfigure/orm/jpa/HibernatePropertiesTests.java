@@ -106,10 +106,9 @@ public class HibernatePropertiesTests {
 
 	@Test
 	public void useNewIdGeneratorMappingsDefault() {
-		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> {
-			assertThat(hibernateProperties).containsEntry(
-					AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true");
-		}));
+		this.contextRunner.run(assertHibernateProperties(
+				(hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
+						AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "true")));
 	}
 
 	@Test
@@ -117,10 +116,11 @@ public class HibernatePropertiesTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.jpa.hibernate.use-new-id-generator-mappings:false")
-				.run(assertHibernateProperties((hibernateProperties) -> {
-					assertThat(hibernateProperties).containsEntry(
-							AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS, "false");
-				}));
+				.run(assertHibernateProperties(
+						(hibernateProperties) -> assertThat(hibernateProperties)
+								.containsEntry(
+										AvailableSettings.USE_NEW_ID_GENERATOR_MAPPINGS,
+										"false")));
 	}
 
 	@Test
