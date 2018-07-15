@@ -50,7 +50,7 @@ public class NettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeadersUndertow() {
+	public void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -58,14 +58,14 @@ public class NettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultUseForwardHeadersUndertow() {
+	public void defaultUseForwardHeaders() {
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(false);
 	}
 
 	@Test
-	public void setUseForwardHeadersUndertow() {
+	public void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
