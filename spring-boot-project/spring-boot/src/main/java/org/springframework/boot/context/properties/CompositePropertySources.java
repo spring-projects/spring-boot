@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.core.env.PropertySource;
@@ -44,7 +43,7 @@ final class CompositePropertySources implements PropertySources {
 	public Iterator<PropertySource<?>> iterator() {
 		return this.propertySources.stream()
 				.flatMap((sources) -> StreamSupport.stream(sources.spliterator(), false))
-				.collect(Collectors.toList()).iterator();
+				.iterator();
 	}
 
 	@Override
