@@ -75,7 +75,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeadersUndertow() {
+	public void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		ConfigurableUndertowWebServerFactory factory = mock(
 				ConfigurableUndertowWebServerFactory.class);
@@ -84,7 +84,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void defaultUseForwardHeadersUndertow() {
+	public void defaultUseForwardHeaders() {
 		ConfigurableUndertowWebServerFactory factory = mock(
 				ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
@@ -92,7 +92,7 @@ public class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void setUseForwardHeadersUndertow() {
+	public void setUseForwardHeaders() {
 		this.serverProperties.setUseForwardHeaders(true);
 		ConfigurableUndertowWebServerFactory factory = mock(
 				ConfigurableUndertowWebServerFactory.class);

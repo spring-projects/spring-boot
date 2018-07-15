@@ -149,10 +149,11 @@ public class FileSystemWatcherTests {
 		this.watcher.addSourceFolder(folder);
 		this.watcher.start();
 		folder.mkdirs();
-		touch(new File(folder, "text.txt"));
+		File file = touch(new File(folder, "text.txt"));
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		System.out.println(changedFiles);
+		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
