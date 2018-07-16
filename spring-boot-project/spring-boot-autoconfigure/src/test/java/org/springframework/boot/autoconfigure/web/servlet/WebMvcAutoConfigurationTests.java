@@ -138,7 +138,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void handlerMappingsCreated() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.getBeans(HandlerMapping.class).hasSize(7));
+				.getBeans(HandlerMapping.class).hasSize(5));
 	}
 
 	@Test
