@@ -141,12 +141,16 @@ content into your application. Rather, pick only the properties that you need.
 	spring.profiles.include= # Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML).
 
 	# QUARTZ SCHEDULER ({sc-spring-boot-autoconfigure}/quartz/QuartzProperties.{sc-ext}[QuartzProperties])
+	spring.quartz.auto-startup=true # Whether to automatically start the scheduler after initialization.
 	spring.quartz.jdbc.comment-prefix=-- # Prefix for single-line comments in SQL initialization scripts.
 	spring.quartz.jdbc.initialize-schema=embedded # Database schema initialization mode.
 	spring.quartz.jdbc.schema=classpath:org/quartz/impl/jdbcjobstore/tables_@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.quartz.job-store-type=memory # Quartz job store type.
 	spring.quartz.properties.*= # Additional Quartz Scheduler properties.
+	spring.quartz.scheduler-name=quartzScheduler # Name of the scheduler.
+	spring.quartz.startup-delay=0s # Delay after which the scheduler is started once initialization completes.
 	spring.quartz.overwrite-existing-jobs=false # Whether configured jobs should overwrite existing job definitions.
+	spring.quartz.wait-for-jobs-to-complete-on-shutdown=false # Whether to wait for running jobs to complete on shutdown.
 
 	# REACTOR ({sc-spring-boot-autoconfigure}/reactor/core/ReactorCoreProperties.{sc-ext}[ReactorCoreProperties])
 	spring.reactor.stacktrace-mode.enabled=false # Whether Reactor should collect stacktrace information at runtime.

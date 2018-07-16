@@ -6000,9 +6000,10 @@ By default, jobs created by configuration will not overwrite already registered 
 have been read from a persistent job store. To enable overwriting existing job definitions
 set the `spring.quartz.overwrite-existing-jobs` property.
 
-Quartz Scheduler configuration can be customized by using Quartz configuration properties
-(`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans, which allow
-programmatic `SchedulerFactoryBean` customization.
+Quartz Scheduler configuration can be customized using `spring.quartz` properties and
+`SchedulerFactoryBeanCustomizer` beans, which allow programmatic `SchedulerFactoryBean`
+customization. Advanced Quartz configuration properties can be customized using
+`spring.quartz.properties.*`.
 
 NOTE: In particular, an `Executor` bean is not associated with the scheduler as Quartz
 offers a way to configure the scheduler via `spring.quartz.properties`. If you need

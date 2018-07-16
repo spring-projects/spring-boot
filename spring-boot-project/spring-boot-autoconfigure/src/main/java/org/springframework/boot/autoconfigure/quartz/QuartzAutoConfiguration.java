@@ -90,6 +90,12 @@ public class QuartzAutoConfiguration {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 		schedulerFactoryBean.setJobFactory(new AutowireCapableBeanJobFactory(
 				this.applicationContext.getAutowireCapableBeanFactory()));
+		schedulerFactoryBean.setBeanName(this.properties.getSchedulerName());
+		schedulerFactoryBean.setAutoStartup(this.properties.isAutoStartup());
+		schedulerFactoryBean
+				.setStartupDelay((int) this.properties.getStartupDelay().getSeconds());
+		schedulerFactoryBean.setWaitForJobsToCompleteOnShutdown(
+				this.properties.isWaitForJobsToCompleteOnShutdown());
 		schedulerFactoryBean
 				.setOverwriteExistingJobs(this.properties.isOverwriteExistingJobs());
 		if (!this.properties.getProperties().isEmpty()) {
