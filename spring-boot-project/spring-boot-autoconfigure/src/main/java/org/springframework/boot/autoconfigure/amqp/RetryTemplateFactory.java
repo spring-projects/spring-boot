@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
@@ -31,7 +32,14 @@ import org.springframework.retry.support.RetryTemplate;
  */
 class RetryTemplateFactory {
 
-	public RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {
+	private final List<RabbitRetryTemplateCustomizer> customizers;
+
+	RetryTemplateFactory(List<RabbitRetryTemplateCustomizer> customizers) {
+		this.customizers = customizers;
+	}
+
+	public RetryTemplate createRetryTemplate(RabbitProperties.Retry properties,
+			RabbitRetryTemplateCustomizer.Target target) {
 		PropertyMapper map = PropertyMapper.get();
 		RetryTemplate template = new RetryTemplate();
 		SimpleRetryPolicy policy = new SimpleRetryPolicy();
@@ -44,6 +52,11 @@ class RetryTemplateFactory {
 		map.from(properties::getMaxInterval).whenNonNull().as(Duration::toMillis)
 				.to(backOffPolicy::setMaxInterval);
 		template.setBackOffPolicy(backOffPolicy);
+		if (this.customizers != null) {
+			for (RabbitRetryTemplateCustomizer customizer : this.customizers) {
+				customizer.customize(target, template);
+			}
+		}
 		return template;
 	}
 

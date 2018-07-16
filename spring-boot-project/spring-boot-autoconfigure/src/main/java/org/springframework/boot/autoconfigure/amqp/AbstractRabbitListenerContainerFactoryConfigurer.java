@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.List;
+
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -40,6 +42,8 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 
 	private MessageRecoverer messageRecoverer;
 
+	private List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
+
 	private RabbitProperties rabbitProperties;
 
 	/**
@@ -57,6 +61,15 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 */
 	protected void setMessageRecoverer(MessageRecoverer messageRecoverer) {
 		this.messageRecoverer = messageRecoverer;
+	}
+
+	/**
+	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
+	 * @param retryTemplateCustomizers the retry template customizers
+	 */
+	protected void setRetryTemplateCustomizers(
+			List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+		this.retryTemplateCustomizers = retryTemplateCustomizers;
 	}
 
 	/**
@@ -108,7 +121,9 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 					? RetryInterceptorBuilder.stateless()
 					: RetryInterceptorBuilder.stateful());
 			builder.retryOperations(
-					new RetryTemplateFactory().createRetryTemplate(retryConfig));
+					new RetryTemplateFactory(this.retryTemplateCustomizers)
+							.createRetryTemplate(retryConfig,
+									RabbitRetryTemplateCustomizer.Target.LISTENER));
 			MessageRecoverer recoverer = (this.messageRecoverer != null
 					? this.messageRecoverer : new RejectAndDontRequeueRecoverer());
 			builder.recoverer(recoverer);

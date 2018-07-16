@@ -5362,7 +5362,16 @@ If necessary, any `org.springframework.amqp.core.Queue` that is defined as a bea
 automatically used to declare a corresponding queue on the RabbitMQ instance.
 
 To retry operations, you can enable retries on the `AmqpTemplate` (for example, in the
-event that the broker connection is lost). Retries are disabled by default.
+event that the broker connection is lost):
+
+[source,properties,indent=0]
+----
+	spring.rabbitmq.template.retry.enabled=true
+	spring.rabbitmq.template.retry.initial-interval=2s
+----
+
+Retries are disabled by default. You can also customize the `RetryTemplate`
+programmatically by declaring a `RabbitRetryTemplateCustomizer` bean.
 
 
 
@@ -5444,7 +5453,8 @@ You can enable retries to handle situations where your listener throws an except
 default, `RejectAndDontRequeueRecoverer` is used, but you can define a `MessageRecoverer`
 of your own. When retries are exhausted, the message is rejected and either dropped or
 routed to a dead-letter exchange if the broker is configured to do so. By default,
-retries are disabled.
+retries are disabled. You can also customize the `RetryTemplate` programmatically by
+declaring a `RabbitRetryTemplateCustomizer` bean.
 
 IMPORTANT: By default, if retries are disabled and the listener throws an exception, the
 delivery is retried indefinitely. You can modify this behavior in two ways: Set the

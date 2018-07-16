@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.List;
+
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
@@ -45,13 +47,17 @@ class RabbitAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<MessageRecoverer> messageRecoverer;
 
+	private final ObjectProvider<List<RabbitRetryTemplateCustomizer>> retryTemplateCustomizers;
+
 	private final RabbitProperties properties;
 
 	RabbitAnnotationDrivenConfiguration(ObjectProvider<MessageConverter> messageConverter,
 			ObjectProvider<MessageRecoverer> messageRecoverer,
+			ObjectProvider<List<RabbitRetryTemplateCustomizer>> retryTemplateCustomizers,
 			RabbitProperties properties) {
 		this.messageConverter = messageConverter;
 		this.messageRecoverer = messageRecoverer;
+		this.retryTemplateCustomizers = retryTemplateCustomizers;
 		this.properties = properties;
 	}
 
@@ -61,6 +67,8 @@ class RabbitAnnotationDrivenConfiguration {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = new SimpleRabbitListenerContainerFactoryConfigurer();
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setRetryTemplateCustomizers(
+				this.retryTemplateCustomizers.getIfAvailable());
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}
@@ -82,6 +90,8 @@ class RabbitAnnotationDrivenConfiguration {
 		DirectRabbitListenerContainerFactoryConfigurer configurer = new DirectRabbitListenerContainerFactoryConfigurer();
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setMessageRecoverer(this.messageRecoverer.getIfUnique());
+		configurer.setRetryTemplateCustomizers(
+				this.retryTemplateCustomizers.getIfAvailable());
 		configurer.setRabbitProperties(this.properties);
 		return configurer;
 	}

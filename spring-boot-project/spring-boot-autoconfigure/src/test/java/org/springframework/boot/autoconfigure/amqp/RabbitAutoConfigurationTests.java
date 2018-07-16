@@ -32,6 +32,7 @@ import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -54,8 +55,11 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.retry.RetryPolicy;
+import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.interceptor.MethodInvocationRecoverer;
+import org.springframework.retry.policy.NeverRetryPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
@@ -281,6 +285,28 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRabbitTemplateRetryWithCustomizer() {
+		this.contextRunner
+				.withUserConfiguration(RabbitRetryTemplateCustomizerConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.template.retry.enabled:true",
+						"spring.rabbitmq.template.retry.initialInterval:2000")
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitTemplate);
+					RetryTemplate retryTemplate = (RetryTemplate) dfa
+							.getPropertyValue("retryTemplate");
+					assertThat(retryTemplate).isNotNull();
+					dfa = new DirectFieldAccessor(retryTemplate);
+					assertThat(dfa.getPropertyValue("backOffPolicy"))
+							.isSameAs(context.getBean(
+									RabbitRetryTemplateCustomizerConfiguration.class).backOffPolicy);
+					ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) dfa
+							.getPropertyValue("backOffPolicy");
+					assertThat(backOffPolicy.getInitialInterval()).isEqualTo(100);
+				});
+	}
+
+	@Test
 	public void testRabbitTemplateExchangeAndRoutingKey() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.template.exchange:my-exchange",
@@ -468,6 +494,53 @@ public class RabbitAutoConfigurationTests {
 					assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
 					checkCommonProps(context, dfa);
 				});
+	}
+
+	@Test
+	public void testSimpleRabbitListenerContainerFactoryRetryWithCustomizer() {
+		this.contextRunner
+				.withUserConfiguration(RabbitRetryTemplateCustomizerConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.simple.retry.enabled:true",
+						"spring.rabbitmq.listener.simple.retry.maxAttempts:4")
+				.run((context) -> {
+					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+							.getBean("rabbitListenerContainerFactory",
+									SimpleRabbitListenerContainerFactory.class);
+					assertListenerRetryTemplate(rabbitListenerContainerFactory,
+							context.getBean(
+									RabbitRetryTemplateCustomizerConfiguration.class).retryPolicy);
+				});
+	}
+
+	@Test
+	public void testDirectRabbitListenerContainerFactoryRetryWithCustomizer() {
+		this.contextRunner
+				.withUserConfiguration(RabbitRetryTemplateCustomizerConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.type:direct",
+						"spring.rabbitmq.listener.direct.retry.enabled:true",
+						"spring.rabbitmq.listener.direct.retry.maxAttempts:4")
+				.run((context) -> {
+					DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+							.getBean("rabbitListenerContainerFactory",
+									DirectRabbitListenerContainerFactory.class);
+					assertListenerRetryTemplate(rabbitListenerContainerFactory,
+							context.getBean(
+									RabbitRetryTemplateCustomizerConfiguration.class).retryPolicy);
+				});
+	}
+
+	private void assertListenerRetryTemplate(
+			AbstractRabbitListenerContainerFactory<?> rabbitListenerContainerFactory,
+			RetryPolicy retryPolicy) {
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
+		assertThat(adviceChain).isNotNull();
+		assertThat(adviceChain.length).isEqualTo(1);
+		dfa = new DirectFieldAccessor(adviceChain[0]);
+		RetryTemplate retryTemplate = (RetryTemplate) dfa
+				.getPropertyValue("retryOperations");
+		dfa = new DirectFieldAccessor(retryTemplate);
+		assertThat(dfa.getPropertyValue("retryPolicy")).isSameAs(retryPolicy);
 	}
 
 	@Test
@@ -789,6 +862,33 @@ public class RabbitAutoConfigurationTests {
 		@Bean
 		public ConnectionNameStrategy myConnectionNameStrategy() {
 			return (connectionFactory) -> "test#" + this.counter.getAndIncrement();
+		}
+
+	}
+
+	@Configuration
+	protected static class RabbitRetryTemplateCustomizerConfiguration {
+
+		private final BackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+
+		private final RetryPolicy retryPolicy = new NeverRetryPolicy();
+
+		@Bean
+		public RabbitRetryTemplateCustomizer rabbitTemplateRetryTemplateCustomizer() {
+			return (target, template) -> {
+				if (target.equals(RabbitRetryTemplateCustomizer.Target.SENDER)) {
+					template.setBackOffPolicy(this.backOffPolicy);
+				}
+			};
+		}
+
+		@Bean
+		public RabbitRetryTemplateCustomizer rabbitListenerRetryTemplateCustomizer() {
+			return (target, template) -> {
+				if (target.equals(RabbitRetryTemplateCustomizer.Target.LISTENER)) {
+					template.setRetryPolicy(this.retryPolicy);
+				}
+			};
 		}
 
 	}
