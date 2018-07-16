@@ -180,8 +180,7 @@ public class TomcatServletWebServerFactoryTests
 		TomcatServletWebServerFactory factory = getFactory();
 		Connector[] listeners = new Connector[4];
 		for (int i = 0; i < listeners.length; i++) {
-			Connector connector = new Connector();
-			listeners[i] = connector;
+			listeners[i] = new Connector();
 		}
 		factory.addAdditionalTomcatConnectors(listeners);
 		this.webServer = factory.getWebServer();

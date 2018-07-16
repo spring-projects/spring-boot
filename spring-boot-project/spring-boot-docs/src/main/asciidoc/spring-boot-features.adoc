@@ -763,13 +763,13 @@ example:
 
 In the preceding example, if the `development` profile is active, the `server.address`
 property is `127.0.0.1`. Similarly, if the `production` *and* `eu-central` profiles are
-active, the `server.address` property is `192.168.1.120`. If the `development` and
+active, the `server.address` property is `192.168.1.120`. If the `development`,
 `production` and `eu-central` profiles are *not* enabled, then the value for the property
 is `192.168.1.100`.
 
 [NOTE]
 ====
-`spring.profiles` can therefore contains a simple profile name (for example `production`)
+`spring.profiles` can therefore contain a simple profile name (for example `production`)
 or a profile expression. A profile expression allows for more complicated profile logic
 to be expressed, for example `production & (eu-central | eu-west)`. Check the
 {spring-reference}core.html#beans-definition-profiles-java[reference guide] for more
@@ -1821,7 +1821,7 @@ ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action f
 The `<springProfile>` tag lets you optionally include or exclude sections of
 configuration based on the active Spring profiles. Profile sections are supported
 anywhere within the `<configuration>` element. Use the `name` attribute to specify which
-profile accepts the configuration. The `<springProfile> tag can contains a simple profile
+profile accepts the configuration. The `<springProfile>` tag can contain a simple profile
 name (for example `staging`) or a profile expression. A profile expression allows for more
 complicated profile logic to be expressed, for example
 `production & (eu-central | eu-west)`. Check the

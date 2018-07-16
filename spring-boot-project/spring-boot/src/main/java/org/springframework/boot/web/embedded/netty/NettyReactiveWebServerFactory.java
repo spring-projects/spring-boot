@@ -102,6 +102,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	/**
 	 * Set if x-forward-* headers should be processed.
 	 * @param useForwardHeaders if x-forward headers should be used
+	 * @since 2.1.0
 	 */
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
