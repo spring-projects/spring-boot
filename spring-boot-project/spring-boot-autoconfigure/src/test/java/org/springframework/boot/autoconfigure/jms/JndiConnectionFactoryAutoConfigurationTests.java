@@ -60,7 +60,7 @@ public class JndiConnectionFactoryAutoConfigurationTests {
 	}
 
 	@After
-	public void close() {
+	public void cleanUp() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
 			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,

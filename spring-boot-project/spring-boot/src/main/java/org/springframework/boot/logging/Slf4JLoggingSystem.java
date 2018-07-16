@@ -75,6 +75,11 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
+	/**
+	 * Return whether bridging JUL into SLF4J or not.
+	 * @return whether bridging JUL into SLF4J or not
+	 * @since 2.0.4
+	 */
 	protected final boolean isBridgeJulIntoSlf4j() {
 		return isBridgeHandlerAvailable() && isJulUsingItsDefaultConfiguration();
 	}
