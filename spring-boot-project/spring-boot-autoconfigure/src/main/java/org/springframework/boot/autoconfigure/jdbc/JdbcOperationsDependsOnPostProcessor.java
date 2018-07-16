@@ -29,7 +29,7 @@ import org.springframework.jdbc.core.JdbcOperations;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.1.0
+ * @since 2.0.4
  * @see BeanDefinition#setDependsOn(String[])
  */
 public class JdbcOperationsDependsOnPostProcessor
