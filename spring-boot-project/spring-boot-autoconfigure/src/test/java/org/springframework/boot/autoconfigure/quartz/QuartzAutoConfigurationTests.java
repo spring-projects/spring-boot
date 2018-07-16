@@ -160,24 +160,17 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	public void withOverwriteExistingJobsParameter() {
+	public void withOverwriteExistingJobs() {
 		this.contextRunner.withUserConfiguration(OverwriteTriggerConfiguration.class)
-				.withPropertyValues("spring.quartz.overwriteExistingJobs=true",
-						"test-name=withConfiguredJobAndOverwrittenTrigger")
+				.withPropertyValues("spring.quartz.overwrite-existing-jobs=true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
 					Scheduler scheduler = context.getBean(Scheduler.class);
-					assertThat(scheduler.getJobDetail(JobKey.jobKey("fooJob")))
-							.isNotNull();
 					Trigger fooTrigger = scheduler
 							.getTrigger(TriggerKey.triggerKey("fooTrigger"));
 					assertThat(fooTrigger).isNotNull();
 					assertThat(((SimpleTrigger) fooTrigger).getRepeatInterval())
 							.isEqualTo(30000);
-					Thread.sleep(1000L);
-					this.output.expect(
-							containsString("withConfiguredJobAndOverwrittenTrigger"));
-					this.output.expect(containsString("jobDataValue"));
 				});
 	}
 

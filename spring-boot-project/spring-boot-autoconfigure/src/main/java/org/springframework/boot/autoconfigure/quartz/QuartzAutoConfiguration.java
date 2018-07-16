@@ -90,6 +90,8 @@ public class QuartzAutoConfiguration {
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 		schedulerFactoryBean.setJobFactory(new AutowireCapableBeanJobFactory(
 				this.applicationContext.getAutowireCapableBeanFactory()));
+		schedulerFactoryBean
+				.setOverwriteExistingJobs(this.properties.isOverwriteExistingJobs());
 		if (!this.properties.getProperties().isEmpty()) {
 			schedulerFactoryBean
 					.setQuartzProperties(asProperties(this.properties.getProperties()));
@@ -103,8 +105,6 @@ public class QuartzAutoConfiguration {
 		if (this.triggers != null && this.triggers.length > 0) {
 			schedulerFactoryBean.setTriggers(this.triggers);
 		}
-		schedulerFactoryBean
-				.setOverwriteExistingJobs(this.properties.isOverwriteExistingJobs());
 		customize(schedulerFactoryBean);
 		return schedulerFactoryBean;
 	}

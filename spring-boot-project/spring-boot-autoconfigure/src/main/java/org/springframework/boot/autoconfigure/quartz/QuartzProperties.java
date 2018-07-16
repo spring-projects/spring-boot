@@ -38,14 +38,14 @@ public class QuartzProperties {
 	private JobStoreType jobStoreType = JobStoreType.MEMORY;
 
 	/**
+	 * Whether configured jobs should overwrite existing job definitions.
+	 */
+	private boolean overwriteExistingJobs = false;
+
+	/**
 	 * Additional Quartz Scheduler properties.
 	 */
 	private final Map<String, String> properties = new HashMap<>();
-
-	/**
-	 * Allows to reschedule existing jobs.
-	 */
-	private boolean overwriteExistingJobs = false;
 
 	private final Jdbc jdbc = new Jdbc();
 
@@ -57,20 +57,20 @@ public class QuartzProperties {
 		this.jobStoreType = jobStoreType;
 	}
 
-	public Map<String, String> getProperties() {
-		return this.properties;
-	}
-
-	public Jdbc getJdbc() {
-		return this.jdbc;
-	}
-
 	public boolean isOverwriteExistingJobs() {
 		return this.overwriteExistingJobs;
 	}
 
 	public void setOverwriteExistingJobs(boolean overwriteExistingJobs) {
 		this.overwriteExistingJobs = overwriteExistingJobs;
+	}
+
+	public Map<String, String> getProperties() {
+		return this.properties;
+	}
+
+	public Jdbc getJdbc() {
+		return this.jdbc;
 	}
 
 	public static class Jdbc {
