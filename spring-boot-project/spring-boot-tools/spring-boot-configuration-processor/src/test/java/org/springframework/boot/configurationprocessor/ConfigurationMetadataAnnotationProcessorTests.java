@@ -222,7 +222,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata).has(Metadata
 				.withProperty("description.multi-line", String.class)
 				.fromSource(DescriptionProperties.class).withDescription(
-						"This is a lengthy description that spans across multiple lines to showcase that the carriage return is cleaned automatically."));
+						"This is a lengthy description that spans across multiple lines to showcase that the line separators are cleaned automatically."));
 	}
 
 	@Test
