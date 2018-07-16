@@ -42,6 +42,11 @@ public class QuartzProperties {
 	 */
 	private final Map<String, String> properties = new HashMap<>();
 
+	/**
+	 * Allows to reschedule existing jobs.
+	 */
+	private boolean overwriteExistingJobs = false;
+
 	private final Jdbc jdbc = new Jdbc();
 
 	public JobStoreType getJobStoreType() {
@@ -58,6 +63,14 @@ public class QuartzProperties {
 
 	public Jdbc getJdbc() {
 		return this.jdbc;
+	}
+
+	public boolean isOverwriteExistingJobs() {
+		return this.overwriteExistingJobs;
+	}
+
+	public void setOverwriteExistingJobs(boolean overwriteExistingJobs) {
+		this.overwriteExistingJobs = overwriteExistingJobs;
 	}
 
 	public static class Jdbc {
