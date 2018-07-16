@@ -86,6 +86,12 @@ public class MockMvcAutoConfiguration {
 		return builder.build();
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	public DispatcherServlet dispatcherServlet(MockMvc mockMvc) {
+		return mockMvc.getDispatcherServlet();
+	}
+
 	private static class MockMvcDispatcherServletCustomizer
 			implements DispatcherServletCustomizer {
 

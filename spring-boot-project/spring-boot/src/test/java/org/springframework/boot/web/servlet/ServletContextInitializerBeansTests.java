@@ -20,6 +20,7 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
@@ -59,7 +60,17 @@ public class ServletContextInitializerBeansTests {
 		assertThat(initializerBeans.iterator()).hasOnlyElementsOfType(TestFilter.class);
 	}
 
-	private void load(Class<?> configuration) {
+	@Test
+	public void looksForInitializerBeansOfSpecifiedType() {
+		load(TestConfiguration.class);
+		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
+				this.context.getBeanFactory(), TestServletContextInitializer.class);
+		assertThat(initializerBeans.size()).isEqualTo(1);
+		assertThat(initializerBeans.iterator())
+				.hasOnlyElementsOfType(TestServletContextInitializer.class);
+	}
+
+	private void load(Class<?>... configuration) {
 		this.context = new AnnotationConfigApplicationContext(configuration);
 	}
 
@@ -77,6 +88,20 @@ public class ServletContextInitializerBeansTests {
 		@Bean
 		public TestFilter testFilter() {
 			return new TestFilter();
+		}
+
+	}
+
+	static class TestConfiguration {
+
+		@Bean
+		public TestServletContextInitializer testServletContextInitializer() {
+			return new TestServletContextInitializer();
+		}
+
+		@Bean
+		public OtherTestServletContextInitializer otherTestServletContextInitializer() {
+			return new OtherTestServletContextInitializer();
 		}
 
 	}
@@ -110,6 +135,24 @@ public class ServletContextInitializerBeansTests {
 
 		@Override
 		public void destroy() {
+
+		}
+
+	}
+
+	static class TestServletContextInitializer implements ServletContextInitializer {
+
+		@Override
+		public void onStartup(ServletContext servletContext) throws ServletException {
+
+		}
+
+	}
+
+	static class OtherTestServletContextInitializer implements ServletContextInitializer {
+
+		@Override
+		public void onStartup(ServletContext servletContext) throws ServletException {
 
 		}
 
