@@ -33,7 +33,7 @@ public class DescriptionProperties {
 
 	/**
 	 * This is a lengthy description that spans across multiple lines to showcase that the
-	 * carriage return is cleaned automatically.
+	 * line separators are cleaned automatically.
 	 */
 	private String multiLine;
 
