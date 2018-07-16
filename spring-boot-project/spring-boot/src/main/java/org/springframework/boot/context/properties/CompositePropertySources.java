@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
@@ -45,23 +46,14 @@ final class CompositePropertySources implements PropertySources {
 
 	@Override
 	public boolean contains(String name) {
-		for (PropertySources sources : this.propertySources) {
-			if (sources.contains(name)) {
-				return true;
-			}
-		}
-		return false;
+		return this.propertySources.stream()
+				.anyMatch((sources) -> sources.contains(name));
 	}
 
 	@Override
 	public PropertySource<?> get(String name) {
-		for (PropertySources sources : this.propertySources) {
-			PropertySource<?> source = sources.get(name);
-			if (source != null) {
-				return source;
-			}
-		}
-		return null;
+		return this.propertySources.stream().map((sources) -> sources.get(name))
+				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 }
