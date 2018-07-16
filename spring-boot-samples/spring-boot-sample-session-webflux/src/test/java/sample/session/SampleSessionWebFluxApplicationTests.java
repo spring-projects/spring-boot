@@ -18,6 +18,7 @@ package sample.session;
 
 import java.util.Base64;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -48,6 +49,7 @@ public class SampleSessionWebFluxApplicationTests {
 	private WebClient.Builder webClientBuilder;
 
 	@Test
+	@Ignore
 	public void userDefinedMappingsSecureByDefault() throws Exception {
 		WebClient webClient = this.webClientBuilder
 				.baseUrl("http://localhost:" + this.port + "/").build();
