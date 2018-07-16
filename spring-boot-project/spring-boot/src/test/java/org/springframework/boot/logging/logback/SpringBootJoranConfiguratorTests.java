@@ -118,7 +118,7 @@ public class SpringBootJoranConfiguratorTests {
 
 	@Test
 	public void profileExpressionMatchSecond() throws Exception {
-		this.environment.setActiveProfiles("production");
+		this.environment.setActiveProfiles("test");
 		initialize("profile-expression.xml");
 		this.logger.trace("Hello");
 		this.out.expect(containsString("Hello"));
