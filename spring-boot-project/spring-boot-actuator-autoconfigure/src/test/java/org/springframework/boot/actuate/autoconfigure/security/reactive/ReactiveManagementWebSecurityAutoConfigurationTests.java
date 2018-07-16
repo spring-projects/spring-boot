@@ -119,12 +119,9 @@ public class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	@Test
 	public void backsOffWhenWebFilterChainProxyBeanPresent() {
-		this.contextRunner
-				.withConfiguration(
-						AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-				.withUserConfiguration(WebFilterChainProxyConfiguration.class)
+		this.contextRunner.withUserConfiguration(WebFilterChainProxyConfiguration.class)
 				.run((context) -> {
-					assertThat(getLocationHeader(context, "/health").toString())
+					assertThat(getLocationHeader(context, "/actuator/health").toString())
 							.contains("/login");
 					assertThat(getLocationHeader(context, "/foo").toString())
 							.contains("/login");
