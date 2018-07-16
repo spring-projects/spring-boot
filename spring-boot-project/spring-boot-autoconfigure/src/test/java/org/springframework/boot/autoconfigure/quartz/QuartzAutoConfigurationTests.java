@@ -29,6 +29,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SimpleScheduleBuilder;
+import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
@@ -159,6 +160,21 @@ public class QuartzAutoConfigurationTests {
 	}
 
 	@Test
+	public void withOverwriteExistingJobs() {
+		this.contextRunner.withUserConfiguration(OverwriteTriggerConfiguration.class)
+				.withPropertyValues("spring.quartz.overwrite-existing-jobs=true")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(Scheduler.class);
+					Scheduler scheduler = context.getBean(Scheduler.class);
+					Trigger fooTrigger = scheduler
+							.getTrigger(TriggerKey.triggerKey("fooTrigger"));
+					assertThat(fooTrigger).isNotNull();
+					assertThat(((SimpleTrigger) fooTrigger).getRepeatInterval())
+							.isEqualTo(30000);
+				});
+	}
+
+	@Test
 	public void withConfiguredJobAndTrigger() {
 		this.contextRunner.withUserConfiguration(QuartzFullConfiguration.class)
 				.withPropertyValues("test-name=withConfiguredJobAndTrigger")
@@ -246,6 +262,21 @@ public class QuartzAutoConfigurationTests {
 					.withIntervalInSeconds(10).repeatForever();
 
 			return TriggerBuilder.newTrigger().forJob(fooJob()).withIdentity("fooTrigger")
+					.withSchedule(scheduleBuilder).build();
+		}
+
+	}
+
+	@Configuration
+	@Import(QuartzFullConfiguration.class)
+	protected static class OverwriteTriggerConfiguration extends BaseQuartzConfiguration {
+
+		@Bean
+		public Trigger anotherFooTrigger(JobDetail fooJob) {
+			SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
+					.withIntervalInSeconds(30).repeatForever();
+
+			return TriggerBuilder.newTrigger().forJob(fooJob).withIdentity("fooTrigger")
 					.withSchedule(scheduleBuilder).build();
 		}
 

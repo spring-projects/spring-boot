@@ -146,6 +146,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.quartz.jdbc.schema=classpath:org/quartz/impl/jdbcjobstore/tables_@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.quartz.job-store-type=memory # Quartz job store type.
 	spring.quartz.properties.*= # Additional Quartz Scheduler properties.
+	spring.quartz.overwrite-existing-jobs=false # Whether configured jobs should overwrite existing job definitions.
 
 	# REACTOR ({sc-spring-boot-autoconfigure}/reactor/core/ReactorCoreProperties.{sc-ext}[ReactorCoreProperties])
 	spring.reactor.stacktrace-mode.enabled=false # Whether Reactor should collect stacktrace information at runtime.

@@ -5996,8 +5996,12 @@ NOTE: By default, the database is detected and initialized by using the standard
 provided with the Quartz library. It is also possible to provide a custom script by
 setting the `spring.quartz.jdbc.schema` property.
 
+By default, jobs created by configuration will not overwrite already registered jobs that
+have been read from a persistent job store. To enable overwriting existing job definitions
+set the `spring.quartz.overwrite-existing-jobs` property.
+
 Quartz Scheduler configuration can be customized by using Quartz configuration properties
-()`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans, which allow
+(`spring.quartz.properties.*`) and `SchedulerFactoryBeanCustomizer` beans, which allow
 programmatic `SchedulerFactoryBean` customization.
 
 NOTE: In particular, an `Executor` bean is not associated with the scheduler as Quartz
