@@ -42,9 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
@@ -63,7 +61,6 @@ import org.springframework.web.util.NestedServletException;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private static final Logger logger = LoggerFactory
