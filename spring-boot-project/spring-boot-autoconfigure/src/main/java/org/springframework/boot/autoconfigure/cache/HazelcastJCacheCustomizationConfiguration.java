@@ -43,8 +43,7 @@ class HazelcastJCacheCustomizationConfiguration {
 		return new HazelcastPropertiesCustomizer(hazelcastInstance.getIfUnique());
 	}
 
-	private static class HazelcastPropertiesCustomizer
-			implements JCachePropertiesCustomizer {
+	static class HazelcastPropertiesCustomizer implements JCachePropertiesCustomizer {
 
 		private final HazelcastInstance hazelcastInstance;
 
