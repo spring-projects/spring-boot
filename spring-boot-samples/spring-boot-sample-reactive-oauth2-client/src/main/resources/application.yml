@@ -17,3 +17,9 @@ spring:
             provider: github
             scope: user:email
             redirect-uri-template: http://localhost:8080/login/oauth2/code/github
+          google-oidc:
+            client-id: ${GOOGLE-CLIENT-ID}
+            client-secret: ${GOOGLE-CLIENT-SECRET}
+        provider:
+          google-oidc:
+            issuer-uri: https://accounts.google.com

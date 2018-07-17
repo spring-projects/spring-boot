@@ -33,7 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-		"APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret" })
+		"APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
+		"GOOGLE-CLIENT-ID=my-google-client-id",
+		"GOOGLE-CLIENT-SECRET=my-google-client-secret" })
 public class SampleOAuth2ClientApplicationTests {
 
 	@LocalServerPort
@@ -55,7 +57,8 @@ public class SampleOAuth2ClientApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-1");
+		assertThat(entity.getBody()).contains("/oauth2/authorization/google");
+		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-2");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-2");
 	}
 
