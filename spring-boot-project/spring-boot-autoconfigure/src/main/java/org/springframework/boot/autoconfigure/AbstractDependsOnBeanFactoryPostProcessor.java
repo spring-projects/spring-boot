@@ -58,6 +58,12 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor
 		this.dependsOn = dependsOn;
 	}
 
+	/**
+	 * Create an instance with target bean class and dependencies.
+	 * @param beanClass target bean class
+	 * @param dependsOn dependencies
+	 * @since 2.0.4
+	 */
 	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
 			String... dependsOn) {
 		this(beanClass, null, dependsOn);

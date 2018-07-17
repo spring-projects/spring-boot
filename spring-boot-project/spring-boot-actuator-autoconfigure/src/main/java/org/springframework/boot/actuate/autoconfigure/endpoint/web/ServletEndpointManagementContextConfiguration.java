@@ -81,11 +81,9 @@ public class ServletEndpointManagementContextConfiguration {
 
 		private Set<String> getServletPaths(WebEndpointProperties properties,
 				DispatcherServletPathProvider servletPathProvider) {
-			Set<String> servletPaths = servletPathProvider.getServletPaths();
-			return servletPaths.stream().map((p) -> {
-				String path = cleanServletPath(p);
-				return path + properties.getBasePath();
-			}).collect(Collectors.toSet());
+			return servletPathProvider.getServletPaths().stream()
+					.map((p) -> cleanServletPath(p) + properties.getBasePath())
+					.collect(Collectors.toSet());
 		}
 
 		private String cleanServletPath(String servletPath) {

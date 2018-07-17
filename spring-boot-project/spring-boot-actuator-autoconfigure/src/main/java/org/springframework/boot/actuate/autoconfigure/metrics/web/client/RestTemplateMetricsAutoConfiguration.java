@@ -82,12 +82,12 @@ public class RestTemplateMetricsAutoConfiguration {
 	}
 
 	/**
-	 * {@link MeterFilter} to deny further client requests and log a warning.
+	 * {@link MeterFilter} to deny further URI tags and log a warning.
 	 */
 	private static class MaximumUriTagsReachedMeterFilter implements MeterFilter {
 
 		private final Logger logger = LoggerFactory
-				.getLogger(RestTemplateMetricsAutoConfiguration.class);
+				.getLogger(MaximumUriTagsReachedMeterFilter.class);
 
 		private final String metricName;
 
