@@ -3260,9 +3260,9 @@ default. The `management.endpoints.web.exposure.include` property can be used to
 the actuators.
 
 If Spring Security is on the classpath and no other WebSecurityConfigurerAdapter is
-present, all actuators other than `/health` and `/info` are secured by Spring Boot auto-configuration.
-If you define a custom `WebSecurityConfigurerAdapter`, Spring Boot auto-configuration will back off and you will be in
-full control of actuator access rules.
+present, all actuators other than `/health` and `/info` are secured by Spring Boot
+auto-configuration. If you define a custom `WebSecurityConfigurerAdapter`, Spring Boot
+auto-configuration will back off and you will be in full control of actuator access rules.
 
 NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the
 exposed actuators do not contain sensitive information and/or are secured by placing them
