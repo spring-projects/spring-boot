@@ -97,6 +97,9 @@ public class PropertiesMeterFilter implements MeterFilter {
 	}
 
 	private <T> T lookup(Map<String, T> values, Id id, T defaultValue) {
+		if (values.isEmpty()) {
+			return defaultValue;
+		}
 		String name = id.getName();
 		while (StringUtils.hasLength(name)) {
 			T result = values.get(name);
