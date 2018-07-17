@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
@@ -128,14 +129,10 @@ public class MetricsWebClientFilterFunctionTests {
 		this.filterFunction.filter(request, exchange).retry(1)
 				.onErrorResume(IllegalArgumentException.class, (t) -> Mono.empty())
 				.block();
-		assertThat(this.registry
-				.get("http.client.requests").tags("method", "GET", "uri",
-						"/projects/spring-boot", "status", "CLIENT_ERROR")
-				.timer().count()).isEqualTo(2);
-		assertThat(this.registry.get("http.client.requests")
-				.tags("method", "GET", "uri", "/projects/spring-boot", "status",
-						"CLIENT_ERROR")
-				.timer().max(TimeUnit.MILLISECONDS)).isLessThan(600);
+		Timer timer = this.registry.get("http.client.requests").tags("method", "GET",
+				"uri", "/projects/spring-boot", "status", "CLIENT_ERROR").timer();
+		assertThat(timer.count()).isEqualTo(2);
+		assertThat(timer.max(TimeUnit.MILLISECONDS)).isLessThan(600);
 	}
 
 }

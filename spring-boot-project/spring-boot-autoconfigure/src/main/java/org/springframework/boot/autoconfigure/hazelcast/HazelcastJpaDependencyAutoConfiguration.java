@@ -33,7 +33,7 @@ import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
- * Additional configuration to ensure that {@link EntityManagerFactory} beans depend-on
+ * Additional configuration to ensure that {@link EntityManagerFactory} beans depend on
  * the {@code hazelcastInstance} bean.
  *
  * @author Stephane Nicoll
