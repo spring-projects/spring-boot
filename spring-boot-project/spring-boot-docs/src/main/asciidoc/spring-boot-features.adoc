@@ -6345,6 +6345,7 @@ responses, as shown in the following example:
 include::{code-examples}/test/web/RandomPortWebTestClientExampleTests.java[tag=test-random-port]
 ----
 
+This setup requires `spring-webflux` on the classpath. If you can't or won't add webflux,
 Spring Boot also provides a `TestRestTemplate` facility:
 
 [source,java,indent=0]
