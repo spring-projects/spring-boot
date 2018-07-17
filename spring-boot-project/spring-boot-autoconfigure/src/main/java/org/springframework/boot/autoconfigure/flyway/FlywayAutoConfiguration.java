@@ -191,7 +191,7 @@ public class FlywayAutoConfiguration {
 
 		/**
 		 * Additional configuration to ensure that {@link EntityManagerFactory} beans
-		 * depend-on the {@code flywayInitializer} bean.
+		 * depend on the {@code flywayInitializer} bean.
 		 */
 		@Configuration
 		@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
@@ -224,8 +224,8 @@ public class FlywayAutoConfiguration {
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link EntityManagerFactory} beans
-	 * depend-on the {@code flyway} bean.
+	 * Additional configuration to ensure that {@link EntityManagerFactory} beans depend
+	 * on the {@code flyway} bean.
 	 */
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
