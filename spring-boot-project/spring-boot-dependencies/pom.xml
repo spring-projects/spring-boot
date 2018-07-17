@@ -1027,14 +1027,14 @@
 				<version>${javax-mail.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.persistence</groupId>
-				<artifactId>javax.persistence-api</artifactId>
-				<version>${javax-persistence.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>javax.money</groupId>
 				<artifactId>money-api</artifactId>
 				<version>${javax-money.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>javax.persistence-api</artifactId>
+				<version>${javax-persistence.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
