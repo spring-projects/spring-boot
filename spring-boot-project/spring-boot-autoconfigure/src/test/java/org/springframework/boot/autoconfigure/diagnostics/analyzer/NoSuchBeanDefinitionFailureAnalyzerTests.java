@@ -184,6 +184,17 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		assertActionMissingName(analysis, "test-string");
 	}
 
+	@Test
+	public void failureAnalysisForNullBeanByType() {
+		FailureAnalysis analysis = analyzeFailure(
+				createFailure(StringNullBeanConfiguration.class));
+		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0,
+				String.class);
+		assertUserDefinedBean(analysis, "as the bean value is null",
+				TestNullBeanConfiguration.class, "string");
+		assertActionMissingType(analysis, String.class);
+	}
+
 	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis,
 			Class<?> component, int index, Class<?> type) {
 		String expected = String.format(
@@ -195,14 +206,14 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	private void assertActionMissingType(FailureAnalysis analysis, Class<?> type) {
 		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider revisiting the conditions above or defining a bean of type '%s' "
+				"Consider revisiting the entries above or defining a bean of type '%s' "
 						+ "in your configuration.",
 				type.getName()));
 	}
 
 	private void assertActionMissingName(FailureAnalysis analysis, String name) {
 		assertThat(analysis.getAction()).startsWith(String.format(
-				"Consider revisiting the conditions above or defining a bean named '%s' "
+				"Consider revisiting the entries above or defining a bean named '%s' "
 						+ "in your configuration.",
 				name));
 	}
@@ -219,6 +230,14 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 			String methodName) {
 		String expected = String.format("Bean method '%s' not loaded because",
 				methodName);
+		assertThat(analysis.getDescription()).contains(expected);
+		assertThat(analysis.getDescription()).contains(description);
+	}
+
+	private void assertUserDefinedBean(FailureAnalysis analysis, String description,
+			Class<?> target, String methodName) {
+		String expected = String.format("User-defined bean method '%s' in '%s' ignored",
+				methodName, ClassUtils.getShortName(target));
 		assertThat(analysis.getDescription()).contains(expected);
 		assertThat(analysis.getDescription()).contains(description);
 	}
@@ -306,6 +325,13 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	@Configuration
+	@ImportAutoConfiguration(TestNullBeanConfiguration.class)
+	@Import(StringHandler.class)
+	protected static class StringNullBeanConfiguration {
+
+	}
+
+	@Configuration
 	public static class TestPropertyAutoConfiguration {
 
 		@ConditionalOnProperty("spring.string.enabled")
@@ -340,6 +366,16 @@ public class NoSuchBeanDefinitionFailureAnalyzerTests {
 		@Bean(name = "test-string")
 		public String string() {
 			return "Test";
+		}
+
+	}
+
+	@Configuration
+	public static class TestNullBeanConfiguration {
+
+		@Bean
+		public String string() {
+			return null;
 		}
 
 	}
