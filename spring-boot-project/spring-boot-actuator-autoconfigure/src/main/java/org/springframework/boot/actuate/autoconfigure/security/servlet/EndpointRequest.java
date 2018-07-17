@@ -297,20 +297,12 @@ public final class EndpointRequest {
 		}
 
 		List<RequestMatcher> antPath(String... parts) {
-			List<RequestMatcher> matchers = new ArrayList<>();
-			this.servletPaths.stream().map((p) -> {
-				if (StringUtils.hasText(p) && !p.equals("/")) {
-					return p;
-				}
-				return "";
-			}).distinct().forEach((path) -> {
-				StringBuilder pattern = new StringBuilder(path);
-				for (String part : parts) {
-					pattern.append(part);
-				}
-				matchers.add(new AntPathRequestMatcher(pattern.toString()));
-			});
-			return matchers;
+			return this.servletPaths.stream()
+					.map((p) -> (StringUtils.hasText(p) && !p.equals("/") ? p : ""))
+					.distinct()
+					.map((path) -> Arrays.stream(parts)
+							.collect(Collectors.joining("", path, "")))
+					.map(AntPathRequestMatcher::new).collect(Collectors.toList());
 		}
 
 	}
