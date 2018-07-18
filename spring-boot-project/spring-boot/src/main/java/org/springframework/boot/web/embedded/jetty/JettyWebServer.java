@@ -107,7 +107,7 @@ public class JettyWebServer implements WebServer {
 				this.server.start();
 				this.server.setStopAtShutdown(false);
 			}
-			catch (Exception ex) {
+			catch (Throwable ex) {
 				// Ensure process isn't left running
 				stopSilently();
 				throw new WebServerException("Unable to start embedded Jetty web server",
