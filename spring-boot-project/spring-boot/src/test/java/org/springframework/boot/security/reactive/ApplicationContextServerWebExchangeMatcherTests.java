@@ -91,7 +91,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/path").build());
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No WebApplicationContext found.");
+		this.thrown.expectMessage("No ApplicationContext found.");
 		new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
 				.callMatchesAndReturnProvidedContext(exchange);
 	}
