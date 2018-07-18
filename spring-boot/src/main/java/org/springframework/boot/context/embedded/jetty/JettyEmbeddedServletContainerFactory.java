@@ -368,6 +368,7 @@ public class JettyEmbeddedServletContainerFactory
 		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
 		context.setConfigurations(configurations);
+		context.setThrowUnavailableOnStartupException(true);
 		configureSession(context);
 		postProcessWebAppContext(context);
 	}

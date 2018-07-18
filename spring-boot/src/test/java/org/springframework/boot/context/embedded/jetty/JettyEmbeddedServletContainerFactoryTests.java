@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,8 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -352,6 +355,42 @@ public class JettyEmbeddedServletContainerFactoryTests
 					public void destroy() {
 					}
 
+				});
+			}
+
+		});
+		this.thrown.expect(EmbeddedServletContainerException.class);
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		try {
+			jettyContainer.start();
+		}
+		finally {
+			QueuedThreadPool threadPool = (QueuedThreadPool) jettyContainer.getServer()
+					.getThreadPool();
+			assertThat(threadPool.isRunning()).isFalse();
+		}
+	}
+
+	@Test
+	public void faultyListenerCausesStartFailure() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.addServerCustomizers(new JettyServerCustomizer() {
+
+			@Override
+			public void customize(Server server) {
+				Collection<WebAppContext> contexts = server.getBeans(WebAppContext.class);
+				contexts.iterator().next().addEventListener(new ServletContextListener() {
+
+					@Override
+					public void contextInitialized(ServletContextEvent sce) {
+						throw new RuntimeException();
+					}
+
+					@Override
+					public void contextDestroyed(ServletContextEvent sce) {
+
+					}
 				});
 			}
 

@@ -104,7 +104,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 				this.server.start();
 				this.server.setStopAtShutdown(false);
 			}
-			catch (Exception ex) {
+			catch (Throwable ex) {
 				// Ensure process isn't left running
 				stopSilently();
 				throw new EmbeddedServletContainerException(
