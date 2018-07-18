@@ -209,11 +209,7 @@ public class OAuth2ClientProperties {
 		private String jwkSetUri;
 
 		/**
-		 * URI that an OpenID Connect Provider asserts as its Issuer Identifier. If the
-		 * issuer provided is "https://example.com", then an "OpenID Provider
-		 * Configuration Request" will be made to
-		 * "https://example.com/.well-known/openid-configuration". The result is expected
-		 * to be an "OpenID Provider Configuration Response".
+		 * URI that an OpenID Connect Provider asserts as its Issuer Identifier.
 		 */
 		private String issuerUri;
 

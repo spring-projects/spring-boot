@@ -3240,6 +3240,21 @@ In other words, the two configurations in the following example use the Google p
 	spring.security.oauth2.client.registration.google.client-secret=password
 ----
 
+For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery],
+the configuration can be further simplified. The provider needs to be configured with an `issuer-uri` which is the
+URI that the it asserts as its Issuer Identifier. For example, if the
+`issuer-uri` provided is "https://example.com", then an `OpenID Provider Configuration Request`
+will be made to "https://example.com/.well-known/openid-configuration". The result is expected
+to be an `OpenID Provider Configuration Response`. The following example shows how an OpenID Connect
+Provider can be configured with the `issuer-uri`:
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.client.registration.oidc-provider.client-id=abcd
+	spring.security.oauth2.client.registration.oidc-provider.client-secret=password
+	spring.security.oauth2.client.provider.oidc-provider.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
+----
+
 
 
 [[boot-features-security-oauth2-server]]
