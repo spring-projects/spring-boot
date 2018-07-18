@@ -58,7 +58,7 @@ public class SampleOAuth2ClientApplicationTests {
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("/oauth2/authorization/google");
-		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-2");
+		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-1");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-2");
 	}
 
