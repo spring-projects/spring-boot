@@ -20,8 +20,12 @@ import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.apache.jasper.servlet.JspServlet;
 import org.eclipse.jetty.server.Connector;
@@ -41,6 +45,7 @@ import org.mockito.InOrder;
 
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 
@@ -294,6 +299,42 @@ public class JettyServletWebServerFactoryTests
 				.getConnectors()[0];
 		assertThat(((ServerConnector) connector).getHost())
 				.isEqualTo(localhost.getHostAddress());
+	}
+
+	@Test
+	public void faultyListenerCausesStartFailure() throws Exception {
+		JettyServletWebServerFactory factory = getFactory();
+		factory.addServerCustomizers(new JettyServerCustomizer() {
+
+			@Override
+			public void customize(Server server) {
+				Collection<WebAppContext> contexts = server.getBeans(WebAppContext.class);
+				contexts.iterator().next().addEventListener(new ServletContextListener() {
+
+					@Override
+					public void contextInitialized(ServletContextEvent sce) {
+						throw new RuntimeException();
+					}
+
+					@Override
+					public void contextDestroyed(ServletContextEvent sce) {
+
+					}
+
+				});
+			}
+
+		});
+		this.thrown.expect(WebServerException.class);
+		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
+		try {
+			jettyWebServer.start();
+		}
+		finally {
+			QueuedThreadPool threadPool = (QueuedThreadPool) jettyWebServer.getServer()
+					.getThreadPool();
+			assertThat(threadPool.isRunning()).isFalse();
+		}
 	}
 
 	@Override
