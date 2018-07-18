@@ -109,7 +109,8 @@ public final class WebFluxTags {
 	 */
 	public static Tag exception(Throwable exception) {
 		if (exception != null) {
-			return Tag.of("exception", exception.getClass().getSimpleName());
+			String simpleName = exception.getClass().getSimpleName();
+			return Tag.of("exception", simpleName.isEmpty() ? exception.getClass().getName() : simpleName);
 		}
 		return EXCEPTION_NONE;
 	}
