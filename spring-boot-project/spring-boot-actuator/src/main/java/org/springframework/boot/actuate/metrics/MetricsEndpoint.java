@@ -91,7 +91,9 @@ public class MetricsEndpoint {
 		Map<Statistic, Double> samples = getSamples(meters);
 		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
-		return new MetricResponse(requiredMetricName, asList(samples, Sample::new),
+		Meter.Id meterId = meters.get(0).getId();
+		return new MetricResponse(requiredMetricName, meterId.getDescription(),
+				meterId.getBaseUnit(), asList(samples, Sample::new),
 				asList(availableTags, AvailableTag::new));
 	}
 
@@ -183,19 +185,33 @@ public class MetricsEndpoint {
 
 		private final String name;
 
+		private final String description;
+
+		private final String baseUnit;
+
 		private final List<Sample> measurements;
 
 		private final List<AvailableTag> availableTags;
 
-		MetricResponse(String name, List<Sample> measurements,
-				List<AvailableTag> availableTags) {
+		MetricResponse(String name, String description, String baseUnit,
+				List<Sample> measurements, List<AvailableTag> availableTags) {
 			this.name = name;
+			this.description = description;
+			this.baseUnit = baseUnit;
 			this.measurements = measurements;
 			this.availableTags = availableTags;
 		}
 
 		public String getName() {
 			return this.name;
+		}
+
+		public String getDescription() {
+			return this.description;
+		}
+
+		public String getBaseUnit() {
+			return this.baseUnit;
 		}
 
 		public List<Sample> getMeasurements() {
