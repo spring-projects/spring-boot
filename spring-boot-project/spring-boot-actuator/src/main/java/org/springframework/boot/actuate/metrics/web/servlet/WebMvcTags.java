@@ -134,9 +134,11 @@ public final class WebMvcTags {
 	 * @return the exception tag derived from the exception
 	 */
 	public static Tag exception(Throwable exception) {
-		return (exception != null
-				? Tag.of("exception", exception.getClass().getSimpleName())
-				: EXCEPTION_NONE);
+		if (exception != null) {
+			String simpleName = exception.getClass().getSimpleName();
+			return Tag.of("exception", simpleName.isEmpty() ? exception.getClass().getName() : simpleName);
+		}
+		return EXCEPTION_NONE;
 	}
 
 }
