@@ -56,7 +56,19 @@ public class ImportAutoConfigurationTests {
 				.containsExactly("ConfigA", "ConfigB", "ConfigD");
 	}
 
-	private List<String> getImportedConfigBeans(Class<?> config) {
+	@Test
+	public void excludeAppliedGlobally() {
+		assertThat(getImportedConfigBeans(ExcludeDConfig.class, ImportADConfig.class))
+				.containsExactly("ConfigA");
+	}
+
+	@Test
+	public void excludeWithRedundancy() {
+		assertThat(getImportedConfigBeans(ExcludeADConfig.class, ExcludeDConfig.class,
+				ImportADConfig.class)).isEmpty();
+	}
+
+	private List<String> getImportedConfigBeans(Class<?>... config) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				config);
 		String shortName = ClassUtils.getShortName(ImportAutoConfigurationTests.class);
@@ -94,6 +106,21 @@ public class ImportAutoConfigurationTests {
 			ConfigB.class }, exclude = ConfigC.class)
 	@MetaImportAutoConfiguration
 	static class ExcludingConfig {
+
+	}
+
+	@ImportAutoConfiguration(classes = { ConfigA.class, ConfigD.class })
+	static class ImportADConfig {
+
+	}
+
+	@ImportAutoConfiguration(exclude = { ConfigA.class, ConfigD.class })
+	static class ExcludeADConfig {
+
+	}
+
+	@ImportAutoConfiguration(exclude = ConfigD.class)
+	static class ExcludeDConfig {
 
 	}
 

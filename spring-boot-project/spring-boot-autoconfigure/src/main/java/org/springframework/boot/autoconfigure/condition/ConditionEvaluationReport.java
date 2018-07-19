@@ -43,6 +43,7 @@ import org.springframework.util.ObjectUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public final class ConditionEvaluationReport {
 
@@ -56,9 +57,9 @@ public final class ConditionEvaluationReport {
 
 	private ConditionEvaluationReport parent;
 
-	private List<String> exclusions = Collections.emptyList();
+	private final List<String> exclusions = new ArrayList<>();
 
-	private Set<String> unconditionalClasses = new HashSet<>();
+	private final Set<String> unconditionalClasses = new HashSet<>();
 
 	/**
 	 * Private constructor.
@@ -92,7 +93,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public void recordExclusions(Collection<String> exclusions) {
 		Assert.notNull(exclusions, "exclusions must not be null");
-		this.exclusions = new ArrayList<>(exclusions);
+		this.exclusions.addAll(exclusions);
 	}
 
 	/**
@@ -102,7 +103,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public void recordEvaluationCandidates(List<String> evaluationCandidates) {
 		Assert.notNull(evaluationCandidates, "evaluationCandidates must not be null");
-		this.unconditionalClasses = new HashSet<>(evaluationCandidates);
+		this.unconditionalClasses.addAll(evaluationCandidates);
 	}
 
 	/**
@@ -145,7 +146,9 @@ public final class ConditionEvaluationReport {
 	 * @return the names of the unconditional classes
 	 */
 	public Set<String> getUnconditionalClasses() {
-		return Collections.unmodifiableSet(this.unconditionalClasses);
+		Set<String> filtered = new HashSet<>(this.unconditionalClasses);
+		filtered.removeIf(this.exclusions::contains);
+		return Collections.unmodifiableSet(filtered);
 	}
 
 	/**
