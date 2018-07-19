@@ -1112,6 +1112,24 @@ property name
 TIP: We recommend that, when possible, properties are stored in lower-case kebab format,
 such as `my.property-name=acme`.
 
+When binding to `Map` properties, if the `key` contains anything other than lowercase
+alpha-numeric characters or `-`, you need to use the bracket notation so that the original
+value is preserved. If the key is not surrounded by `[]`, any characters that are not alpha-numeric
+or `-` are removed. For example, consider binding the following properties to a `Map`:
+
+[source,yaml,indent=0]
+----
+	acme:
+	  map:
+	    "[/key1]": value1
+	    "[/key2]": value2
+	    /key3: value3
+
+----
+
+The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
+
+
 [[boot-features-external-config-complex-type-merge]]
 ==== Merging Complex Types
 When lists are configured in more than one place, overriding works by replacing the entire
