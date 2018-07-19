@@ -40,8 +40,8 @@ public class CassandraContainer extends Container {
 	public CassandraContainer() {
 		super("cassandra:3.11.1", PORT,
 				(container) -> container.waitingFor(new WaitStrategy(container))
-						.withStartupAttempts(3)
-						.withStartupTimeout(Duration.ofSeconds(60)));
+						.withStartupAttempts(5)
+						.withStartupTimeout(Duration.ofSeconds(120)));
 	}
 
 	private static final class WaitStrategy extends HostPortWaitStrategy {
