@@ -189,15 +189,15 @@ public class WebMvcMetricsFilterTests {
 	}
 
 	@Test
-	public void anonymousError() throws Exception {
+	public void anonymousError() {
 		try {
-			mvc.perform(get("/api/c1/anonymousError/10"));
-		} catch(Throwable ignore) {
+			this.mvc.perform(get("/api/c1/anonymousError/10"));
 		}
-
-		assertThat(this.registry.get("http.server.requests").tag("uri", "/api/c1/anonymousError/{id}").timer().getId()
-				.getTag("exception"))
-				.endsWith("$1");
+		catch (Throwable ignore) {
+		}
+		assertThat(this.registry.get("http.server.requests")
+				.tag("uri", "/api/c1/anonymousError/{id}").timer().getId()
+				.getTag("exception")).endsWith("$1");
 	}
 
 	@Test
@@ -454,8 +454,10 @@ public class WebMvcMetricsFilterTests {
 
 		@Timed
 		@GetMapping("/anonymousError/{id}")
-		public String alwaysThrowsAnonymousException(@PathVariable Long id) throws Exception {
-			throw new Exception("this exception won't have a simple class name") {};
+		public String alwaysThrowsAnonymousException(@PathVariable Long id)
+				throws Exception {
+			throw new Exception("this exception won't have a simple class name") {
+			};
 		}
 
 		@Timed
