@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.metrics.web.reactive.server;
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPattern;
@@ -109,7 +110,9 @@ public final class WebFluxTags {
 	 */
 	public static Tag exception(Throwable exception) {
 		if (exception != null) {
-			return Tag.of("exception", exception.getClass().getSimpleName());
+			String simpleName = exception.getClass().getSimpleName();
+			return Tag.of("exception", StringUtils.hasText(simpleName) ? simpleName
+					: exception.getClass().getName());
 		}
 		return EXCEPTION_NONE;
 	}
