@@ -76,7 +76,7 @@
 		<httpasyncclient.version>4.1.3</httpasyncclient.version>
 		<httpclient.version>4.5.6</httpclient.version>
 		<httpcore.version>4.4.10</httpcore.version>
-		<infinispan.version>9.3.0.Final</infinispan.version>
+		<infinispan.version>9.3.1.Final</infinispan.version>
 		<influxdb-java.version>2.11</influxdb-java.version>
 		<jackson.version>2.9.6</jackson.version>
 		<janino.version>3.0.8</janino.version>
