@@ -640,22 +640,22 @@ public class ServerProperties
 		/**
 		 * Delay in seconds between the invocation of backgroundProcess methods.
 		 */
-		private int backgroundProcessorDelay = 30; // seconds
+		private int backgroundProcessorDelay = 10; // seconds
 
 		/**
 		 * Maximum amount of worker threads.
 		 */
-		private int maxThreads = 0; // Number of threads in protocol handler
+		private int maxThreads = 200; // Number of threads in protocol handler
 
 		/**
 		 * Minimum amount of worker threads.
 		 */
-		private int minSpareThreads = 0; // Minimum spare threads in protocol handler
+		private int minSpareThreads = 10; // Minimum spare threads in protocol handler
 
 		/**
 		 * Maximum size in bytes of the HTTP post content.
 		 */
-		private int maxHttpPostSize = 0; // bytes
+		private int maxHttpPostSize = 2097152; // bytes
 
 		/**
 		 * Maximum size in bytes of the HTTP message header.
@@ -666,25 +666,25 @@ public class ServerProperties
 		 * Whether requests to the context root should be redirected by appending a / to
 		 * the path.
 		 */
-		private Boolean redirectContextRoot;
+		private Boolean redirectContextRoot = true;
 
 		/**
 		 * Character encoding to use to decode the URI.
 		 */
-		private Charset uriEncoding;
+		private Charset uriEncoding = Charset.forName("UTF-8");
 
 		/**
 		 * Maximum number of connections that the server will accept and process at any
 		 * given time. Once the limit has been reached, the operating system may still
 		 * accept connections based on the "acceptCount" property.
 		 */
-		private int maxConnections = 0;
+		private int maxConnections = 10000;
 
 		/**
 		 * Maximum queue length for incoming connection requests when all possible request
 		 * processing threads are in use.
 		 */
-		private int acceptCount = 0;
+		private int acceptCount = 100;
 
 		/**
 		 * Comma-separated list of additional patterns that match jars to ignore for TLD
@@ -1091,7 +1091,7 @@ public class ServerProperties
 			/**
 			 * Defer inclusion of the date stamp in the file name until rotate time.
 			 */
-			private boolean renameOnRotate;
+			private boolean renameOnRotate = false;
 
 			/**
 			 * Date format to place in log file name.
@@ -1102,7 +1102,7 @@ public class ServerProperties
 			 * Set request attributes for IP address, Hostname, protocol and port used for
 			 * the request.
 			 */
-			private boolean requestAttributesEnabled;
+			private boolean requestAttributesEnabled = false;
 
 			/**
 			 * Buffer output such that it is only flushed periodically.
@@ -1198,17 +1198,19 @@ public class ServerProperties
 		/**
 		 * Maximum size in bytes of the HTTP post or put content.
 		 */
-		private int maxHttpPostSize = 0; // bytes
+		private int maxHttpPostSize = 200000; // bytes
 
 		/**
-		 * Number of acceptor threads to use.
+		 * Number of acceptor threads to use. When the value is -1, the default, the
+		 * number of acceptors is derived from the operating environment.
 		 */
-		private Integer acceptors;
+		private Integer acceptors = -1;
 
 		/**
-		 * Number of selector threads to use.
+		 * Number of selector threads to use. When the value is -1, the default, the
+		 * number of selectors is derived from the operating environment.
 		 */
-		private Integer selectors;
+		private Integer selectors = -1;
 
 		public int getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
@@ -1359,12 +1361,14 @@ public class ServerProperties
 	public static class Undertow {
 
 		/**
-		 * Maximum size in bytes of the HTTP post content.
+		 * Maximum size in bytes of the HTTP post content. When the value is -1, the
+		 * default, the size is unlimited.
 		 */
-		private long maxHttpPostSize = 0; // bytes
+		private long maxHttpPostSize = -1; // bytes
 
 		/**
-		 * Size of each buffer in bytes.
+		 * Size of each buffer in bytes. The default is derived from the maximum amount of
+		 * memory that is available to the JVM.
 		 */
 		private Integer bufferSize;
 
@@ -1375,17 +1379,19 @@ public class ServerProperties
 		private Integer buffersPerRegion;
 
 		/**
-		 * Number of I/O threads to create for the worker.
+		 * Number of I/O threads to create for the worker. The default is derived from the
+		 * number of available processors.
 		 */
 		private Integer ioThreads;
 
 		/**
-		 * Number of worker threads.
+		 * Number of worker threads. The default is 8 times the number of I/O threads.
 		 */
 		private Integer workerThreads;
 
 		/**
-		 * Allocate buffers outside the Java heap.
+		 * Allocate buffers outside the Java heap. The default is derived from the maximum
+		 * amount of memory that is available to the JVM.
 		 */
 		private Boolean directBuffers;
 
