@@ -81,7 +81,7 @@ public class UndertowWebServerFactoryCustomizer implements
 				.to(factory::setAccessLogSuffix);
 		propertyMapper.from(accesslogProperties::isRotate)
 				.to(factory::setAccessLogRotate);
-		propertyMapper.from(() -> getOrDeduceUseForwardHeaders())
+		propertyMapper.from(this::getOrDeduceUseForwardHeaders)
 				.to(factory::setUseForwardHeaders);
 		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,

@@ -84,7 +84,7 @@ public class TomcatWebServerFactoryCustomizer implements
 						tomcatProperties.getMaxThreads()));
 		propertyMapper.from(tomcatProperties::getMinSpareThreads).when(this::isPositive)
 				.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
-		propertyMapper.from(() -> determineMaxHttpHeaderSize()).when(this::isPositive)
+		propertyMapper.from(this::determineMaxHttpHeaderSize).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull()

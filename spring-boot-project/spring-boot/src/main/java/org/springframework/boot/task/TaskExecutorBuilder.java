@@ -279,16 +279,15 @@ public class TaskExecutorBuilder {
 	 */
 	public <T extends ThreadPoolTaskExecutor> T configure(T taskExecutor) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(() -> this.queueCapacity).to(taskExecutor::setQueueCapacity);
-		map.from(() -> this.corePoolSize).to(taskExecutor::setCorePoolSize);
-		map.from(() -> this.maxPoolSize).to(taskExecutor::setMaxPoolSize);
-		map.from(() -> this.keepAlive).asInt(Duration::getSeconds)
+		map.from(this.queueCapacity).to(taskExecutor::setQueueCapacity);
+		map.from(this.corePoolSize).to(taskExecutor::setCorePoolSize);
+		map.from(this.maxPoolSize).to(taskExecutor::setMaxPoolSize);
+		map.from(this.keepAlive).asInt(Duration::getSeconds)
 				.to(taskExecutor::setKeepAliveSeconds);
-		map.from(() -> this.allowCoreThreadTimeOut)
-				.to(taskExecutor::setAllowCoreThreadTimeOut);
-		map.from(() -> this.threadNamePrefix).whenHasText()
+		map.from(this.allowCoreThreadTimeOut).to(taskExecutor::setAllowCoreThreadTimeOut);
+		map.from(this.threadNamePrefix).whenHasText()
 				.to(taskExecutor::setThreadNamePrefix);
-		map.from(() -> this.taskDecorator).to(taskExecutor::setTaskDecorator);
+		map.from(this.taskDecorator).to(taskExecutor::setTaskDecorator);
 
 		if (!CollectionUtils.isEmpty(this.taskExecutorCustomizers)) {
 			for (TaskExecutorCustomizer customizer : this.taskExecutorCustomizers) {
