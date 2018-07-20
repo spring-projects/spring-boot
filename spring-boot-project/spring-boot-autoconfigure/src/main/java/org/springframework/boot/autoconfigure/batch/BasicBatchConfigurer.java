@@ -122,7 +122,7 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	protected JobRepository createJobRepository() throws Exception {
 		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
 		PropertyMapper map = PropertyMapper.get();
-		map.from(() -> this.dataSource).to(factory::setDataSource);
+		map.from(this.dataSource).to(factory::setDataSource);
 		map.from(this::determineIsolationLevel).whenNonNull()
 				.to(factory::setIsolationLevelForCreate);
 		map.from(this.properties::getTablePrefix).whenHasText()

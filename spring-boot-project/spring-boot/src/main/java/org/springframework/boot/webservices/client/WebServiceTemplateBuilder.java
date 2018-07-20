@@ -502,13 +502,12 @@ public class WebServiceTemplateBuilder {
 		configureMessageSenders(webServiceTemplate);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		applyCustomizers(webServiceTemplate, this.internalCustomizers);
-		map.from(() -> this.marshaller).to(webServiceTemplate::setMarshaller);
-		map.from(() -> this.unmarshaller).to(webServiceTemplate::setUnmarshaller);
-		map.from(() -> this.destinationProvider)
-				.to(webServiceTemplate::setDestinationProvider);
-		map.from(() -> this.transformerFactoryClass)
+		map.from(this.marshaller).to(webServiceTemplate::setMarshaller);
+		map.from(this.unmarshaller).to(webServiceTemplate::setUnmarshaller);
+		map.from(this.destinationProvider).to(webServiceTemplate::setDestinationProvider);
+		map.from(this.transformerFactoryClass)
 				.to(webServiceTemplate::setTransformerFactoryClass);
-		map.from(() -> this.messageFactory).to(webServiceTemplate::setMessageFactory);
+		map.from(this.messageFactory).to(webServiceTemplate::setMessageFactory);
 		if (!CollectionUtils.isEmpty(this.interceptors)) {
 			Set<ClientInterceptor> merged = new LinkedHashSet<>(this.interceptors);
 			if (webServiceTemplate.getInterceptors() != null) {

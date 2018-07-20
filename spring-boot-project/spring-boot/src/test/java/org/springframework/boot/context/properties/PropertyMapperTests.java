@@ -38,10 +38,36 @@ public class PropertyMapperTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
+	public void fromNullValue() {
+		ExampleDest dest = new ExampleDest();
+		this.map.from((String) null).to(dest::setName);
+		assertThat(dest.getName()).isNull();
+	}
+
+	@Test
+	public void fromValue() {
+		ExampleDest dest = new ExampleDest();
+		this.map.from("Hello World").to(dest::setName);
+		assertThat(dest.getName()).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void fromValueAsIntShouldAdaptSupplier() {
+		Integer result = this.map.from("123").asInt(Long::valueOf)
+				.toInstance(Integer::new);
+		assertThat(result).isEqualTo(123);
+	}
+
+	@Test
+	public void fromValueAlwaysApplyingWhenNonNullShouldAlwaysApplyNonNullToSource() {
+		this.map.alwaysApplyingWhenNonNull().from((String) null).toCall(Assert::fail);
+	}
+
+	@Test
 	public void fromWhenSupplierIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Supplier must not be null");
-		this.map.from(null);
+		this.map.from((Supplier<?>) null);
 	}
 
 	@Test
