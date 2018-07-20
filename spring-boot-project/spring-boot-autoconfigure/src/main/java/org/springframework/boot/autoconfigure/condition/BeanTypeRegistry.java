@@ -155,7 +155,10 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 	}
 
 	private void addBeanTypeForNonAliasDefinition(String name) {
-		addBeanTypeForNonAliasDefinition(name, getBeanDefinition(name));
+		RootBeanDefinition beanDefinition = getBeanDefinition(name);
+		if (beanDefinition != null) {
+			addBeanTypeForNonAliasDefinition(name, beanDefinition);
+		}
 	}
 
 	private RootBeanDefinition getBeanDefinition(String name) {
@@ -215,11 +218,13 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 				if (!this.beanFactory.isAlias(name)
 						&& !this.beanFactory.containsSingleton(name)) {
 					RootBeanDefinition beanDefinition = getBeanDefinition(name);
-					RootBeanDefinition existingDefinition = this.beanDefinitions.put(name,
-							beanDefinition);
-					if (existingDefinition != null
-							&& !beanDefinition.equals(existingDefinition)) {
-						addBeanTypeForNonAliasDefinition(name, beanDefinition);
+					if (beanDefinition != null) {
+						RootBeanDefinition existingDefinition = this.beanDefinitions
+								.put(name, beanDefinition);
+						if (existingDefinition != null
+								&& !beanDefinition.equals(existingDefinition)) {
+							addBeanTypeForNonAliasDefinition(name, beanDefinition);
+						}
 					}
 				}
 			}
