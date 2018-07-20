@@ -41,7 +41,7 @@ public class SimpleMainTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	private static final String SPRING_STARTUP = "root of context hierarchy";
+	private static final String SPRING_STARTUP = "Started SpringApplication in";
 
 	@Test(expected = IllegalArgumentException.class)
 	public void emptyApplicationContext() throws Exception {
