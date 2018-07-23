@@ -29,8 +29,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -44,15 +46,11 @@ public class CassandraReactiveHealthIndicatorTest {
 
 	@Test
 	public void testCassandraIsUp() {
-		Row row = mock(Row.class);
-		ReactiveResultSet reactiveResultSet = mock(ReactiveResultSet.class);
-		Mono<ReactiveResultSet> reactiveResultSetMono = Mono.just(reactiveResultSet);
 		ReactiveCqlOperations reactiveCqlOperations = mock(ReactiveCqlOperations.class);
 		ReactiveCassandraOperations reactiveCassandraOperations = mock(ReactiveCassandraOperations.class);
 
-		given(row.getString(0)).willReturn("6.0.0");
-		given(reactiveResultSet.availableRows()).willReturn(Flux.just(row));
-		given(reactiveCqlOperations.queryForResultSet(any(Select.class))).willReturn(reactiveResultSetMono);
+		given(reactiveCqlOperations.queryForObject(any(Select.class), eq(String.class)))
+				.willReturn(Mono.just("6.0.0"));
 		given(reactiveCassandraOperations.getReactiveCqlOperations()).willReturn(reactiveCqlOperations);
 
 		CassandraReactiveHealthIndicator cassandraReactiveHealthIndicator =
