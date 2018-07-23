@@ -3252,6 +3252,7 @@ You can register multiple OAuth2 clients and providers under the
 	spring.security.oauth2.client.provider.my-oauth-provider.authorization-uri=http://my-auth-server/oauth/authorize
 	spring.security.oauth2.client.provider.my-oauth-provider.token-uri=http://my-auth-server/oauth/token
 	spring.security.oauth2.client.provider.my-oauth-provider.user-info-uri=http://my-auth-server/userinfo
+	spring.security.oauth2.client.provider.my-oauth-provider.user-info-authentication-method=header
 	spring.security.oauth2.client.provider.my-oauth-provider.jwk-set-uri=http://my-auth-server/token_keys
 	spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
 ----
