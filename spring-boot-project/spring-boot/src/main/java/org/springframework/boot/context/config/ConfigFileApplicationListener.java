@@ -143,6 +143,7 @@ public class ConfigFileApplicationListener
 	/**
 	 * Name of the application configuration {@link PropertySource}.
 	 */
+	@Deprecated
 	public static final String APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME = "applicationConfigurationProperties";
 
 	private final DeferredLog logger = new DeferredLog();
