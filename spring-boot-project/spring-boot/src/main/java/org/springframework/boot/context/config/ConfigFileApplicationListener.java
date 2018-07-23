@@ -141,11 +141,6 @@ public class ConfigFileApplicationListener
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
-	/**
-	 * Name of the application configuration {@link PropertySource}.
-	 */
-	public static final String APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME = "applicationConfigurationProperties";
-
 	private final DeferredLog logger = new DeferredLog();
 
 	private String searchLocations;
