@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveDataAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
@@ -48,7 +48,7 @@ import java.util.Map;
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter({ CassandraAutoConfiguration.class,
-		CassandraDataAutoConfiguration.class })
+		CassandraReactiveDataAutoConfiguration.class })
 public class CassandraReactiveHealthIndicatorAutoConfiguration extends
 		CompositeReactiveHealthIndicatorConfiguration<CassandraReactiveHealthIndicator, ReactiveCassandraOperations> {
 	private final Map<String, ReactiveCassandraOperations> reactiveCassandraOperations;
