@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
 
@@ -101,9 +102,9 @@ public class HttpExchangeTracer {
 		if (!this.includes.contains(include)) {
 			return new LinkedHashMap<>();
 		}
-		Map<String, List<String>> headers = headersSupplier.get();
-		headers.keySet().removeIf((header) -> !headerPredicate.test(header));
-		return headers;
+		return headersSupplier.get().entrySet().stream()
+				.filter((entry) -> headerPredicate.test(entry.getKey()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	private final class FilteredTraceableRequest implements TraceableRequest {
