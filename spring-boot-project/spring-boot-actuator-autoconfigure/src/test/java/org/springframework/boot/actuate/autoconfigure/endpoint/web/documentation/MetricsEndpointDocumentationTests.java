@@ -54,7 +54,8 @@ public class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentat
 				.andExpect(status().isOk())
 				.andDo(document("metrics/metric", responseFields(
 						fieldWithPath("name").description("Name of the metric"),
-						fieldWithPath("description").description("Description of the metric"),
+						fieldWithPath("description")
+								.description("Description of the metric"),
 						fieldWithPath("baseUnit").description("Base unit of the metric"),
 						fieldWithPath("measurements")
 								.description("Measurements of the metric"),
