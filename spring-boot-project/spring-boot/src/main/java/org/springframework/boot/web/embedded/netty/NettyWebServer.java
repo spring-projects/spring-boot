@@ -115,15 +115,14 @@ public class NettyWebServer implements WebServer {
 	@Override
 	public void stop() throws WebServerException {
 		if (this.disposableServer != null) {
-			// temporary fix for gh-9146
-			this.disposableServer.onDispose()
-					.doFinally((signal) -> HttpResources.reset());
 			if (this.lifecycleTimeout != null) {
 				this.disposableServer.disposeNow(this.lifecycleTimeout);
 			}
 			else {
 				this.disposableServer.disposeNow();
 			}
+			// temporary fix for gh-9146
+			HttpResources.shutdown();
 			this.disposableServer = null;
 		}
 	}
