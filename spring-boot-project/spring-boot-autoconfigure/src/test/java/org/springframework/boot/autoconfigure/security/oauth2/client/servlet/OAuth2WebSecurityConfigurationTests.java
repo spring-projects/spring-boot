@@ -85,7 +85,8 @@ public class OAuth2WebSecurityConfigurationTests {
 	public void configurationRegistersAuthorizedClientServiceBean() {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
-					assertThat(context).hasSingleBean(OAuth2AuthorizedClientService.class);
+					assertThat(context)
+							.hasSingleBean(OAuth2AuthorizedClientService.class);
 				});
 	}
 
