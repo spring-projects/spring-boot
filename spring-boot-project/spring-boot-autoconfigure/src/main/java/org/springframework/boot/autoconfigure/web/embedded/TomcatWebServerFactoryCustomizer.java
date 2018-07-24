@@ -19,11 +19,9 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import java.time.Duration;
 
 import org.apache.catalina.Lifecycle;
-import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
@@ -48,7 +46,6 @@ import org.springframework.util.StringUtils;
  * @author Yulin Qin
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @author Rob Tompkins
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer implements
@@ -73,8 +70,6 @@ public class TomcatWebServerFactoryCustomizer implements
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties properties = this.serverProperties;
 		ServerProperties.Tomcat tomcatProperties = properties.getTomcat();
-		ServerProperties.Tomcat.WebResource tomcatWebResourceProperties = tomcatProperties
-				.getWebResource();
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(tomcatProperties::getBasedir).whenNonNull()
 				.to(factory::setBaseDirectory);
@@ -106,9 +101,6 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
-		propertyMapper.from(tomcatWebResourceProperties::getUseCaching).whenFalse()
-				.to((isWebResourceCachingAllowed) -> customizeWebResourceCaching(factory,
-						isWebResourceCachingAllowed));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
 	}
@@ -131,18 +123,6 @@ public class TomcatWebServerFactoryCustomizer implements
 				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
 				protocol.setAcceptCount(acceptCount);
 			}
-		});
-	}
-
-	private void customizeWebResourceCaching(ConfigurableTomcatWebServerFactory factory,
-			Boolean useWebResourceCaching) {
-		factory.addContextCustomizers((context) -> {
-			WebResourceRoot webResourceRoot = context.getResources();
-			if (webResourceRoot == null) {
-				webResourceRoot = new StandardRoot(context);
-			}
-			webResourceRoot.setCachingAllowed(useWebResourceCaching);
-			context.setResources(webResourceRoot);
 		});
 	}
 
@@ -261,14 +241,14 @@ public class TomcatWebServerFactoryCustomizer implements
 	private void customizeStaticResources(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat.Resource resource = this.serverProperties.getTomcat()
 				.getResource();
-		if (resource.getCacheTtl() == null) {
-			return;
-		}
 		factory.addContextCustomizers((context) -> {
 			context.addLifecycleListener((event) -> {
 				if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
-					long ttl = resource.getCacheTtl().toMillis();
-					context.getResources().setCacheTtl(ttl);
+					context.getResources().setCachingAllowed(resource.isAllowCaching());
+					if (resource.getCacheTtl() != null) {
+						long ttl = resource.getCacheTtl().toMillis();
+						context.getResources().setCacheTtl(ttl);
+					}
 				}
 			});
 		});

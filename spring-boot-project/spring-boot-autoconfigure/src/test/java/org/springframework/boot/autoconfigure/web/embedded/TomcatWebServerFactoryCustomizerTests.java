@@ -100,20 +100,6 @@ public class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void turnOffWebResourceCaching() {
-		bind("server.tomcat.webresource.use-caching=false");
-		customizeAndRunServer((server) -> {
-			Mapper mapper = server.getTomcat().getService().getMapper();
-			Object contextObjectToContextVersionMap = ReflectionTestUtils.getField(mapper,
-					"contextObjectToContextVersionMap");
-			Object tomcatEmbeddedContext = ((Map<Context, Object>) contextObjectToContextVersionMap)
-					.values().toArray()[0];
-			assertThat(((StandardRoot) ReflectionTestUtils.getField(tomcatEmbeddedContext,
-					"resources")).isCachingAllowed()).isFalse();
-		});
-	}
-
-	@Test
 	public void customMaxHttpPostSize() {
 		bind("server.tomcat.max-http-post-size=10000");
 		customizeAndRunServer(
@@ -138,6 +124,20 @@ public class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("x-my-remote-ip-header");
 		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
+	}
+
+	@Test
+	public void customStaticResourceAllowCaching() {
+		bind("server.tomcat.resource.allow-caching=false");
+		customizeAndRunServer((server) -> {
+			Mapper mapper = server.getTomcat().getService().getMapper();
+			Object contextObjectToContextVersionMap = ReflectionTestUtils.getField(mapper,
+					"contextObjectToContextVersionMap");
+			Object tomcatEmbeddedContext = ((Map<Context, Object>) contextObjectToContextVersionMap)
+					.values().toArray()[0];
+			assertThat(((StandardRoot) ReflectionTestUtils.getField(tomcatEmbeddedContext,
+					"resources")).isCachingAllowed()).isFalse();
+		});
 	}
 
 	@Test
