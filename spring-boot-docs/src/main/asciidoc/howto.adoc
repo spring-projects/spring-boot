@@ -2253,7 +2253,7 @@ location and the `/opt/migration` directory:
 
 [source,properties,indent=0]
 ----
-	spring.flyway.locations=classpath:db/migration,filesystem:/opt/migration
+	flyway.locations=classpath:db/migration,filesystem:/opt/migration
 ----
 
 You can also add a special `{vendor}` placeholder to use vendor-specific scripts. Assume
