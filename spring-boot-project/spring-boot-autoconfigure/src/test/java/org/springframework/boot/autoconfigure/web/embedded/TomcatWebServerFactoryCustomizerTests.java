@@ -16,14 +16,17 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
+import org.apache.catalina.mapper.Mapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +39,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author Rob Tompkins
  */
 public class TomcatWebServerFactoryCustomizerTests {
 
@@ -119,6 +124,20 @@ public class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("x-my-remote-ip-header");
 		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
+	}
+
+	@Test
+	public void customStaticResourceAllowCaching() {
+		bind("server.tomcat.resource.allow-caching=false");
+		customizeAndRunServer((server) -> {
+			Mapper mapper = server.getTomcat().getService().getMapper();
+			Object contextObjectToContextVersionMap = ReflectionTestUtils.getField(mapper,
+					"contextObjectToContextVersionMap");
+			Object tomcatEmbeddedContext = ((Map<Context, Object>) contextObjectToContextVersionMap)
+					.values().toArray()[0];
+			assertThat(((StandardRoot) ReflectionTestUtils.getField(tomcatEmbeddedContext,
+					"resources")).isCachingAllowed()).isFalse();
+		});
 	}
 
 	@Test

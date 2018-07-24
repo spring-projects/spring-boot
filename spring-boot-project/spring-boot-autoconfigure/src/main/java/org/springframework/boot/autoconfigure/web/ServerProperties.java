@@ -661,9 +661,22 @@ public class ServerProperties {
 		public static class Resource {
 
 			/**
+			 * Whether static resource caching is permitted for this web application.
+			 */
+			private boolean allowCaching = true;
+
+			/**
 			 * Time-to-live of the static resource cache.
 			 */
 			private Duration cacheTtl;
+
+			public boolean isAllowCaching() {
+				return this.allowCaching;
+			}
+
+			public void setAllowCaching(boolean allowCaching) {
+				this.allowCaching = allowCaching;
+			}
 
 			public Duration getCacheTtl() {
 				return this.cacheTtl;

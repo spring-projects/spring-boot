@@ -241,14 +241,14 @@ public class TomcatWebServerFactoryCustomizer implements
 	private void customizeStaticResources(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat.Resource resource = this.serverProperties.getTomcat()
 				.getResource();
-		if (resource.getCacheTtl() == null) {
-			return;
-		}
 		factory.addContextCustomizers((context) -> {
 			context.addLifecycleListener((event) -> {
 				if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
-					long ttl = resource.getCacheTtl().toMillis();
-					context.getResources().setCacheTtl(ttl);
+					context.getResources().setCachingAllowed(resource.isAllowCaching());
+					if (resource.getCacheTtl() != null) {
+						long ttl = resource.getCacheTtl().toMillis();
+						context.getResources().setCacheTtl(ttl);
+					}
 				}
 			});
 		});
