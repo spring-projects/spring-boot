@@ -189,7 +189,7 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void changeLogDoesNotExist() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.locations:file:no-such-dir")
+				.withPropertyValues("spring.flyway.locations:filesystem:no-such-dir")
 				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context).getFailure()
@@ -223,6 +223,14 @@ public class FlywayAutoConfigurationTests {
 	public void checkLocationsAllExistWithImplicitClasspathPrefix() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.locations:db/changelog,db/migration")
+				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	public void checkLocationsAllExistWithFilesystemPrefix() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues(
+						"spring.flyway.locations:filesystem:src/test/resources/db/migration")
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 

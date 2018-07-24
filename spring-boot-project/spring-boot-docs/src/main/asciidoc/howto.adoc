@@ -2207,8 +2207,17 @@ To automatically run Flyway database migrations on startup, add the
 The migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an
 underscore-separated version, such as '`1`' or '`2_1`'). By default, they are in a folder
 called `classpath:db/migration`, but you can modify that location by setting
-`spring.flyway.locations`. You can also add a special `{vendor}` placeholder to use
-vendor-specific scripts. Assume the following:
+`spring.flyway.locations`. This is a comma-separated list of one or more `classpath:`
+or `filesystem:` locations. For example, the following configuration would search for
+scripts in both the default classpath location and the `/opt/migration` directory:
+
+[source,properties,indent=0]
+----
+	spring.flyway.locations=classpath:db/migration,filesystem:/opt/migration
+----
+
+You can also add a special `{vendor}` placeholder to use vendor-specific scripts. Assume
+the following:
 
 [source,properties,indent=0]
 ----
