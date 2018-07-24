@@ -117,11 +117,15 @@ public class FlywayAutoConfiguration {
 
 		private boolean hasAtLeastOneLocation() {
 			for (String location : this.properties.getLocations()) {
-				if (this.resourceLoader.getResource(location).exists()) {
+				if (this.resourceLoader.getResource(normalizePrefix(location)).exists()) {
 					return true;
 				}
 			}
 			return false;
+		}
+
+		private String normalizePrefix(String location) {
+			return location.replace("filesystem:", "file:");
 		}
 
 		@Bean

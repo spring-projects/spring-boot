@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void changeLogDoesNotExist() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:file:no-such-dir");
+				"flyway.locations:filesystem:no-such-dir");
 		this.thrown.expect(BeanCreationException.class);
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
@@ -186,6 +186,16 @@ public class FlywayAutoConfigurationTests {
 	public void checkLocationsAllExistWithImplicitClasspathPrefix() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"flyway.locations:db/changelog,db/migration",
+				"flyway.check-location:true");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+	}
+
+	@Test
+	public void checkLocationsAllExistWithImplicitFilesystemPrefix() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations:filesystem:src/test/resources/db/migration",
 				"flyway.check-location:true");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class,
