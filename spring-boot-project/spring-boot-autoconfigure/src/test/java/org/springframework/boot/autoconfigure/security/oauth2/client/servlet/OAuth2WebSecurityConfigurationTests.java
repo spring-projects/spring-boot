@@ -38,7 +38,9 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.FilterChainProxy;
@@ -91,6 +93,15 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
+	public void configurationRegistersAuthorizedClientRepositoryBean() {
+		this.contextRunner
+				.withUserConfiguration(ClientRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(OAuth2AuthorizedClientRepository.class));
+	}
+
+	@Test
 	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent() {
 		this.contextRunner.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
@@ -109,6 +120,17 @@ public class OAuth2WebSecurityConfigurationTests {
 					assertThat(context)
 							.hasSingleBean(OAuth2AuthorizedClientService.class);
 					assertThat(context).hasBean("testAuthorizedClientService");
+				});
+	}
+
+	@Test
+	public void authorizedClientRepositoryBeanIsConditionalOnMissingBean() {
+		this.contextRunner.withUserConfiguration(
+				OAuth2AuthorizedClientRepositoryConfiguration.class,
+				OAuth2WebSecurityConfiguration.class).run((context) -> {
+					assertThat(context)
+							.hasSingleBean(OAuth2AuthorizedClientRepository.class);
+					assertThat(context).hasBean("testAuthorizedClientRepository");
 				});
 	}
 
@@ -208,6 +230,19 @@ public class OAuth2WebSecurityConfigurationTests {
 				ClientRegistrationRepository clientRegistrationRepository) {
 			return new InMemoryOAuth2AuthorizedClientService(
 					clientRegistrationRepository);
+		}
+
+	}
+
+	@Configuration
+	@Import(ClientRepositoryConfiguration.class)
+	static class OAuth2AuthorizedClientRepositoryConfiguration {
+
+		@Bean
+		public OAuth2AuthorizedClientRepository testAuthorizedClientRepository(
+				OAuth2AuthorizedClientService authorizedClientService) {
+			return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(
+					authorizedClientService);
 		}
 
 	}
