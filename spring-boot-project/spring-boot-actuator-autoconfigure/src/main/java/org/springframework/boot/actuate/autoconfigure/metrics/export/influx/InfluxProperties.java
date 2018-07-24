@@ -58,17 +58,21 @@ public class InfluxProperties extends StepRegistryProperties {
 	private String retentionPolicy;
 
 	/**
-	 * Time period for which influx should retain data in the current database (e.g. 2h, 52w)
+	 * Time period for which Influx should retain data in the current database. For
+	 * instance 7d, check the influx documentation for more details on the duration
+	 * format.
 	 */
 	private String retentionDuration;
 
 	/**
-	 * How many copies of the data are stored in the cluster. Must be 1 for a single node instance.
+	 * How many copies of the data are stored in the cluster. Must be 1 for a single node
+	 * instance.
 	 */
 	private Integer retentionReplicationFactor;
 
 	/**
-	 * The time range covered by a shard group (e.g. 2h, 52w).
+	 * Time range covered by a shard group. For instance 2w, check the influx
+	 * documentation for more details on the duration format.
 	 */
 	private String retentionShardDuration;
 
@@ -128,6 +132,30 @@ public class InfluxProperties extends StepRegistryProperties {
 		this.retentionPolicy = retentionPolicy;
 	}
 
+	public String getRetentionDuration() {
+		return this.retentionDuration;
+	}
+
+	public void setRetentionDuration(String retentionDuration) {
+		this.retentionDuration = retentionDuration;
+	}
+
+	public Integer getRetentionReplicationFactor() {
+		return this.retentionReplicationFactor;
+	}
+
+	public void setRetentionReplicationFactor(Integer retentionReplicationFactor) {
+		this.retentionReplicationFactor = retentionReplicationFactor;
+	}
+
+	public String getRetentionShardDuration() {
+		return this.retentionShardDuration;
+	}
+
+	public void setRetentionShardDuration(String retentionShardDuration) {
+		this.retentionShardDuration = retentionShardDuration;
+	}
+
 	public String getUri() {
 		return this.uri;
 	}
@@ -152,27 +180,4 @@ public class InfluxProperties extends StepRegistryProperties {
 		this.autoCreateDb = autoCreateDb;
 	}
 
-	public String getRetentionDuration() {
-		return retentionDuration;
-	}
-
-	public void setRetentionDuration(String retentionDuration) {
-		this.retentionDuration = retentionDuration;
-	}
-
-	public Integer getRetentionReplicationFactor() {
-		return retentionReplicationFactor;
-	}
-
-	public void setRetentionReplicationFactor(Integer retentionReplicationFactor) {
-		this.retentionReplicationFactor = retentionReplicationFactor;
-	}
-
-	public String getRetentionShardDuration() {
-		return retentionShardDuration;
-	}
-
-	public void setRetentionShardDuration(String retentionShardDuration) {
-		this.retentionShardDuration = retentionShardDuration;
-	}
 }
