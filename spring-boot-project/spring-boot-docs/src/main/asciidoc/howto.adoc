@@ -753,6 +753,22 @@ This error is not fatal, and the application still starts with HTTP/1.1 SSL supp
 
 
 
+[[howto-configure-http2-netty]]
+==== HTTP/2 with Reactor Netty
+The `spring-boot-webflux-starter` is using by default Reactor Netty as a server.
+Reactor Netty can be configured for HTTP/2 using the JDK support with JDK 9 or later.
+For JDK 8 environments, or for optimal runtime performance, this server also supports
+HTTP/2 with native libraries. To enable that, your application needs to have an
+additional dependency.
+
+Spring Boot manages the version for the
+`io.netty:netty-tcnative-boringssl-static` "uber jar", containing native libraries for
+all platforms. Developers can choose to import only the required dependendencies using
+a classifier (see http://netty.io/wiki/forked-tomcat-native.html[the Netty official
+documentation]).
+
+
+
 [[howto-configure-webserver]]
 === Configure the Web Server
 

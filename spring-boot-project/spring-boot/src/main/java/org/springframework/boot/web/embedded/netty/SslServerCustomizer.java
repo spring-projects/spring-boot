@@ -26,8 +26,9 @@ import javax.net.ssl.TrustManagerFactory;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContextBuilder;
 import reactor.netty.http.server.HttpServer;
-import reactor.netty.tcp.SslProvider.DefaultConfigurationType;
+import reactor.netty.tcp.SslProvider;
 
+import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.util.ResourceUtils;
@@ -42,19 +43,26 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private final Ssl ssl;
 
+	private final Http2 http2;
+
 	private final SslStoreProvider sslStoreProvider;
 
-	public SslServerCustomizer(Ssl ssl, SslStoreProvider sslStoreProvider) {
+	public SslServerCustomizer(Ssl ssl, Http2 http2, SslStoreProvider sslStoreProvider) {
 		this.ssl = ssl;
+		this.http2 = http2;
 		this.sslStoreProvider = sslStoreProvider;
 	}
 
 	@Override
 	public HttpServer apply(HttpServer server) {
 		try {
-			return server
-					.secure((contextSpec) -> contextSpec.sslContext(getContextBuilder())
-							.defaultConfiguration(DefaultConfigurationType.NONE));
+			return server.secure((contextSpec) -> {
+				SslProvider.DefaultConfigurationSpec spec = contextSpec
+						.sslContext(getContextBuilder());
+				if (this.http2 != null && this.http2.isEnabled()) {
+					spec.defaultConfiguration(SslProvider.DefaultConfigurationType.H2);
+				}
+			});
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
