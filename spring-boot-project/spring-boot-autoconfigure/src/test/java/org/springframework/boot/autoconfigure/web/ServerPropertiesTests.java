@@ -79,6 +79,7 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
 	public void testServletPathAsMapping() {
 		bind("server.servlet.path", "/foo/*");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");
@@ -86,6 +87,7 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	@Deprecated
 	public void testServletPathAsPrefix() {
 		bind("server.servlet.path", "/foo");
 		assertThat(this.properties.getServlet().getServletMapping()).isEqualTo("/foo/*");

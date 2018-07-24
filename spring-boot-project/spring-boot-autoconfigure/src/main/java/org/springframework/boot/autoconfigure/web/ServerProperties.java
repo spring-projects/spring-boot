@@ -269,6 +269,13 @@ public class ServerProperties {
 			return this.session;
 		}
 
+		/**
+		 * Return the mapping used to map a servlet to the path.
+		 * @return the servlet mapping
+		 * @deprecated since 2.0.4 in favor of
+		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getServletUrlMapping}
+		 */
+		@Deprecated
 		public String getServletMapping() {
 			if (this.path.equals("") || this.path.equals("/")) {
 				return "/";
@@ -282,6 +289,14 @@ public class ServerProperties {
 			return this.path + "/*";
 		}
 
+		/**
+		 * Return a path relative to the servlet prefix.
+		 * @param path the path to make relative
+		 * @return the relative path
+		 * @deprecated since 2.0.4 in favor of
+		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getRelativePath(String)}
+		 */
+		@Deprecated
 		public String getPath(String path) {
 			String prefix = getServletPrefix();
 			if (!path.startsWith("/")) {
@@ -290,6 +305,13 @@ public class ServerProperties {
 			return prefix + path;
 		}
 
+		/**
+		 * Return the servlet prefix.
+		 * @return the servlet prefix
+		 * @deprecated since 2.0.4 in favor of
+		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getPrefix()}
+		 */
+		@Deprecated
 		public String getServletPrefix() {
 			String result = this.path;
 			int index = result.indexOf('*');
@@ -302,6 +324,14 @@ public class ServerProperties {
 			return result;
 		}
 
+		/**
+		 * Create a array of relative paths from the given source.
+		 * @param paths the source paths
+		 * @return the relative paths
+		 * @deprecated since 2.0.4 in favor of
+		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getRelativePath(String)}
+		 */
+		@Deprecated
 		public String[] getPathsArray(Collection<String> paths) {
 			String[] result = new String[paths.size()];
 			int i = 0;
@@ -311,6 +341,14 @@ public class ServerProperties {
 			return result;
 		}
 
+		/**
+		 * Create a array of relative paths from the given source.
+		 * @param paths the source paths
+		 * @return the relative paths
+		 * @deprecated since 2.0.4 in favor of
+		 * {@link org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath#getRelativePath(String)}
+		 */
+		@Deprecated
 		public String[] getPathsArray(String[] paths) {
 			String[] result = new String[paths.length];
 			int i = 0;

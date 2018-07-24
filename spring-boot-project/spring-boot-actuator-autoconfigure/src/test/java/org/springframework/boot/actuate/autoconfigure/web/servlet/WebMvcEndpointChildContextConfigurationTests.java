@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -64,12 +64,12 @@ public class WebMvcEndpointChildContextConfigurationTests {
 	}
 
 	@Test
-	public void contextShouldConfigureDispatcherServletPathProviderWithEmptyPath() {
+	public void contextShouldConfigureDispatcherServletPathWithRootPath() {
 		this.contextRunner
 				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
-				.run((context) -> assertThat(context
-						.getBean(DispatcherServletPathProvider.class).getServletPaths())
-								.containsExactly(""));
+				.run((context) -> assertThat(
+						context.getBean(DispatcherServletPath.class).getPath())
+								.isEqualTo("/"));
 	}
 
 	static class ExistingConfig {

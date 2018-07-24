@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
@@ -30,11 +27,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -72,25 +68,11 @@ public class ServletEndpointManagementContextConfiguration {
 		public ServletEndpointRegistrar servletEndpointRegistrar(
 				WebEndpointProperties properties,
 				ServletEndpointsSupplier servletEndpointsSupplier) {
-			DispatcherServletPathProvider servletPathProvider = this.context
-					.getBean(DispatcherServletPathProvider.class);
-			Set<String> cleanedPaths = getServletPaths(properties, servletPathProvider);
-			return new ServletEndpointRegistrar(cleanedPaths,
+			DispatcherServletPath dispatcherServletPath = this.context
+					.getBean(DispatcherServletPath.class);
+			return new ServletEndpointRegistrar(
+					dispatcherServletPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
-		}
-
-		private Set<String> getServletPaths(WebEndpointProperties properties,
-				DispatcherServletPathProvider servletPathProvider) {
-			return servletPathProvider.getServletPaths().stream()
-					.map((p) -> cleanServletPath(p) + properties.getBasePath())
-					.collect(Collectors.toSet());
-		}
-
-		private String cleanServletPath(String servletPath) {
-			if (StringUtils.hasText(servletPath) && servletPath.endsWith("/")) {
-				return servletPath.substring(0, servletPath.length() - 1);
-			}
-			return servletPath;
 		}
 
 	}

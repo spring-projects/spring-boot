@@ -25,6 +25,7 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -96,15 +97,20 @@ public class StaticResourceRequestTests {
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
+		DispatcherServletPath dispatcherServletPath = () -> "";
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		context.registerBean(ServerProperties.class);
+		context.registerBean(DispatcherServletPath.class, () -> dispatcherServletPath);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
 			ServerProperties serverProperties) {
+		DispatcherServletPath dispatcherServletPath = () -> serverProperties.getServlet()
+				.getPath();
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		context.registerBean(ServerProperties.class, () -> serverProperties);
+		context.registerBean(DispatcherServletPath.class, () -> dispatcherServletPath);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 

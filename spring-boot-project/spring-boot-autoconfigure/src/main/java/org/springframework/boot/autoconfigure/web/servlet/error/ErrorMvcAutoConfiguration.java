@@ -49,6 +49,7 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.ErrorPage;
@@ -94,11 +95,15 @@ public class ErrorMvcAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
+	private final DispatcherServletPath dispatcherServletPath;
+
 	private final List<ErrorViewResolver> errorViewResolvers;
 
 	public ErrorMvcAutoConfiguration(ServerProperties serverProperties,
+			DispatcherServletPath dispatcherServletPath,
 			ObjectProvider<List<ErrorViewResolver>> errorViewResolversProvider) {
 		this.serverProperties = serverProperties;
+		this.dispatcherServletPath = dispatcherServletPath;
 		this.errorViewResolvers = errorViewResolversProvider.getIfAvailable();
 	}
 
@@ -118,7 +123,7 @@ public class ErrorMvcAutoConfiguration {
 
 	@Bean
 	public ErrorPageCustomizer errorPageCustomizer() {
-		return new ErrorPageCustomizer(this.serverProperties);
+		return new ErrorPageCustomizer(this.serverProperties, this.dispatcherServletPath);
 	}
 
 	@Bean
@@ -327,15 +332,18 @@ public class ErrorMvcAutoConfiguration {
 
 		private final ServerProperties properties;
 
-		protected ErrorPageCustomizer(ServerProperties properties) {
+		private final DispatcherServletPath dispatcherServletPath;
+
+		protected ErrorPageCustomizer(ServerProperties properties,
+				DispatcherServletPath dispatcherServletPath) {
 			this.properties = properties;
+			this.dispatcherServletPath = dispatcherServletPath;
 		}
 
 		@Override
 		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
-			ErrorPage errorPage = new ErrorPage(
-					this.properties.getServlet().getServletPrefix()
-							+ this.properties.getError().getPath());
+			ErrorPage errorPage = new ErrorPage(this.dispatcherServletPath
+					.getRelativePath(this.properties.getError().getPath()));
 			errorPageRegistry.addErrorPages(errorPage);
 		}
 

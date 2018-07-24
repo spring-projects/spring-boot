@@ -33,7 +33,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -137,23 +137,20 @@ public final class EndpointRequest {
 
 		private RequestMatcher createDelegate(WebApplicationContext context) {
 			try {
-				Set<String> servletPaths = getServletPaths(context);
-				RequestMatcherFactory requestMatcherFactory = new RequestMatcherFactory(
-						servletPaths);
-				return createDelegate(context, requestMatcherFactory);
+				String pathPrefix = getPathPrefix(context);
+				return createDelegate(context, new RequestMatcherFactory(pathPrefix));
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return EMPTY_MATCHER;
 			}
 		}
 
-		private Set<String> getServletPaths(WebApplicationContext context) {
+		private String getPathPrefix(WebApplicationContext context) {
 			try {
-				return context.getBean(DispatcherServletPathProvider.class)
-						.getServletPaths();
+				return context.getBean(DispatcherServletPath.class).getPrefix();
 			}
 			catch (NoSuchBeanDefinitionException ex) {
-				return Collections.singleton("");
+				return "";
 			}
 		}
 
@@ -225,7 +222,7 @@ public final class EndpointRequest {
 					requestMatcherFactory, paths);
 			if (this.includeLinks
 					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.addAll(
+				delegateMatchers.add(
 						requestMatcherFactory.antPath(pathMappedEndpoints.getBasePath()));
 			}
 			return new OrRequestMatcher(delegateMatchers);
@@ -258,8 +255,7 @@ public final class EndpointRequest {
 		private List<RequestMatcher> getDelegateMatchers(
 				RequestMatcherFactory requestMatcherFactory, Set<String> paths) {
 			return paths.stream()
-					.flatMap(
-							(path) -> requestMatcherFactory.antPath(path, "/**").stream())
+					.map((path) -> requestMatcherFactory.antPath(path, "/**"))
 					.collect(Collectors.toList());
 		}
 
@@ -276,9 +272,7 @@ public final class EndpointRequest {
 			WebEndpointProperties properties = context
 					.getBean(WebEndpointProperties.class);
 			if (StringUtils.hasText(properties.getBasePath())) {
-				List<RequestMatcher> matchers = requestMatcherFactory
-						.antPath(properties.getBasePath());
-				return new OrRequestMatcher(matchers);
+				return requestMatcherFactory.antPath(properties.getBasePath());
 			}
 			return EMPTY_MATCHER;
 		}
@@ -290,19 +284,18 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		private final Set<String> servletPaths = new LinkedHashSet<>();
+		private final String prefix;
 
-		RequestMatcherFactory(Set<String> servletPaths) {
-			this.servletPaths.addAll(servletPaths);
+		RequestMatcherFactory(String prefix) {
+			this.prefix = prefix;
 		}
 
-		List<RequestMatcher> antPath(String... parts) {
-			return this.servletPaths.stream()
-					.map((p) -> (StringUtils.hasText(p) && !p.equals("/") ? p : ""))
-					.distinct()
-					.map((path) -> Arrays.stream(parts)
-							.collect(Collectors.joining("", path, "")))
-					.map(AntPathRequestMatcher::new).collect(Collectors.toList());
+		public RequestMatcher antPath(String... parts) {
+			String pattern = this.prefix;
+			for (String part : parts) {
+				pattern += part;
+			}
+			return new AntPathRequestMatcher(pattern);
 		}
 
 	}
