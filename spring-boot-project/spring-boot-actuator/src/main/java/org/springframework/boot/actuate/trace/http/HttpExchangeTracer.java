@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.trace.http;
 
 import java.net.URI;
 import java.security.Principal;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,12 +102,7 @@ public class HttpExchangeTracer {
 			return new LinkedHashMap<>();
 		}
 		Map<String, List<String>> headers = headersSupplier.get();
-		Iterator<String> keys = headers.keySet().iterator();
-		while (keys.hasNext()) {
-			if (!headerPredicate.test(keys.next())) {
-				keys.remove();
-			}
-		}
+		headers.keySet().removeIf((header) -> !headerPredicate.test(header));
 		return headers;
 	}
 
