@@ -61,8 +61,10 @@ public class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	public void securityConfigurerConfiguresOAuth2Login() {
-		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
 					ClientRegistrationRepository expected = context
 							.getBean(ClientRegistrationRepository.class);
 					ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils
@@ -85,17 +87,17 @@ public class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	public void configurationRegistersAuthorizedClientServiceBean() {
-		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run((context) -> {
-					assertThat(context)
-							.hasSingleBean(OAuth2AuthorizedClientService.class);
-				});
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(OAuth2AuthorizedClientService.class));
 	}
 
 	@Test
 	public void configurationRegistersAuthorizedClientRepositoryBean() {
 		this.contextRunner
-				.withUserConfiguration(ClientRepositoryConfiguration.class,
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
 						OAuth2WebSecurityConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(OAuth2AuthorizedClientRepository.class));
@@ -189,7 +191,7 @@ public class OAuth2WebSecurityConfigurationTests {
 
 	@Configuration
 	@Import(TestConfig.class)
-	static class ClientRepositoryConfiguration {
+	static class ClientRegistrationRepositoryConfiguration {
 
 		@Bean
 		public ClientRegistrationRepository clientRegistrationRepository() {
@@ -216,13 +218,13 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ ClientRepositoryConfiguration.class })
+	@Import(ClientRegistrationRepositoryConfiguration.class)
 	static class TestWebSecurityConfigurerConfig extends WebSecurityConfigurerAdapter {
 
 	}
 
 	@Configuration
-	@Import({ ClientRepositoryConfiguration.class })
+	@Import(ClientRegistrationRepositoryConfiguration.class)
 	static class OAuth2AuthorizedClientServiceConfiguration {
 
 		@Bean
@@ -235,7 +237,7 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Configuration
-	@Import(ClientRepositoryConfiguration.class)
+	@Import(ClientRegistrationRepositoryConfiguration.class)
 	static class OAuth2AuthorizedClientRepositoryConfiguration {
 
 		@Bean
