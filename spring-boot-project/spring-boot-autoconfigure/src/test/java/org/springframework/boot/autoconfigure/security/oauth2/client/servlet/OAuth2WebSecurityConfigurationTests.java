@@ -85,12 +85,8 @@ public class OAuth2WebSecurityConfigurationTests {
 	public void configurationRegistersAuthorizedClientServiceBean() {
 		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
-					OAuth2AuthorizedClientService bean = context
-							.getBean(OAuth2AuthorizedClientService.class);
-					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
-							.getField(getAuthCodeFilters(context).get(0),
-									"authorizedClientService");
-					assertThat(authorizedClientService).isEqualTo(bean);
+					assertThat(context)
+							.hasSingleBean(OAuth2AuthorizedClientService.class);
 				});
 	}
 
@@ -110,12 +106,9 @@ public class OAuth2WebSecurityConfigurationTests {
 				.withUserConfiguration(OAuth2AuthorizedClientServiceConfiguration.class,
 						OAuth2WebSecurityConfiguration.class)
 				.run((context) -> {
-					OAuth2AuthorizedClientService bean = context
-							.getBean(OAuth2AuthorizedClientService.class);
-					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
-							.getField(getAuthCodeFilters(context).get(0),
-									"authorizedClientService");
-					assertThat(authorizedClientService).isEqualTo(bean);
+					assertThat(context)
+							.hasSingleBean(OAuth2AuthorizedClientService.class);
+					assertThat(context).hasBean("testAuthorizedClientService");
 				});
 	}
 
