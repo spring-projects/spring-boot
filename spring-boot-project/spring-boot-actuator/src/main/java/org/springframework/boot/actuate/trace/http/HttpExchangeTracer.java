@@ -102,7 +102,7 @@ public class HttpExchangeTracer {
 			return new LinkedHashMap<>();
 		}
 		Map<String, List<String>> headers = headersSupplier.get();
-		headers.keySet().removeIf(s -> !headerPredicate.test(s));
+		headers.keySet().removeIf((header) -> !headerPredicate.test(header));
 		return headers;
 	}
 
