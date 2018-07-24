@@ -255,6 +255,54 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		testOidcConfiguration(registration, "okta-oidc");
 	}
 
+	@Test
+	public void oidcProviderConfigurationWithCustomConfigurationOverridesProviderDefaults()
+			throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String issuer = this.server.url("").toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		Registration registration = new Registration();
+		registration.setProvider("okta-oidc");
+		registration.setClientId("clientId");
+		registration.setClientSecret("clientSecret");
+		registration.setClientAuthenticationMethod("post");
+		registration.setRedirectUriTemplate("http://example.com/redirect");
+		registration.setScope(Collections.singleton("user"));
+		Provider provider = new Provider();
+		provider.setIssuerUri(issuer);
+		provider.setAuthorizationUri("http://example.com/auth");
+		provider.setTokenUri("http://example.com/token");
+		provider.setUserInfoUri("http://example.com/info");
+		provider.setUserNameAttribute("sub");
+		provider.setJwkSetUri("http://example.com/jwk");
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		properties.getProvider().put("okta-oidc", provider);
+		properties.getRegistration().put("okta", registration);
+		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
+				.getClientRegistrations(properties);
+		ClientRegistration adapted = registrations.get("okta");
+		ProviderDetails providerDetails = adapted.getProviderDetails();
+		assertThat(adapted.getClientAuthenticationMethod())
+				.isEqualTo(ClientAuthenticationMethod.POST);
+		assertThat(adapted.getAuthorizationGrantType())
+				.isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
+		assertThat(adapted.getRegistrationId()).isEqualTo("okta");
+		assertThat(adapted.getClientName()).isEqualTo(cleanIssuerPath);
+		assertThat(adapted.getScopes()).containsOnly("user");
+		assertThat(adapted.getRedirectUriTemplate())
+				.isEqualTo("http://example.com/redirect");
+		assertThat(providerDetails.getAuthorizationUri())
+				.isEqualTo("http://example.com/auth");
+		assertThat(providerDetails.getTokenUri()).isEqualTo("http://example.com/token");
+		assertThat(providerDetails.getJwkSetUri()).isEqualTo("http://example.com/jwk");
+		assertThat(providerDetails.getUserInfoEndpoint().getUri())
+				.isEqualTo("http://example.com/info");
+		assertThat(providerDetails.getUserInfoEndpoint().getUserNameAttributeName())
+				.isEqualTo("sub");
+	}
+
 	private void testOidcConfiguration(Registration registration, String providerId)
 			throws Exception {
 		this.server = new MockWebServer();

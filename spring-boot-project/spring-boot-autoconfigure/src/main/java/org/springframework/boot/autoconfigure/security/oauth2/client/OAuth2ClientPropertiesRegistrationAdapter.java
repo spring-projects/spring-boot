@@ -56,14 +56,11 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static ClientRegistration getClientRegistration(String registrationId,
 			Registration properties, Map<String, Provider> providers) {
-		String issuer = getIssuerIfPossible(registrationId, properties.getProvider(),
-				providers);
-		if (issuer != null) {
-			return OidcConfigurationProvider.issuer(issuer).registrationId(registrationId)
-					.clientId(properties.getClientId())
-					.clientSecret(properties.getClientSecret()).build();
+		Builder builder = getBuilderFromIssuerIfPossible(registrationId,
+				properties.getProvider(), providers);
+		if (builder == null) {
+			builder = getBuilder(registrationId, properties.getProvider(), providers);
 		}
-		Builder builder = getBuilder(registrationId, properties.getProvider(), providers);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getClientId).to(builder::clientId);
 		map.from(properties::getClientSecret).to(builder::clientSecret);
@@ -79,7 +76,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		return builder.build();
 	}
 
-	private static String getIssuerIfPossible(String registrationId,
+	private static Builder getBuilderFromIssuerIfPossible(String registrationId,
 			String configuredProviderId, Map<String, Provider> providers) {
 		String providerId = (configuredProviderId != null ? configuredProviderId
 				: registrationId);
@@ -87,7 +84,10 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 			Provider provider = providers.get(providerId);
 			String issuer = provider.getIssuerUri();
 			if (issuer != null) {
-				return cleanIssuerPath(issuer);
+				String cleanedIssuer = cleanIssuerPath(issuer);
+				Builder builder = OidcConfigurationProvider.issuer(cleanedIssuer)
+						.registrationId(registrationId);
+				return getBuilder(builder, provider);
 			}
 		}
 		return null;
