@@ -1414,7 +1414,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.influx.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
 	management.metrics.export.influx.password= # Login password of the Influx server.
 	management.metrics.export.influx.read-timeout=10s # Read timeout for requests to this backend.
+	management.metrics.export.influx.retention-duration= # Time period for which Influx should retain data in the current database.
+	management.metrics.export.influx.retention-shard-duration= # Time range covered by a shard group.
 	management.metrics.export.influx.retention-policy= # Retention policy to use (Influx writes to the DEFAULT retention policy if one is not specified).
+	management.metrics.export.influx.retention-replication-factor= # How many copies of the data are stored in the cluster.
 	management.metrics.export.influx.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.influx.uri=http://localhost:8086 # URI of the Influx server.
 	management.metrics.export.influx.user-name= # Login user of the Influx server.
