@@ -115,14 +115,6 @@ class NoSuchBeanDefinitionFailureAnalyzer
 	}
 
 	private Class<?> extractBeanType(ResolvableType resolvableType) {
-		ResolvableType collectionType = resolvableType.asCollection();
-		if (!collectionType.equals(ResolvableType.NONE)) {
-			return collectionType.getGeneric(0).getRawClass();
-		}
-		ResolvableType mapType = resolvableType.asMap();
-		if (!mapType.equals(ResolvableType.NONE)) {
-			return mapType.getGeneric(1).getRawClass();
-		}
 		return resolvableType.getRawClass();
 	}
 
