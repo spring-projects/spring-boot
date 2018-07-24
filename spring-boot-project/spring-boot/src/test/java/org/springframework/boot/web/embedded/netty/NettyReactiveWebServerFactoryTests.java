@@ -18,14 +18,14 @@ package org.springframework.boot.web.embedded.netty;
 
 import java.util.Arrays;
 
-import org.junit.Ignore;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.InOrder;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
-import org.springframework.boot.web.server.WebServerException;
+import org.springframework.boot.web.server.PortInUseException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -46,14 +46,15 @@ public class NettyReactiveWebServerFactoryTests
 	}
 
 	@Test
-	@Ignore
 	public void exceptionIsThrownWhenPortIsAlreadyInUse() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setPort(0);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
-		this.thrown.expect(WebServerException.class);
+		this.thrown.expect(PortInUseException.class);
+		this.thrown.expect(
+				Matchers.hasProperty("port", Matchers.equalTo(this.webServer.getPort())));
 		factory.getWebServer(new EchoHandler()).start();
 	}
 
