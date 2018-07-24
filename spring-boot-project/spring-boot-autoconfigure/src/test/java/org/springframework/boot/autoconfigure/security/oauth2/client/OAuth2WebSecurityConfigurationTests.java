@@ -59,8 +59,10 @@ public class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	public void securityConfigurerConfiguresOAuth2Login() {
-		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
 					ClientRegistrationRepository expected = context
 							.getBean(ClientRegistrationRepository.class);
 					ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils
@@ -83,8 +85,10 @@ public class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	public void configurationRegistersAuthorizedClientServiceBean() {
-		this.contextRunner.withUserConfiguration(ClientRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
 					OAuth2AuthorizedClientService bean = context
 							.getBean(OAuth2AuthorizedClientService.class);
 					OAuth2AuthorizedClientService authorizedClientService = (OAuth2AuthorizedClientService) ReflectionTestUtils
@@ -174,7 +178,7 @@ public class OAuth2WebSecurityConfigurationTests {
 
 	@Configuration
 	@Import(TestConfig.class)
-	static class ClientRepositoryConfiguration {
+	static class ClientRegistrationRepositoryConfiguration {
 
 		@Bean
 		public ClientRegistrationRepository clientRegistrationRepository() {
@@ -201,13 +205,13 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ ClientRepositoryConfiguration.class })
+	@Import(ClientRegistrationRepositoryConfiguration.class)
 	static class TestWebSecurityConfigurerConfig extends WebSecurityConfigurerAdapter {
 
 	}
 
 	@Configuration
-	@Import({ ClientRepositoryConfiguration.class })
+	@Import(ClientRegistrationRepositoryConfiguration.class)
 	static class OAuth2AuthorizedClientServiceConfiguration {
 
 		@Bean
