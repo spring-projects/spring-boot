@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,17 +34,24 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  */
-final class SpringBootConfigurationFinder {
+public final class SpringBootConfigurationFinder {
 
 	private static final Map<String, Class<?>> cache = Collections
 			.synchronizedMap(new Cache(40));
 
 	private final ClassPathScanningCandidateComponentProvider scanner;
 
-	SpringBootConfigurationFinder() {
+	public SpringBootConfigurationFinder() {
 		this.scanner = new ClassPathScanningCandidateComponentProvider(false);
 		this.scanner.addIncludeFilter(
 				new AnnotationTypeFilter(SpringBootConfiguration.class));
+		this.scanner.setResourcePattern("*.class");
+	}
+
+	public SpringBootConfigurationFinder(Class<? extends Annotation> annotationType) {
+		this.scanner = new ClassPathScanningCandidateComponentProvider(false);
+		this.scanner.addIncludeFilter(
+				new AnnotationTypeFilter(annotationType));
 		this.scanner.setResourcePattern("*.class");
 	}
 
