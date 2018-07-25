@@ -128,9 +128,10 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source
 				.filter(root::isAncestorOf)) {
-			name = name.chop(root.getNumberOfElements() + 1);
-			if (name.isLastElementIndexed()) {
-				String key = name.getLastElement(Form.UNIFORM);
+			ConfigurationPropertyName choppedName = name
+					.chop(root.getNumberOfElements() + 1);
+			if (choppedName.isLastElementIndexed()) {
+				String key = choppedName.getLastElement(Form.UNIFORM);
 				ConfigurationProperty value = source.getConfigurationProperty(name);
 				children.add(key, value);
 			}

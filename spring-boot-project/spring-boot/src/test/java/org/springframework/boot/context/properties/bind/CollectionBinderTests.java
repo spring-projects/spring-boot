@@ -135,6 +135,29 @@ public class CollectionBinderTests {
 	}
 
 	@Test
+	public void bindToNonScalarCollectionWhenNonSequentialShouldThrowException() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo[0].value", "1");
+		source.put("foo[1].value", "2");
+		source.put("foo[4].value", "4");
+		this.sources.add(source);
+		try {
+			Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
+			this.binder.bind("foo", target);
+			fail("No exception thrown");
+		}
+		catch (BindException ex) {
+			ex.printStackTrace();
+			Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
+					.getCause()).getUnboundProperties();
+			assertThat(unbound).hasSize(1);
+			ConfigurationProperty property = unbound.iterator().next();
+			assertThat(property.getName().toString()).isEqualTo("foo[4].value");
+			assertThat(property.getValue()).isEqualTo("4");
+		}
+	}
+
+	@Test
 	public void bindToCollectionWhenNonIterableShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[1]", "2");
