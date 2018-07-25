@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
 import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +43,16 @@ public class CacheMetricsRegistrarTests {
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(
 				new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
+		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter())
+				.isNotNull();
+	}
+
+	@Test
+	public void bindToSupportedCacheWrappedInTransactionProxy() {
+		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
+				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
+		assertThat(registrar.bindCacheToRegistry(new TransactionAwareCacheDecorator(
+				new CaffeineCache("test", Caffeine.newBuilder().build())))).isTrue();
 		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter())
 				.isNotNull();
 	}
