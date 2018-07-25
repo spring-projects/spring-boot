@@ -22,8 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.integration.support.management.graph.Graph;
-import org.springframework.integration.support.management.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.Graph;
+import org.springframework.integration.graph.IntegrationGraphServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

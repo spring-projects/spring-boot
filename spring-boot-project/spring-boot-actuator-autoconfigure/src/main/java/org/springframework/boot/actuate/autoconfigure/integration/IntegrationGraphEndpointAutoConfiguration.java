@@ -26,8 +26,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.graph.IntegrationGraphServer;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
-import org.springframework.integration.support.management.graph.IntegrationGraphServer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the

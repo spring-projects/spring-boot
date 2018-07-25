@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.integration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.integration.support.management.graph.Graph;
-import org.springframework.integration.support.management.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.Graph;
+import org.springframework.integration.graph.IntegrationGraphServer;
 
 /**
  * {@link Endpoint} to expose the Spring Integration graph.

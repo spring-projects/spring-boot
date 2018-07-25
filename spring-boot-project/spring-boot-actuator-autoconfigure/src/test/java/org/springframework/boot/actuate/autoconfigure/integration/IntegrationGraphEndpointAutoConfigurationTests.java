@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.integration.support.management.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.IntegrationGraphServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

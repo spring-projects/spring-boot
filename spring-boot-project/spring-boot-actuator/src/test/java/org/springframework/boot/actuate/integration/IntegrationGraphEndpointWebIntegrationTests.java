@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.integration.config.EnableIntegration;
-import org.springframework.integration.support.management.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.IntegrationGraphServer;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
