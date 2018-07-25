@@ -17,10 +17,7 @@
 package org.springframework.boot.autoconfigure.data.rest;
 
 import java.net.URI;
-import java.util.Date;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
 
@@ -143,13 +140,6 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
 		assertThat(bean.getBaseUri()).isEqualTo(URI.create(""));
-	}
-
-	public void assertThatDateIsFormattedCorrectly(String beanName)
-			throws JsonProcessingException {
-		ObjectMapper objectMapper = this.context.getBean(beanName, ObjectMapper.class);
-		assertThat(objectMapper.writeValueAsString(new Date(1413387983267L)))
-				.isEqualTo("\"2014-10\"");
 	}
 
 	private void load(Class<?> config, String... environment) {
