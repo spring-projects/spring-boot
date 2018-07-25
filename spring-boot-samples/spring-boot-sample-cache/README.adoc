@@ -94,6 +94,8 @@ NOTE: If you want to use the client/server mode or if you need more options, Inf
 provides an official Spring Boot starter, check
 https://github.com/infinispan/infinispan-spring-boot[the documentation] for more details.
 
+
+
 === Couchbase
 Add the `java-client` and `couchbase-spring-cache` dependencies and make sure that
 you have setup at least a `spring.couchbase.bootstrap-hosts` property.

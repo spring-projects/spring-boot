@@ -133,15 +133,5 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<profile>
-			<id>guava</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-					<version>18.0</version>
-				</dependency>
-			</dependencies>
-		</profile>
 	</profiles>
 </project>
