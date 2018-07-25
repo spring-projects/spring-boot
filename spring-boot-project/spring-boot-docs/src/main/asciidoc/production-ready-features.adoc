@@ -921,6 +921,9 @@ appropriate:
 |===
 |Name |Description
 
+|{sc-spring-boot-actuator}/cassandra/CassandraReactiveHealthIndicator.{sc-ext}[`CassandraReactiveHealthIndicator`]
+|Checks that a Cassandra database is up.
+
 |{sc-spring-boot-actuator}/mongo/MongoReactiveHealthIndicator.{sc-ext}[`MongoReactiveHealthIndicator`]
 |Checks that a Mongo database is up.
 
