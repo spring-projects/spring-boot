@@ -15,21 +15,17 @@
  */
 package org.springframework.boot.actuate.cassandra;
 
-import com.datastax.driver.core.Row;
 import com.datastax.driver.core.querybuilder.Select;
 import org.junit.Test;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.Status;
-import org.springframework.data.cassandra.CassandraInternalException;
-import org.springframework.data.cassandra.ReactiveResultSet;
-import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
-import org.springframework.data.cassandra.core.cql.ReactiveCqlOperations;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.assertj.core.api.Assertions.anyOf;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Status;
+import org.springframework.data.cassandra.CassandraInternalException;
+import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
+import org.springframework.data.cassandra.core.cql.ReactiveCqlOperations;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,24 +33,24 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * A {@link ReactiveHealthIndicator} for Mongo.
+ * Tests for {@link CassandraReactiveHealthIndicatorTests}.
  *
  * @author Artsiom Yudovin
- * @since 2.0.0
  */
-public class CassandraReactiveHealthIndicatorTest {
+public class CassandraReactiveHealthIndicatorTests {
 
 	@Test
 	public void testCassandraIsUp() {
 		ReactiveCqlOperations reactiveCqlOperations = mock(ReactiveCqlOperations.class);
-		ReactiveCassandraOperations reactiveCassandraOperations = mock(ReactiveCassandraOperations.class);
-
 		given(reactiveCqlOperations.queryForObject(any(Select.class), eq(String.class)))
 				.willReturn(Mono.just("6.0.0"));
-		given(reactiveCassandraOperations.getReactiveCqlOperations()).willReturn(reactiveCqlOperations);
+		ReactiveCassandraOperations reactiveCassandraOperations = mock(
+				ReactiveCassandraOperations.class);
+		given(reactiveCassandraOperations.getReactiveCqlOperations())
+				.willReturn(reactiveCqlOperations);
 
-		CassandraReactiveHealthIndicator cassandraReactiveHealthIndicator =
-				new CassandraReactiveHealthIndicator(reactiveCassandraOperations);
+		CassandraReactiveHealthIndicator cassandraReactiveHealthIndicator = new CassandraReactiveHealthIndicator(
+				reactiveCassandraOperations);
 		Mono<Health> health = cassandraReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
@@ -65,19 +61,20 @@ public class CassandraReactiveHealthIndicatorTest {
 
 	@Test
 	public void testCassandraIsDown() {
-		ReactiveCassandraOperations reactiveCassandraOperations = mock(ReactiveCassandraOperations.class);
-
+		ReactiveCassandraOperations reactiveCassandraOperations = mock(
+				ReactiveCassandraOperations.class);
 		given(reactiveCassandraOperations.getReactiveCqlOperations())
 				.willThrow(new CassandraInternalException("Connection failed"));
 
-		CassandraReactiveHealthIndicator cassandraReactiveHealthIndicator =
-				new CassandraReactiveHealthIndicator(reactiveCassandraOperations);
+		CassandraReactiveHealthIndicator cassandraReactiveHealthIndicator = new CassandraReactiveHealthIndicator(
+				reactiveCassandraOperations);
 		Mono<Health> health = cassandraReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
-			assertThat(h.getDetails().get("error"))
-					.isEqualTo(CassandraInternalException.class.getName() + ": Connection failed");
+			assertThat(h.getDetails().get("error")).isEqualTo(
+					CassandraInternalException.class.getName() + ": Connection failed");
 		}).verifyComplete();
 	}
+
 }

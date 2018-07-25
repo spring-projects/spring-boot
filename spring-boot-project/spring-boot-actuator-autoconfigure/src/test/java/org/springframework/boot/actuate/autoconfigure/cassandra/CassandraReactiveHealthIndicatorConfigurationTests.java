@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 package org.springframework.boot.actuate.autoconfigure.cassandra;
 
 import org.junit.Test;
+
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;
 import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,16 +32,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link CassandraReactiveHealthIndicatorAutoConfiguration}.
+ * Tests for {@link CassandraReactiveHealthIndicatorConfiguration}.
  *
  * @author Artsiom Yudovin
+ * @author Stephane Nicoll
  */
-public class CassandraReactiveHealthIndicatorAutoConfigurationTests {
+public class CassandraReactiveHealthIndicatorConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CassandraReactiveHealthIndicatorAutoConfigurationTests.CassandraConfiguration.class,
-					CassandraReactiveHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+			.withUserConfiguration(CassandraMockConfiguration.class).withConfiguration(
+					AutoConfigurations.of(CassandraHealthIndicatorAutoConfiguration.class,
+							HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {
@@ -60,8 +61,7 @@ public class CassandraReactiveHealthIndicatorAutoConfigurationTests {
 	}
 
 	@Configuration
-	@AutoConfigureBefore(CassandraReactiveHealthIndicatorAutoConfiguration.class)
-	protected static class CassandraConfiguration {
+	protected static class CassandraMockConfiguration {
 
 		@Bean
 		public ReactiveCassandraOperations cassandraOperations() {
@@ -69,4 +69,5 @@ public class CassandraReactiveHealthIndicatorAutoConfigurationTests {
 		}
 
 	}
+
 }
