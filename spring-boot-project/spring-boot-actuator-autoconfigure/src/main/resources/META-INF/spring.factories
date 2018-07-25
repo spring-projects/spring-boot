@@ -5,6 +5,7 @@ org.springframework.boot.actuate.autoconfigure.audit.AuditEventsEndpointAutoConf
 org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cache.CachesEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthIndicatorAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.cassandra.CassandraReactiveHealthIndicatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.CloudFoundryActuatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.ReactiveCloudFoundryActuatorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpointAutoConfiguration,\
