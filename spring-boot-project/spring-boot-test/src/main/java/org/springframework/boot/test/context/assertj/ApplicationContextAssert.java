@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * AssertJ {@link org.assertj.core.api.Assert assertions} that can be applied to an
  * {@link ApplicationContext}.
  *
- * @param <C> The application context type
+ * @param <C> the application context type
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 2.0.0

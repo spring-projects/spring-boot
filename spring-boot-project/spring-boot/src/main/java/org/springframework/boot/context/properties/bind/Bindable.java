@@ -31,7 +31,7 @@ import org.springframework.util.ObjectUtils;
 /**
  * Source that can be bound by a {@link Binder}.
  *
- * @param <T> The source type
+ * @param <T> the source type
  * @author Phillip Webb
  * @author Madhura Bhave
  * @since 2.0.0
@@ -179,7 +179,7 @@ public final class Bindable<T> {
 	/**
 	 * Create a new {@link Bindable} of the type of the specified instance with an
 	 * existing value equal to the instance.
-	 * @param <T> The source type
+	 * @param <T> the source type
 	 * @param instance the instance (must not be {@code null})
 	 * @return a {@link Bindable} instance
 	 * @see #of(ResolvableType)
@@ -194,7 +194,7 @@ public final class Bindable<T> {
 
 	/**
 	 * Create a new {@link Bindable} of the specified type.
-	 * @param <T> The source type
+	 * @param <T> the source type
 	 * @param type the type (must not be {@code null})
 	 * @return a {@link Bindable} instance
 	 * @see #of(ResolvableType)
@@ -238,7 +238,7 @@ public final class Bindable<T> {
 
 	/**
 	 * Create a new {@link Bindable} of the specified type.
-	 * @param <T> The source type
+	 * @param <T> the source type
 	 * @param type the type (must not be {@code null})
 	 * @return a {@link Bindable} instance
 	 * @see #of(Class)

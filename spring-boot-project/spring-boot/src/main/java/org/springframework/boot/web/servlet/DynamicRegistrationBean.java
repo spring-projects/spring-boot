@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
  * Base class for Servlet 3.0+ {@link javax.servlet.Registration.Dynamic dynamic} based
  * registration beans.
  *
- * @param <D> The dynamic registration result
+ * @param <D> the dynamic registration result
  * @author Phillip Webb
  * @since 2.0.0
  */

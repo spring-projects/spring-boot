@@ -84,9 +84,9 @@ import org.springframework.util.Assert;
  * }</pre>
  * <p>
  *
- * @param <SELF> The "self" type for this runner
- * @param <C> The context type
- * @param <A> The application context assertion provider
+ * @param <SELF> the "self" type for this runner
+ * @param <C> the context type
+ * @param <A> the application context assertion provider
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb

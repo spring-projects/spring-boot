@@ -29,7 +29,7 @@ import org.springframework.util.ObjectUtils;
  * A container object to return result of a {@link Binder} bind operation. May contain
  * either a successfully bound object or an empty result.
  *
- * @param <T> The result type
+ * @param <T> the result type
  * @author Phillip Webb
  * @author Madhura Bhave
  * @since 2.0.0
@@ -81,7 +81,7 @@ public final class BindResult<T> {
 	/**
 	 * Apply the provided mapping function to the bound value, or return an updated
 	 * unbound result if no value has been bound.
-	 * @param <U> The type of the result of the mapping function
+	 * @param <U> the type of the result of the mapping function
 	 * @param mapper a mapping function to apply to the bound value. The mapper will not
 	 * be invoked if no value has been bound.
 	 * @return an {@code BindResult} describing the result of applying a mapping function
@@ -127,8 +127,8 @@ public final class BindResult<T> {
 	/**
 	 * Return the object that was bound, or throw an exception to be created by the
 	 * provided supplier if no value has been bound.
-	 * @param <X> Type of the exception to be thrown
-	 * @param exceptionSupplier The supplier which will return the exception to be thrown
+	 * @param <X> the type of the exception to be thrown
+	 * @param exceptionSupplier the supplier which will return the exception to be thrown
 	 * @return the present value
 	 * @throws X if there is no value present
 	 */

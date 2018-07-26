@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
 /**
  * Base class for properties to config adapters.
  *
- * @param <T> The properties type
+ * @param <T> the properties type
  * @author Phillip Webb
  * @author Nikolay Rybak
  * @since 2.0.0

@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 /**
  * Abstract base class for {@link ExposableEndpoint} implementations.
  *
- * @param <O> The operation type.
+ * @param <O> the operation type.
  * @author Phillip Webb
  * @since 2.0.0
  */

@@ -160,8 +160,8 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
 	/**
 	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
-	 * @param entryName The name of the entry
-	 * @param inputStream The stream from which the entry's data can be read
+	 * @param entryName the name of the entry
+	 * @param inputStream the stream from which the entry's data can be read
 	 * @throws IOException if the write fails
 	 */
 	@Override

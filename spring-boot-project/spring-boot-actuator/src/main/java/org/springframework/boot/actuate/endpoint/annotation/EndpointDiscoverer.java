@@ -54,8 +54,8 @@ import org.springframework.util.StringUtils;
  * {@link Endpoint @Endpoint} beans and {@link EndpointExtension @EndpointExtension} beans
  * in an application context.
  *
- * @param <E> The endpoint type
- * @param <O> The operation type
+ * @param <E> the endpoint type
+ * @param <O> the operation type
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb

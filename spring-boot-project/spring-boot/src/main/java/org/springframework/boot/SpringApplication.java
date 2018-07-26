@@ -1001,7 +1001,7 @@ public class SpringApplication {
 	/**
 	 * Sets the {@link Banner} instance which will be used to print the banner when no
 	 * static banner file is provided.
-	 * @param banner The Banner instance to use
+	 * @param banner the Banner instance to use
 	 */
 	public void setBanner(Banner banner) {
 		this.banner = banner;

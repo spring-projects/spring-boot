@@ -69,8 +69,8 @@ public class RouterFunctionMetrics {
 	/**
 	 * Returns a new {@link RouterFunctionMetrics} instance with the specified default
 	 * tags.
-	 * @param defaultTags Generate a list of tags to apply to the timer.
-	 * {@code ServerResponse} may be null.
+	 * @param defaultTags function to generate a list of tags to apply to the timer
+	 * {@code ServerResponse} may be null
 	 * @return {@code this} for further configuration
 	 */
 	public RouterFunctionMetrics defaultTags(
@@ -94,8 +94,8 @@ public class RouterFunctionMetrics {
 
 	/**
 	 * Creates a {@code method} tag from the method of the given {@code request}.
-	 * @param request The HTTP request.
-	 * @return A "method" tag whose value is a capitalized method (e.g. GET).
+	 * @param request the HTTP request
+	 * @return a "method" tag whose value is a capitalized method (e.g. GET)
 	 */
 	public static Tag getMethodTag(ServerRequest request) {
 		return Tag.of("method", request.method().toString());
@@ -103,8 +103,8 @@ public class RouterFunctionMetrics {
 
 	/**
 	 * Creates a {@code status} tag from the status of the given {@code response}.
-	 * @param response The HTTP response.
-	 * @return A "status" tag whose value is the numeric status code.
+	 * @param response the HTTP response
+	 * @return a "status" tag whose value is the numeric status code
 	 */
 	public static Tag getStatusTag(ServerResponse response) {
 		return Tag.of("status", response.statusCode().toString());

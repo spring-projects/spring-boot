@@ -57,7 +57,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	/**
 	 * Bind indexed elements to the supplied collection.
-	 * @param name The name of the property to bind
+	 * @param name the name of the property to bind
 	 * @param target the target bindable
 	 * @param elementBinder the binder to use for elements
 	 * @param aggregateType the aggregate type, may be a collection or an array

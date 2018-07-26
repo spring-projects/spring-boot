@@ -368,7 +368,7 @@ public final class LambdaSafe {
 	 * the callback wasn't suitable. Similar in design to {@link Optional} but allows for
 	 * {@code null} as a valid value.
 	 *
-	 * @param <R> The result type
+	 * @param <R> the result type
 	 */
 	public static final class InvocationResult<R> {
 
