@@ -17,10 +17,10 @@
 package org.springframework.boot.test.context.example;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.SpringBootConfigurationFinderTests;
+import org.springframework.boot.test.context.AnnotatedClassFinderTests;
 
 /**
- * Example config used in {@link SpringBootConfigurationFinderTests}.
+ * Example config used in {@link AnnotatedClassFinderTests}.
  *
  * @author Phillip Webb
  */
