@@ -17,11 +17,13 @@
 package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -87,15 +89,11 @@ class NoSuchBeanDefinitionFailureAnalyzer
 		message.append(String.format("%s required %s that could not be found.%n",
 				(description != null ? description : "A component"),
 				getBeanDescription(cause)));
-		if (!autoConfigurationResults.isEmpty()) {
-			for (AutoConfigurationResult result : autoConfigurationResults) {
-				message.append(String.format("\t- %s%n", result));
-			}
+		for (AutoConfigurationResult result : autoConfigurationResults) {
+			message.append(String.format("\t- %s%n", result));
 		}
-		if (!userConfigurationResults.isEmpty()) {
-			for (UserConfigurationResult result : userConfigurationResults) {
-				message.append(String.format("\t- %s%n", result));
-			}
+		for (UserConfigurationResult result : userConfigurationResults) {
+			message.append(String.format("\t- %s%n", result));
 		}
 		String action = String.format("Consider %s %s in your configuration.",
 				(!autoConfigurationResults.isEmpty()
@@ -128,18 +126,17 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 	private List<UserConfigurationResult> getUserConfigurationResults(
 			NoSuchBeanDefinitionException cause) {
-		List<UserConfigurationResult> results = new ArrayList<>();
 		ResolvableType type = cause.getResolvableType();
-		if (type != null) {
-			for (String beanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					this.beanFactory, cause.getResolvableType())) {
-				boolean nullBean = this.beanFactory.getBean(beanName).equals(null);
-				results.add(new UserConfigurationResult(
-						getFactoryMethodMetadata(beanName), nullBean));
-			}
+		if (type == null) {
+			return Collections.emptyList();
 		}
-		return results;
-
+		String[] beanNames = BeanFactoryUtils
+				.beanNamesForTypeIncludingAncestors(this.beanFactory, type);
+		return Arrays.stream(beanNames)
+				.map((beanName) -> new UserConfigurationResult(
+						getFactoryMethodMetadata(beanName),
+						this.beanFactory.getBean(beanName).equals(null)))
+				.collect(Collectors.toList());
 	}
 
 	private MethodMetadata getFactoryMethodMetadata(String beanName) {
