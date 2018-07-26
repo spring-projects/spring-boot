@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,21 +30,34 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Internal utility class to scan for a {@link SpringBootConfiguration} class.
+ *  Utility class to scan for a {@link SpringBootConfiguration} or custom annotation.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
+ * @since 2.1.0
  */
-final class SpringBootConfigurationFinder {
+public final class SpringBootConfigurationFinder {
 
 	private static final Map<String, Class<?>> cache = Collections
 			.synchronizedMap(new Cache(40));
 
 	private final ClassPathScanningCandidateComponentProvider scanner;
 
-	SpringBootConfigurationFinder() {
+	/**
+	 * Default constructor initializing finder to scan for a {@link SpringBootConfiguration} annotation.
+	 */
+	public SpringBootConfigurationFinder() {
+		this(SpringBootConfiguration.class);
+	}
+
+	/**
+	 * Customiable constructor allow to provide the custom annotation to scan for.
+	 * @param annotationType Annotation to scan for.
+	 */
+	public SpringBootConfigurationFinder(Class<? extends Annotation> annotationType) {
 		this.scanner = new ClassPathScanningCandidateComponentProvider(false);
 		this.scanner.addIncludeFilter(
-				new AnnotationTypeFilter(SpringBootConfiguration.class));
+				new AnnotationTypeFilter(annotationType));
 		this.scanner.setResourcePattern("*.class");
 	}
 
