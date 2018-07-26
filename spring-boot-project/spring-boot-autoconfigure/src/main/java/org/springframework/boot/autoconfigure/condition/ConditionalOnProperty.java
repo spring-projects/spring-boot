@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.couchbase.OnBootstrapHostsCondition;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 
@@ -85,7 +84,6 @@ import org.springframework.core.env.Environment;
  * </pre>
  *
  * It is better to use a custom condition for such cases.
- * See {@link OnBootstrapHostsCondition} for an example of a custom condition.
  *
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
