@@ -30,9 +30,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Internal utility class to scan for a {@link SpringBootConfiguration} class.
+ *  Utility class to scan for a {@link SpringBootConfiguration} or your custom annotation.
  *
  * @author Phillip Webb
+ * @since 2.0.0
  */
 public final class SpringBootConfigurationFinder {
 
@@ -41,13 +42,17 @@ public final class SpringBootConfigurationFinder {
 
 	private final ClassPathScanningCandidateComponentProvider scanner;
 
+	/**
+	 * Default constructor initializing finder to scan for a {@link SpringBootConfiguration} annotation.
+	 */
 	public SpringBootConfigurationFinder() {
-		this.scanner = new ClassPathScanningCandidateComponentProvider(false);
-		this.scanner.addIncludeFilter(
-				new AnnotationTypeFilter(SpringBootConfiguration.class));
-		this.scanner.setResourcePattern("*.class");
+		this(SpringBootConfiguration.class);
 	}
 
+	/**
+	 * Customiable constructor allow to provide the custom annotation to scan for.
+	 * @param annotationType Annotation to scan for.
+	 */
 	public SpringBootConfigurationFinder(Class<? extends Annotation> annotationType) {
 		this.scanner = new ClassPathScanningCandidateComponentProvider(false);
 		this.scanner.addIncludeFilter(
