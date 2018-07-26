@@ -33,7 +33,7 @@ import org.springframework.util.ClassUtils;
  *  Utility class to scan for a {@link SpringBootConfiguration} or custom annotation.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 2.1.0
  */
 public final class SpringBootConfigurationFinder {
 
