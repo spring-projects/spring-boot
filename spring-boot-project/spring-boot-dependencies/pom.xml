@@ -156,7 +156,7 @@
 		<spring-amqp.version>2.1.0.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-batch.version>4.1.0.M2</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.2.RELEASE</spring-cloud-connectors.version>
-		<spring-data-releasetrain.version>Lovelace-BUILD-SNAPSHOT</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Lovelace-RC1</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.25.0.BUILD-SNAPSHOT</spring-hateoas.version>
 		<spring-integration.version>5.1.0.BUILD-SNAPSHOT</spring-integration.version>
 		<spring-kafka.version>2.2.0.BUILD-SNAPSHOT</spring-kafka.version>
