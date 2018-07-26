@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -30,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 /**
  * {@link ServletContextInitializer} to register {@link ExposableServletEndpoint servlet
@@ -44,24 +40,14 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 
 	private static final Log logger = LogFactory.getLog(ServletEndpointRegistrar.class);
 
-	private final Set<String> basePaths = new LinkedHashSet<>();
+	private final String basePath;
 
 	private final Collection<ExposableServletEndpoint> servletEndpoints;
 
 	public ServletEndpointRegistrar(String basePath,
 			Collection<ExposableServletEndpoint> servletEndpoints) {
 		Assert.notNull(servletEndpoints, "ServletEndpoints must not be null");
-		this.basePaths.add((basePath != null ? basePath : ""));
-		this.servletEndpoints = servletEndpoints;
-	}
-
-	public ServletEndpointRegistrar(Set<String> basePaths,
-			Collection<ExposableServletEndpoint> servletEndpoints) {
-		Assert.notNull(servletEndpoints, "ServletEndpoints must not be null");
-		this.basePaths.addAll(basePaths);
-		if (CollectionUtils.isEmpty(this.basePaths)) {
-			this.basePaths.add("");
-		}
+		this.basePath = (basePath != null ? basePath : "");
 		this.servletEndpoints = servletEndpoints;
 	}
 
@@ -74,24 +60,14 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 	private void register(ServletContext servletContext,
 			ExposableServletEndpoint endpoint) {
 		String name = endpoint.getId() + "-actuator-endpoint";
+		String path = this.basePath + "/" + endpoint.getRootPath();
+		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
 		EndpointServlet endpointServlet = endpoint.getEndpointServlet();
 		Dynamic registration = servletContext.addServlet(name,
 				endpointServlet.getServlet());
-		String[] urlMappings = getUrlMappings(endpoint.getRootPath());
-		registration.addMapping(urlMappings);
-		if (logger.isInfoEnabled()) {
-			Arrays.stream(urlMappings).forEach(
-					(mapping) -> logger.info("Registered '" + mapping + "' to " + name));
-		}
+		registration.addMapping(urlMapping);
 		registration.setInitParameters(endpointServlet.getInitParameters());
-	}
-
-	private String[] getUrlMappings(String endpointPath) {
-		return this.basePaths.stream()
-				.map((basePath) -> (basePath != null ? basePath + "/" + endpointPath
-						: "/" + endpointPath))
-				.distinct().map((path) -> (path.endsWith("/") ? path + "*" : path + "/*"))
-				.toArray(String[]::new);
+		logger.info("Registered '" + path + "' to " + name);
 	}
 
 }

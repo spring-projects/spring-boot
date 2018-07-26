@@ -24,12 +24,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 
 /**
- * Composite {@link HandlerExceptionResolver}.
+ * Composite {@link HandlerMapping}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll

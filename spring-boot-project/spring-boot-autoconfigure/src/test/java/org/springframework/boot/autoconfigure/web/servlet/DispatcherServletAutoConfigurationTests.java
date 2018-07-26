@@ -66,8 +66,7 @@ public class DispatcherServletAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).doesNotHaveBean(ServletRegistrationBean.class);
 					assertThat(context).doesNotHaveBean(DispatcherServlet.class);
-					assertThat(context)
-							.doesNotHaveBean(DispatcherServletPathProvider.class);
+					assertThat(context).doesNotHaveBean(DispatcherServletPath.class);
 				});
 	}
 
@@ -77,7 +76,7 @@ public class DispatcherServletAutoConfigurationTests {
 	public void registrationOverrideWithDispatcherServletWrongName() {
 		this.contextRunner
 				.withUserConfiguration(CustomDispatcherServletDifferentName.class,
-						CustomDispatcherServletPathProvider.class)
+						CustomDispatcherServletPath.class)
 				.run((context) -> {
 					ServletRegistrationBean<?> registration = context
 							.getBean(ServletRegistrationBean.class);
@@ -91,7 +90,7 @@ public class DispatcherServletAutoConfigurationTests {
 	@Test
 	public void registrationOverrideWithAutowiredServlet() {
 		this.contextRunner.withUserConfiguration(CustomAutowiredRegistration.class,
-				CustomDispatcherServletPathProvider.class).run((context) -> {
+				CustomDispatcherServletPath.class).run((context) -> {
 					ServletRegistrationBean<?> registration = context
 							.getBean(ServletRegistrationBean.class);
 					assertThat(registration.getUrlMappings()).containsExactly("/foo");
@@ -111,43 +110,35 @@ public class DispatcherServletAutoConfigurationTests {
 					assertThat(registration.getUrlMappings())
 							.containsExactly("/spring/*");
 					assertThat(registration.getMultipartConfig()).isNull();
-					assertThat(context.getBean(DispatcherServletPathProvider.class)
-							.getServletPaths()).containsExactly("/spring");
+					assertThat(context.getBean(DispatcherServletPath.class).getPath())
+							.isEqualTo("/spring");
 				});
 	}
 
 	@Test
-	public void pathProviderNotCreatedWhenMultipleDispatcherServletsPresent() {
-		this.contextRunner
-				.withUserConfiguration(CustomDispatcherServletDifferentName.class)
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(DispatcherServletPathProvider.class));
-	}
-
-	@Test
-	public void pathProviderWhenCustomDispatcherServletSameNameShouldReturnConfiguredServletPath() {
+	public void dispatcherServletPathWhenCustomDispatcherServletSameNameShouldReturnConfiguredServletPath() {
 		this.contextRunner.withUserConfiguration(CustomDispatcherServletSameName.class)
 				.withPropertyValues("spring.mvc.servlet.path:/spring")
-				.run((context) -> assertThat(context
-						.getBean(DispatcherServletPathProvider.class).getServletPaths())
-								.containsExactly("/spring"));
+				.run((context) -> assertThat(
+						context.getBean(DispatcherServletPath.class).getPath())
+								.isEqualTo("/spring"));
 	}
 
 	@Test
-	public void pathProviderNotCreatedWhenDefaultDispatcherServletNotAvailable() {
+	public void dispatcherServletPathNotCreatedWhenDefaultDispatcherServletNotAvailable() {
 		this.contextRunner
 				.withUserConfiguration(CustomDispatcherServletDifferentName.class,
 						NonServletConfiguration.class)
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(DispatcherServletPathProvider.class));
+						.doesNotHaveBean(DispatcherServletPath.class));
 	}
 
 	@Test
-	public void pathProviderNotCreatedWhenCustomRegistrationBeanPresent() {
+	public void dispatcherServletPathNotCreatedWhenCustomRegistrationBeanPresent() {
 		this.contextRunner
 				.withUserConfiguration(CustomDispatcherServletRegistration.class)
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(DispatcherServletPathProvider.class));
+						.doesNotHaveBean(DispatcherServletPath.class));
 	}
 
 	@Test
@@ -237,11 +228,11 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class CustomDispatcherServletPathProvider {
+	protected static class CustomDispatcherServletPath {
 
 		@Bean
-		public DispatcherServletPathProvider dispatcherServletPathProvider() {
-			return mock(DispatcherServletPathProvider.class);
+		public DispatcherServletPath dispatcherServletPath() {
+			return mock(DispatcherServletPath.class);
 		}
 
 	}
@@ -259,8 +250,8 @@ public class DispatcherServletAutoConfigurationTests {
 		}
 
 		@Bean
-		public DispatcherServletPathProvider dispatcherServletPathProvider() {
-			return mock(DispatcherServletPathProvider.class);
+		public DispatcherServletPath dispatcherServletPath() {
+			return mock(DispatcherServletPath.class);
 		}
 
 	}

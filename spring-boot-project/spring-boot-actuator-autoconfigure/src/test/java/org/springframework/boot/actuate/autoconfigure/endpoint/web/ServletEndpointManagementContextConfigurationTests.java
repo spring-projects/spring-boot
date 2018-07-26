@@ -17,15 +17,13 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -50,22 +48,18 @@ public class ServletEndpointManagementContextConfigurationTests {
 			.withUserConfiguration(TestConfig.class);
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void contextShouldContainServletEndpointRegistrar() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(ResourceConfig.class);
 		this.contextRunner.withClassLoader(classLoader).run((context) -> {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
 			ServletEndpointRegistrar bean = context
 					.getBean(ServletEndpointRegistrar.class);
-			Set<String> basePaths = (Set<String>) ReflectionTestUtils.getField(bean,
-					"basePaths");
-			assertThat(basePaths).containsExactlyInAnyOrder("/test/actuator", "/actuator",
-					"/foo/actuator");
+			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
+			assertThat(basePath).isEqualTo("/test/actuator");
 		});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void servletPathShouldNotAffectJerseyConfiguration() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(
 				DispatcherServlet.class);
@@ -73,9 +67,8 @@ public class ServletEndpointManagementContextConfigurationTests {
 			assertThat(context).hasSingleBean(ServletEndpointRegistrar.class);
 			ServletEndpointRegistrar bean = context
 					.getBean(ServletEndpointRegistrar.class);
-			Set<String> basePaths = (Set<String>) ReflectionTestUtils.getField(bean,
-					"basePaths");
-			assertThat(basePaths).containsExactly("/actuator");
+			String basePath = (String) ReflectionTestUtils.getField(bean, "basePath");
+			assertThat(basePath).isEqualTo("/actuator");
 		});
 	}
 
@@ -97,14 +90,8 @@ public class ServletEndpointManagementContextConfigurationTests {
 		}
 
 		@Bean
-		public DispatcherServletPathProvider servletPathProvider() {
-			return () -> {
-				Set<String> paths = new LinkedHashSet<>();
-				paths.add("/");
-				paths.add("/test");
-				paths.add("/foo/");
-				return paths;
-			};
+		public DispatcherServletPath dispatcherServletPath() {
+			return () -> "/test";
 		}
 
 	}

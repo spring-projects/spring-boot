@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.util.Set;
-
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -26,10 +24,13 @@ import org.springframework.web.servlet.DispatcherServlet;
  *
  * @author Madhura Bhave
  * @since 2.0.2
+ * @deprecated since 2.0.4 in favor of {@link DispatcherServletPath} and
+ * {@link DispatcherServletRegistrationBean}
  */
+@Deprecated
 @FunctionalInterface
 public interface DispatcherServletPathProvider {
 
-	Set<String> getServletPaths();
+	String getServletPath();
 
 }

@@ -49,6 +49,7 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -96,15 +97,15 @@ public class ErrorMvcAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
-	private final WebMvcProperties webMvcProperties;
+	private final DispatcherServletPath dispatcherServletPath;
 
 	private final List<ErrorViewResolver> errorViewResolvers;
 
 	public ErrorMvcAutoConfiguration(ServerProperties serverProperties,
-			WebMvcProperties webMvcProperties,
+			DispatcherServletPath dispatcherServletPath,
 			ObjectProvider<List<ErrorViewResolver>> errorViewResolversProvider) {
 		this.serverProperties = serverProperties;
-		this.webMvcProperties = webMvcProperties;
+		this.dispatcherServletPath = dispatcherServletPath;
 		this.errorViewResolvers = errorViewResolversProvider.getIfAvailable();
 	}
 
@@ -124,7 +125,7 @@ public class ErrorMvcAutoConfiguration {
 
 	@Bean
 	public ErrorPageCustomizer errorPageCustomizer() {
-		return new ErrorPageCustomizer(this.serverProperties, this.webMvcProperties);
+		return new ErrorPageCustomizer(this.serverProperties, this.dispatcherServletPath);
 	}
 
 	@Bean
@@ -331,21 +332,20 @@ public class ErrorMvcAutoConfiguration {
 	 */
 	private static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 
-		private final ServerProperties serverProperties;
+		private final ServerProperties properties;
 
-		private final WebMvcProperties webMvcProperties;
+		private final DispatcherServletPath dispatcherServletPath;
 
-		protected ErrorPageCustomizer(ServerProperties serverProperties,
-				WebMvcProperties webMvcProperties) {
-			this.serverProperties = serverProperties;
-			this.webMvcProperties = webMvcProperties;
+		protected ErrorPageCustomizer(ServerProperties properties,
+				DispatcherServletPath dispatcherServletPath) {
+			this.properties = properties;
+			this.dispatcherServletPath = dispatcherServletPath;
 		}
 
 		@Override
 		public void registerErrorPages(ErrorPageRegistry errorPageRegistry) {
-			ErrorPage errorPage = new ErrorPage(
-					this.webMvcProperties.getServlet().getServletPrefix()
-							+ this.serverProperties.getError().getPath());
+			ErrorPage errorPage = new ErrorPage(this.dispatcherServletPath
+					.getRelativePath(this.properties.getError().getPath()));
 			errorPageRegistry.addErrorPages(errorPage);
 		}
 

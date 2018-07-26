@@ -19,7 +19,9 @@
 		<profile>
 			<id>default</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>!disable-spring-boot-default-profile</name>
+				</property>
 			</activation>
 			<properties>
 				<spring-javaformat.version>0.0.3</spring-javaformat.version>
