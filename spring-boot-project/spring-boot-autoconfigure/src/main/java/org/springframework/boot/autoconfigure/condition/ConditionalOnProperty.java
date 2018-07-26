@@ -75,7 +75,8 @@ import org.springframework.core.env.Environment;
  * <p>
  * This condition cannot be reliably used for matching collection properties. For example,
  * in the following configuration, the condition matches if {@code spring.example.values}
- * is present in the {@link Environment} but does not match if {@code spring.example.values[0]} is present.
+ * is present in the {@link Environment} but does not match if
+ * {@code spring.example.values[0]} is present.
  *
  * <pre class="code">
  * &#064;ConditionalOnProperty(prefix = "spring", name = "example.values")
