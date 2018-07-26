@@ -23,20 +23,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- *  Utility class to scan for a {@link SpringBootConfiguration} or custom annotation.
+ * Utility class to find a class annotated with a particular annotation in a hierarchy.
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Stephane Nicoll
  * @since 2.1.0
  */
-public final class SpringBootConfigurationFinder {
+public final class AnnotatedClassFinder {
 
 	private static final Map<String, Class<?>> cache = Collections
 			.synchronizedMap(new Cache(40));
@@ -44,28 +44,35 @@ public final class SpringBootConfigurationFinder {
 	private final ClassPathScanningCandidateComponentProvider scanner;
 
 	/**
-	 * Default constructor initializing finder to scan for a {@link SpringBootConfiguration} annotation.
+	 * Create a new instance with the {@code annotationType} to find.
+	 * @param annotationType the annotation to find
 	 */
-	public SpringBootConfigurationFinder() {
-		this(SpringBootConfiguration.class);
-	}
-
-	/**
-	 * Customiable constructor allow to provide the custom annotation to scan for.
-	 * @param annotationType Annotation to scan for.
-	 */
-	public SpringBootConfigurationFinder(Class<? extends Annotation> annotationType) {
+	public AnnotatedClassFinder(Class<? extends Annotation> annotationType) {
+		Assert.notNull(annotationType, "AnnotationType must not be null");
 		this.scanner = new ClassPathScanningCandidateComponentProvider(false);
-		this.scanner.addIncludeFilter(
-				new AnnotationTypeFilter(annotationType));
+		this.scanner.addIncludeFilter(new AnnotationTypeFilter(annotationType));
 		this.scanner.setResourcePattern("*.class");
 	}
 
+	/**
+	 * Find the first {@link Class} that is annotated with the target annotation, starting
+	 * from the package defined by the given {@code source} up to the root.
+	 * @param source the source class to use to initiate the search
+	 * @return the first {@link Class} annotated with the target annotation within the
+	 * hierarchy defined by the given {@code source} or {@code null} if none is found.
+	 */
 	public Class<?> findFromClass(Class<?> source) {
 		Assert.notNull(source, "Source must not be null");
 		return findFromPackage(ClassUtils.getPackageName(source));
 	}
 
+	/**
+	 * Find the first {@link Class} that is annotated with the target annotation, starting
+	 * from the package defined by the given {@code source} up to the root.
+	 * @param source the source package to use to initiate the search
+	 * @return the first {@link Class} annotated with the target annotation within the
+	 * hierarchy defined by the given {@code source} or {@code null} if none is found.
+	 */
 	public Class<?> findFromPackage(String source) {
 		Assert.notNull(source, "Source must not be null");
 		Class<?> configuration = cache.get(source);

@@ -20,22 +20,24 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.example.ExampleConfig;
 import org.springframework.boot.test.context.example.scan.Example;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootConfigurationFinder}.
+ * Tests for {@link AnnotatedClassFinder}.
  *
  * @author Phillip Webb
  */
-public class SpringBootConfigurationFinderTests {
+public class AnnotatedClassFinderTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private SpringBootConfigurationFinder finder = new SpringBootConfigurationFinder();
+	private AnnotatedClassFinder finder = new AnnotatedClassFinder(
+			SpringBootConfiguration.class);
 
 	@Test
 	public void findFromClassWhenSourceIsNullShouldThrowException() {
