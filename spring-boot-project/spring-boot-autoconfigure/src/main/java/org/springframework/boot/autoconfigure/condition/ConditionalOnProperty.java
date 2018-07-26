@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.autoconfigure.couchbase.OnBootstrapHostsCondition;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 
@@ -71,6 +72,20 @@ import org.springframework.core.env.Environment;
  * If the property is not contained in the {@link Environment} at all, the
  * {@link #matchIfMissing()} attribute is consulted. By default missing attributes do not
  * match.
+ *
+ * <p>
+ * This condition cannot be reliably used for matching collection properties. For example,
+ * in the following configuration, the condition matches if {@code spring.example.values}
+ * is present in the {@link Environment} but does not match if {@code spring.example.values[0]} is present.
+ *
+ * <pre class="code">
+ * &#064;ConditionalOnProperty(prefix = "spring", name = "example.values")
+ * class ExampleAutoConfiguration {
+ * }
+ * </pre>
+ *
+ * It is better to use a custom condition for such cases.
+ * See {@link OnBootstrapHostsCondition} for an example of a custom condition.
  *
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
