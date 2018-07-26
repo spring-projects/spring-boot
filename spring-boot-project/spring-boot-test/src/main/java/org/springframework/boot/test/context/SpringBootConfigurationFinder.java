@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- *  Utility class to scan for a {@link SpringBootConfiguration} or your custom annotation.
+ *  Utility class to scan for a {@link SpringBootConfiguration} or custom annotation.
  *
  * @author Phillip Webb
  * @since 2.0.0
