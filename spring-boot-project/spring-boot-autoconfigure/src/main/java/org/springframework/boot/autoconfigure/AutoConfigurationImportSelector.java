@@ -489,8 +489,8 @@ public class AutoConfigurationImportSelector
 		private final Set<String> exclusions;
 
 		private AutoConfigurationEntry() {
-			this.configurations = Collections.EMPTY_LIST;
-			this.exclusions = Collections.EMPTY_SET;
+			this.configurations = Collections.emptyList();
+			this.exclusions = Collections.emptySet();
 		}
 
 		/**
