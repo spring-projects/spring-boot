@@ -182,62 +182,29 @@ public class BuildInfoProperties implements Serializable {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
 		BuildInfoProperties other = (BuildInfoProperties) obj;
-		if (this.additionalProperties == null) {
-			if (other.additionalProperties != null) {
-				return false;
-			}
+		boolean result = true;
+		result = result
+				&& nullSafeEquals(this.additionalProperties, other.additionalProperties);
+		result = result && nullSafeEquals(this.artifact, other.artifact);
+		result = result && nullSafeEquals(this.group, other.group);
+		result = result && nullSafeEquals(this.name, other.name);
+		result = result && nullSafeEquals(this.version, other.version);
+		result = result && nullSafeEquals(this.time, other.time);
+		return result;
+	}
+
+	private boolean nullSafeEquals(Object o1, Object o2) {
+		if (o1 == o2) {
+			return true;
 		}
-		else if (!this.additionalProperties.equals(other.additionalProperties)) {
+		if (o1 == null || o2 == null) {
 			return false;
 		}
-		if (this.artifact == null) {
-			if (other.artifact != null) {
-				return false;
-			}
-		}
-		else if (!this.artifact.equals(other.artifact)) {
-			return false;
-		}
-		if (this.group == null) {
-			if (other.group != null) {
-				return false;
-			}
-		}
-		else if (!this.group.equals(other.group)) {
-			return false;
-		}
-		if (this.name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		}
-		else if (!this.name.equals(other.name)) {
-			return false;
-		}
-		if (this.version == null) {
-			if (other.version != null) {
-				return false;
-			}
-		}
-		else if (!this.version.equals(other.version)) {
-			return false;
-		}
-		if (this.time == null) {
-			if (other.time != null) {
-				return false;
-			}
-		}
-		else if (!this.time.equals(other.time)) {
-			return false;
-		}
-		return true;
+		return (o1.equals(o2));
 	}
 
 }

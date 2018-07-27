@@ -119,7 +119,6 @@ class BootZipCopyAction implements CopyAction {
 		return () -> true;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Spec<FileTreeElement> createExclusionSpec(
 			Spec<FileTreeElement> loaderEntries) {
 		return Specs.union(loaderEntries, this.exclusions);
