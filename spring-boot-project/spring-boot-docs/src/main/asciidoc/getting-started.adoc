@@ -493,7 +493,7 @@ problem, check there first.
 You can shortcut the steps below by going to https://start.spring.io and choosing the
 "Web" starter from the dependencies searcher. Doing so generates a new project structure
 so that you can <<getting-started-first-application-code,start coding right away>>. Check
-the https://github.com/spring-io/initializr[Spring Initializr documentation] for more
+the {spring-initializr-reference}/#user-guide[Spring Initializr documentation] for more
 details.
 ====
 
