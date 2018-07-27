@@ -54,8 +54,18 @@ public class EndpointRequestTests {
 	public void toAnyEndpointShouldMatchEndpointPath() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, "/actuator", "/").matches("/actuator/foo");
+		assertMatcher(matcher, "/actuator", "/").matches("/actuator/foo/zoo/");
 		assertMatcher(matcher, "/actuator", "/").matches("/actuator/bar");
+		assertMatcher(matcher, "/actuator", "/").matches("/actuator/bar/baz");
 		assertMatcher(matcher, "/actuator", "/").matches("/actuator");
+	}
+
+	@Test
+	public void toAnyEndpointShouldMatchEndpointPathWithTrailingSlash() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
+		assertMatcher(matcher, "/actuator", "/").matches("/actuator/foo/");
+		assertMatcher(matcher, "/actuator", "/").matches("/actuator/bar/");
+		assertMatcher(matcher, "/actuator", "/").matches("/actuator/");
 	}
 
 	@Test
@@ -127,6 +137,7 @@ public class EndpointRequestTests {
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
 		assertMatcher(matcher).matches("/actuator");
+		assertMatcher(matcher).matches("/actuator/");
 	}
 
 	@Test

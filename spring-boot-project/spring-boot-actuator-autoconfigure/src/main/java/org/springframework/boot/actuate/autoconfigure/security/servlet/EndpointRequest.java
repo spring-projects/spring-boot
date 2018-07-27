@@ -157,6 +157,14 @@ public final class EndpointRequest {
 		protected abstract RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory);
 
+		protected List<RequestMatcher> getLinksMatchers(
+				RequestMatcherFactory requestMatcherFactory, String basePath) {
+			List<RequestMatcher> linksMatchers = new ArrayList<>();
+			linksMatchers.add(requestMatcherFactory.antPath(basePath));
+			linksMatchers.add(requestMatcherFactory.antPath(basePath, "/"));
+			return linksMatchers;
+		}
+
 	}
 
 	/**
@@ -220,10 +228,10 @@ public final class EndpointRequest {
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			List<RequestMatcher> delegateMatchers = getDelegateMatchers(
 					requestMatcherFactory, paths);
-			if (this.includeLinks
-					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(
-						requestMatcherFactory.antPath(pathMappedEndpoints.getBasePath()));
+			String basePath = pathMappedEndpoints.getBasePath();
+			if (this.includeLinks && StringUtils.hasText(basePath)) {
+				delegateMatchers
+						.addAll(getLinksMatchers(requestMatcherFactory, basePath));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
@@ -271,8 +279,10 @@ public final class EndpointRequest {
 				RequestMatcherFactory requestMatcherFactory) {
 			WebEndpointProperties properties = context
 					.getBean(WebEndpointProperties.class);
-			if (StringUtils.hasText(properties.getBasePath())) {
-				return requestMatcherFactory.antPath(properties.getBasePath());
+			String basePath = properties.getBasePath();
+			if (StringUtils.hasText(basePath)) {
+				return new OrRequestMatcher(
+						getLinksMatchers(requestMatcherFactory, basePath));
 			}
 			return EMPTY_MATCHER;
 		}
