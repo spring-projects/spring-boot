@@ -74,8 +74,8 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
-		Iterable<PropertySource<?>> sources = (this.environment != null
-				? this.environment.getPropertySources() : Collections.emptyList());
+		Iterable<PropertySource<?>> sources = (this.environment != null)
+				? this.environment.getPropertySources() : Collections.emptyList();
 		return StreamSupport.stream(sources.spliterator(), false)
 				.filter((source) -> !ConfigurationPropertySources
 						.isAttachedConfigurationPropertySource(source));
@@ -110,7 +110,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 			message.append(String.format(
 					"%n%nAdditionally, this property is also set in the following "
 							+ "property %s:%n%n",
-					others.size() > 1 ? "sources" : "source"));
+					(others.size() > 1) ? "sources" : "source"));
 			for (Descriptor other : others) {
 				message.append("\t- In '" + other.getPropertySource() + "'");
 				message.append(" with the value '" + other.getValue() + "'");

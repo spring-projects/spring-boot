@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 		public int compare(Status s1, Status s2) {
 			int i1 = this.statusOrder.indexOf(s1.getCode());
 			int i2 = this.statusOrder.indexOf(s2.getCode());
-			return (i1 < i2 ? -1 : (i1 != i2 ? 1 : s1.getCode().compareTo(s2.getCode())));
+			return (i1 < i2) ? -1 : (i1 != i2) ? 1 : s1.getCode().compareTo(s2.getCode());
 		}
 
 	}

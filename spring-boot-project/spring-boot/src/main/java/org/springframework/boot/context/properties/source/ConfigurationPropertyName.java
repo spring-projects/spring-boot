@@ -131,7 +131,7 @@ public final class ConfigurationPropertyName
 	 */
 	public String getLastElement(Form form) {
 		int size = getNumberOfElements();
-		return (size != 0 ? getElement(size - 1, form) : EMPTY_STRING);
+		return (size != 0) ? getElement(size - 1, form) : EMPTY_STRING;
 	}
 
 	/**
@@ -259,10 +259,10 @@ public final class ConfigurationPropertyName
 		int i1 = 0;
 		int i2 = 0;
 		while (i1 < l1 || i2 < l2) {
-			boolean indexed1 = (i1 < l1 ? n1.isIndexed(i2) : false);
-			boolean indexed2 = (i2 < l2 ? n2.isIndexed(i2) : false);
-			String e1 = (i1 < l1 ? n1.getElement(i1++, Form.UNIFORM) : null);
-			String e2 = (i2 < l2 ? n2.getElement(i2++, Form.UNIFORM) : null);
+			boolean indexed1 = (i1 < l1) ? n1.isIndexed(i2) : false;
+			boolean indexed2 = (i2 < l2) ? n2.isIndexed(i2) : false;
+			String e1 = (i1 < l1) ? n1.getElement(i1++, Form.UNIFORM) : null;
+			String e2 = (i2 < l2) ? n2.getElement(i2++, Form.UNIFORM) : null;
 			int result = compare(e1, indexed1, e2, indexed2);
 			if (result != 0) {
 				return result;
@@ -316,7 +316,7 @@ public final class ConfigurationPropertyName
 			else {
 				for (int i = 0; i < element.length(); i++) {
 					char ch = Character.toLowerCase(element.charAt(i));
-					result.append(ch != '_' ? ch : "");
+					result.append((ch != '_') ? ch : "");
 				}
 			}
 		}
@@ -346,7 +346,7 @@ public final class ConfigurationPropertyName
 		for (int i = 0 + offset; i < element.length() - offset; i++) {
 			char ch = (indexed ? element.charAt(i)
 					: Character.toLowerCase(element.charAt(i)));
-			hash = (ch == '-' || ch == '_' ? hash : 31 * hash + Character.hashCode(ch));
+			hash = (ch == '-' || ch == '_') ? hash : 31 * hash + Character.hashCode(ch);
 		}
 		return hash;
 	}

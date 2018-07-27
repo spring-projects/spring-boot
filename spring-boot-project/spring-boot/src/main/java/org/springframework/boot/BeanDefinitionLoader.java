@@ -219,8 +219,8 @@ class BeanDefinitionLoader {
 	}
 
 	private Resource[] findResources(String source) {
-		ResourceLoader loader = (this.resourceLoader != null ? this.resourceLoader
-				: new PathMatchingResourcePatternResolver());
+		ResourceLoader loader = (this.resourceLoader != null) ? this.resourceLoader
+				: new PathMatchingResourcePatternResolver();
 		try {
 			if (loader instanceof ResourcePatternResolver) {
 				return ((ResourcePatternResolver) loader).getResources(source);

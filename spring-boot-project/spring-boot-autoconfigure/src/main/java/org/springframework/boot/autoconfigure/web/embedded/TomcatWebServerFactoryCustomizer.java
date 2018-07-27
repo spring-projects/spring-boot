@@ -110,9 +110,9 @@ public class TomcatWebServerFactoryCustomizer implements
 	}
 
 	private int determineMaxHttpHeaderSize() {
-		return (this.serverProperties.getMaxHttpHeaderSize() > 0
+		return (this.serverProperties.getMaxHttpHeaderSize() > 0)
 				? this.serverProperties.getMaxHttpHeaderSize()
-				: this.serverProperties.getTomcat().getMaxHttpHeaderSize());
+				: this.serverProperties.getTomcat().getMaxHttpHeaderSize();
 	}
 
 	private void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory,

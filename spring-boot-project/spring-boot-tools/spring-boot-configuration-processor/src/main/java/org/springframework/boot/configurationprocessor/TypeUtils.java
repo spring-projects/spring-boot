@@ -139,12 +139,12 @@ class TypeUtils {
 	}
 
 	public String getJavaDoc(Element element) {
-		String javadoc = (element != null
-				? this.env.getElementUtils().getDocComment(element) : null);
+		String javadoc = (element != null)
+				? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
 			javadoc = javadoc.replaceAll("[\r\n]+", "").trim();
 		}
-		return ("".equals(javadoc) ? null : javadoc);
+		return "".equals(javadoc) ? null : javadoc;
 	}
 
 	public TypeMirror getWrapperOrPrimitiveFor(TypeMirror typeMirror) {

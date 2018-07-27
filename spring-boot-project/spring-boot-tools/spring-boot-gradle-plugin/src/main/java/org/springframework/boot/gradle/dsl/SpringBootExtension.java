@@ -119,7 +119,7 @@ public class SpringBootExtension {
 
 	private String determineArtifactBaseName() {
 		Jar artifactTask = findArtifactTask();
-		return (artifactTask != null ? artifactTask.getBaseName() : null);
+		return (artifactTask != null) ? artifactTask.getBaseName() : null;
 	}
 
 	private Jar findArtifactTask() {

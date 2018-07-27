@@ -197,7 +197,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private boolean isTransitive(Map<?, ?> dependencyMap) {
 		Boolean transitive = (Boolean) dependencyMap.get("transitive");
-		return (transitive != null ? transitive : true);
+		return (transitive != null) ? transitive : true;
 	}
 
 	private List<Dependency> getDependencies(DependencyResult dependencyResult) {
@@ -219,7 +219,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private GroovyClassLoader getClassLoader(Map args) {
 		GroovyClassLoader classLoader = (GroovyClassLoader) args.get("classLoader");
-		return (classLoader != null ? classLoader : this.classLoader);
+		return (classLoader != null) ? classLoader : this.classLoader;
 	}
 
 	@Override

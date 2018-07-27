@@ -168,10 +168,10 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			BeanDefinition definition = this.beanFactory
 					.getBeanDefinition(ImportsConfiguration.BEAN_NAME);
-			Object testClass = (definition != null
-					? definition.getAttribute(TEST_CLASS_ATTRIBUTE) : null);
-			return (testClass != null ? new String[] { ((Class<?>) testClass).getName() }
-					: NO_IMPORTS);
+			Object testClass = (definition != null)
+					? definition.getAttribute(TEST_CLASS_ATTRIBUTE) : null;
+			return (testClass != null) ? new String[] { ((Class<?>) testClass).getName() }
+					: NO_IMPORTS;
 		}
 
 	}
@@ -245,7 +245,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			collectClassAnnotations(testClass, annotations, seen);
 			Set<Object> determinedImports = determineImports(annotations, testClass);
 			this.key = Collections.unmodifiableSet(
-					determinedImports != null ? determinedImports : annotations);
+					(determinedImports != null) ? determinedImports : annotations);
 		}
 
 		private void collectClassAnnotations(Class<?> classType,

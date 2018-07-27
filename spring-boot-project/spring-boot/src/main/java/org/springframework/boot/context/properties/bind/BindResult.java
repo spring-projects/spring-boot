@@ -89,7 +89,7 @@ public final class BindResult<T> {
 	 */
 	public <U> BindResult<U> map(Function<? super T, ? extends U> mapper) {
 		Assert.notNull(mapper, "Mapper must not be null");
-		return of(this.value != null ? mapper.apply(this.value) : null);
+		return of((this.value != null) ? mapper.apply(this.value) : null);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public final class BindResult<T> {
 	 * @return the value, if bound, otherwise {@code other}
 	 */
 	public T orElse(T other) {
-		return (this.value != null ? this.value : other);
+		return (this.value != null) ? this.value : other;
 	}
 
 	/**
@@ -110,7 +110,7 @@ public final class BindResult<T> {
 	 * @return the value, if bound, otherwise the supplied {@code other}
 	 */
 	public T orElseGet(Supplier<? extends T> other) {
-		return (this.value != null ? this.value : other.get());
+		return (this.value != null) ? this.value : other.get();
 	}
 
 	/**
@@ -121,7 +121,7 @@ public final class BindResult<T> {
 	 */
 	public T orElseCreate(Class<? extends T> type) {
 		Assert.notNull(type, "Type must not be null");
-		return (this.value != null ? this.value : BeanUtils.instantiateClass(type));
+		return (this.value != null) ? this.value : BeanUtils.instantiateClass(type);
 	}
 
 	/**

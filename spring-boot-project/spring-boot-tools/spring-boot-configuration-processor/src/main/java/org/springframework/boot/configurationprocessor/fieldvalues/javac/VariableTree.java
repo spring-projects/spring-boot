@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class VariableTree extends ReflectionWrapper {
 
 	public ExpressionTree getInitializer() throws Exception {
 		Object instance = findMethod("getInitializer").invoke(getInstance());
-		return (instance != null ? new ExpressionTree(instance) : null);
+		return (instance != null) ? new ExpressionTree(instance) : null;
 	}
 
 	@SuppressWarnings("unchecked")

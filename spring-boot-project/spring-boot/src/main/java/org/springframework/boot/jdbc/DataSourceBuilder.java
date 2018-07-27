@@ -138,8 +138,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	private Class<? extends DataSource> getType() {
-		Class<? extends DataSource> type = (this.type != null ? this.type
-				: findType(this.classLoader));
+		Class<? extends DataSource> type = (this.type != null) ? this.type
+				: findType(this.classLoader);
 		if (type != null) {
 			return type;
 		}

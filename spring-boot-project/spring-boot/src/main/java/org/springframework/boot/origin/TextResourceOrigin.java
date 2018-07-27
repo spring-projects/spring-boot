@@ -83,7 +83,7 @@ public class TextResourceOrigin implements Origin {
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		result.append(this.resource != null ? this.resource.getDescription()
+		result.append((this.resource != null) ? this.resource.getDescription()
 				: "unknown resource [?]");
 		if (this.location != null) {
 			result.append(":").append(this.location);

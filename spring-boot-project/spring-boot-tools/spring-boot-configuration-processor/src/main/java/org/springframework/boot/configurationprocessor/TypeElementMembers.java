@@ -156,8 +156,8 @@ class TypeElementMembers {
 	}
 
 	private String getAccessorName(String methodName) {
-		String name = (methodName.startsWith("is") ? methodName.substring(2)
-				: methodName.substring(3));
+		String name = methodName.startsWith("is") ? methodName.substring(2)
+				: methodName.substring(3);
 		name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 		return name;
 	}

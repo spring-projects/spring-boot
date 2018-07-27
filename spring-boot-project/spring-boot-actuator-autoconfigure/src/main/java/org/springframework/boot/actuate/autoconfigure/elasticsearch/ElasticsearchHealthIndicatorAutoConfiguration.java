@@ -82,7 +82,7 @@ public class ElasticsearchHealthIndicatorAutoConfiguration {
 		protected ElasticsearchHealthIndicator createHealthIndicator(Client client) {
 			Duration responseTimeout = this.properties.getResponseTimeout();
 			return new ElasticsearchHealthIndicator(client,
-					responseTimeout != null ? responseTimeout.toMillis() : 100,
+					(responseTimeout != null) ? responseTimeout.toMillis() : 100,
 					this.properties.getIndices());
 		}
 

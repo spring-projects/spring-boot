@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class ErrorPage {
 	 * @return the status value (or 0 for a page that matches any status)
 	 */
 	public int getStatusCode() {
-		return (this.status != null ? this.status.value() : 0);
+		return (this.status != null) ? this.status.value() : 0;
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class ErrorPage {
 	 * @return the exception type name (or {@code null} if there is none)
 	 */
 	public String getExceptionName() {
-		return (this.exception != null ? this.exception.getName() : null);
+		return (this.exception != null) ? this.exception.getName() : null;
 	}
 
 	/**

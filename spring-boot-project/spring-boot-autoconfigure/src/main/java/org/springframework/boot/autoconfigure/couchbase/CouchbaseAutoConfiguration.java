@@ -158,7 +158,7 @@ public class CouchbaseAutoConfiguration {
 				return factory.apply(service.getMinEndpoints(),
 						service.getMaxEndpoints());
 			}
-			int endpoints = (fallback != null ? fallback : 1);
+			int endpoints = (fallback != null) ? fallback : 1;
 			return factory.apply(endpoints, endpoints);
 		}
 

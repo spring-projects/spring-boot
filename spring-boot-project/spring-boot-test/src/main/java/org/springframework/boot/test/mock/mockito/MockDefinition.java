@@ -56,7 +56,7 @@ class MockDefinition extends Definition {
 		Assert.notNull(typeToMock, "TypeToMock must not be null");
 		this.typeToMock = typeToMock;
 		this.extraInterfaces = asClassSet(extraInterfaces);
-		this.answer = (answer != null ? answer : Answers.RETURNS_DEFAULTS);
+		this.answer = (answer != null) ? answer : Answers.RETURNS_DEFAULTS;
 		this.serializable = serializable;
 	}
 

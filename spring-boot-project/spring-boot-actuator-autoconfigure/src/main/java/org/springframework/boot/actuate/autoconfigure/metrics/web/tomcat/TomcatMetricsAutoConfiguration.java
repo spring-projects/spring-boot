@@ -47,7 +47,8 @@ public class TomcatMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public TomcatMetrics tomcatMetrics() {
-		return new TomcatMetrics(this.context != null ? this.context.getManager() : null,
+		return new TomcatMetrics(
+				(this.context != null) ? this.context.getManager() : null,
 				Collections.emptyList());
 	}
 

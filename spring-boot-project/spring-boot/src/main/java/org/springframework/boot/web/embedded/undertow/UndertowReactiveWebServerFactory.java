@@ -149,8 +149,8 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		try {
 			createAccessLogDirectoryIfNecessary();
 			XnioWorker worker = createWorker();
-			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix
-					: "access_log.");
+			String prefix = (this.accessLogPrefix != null) ? this.accessLogPrefix
+					: "access_log.";
 			DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					worker, this.accessLogDirectory, prefix, this.accessLogSuffix,
 					this.accessLogRotate);

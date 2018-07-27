@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,13 @@ public class DependencyManagementArtifactCoordinatesResolver
 	@Override
 	public String getGroupId(String artifactId) {
 		Dependency dependency = find(artifactId);
-		return (dependency != null ? dependency.getGroupId() : null);
+		return (dependency != null) ? dependency.getGroupId() : null;
 	}
 
 	@Override
 	public String getArtifactId(String id) {
 		Dependency dependency = find(id);
-		return (dependency != null ? dependency.getArtifactId() : null);
+		return (dependency != null) ? dependency.getArtifactId() : null;
 	}
 
 	private Dependency find(String id) {
@@ -69,7 +69,7 @@ public class DependencyManagementArtifactCoordinatesResolver
 	@Override
 	public String getVersion(String module) {
 		Dependency dependency = find(module);
-		return (dependency != null ? dependency.getVersion() : null);
+		return (dependency != null) ? dependency.getVersion() : null;
 	}
 
 }

@@ -158,8 +158,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		Tomcat tomcat = new Tomcat();
-		File baseDir = (this.baseDirectory != null ? this.baseDirectory
-				: createTempDir("tomcat"));
+		File baseDir = (this.baseDirectory != null) ? this.baseDirectory
+				: createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
@@ -190,12 +190,12 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
-		File docBase = (documentRoot != null ? documentRoot
-				: createTempDir("tomcat-docbase"));
+		File docBase = (documentRoot != null) ? documentRoot
+				: createTempDir("tomcat-docbase");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
 		context.setParentClassLoader(
-				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
+				(this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
 						: ClassUtils.getDefaultClassLoader());
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
@@ -283,7 +283,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		connector.setPort(port);
 		if (StringUtils.hasText(this.getServerHeader())) {
 			connector.setAttribute("server", this.getServerHeader());

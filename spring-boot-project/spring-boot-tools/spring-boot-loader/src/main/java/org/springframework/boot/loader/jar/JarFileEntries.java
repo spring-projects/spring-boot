@@ -243,10 +243,10 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			boolean cacheEntry) {
 		try {
 			FileHeader cached = this.entriesCache.get(index);
-			FileHeader entry = (cached != null ? cached
+			FileHeader entry = (cached != null) ? cached
 					: CentralDirectoryFileHeader.fromRandomAccessData(
 							this.centralDirectoryData,
-							this.centralDirectoryOffsets[index], this.filter));
+							this.centralDirectoryOffsets[index], this.filter);
 			if (CentralDirectoryFileHeader.class.equals(entry.getClass())
 					&& type.equals(JarEntry.class)) {
 				entry = new JarEntry(this.jarFile, (CentralDirectoryFileHeader) entry);
@@ -277,7 +277,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	}
 
 	private AsciiBytes applyFilter(AsciiBytes name) {
-		return (this.filter != null ? this.filter.apply(name) : name);
+		return (this.filter != null) ? this.filter.apply(name) : name;
 	}
 
 	/**

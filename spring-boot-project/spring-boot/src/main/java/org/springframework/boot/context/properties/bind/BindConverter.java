@@ -124,7 +124,7 @@ class BindConverter {
 		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
 			Assert.notNull(targetType, "Target type to convert to cannot be null");
 			return canConvert(
-					(sourceType != null ? TypeDescriptor.valueOf(sourceType) : null),
+					(sourceType != null) ? TypeDescriptor.valueOf(sourceType) : null,
 					TypeDescriptor.valueOf(targetType));
 		}
 

@@ -316,8 +316,8 @@ public class ConfigFileApplicationListener
 
 		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
-			this.resourceLoader = (resourceLoader != null ? resourceLoader
-					: new DefaultResourceLoader());
+			this.resourceLoader = (resourceLoader != null) ? resourceLoader
+					: new DefaultResourceLoader();
 			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(
 					PropertySourceLoader.class, getClass().getClassLoader());
 		}
@@ -590,8 +590,8 @@ public class ConfigFileApplicationListener
 		private String getDescription(String location, Resource resource,
 				Profile profile) {
 			String description = getDescription(location, resource);
-			return (profile != null ? description + " for profile " + profile
-					: description);
+			return (profile != null) ? description + " for profile " + profile
+					: description;
 		}
 
 		private String getDescription(String location, Resource resource) {
@@ -667,7 +667,7 @@ public class ConfigFileApplicationListener
 
 		private Set<String> asResolvedSet(String value, String fallback) {
 			List<String> list = Arrays.asList(StringUtils.trimArrayElements(
-					StringUtils.commaDelimitedListToStringArray(value != null
+					StringUtils.commaDelimitedListToStringArray((value != null)
 							? this.environment.resolvePlaceholders(value) : fallback)));
 			Collections.reverse(list);
 			return new LinkedHashSet<>(list);

@@ -68,7 +68,7 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	private void process(String name, String value) {
 		String existing = this.data.getProperty(name);
-		this.data.setProperty(name, (existing != null ? existing + "," + value : value));
+		this.data.setProperty(name, (existing != null) ? existing + "," + value : value);
 	}
 
 	@Override

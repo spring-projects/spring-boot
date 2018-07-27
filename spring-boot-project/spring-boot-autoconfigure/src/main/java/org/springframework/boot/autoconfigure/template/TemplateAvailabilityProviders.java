@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class TemplateAvailabilityProviders {
 	 * @param applicationContext the source application context
 	 */
 	public TemplateAvailabilityProviders(ApplicationContext applicationContext) {
-		this(applicationContext != null ? applicationContext.getClassLoader() : null);
+		this((applicationContext != null) ? applicationContext.getClassLoader() : null);
 	}
 
 	/**
@@ -143,12 +143,12 @@ public class TemplateAvailabilityProviders {
 		if (provider == null) {
 			synchronized (this.cache) {
 				provider = findProvider(view, environment, classLoader, resourceLoader);
-				provider = (provider != null ? provider : NONE);
+				provider = (provider != null) ? provider : NONE;
 				this.resolved.put(view, provider);
 				this.cache.put(view, provider);
 			}
 		}
-		return (provider != NONE ? provider : null);
+		return (provider != NONE) ? provider : null;
 	}
 
 	private TemplateAvailabilityProvider findProvider(String view,

@@ -161,9 +161,9 @@ public class ImageBanner implements Banner {
 		IIOMetadataNode root = (IIOMetadataNode) metadata
 				.getAsTree(metadata.getNativeMetadataFormatName());
 		IIOMetadataNode extension = findNode(root, "GraphicControlExtension");
-		String attribute = (extension != null ? extension.getAttribute("delayTime")
-				: null);
-		return (attribute != null ? Integer.parseInt(attribute) * 10 : 0);
+		String attribute = (extension != null) ? extension.getAttribute("delayTime")
+				: null;
+		return (attribute != null) ? Integer.parseInt(attribute) * 10 : 0;
 	}
 
 	private static IIOMetadataNode findNode(IIOMetadataNode rootNode, String nodeName) {

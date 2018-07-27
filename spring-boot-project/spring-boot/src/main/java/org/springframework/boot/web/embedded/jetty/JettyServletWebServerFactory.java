@@ -135,7 +135,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = createServer(address);
 		configureWebAppContext(context, initializers);
@@ -253,19 +253,19 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private File getTempDirectory() {
 		String temp = System.getProperty("java.io.tmpdir");
-		return (temp != null ? new File(temp) : null);
+		return (temp != null) ? new File(temp) : null;
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
 		File root = getValidDocumentRoot();
-		File docBase = (root != null ? root : createTempDir("jetty-docbase"));
+		File docBase = (root != null) ? root : createTempDir("jetty-docbase");
 		try {
 			List<Resource> resources = new ArrayList<>();
 			Resource rootResource = (docBase.isDirectory()
 					? Resource.newResource(docBase.getCanonicalFile())
 					: JarResource.newJarResource(Resource.newResource(docBase)));
-			resources.add(
-					root != null ? new LoaderHidingResource(rootResource) : rootResource);
+			resources.add((root != null) ? new LoaderHidingResource(rootResource)
+					: rootResource);
 			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				if (resource.exists() && resource.isDirectory()) {

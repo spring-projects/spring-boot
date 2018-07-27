@@ -110,8 +110,8 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 			builder.maxAttempts(retryConfig.getMaxAttempts());
 			builder.backOffOptions(retryConfig.getInitialInterval().toMillis(),
 					retryConfig.getMultiplier(), retryConfig.getMaxInterval().toMillis());
-			MessageRecoverer recoverer = (this.messageRecoverer != null
-					? this.messageRecoverer : new RejectAndDontRequeueRecoverer());
+			MessageRecoverer recoverer = (this.messageRecoverer != null)
+					? this.messageRecoverer : new RejectAndDontRequeueRecoverer();
 			builder.recoverer(recoverer);
 			factory.setAdviceChain(builder.build());
 		}

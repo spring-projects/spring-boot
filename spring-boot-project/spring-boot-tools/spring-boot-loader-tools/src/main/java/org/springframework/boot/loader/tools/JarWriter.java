@@ -363,7 +363,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
 		@Override
 		public int read() throws IOException {
-			int read = (this.headerStream != null ? this.headerStream.read() : -1);
+			int read = (this.headerStream != null) ? this.headerStream.read() : -1;
 			if (read != -1) {
 				this.position++;
 				if (this.position >= this.headerLength) {
@@ -381,8 +381,8 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
-			int read = (this.headerStream != null ? this.headerStream.read(b, off, len)
-					: -1);
+			int read = (this.headerStream != null) ? this.headerStream.read(b, off, len)
+					: -1;
 			if (read <= 0) {
 				return readRemainder(b, off, len);
 			}

@@ -95,7 +95,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {
 		Cache cache = getCache();
-		List<ConfigurationPropertyName> names = (cache != null ? cache.getNames() : null);
+		List<ConfigurationPropertyName> names = (cache != null) ? cache.getNames() : null;
 		if (names != null) {
 			return names;
 		}
@@ -112,7 +112,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private PropertyMapping[] getPropertyMappings(Cache cache) {
-		PropertyMapping[] result = (cache != null ? cache.getMappings() : null);
+		PropertyMapping[] result = (cache != null) ? cache.getMappings() : null;
 		if (result != null) {
 			return result;
 		}

@@ -255,7 +255,7 @@ public class ConfigurationPropertiesReportEndpointTests {
 		}
 
 		public boolean isMixedBoolean() {
-			return (this.mixedBoolean != null ? this.mixedBoolean : false);
+			return (this.mixedBoolean != null) ? this.mixedBoolean : false;
 		}
 
 		public void setMixedBoolean(Boolean mixedBoolean) {

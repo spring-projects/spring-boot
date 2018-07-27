@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class OnJavaCondition extends SpringBootCondition {
 			JavaVersion version) {
 		boolean match = isWithin(runningVersion, range, version);
 		String expected = String.format(
-				range != Range.EQUAL_OR_NEWER ? "(older than %s)" : "(%s or newer)",
+				(range != Range.EQUAL_OR_NEWER) ? "(older than %s)" : "(%s or newer)",
 				version);
 		ConditionMessage message = ConditionMessage
 				.forCondition(ConditionalOnJava.class, expected)

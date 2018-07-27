@@ -115,7 +115,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		InputStream resourceStream = super.getResourceAsStream(name);
 		if (resourceStream == null) {
 			byte[] bytes = this.classResources.get(name);
-			resourceStream = (bytes != null ? new ByteArrayInputStream(bytes) : null);
+			resourceStream = (bytes != null) ? new ByteArrayInputStream(bytes) : null;
 		}
 		return resourceStream;
 	}

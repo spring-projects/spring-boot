@@ -73,7 +73,7 @@ public final class RestTemplateExchangeTags {
 	}
 
 	private static String ensureLeadingSlash(String url) {
-		return (url == null || url.startsWith("/") ? url : "/" + url);
+		return (url == null || url.startsWith("/")) ? url : "/" + url;
 	}
 
 	/**

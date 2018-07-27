@@ -326,7 +326,7 @@ public class HttpExchangeTracerTests {
 	private String mixedCase(String input) {
 		StringBuilder output = new StringBuilder();
 		for (int i = 0; i < input.length(); i++) {
-			output.append(i % 2 != 0 ? Character.toUpperCase(input.charAt(i))
+			output.append((i % 2 != 0) ? Character.toUpperCase(input.charAt(i))
 					: Character.toLowerCase(input.charAt(i)));
 		}
 		return output.toString();
