@@ -44,8 +44,8 @@ public class CachesEndpointWebExtension {
 			@Nullable String cacheManager) {
 		try {
 			CacheEntry entry = this.delegate.cache(cache, cacheManager);
-			int status = (entry != null ? WebEndpointResponse.STATUS_OK
-					: WebEndpointResponse.STATUS_NOT_FOUND);
+			int status = (entry != null) ? WebEndpointResponse.STATUS_OK
+					: WebEndpointResponse.STATUS_NOT_FOUND;
 			return new WebEndpointResponse<>(entry, status);
 		}
 		catch (NonUniqueCacheException ex) {

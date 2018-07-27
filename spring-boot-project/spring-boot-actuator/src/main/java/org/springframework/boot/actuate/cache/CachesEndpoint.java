@@ -147,7 +147,7 @@ public class CachesEndpoint {
 	}
 
 	private Predicate<String> isNameMatch(String name) {
-		return (name != null ? ((requested) -> requested.equals(name)) : matchAll());
+		return (name != null) ? ((requested) -> requested.equals(name)) : matchAll();
 	}
 
 	private Predicate<String> matchAll() {

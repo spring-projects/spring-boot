@@ -60,7 +60,7 @@ public class HealthEndpoint {
 	public Health healthForComponent(@Selector String component) {
 		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator,
 				component);
-		return (indicator != null ? indicator.health() : null);
+		return (indicator != null) ? indicator.health() : null;
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class HealthEndpoint {
 		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator,
 				component);
 		HealthIndicator nestedIndicator = getNestedHealthIndicator(indicator, instance);
-		return (nestedIndicator != null ? nestedIndicator.health() : null);
+		return (nestedIndicator != null) ? nestedIndicator.health() : null;
 	}
 
 	private HealthIndicator getNestedHealthIndicator(HealthIndicator healthIndicator,

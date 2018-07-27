@@ -549,8 +549,8 @@ public class WebServiceTemplateBuilder {
 	}
 
 	private static <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
-		Set<T> result = new LinkedHashSet<>(set != null ? set : Collections.emptySet());
-		result.addAll(additions != null ? additions : Collections.emptyList());
+		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
+		result.addAll((additions != null) ? additions : Collections.emptyList());
 		return Collections.unmodifiableSet(result);
 	}
 

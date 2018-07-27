@@ -81,9 +81,9 @@ public class ServletContextInitializerBeans
 	public ServletContextInitializerBeans(ListableBeanFactory beanFactory,
 			Class<? extends ServletContextInitializer>... initializerTypes) {
 		this.initializers = new LinkedMultiValueMap<>();
-		this.initializerTypes = (initializerTypes.length != 0
+		this.initializerTypes = (initializerTypes.length != 0)
 				? Arrays.asList(initializerTypes)
-				: Collections.singletonList(ServletContextInitializer.class));
+				: Collections.singletonList(ServletContextInitializer.class);
 		addServletContextInitializerBeans(beanFactory);
 		addAdaptableBeans(beanFactory);
 		List<ServletContextInitializer> sortedInitializers = this.initializers.values()

@@ -236,7 +236,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 */
 	private Artifact getSourceArtifact() {
 		Artifact sourceArtifact = getArtifact(this.classifier);
-		return (sourceArtifact != null ? sourceArtifact : this.project.getArtifact());
+		return (sourceArtifact != null) ? sourceArtifact : this.project.getArtifact();
 	}
 
 	private Artifact getArtifact(String classifier) {
@@ -345,8 +345,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 					this.classifier, target);
 		}
 		else {
-			String artifactId = (this.classifier != null
-					? "artifact with classifier " + this.classifier : "main artifact");
+			String artifactId = (this.classifier != null)
+					? "artifact with classifier " + this.classifier : "main artifact";
 			getLog().info(String.format("Replacing %s %s", artifactId, source.getFile()));
 			source.setFile(target);
 		}

@@ -77,9 +77,9 @@ public class HttpWebServiceMessageSenderBuilder {
 	}
 
 	public WebServiceMessageSender build() {
-		ClientHttpRequestFactory requestFactory = (this.requestFactorySupplier != null
+		ClientHttpRequestFactory requestFactory = (this.requestFactorySupplier != null)
 				? this.requestFactorySupplier.get()
-				: new ClientHttpRequestFactorySupplier().get());
+				: new ClientHttpRequestFactorySupplier().get();
 		if (this.connectTimeout != null) {
 			new TimeoutRequestFactoryCustomizer(this.connectTimeout, "setConnectTimeout")
 					.customize(requestFactory);

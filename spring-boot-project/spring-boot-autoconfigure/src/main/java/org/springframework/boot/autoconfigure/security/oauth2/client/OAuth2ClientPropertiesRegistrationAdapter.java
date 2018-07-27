@@ -78,8 +78,8 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static Builder getBuilderFromIssuerIfPossible(String registrationId,
 			String configuredProviderId, Map<String, Provider> providers) {
-		String providerId = (configuredProviderId != null ? configuredProviderId
-				: registrationId);
+		String providerId = (configuredProviderId != null) ? configuredProviderId
+				: registrationId;
 		if (providers.containsKey(providerId)) {
 			Provider provider = providers.get(providerId);
 			String issuer = provider.getIssuerUri();
