@@ -79,6 +79,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @author Gary Russell
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })

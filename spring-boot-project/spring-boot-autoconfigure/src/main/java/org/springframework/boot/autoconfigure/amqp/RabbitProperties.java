@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Josh Thornhill
  * @author Gary Russell
+ * @author Artsiom Yudovin
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
