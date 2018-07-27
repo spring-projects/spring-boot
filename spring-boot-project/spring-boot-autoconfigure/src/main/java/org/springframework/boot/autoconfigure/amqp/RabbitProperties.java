@@ -713,6 +713,11 @@ public class RabbitProperties {
 		 */
 		private String routingKey = "";
 
+		/**
+		 * The default queue name that will be used for synchronous receives.
+		 */
+		private String queue;
+
 		public Retry getRetry() {
 			return this.retry;
 		}
@@ -757,6 +762,13 @@ public class RabbitProperties {
 			this.routingKey = routingKey;
 		}
 
+		public String getQueue() {
+			return queue;
+		}
+
+		public void setQueue(String queue) {
+			this.queue = queue;
+		}
 	}
 
 	public static class Retry {

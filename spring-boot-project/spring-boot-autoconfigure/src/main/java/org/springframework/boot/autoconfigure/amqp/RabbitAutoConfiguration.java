@@ -190,6 +190,7 @@ public class RabbitAutoConfiguration {
 					.to(template::setReplyTimeout);
 			map.from(properties::getExchange).to(template::setExchange);
 			map.from(properties::getRoutingKey).to(template::setRoutingKey);
+			map.from(properties::getQueue).whenNonNull().to(template::setQueue);
 			return template;
 		}
 
