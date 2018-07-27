@@ -714,7 +714,7 @@ public class RabbitProperties {
 		private String routingKey = "";
 
 		/**
-		 * The default queue name that will be used for synchronous receives.
+		 * Default queue name that will be used for synchronous receives.
 		 */
 		private String queue;
 
