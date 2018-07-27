@@ -42,6 +42,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-boot-gradle-plugin: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin
 :spring-boot-gradle-plugin-reference: https://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/gradle-plugin/reference/html
 :spring-reference: https://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/
+:spring-initializr-reference: https://docs.spring.io/initializr/docs/current/reference/htmlsingle
 :spring-rest-docs: https://projects.spring.io/spring-restdocs/
 :spring-integration: https://projects.spring.io/spring-integration/
 :spring-session: https://projects.spring.io/spring-session/
