@@ -105,16 +105,6 @@ public class ErrorPage {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
-		result = prime * result + this.getStatusCode();
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -132,6 +122,16 @@ public class ErrorPage {
 			return rtn;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
+		result = prime * result + this.getStatusCode();
+		return result;
 	}
 
 }

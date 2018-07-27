@@ -75,16 +75,16 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 
 	/**

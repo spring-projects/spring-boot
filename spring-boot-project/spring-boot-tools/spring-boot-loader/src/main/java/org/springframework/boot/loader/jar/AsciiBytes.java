@@ -124,20 +124,6 @@ final class AsciiBytes {
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);
 	}
 
-	@Override
-	public String toString() {
-		if (this.string == null) {
-			if (this.length == 0) {
-				this.string = EMPTY_STRING;
-			}
-			else {
-				this.string = new String(this.bytes, this.offset, this.length,
-						StandardCharsets.UTF_8);
-			}
-		}
-		return this.string;
-	}
-
 	public boolean matches(CharSequence name, char suffix) {
 		int charIndex = 0;
 		int nameLen = name.length();
@@ -178,30 +164,6 @@ final class AsciiBytes {
 		return 0;
 	}
 
-	@Override
-	public int hashCode() {
-		int hash = this.hash;
-		if (hash == 0 && this.bytes.length > 0) {
-			for (int i = this.offset; i < this.offset + this.length; i++) {
-				int b = this.bytes[i];
-				int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
-				b &= INITIAL_BYTE_BITMASK[remainingUtfBytes];
-				for (int j = 0; j < remainingUtfBytes; j++) {
-					b = (b << 6) + (this.bytes[++i] & SUBSEQUENT_BYTE_BITMASK);
-				}
-				if (b <= 0xFFFF) {
-					hash = 31 * hash + b;
-				}
-				else {
-					hash = 31 * hash + ((b >> 0xA) + 0xD7C0);
-					hash = 31 * hash + ((b & 0x3FF) + 0xDC00);
-				}
-			}
-			this.hash = hash;
-		}
-		return hash;
-	}
-
 	private int getNumberOfUtfBytes(int b) {
 		if ((b & 0x80) == 0) {
 			return 1;
@@ -234,6 +196,44 @@ final class AsciiBytes {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = this.hash;
+		if (hash == 0 && this.bytes.length > 0) {
+			for (int i = this.offset; i < this.offset + this.length; i++) {
+				int b = this.bytes[i];
+				int remainingUtfBytes = getNumberOfUtfBytes(b) - 1;
+				b &= INITIAL_BYTE_BITMASK[remainingUtfBytes];
+				for (int j = 0; j < remainingUtfBytes; j++) {
+					b = (b << 6) + (this.bytes[++i] & SUBSEQUENT_BYTE_BITMASK);
+				}
+				if (b <= 0xFFFF) {
+					hash = 31 * hash + b;
+				}
+				else {
+					hash = 31 * hash + ((b >> 0xA) + 0xD7C0);
+					hash = 31 * hash + ((b & 0x3FF) + 0xDC00);
+				}
+			}
+			this.hash = hash;
+		}
+		return hash;
+	}
+
+	@Override
+	public String toString() {
+		if (this.string == null) {
+			if (this.length == 0) {
+				this.string = EMPTY_STRING;
+			}
+			else {
+				this.string = new String(this.bytes, this.offset, this.length,
+						StandardCharsets.UTF_8);
+			}
+		}
+		return this.string;
 	}
 
 	static String toString(byte[] bytes) {

@@ -56,14 +56,14 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.propertySource.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		return (obj != null && getClass() == obj.getClass() && this.propertySource
 				.equals(((PropertyMappingContextCustomizer) obj).propertySource));
+	}
+
+	@Override
+	public int hashCode() {
+		return this.propertySource.hashCode();
 	}
 
 	/**

@@ -296,62 +296,6 @@ public final class ConfigurationPropertyName
 	}
 
 	@Override
-	public String toString() {
-		if (this.string == null) {
-			this.string = toString(this.elements);
-		}
-		return this.string;
-	}
-
-	private String toString(CharSequence[] elements) {
-		StringBuilder result = new StringBuilder();
-		for (CharSequence element : elements) {
-			boolean indexed = isIndexed(element);
-			if (result.length() > 0 && !indexed) {
-				result.append(".");
-			}
-			if (indexed) {
-				result.append(element);
-			}
-			else {
-				for (int i = 0; i < element.length(); i++) {
-					char ch = Character.toLowerCase(element.charAt(i));
-					result.append((ch != '_') ? ch : "");
-				}
-			}
-		}
-		return result.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		if (this.elementHashCodes == null) {
-			this.elementHashCodes = getElementHashCodes();
-		}
-		return ObjectUtils.nullSafeHashCode(this.elementHashCodes);
-	}
-
-	private int[] getElementHashCodes() {
-		int[] hashCodes = new int[this.elements.length];
-		for (int i = 0; i < this.elements.length; i++) {
-			hashCodes[i] = getElementHashCode(this.elements[i]);
-		}
-		return hashCodes;
-	}
-
-	private int getElementHashCode(CharSequence element) {
-		int hash = 0;
-		boolean indexed = isIndexed(element);
-		int offset = (indexed ? 1 : 0);
-		for (int i = 0 + offset; i < element.length() - offset; i++) {
-			char ch = (indexed ? element.charAt(i)
-					: Character.toLowerCase(element.charAt(i)));
-			hash = (ch == '-' || ch == '_') ? hash : 31 * hash + Character.hashCode(ch);
-		}
-		return hash;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -407,6 +351,62 @@ public final class ConfigurationPropertyName
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		if (this.elementHashCodes == null) {
+			this.elementHashCodes = getElementHashCodes();
+		}
+		return ObjectUtils.nullSafeHashCode(this.elementHashCodes);
+	}
+
+	private int[] getElementHashCodes() {
+		int[] hashCodes = new int[this.elements.length];
+		for (int i = 0; i < this.elements.length; i++) {
+			hashCodes[i] = getElementHashCode(this.elements[i]);
+		}
+		return hashCodes;
+	}
+
+	private int getElementHashCode(CharSequence element) {
+		int hash = 0;
+		boolean indexed = isIndexed(element);
+		int offset = (indexed ? 1 : 0);
+		for (int i = 0 + offset; i < element.length() - offset; i++) {
+			char ch = (indexed ? element.charAt(i)
+					: Character.toLowerCase(element.charAt(i)));
+			hash = (ch == '-' || ch == '_') ? hash : 31 * hash + Character.hashCode(ch);
+		}
+		return hash;
+	}
+
+	@Override
+	public String toString() {
+		if (this.string == null) {
+			this.string = toString(this.elements);
+		}
+		return this.string;
+	}
+
+	private String toString(CharSequence[] elements) {
+		StringBuilder result = new StringBuilder();
+		for (CharSequence element : elements) {
+			boolean indexed = isIndexed(element);
+			if (result.length() > 0 && !indexed) {
+				result.append(".");
+			}
+			if (indexed) {
+				result.append(element);
+			}
+			else {
+				for (int i = 0; i < element.length(); i++) {
+					char ch = Character.toLowerCase(element.charAt(i));
+					result.append((ch != '_') ? ch : "");
+				}
+			}
+		}
+		return result.toString();
 	}
 
 	private static boolean isIndexed(CharSequence element) {

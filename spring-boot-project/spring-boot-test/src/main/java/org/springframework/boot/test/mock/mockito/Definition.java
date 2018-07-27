@@ -77,17 +77,6 @@ abstract class Definition {
 	}
 
 	@Override
-	public int hashCode() {
-		int result = 1;
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
-		result = MULTIPLIER * result
-				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -102,6 +91,17 @@ abstract class Definition {
 		result = result && ObjectUtils.nullSafeEquals(this.proxyTargetAware,
 				other.proxyTargetAware);
 		result = result && ObjectUtils.nullSafeEquals(this.qualifier, other.qualifier);
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
+		result = MULTIPLIER * result
+				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
 		return result;
 	}
 

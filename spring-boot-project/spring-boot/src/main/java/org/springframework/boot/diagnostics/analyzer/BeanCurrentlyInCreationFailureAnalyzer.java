@@ -140,11 +140,6 @@ class BeanCurrentlyInCreationFailureAnalyzer
 		}
 
 		@Override
-		public int hashCode() {
-			return this.name.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -153,6 +148,11 @@ class BeanCurrentlyInCreationFailureAnalyzer
 				return false;
 			}
 			return this.name.equals(((BeanInCycle) obj).name);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.name.hashCode();
 		}
 
 		@Override

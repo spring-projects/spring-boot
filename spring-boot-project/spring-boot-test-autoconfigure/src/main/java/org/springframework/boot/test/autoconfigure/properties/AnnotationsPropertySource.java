@@ -202,11 +202,6 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 	}
 
 	@Override
-	public int hashCode() {
-		return this.properties.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -215,6 +210,11 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			return false;
 		}
 		return this.properties.equals(((AnnotationsPropertySource) obj).properties);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.properties.hashCode();
 	}
 
 }

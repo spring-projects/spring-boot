@@ -163,21 +163,6 @@ public class BuildInfoProperties implements Serializable {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.additionalProperties == null) ? 0
-				: this.additionalProperties.hashCode());
-		result = prime * result
-				+ ((this.artifact == null) ? 0 : this.artifact.hashCode());
-		result = prime * result + ((this.group == null) ? 0 : this.group.hashCode());
-		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
-		result = prime * result + ((this.time == null) ? 0 : this.time.hashCode());
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -205,6 +190,21 @@ public class BuildInfoProperties implements Serializable {
 			return false;
 		}
 		return (o1.equals(o2));
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((this.additionalProperties == null) ? 0
+				: this.additionalProperties.hashCode());
+		result = prime * result
+				+ ((this.artifact == null) ? 0 : this.artifact.hashCode());
+		result = prime * result + ((this.group == null) ? 0 : this.group.hashCode());
+		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+		result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
+		result = prime * result + ((this.time == null) ? 0 : this.time.hashCode());
+		return result;
 	}
 
 }

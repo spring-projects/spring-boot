@@ -33,11 +33,6 @@ public final class MockOrigin implements Origin {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -46,6 +41,11 @@ public final class MockOrigin implements Origin {
 			return false;
 		}
 		return this.value.equals(((MockOrigin) obj).value);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 	@Override

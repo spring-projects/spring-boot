@@ -134,24 +134,6 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder string = new StringBuilder(this.name);
-		buildToStringProperty(string, "type", this.type);
-		buildToStringProperty(string, "sourceType", this.sourceType);
-		buildToStringProperty(string, "description", this.description);
-		buildToStringProperty(string, "defaultValue", this.defaultValue);
-		buildToStringProperty(string, "deprecation", this.deprecation);
-		return string.toString();
-	}
-
-	protected void buildToStringProperty(StringBuilder string, String property,
-			Object value) {
-		if (value != null) {
-			string.append(" ").append(property).append(":").append(value);
-		}
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -197,6 +179,24 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 
 	private int nullSafeHashCode(Object o) {
 		return (o != null) ? o.hashCode() : 0;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder string = new StringBuilder(this.name);
+		buildToStringProperty(string, "type", this.type);
+		buildToStringProperty(string, "sourceType", this.sourceType);
+		buildToStringProperty(string, "description", this.description);
+		buildToStringProperty(string, "defaultValue", this.defaultValue);
+		buildToStringProperty(string, "deprecation", this.deprecation);
+		return string.toString();
+	}
+
+	protected void buildToStringProperty(StringBuilder string, String property,
+			Object value) {
+		if (value != null) {
+			string.append(" ").append(property).append(":").append(value);
+		}
 	}
 
 	@Override

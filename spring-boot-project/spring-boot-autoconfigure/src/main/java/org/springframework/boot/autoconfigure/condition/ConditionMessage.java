@@ -60,16 +60,6 @@ public final class ConditionMessage {
 	}
 
 	@Override
-	public String toString() {
-		return (this.message != null) ? this.message : "";
-	}
-
-	@Override
-	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.message);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || !ConditionMessage.class.isInstance(obj)) {
 			return false;
@@ -78,6 +68,16 @@ public final class ConditionMessage {
 			return true;
 		}
 		return ObjectUtils.nullSafeEquals(((ConditionMessage) obj).message, this.message);
+	}
+
+	@Override
+	public int hashCode() {
+		return ObjectUtils.nullSafeHashCode(this.message);
+	}
+
+	@Override
+	public String toString() {
+		return (this.message != null) ? this.message : "";
 	}
 
 	/**

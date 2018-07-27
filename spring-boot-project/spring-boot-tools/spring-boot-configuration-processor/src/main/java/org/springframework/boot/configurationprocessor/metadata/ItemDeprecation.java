@@ -69,13 +69,6 @@ public class ItemDeprecation {
 	}
 
 	@Override
-	public String toString() {
-		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
-				+ "replacement='" + this.replacement + '\'' + ", " + "level='"
-				+ this.level + '\'' + '}';
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -95,6 +88,13 @@ public class ItemDeprecation {
 		result = 31 * result + nullSafeHashCode(this.replacement);
 		result = 31 * result + nullSafeHashCode(this.level);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
+				+ "replacement='" + this.replacement + '\'' + ", " + "level='"
+				+ this.level + '\'' + '}';
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {

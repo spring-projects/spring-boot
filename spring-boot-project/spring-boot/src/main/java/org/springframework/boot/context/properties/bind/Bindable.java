@@ -107,24 +107,6 @@ public final class Bindable<T> {
 	}
 
 	@Override
-	public String toString() {
-		ToStringCreator creator = new ToStringCreator(this);
-		creator.append("type", this.type);
-		creator.append("value", (this.value != null) ? "provided" : "none");
-		creator.append("annotations", this.annotations);
-		return creator.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -137,6 +119,24 @@ public final class Bindable<T> {
 		result = result && nullSafeEquals(this.type.resolve(), other.type.resolve());
 		result = result && nullSafeEquals(this.annotations, other.annotations);
 		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("type", this.type);
+		creator.append("value", (this.value != null) ? "provided" : "none");
+		creator.append("annotations", this.annotations);
+		return creator.toString();
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {

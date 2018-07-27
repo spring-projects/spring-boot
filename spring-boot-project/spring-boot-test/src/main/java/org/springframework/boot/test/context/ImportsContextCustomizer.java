@@ -116,11 +116,6 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.key.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -131,6 +126,11 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		// ImportSelectors are flexible so the only safe cache key is the test class
 		ImportsContextCustomizer other = (ImportsContextCustomizer) obj;
 		return this.key.equals(other.key);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.key.hashCode();
 	}
 
 	@Override
@@ -339,14 +339,14 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		}
 
 		@Override
-		public int hashCode() {
-			return this.key.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			return (obj != null && getClass() == obj.getClass()
 					&& this.key.equals(((ContextCustomizerKey) obj).key));
+		}
+
+		@Override
+		public int hashCode() {
+			return this.key.hashCode();
 		}
 
 		@Override

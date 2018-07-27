@@ -269,16 +269,6 @@ public class UndertowWebServer implements WebServer {
 		}
 
 		@Override
-		public String toString() {
-			return this.number + " (" + this.protocol + ")";
-		}
-
-		@Override
-		public int hashCode() {
-			return this.number;
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -294,6 +284,16 @@ public class UndertowWebServer implements WebServer {
 				return false;
 			}
 			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.number;
+		}
+
+		@Override
+		public String toString() {
+			return this.number + " (" + this.protocol + ")";
 		}
 
 	}

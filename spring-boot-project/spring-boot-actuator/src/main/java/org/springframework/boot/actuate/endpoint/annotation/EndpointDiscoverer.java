@@ -383,11 +383,6 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		}
 
 		@Override
-		public int hashCode() {
-			return this.key.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (obj == this) {
 				return true;
@@ -396,6 +391,11 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 				return false;
 			}
 			return this.key.equals(((OperationKey) obj).key);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.key.hashCode();
 		}
 
 		@Override

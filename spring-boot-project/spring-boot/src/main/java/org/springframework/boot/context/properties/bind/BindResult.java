@@ -141,11 +141,6 @@ public final class BindResult<T> {
 	}
 
 	@Override
-	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.value);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -154,6 +149,11 @@ public final class BindResult<T> {
 			return false;
 		}
 		return ObjectUtils.nullSafeEquals(this.value, ((BindResult<?>) obj).value);
+	}
+
+	@Override
+	public int hashCode() {
+		return ObjectUtils.nullSafeHashCode(this.value);
 	}
 
 	@SuppressWarnings("unchecked")
