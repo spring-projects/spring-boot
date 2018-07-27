@@ -1166,6 +1166,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.template.retry.max-interval=10000ms # Maximum duration between attempts.
 	spring.rabbitmq.template.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.template.routing-key= # Value of a default routing key to use for send operations.
+	spring.rabbitmq.template.queue= # Value of a default queue name that will be used for synchronous receives.
 	spring.rabbitmq.username=guest # Login user to authenticate to the broker.
 	spring.rabbitmq.virtual-host= # Virtual host to use when connecting to the broker.
 
