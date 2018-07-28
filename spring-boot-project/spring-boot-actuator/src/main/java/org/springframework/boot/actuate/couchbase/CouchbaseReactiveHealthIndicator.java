@@ -17,14 +17,15 @@ package org.springframework.boot.actuate.couchbase;
 
 import com.couchbase.client.java.bucket.BucketInfo;
 import com.couchbase.client.java.cluster.ClusterInfo;
-import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
-import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 import rx.Observable;
 import rx.RxReactiveStreams;
 import rx.Single;
+
+import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link org.springframework.boot.actuate.health.ReactiveHealthIndicator} for Couchbase.
@@ -57,8 +58,8 @@ public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndi
 		Single<Health> health = bucket
 				.map(BucketInfo::nodeList)
 				.map(StringUtils::collectionToCommaDelimitedString)
-				.map(nodes -> up(builder, versions, nodes))
-				.onErrorReturn(error -> down(builder, error))
+				.map((nodes) -> up(builder, versions, nodes))
+				.onErrorReturn((error) -> down(builder, error))
 				.toSingle();
 		return Mono.from(RxReactiveStreams.toPublisher(health));
 	}

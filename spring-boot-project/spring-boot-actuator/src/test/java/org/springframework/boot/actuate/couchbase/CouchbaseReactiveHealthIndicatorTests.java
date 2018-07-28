@@ -23,12 +23,13 @@ import com.couchbase.client.java.cluster.ClusterInfo;
 import com.couchbase.client.java.error.TranscodingException;
 import com.couchbase.client.java.util.features.Version;
 import org.junit.Test;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Status;
-import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import rx.Observable;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Status;
+import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 
 import java.net.InetAddress;
 import java.util.Arrays;
