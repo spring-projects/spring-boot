@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
+import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.messaging.handler.annotation.Header;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +49,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 	private static final String ADMIN_CREATED_TOPIC = "adminCreatedTopic";
 
 	@ClassRule
-	public static final KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1, true,
+	public static final EmbeddedKafkaRule embeddedKafka = new EmbeddedKafkaRule(1, true,
 			TEST_TOPIC);
 
 	private AnnotationConfigApplicationContext context;
@@ -65,7 +65,7 @@ public class KafkaAutoConfigurationIntegrationTests {
 	@Test
 	public void testEndToEnd() throws Exception {
 		load(KafkaConfig.class,
-				"spring.kafka.bootstrap-servers:" + kafkaEmbedded.getBrokersAsString(),
+				"spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString(),
 				"spring.kafka.consumer.group-id=testGroup",
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		KafkaTemplate<String, String> template = this.context
@@ -95,6 +95,10 @@ public class KafkaAutoConfigurationIntegrationTests {
 		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();
 		return applicationContext;
+	}
+
+	private String getEmbeddedKafkaBrokersAsString() {
+		return embeddedKafka.getEmbeddedKafka().getBrokersAsString();
 	}
 
 	public static class KafkaConfig {
