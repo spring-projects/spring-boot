@@ -50,11 +50,6 @@ public class VehicleDetails {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.make.hashCode() * 31 + this.model.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -64,6 +59,11 @@ public class VehicleDetails {
 		}
 		VehicleDetails other = (VehicleDetails) obj;
 		return this.make.equals(other.make) && this.model.equals(other.model);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.make.hashCode() * 31 + this.model.hashCode();
 	}
 
 }
