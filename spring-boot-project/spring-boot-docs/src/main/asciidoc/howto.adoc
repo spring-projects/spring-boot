@@ -2237,7 +2237,7 @@ the following:
 
 [source,properties,indent=0]
 ----
-	spring.flyway.locations=db/migration/{vendor}
+	spring.flyway.locations=classpath:db/migration/{vendor}
 ----
 
 Rather than using `db/migration`, the preceding configuration sets the folder to use
