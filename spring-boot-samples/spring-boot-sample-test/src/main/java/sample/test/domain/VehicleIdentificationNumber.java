@@ -34,11 +34,6 @@ public final class VehicleIdentificationNumber {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.vin.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -47,6 +42,11 @@ public final class VehicleIdentificationNumber {
 			return false;
 		}
 		return this.vin.equals(((VehicleIdentificationNumber) obj).vin);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.vin.hashCode();
 	}
 
 	@Override
