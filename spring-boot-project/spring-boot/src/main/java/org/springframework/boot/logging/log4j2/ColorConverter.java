@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 		}
 		PatternParser parser = PatternLayout.createPatternParser(config);
 		List<PatternFormatter> formatters = parser.parse(options[0]);
-		AnsiElement element = (options.length != 1 ? ELEMENTS.get(options[1]) : null);
+		AnsiElement element = (options.length != 1) ? ELEMENTS.get(options[1]) : null;
 		return new ColorConverter(formatters, element);
 	}
 
@@ -126,7 +126,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 			if (element == null) {
 				// Assume highlighting
 				element = LEVELS.get(event.getLevel().intLevel());
-				element = (element != null ? element : AnsiColor.GREEN);
+				element = (element != null) ? element : AnsiColor.GREEN;
 			}
 			appendAnsiString(toAppendTo, buf.toString(), element);
 		}

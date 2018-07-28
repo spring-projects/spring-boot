@@ -157,7 +157,8 @@ public class OptionHandler {
 		OptionHelpAdapter(OptionDescriptor descriptor) {
 			this.options = new LinkedHashSet<>();
 			for (String option : descriptor.options()) {
-				this.options.add((option.length() != 1 ? "--" : "-") + option);
+				String prefix = (option.length() != 1) ? "--" : "-";
+				this.options.add(prefix + option);
 			}
 			if (this.options.contains("--cp")) {
 				this.options.remove("--cp");

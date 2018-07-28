@@ -179,7 +179,7 @@ public class JerseyEndpointResourceFactory {
 			Map<String, Object> result = new HashMap<>();
 			multivaluedMap.forEach((name, values) -> {
 				if (!CollectionUtils.isEmpty(values)) {
-					result.put(name, values.size() != 1 ? values : values.get(0));
+					result.put(name, (values.size() != 1) ? values : values.get(0));
 				}
 			});
 			return result;

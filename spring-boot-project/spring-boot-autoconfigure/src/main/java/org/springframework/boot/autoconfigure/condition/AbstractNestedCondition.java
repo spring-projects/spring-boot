@@ -147,8 +147,8 @@ public abstract class AbstractNestedCondition extends SpringBootCondition
 		private List<String[]> getConditionClasses(AnnotatedTypeMetadata metadata) {
 			MultiValueMap<String, Object> attributes = metadata
 					.getAllAnnotationAttributes(Conditional.class.getName(), true);
-			Object values = (attributes != null ? attributes.get("value") : null);
-			return (List<String[]>) (values != null ? values : Collections.emptyList());
+			Object values = (attributes != null) ? attributes.get("value") : null;
+			return (List<String[]>) ((values != null) ? values : Collections.emptyList());
 		}
 
 		private Condition getCondition(String conditionClassName) {

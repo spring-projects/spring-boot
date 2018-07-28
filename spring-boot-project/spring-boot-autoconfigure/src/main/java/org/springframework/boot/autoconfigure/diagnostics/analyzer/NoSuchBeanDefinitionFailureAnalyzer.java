@@ -87,7 +87,7 @@ class NoSuchBeanDefinitionFailureAnalyzer
 				cause);
 		StringBuilder message = new StringBuilder();
 		message.append(String.format("%s required %s that could not be found.%n",
-				(description != null ? description : "A component"),
+				(description != null) ? description : "A component",
 				getBeanDescription(cause)));
 		for (AutoConfigurationResult result : autoConfigurationResults) {
 			message.append(String.format("\t- %s%n", result));
@@ -97,9 +97,8 @@ class NoSuchBeanDefinitionFailureAnalyzer
 		}
 		String action = String.format("Consider %s %s in your configuration.",
 				(!autoConfigurationResults.isEmpty()
-						|| !userConfigurationResults.isEmpty()
-								? "revisiting the entries above or defining"
-								: "defining"),
+						|| !userConfigurationResults.isEmpty())
+								? "revisiting the entries above or defining" : "defining",
 				getBeanDescription(cause));
 		return new FailureAnalysis(message.toString(), action, cause);
 	}
@@ -193,8 +192,8 @@ class NoSuchBeanDefinitionFailureAnalyzer
 
 		Source(String source) {
 			String[] tokens = source.split("#");
-			this.className = (tokens.length > 1 ? tokens[0] : source);
-			this.methodName = (tokens.length != 2 ? null : tokens[1]);
+			this.className = (tokens.length > 1) ? tokens[0] : source;
+			this.methodName = (tokens.length != 2) ? null : tokens[1];
 		}
 
 		public String getClassName() {
@@ -254,8 +253,8 @@ class NoSuchBeanDefinitionFailureAnalyzer
 		private boolean hasName(MethodMetadata methodMetadata, String name) {
 			Map<String, Object> attributes = methodMetadata
 					.getAnnotationAttributes(Bean.class.getName());
-			String[] candidates = (attributes != null ? (String[]) attributes.get("name")
-					: null);
+			String[] candidates = (attributes != null) ? (String[]) attributes.get("name")
+					: null;
 			if (candidates != null) {
 				for (String candidate : candidates) {
 					if (candidate.equals(name)) {

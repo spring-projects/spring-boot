@@ -119,13 +119,13 @@ public class TypeExcludeFiltersContextCustomizerFactoryTests {
 		}
 
 		@Override
-		public int hashCode() {
-			return SimpleExclude.class.hashCode();
+		public boolean equals(Object obj) {
+			return obj.getClass() == getClass();
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			return obj.getClass() == getClass();
+		public int hashCode() {
+			return SimpleExclude.class.hashCode();
 		}
 
 	}

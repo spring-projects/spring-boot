@@ -130,13 +130,12 @@ public class EmbeddedMongoAutoConfiguration {
 				this.embeddedProperties.getFeatures().toArray(new Feature[0]));
 		MongodConfigBuilder builder = new MongodConfigBuilder()
 				.version(featureAwareVersion);
-		if (this.embeddedProperties.getStorage() != null) {
-			builder.replication(
-					new Storage(this.embeddedProperties.getStorage().getDatabaseDir(),
-							this.embeddedProperties.getStorage().getReplSetName(),
-							this.embeddedProperties.getStorage().getOplogSize() != null
-									? this.embeddedProperties.getStorage().getOplogSize()
-									: 0));
+		EmbeddedMongoProperties.Storage storage = this.embeddedProperties.getStorage();
+		if (storage != null) {
+			String databaseDir = storage.getDatabaseDir();
+			String replSetName = storage.getReplSetName();
+			int oplogSize = (storage.getOplogSize() != null) ? storage.getOplogSize() : 0;
+			builder.replication(new Storage(databaseDir, replSetName, oplogSize));
 		}
 		Integer configuredPort = this.properties.getPort();
 		if (configuredPort != null && configuredPort > 0) {

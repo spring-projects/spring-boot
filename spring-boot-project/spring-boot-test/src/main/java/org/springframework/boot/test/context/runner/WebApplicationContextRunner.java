@@ -93,11 +93,11 @@ public final class WebApplicationContextRunner extends
 	 */
 	public static Supplier<ConfigurableWebApplicationContext> withMockServletContext(
 			Supplier<ConfigurableWebApplicationContext> contextFactory) {
-		return (contextFactory != null ? () -> {
+		return (contextFactory != null) ? () -> {
 			ConfigurableWebApplicationContext context = contextFactory.get();
 			context.setServletContext(new MockServletContext());
 			return context;
-		} : null);
+		} : null;
 	}
 
 }

@@ -184,7 +184,7 @@ class JavaBeanBinder implements BeanBinder {
 			T instance = null;
 			if (canCallGetValue && value != null) {
 				instance = value.get();
-				type = (instance != null ? instance.getClass() : type);
+				type = (instance != null) ? instance.getClass() : type;
 			}
 			if (instance == null && !isInstantiable(type)) {
 				return null;
@@ -287,7 +287,7 @@ class JavaBeanBinder implements BeanBinder {
 
 		public Annotation[] getAnnotations() {
 			try {
-				return (this.field != null ? this.field.getDeclaredAnnotations() : null);
+				return (this.field != null) ? this.field.getDeclaredAnnotations() : null;
 			}
 			catch (Exception ex) {
 				return null;

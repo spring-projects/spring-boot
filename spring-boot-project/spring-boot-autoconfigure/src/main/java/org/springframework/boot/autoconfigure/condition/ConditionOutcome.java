@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,12 +123,6 @@ public class ConditionOutcome {
 	}
 
 	@Override
-	public int hashCode() {
-		return Boolean.hashCode(this.match) * 31
-				+ ObjectUtils.nullSafeHashCode(this.message);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -145,8 +139,14 @@ public class ConditionOutcome {
 	}
 
 	@Override
+	public int hashCode() {
+		return Boolean.hashCode(this.match) * 31
+				+ ObjectUtils.nullSafeHashCode(this.message);
+	}
+
+	@Override
 	public String toString() {
-		return (this.message != null ? this.message.toString() : "");
+		return (this.message != null) ? this.message.toString() : "";
 	}
 
 	/**

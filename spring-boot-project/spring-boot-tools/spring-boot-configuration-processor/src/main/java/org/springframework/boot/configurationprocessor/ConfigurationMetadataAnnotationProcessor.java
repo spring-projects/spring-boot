@@ -317,8 +317,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			reason = (String) elementValues.get("reason");
 			replacement = (String) elementValues.get("replacement");
 		}
-		return new ItemDeprecation(("".equals(reason) ? null : reason),
-				("".equals(replacement) ? null : replacement));
+		reason = "".equals(reason) ? null : reason;
+		replacement = "".equals(replacement) ? null : replacement;
+		return new ItemDeprecation(reason, replacement);
 	}
 
 	private void processSimpleLombokTypes(String prefix, TypeElement element,
@@ -420,7 +421,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
 					this.typeUtils.getQualifiedName(returnElement),
 					this.typeUtils.getQualifiedName(element),
-					(getter != null ? getter.toString() : null)));
+					(getter != null) ? getter.toString() : null));
 			processTypeElement(nestedPrefix, (TypeElement) returnElement, source);
 		}
 	}
@@ -453,7 +454,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataCollector.add(ItemMetadata.newProperty(endpointKey, "enabled",
 				Boolean.class.getName(), type, null,
 				String.format("Whether to enable the %s endpoint.", endpointId),
-				(enabledByDefault != null ? enabledByDefault : true), null));
+				(enabledByDefault != null) ? enabledByDefault : true, null));
 		if (hasMainReadOperation(element)) {
 			this.metadataCollector.add(ItemMetadata.newProperty(endpointKey,
 					"cache.time-to-live", Duration.class.getName(), type, null,

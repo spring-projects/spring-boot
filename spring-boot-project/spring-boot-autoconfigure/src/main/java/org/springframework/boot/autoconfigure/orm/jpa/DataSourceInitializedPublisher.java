@@ -88,8 +88,8 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	private DataSource findDataSource(EntityManagerFactory entityManagerFactory) {
 		Object dataSource = entityManagerFactory.getProperties()
 				.get("javax.persistence.nonJtaDataSource");
-		return (dataSource != null && dataSource instanceof DataSource
-				? (DataSource) dataSource : this.dataSource);
+		return (dataSource != null && dataSource instanceof DataSource)
+				? (DataSource) dataSource : this.dataSource;
 	}
 
 	private boolean isInitializingDatabase(DataSource dataSource) {

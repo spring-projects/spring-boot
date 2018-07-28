@@ -155,7 +155,7 @@ public class QuartzAutoConfiguration {
 		private DataSource getDataSource(DataSource dataSource,
 				ObjectProvider<DataSource> quartzDataSource) {
 			DataSource dataSourceIfAvailable = quartzDataSource.getIfAvailable();
-			return (dataSourceIfAvailable != null ? dataSourceIfAvailable : dataSource);
+			return (dataSourceIfAvailable != null) ? dataSourceIfAvailable : dataSource;
 		}
 
 		@Bean

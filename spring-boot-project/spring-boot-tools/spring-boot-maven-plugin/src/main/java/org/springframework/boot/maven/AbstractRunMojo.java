@@ -392,7 +392,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
 				classpath = classpath
-						.append((classpath.length() > 0 ? File.pathSeparator : "")
+						.append(((classpath.length() > 0) ? File.pathSeparator : "")
 								+ new File(ele.toURI()));
 			}
 			if (getLog().isDebugEnabled()) {
@@ -511,7 +511,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		public void uncaughtException(Thread thread, Throwable ex) {
 			if (!(ex instanceof ThreadDeath)) {
 				synchronized (this.monitor) {
-					this.exception = (this.exception != null ? this.exception : ex);
+					this.exception = (this.exception != null) ? this.exception : ex;
 				}
 				getLog().warn(ex);
 			}
@@ -541,7 +541,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 		LaunchRunner(String startClassName, String... args) {
 			this.startClassName = startClassName;
-			this.args = (args != null ? args : new String[] {});
+			this.args = (args != null) ? args : new String[] {};
 		}
 
 		@Override

@@ -75,7 +75,7 @@ public class MapConfigurationPropertySource
 	 * @param value the value
 	 */
 	public void put(Object name, Object value) {
-		this.source.put((name != null ? name.toString() : null), value);
+		this.source.put((name != null) ? name.toString() : null, value);
 	}
 
 	@Override

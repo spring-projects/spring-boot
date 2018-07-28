@@ -102,15 +102,15 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static Builder getBuilder(String registrationId, String configuredProviderId,
 			Map<String, Provider> providers) {
-		String providerId = (configuredProviderId != null ? configuredProviderId
-				: registrationId);
+		String providerId = (configuredProviderId != null) ? configuredProviderId
+				: registrationId;
 		CommonOAuth2Provider provider = getCommonProvider(providerId);
 		if (provider == null && !providers.containsKey(providerId)) {
 			throw new IllegalStateException(
 					getErrorMessage(configuredProviderId, registrationId));
 		}
-		Builder builder = (provider != null ? provider.getBuilder(registrationId)
-				: ClientRegistration.withRegistrationId(registrationId));
+		Builder builder = (provider != null) ? provider.getBuilder(registrationId)
+				: ClientRegistration.withRegistrationId(registrationId);
 		if (providers.containsKey(providerId)) {
 			return getBuilder(builder, providers.get(providerId));
 		}
@@ -119,7 +119,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	private static String getErrorMessage(String configuredProviderId,
 			String registrationId) {
-		return (configuredProviderId != null
+		return ((configuredProviderId != null)
 				? "Unknown provider ID '" + configuredProviderId + "'"
 				: "Provider ID must be specified for client registration '"
 						+ registrationId + "'");

@@ -179,7 +179,7 @@ public class FlywayAutoConfiguration {
 		private String getProperty(Supplier<String> property,
 				Supplier<String> defaultValue) {
 			String value = property.get();
-			return (value != null ? value : defaultValue.get());
+			return (value != null) ? value : defaultValue.get();
 		}
 
 		private void checkLocationExists(String... locations) {

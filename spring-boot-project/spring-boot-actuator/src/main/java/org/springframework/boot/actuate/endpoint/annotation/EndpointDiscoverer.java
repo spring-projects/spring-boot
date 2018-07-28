@@ -54,8 +54,8 @@ import org.springframework.util.StringUtils;
  * {@link Endpoint @Endpoint} beans and {@link EndpointExtension @EndpointExtension} beans
  * in an application context.
  *
- * @param <E> The endpoint type
- * @param <O> The operation type
+ * @param <E> the endpoint type
+ * @param <O> the operation type
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
@@ -383,11 +383,6 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		}
 
 		@Override
-		public int hashCode() {
-			return this.key.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (obj == this) {
 				return true;
@@ -396,6 +391,11 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 				return false;
 			}
 			return this.key.equals(((OperationKey) obj).key);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.key.hashCode();
 		}
 
 		@Override

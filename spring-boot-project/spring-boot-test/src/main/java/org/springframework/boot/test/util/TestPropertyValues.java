@@ -235,7 +235,7 @@ public final class TestPropertyValues {
 		}
 
 		protected String applySuffix(String name) {
-			return (this.suffix != null ? name + "-" + this.suffix : name);
+			return (this.suffix != null) ? name + "-" + this.suffix : name;
 		}
 
 	}
@@ -261,8 +261,8 @@ public final class TestPropertyValues {
 
 		public static Pair parse(String pair) {
 			int index = getSeparatorIndex(pair);
-			String name = (index > 0 ? pair.substring(0, index) : pair);
-			String value = (index > 0 ? pair.substring(index + 1) : "");
+			String name = (index > 0) ? pair.substring(0, index) : pair;
+			String value = (index > 0) ? pair.substring(index + 1) : "";
 			return of(name.trim(), value.trim());
 		}
 

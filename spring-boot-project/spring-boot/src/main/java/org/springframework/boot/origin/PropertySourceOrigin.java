@@ -76,7 +76,7 @@ public class PropertySourceOrigin implements Origin {
 	 */
 	public static Origin get(PropertySource<?> propertySource, String name) {
 		Origin origin = OriginLookup.getOrigin(propertySource, name);
-		return (origin != null ? origin : new PropertySourceOrigin(propertySource, name));
+		return (origin != null) ? origin : new PropertySourceOrigin(propertySource, name);
 	}
 
 }

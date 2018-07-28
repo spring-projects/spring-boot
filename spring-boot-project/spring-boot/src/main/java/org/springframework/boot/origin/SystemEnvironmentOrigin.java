@@ -41,16 +41,6 @@ public class SystemEnvironmentOrigin implements Origin {
 	}
 
 	@Override
-	public String toString() {
-		return "System Environment Property \"" + this.property + "\"";
-	}
-
-	@Override
-	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.property);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -60,6 +50,16 @@ public class SystemEnvironmentOrigin implements Origin {
 		}
 		SystemEnvironmentOrigin other = (SystemEnvironmentOrigin) obj;
 		return ObjectUtils.nullSafeEquals(this.property, other.property);
+	}
+
+	@Override
+	public int hashCode() {
+		return ObjectUtils.nullSafeHashCode(this.property);
+	}
+
+	@Override
+	public String toString() {
+		return "System Environment Property \"" + this.property + "\"";
 	}
 
 }

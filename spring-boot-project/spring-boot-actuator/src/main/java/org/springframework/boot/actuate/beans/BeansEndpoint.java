@@ -118,7 +118,7 @@ public class BeansEndpoint {
 			}
 			ConfigurableApplicationContext parent = getConfigurableParent(context);
 			return new ContextBeans(describeBeans(context.getBeanFactory()),
-					parent != null ? parent.getId() : null);
+					(parent != null) ? parent.getId() : null);
 		}
 
 		private static Map<String, BeanDescriptor> describeBeans(

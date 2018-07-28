@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,13 +69,6 @@ public class ItemDeprecation {
 	}
 
 	@Override
-	public String toString() {
-		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
-				+ "replacement='" + this.replacement + '\'' + ", " + "level='"
-				+ this.level + '\'' + '}';
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -97,6 +90,13 @@ public class ItemDeprecation {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
+				+ "replacement='" + this.replacement + '\'' + ", " + "level='"
+				+ this.level + '\'' + '}';
+	}
+
 	private boolean nullSafeEquals(Object o1, Object o2) {
 		if (o1 == o2) {
 			return true;
@@ -108,7 +108,7 @@ public class ItemDeprecation {
 	}
 
 	private int nullSafeHashCode(Object o) {
-		return (o != null ? o.hashCode() : 0);
+		return (o != null) ? o.hashCode() : 0;
 	}
 
 }

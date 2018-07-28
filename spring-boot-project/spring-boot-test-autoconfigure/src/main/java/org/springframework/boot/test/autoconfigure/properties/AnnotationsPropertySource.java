@@ -105,8 +105,8 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		}
 		Annotation mergedAnnotation = AnnotatedElementUtils.getMergedAnnotation(source,
 				annotationType);
-		return (mergedAnnotation != null ? mergedAnnotation
-				: findMergedAnnotation(source.getSuperclass(), annotationType));
+		return (mergedAnnotation != null) ? mergedAnnotation
+				: findMergedAnnotation(source.getSuperclass(), annotationType);
 	}
 
 	private void collectProperties(Annotation annotation, Method attribute,
@@ -143,8 +143,8 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private String getName(PropertyMapping typeMapping, PropertyMapping attributeMapping,
 			Method attribute) {
-		String prefix = (typeMapping != null ? typeMapping.value() : "");
-		String name = (attributeMapping != null ? attributeMapping.value() : "");
+		String prefix = (typeMapping != null) ? typeMapping.value() : "";
+		String name = (attributeMapping != null) ? attributeMapping.value() : "";
 		if (!StringUtils.hasText(name)) {
 			name = toKebabCase(attribute.getName());
 		}
@@ -202,11 +202,6 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 	}
 
 	@Override
-	public int hashCode() {
-		return this.properties.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -215,6 +210,11 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			return false;
 		}
 		return this.properties.equals(((AnnotationsPropertySource) obj).properties);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.properties.hashCode();
 	}
 
 }

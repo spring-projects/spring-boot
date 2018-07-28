@@ -41,7 +41,6 @@ public class LaunchScriptConfiguration implements Serializable {
 	private File script;
 
 	public LaunchScriptConfiguration() {
-
 	}
 
 	LaunchScriptConfiguration(AbstractArchiveTask archiveTask) {
@@ -90,24 +89,11 @@ public class LaunchScriptConfiguration implements Serializable {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((this.properties == null) ? 0 : this.properties.hashCode());
-		result = prime * result + ((this.script == null) ? 0 : this.script.hashCode());
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
 		LaunchScriptConfiguration other = (LaunchScriptConfiguration) obj;
@@ -137,12 +123,22 @@ public class LaunchScriptConfiguration implements Serializable {
 		}
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((this.properties == null) ? 0 : this.properties.hashCode());
+		result = prime * result + ((this.script == null) ? 0 : this.script.hashCode());
+		return result;
+	}
+
 	private String removeLineBreaks(String string) {
-		return (string != null ? string.replaceAll("\\s+", " ") : null);
+		return (string != null) ? string.replaceAll("\\s+", " ") : null;
 	}
 
 	private String augmentLineBreaks(String string) {
-		return (string != null ? string.replaceAll("\n", "\n#  ") : null);
+		return (string != null) ? string.replaceAll("\n", "\n#  ") : null;
 	}
 
 	private void putIfMissing(Map<String, String> properties, String key,

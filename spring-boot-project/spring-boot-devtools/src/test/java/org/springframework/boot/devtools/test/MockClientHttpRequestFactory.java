@@ -119,7 +119,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
 			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
-					this.payload != null ? this.payload : NO_DATA, this.status);
+					(this.payload != null) ? this.payload : NO_DATA, this.status);
 			waitForDelay();
 			if (this.payload != null) {
 				httpResponse.getHeaders().setContentLength(this.payload.length);

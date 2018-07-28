@@ -282,7 +282,7 @@ public class ServletContextInitializerBeans
 		@Override
 		public RegistrationBean createRegistrationBean(String name, Servlet source,
 				int totalNumberOfSourceBeans) {
-			String url = (totalNumberOfSourceBeans != 1 ? "/" + name + "/" : "/");
+			String url = (totalNumberOfSourceBeans != 1) ? "/" + name + "/" : "/";
 			if (name.equals(DISPATCHER_SERVLET_NAME)) {
 				url = "/"; // always map the main dispatcherServlet to "/"
 			}

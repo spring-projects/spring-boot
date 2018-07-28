@@ -66,7 +66,7 @@ final class DelimitedStringToArrayConverter implements ConditionalGenericConvert
 			TypeDescriptor targetType) {
 		Delimiter delimiter = targetType.getAnnotation(Delimiter.class);
 		String[] elements = getElements(source,
-				(delimiter != null ? delimiter.value() : ","));
+				(delimiter != null) ? delimiter.value() : ",");
 		TypeDescriptor elementDescriptor = targetType.getElementTypeDescriptor();
 		Object target = Array.newInstance(elementDescriptor.getType(), elements.length);
 		for (int i = 0; i < elements.length; i++) {

@@ -251,7 +251,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private File getTargetFile() {
-		String classifier = (this.classifier != null ? this.classifier.trim() : "");
+		String classifier = (this.classifier != null) ? this.classifier.trim() : "";
 		if (!classifier.isEmpty() && !classifier.startsWith("-")) {
 			classifier = "-" + classifier;
 		}
@@ -312,7 +312,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private String removeLineBreaks(String description) {
-		return (description != null ? description.replaceAll("\\s+", " ") : null);
+		return (description != null) ? description.replaceAll("\\s+", " ") : null;
 	}
 
 	private void putIfMissing(Properties properties, String key,

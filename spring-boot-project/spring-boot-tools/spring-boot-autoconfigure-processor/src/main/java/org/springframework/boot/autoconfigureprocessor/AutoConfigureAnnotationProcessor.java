@@ -152,7 +152,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	private String toCommaDelimitedString(List<Object> list) {
 		StringBuilder result = new StringBuilder();
 		for (Object item : list) {
-			result.append(result.length() != 0 ? "," : "");
+			result.append((result.length() != 0) ? "," : "");
 			result.append(item);
 		}
 		return result.toString();

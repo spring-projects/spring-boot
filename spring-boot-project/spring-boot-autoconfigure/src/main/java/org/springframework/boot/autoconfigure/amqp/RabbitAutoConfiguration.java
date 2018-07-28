@@ -195,7 +195,7 @@ public class RabbitAutoConfiguration {
 
 		private boolean determineMandatoryFlag() {
 			Boolean mandatory = this.properties.getTemplate().getMandatory();
-			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
+			return (mandatory != null) ? mandatory : this.properties.isPublisherReturns();
 		}
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ abstract class Definition {
 	Definition(String name, MockReset reset, boolean proxyTargetAware,
 			QualifierDefinition qualifier) {
 		this.name = name;
-		this.reset = (reset != null ? reset : MockReset.AFTER);
+		this.reset = (reset != null) ? reset : MockReset.AFTER;
 		this.proxyTargetAware = proxyTargetAware;
 		this.qualifier = qualifier;
 	}
@@ -77,17 +77,6 @@ abstract class Definition {
 	}
 
 	@Override
-	public int hashCode() {
-		int result = 1;
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
-		result = MULTIPLIER * result
-				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
-		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -102,6 +91,17 @@ abstract class Definition {
 		result = result && ObjectUtils.nullSafeEquals(this.proxyTargetAware,
 				other.proxyTargetAware);
 		result = result && ObjectUtils.nullSafeEquals(this.qualifier, other.qualifier);
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.name);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.reset);
+		result = MULTIPLIER * result
+				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
+		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.qualifier);
 		return result;
 	}
 

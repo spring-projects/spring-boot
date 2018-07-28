@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,22 +73,6 @@ public final class LoggerConfiguration {
 	}
 
 	@Override
-	public String toString() {
-		return "LoggerConfiguration [name=" + this.name + ", configuredLevel="
-				+ this.configuredLevel + ", effectiveLevel=" + this.effectiveLevel + "]";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.configuredLevel);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.effectiveLevel);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -107,6 +91,22 @@ public final class LoggerConfiguration {
 			return rtn;
 		}
 		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.configuredLevel);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.effectiveLevel);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "LoggerConfiguration [name=" + this.name + ", configuredLevel="
+				+ this.configuredLevel + ", effectiveLevel=" + this.effectiveLevel + "]";
 	}
 
 }

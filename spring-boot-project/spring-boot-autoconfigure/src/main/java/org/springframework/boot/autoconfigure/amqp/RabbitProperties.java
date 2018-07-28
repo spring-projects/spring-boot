@@ -206,7 +206,7 @@ public class RabbitProperties {
 			return this.username;
 		}
 		Address address = this.parsedAddresses.get(0);
-		return (address.username != null ? address.username : this.username);
+		return (address.username != null) ? address.username : this.username;
 	}
 
 	public void setUsername(String username) {
@@ -229,7 +229,7 @@ public class RabbitProperties {
 			return getPassword();
 		}
 		Address address = this.parsedAddresses.get(0);
-		return (address.password != null ? address.password : getPassword());
+		return (address.password != null) ? address.password : getPassword();
 	}
 
 	public void setPassword(String password) {
@@ -256,7 +256,7 @@ public class RabbitProperties {
 			return getVirtualHost();
 		}
 		Address address = this.parsedAddresses.get(0);
-		return (address.virtualHost != null ? address.virtualHost : getVirtualHost());
+		return (address.virtualHost != null) ? address.virtualHost : getVirtualHost();
 	}
 
 	public void setVirtualHost(String virtualHost) {

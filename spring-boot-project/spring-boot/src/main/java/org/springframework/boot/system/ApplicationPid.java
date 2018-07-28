@@ -61,16 +61,6 @@ public class ApplicationPid {
 	}
 
 	@Override
-	public String toString() {
-		return (this.pid != null ? this.pid : "???");
-	}
-
-	@Override
-	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.pid);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -79,6 +69,16 @@ public class ApplicationPid {
 			return ObjectUtils.nullSafeEquals(this.pid, ((ApplicationPid) obj).pid);
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return ObjectUtils.nullSafeHashCode(this.pid);
+	}
+
+	@Override
+	public String toString() {
+		return (this.pid != null) ? this.pid : "???";
 	}
 
 	/**

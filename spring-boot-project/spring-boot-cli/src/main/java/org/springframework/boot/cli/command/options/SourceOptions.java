@@ -130,7 +130,7 @@ public class SourceOptions {
 	}
 
 	private String asString(Object arg) {
-		return (arg != null ? String.valueOf(arg) : null);
+		return (arg != null) ? String.valueOf(arg) : null;
 	}
 
 	public List<String> getSources() {

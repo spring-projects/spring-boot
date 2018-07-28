@@ -113,7 +113,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	/**
 	 * Flatten the map keys using period separator.
-	 * @param map The map that should be flattened
+	 * @param map the map that should be flattened
 	 * @return the flattened map
 	 */
 	private Map<String, Object> flatten(Map<String, Object> map) {
@@ -124,7 +124,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	private void flatten(String prefix, Map<String, Object> result,
 			Map<String, Object> map) {
-		String namePrefix = (prefix != null ? prefix + "." : "");
+		String namePrefix = (prefix != null) ? prefix + "." : "";
 		map.forEach((key, value) -> extract(namePrefix + key, result, value));
 	}
 

@@ -311,8 +311,8 @@ public class ConfigFileApplicationListener
 
 		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
-			this.resourceLoader = (resourceLoader != null ? resourceLoader
-					: new DefaultResourceLoader());
+			this.resourceLoader = (resourceLoader != null) ? resourceLoader
+					: new DefaultResourceLoader();
 			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(
 					PropertySourceLoader.class, getClass().getClassLoader());
 		}
@@ -586,8 +586,8 @@ public class ConfigFileApplicationListener
 		private String getDescription(String location, Resource resource,
 				Profile profile) {
 			String description = getDescription(location, resource);
-			return (profile != null ? description + " for profile " + profile
-					: description);
+			return (profile != null) ? description + " for profile " + profile
+					: description;
 		}
 
 		private String getDescription(String location, Resource resource) {
@@ -663,7 +663,7 @@ public class ConfigFileApplicationListener
 
 		private Set<String> asResolvedSet(String value, String fallback) {
 			List<String> list = Arrays.asList(StringUtils.trimArrayElements(
-					StringUtils.commaDelimitedListToStringArray(value != null
+					StringUtils.commaDelimitedListToStringArray((value != null)
 							? this.environment.resolvePlaceholders(value) : fallback)));
 			Collections.reverse(list);
 			return new LinkedHashSet<>(list);
@@ -730,16 +730,6 @@ public class ConfigFileApplicationListener
 		}
 
 		@Override
-		public String toString() {
-			return this.name;
-		}
-
-		@Override
-		public int hashCode() {
-			return this.name.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (obj == this) {
 				return true;
@@ -748,6 +738,16 @@ public class ConfigFileApplicationListener
 				return false;
 			}
 			return ((Profile) obj).name.equals(this.name);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.name.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
 		}
 
 	}
@@ -767,11 +767,6 @@ public class ConfigFileApplicationListener
 		}
 
 		@Override
-		public int hashCode() {
-			return this.loader.hashCode() * 31 + this.resource.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -782,6 +777,11 @@ public class ConfigFileApplicationListener
 			DocumentsCacheKey other = (DocumentsCacheKey) obj;
 			return this.loader.equals(other.loader)
 					&& this.resource.equals(other.resource);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.loader.hashCode() * 31 + this.resource.hashCode();
 		}
 
 	}

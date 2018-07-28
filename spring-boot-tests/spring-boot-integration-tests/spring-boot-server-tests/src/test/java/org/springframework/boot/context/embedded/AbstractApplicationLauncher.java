@@ -70,9 +70,9 @@ abstract class AbstractApplicationLauncher extends ExternalResource {
 
 	private Process startApplication() throws Exception {
 		File workingDirectory = getWorkingDirectory();
-		File serverPortFile = (workingDirectory != null
+		File serverPortFile = (workingDirectory != null)
 				? new File(workingDirectory, "target/server.port")
-				: new File("target/server.port"));
+				: new File("target/server.port");
 		serverPortFile.delete();
 		File archive = this.applicationBuilder.buildApplication();
 		List<String> arguments = new ArrayList<>();

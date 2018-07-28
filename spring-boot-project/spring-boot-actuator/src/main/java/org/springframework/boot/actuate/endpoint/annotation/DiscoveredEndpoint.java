@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.endpoint.Operation;
 /**
  * An {@link ExposableEndpoint endpoint} discovered by an {@link EndpointDiscoverer}.
  *
- * @param <O> The operation type
+ * @param <O> the operation type
  * @author Phillip Webb
  * @since 2.0.0
  */

@@ -563,8 +563,8 @@ public class SpringApplication {
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
-		ResourceLoader resourceLoader = (this.resourceLoader != null ? this.resourceLoader
-				: new DefaultResourceLoader(getClassLoader()));
+		ResourceLoader resourceLoader = (this.resourceLoader != null)
+				? this.resourceLoader : new DefaultResourceLoader(getClassLoader());
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(
 				resourceLoader, this.banner);
 		if (this.bannerMode == Mode.LOG) {
@@ -995,7 +995,7 @@ public class SpringApplication {
 	/**
 	 * Sets the {@link Banner} instance which will be used to print the banner when no
 	 * static banner file is provided.
-	 * @param banner The Banner instance to use
+	 * @param banner the Banner instance to use
 	 */
 	public void setBanner(Banner banner) {
 		this.banner = banner;
@@ -1301,7 +1301,7 @@ public class SpringApplication {
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-			exitCode = (exitCode != 0 ? exitCode : 1);
+			exitCode = (exitCode != 0) ? exitCode : 1;
 		}
 		return exitCode;
 	}

@@ -139,7 +139,7 @@ class OnPropertyCondition extends SpringBootCondition {
 					"The name or value attribute of @ConditionalOnProperty must be specified");
 			Assert.state(value.length == 0 || name.length == 0,
 					"The name and value attributes of @ConditionalOnProperty are exclusive");
-			return (value.length > 0 ? value : name);
+			return (value.length > 0) ? value : name;
 		}
 
 		private void collectProperties(PropertyResolver resolver, List<String> missing,

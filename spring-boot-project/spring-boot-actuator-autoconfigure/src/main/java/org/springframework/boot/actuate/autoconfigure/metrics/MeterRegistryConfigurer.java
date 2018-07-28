@@ -51,9 +51,9 @@ class MeterRegistryConfigurer {
 			Collection<MeterFilter> filters,
 			Collection<MeterRegistryCustomizer<?>> customizers,
 			boolean addToGlobalRegistry) {
-		this.binders = (binders != null ? binders : Collections.emptyList());
-		this.filters = (filters != null ? filters : Collections.emptyList());
-		this.customizers = (customizers != null ? customizers : Collections.emptyList());
+		this.binders = (binders != null) ? binders : Collections.emptyList();
+		this.filters = (filters != null) ? filters : Collections.emptyList();
+		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
 		this.addToGlobalRegistry = addToGlobalRegistry;
 	}
 

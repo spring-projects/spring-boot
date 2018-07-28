@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public abstract class AbstractConfigurationMetadataTests {
 		assertThat(actual).isNotNull();
 		assertThat(actual.getId()).isEqualTo(id);
 		assertThat(actual.getName()).isEqualTo(name);
-		String typeName = (type != null ? type.getName() : null);
+		String typeName = (type != null) ? type.getName() : null;
 		assertThat(actual.getType()).isEqualTo(typeName);
 		assertThat(actual.getDefaultValue()).isEqualTo(defaultValue);
 	}

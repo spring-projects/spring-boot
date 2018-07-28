@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class Library {
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
 	 */
 	public Library(String name, File file, LibraryScope scope, boolean unpackRequired) {
-		this.name = (name != null ? name : file.getName());
+		this.name = (name != null) ? name : file.getName();
 		this.file = file;
 		this.scope = scope;
 		this.unpackRequired = unpackRequired;

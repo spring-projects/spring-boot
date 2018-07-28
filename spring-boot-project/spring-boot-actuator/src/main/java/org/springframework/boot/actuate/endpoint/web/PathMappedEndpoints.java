@@ -46,7 +46,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 */
 	public PathMappedEndpoints(String basePath, EndpointsSupplier<?> supplier) {
 		Assert.notNull(supplier, "Supplier must not be null");
-		this.basePath = (basePath != null ? basePath : "");
+		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(Collections.singleton(supplier));
 	}
 
@@ -58,7 +58,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	public PathMappedEndpoints(String basePath,
 			Collection<EndpointsSupplier<?>> suppliers) {
 		Assert.notNull(suppliers, "Suppliers must not be null");
-		this.basePath = (basePath != null ? basePath : "");
+		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(suppliers);
 	}
 
@@ -91,7 +91,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 */
 	public String getRootPath(String endpointId) {
 		PathMappedEndpoint endpoint = getEndpoint(endpointId);
-		return (endpoint != null ? endpoint.getRootPath() : null);
+		return (endpoint != null) ? endpoint.getRootPath() : null;
 	}
 
 	/**
@@ -144,7 +144,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	}
 
 	private String getPath(PathMappedEndpoint endpoint) {
-		return (endpoint != null ? this.basePath + "/" + endpoint.getRootPath() : null);
+		return (endpoint != null) ? this.basePath + "/" + endpoint.getRootPath() : null;
 	}
 
 	private <T> List<T> asList(Stream<T> stream) {

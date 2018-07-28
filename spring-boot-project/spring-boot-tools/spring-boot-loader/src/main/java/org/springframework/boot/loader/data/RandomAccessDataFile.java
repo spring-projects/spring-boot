@@ -144,7 +144,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		@Override
 		public int read(byte[] b) throws IOException {
-			return read(b, 0, b != null ? b.length : 0);
+			return read(b, 0, (b != null) ? b.length : 0);
 		}
 
 		@Override
@@ -178,7 +178,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		@Override
 		public long skip(long n) throws IOException {
-			return (n <= 0 ? 0 : moveOn(cap(n)));
+			return (n <= 0) ? 0 : moveOn(cap(n));
 		}
 
 		/**

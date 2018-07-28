@@ -82,8 +82,8 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 			ReactiveHealthIndicatorRegistry registry) {
 		this.registry = registry;
 		this.healthAggregator = healthAggregator;
-		this.timeoutCompose = (mono) -> (this.timeout != null ? mono.timeout(
-				Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono);
+		this.timeoutCompose = (mono) -> (this.timeout != null) ? mono.timeout(
+				Duration.ofMillis(this.timeout), Mono.just(this.timeoutHealth)) : mono;
 	}
 
 	/**
@@ -115,8 +115,8 @@ public class CompositeReactiveHealthIndicator implements ReactiveHealthIndicator
 	public CompositeReactiveHealthIndicator timeoutStrategy(long timeout,
 			Health timeoutHealth) {
 		this.timeout = timeout;
-		this.timeoutHealth = (timeoutHealth != null ? timeoutHealth
-				: Health.unknown().build());
+		this.timeoutHealth = (timeoutHealth != null) ? timeoutHealth
+				: Health.unknown().build();
 		return this;
 	}
 

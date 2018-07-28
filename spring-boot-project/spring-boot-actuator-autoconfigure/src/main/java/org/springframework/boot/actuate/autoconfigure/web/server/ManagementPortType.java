@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@ public enum ManagementPortType {
 		if (managementPort != null && managementPort < 0) {
 			return DISABLED;
 		}
-		return ((managementPort == null)
+		return ((managementPort == null
 				|| (serverPort == null && managementPort.equals(8080))
-				|| (managementPort != 0 && managementPort.equals(serverPort)) ? SAME
+				|| (managementPort != 0 && managementPort.equals(serverPort))) ? SAME
 						: DIFFERENT);
 	}
 

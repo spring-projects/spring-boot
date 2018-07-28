@@ -94,7 +94,7 @@ public final class AnsiColors {
 		private final double b;
 
 		LabColor(Integer rgb) {
-			this(rgb != null ? new Color(rgb) : null);
+			this((rgb != null) ? new Color(rgb) : null);
 		}
 
 		LabColor(Color color) {
@@ -117,8 +117,8 @@ public final class AnsiColors {
 		}
 
 		private double f(double t) {
-			return (t > (216.0 / 24389.0) ? Math.cbrt(t)
-					: (1.0 / 3.0) * Math.pow(29.0 / 6.0, 2) * t + (4.0 / 29.0));
+			return (t > (216.0 / 24389.0)) ? Math.cbrt(t)
+					: (1.0 / 3.0) * Math.pow(29.0 / 6.0, 2) * t + (4.0 / 29.0);
 		}
 
 		// See http://en.wikipedia.org/wiki/Color_difference#CIE94

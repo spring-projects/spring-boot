@@ -248,7 +248,7 @@ public class AutoConfigurationImportSelector
 		}
 		String[] excludes = getEnvironment()
 				.getProperty(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class);
-		return (excludes != null ? Arrays.asList(excludes) : Collections.emptyList());
+		return (excludes != null) ? Arrays.asList(excludes) : Collections.emptyList();
 	}
 
 	private List<String> filter(List<String> configurations,
@@ -296,7 +296,7 @@ public class AutoConfigurationImportSelector
 
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {
 		String[] value = attributes.getStringArray(name);
-		return Arrays.asList(value != null ? value : new String[0]);
+		return Arrays.asList((value != null) ? value : new String[0]);
 	}
 
 	private void fireAutoConfigurationImportEvents(List<String> configurations,

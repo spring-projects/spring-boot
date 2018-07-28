@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,8 +150,9 @@ public class MavenSettings {
 		PrintWriter printer = new PrintWriter(message);
 		printer.println("Failed to determine active profiles:");
 		for (ModelProblemCollectorRequest problem : problemCollector.getProblems()) {
-			printer.println("    " + problem.getMessage() + (problem.getLocation() != null
-					? " at " + problem.getLocation() : ""));
+			String location = (problem.getLocation() != null)
+					? " at " + problem.getLocation() : "";
+			printer.println("    " + problem.getMessage() + location);
 			if (problem.getException() != null) {
 				printer.println(indentStackTrace(problem.getException(), "        "));
 			}

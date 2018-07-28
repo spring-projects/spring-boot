@@ -338,7 +338,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		private Integer getSeconds(Duration cachePeriod) {
-			return (cachePeriod != null ? (int) cachePeriod.getSeconds() : null);
+			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
 		}
 
 		@Bean

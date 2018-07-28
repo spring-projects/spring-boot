@@ -57,7 +57,7 @@ public class ApplicationHome {
 	 * @param sourceClass the source class or {@code null}
 	 */
 	public ApplicationHome(Class<?> sourceClass) {
-		this.source = findSource(sourceClass != null ? sourceClass : getStartClass());
+		this.source = findSource((sourceClass != null) ? sourceClass : getStartClass());
 		this.dir = findHomeDir(this.source);
 	}
 
@@ -88,11 +88,11 @@ public class ApplicationHome {
 
 	private File findSource(Class<?> sourceClass) {
 		try {
-			ProtectionDomain domain = (sourceClass != null
-					? sourceClass.getProtectionDomain() : null);
-			CodeSource codeSource = (domain != null ? domain.getCodeSource() : null);
-			URL location = (codeSource != null ? codeSource.getLocation() : null);
-			File source = (location != null ? findSource(location) : null);
+			ProtectionDomain domain = (sourceClass != null)
+					? sourceClass.getProtectionDomain() : null;
+			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
+			URL location = (codeSource != null) ? codeSource.getLocation() : null;
+			File source = (location != null) ? findSource(location) : null;
 			if (source != null && source.exists() && !isUnitTest()) {
 				return source.getAbsoluteFile();
 			}
@@ -136,7 +136,7 @@ public class ApplicationHome {
 
 	private File findHomeDir(File source) {
 		File homeDir = source;
-		homeDir = (homeDir != null ? homeDir : findDefaultHomeDir());
+		homeDir = (homeDir != null) ? homeDir : findDefaultHomeDir();
 		if (homeDir.isFile()) {
 			homeDir = homeDir.getParentFile();
 		}

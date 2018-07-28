@@ -48,10 +48,10 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 	public PropertySourcesPlaceholdersResolver(Iterable<PropertySource<?>> sources,
 			PropertyPlaceholderHelper helper) {
 		this.sources = sources;
-		this.helper = (helper != null ? helper
+		this.helper = (helper != null) ? helper
 				: new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
 						SystemPropertyUtils.PLACEHOLDER_SUFFIX,
-						SystemPropertyUtils.VALUE_SEPARATOR, true));
+						SystemPropertyUtils.VALUE_SEPARATOR, true);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 	private final JavaType mapType;
 
 	public JacksonJmxOperationResponseMapper(ObjectMapper objectMapper) {
-		this.objectMapper = (objectMapper != null ? objectMapper : new ObjectMapper());
+		this.objectMapper = (objectMapper != null) ? objectMapper : new ObjectMapper();
 		this.listType = this.objectMapper.getTypeFactory()
 				.constructParametricType(List.class, Object.class);
 		this.mapType = this.objectMapper.getTypeFactory()

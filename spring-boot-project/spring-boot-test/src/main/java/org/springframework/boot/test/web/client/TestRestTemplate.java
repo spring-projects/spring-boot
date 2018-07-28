@@ -130,7 +130,7 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(RestTemplateBuilder restTemplateBuilder, String username,
 			String password, HttpClientOption... httpClientOptions) {
-		this(restTemplateBuilder != null ? restTemplateBuilder.build() : null, username,
+		this((restTemplateBuilder != null) ? restTemplateBuilder.build() : null, username,
 				password, httpClientOptions);
 	}
 
