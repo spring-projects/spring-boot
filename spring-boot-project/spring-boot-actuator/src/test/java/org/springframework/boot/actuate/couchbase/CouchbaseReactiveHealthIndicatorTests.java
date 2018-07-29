@@ -27,13 +27,13 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import rx.Observable;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Status;
-import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
-
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Status;
+import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
