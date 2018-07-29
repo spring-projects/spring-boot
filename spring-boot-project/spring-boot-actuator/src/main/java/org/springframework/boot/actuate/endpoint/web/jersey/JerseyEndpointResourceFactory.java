@@ -188,7 +188,7 @@ public class JerseyEndpointResourceFactory {
 		private Response convertToJaxRsResponse(Object response, String httpMethod) {
 			if (response == null) {
 				boolean isGet = HttpMethod.GET.equals(httpMethod);
-				Status status = (isGet ? Status.NOT_FOUND : Status.NO_CONTENT);
+				Status status = isGet ? Status.NOT_FOUND : Status.NO_CONTENT;
 				return Response.status(status).build();
 			}
 			try {

@@ -302,7 +302,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						|| isDeprecated(source);
 				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
 						dataType, sourceType, null, description, defaultValue,
-						(deprecated ? getItemDeprecation(getter) : null)));
+						deprecated ? getItemDeprecation(getter) : null));
 			}
 		});
 	}
@@ -344,7 +344,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				boolean deprecated = isDeprecated(field) || isDeprecated(source);
 				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
 						dataType, sourceType, null, description, defaultValue,
-						(deprecated ? new ItemDeprecation() : null)));
+						deprecated ? new ItemDeprecation() : null));
 			}
 		});
 	}

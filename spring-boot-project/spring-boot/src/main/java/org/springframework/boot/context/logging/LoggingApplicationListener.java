@@ -310,7 +310,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private void setLogLevel(LoggingSystem system, String name, String level) {
 		try {
-			name = (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name);
+			name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
 			system.setLogLevel(name, coerceLogLevel(level));
 		}
 		catch (RuntimeException ex) {

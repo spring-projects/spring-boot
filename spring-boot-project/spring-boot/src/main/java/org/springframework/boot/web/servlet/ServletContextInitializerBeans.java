@@ -178,7 +178,7 @@ public class ServletContextInitializerBeans
 	private MultipartConfigElement getMultipartConfig(ListableBeanFactory beanFactory) {
 		List<Entry<String, MultipartConfigElement>> beans = getOrderedBeansOfType(
 				beanFactory, MultipartConfigElement.class);
-		return (beans.isEmpty() ? null : beans.get(0).getValue());
+		return beans.isEmpty() ? null : beans.get(0).getValue();
 	}
 
 	protected <T> void addAsRegistrationBean(ListableBeanFactory beanFactory,

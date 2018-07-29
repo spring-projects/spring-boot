@@ -441,7 +441,7 @@ public class ConfigFileApplicationListener
 				DocumentConsumer consumer) {
 			getSearchLocations().forEach((location) -> {
 				boolean isFolder = location.endsWith("/");
-				Set<String> names = (isFolder ? getSearchNames() : NO_SEARCH_NAMES);
+				Set<String> names = isFolder ? getSearchNames() : NO_SEARCH_NAMES;
 				names.forEach(
 						(name) -> load(location, name, profile, filterFactory, consumer));
 			});

@@ -214,7 +214,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public Object getContent() throws IOException {
 		connect();
-		return (this.jarEntryName.isEmpty() ? this.jarFile : super.getContent());
+		return this.jarEntryName.isEmpty() ? this.jarFile : super.getContent();
 	}
 
 	@Override
@@ -386,7 +386,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 		private String deduceContentType() {
 			// Guess the content type, don't bother with streams as mark is not supported
-			String type = (isEmpty() ? "x-java/jar" : null);
+			String type = isEmpty() ? "x-java/jar" : null;
 			type = (type != null) ? type : guessContentTypeFromName(toString());
 			type = (type != null) ? type : "content/unknown";
 			return type;

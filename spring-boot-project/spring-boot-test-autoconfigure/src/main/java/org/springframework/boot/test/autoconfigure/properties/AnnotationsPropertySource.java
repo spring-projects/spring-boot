@@ -164,7 +164,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private String dotAppend(String prefix, String postfix) {
 		if (StringUtils.hasText(prefix)) {
-			return (prefix.endsWith(".") ? prefix + postfix : prefix + "." + postfix);
+			return prefix.endsWith(".") ? prefix + postfix : prefix + "." + postfix;
 		}
 		return postfix;
 	}

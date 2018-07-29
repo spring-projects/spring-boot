@@ -119,7 +119,7 @@ public class ResourceBanner implements Banner {
 		if (version == null) {
 			return "";
 		}
-		return (format ? " (v" + version + ")" : version);
+		return format ? " (v" + version + ")" : version;
 	}
 
 	private PropertyResolver getAnsiResolver() {

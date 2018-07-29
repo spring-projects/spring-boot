@@ -48,7 +48,7 @@ public final class ConditionMessage {
 	}
 
 	private ConditionMessage(ConditionMessage prior, String message) {
-		this.message = (prior.isEmpty() ? message : prior + "; " + message);
+		this.message = prior.isEmpty() ? message : prior + "; " + message;
 	}
 
 	/**

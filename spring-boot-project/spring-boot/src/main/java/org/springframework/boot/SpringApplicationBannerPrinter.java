@@ -99,7 +99,7 @@ class SpringApplicationBannerPrinter {
 		String location = environment.getProperty(BANNER_IMAGE_LOCATION_PROPERTY);
 		if (StringUtils.hasLength(location)) {
 			Resource resource = this.resourceLoader.getResource(location);
-			return (resource.exists() ? new ImageBanner(resource) : null);
+			return resource.exists() ? new ImageBanner(resource) : null;
 		}
 		for (String ext : IMAGE_EXTENSION) {
 			Resource resource = this.resourceLoader.getResource("banner." + ext);

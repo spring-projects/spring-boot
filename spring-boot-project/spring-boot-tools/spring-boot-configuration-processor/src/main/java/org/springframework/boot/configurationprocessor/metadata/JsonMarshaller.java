@@ -111,7 +111,7 @@ public class JsonMarshaller {
 					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
-		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);
+		return object.optBoolean("deprecated") ? new ItemDeprecation() : null;
 	}
 
 	private ItemHint toItemHint(JSONObject object) throws Exception {

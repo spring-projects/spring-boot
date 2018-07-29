@@ -66,7 +66,7 @@ public class ContextIdApplicationContextInitializer implements
 
 	private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.getProperty("spring.application.name");
-		return (StringUtils.hasText(name) ? name : "application");
+		return StringUtils.hasText(name) ? name : "application";
 	}
 
 	/**

@@ -319,17 +319,17 @@ public final class ConfigurationPropertyName
 		int l1 = e1.length();
 		int l2 = e2.length();
 		boolean indexed1 = isIndexed(e1);
-		int offset1 = (indexed1 ? 1 : 0);
+		int offset1 = indexed1 ? 1 : 0;
 		boolean indexed2 = isIndexed(e2);
-		int offset2 = (indexed2 ? 1 : 0);
+		int offset2 = indexed2 ? 1 : 0;
 		int i1 = offset1;
 		int i2 = offset2;
 		while (i1 < l1 - offset1) {
 			if (i2 >= l2 - offset2) {
 				return false;
 			}
-			char ch1 = (indexed1 ? e1.charAt(i1) : Character.toLowerCase(e1.charAt(i1)));
-			char ch2 = (indexed2 ? e2.charAt(i2) : Character.toLowerCase(e2.charAt(i2)));
+			char ch1 = indexed1 ? e1.charAt(i1) : Character.toLowerCase(e1.charAt(i1));
+			char ch2 = indexed2 ? e2.charAt(i2) : Character.toLowerCase(e2.charAt(i2));
 			if (ch1 == '-' || ch1 == '_') {
 				i1++;
 			}
@@ -372,7 +372,7 @@ public final class ConfigurationPropertyName
 	private int getElementHashCode(CharSequence element) {
 		int hash = 0;
 		boolean indexed = isIndexed(element);
-		int offset = (indexed ? 1 : 0);
+		int offset = indexed ? 1 : 0;
 		for (int i = 0 + offset; i < element.length() - offset; i++) {
 			char ch = (indexed ? element.charAt(i)
 					: Character.toLowerCase(element.charAt(i)));

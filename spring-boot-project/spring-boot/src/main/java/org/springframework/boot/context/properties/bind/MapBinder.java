@@ -70,7 +70,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			}
 			new EntryBinder(name, resolvedTarget, elementBinder).bindEntries(source, map);
 		}
-		return (map.isEmpty() ? null : map);
+		return map.isEmpty() ? null : map;
 	}
 
 	private Bindable<?> resolveTarget(Bindable<?> target) {
