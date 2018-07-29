@@ -34,7 +34,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-class HateoasObjenesisCacheDisabler implements InitializingBean {
+public class HateoasObjenesisCacheDisabler implements InitializingBean {
 
 	private static final Log logger = LogFactory
 			.getLog(HateoasObjenesisCacheDisabler.class);
