@@ -178,7 +178,7 @@ class JsonReader {
 					.setReplacement(deprecationJsonObject.optString("replacement", null));
 			return deprecation;
 		}
-		return (object.optBoolean("deprecated") ? new Deprecation() : null);
+		return object.optBoolean("deprecated") ? new Deprecation() : null;
 	}
 
 	private Deprecation.Level parseDeprecationLevel(String value) {

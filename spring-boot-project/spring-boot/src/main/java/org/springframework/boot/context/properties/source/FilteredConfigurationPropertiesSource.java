@@ -44,7 +44,7 @@ class FilteredConfigurationPropertiesSource implements ConfigurationPropertySour
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
 		boolean filtered = getFilter().test(name);
-		return (filtered ? getSource().getConfigurationProperty(name) : null);
+		return filtered ? getSource().getConfigurationProperty(name) : null;
 	}
 
 	@Override

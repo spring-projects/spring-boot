@@ -61,7 +61,7 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	 */
 	public WebConversionService(String dateFormat) {
 		super(false);
-		this.dateFormat = (StringUtils.hasText(dateFormat) ? dateFormat : null);
+		this.dateFormat = StringUtils.hasText(dateFormat) ? dateFormat : null;
 		if (this.dateFormat != null) {
 			addFormatters();
 		}

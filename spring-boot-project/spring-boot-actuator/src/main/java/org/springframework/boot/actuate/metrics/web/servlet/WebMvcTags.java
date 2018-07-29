@@ -123,7 +123,7 @@ public final class WebMvcTags {
 
 	private static String getPathInfo(HttpServletRequest request) {
 		String pathInfo = request.getPathInfo();
-		String uri = (StringUtils.hasText(pathInfo) ? pathInfo : "/");
+		String uri = StringUtils.hasText(pathInfo) ? pathInfo : "/";
 		return uri.replaceAll("//+", "/").replaceAll("/$", "");
 	}
 

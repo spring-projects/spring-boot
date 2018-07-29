@@ -124,8 +124,8 @@ public class Handler extends URLStreamHandler {
 
 	private void log(boolean warning, String message, Exception cause) {
 		try {
-			Logger.getLogger(getClass().getName())
-					.log((warning ? Level.WARNING : Level.FINEST), message, cause);
+			Level level = warning ? Level.WARNING : Level.FINEST;
+			Logger.getLogger(getClass().getName()).log(level, message, cause);
 		}
 		catch (Exception ex) {
 			if (warning) {

@@ -209,7 +209,7 @@ public class ConditionsReportEndpoint {
 				this.message = outcome.getMessage();
 			}
 			else {
-				this.message = (outcome.isMatch() ? "matched" : "did not match");
+				this.message = outcome.isMatch() ? "matched" : "did not match";
 			}
 		}
 

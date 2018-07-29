@@ -51,7 +51,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 	@Override
 	public MeterFilterReply accept(Meter.Id id) {
 		boolean enabled = lookup(this.properties.getEnable(), id, true);
-		return (enabled ? MeterFilterReply.NEUTRAL : MeterFilterReply.DENY);
+		return enabled ? MeterFilterReply.NEUTRAL : MeterFilterReply.DENY;
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public class ServerPortInfoApplicationContextInitializer
 
 	private String getName(WebServerApplicationContext context) {
 		String name = context.getServerNamespace();
-		return (StringUtils.hasText(name) ? name : "server");
+		return StringUtils.hasText(name) ? name : "server";
 	}
 
 	private void setPortProperty(ApplicationContext context, String propertyName,

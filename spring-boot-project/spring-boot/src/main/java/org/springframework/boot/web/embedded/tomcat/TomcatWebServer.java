@@ -320,7 +320,7 @@ public class TomcatWebServer implements WebServer {
 		StringBuilder ports = new StringBuilder();
 		for (Connector connector : this.tomcat.getService().findConnectors()) {
 			ports.append((ports.length() != 0) ? " " : "");
-			int port = (localPort ? connector.getLocalPort() : connector.getPort());
+			int port = localPort ? connector.getLocalPort() : connector.getPort();
 			ports.append(port + " (" + connector.getScheme() + ")");
 		}
 		return ports.toString();

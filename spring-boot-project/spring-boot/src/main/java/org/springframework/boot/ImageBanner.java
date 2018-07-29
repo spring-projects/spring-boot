@@ -200,7 +200,7 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(BufferedImage image, int margin, boolean invert,
 			PrintStream out) {
-		AnsiElement background = (invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT);
+		AnsiElement background = invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT;
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(background));
 		out.println();

@@ -161,8 +161,7 @@ public class HttpTunnelConnectionTests {
 
 	private TunnelChannel openTunnel(boolean singleThreaded) throws Exception {
 		HttpTunnelConnection connection = new HttpTunnelConnection(this.url,
-				this.requestFactory,
-				(singleThreaded ? new CurrentThreadExecutor() : null));
+				this.requestFactory, singleThreaded ? new CurrentThreadExecutor() : null);
 		return connection.open(this.incomingChannel, this.closeable);
 	}
 

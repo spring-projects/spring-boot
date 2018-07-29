@@ -43,7 +43,7 @@ public class JavaExecutable {
 	private File findInJavaHome(String javaHome) {
 		File bin = new File(new File(javaHome), "bin");
 		File command = new File(bin, "java.exe");
-		command = (command.exists() ? command : new File(bin, "java"));
+		command = command.exists() ? command : new File(bin, "java");
 		Assert.state(command.exists(), () -> "Unable to find java in " + javaHome);
 		return command;
 	}

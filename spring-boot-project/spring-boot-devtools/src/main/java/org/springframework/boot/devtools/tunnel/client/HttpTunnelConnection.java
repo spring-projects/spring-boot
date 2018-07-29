@@ -101,7 +101,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	protected final ClientHttpRequest createRequest(boolean hasPayload)
 			throws IOException {
-		HttpMethod method = (hasPayload ? HttpMethod.POST : HttpMethod.GET);
+		HttpMethod method = hasPayload ? HttpMethod.POST : HttpMethod.GET;
 		return this.requestFactory.createRequest(this.uri, method);
 	}
 

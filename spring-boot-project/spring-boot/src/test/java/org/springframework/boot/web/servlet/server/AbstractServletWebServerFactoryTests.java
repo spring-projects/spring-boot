@@ -712,7 +712,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	private String getStoreType(String keyStore) {
-		return (keyStore.endsWith(".p12") ? "pkcs12" : null);
+		return keyStore.endsWith(".p12") ? "pkcs12" : null;
 	}
 
 	@Test

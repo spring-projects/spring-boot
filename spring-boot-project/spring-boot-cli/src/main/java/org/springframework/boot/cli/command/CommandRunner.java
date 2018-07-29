@@ -54,7 +54,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param name the name of the runner or {@code null}
 	 */
 	public CommandRunner(String name) {
-		this.name = (StringUtils.hasLength(name) ? name + " " : "");
+		this.name = StringUtils.hasLength(name) ? name + " " : "";
 	}
 
 	/**

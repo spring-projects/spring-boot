@@ -140,7 +140,7 @@ public class ApplicationHome {
 		if (homeDir.isFile()) {
 			homeDir = homeDir.getParentFile();
 		}
-		homeDir = (homeDir.exists() ? homeDir : new File("."));
+		homeDir = homeDir.exists() ? homeDir : new File(".");
 		return homeDir.getAbsoluteFile();
 	}
 

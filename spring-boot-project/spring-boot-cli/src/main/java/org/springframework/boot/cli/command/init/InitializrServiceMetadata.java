@@ -212,7 +212,7 @@ class InitializrServiceMetadata {
 
 	private String getStringValue(JSONObject object, String name, String defaultValue)
 			throws JSONException {
-		return (object.has(name) ? object.getString(name) : defaultValue);
+		return object.has(name) ? object.getString(name) : defaultValue;
 	}
 
 	private Map<String, String> parseStringItems(JSONObject json) throws JSONException {

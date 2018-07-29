@@ -132,7 +132,7 @@ public class MetricsEndpoint {
 	}
 
 	private BiFunction<Double, Double, Double> mergeFunction(Statistic statistic) {
-		return (Statistic.MAX.equals(statistic) ? Double::max : Double::sum);
+		return Statistic.MAX.equals(statistic) ? Double::max : Double::sum;
 	}
 
 	private Map<String, Set<String>> getAvailableTags(List<Meter> meters) {

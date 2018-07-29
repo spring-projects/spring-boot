@@ -111,7 +111,7 @@ public class ConditionOutcome {
 	 * @return the message or {@code null}
 	 */
 	public String getMessage() {
-		return (this.message.isEmpty() ? null : this.message.toString());
+		return this.message.isEmpty() ? null : this.message.toString();
 	}
 
 	/**
