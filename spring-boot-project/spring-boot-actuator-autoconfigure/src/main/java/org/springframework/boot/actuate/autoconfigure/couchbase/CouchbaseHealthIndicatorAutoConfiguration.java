@@ -42,15 +42,11 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(Bucket.class)
 @ConditionalOnEnabledHealthIndicator("couchbase")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
-@AutoConfigureAfter({
-		CouchbaseAutoConfiguration.class,
+@AutoConfigureAfter({ CouchbaseAutoConfiguration.class,
 		CouchbaseDataAutoConfiguration.class,
-		CouchbaseReactiveDataAutoConfiguration.class
-})
-@Import({
-		CouchbaseHealthIndicatorConfiguration.class,
-		CouchbaseReactiveHealthIndicatorConfiguration.class
-})
+		CouchbaseReactiveDataAutoConfiguration.class })
+@Import({ CouchbaseHealthIndicatorConfiguration.class,
+		CouchbaseReactiveHealthIndicatorConfiguration.class })
 public class CouchbaseHealthIndicatorAutoConfiguration {
 
 }

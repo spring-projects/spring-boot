@@ -28,7 +28,8 @@ import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link org.springframework.boot.actuate.health.ReactiveHealthIndicator} for Couchbase.
+ * A {@link org.springframework.boot.actuate.health.ReactiveHealthIndicator} for
+ * Couchbase.
  *
  * @author Mikalai Lushchytski
  * @since 2.1.0
@@ -52,23 +53,21 @@ public class CouchbaseReactiveHealthIndicator extends AbstractReactiveHealthIndi
 		String versions = StringUtils
 				.collectionToCommaDelimitedString(cluster.getAllVersions());
 		Observable<BucketInfo> bucket = this.couchbaseOperations.getCouchbaseBucket()
-				.bucketManager()
-				.async()
-				.info();
-		Single<Health> health = bucket
-				.map(BucketInfo::nodeList)
+				.bucketManager().async().info();
+		Single<Health> health = bucket.map(BucketInfo::nodeList)
 				.map(StringUtils::collectionToCommaDelimitedString)
 				.map((nodes) -> up(builder, versions, nodes))
-				.onErrorReturn((error) -> down(builder, error))
-				.toSingle();
+				.onErrorReturn((error) -> down(builder, error)).toSingle();
 		return Mono.from(RxReactiveStreams.toPublisher(health));
 	}
 
 	private Health up(Health.Builder builder, String versions, String nodes) {
-		return builder.up().withDetail("versions", versions).withDetail("nodes", nodes).build();
+		return builder.up().withDetail("versions", versions).withDetail("nodes", nodes)
+				.build();
 	}
 
 	private Health down(Health.Builder builder, Throwable error) {
 		return builder.down(error).build();
 	}
+
 }

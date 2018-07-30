@@ -47,12 +47,12 @@ public class CouchbaseReactiveHealthIndicatorTests {
 	@Test
 	public void testCouchbaseIsUp() {
 		ClusterInfo clusterInfo = mock(ClusterInfo.class);
-		RxJavaCouchbaseOperations rxJavaCouchbaseOperations = mock(RxJavaCouchbaseOperations.class);
+		RxJavaCouchbaseOperations rxJavaCouchbaseOperations = mock(
+				RxJavaCouchbaseOperations.class);
 		given(rxJavaCouchbaseOperations.getCouchbaseClusterInfo())
 				.willReturn(clusterInfo);
-		given(clusterInfo.getAllVersions()).willReturn(Arrays.asList(
-				new Version(5, 5, 0), new Version(6, 0, 0)
-		));
+		given(clusterInfo.getAllVersions())
+				.willReturn(Arrays.asList(new Version(5, 5, 0), new Version(6, 0, 0)));
 		Bucket bucket = mock(Bucket.class);
 		BucketManager bucketManager = mock(BucketManager.class);
 		AsyncBucketManager asyncBucketManager = mock(AsyncBucketManager.class);
@@ -83,19 +83,20 @@ public class CouchbaseReactiveHealthIndicatorTests {
 	@Test
 	public void testCouchbaseIsDown() {
 		ClusterInfo clusterInfo = mock(ClusterInfo.class);
-		RxJavaCouchbaseOperations rxJavaCouchbaseOperations = mock(RxJavaCouchbaseOperations.class);
+		RxJavaCouchbaseOperations rxJavaCouchbaseOperations = mock(
+				RxJavaCouchbaseOperations.class);
 		given(rxJavaCouchbaseOperations.getCouchbaseClusterInfo())
 				.willReturn(clusterInfo);
-		given(clusterInfo.getAllVersions()).willReturn(Collections.singletonList(
-				new Version(5, 5, 0)
-		));
+		given(clusterInfo.getAllVersions())
+				.willReturn(Collections.singletonList(new Version(5, 5, 0)));
 		BucketManager bucketManager = mock(BucketManager.class);
 		AsyncBucketManager asyncBucketManager = mock(AsyncBucketManager.class);
 		Bucket bucket = mock(Bucket.class);
 		given(rxJavaCouchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
 		given(bucket.bucketManager()).willReturn(bucketManager);
 		given(bucketManager.async()).willReturn(asyncBucketManager);
-		given(asyncBucketManager.info()).willReturn(Observable.error(new TranscodingException("Failure")));
+		given(asyncBucketManager.info())
+				.willReturn(Observable.error(new TranscodingException("Failure")));
 		CouchbaseReactiveHealthIndicator couchbaseReactiveHealthIndicator = new CouchbaseReactiveHealthIndicator(
 				rxJavaCouchbaseOperations);
 
@@ -103,8 +104,9 @@ public class CouchbaseReactiveHealthIndicatorTests {
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
-			assertThat(h.getDetails().get("error")).isEqualTo(
-					TranscodingException.class.getName() + ": Failure");
+			assertThat(h.getDetails().get("error"))
+					.isEqualTo(TranscodingException.class.getName() + ": Failure");
 		}).verifyComplete();
 	}
+
 }

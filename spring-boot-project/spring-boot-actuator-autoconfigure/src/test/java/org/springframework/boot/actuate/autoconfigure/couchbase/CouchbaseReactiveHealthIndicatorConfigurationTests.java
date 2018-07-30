@@ -37,10 +37,9 @@ import static org.mockito.Mockito.mock;
 public class CouchbaseReactiveHealthIndicatorConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(CouchbaseMockConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(
-					CouchbaseHealthIndicatorAutoConfiguration.class,
-					HealthIndicatorAutoConfiguration.class));
+			.withUserConfiguration(CouchbaseMockConfiguration.class).withConfiguration(
+					AutoConfigurations.of(CouchbaseHealthIndicatorAutoConfiguration.class,
+							HealthIndicatorAutoConfiguration.class));
 
 	@Test
 	public void runShouldCreateIndicator() {

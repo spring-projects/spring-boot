@@ -51,4 +51,5 @@ public class CouchbaseHealthIndicatorConfiguration extends
 	public HealthIndicator couchbaseHealthIndicator() {
 		return createHealthIndicator(this.couchbaseOperations);
 	}
+
 }

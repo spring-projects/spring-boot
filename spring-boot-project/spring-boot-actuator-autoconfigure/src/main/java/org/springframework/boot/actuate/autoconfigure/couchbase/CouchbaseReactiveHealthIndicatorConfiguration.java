@@ -28,7 +28,8 @@ import org.springframework.data.couchbase.core.RxJavaCouchbaseOperations;
 import java.util.Map;
 
 /**
- * Configuration for {@link org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicator}.
+ * Configuration for
+ * {@link org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicator}.
  *
  * @author Mikalai Lushchytski
  * @since 2.1.0
@@ -51,4 +52,5 @@ public class CouchbaseReactiveHealthIndicatorConfiguration extends
 	public ReactiveHealthIndicator couchbaseReactiveHealthIndicator() {
 		return createHealthIndicator(this.couchbaseOperations);
 	}
+
 }
