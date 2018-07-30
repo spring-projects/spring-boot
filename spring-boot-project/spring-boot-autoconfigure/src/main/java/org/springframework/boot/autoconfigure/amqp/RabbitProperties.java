@@ -770,6 +770,7 @@ public class RabbitProperties {
 		public void setQueue(String queue) {
 			this.queue = queue;
 		}
+
 	}
 
 	public static class Retry {
