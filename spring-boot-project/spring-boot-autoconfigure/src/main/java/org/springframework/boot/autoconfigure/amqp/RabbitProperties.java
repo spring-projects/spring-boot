@@ -715,7 +715,8 @@ public class RabbitProperties {
 		private String routingKey = "";
 
 		/**
-		 * Default queue name that will be used for synchronous receives.
+		 * Name of the default queue to receive messages from when none is specified
+		 * explicitly.
 		 */
 		private String queue;
 
@@ -764,12 +765,13 @@ public class RabbitProperties {
 		}
 
 		public String getQueue() {
-			return queue;
+			return this.queue;
 		}
 
 		public void setQueue(String queue) {
 			this.queue = queue;
 		}
+
 	}
 
 	public static class Retry {

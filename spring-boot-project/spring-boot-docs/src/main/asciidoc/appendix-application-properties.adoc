@@ -1158,6 +1158,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.ssl.algorithm= # SSL algorithm to use. By default, configured by the Rabbit client library.
 	spring.rabbitmq.template.exchange= # Name of the default exchange to use for send operations.
 	spring.rabbitmq.template.mandatory= # Whether to enable mandatory messages.
+	spring.rabbitmq.template.queue= # Name of the default queue to receive messages from when none is specified explicitly.
 	spring.rabbitmq.template.receive-timeout= # Timeout for `receive()` operations.
 	spring.rabbitmq.template.reply-timeout= # Timeout for `sendAndReceive()` operations.
 	spring.rabbitmq.template.retry.enabled=false # Whether publishing retries are enabled.
@@ -1166,7 +1167,6 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.template.retry.max-interval=10000ms # Maximum duration between attempts.
 	spring.rabbitmq.template.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.template.routing-key= # Value of a default routing key to use for send operations.
-	spring.rabbitmq.template.queue= # Value of a default queue name that will be used for synchronous receives.
 	spring.rabbitmq.username=guest # Login user to authenticate to the broker.
 	spring.rabbitmq.virtual-host= # Virtual host to use when connecting to the broker.
 
