@@ -15,6 +15,10 @@
  */
 package org.springframework.boot.actuate.couchbase;
 
+import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.Collections;
+
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.bucket.AsyncBucketManager;
 import com.couchbase.client.java.bucket.BucketInfo;
@@ -22,11 +26,6 @@ import com.couchbase.client.java.bucket.BucketManager;
 import com.couchbase.client.java.cluster.ClusterInfo;
 import com.couchbase.client.java.error.TranscodingException;
 import com.couchbase.client.java.util.features.Version;
-
-import java.net.InetAddress;
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
