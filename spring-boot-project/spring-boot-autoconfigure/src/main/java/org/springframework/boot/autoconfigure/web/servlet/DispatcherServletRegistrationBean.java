@@ -24,7 +24,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link ServletRegistrationBean} for the auto-configured {@link DispatcherServlet}. Both
- * registeres the servlet and exposes {@link DispatcherServletPath} information.
+ * registers the servlet and exposes {@link DispatcherServletPath} information.
  *
  * @author Phillip Webb
  * @since 2.0.4
