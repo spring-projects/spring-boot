@@ -764,7 +764,7 @@ public class RabbitProperties {
 		}
 
 		public String getQueue() {
-			return queue;
+			return this.queue;
 		}
 
 		public void setQueue(String queue) {
