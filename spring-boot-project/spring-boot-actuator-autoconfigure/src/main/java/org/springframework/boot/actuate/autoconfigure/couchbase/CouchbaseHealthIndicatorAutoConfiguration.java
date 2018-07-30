@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.couchbase;
 
 import com.couchbase.client.java.Bucket;
+
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;

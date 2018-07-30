@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.actuate.autoconfigure.couchbase;
 
+import java.util.Map;
+
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
 import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -24,8 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
-
-import java.util.Map;
 
 /**
  * Configuration for {@link CouchbaseHealthIndicator}.
