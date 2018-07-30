@@ -433,19 +433,11 @@ public class AutoConfigurationImportSelector
 			Set<String> allExclusions = this.autoConfigurationEntries.stream()
 					.map(AutoConfigurationEntry::getExclusions)
 					.flatMap(Collection::stream).collect(Collectors.toSet());
-			Set<String> processedConfigurations = new LinkedHashSet<>();
-			Set<String> processedExclusions = new LinkedHashSet<>();
-			this.autoConfigurationEntries.forEach((entry) -> {
-				List<String> configurations = new ArrayList<>(entry.getConfigurations());
-				configurations.removeAll(allExclusions);
-				configurations.removeIf(processedConfigurations::contains);
-				Set<String> exclusions = new HashSet<>(entry.getExclusions());
-				exclusions.removeIf(processedExclusions::contains);
-				// This now represents the exact state of this entry based on the
-				// state of all other entries
-				processedConfigurations.addAll(configurations);
-				processedExclusions.addAll(exclusions);
-			});
+			Set<String> processedConfigurations = this.autoConfigurationEntries.stream()
+					.map(AutoConfigurationEntry::getConfigurations)
+					.flatMap(Collection::stream)
+					.collect(Collectors.toCollection(LinkedHashSet::new));
+			processedConfigurations.removeAll(allExclusions);
 
 			return sortAutoConfigurations(processedConfigurations,
 					getAutoConfigurationMetadata())
