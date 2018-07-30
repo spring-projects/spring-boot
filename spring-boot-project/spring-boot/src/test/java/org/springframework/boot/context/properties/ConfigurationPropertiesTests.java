@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -350,6 +351,15 @@ public class ConfigurationPropertiesTests {
 		WithPropertyPlaceholderValueProperties bean = this.context
 				.getBean(WithPropertyPlaceholderValueProperties.class);
 		assertThat(bean.getValue()).isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWithPropertyPlaceholderShouldNotAlterPropertySourceOrder() {
+		load(WithPropertyPlaceholderWithLocalPropertiesValueConfiguration.class,
+				"com.example.bar=a");
+		SimplePrefixedProperties bean = this.context
+				.getBean(SimplePrefixedProperties.class);
+		assertThat(bean.getBar()).isEqualTo("a");
 	}
 
 	@Test
@@ -955,6 +965,21 @@ public class ConfigurationPropertiesTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer configurer() {
 			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(SimplePrefixedProperties.class)
+	static class WithPropertyPlaceholderWithLocalPropertiesValueConfiguration {
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer configurer() {
+			PropertySourcesPlaceholderConfigurer placeholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+			Properties properties = new Properties();
+			properties.put("com.example.bar", "b");
+			placeholderConfigurer.setProperties(properties);
+			return placeholderConfigurer;
 		}
 
 	}
