@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -29,6 +26,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -60,9 +58,7 @@ public class ApplicationInfoMetrics implements MeterBinder {
 		Info build = builder.build();
 
 		final Map<String, Object> details = build.getDetails();
-		Map<String, String> flatDetails = new LinkedHashMap<>();
-
-		flattenKeys(details, flatDetails);
+		Map<String, String> flatDetails = flattenKeys(details, "");
 
 		final List<Tag> tags = flatDetails.entrySet().stream()
 				.map(e -> Tag.of(e.getKey(), e.getValue()))
@@ -71,17 +67,18 @@ public class ApplicationInfoMetrics implements MeterBinder {
 		return tags;
 	}
 
-	private void flattenKeys(Map<String, Object> map, Map<String, String> result) {
+	private Map<String, String> flattenKeys(Map<String, Object> info, final String parentKey) {
 
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			if (!(entry.getValue() instanceof Map)) {
-				result.put(entry.getKey(), String.valueOf(entry.getValue()));
+		final Map<String, String> result = new LinkedHashMap<>();
+		final String prefix = StringUtils.isEmpty(parentKey) ? "" : parentKey + '.';
+
+		for (Map.Entry<String, Object> entry : info.entrySet()) {
+			if (entry.getValue() instanceof Map) {
+				result.putAll(flattenKeys((Map<String, Object>) entry.getValue(), prefix + entry.getKey()));
 			} else {
-				final Map<String, Object> remaining = (Map<String, Object>) entry.getValue();
-				remaining.entrySet().stream()
-						.map(e -> Collections.singletonMap(entry.getKey().concat(".").concat(e.getKey()), e.getValue()))
-						.forEach(m -> flattenKeys(m, result));
+				result.put(prefix + entry.getKey(), Objects.toString(entry.getValue()));
 			}
 		}
+		return result;
 	}
 }

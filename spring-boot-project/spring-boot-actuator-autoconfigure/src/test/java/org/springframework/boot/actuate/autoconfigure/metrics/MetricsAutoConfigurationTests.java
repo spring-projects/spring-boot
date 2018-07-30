@@ -380,4 +380,24 @@ public class MetricsAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	static class CustomApplicationInfoMetricsConfiguration {
+
+		@Bean
+		ApplicationInfoMetrics customApplicationInfoMetrics() {
+			return new ApplicationInfoMetrics(Collections.singletonList(mock(InfoContributor.class)));
+		}
+
+	}
+
+	@Configuration
+	static class CustomApplicationInfoMetricsConfiguration {
+
+		@Bean
+		ApplicationInfoMetrics customApplicationInfoMetrics() {
+			return new ApplicationInfoMetrics(Collections.singletonList(mock(InfoContributor.class)));
+		}
+
+	}
+
 }
