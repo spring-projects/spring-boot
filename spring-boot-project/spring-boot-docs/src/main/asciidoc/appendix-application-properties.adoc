@@ -962,10 +962,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.activemq.packages.trusted= # Comma-separated list of specific packages to trust (when not trusting all packages).
 	spring.activemq.pool.block-if-full=true # Whether to block when a connection is requested and the pool is full. Set it to false to throw a "JMSException" instead.
 	spring.activemq.pool.block-if-full-timeout=-1ms # Blocking period before throwing an exception if the pool is still full.
-	spring.activemq.pool.enabled=false # Whether a PooledConnectionFactory should be created, instead of a regular ConnectionFactory.
+	spring.activemq.pool.enabled=false # Whether a JmsPoolConnectionFactory should be created, instead of a regular ConnectionFactory.
 	spring.activemq.pool.idle-timeout=30s # Connection idle timeout.
 	spring.activemq.pool.max-connections=1 # Maximum number of pooled connections.
-	spring.activemq.pool.maximum-active-session-per-connection=500 # Maximum number of active sessions per connection.
+	spring.activemq.pool.max-sessions-per-connection=500 # Maximum number of pooled sessions per connection in the pool.
 	spring.activemq.pool.time-between-expiration-check=-1ms # Time to sleep between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
 	spring.activemq.pool.use-anonymous-producers=true # Whether to use only one anonymous "MessageProducer" instance. Set it to false to create one "MessageProducer" every time one is required.
 
@@ -983,11 +983,11 @@ content into your application. Rather, pick only the properties that you need.
 	spring.artemis.pool.block-if-full=true # Whether to block when a connection is requested and the pool is full. Set it to false to throw a "JMSException" instead.
 	spring.artemis.pool.block-if-full-timeout=-1ms # Blocking period before throwing an exception if the pool is still full.
 	spring.artemis.pool.create-connection-on-startup=true # Whether to create a connection on startup. Can be used to warm up the pool on startup.
-	spring.artemis.pool.enabled=false # Whether a PooledConnectionFactory should be created, instead of a regular ConnectionFactory.
+	spring.artemis.pool.enabled=false # Whether a JmsPoolConnectionFactory should be created, instead of a regular ConnectionFactory.
 	spring.artemis.pool.expiry-timeout=0ms # Connection expiration timeout.
 	spring.artemis.pool.idle-timeout=30s # Connection idle timeout.
 	spring.artemis.pool.max-connections=1 # Maximum number of pooled connections.
-	spring.artemis.pool.maximum-active-session-per-connection=500 # Maximum number of active sessions per connection.
+	spring.artemis.pool.max-sessions-per-connection=500 # Maximum number of pooled sessions per connection in the pool.
 	spring.artemis.pool.reconnect-on-exception=true # Reset the connection when a "JMSException" occurs.
 	spring.artemis.pool.time-between-expiration-check=-1ms # Time to sleep between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
 	spring.artemis.pool.use-anonymous-producers=true # Whether to use only one anonymous "MessageProducer" instance. Set it to false to create one "MessageProducer" every time one is required.

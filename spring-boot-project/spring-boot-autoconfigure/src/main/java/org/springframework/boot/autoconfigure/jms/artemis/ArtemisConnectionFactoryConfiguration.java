@@ -19,15 +19,15 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
-import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryFactory;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
-import org.springframework.boot.autoconfigure.jms.activemq.PooledConnectionFactoryFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.connection.CachingConnectionFactory;
@@ -87,17 +87,17 @@ class ArtemisConnectionFactoryConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ PooledConnectionFactory.class, PooledObject.class })
+	@ConditionalOnClass({ JmsPoolConnectionFactory.class, PooledObject.class })
 	static class PooledConnectionFactoryConfiguration {
 
 		@Bean(destroyMethod = "stop")
 		@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "true", matchIfMissing = false)
-		public PooledConnectionFactory pooledJmsConnectionFactory(
+		public JmsPoolConnectionFactory pooledJmsConnectionFactory(
 				ListableBeanFactory beanFactory, ArtemisProperties properties) {
 			ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(
 					beanFactory, properties)
 							.createConnectionFactory(ActiveMQConnectionFactory.class);
-			return new PooledConnectionFactoryFactory(properties.getPool())
+			return new JmsPoolConnectionFactoryFactory(properties.getPool())
 					.createPooledConnectionFactory(connectionFactory);
 		}
 

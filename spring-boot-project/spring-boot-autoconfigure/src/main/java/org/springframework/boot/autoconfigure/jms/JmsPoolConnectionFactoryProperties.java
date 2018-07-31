@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.activemq;
+package org.springframework.boot.autoconfigure.jms;
 
 import java.time.Duration;
 
@@ -24,10 +24,10 @@ import java.time.Duration;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-public class PooledConnectionFactoryProperties {
+public class JmsPoolConnectionFactoryProperties {
 
 	/**
-	 * Whether a PooledConnectionFactory should be created, instead of a regular
+	 * Whether a JmsPoolConnectionFactory should be created, instead of a regular
 	 * ConnectionFactory.
 	 */
 	private boolean enabled;
@@ -54,9 +54,9 @@ public class PooledConnectionFactoryProperties {
 	private int maxConnections = 1;
 
 	/**
-	 * Maximum number of active sessions per connection.
+	 * Maximum number of pooled sessions per connection in the pool.
 	 */
-	private int maximumActiveSessionPerConnection = 500;
+	private int maxSessionsPerConnection = 500;
 
 	/**
 	 * Time to sleep between runs of the idle connection eviction thread. When negative,
@@ -110,13 +110,23 @@ public class PooledConnectionFactoryProperties {
 		this.maxConnections = maxConnections;
 	}
 
+	@Deprecated
 	public int getMaximumActiveSessionPerConnection() {
-		return this.maximumActiveSessionPerConnection;
+		return getMaxSessionsPerConnection();
 	}
 
+	@Deprecated
 	public void setMaximumActiveSessionPerConnection(
 			int maximumActiveSessionPerConnection) {
-		this.maximumActiveSessionPerConnection = maximumActiveSessionPerConnection;
+		setMaxSessionsPerConnection(maximumActiveSessionPerConnection);
+	}
+
+	public int getMaxSessionsPerConnection() {
+		return this.maxSessionsPerConnection;
+	}
+
+	public void setMaxSessionsPerConnection(int maxSessionsPerConnection) {
+		this.maxSessionsPerConnection = maxSessionsPerConnection;
 	}
 
 	public Duration getTimeBetweenExpirationCheck() {

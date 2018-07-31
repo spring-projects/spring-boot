@@ -37,10 +37,10 @@ import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.JMSQueueConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.config.impl.TopicConfigurationImpl;
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS;
-import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
@@ -350,81 +350,83 @@ public class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultPooledConnectionFactoryIsApplied() {
+	public void defaultPoolConnectionFactoryIsApplied() {
 		this.contextRunner.withPropertyValues("spring.artemis.pool.enabled=true")
 				.run((context) -> {
-					assertThat(context.getBeansOfType(PooledConnectionFactory.class))
+					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class))
 							.hasSize(1);
-					PooledConnectionFactory connectionFactory = context
-							.getBean(PooledConnectionFactory.class);
-					PooledConnectionFactory defaultFactory = new PooledConnectionFactory();
+					JmsPoolConnectionFactory connectionFactory = context
+							.getBean(JmsPoolConnectionFactory.class);
+					JmsPoolConnectionFactory defaultFactory = new JmsPoolConnectionFactory();
 					assertThat(connectionFactory.isBlockIfSessionPoolIsFull())
 							.isEqualTo(defaultFactory.isBlockIfSessionPoolIsFull());
 					assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout())
 							.isEqualTo(
 									defaultFactory.getBlockIfSessionPoolIsFullTimeout());
-					assertThat(connectionFactory.isCreateConnectionOnStartup())
-							.isEqualTo(defaultFactory.isCreateConnectionOnStartup());
-					assertThat(connectionFactory.getExpiryTimeout())
-							.isEqualTo(defaultFactory.getExpiryTimeout());
-					assertThat(connectionFactory.getIdleTimeout())
-							.isEqualTo(defaultFactory.getIdleTimeout());
+					assertThat(connectionFactory.getConnectionIdleTimeout())
+							.isEqualTo(defaultFactory.getConnectionIdleTimeout());
 					assertThat(connectionFactory.getMaxConnections())
 							.isEqualTo(defaultFactory.getMaxConnections());
-					assertThat(connectionFactory.getMaximumActiveSessionPerConnection())
-							.isEqualTo(defaultFactory
-									.getMaximumActiveSessionPerConnection());
-					assertThat(connectionFactory.isReconnectOnException())
-							.isEqualTo(defaultFactory.isReconnectOnException());
-					assertThat(connectionFactory.getTimeBetweenExpirationCheckMillis())
-							.isEqualTo(
-									defaultFactory.getTimeBetweenExpirationCheckMillis());
+					assertThat(connectionFactory.getMaxSessionsPerConnection())
+							.isEqualTo(defaultFactory.getMaxSessionsPerConnection());
+					assertThat(connectionFactory.getConnectionCheckInterval())
+							.isEqualTo(defaultFactory.getConnectionCheckInterval());
 					assertThat(connectionFactory.isUseAnonymousProducers())
 							.isEqualTo(defaultFactory.isUseAnonymousProducers());
 				});
 	}
 
 	@Test
-	public void customPooledConnectionFactoryIsApplied() {
+	public void customPoolConnectionFactoryIsApplied() {
 		this.contextRunner
 				.withPropertyValues("spring.artemis.pool.enabled=true",
 						"spring.artemis.pool.blockIfFull=false",
 						"spring.artemis.pool.blockIfFullTimeout=64",
-						"spring.artemis.pool.createConnectionOnStartup=false",
-						"spring.artemis.pool.expiryTimeout=4096",
 						"spring.artemis.pool.idleTimeout=512",
 						"spring.artemis.pool.maxConnections=256",
-						"spring.artemis.pool.maximumActiveSessionPerConnection=1024",
-						"spring.artemis.pool.reconnectOnException=false",
+						"spring.artemis.pool.maxSessionsPerConnection=1024",
 						"spring.artemis.pool.timeBetweenExpirationCheck=2048",
 						"spring.artemis.pool.useAnonymousProducers=false")
 				.run((context) -> {
-					assertThat(context.getBeansOfType(PooledConnectionFactory.class))
+					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class))
 							.hasSize(1);
-					PooledConnectionFactory connectionFactory = context
-							.getBean(PooledConnectionFactory.class);
+					JmsPoolConnectionFactory connectionFactory = context
+							.getBean(JmsPoolConnectionFactory.class);
 					assertThat(connectionFactory.isBlockIfSessionPoolIsFull()).isFalse();
 					assertThat(connectionFactory.getBlockIfSessionPoolIsFullTimeout())
 							.isEqualTo(64);
-					assertThat(connectionFactory.isCreateConnectionOnStartup()).isFalse();
-					assertThat(connectionFactory.getExpiryTimeout()).isEqualTo(4096);
-					assertThat(connectionFactory.getIdleTimeout()).isEqualTo(512);
+					assertThat(connectionFactory.getConnectionIdleTimeout())
+							.isEqualTo(512);
 					assertThat(connectionFactory.getMaxConnections()).isEqualTo(256);
-					assertThat(connectionFactory.getMaximumActiveSessionPerConnection())
+					assertThat(connectionFactory.getMaxSessionsPerConnection())
 							.isEqualTo(1024);
-					assertThat(connectionFactory.isReconnectOnException()).isFalse();
-					assertThat(connectionFactory.getTimeBetweenExpirationCheckMillis())
+					assertThat(connectionFactory.getConnectionCheckInterval())
 							.isEqualTo(2048);
 					assertThat(connectionFactory.isUseAnonymousProducers()).isFalse();
 				});
 	}
 
 	@Test
-	public void pooledConnectionFactoryConfiguration() {
+	public void customPoolConnectionFactoryIsAppliedWithDeprecatedSettings() {
+		this.contextRunner
+				.withPropertyValues("spring.artemis.pool.enabled=true",
+						"spring.artemis.pool.maximumActiveSessionPerConnection=1024")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(JmsPoolConnectionFactory.class))
+							.hasSize(1);
+					JmsPoolConnectionFactory connectionFactory = context
+							.getBean(JmsPoolConnectionFactory.class);
+					assertThat(connectionFactory.getMaxSessionsPerConnection())
+							.isEqualTo(1024);
+				});
+	}
+
+	@Test
+	public void poolConnectionFactoryConfiguration() {
 		this.contextRunner.withPropertyValues("spring.artemis.pool.enabled:true")
 				.run((context) -> {
 					ConnectionFactory factory = context.getBean(ConnectionFactory.class);
-					assertThat(factory).isInstanceOf(PooledConnectionFactory.class);
+					assertThat(factory).isInstanceOf(JmsPoolConnectionFactory.class);
 					context.getSourceApplicationContext().close();
 					assertThat(factory.createConnection()).isNull();
 				});

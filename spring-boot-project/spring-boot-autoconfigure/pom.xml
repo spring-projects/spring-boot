@@ -185,17 +185,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-pool</artifactId>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<artifactId>geronimo-jms_1.1_spec</artifactId>
-					<groupId>org.apache.geronimo.specs</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-jms-client</artifactId>
 			<optional>true</optional>
 			<exclusions>
@@ -345,6 +334,17 @@
 			<groupId>org.jboss</groupId>
 			<artifactId>jboss-transaction-spi</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.messaginghub</groupId>
+			<artifactId>pooled-jms</artifactId>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-jms_2.0_spec</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>

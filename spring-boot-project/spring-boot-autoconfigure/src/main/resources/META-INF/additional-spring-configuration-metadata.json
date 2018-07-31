@@ -50,6 +50,18 @@
       "defaultValue": true
     },
     {
+      "name": "spring.activemq.pool.maximum-active-session-per-connection",
+      "deprecation": {
+        "replacement": "spring.activemq.pool.max-sessions-per-connection"
+      }
+    },
+    {
+      "name": "spring.artemis.pool.maximum-active-session-per-connection",
+      "deprecation": {
+        "replacement": "spring.artemis.pool.max-sessions-per-connection"
+      }
+    },
+    {
       "name": "spring.application.admin.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable admin features for the application.",

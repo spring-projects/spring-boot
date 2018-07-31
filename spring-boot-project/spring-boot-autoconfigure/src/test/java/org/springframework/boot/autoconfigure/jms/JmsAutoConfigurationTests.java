@@ -20,8 +20,8 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.junit.Test;
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
@@ -369,8 +369,8 @@ public class JmsAutoConfigurationTests {
 				.withPropertyValues("spring.activemq.pool.enabled:true")
 				.run((context) -> {
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-					PooledConnectionFactory pool = context
-							.getBean(PooledConnectionFactory.class);
+					JmsPoolConnectionFactory pool = context
+							.getBean(JmsPoolConnectionFactory.class);
 					assertThat(jmsTemplate).isNotNull();
 					assertThat(pool).isNotNull();
 					assertThat(pool).isEqualTo(jmsTemplate.getConnectionFactory());
@@ -387,8 +387,8 @@ public class JmsAutoConfigurationTests {
 						"spring.activemq.inMemory:false")
 				.run((context) -> {
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-					PooledConnectionFactory pool = context
-							.getBean(PooledConnectionFactory.class);
+					JmsPoolConnectionFactory pool = context
+							.getBean(JmsPoolConnectionFactory.class);
 					assertThat(jmsTemplate).isNotNull();
 					assertThat(pool).isNotNull();
 					assertThat(pool).isEqualTo(jmsTemplate.getConnectionFactory());
@@ -405,8 +405,8 @@ public class JmsAutoConfigurationTests {
 						"spring.activemq.brokerUrl:tcp://remote-host:10000")
 				.run((context) -> {
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-					PooledConnectionFactory pool = context
-							.getBean(PooledConnectionFactory.class);
+					JmsPoolConnectionFactory pool = context
+							.getBean(JmsPoolConnectionFactory.class);
 					assertThat(jmsTemplate).isNotNull();
 					assertThat(pool).isNotNull();
 					assertThat(pool).isEqualTo(jmsTemplate.getConnectionFactory());

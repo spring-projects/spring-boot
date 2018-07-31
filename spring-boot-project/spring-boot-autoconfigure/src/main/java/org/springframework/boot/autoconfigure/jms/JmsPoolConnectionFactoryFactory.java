@@ -14,36 +14,37 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.activemq;
+package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
-import org.apache.activemq.jms.pool.PooledConnectionFactory;
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 /**
- * Factory to create a {@link PooledConnectionFactory} from properties defined in
- * {@link PooledConnectionFactoryProperties}.
+ * Factory to create a {@link JmsPoolConnectionFactory} from properties defined in
+ * {@link JmsPoolConnectionFactoryProperties}.
  *
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-public class PooledConnectionFactoryFactory {
+public class JmsPoolConnectionFactoryFactory {
 
-	private final PooledConnectionFactoryProperties properties;
+	private final JmsPoolConnectionFactoryProperties properties;
 
-	public PooledConnectionFactoryFactory(PooledConnectionFactoryProperties properties) {
+	public JmsPoolConnectionFactoryFactory(
+			JmsPoolConnectionFactoryProperties properties) {
 		this.properties = properties;
 	}
 
 	/**
-	 * Create a {@link PooledConnectionFactory} based on the specified
+	 * Create a {@link JmsPoolConnectionFactory} based on the specified
 	 * {@link ConnectionFactory}.
 	 * @param connectionFactory the connection factory to wrap
 	 * @return a pooled connection factory
 	 */
-	public PooledConnectionFactory createPooledConnectionFactory(
+	public JmsPoolConnectionFactory createPooledConnectionFactory(
 			ConnectionFactory connectionFactory) {
-		PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
+		JmsPoolConnectionFactory pooledConnectionFactory = new JmsPoolConnectionFactory();
 		pooledConnectionFactory.setConnectionFactory(connectionFactory);
 
 		pooledConnectionFactory
@@ -53,14 +54,14 @@ public class PooledConnectionFactoryFactory {
 					this.properties.getBlockIfFullTimeout().toMillis());
 		}
 		if (this.properties.getIdleTimeout() != null) {
-			pooledConnectionFactory
-					.setIdleTimeout((int) this.properties.getIdleTimeout().toMillis());
+			pooledConnectionFactory.setConnectionIdleTimeout(
+					(int) this.properties.getIdleTimeout().toMillis());
 		}
 		pooledConnectionFactory.setMaxConnections(this.properties.getMaxConnections());
-		pooledConnectionFactory.setMaximumActiveSessionPerConnection(
-				this.properties.getMaximumActiveSessionPerConnection());
+		pooledConnectionFactory.setMaxSessionsPerConnection(
+				this.properties.getMaxSessionsPerConnection());
 		if (this.properties.getTimeBetweenExpirationCheck() != null) {
-			pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
+			pooledConnectionFactory.setConnectionCheckInterval(
 					this.properties.getTimeBetweenExpirationCheck().toMillis());
 		}
 		pooledConnectionFactory
