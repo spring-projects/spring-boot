@@ -103,7 +103,7 @@ public class TomcatWebServerFactoryCustomizer implements
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize)
-				.when(maxSwallowSize -> maxSwallowSize != 0)
+				.when((maxSwallowSize) -> maxSwallowSize != 0)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
