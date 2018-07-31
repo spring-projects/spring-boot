@@ -62,6 +62,7 @@ import org.springframework.retry.interceptor.MethodInvocationRecoverer;
 import org.springframework.retry.policy.NeverRetryPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -316,6 +317,17 @@ public class RabbitAutoConfigurationTests {
 					assertThat(rabbitTemplate.getExchange()).isEqualTo("my-exchange");
 					assertThat(rabbitTemplate.getRoutingKey())
 							.isEqualTo("my-routing-key");
+				});
+	}
+
+	@Test
+	public void testRabbitTemplateDefaultQueue() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.template.queue:default-queue")
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					assertThat(ReflectionTestUtils.getField(rabbitTemplate, "queue"))
+							.isEqualTo("default-queue");
 				});
 	}
 

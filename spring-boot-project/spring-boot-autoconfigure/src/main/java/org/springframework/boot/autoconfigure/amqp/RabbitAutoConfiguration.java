@@ -79,6 +79,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @author Gary Russell
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -190,6 +191,7 @@ public class RabbitAutoConfiguration {
 					.to(template::setReplyTimeout);
 			map.from(properties::getExchange).to(template::setExchange);
 			map.from(properties::getRoutingKey).to(template::setRoutingKey);
+			map.from(properties::getQueue).whenNonNull().to(template::setQueue);
 			return template;
 		}
 
