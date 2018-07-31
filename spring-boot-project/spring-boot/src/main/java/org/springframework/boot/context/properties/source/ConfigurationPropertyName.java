@@ -394,7 +394,7 @@ public final class ConfigurationPropertyName
 		for (CharSequence element : elements) {
 			boolean indexed = isIndexed(element);
 			if (result.length() > 0 && !indexed) {
-				result.append(".");
+				result.append('.');
 			}
 			if (indexed) {
 				result.append(element);
@@ -402,7 +402,9 @@ public final class ConfigurationPropertyName
 			else {
 				for (int i = 0; i < element.length(); i++) {
 					char ch = Character.toLowerCase(element.charAt(i));
-					result.append((ch != '_') ? ch : "");
+					if (ch != '_') {
+						result.append(ch);
+					}
 				}
 			}
 		}

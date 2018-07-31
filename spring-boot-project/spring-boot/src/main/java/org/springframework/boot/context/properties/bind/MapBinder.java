@@ -214,7 +214,9 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			StringBuilder result = new StringBuilder();
 			for (int i = this.root.getNumberOfElements(); i < name
 					.getNumberOfElements(); i++) {
-				result.append((result.length() != 0) ? "." : "");
+				if (result.length() != 0) {
+					result.append('.');
+				}
 				result.append(name.getElement(i, Form.ORIGINAL));
 			}
 			return result.toString();
