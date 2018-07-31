@@ -46,6 +46,7 @@ import org.springframework.util.StringUtils;
  * @author Yulin Qin
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer implements
@@ -101,6 +102,9 @@ public class TomcatWebServerFactoryCustomizer implements
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
+		propertyMapper.from(tomcatProperties::getMaxSwallowSize)
+				.when((maxSwallowSize) -> maxSwallowSize != 0)
+				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
 	}
@@ -264,6 +268,18 @@ public class TomcatWebServerFactoryCustomizer implements
 				context.getParent().getPipeline().addValve(valve);
 			});
 		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void customizeMaxSwallowSize(ConfigurableTomcatWebServerFactory factory,
+			int maxSwallowSize) {
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractHttp11Protocol) {
+				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+				protocol.setMaxSwallowSize(maxSwallowSize);
+			}
+		});
 	}
 
 }
