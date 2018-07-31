@@ -175,8 +175,7 @@ public class JettyWebServer implements WebServer {
 			if (ports.length() != 0) {
 				ports.append(", ");
 			}
-			ports.append(getLocalPort(connector));
-			ports.append(getProtocols(connector));
+			ports.append(getLocalPort(connector)).append(getProtocols(connector));
 		}
 		return ports.toString();
 	}

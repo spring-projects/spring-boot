@@ -323,10 +323,7 @@ public class TomcatWebServer implements WebServer {
 				ports.append(' ');
 			}
 			int port = localPort ? connector.getLocalPort() : connector.getPort();
-			ports.append(port);
-			ports.append(" (");
-			ports.append(connector.getScheme());
-			ports.append(')');
+			ports.append(port).append(" (").append(connector.getScheme()).append(')');
 		}
 		return ports.toString();
 	}
