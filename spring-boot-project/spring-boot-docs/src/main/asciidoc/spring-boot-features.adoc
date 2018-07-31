@@ -5119,6 +5119,8 @@ accordingly, as shown in the following example:
 	spring.activemq.pool.max-connections=50
 ----
 
+WARNING: `PooledConnectionFactory` is not JMS 2.0 compliant
+
 TIP: See
 {sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
 for more of the supported options. You can also register an arbitrary number of beans

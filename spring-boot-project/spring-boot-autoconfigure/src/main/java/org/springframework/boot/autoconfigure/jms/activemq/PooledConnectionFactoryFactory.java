@@ -52,12 +52,6 @@ public class PooledConnectionFactoryFactory {
 			pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(
 					this.properties.getBlockIfFullTimeout().toMillis());
 		}
-		pooledConnectionFactory.setCreateConnectionOnStartup(
-				this.properties.isCreateConnectionOnStartup());
-		if (this.properties.getExpiryTimeout() != null) {
-			pooledConnectionFactory
-					.setExpiryTimeout(this.properties.getExpiryTimeout().toMillis());
-		}
 		if (this.properties.getIdleTimeout() != null) {
 			pooledConnectionFactory
 					.setIdleTimeout((int) this.properties.getIdleTimeout().toMillis());
@@ -65,8 +59,6 @@ public class PooledConnectionFactoryFactory {
 		pooledConnectionFactory.setMaxConnections(this.properties.getMaxConnections());
 		pooledConnectionFactory.setMaximumActiveSessionPerConnection(
 				this.properties.getMaximumActiveSessionPerConnection());
-		pooledConnectionFactory
-				.setReconnectOnException(this.properties.isReconnectOnException());
 		if (this.properties.getTimeBetweenExpirationCheck() != null) {
 			pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(
 					this.properties.getTimeBetweenExpirationCheck().toMillis());

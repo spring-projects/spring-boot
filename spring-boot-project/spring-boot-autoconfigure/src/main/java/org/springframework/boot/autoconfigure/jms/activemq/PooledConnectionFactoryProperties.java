@@ -44,17 +44,6 @@ public class PooledConnectionFactoryProperties {
 	private Duration blockIfFullTimeout = Duration.ofMillis(-1);
 
 	/**
-	 * Whether to create a connection on startup. Can be used to warm up the pool on
-	 * startup.
-	 */
-	private boolean createConnectionOnStartup = true;
-
-	/**
-	 * Connection expiration timeout.
-	 */
-	private Duration expiryTimeout = Duration.ofMillis(0);
-
-	/**
 	 * Connection idle timeout.
 	 */
 	private Duration idleTimeout = Duration.ofSeconds(30);
@@ -68,11 +57,6 @@ public class PooledConnectionFactoryProperties {
 	 * Maximum number of active sessions per connection.
 	 */
 	private int maximumActiveSessionPerConnection = 500;
-
-	/**
-	 * Reset the connection when a "JMSException" occurs.
-	 */
-	private boolean reconnectOnException = true;
 
 	/**
 	 * Time to sleep between runs of the idle connection eviction thread. When negative,
@@ -110,22 +94,6 @@ public class PooledConnectionFactoryProperties {
 		this.blockIfFullTimeout = blockIfFullTimeout;
 	}
 
-	public boolean isCreateConnectionOnStartup() {
-		return this.createConnectionOnStartup;
-	}
-
-	public void setCreateConnectionOnStartup(boolean createConnectionOnStartup) {
-		this.createConnectionOnStartup = createConnectionOnStartup;
-	}
-
-	public Duration getExpiryTimeout() {
-		return this.expiryTimeout;
-	}
-
-	public void setExpiryTimeout(Duration expiryTimeout) {
-		this.expiryTimeout = expiryTimeout;
-	}
-
 	public Duration getIdleTimeout() {
 		return this.idleTimeout;
 	}
@@ -149,14 +117,6 @@ public class PooledConnectionFactoryProperties {
 	public void setMaximumActiveSessionPerConnection(
 			int maximumActiveSessionPerConnection) {
 		this.maximumActiveSessionPerConnection = maximumActiveSessionPerConnection;
-	}
-
-	public boolean isReconnectOnException() {
-		return this.reconnectOnException;
-	}
-
-	public void setReconnectOnException(boolean reconnectOnException) {
-		this.reconnectOnException = reconnectOnException;
 	}
 
 	public Duration getTimeBetweenExpirationCheck() {
