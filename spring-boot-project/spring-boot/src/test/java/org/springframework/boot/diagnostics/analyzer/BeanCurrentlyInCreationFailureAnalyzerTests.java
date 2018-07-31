@@ -144,7 +144,6 @@ public class BeanCurrentlyInCreationFailureAnalyzerTests {
 			return null;
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
 			return ex;
 		}
 	}
