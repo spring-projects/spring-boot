@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for ActiveMQ.
@@ -228,6 +229,7 @@ public class ActiveMQProperties {
 			this.blockIfFullTimeout = blockIfFullTimeout;
 		}
 
+		@DeprecatedConfigurationProperty
 		public boolean isCreateConnectionOnStartup() {
 			return this.createConnectionOnStartup;
 		}
@@ -236,6 +238,7 @@ public class ActiveMQProperties {
 			this.createConnectionOnStartup = createConnectionOnStartup;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "Use idle-timeout instead")
 		public Duration getExpiryTimeout() {
 			return this.expiryTimeout;
 		}
@@ -269,6 +272,7 @@ public class ActiveMQProperties {
 			this.maximumActiveSessionPerConnection = maximumActiveSessionPerConnection;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "Disabling this option will likely lead to broken connections in the pool.")
 		public boolean isReconnectOnException() {
 			return this.reconnectOnException;
 		}
