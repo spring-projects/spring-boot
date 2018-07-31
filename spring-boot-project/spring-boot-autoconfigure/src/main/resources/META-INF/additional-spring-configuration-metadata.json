@@ -583,14 +583,6 @@
       }
     },
     {
-      "name": "flyway.encoding",
-      "type": "java.lang.String",
-      "deprecation": {
-        "replacement": "spring.flyway.encoding",
-        "level": "error"
-      }
-    },
-    {
       "name": "flyway.init-description",
       "type": "java.lang.String",
       "deprecation": {
