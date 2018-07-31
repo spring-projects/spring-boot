@@ -510,7 +510,7 @@ public class ServerProperties {
 		}
 
 		public int getMaxSwallowSize() {
-			return maxSwallowSize;
+			return this.maxSwallowSize;
 		}
 
 		public void setMaxSwallowSize(int maxSwallowSize) {
