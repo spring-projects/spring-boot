@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Josh Thornhill
  * @author Gary Russell
+ * @author Artsiom Yudovin
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -713,6 +714,12 @@ public class RabbitProperties {
 		 */
 		private String routingKey = "";
 
+		/**
+		 * Name of the default queue to receive messages from when none is specified
+		 * explicitly.
+		 */
+		private String queue;
+
 		public Retry getRetry() {
 			return this.retry;
 		}
@@ -755,6 +762,14 @@ public class RabbitProperties {
 
 		public void setRoutingKey(String routingKey) {
 			this.routingKey = routingKey;
+		}
+
+		public String getQueue() {
+			return this.queue;
+		}
+
+		public void setQueue(String queue) {
+			this.queue = queue;
 		}
 
 	}

@@ -1158,6 +1158,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.ssl.algorithm= # SSL algorithm to use. By default, configured by the Rabbit client library.
 	spring.rabbitmq.template.exchange= # Name of the default exchange to use for send operations.
 	spring.rabbitmq.template.mandatory= # Whether to enable mandatory messages.
+	spring.rabbitmq.template.queue= # Name of the default queue to receive messages from when none is specified explicitly.
 	spring.rabbitmq.template.receive-timeout= # Timeout for `receive()` operations.
 	spring.rabbitmq.template.reply-timeout= # Timeout for `sendAndReceive()` operations.
 	spring.rabbitmq.template.retry.enabled=false # Whether publishing retries are enabled.
