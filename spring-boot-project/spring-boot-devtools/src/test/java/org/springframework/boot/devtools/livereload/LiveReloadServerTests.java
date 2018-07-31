@@ -188,7 +188,6 @@ public class LiveReloadServerTests {
 					super.run();
 				}
 				catch (ConnectionClosedException ex) {
-					ex.printStackTrace();
 					synchronized (MonitoredLiveReloadServer.this.monitor) {
 						MonitoredLiveReloadServer.this.closedExceptions.add(ex);
 					}
