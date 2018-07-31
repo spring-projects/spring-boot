@@ -272,7 +272,7 @@ public class TomcatWebServerFactoryCustomizer implements
 
 	@SuppressWarnings("rawtypes")
 	private void customizeMaxSwallowSize(ConfigurableTomcatWebServerFactory factory,
-										 int maxSwallowSize) {
+			int maxSwallowSize) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractHttp11Protocol) {

@@ -74,7 +74,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 		bind("server.tomcat.max-swallow-size=10");
 		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
 				.getTomcat().getConnector().getProtocolHandler()).getMaxSwallowSize())
-				.isEqualTo(10));
+						.isEqualTo(10));
 	}
 
 	@Test
