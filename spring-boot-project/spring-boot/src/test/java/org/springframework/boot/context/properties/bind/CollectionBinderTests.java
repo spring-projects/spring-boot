@@ -124,7 +124,6 @@ public class CollectionBinderTests {
 			fail("No exception thrown");
 		}
 		catch (BindException ex) {
-			ex.printStackTrace();
 			Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
 					.getCause()).getUnboundProperties();
 			assertThat(unbound).hasSize(1);
@@ -147,7 +146,6 @@ public class CollectionBinderTests {
 			fail("No exception thrown");
 		}
 		catch (BindException ex) {
-			ex.printStackTrace();
 			Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
 					.getCause()).getUnboundProperties();
 			assertThat(unbound).hasSize(1);

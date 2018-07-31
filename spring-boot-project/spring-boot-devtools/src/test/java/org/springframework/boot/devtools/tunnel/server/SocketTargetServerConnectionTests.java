@@ -162,7 +162,6 @@ public class SocketTargetServerConnectionTests {
 					channel.close();
 				}
 				catch (Exception ex) {
-					ex.printStackTrace();
 					fail();
 				}
 			}
