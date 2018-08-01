@@ -18,6 +18,7 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,6 +65,18 @@ public class SpyBeanWithAopProxyTests {
 		verify(this.dateService, times(1)).getDate(matchesAnyBoolean());
 	}
 
+	@Test
+	public void verifyShouldUseProxyTargetWithMethodArguments() throws Exception {
+		Long d1 = this.dateService.getRandomDate(1234L);
+		Thread.sleep(200);
+		Long d2 = this.dateService.getRandomDate(1234L);
+		assertThat(d1).isEqualTo(d2);
+		verify(this.dateService, times(1)).getDate(false);
+		verify(this.dateService, times(1)).getDate(matchesFalse());
+		verify(this.dateService, times(1)).getDate(matchesAnyBoolean());
+	}
+
+
 	private boolean matchesFalse() {
 		if (isTestingMockito1()) {
 			Method method = ReflectionUtils.findMethod(
@@ -103,7 +116,7 @@ public class SpyBeanWithAopProxyTests {
 		@Bean
 		public ConcurrentMapCacheManager cacheManager() {
 			ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-			cacheManager.setCacheNames(Arrays.asList("test"));
+			cacheManager.setCacheNames(Arrays.asList("test", "test2"));
 			return cacheManager;
 		}
 
@@ -115,6 +128,11 @@ public class SpyBeanWithAopProxyTests {
 		@Cacheable(cacheNames = "test")
 		public Long getDate(boolean arg) {
 			return System.nanoTime();
+		}
+
+		@Cacheable(cacheNames = "test2", key = "#seed")
+		public Long getRandomDate(Long seed) {
+			return ThreadLocalRandom.current().nextLong(seed);
 		}
 
 	}
