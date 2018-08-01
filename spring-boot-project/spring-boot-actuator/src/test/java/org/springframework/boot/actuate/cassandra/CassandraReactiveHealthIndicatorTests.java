@@ -33,7 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link CassandraReactiveHealthIndicatorTests}.
+ * Tests for {@link CassandraReactiveHealthIndicator}.
  *
  * @author Artsiom Yudovin
  */
