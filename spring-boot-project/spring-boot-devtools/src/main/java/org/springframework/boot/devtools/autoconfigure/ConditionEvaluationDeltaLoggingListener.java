@@ -30,7 +30,7 @@ import org.springframework.context.ApplicationListener;
  *
  * @author Andy Wilkinson
  */
-class ConditionEvaluationDeltaLoggingListener
+public class ConditionEvaluationDeltaLoggingListener
 		implements ApplicationListener<ApplicationReadyEvent> {
 
 	private final Log logger = LogFactory.getLog(getClass());

@@ -44,7 +44,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-final class ChangeableUrls implements Iterable<URL> {
+public final class ChangeableUrls implements Iterable<URL> {
 
 	private static final Log logger = LogFactory.getLog(ChangeableUrls.class);
 

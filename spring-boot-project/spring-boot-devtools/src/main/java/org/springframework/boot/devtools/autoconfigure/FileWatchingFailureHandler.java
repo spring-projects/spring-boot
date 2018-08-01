@@ -32,7 +32,7 @@ import org.springframework.boot.devtools.restart.Restarter;
  *
  * @author Phillip Webb
  */
-class FileWatchingFailureHandler implements FailureHandler {
+public class FileWatchingFailureHandler implements FailureHandler {
 
 	private final FileSystemWatcherFactory fileSystemWatcherFactory;
 
