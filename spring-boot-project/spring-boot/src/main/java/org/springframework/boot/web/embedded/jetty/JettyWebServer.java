@@ -172,8 +172,10 @@ public class JettyWebServer implements WebServer {
 	private String getActualPortsDescription() {
 		StringBuilder ports = new StringBuilder();
 		for (Connector connector : this.server.getConnectors()) {
-			ports.append((ports.length() != 0) ? ", " : "");
-			ports.append(getLocalPort(connector) + getProtocols(connector));
+			if (ports.length() != 0) {
+				ports.append(", ");
+			}
+			ports.append(getLocalPort(connector)).append(getProtocols(connector));
 		}
 		return ports.toString();
 	}

@@ -63,9 +63,11 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		}
 		StringBuilder fullName = new StringBuilder((prefix != null) ? prefix : "");
 		if (fullName.length() > 0 && name != null) {
-			fullName.append(".");
+			fullName.append('.');
 		}
-		fullName.append((name != null) ? ConfigurationMetadata.toDashedCase(name) : "");
+		if (name != null) {
+			fullName.append(ConfigurationMetadata.toDashedCase(name));
+		}
 		return fullName.toString();
 	}
 
