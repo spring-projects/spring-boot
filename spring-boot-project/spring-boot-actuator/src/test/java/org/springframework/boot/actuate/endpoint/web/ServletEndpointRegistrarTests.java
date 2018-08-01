@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import javax.servlet.GenericServlet;
@@ -47,6 +46,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link ServletEndpointRegistrar}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class ServletEndpointRegistrarTests {
 
@@ -77,29 +77,38 @@ public class ServletEndpointRegistrarTests {
 	}
 
 	@Test
-	public void onStartupShouldRegisterServlets() throws Exception {
-		ExposableServletEndpoint endpoint = mockEndpoint(
-				new EndpointServlet(TestServlet.class));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(null,
-				Collections.singleton(endpoint));
-		registrar.onStartup(this.servletContext);
-		verify(this.servletContext).addServlet(eq("test-actuator-endpoint"),
-				this.servlet.capture());
-		assertThat(this.servlet.getValue()).isInstanceOf(TestServlet.class);
-		verify(this.dynamic).addMapping("/test/*");
+	public void onStartupShouldRegisterServlets() throws ServletException {
+		assertBasePath(null, "/test/*");
 	}
 
 	@Test
-	public void onStartupWhenHasBasePathShouldIncludeBasePath() throws Exception {
+	public void onStartupWhenHasBasePathShouldIncludeBasePath() throws ServletException {
+		assertBasePath("/actuator", "/actuator/test/*");
+	}
+
+	@Test
+	public void onStartupWhenHasEmptyBasePathShouldPrefixWithSlash()
+			throws ServletException {
+		assertBasePath("", "/test/*");
+	}
+
+	@Test
+	public void onStartupWhenHasRootBasePathShouldNotAddDuplicateSlash()
+			throws ServletException {
+		assertBasePath("/", "/test/*");
+	}
+
+	private void assertBasePath(String basePath, String expectedMapping)
+			throws ServletException {
 		ExposableServletEndpoint endpoint = mockEndpoint(
 				new EndpointServlet(TestServlet.class));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath,
 				Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet(eq("test-actuator-endpoint"),
 				this.servlet.capture());
 		assertThat(this.servlet.getValue()).isInstanceOf(TestServlet.class);
-		verify(this.dynamic).addMapping("/actuator/test/*");
+		verify(this.dynamic).addMapping(expectedMapping);
 	}
 
 	@Test
@@ -124,8 +133,7 @@ public class ServletEndpointRegistrarTests {
 	public static class TestServlet extends GenericServlet {
 
 		@Override
-		public void service(ServletRequest req, ServletResponse res)
-				throws ServletException, IOException {
+		public void service(ServletRequest req, ServletResponse res) {
 		}
 
 	}
