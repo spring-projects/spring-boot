@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ServletContextInitializer} to register {@link ExposableServletEndpoint servlet
@@ -47,8 +48,15 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 	public ServletEndpointRegistrar(String basePath,
 			Collection<ExposableServletEndpoint> servletEndpoints) {
 		Assert.notNull(servletEndpoints, "ServletEndpoints must not be null");
-		this.basePath = (basePath != null) ? basePath : "";
+		this.basePath = cleanBasePath(basePath);
 		this.servletEndpoints = servletEndpoints;
+	}
+
+	private static String cleanBasePath(String basePath) {
+		if (StringUtils.hasText(basePath) && basePath.endsWith("/")) {
+			return basePath.substring(0, basePath.length() - 1);
+		}
+		return (basePath != null) ? basePath : "";
 	}
 
 	@Override
