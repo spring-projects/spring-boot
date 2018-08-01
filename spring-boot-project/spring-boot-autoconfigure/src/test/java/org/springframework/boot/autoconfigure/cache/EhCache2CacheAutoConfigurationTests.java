@@ -31,7 +31,7 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CacheAutoConfigurationTests} with EhCache 2.
+ * Tests for {@link CacheAutoConfiguration} with EhCache 2.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson

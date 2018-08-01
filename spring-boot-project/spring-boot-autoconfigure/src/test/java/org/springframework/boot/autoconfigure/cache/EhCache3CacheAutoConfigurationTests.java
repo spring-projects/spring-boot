@@ -30,7 +30,7 @@ import org.springframework.core.io.Resource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CacheAutoConfigurationTests} with EhCache 3.
+ * Tests for {@link CacheAutoConfiguration} with EhCache 3.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
