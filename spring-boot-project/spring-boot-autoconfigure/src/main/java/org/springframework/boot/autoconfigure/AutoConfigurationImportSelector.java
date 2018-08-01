@@ -412,8 +412,8 @@ public class AutoConfigurationImportSelector
 				DeferredImportSelector deferredImportSelector) {
 			Assert.state(
 					deferredImportSelector instanceof AutoConfigurationImportSelector,
-					String.format(
-							"AutoConfigurationImportSelector only supports %s implementations, got %s",
+					() -> String.format(
+							"Only %s implementations are supported, got %s",
 							AutoConfigurationImportSelector.class.getSimpleName(),
 							deferredImportSelector.getClass().getName()));
 			AutoConfigurationEntry autoConfigurationEntry = ((AutoConfigurationImportSelector) deferredImportSelector)
