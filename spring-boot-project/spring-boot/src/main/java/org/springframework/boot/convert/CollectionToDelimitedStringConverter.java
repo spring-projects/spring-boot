@@ -73,10 +73,10 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 		}
 		return source.stream()
 				.map((element) -> convertElement(element, sourceType, targetType))
-				.collect(Collectors.joining(getDelimter(sourceType)));
+				.collect(Collectors.joining(getDelimiter(sourceType)));
 	}
 
-	private CharSequence getDelimter(TypeDescriptor sourceType) {
+	private CharSequence getDelimiter(TypeDescriptor sourceType) {
 		Delimiter annotation = sourceType.getAnnotation(Delimiter.class);
 		return (annotation != null) ? annotation.value() : ",";
 	}

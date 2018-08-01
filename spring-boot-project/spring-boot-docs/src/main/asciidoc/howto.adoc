@@ -763,7 +763,7 @@ additional dependency.
 
 Spring Boot manages the version for the
 `io.netty:netty-tcnative-boringssl-static` "uber jar", containing native libraries for
-all platforms. Developers can choose to import only the required dependendencies using
+all platforms. Developers can choose to import only the required dependencies using
 a classifier (see http://netty.io/wiki/forked-tomcat-native.html[the Netty official
 documentation]).
 
