@@ -104,7 +104,7 @@ public class AutoConfigurationImportSelector
 
 	/**
 	 * Return the {@link AutoConfigurationEntry} based on the {@link AnnotationMetadata}
-	 * of the importing @{@link Configuration} class.
+	 * of the importing {@link Configuration @Configuration} class.
 	 * @param autoConfigurationMetadata the auto-configuration metadata
 	 * @param annotationMetadata the annotation metadata of the configuration class
 	 * @return the auto-configurations that should be imported
