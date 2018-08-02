@@ -39,8 +39,6 @@ import org.springframework.util.StringUtils;
  */
 public class PropertiesMeterFilter implements MeterFilter {
 
-	private static final ServiceLevelAgreementBoundary[] EMPTY_SLA = {};
-
 	private MetricsProperties properties;
 
 	public PropertiesMeterFilter(MetricsProperties properties) {
@@ -67,7 +65,10 @@ public class PropertiesMeterFilter implements MeterFilter {
 	}
 
 	private long[] convertSla(Meter.Type meterType, ServiceLevelAgreementBoundary[] sla) {
-		long[] converted = Arrays.stream((sla != null) ? sla : EMPTY_SLA)
+		if (sla == null) {
+			return null;
+		}
+		long[] converted = Arrays.stream(sla)
 				.map((candidate) -> candidate.getValue(meterType))
 				.filter(Objects::nonNull).mapToLong(Long::longValue).toArray();
 		return (converted.length != 0) ? converted : null;
