@@ -112,7 +112,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return an {@code Optional} describing the value if a value matches the given
 	 * predicate, otherwise an empty {@code Optional}
 	 */
-	public Optional<DigitalAmount> filter(Predicate<DigitalAmount> predicate) {
+	public Optional<DigitalAmount> filter(Predicate<? super DigitalAmount> predicate) {
 		Assert.notNull(predicate, () -> "Predicate must not be null");
 		if (predicate.test(this)) {
 			return Optional.of(this);
