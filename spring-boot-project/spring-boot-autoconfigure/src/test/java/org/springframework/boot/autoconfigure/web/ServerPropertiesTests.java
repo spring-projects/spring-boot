@@ -42,7 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
- * @author Artsiom Yudovin
  */
 public class ServerPropertiesTests {
 
@@ -92,7 +91,6 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.remote-ip-header", "Remote-Ip");
 		map.put("server.tomcat.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		map.put("server.tomcat.background-processor-delay", "10");
-		map.put("server.tomcat.max-swallow-size", "2");
 		bind(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		assertThat(tomcat.getAccesslog().getPattern()).isEqualTo("%h %t '%r' %s %b");
@@ -107,7 +105,6 @@ public class ServerPropertiesTests {
 				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		assertThat(tomcat.getBackgroundProcessorDelay())
 				.isEqualTo(Duration.ofSeconds(10));
-		assertThat(tomcat.getMaxSwallowSize()).isEqualTo(2);
 	}
 
 	@Test
