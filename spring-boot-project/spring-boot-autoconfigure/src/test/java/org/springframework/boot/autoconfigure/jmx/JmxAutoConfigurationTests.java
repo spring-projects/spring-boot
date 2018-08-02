@@ -92,6 +92,7 @@ public class JmxAutoConfigurationTests {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "true");
 		env.setProperty("spring.jmx.default-domain", "my-test-domain");
+		env.setProperty("spring.jmx.unique-names", "true");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(env);
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
@@ -102,6 +103,8 @@ public class JmxAutoConfigurationTests {
 				.getField(mBeanExporter, "namingStrategy");
 		assertThat(ReflectionTestUtils.getField(naming, "defaultDomain"))
 				.isEqualTo("my-test-domain");
+		assertThat(ReflectionTestUtils.getField(naming, "ensureUniqueRuntimeObjectNames"))
+				.isEqualTo(true);
 	}
 
 	@Test
