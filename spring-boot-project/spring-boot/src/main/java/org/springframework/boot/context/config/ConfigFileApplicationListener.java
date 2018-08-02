@@ -332,6 +332,7 @@ public class ConfigFileApplicationListener
 						addToLoaded(MutablePropertySources::addLast, false));
 				this.processedProfiles.add(profile);
 			}
+			resetEnvironmentProfiles(this.processedProfiles);
 			load(null, this::getNegativeProfileFilter,
 					addToLoaded(MutablePropertySources::addFirst, true));
 			addLoadedPropertySources();
@@ -667,6 +668,21 @@ public class ConfigFileApplicationListener
 							? this.environment.resolvePlaceholders(value) : fallback)));
 			Collections.reverse(list);
 			return new LinkedHashSet<>(list);
+		}
+
+		/**
+		 * This ensures that the order of active profiles in the {@link Environment}
+		 * matches the order in which the profiles were processed.
+		 * @param processedProfiles the processed profiles
+		 */
+		private void resetEnvironmentProfiles(List<Profile> processedProfiles) {
+			String[] names = processedProfiles.stream().filter((profile) -> {
+				if (profile != null && !profile.isDefaultProfile()) {
+					return true;
+				}
+				return false;
+			}).map(Profile::getName).toArray(String[]::new);
+			this.environment.setActiveProfiles(names);
 		}
 
 		private void addLoadedPropertySources() {

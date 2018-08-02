@@ -407,7 +407,7 @@ public class ConfigFileApplicationListenerTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev", "spring.profiles.include=other");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
-		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
+		assertThat(this.environment.getActiveProfiles()).containsExactly("other", "dev");
 		assertThat(this.environment.getProperty("my.property"))
 				.isEqualTo("fromdevpropertiesfile");
 		validateProfilePrecedence(null, "other", "dev");
