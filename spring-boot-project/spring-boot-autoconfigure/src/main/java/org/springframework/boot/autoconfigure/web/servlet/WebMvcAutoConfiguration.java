@@ -46,6 +46,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.task.TaskExecutorAutoConfiguration;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
@@ -70,6 +71,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
@@ -140,7 +142,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter({ DispatcherServletAutoConfiguration.class,
-		ValidationAutoConfiguration.class })
+		TaskExecutorAutoConfiguration.class, ValidationAutoConfiguration.class })
 public class WebMvcAutoConfiguration {
 
 	public static final String DEFAULT_PREFIX = "";
@@ -210,6 +212,14 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+			if (this.beanFactory.containsBean(
+					TaskExecutorAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
+				Object taskExecutor = this.beanFactory.getBean(
+						TaskExecutorAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+				if (taskExecutor instanceof AsyncTaskExecutor) {
+					configurer.setTaskExecutor(((AsyncTaskExecutor) taskExecutor));
+				}
+			}
 			Duration timeout = this.mvcProperties.getAsync().getRequestTimeout();
 			if (timeout != null) {
 				configurer.setDefaultTimeout(timeout.toMillis());

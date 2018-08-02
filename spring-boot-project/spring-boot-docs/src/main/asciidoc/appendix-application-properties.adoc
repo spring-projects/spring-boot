@@ -160,6 +160,13 @@ content into your application. Rather, pick only the properties that you need.
 	spring.sendgrid.proxy.host= # SendGrid proxy host.
 	spring.sendgrid.proxy.port= # SendGrid proxy port.
 
+	# TASK EXECUTION  ({sc-spring-boot-autoconfigure}/task/TaskProperties.{sc-ext}[TaskProperties])
+	spring.task.pool.allow-core-thread-timeout=true # Whether core threads are allowed to time out. This enables dynamic growing and shrinking of the pool.
+	spring.task.pool.core-size=8 # Core number of threads.
+	spring.task.pool.keep-alive=60s # Time limit for which threads may remain idle before being terminated.
+	spring.task.pool.max-size= # Maximum allowed number of threads. If tasks are filling up the queue, the pool can expand up to that size to accommodate the load. Ignored if the queue is unbounded.
+	spring.task.pool.queue-capacity= # Queue capacity. A unbounded capacity does not increase the pool and therefore ignores the "max-size" parameter.
+	spring.task.thread-name-prefix=executor- # Prefix to use for the names of newly created threads.
 
 	# ----------------------------------------
 	# WEB PROPERTIES

@@ -6080,6 +6080,32 @@ in a similar manner, as shown in the following example:
 
 
 
+[[boot-features-task-execution]]
+== Task Execution
+In the absence of a `TaskExecutor` bean in the context, Spring Boot auto-configures a
+`ThreadPoolTaskExecutor` with sensible defaults that can be automatically associated to
+asynchronous task execution (`@EnableAsync`) and Spring MVC asynchronous request
+processing.
+
+The thread pool uses 8 core threads that can grow and shrink according to the load. Those
+default settings can be fine-tuned using the `spring.task` namespace as shown in the
+following example:
+
+[source,properties,indent=0]
+----
+	spring.task.pool.max-threads=16
+	spring.task.pool.queue-capacity=100
+	spring.task.pool.keep-alive=10s
+----
+
+This changes the thread pool to use a bounded queue so that when the queue is full (100
+tasks), the thread pool increases to maximum 16 threads. Shrinking of the pool is more
+aggressive as well as threads are reclaimed when they are idle for 10 seconds (rather than
+60 seconds by default).
+
+
+
+
 [[boot-features-integration]]
 == Spring Integration
 Spring Boot offers several conveniences for working with {spring-integration}[Spring
