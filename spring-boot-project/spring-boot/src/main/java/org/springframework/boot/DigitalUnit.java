@@ -16,7 +16,10 @@
 
 package org.springframework.boot;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@code DigitalUnit} represents digital amount at a given unit of granularity and
@@ -338,7 +341,7 @@ public enum DigitalUnit {
 	 * @param unit the unit of the amount
 	 * @return converted amount.
 	 */
-	public final long toUnit(long amount, DigitalUnit unit) {
+	public final long toUnit(long amount, @NonNull DigitalUnit unit) {
 		Assert.notNull(unit, "Digital Unit must not be null");
 		switch (unit) {
 		case BYTES:
@@ -397,7 +400,7 @@ public enum DigitalUnit {
 	 * @return converted amount.
 	 * @throws ArithmeticException if the result overflows a long
 	 */
-	public final long fromUnit(long amount, DigitalUnit unit) {
+	public final long fromUnit(long amount, @NonNull DigitalUnit unit) {
 		Assert.notNull(unit, "Digital Unit must not be null");
 		switch (unit) {
 		case BYTES:
@@ -459,10 +462,12 @@ public enum DigitalUnit {
 	 * @return the {@code DigitalUnit}
 	 * @throws IllegalStateException if the value is not a known abbreviation
 	 */
-	public static DigitalUnit fromAbbreviation(String value) {
-		for (DigitalUnit unit : values()) {
-			if (value != null && unit.abbreviation.equalsIgnoreCase(value.trim())) {
-				return unit;
+	public static DigitalUnit fromAbbreviation(@Nullable String value) {
+		if (StringUtils.hasText(value)) {
+			for (DigitalUnit unit : values()) {
+				if (unit.abbreviation.equalsIgnoreCase(value.trim())) {
+					return unit;
+				}
 			}
 		}
 		throw new IllegalArgumentException("Unknown abbreviation '" + value + "'");
@@ -474,10 +479,12 @@ public enum DigitalUnit {
 	 * @return the {@code DigitalUnit}
 	 * @throws IllegalStateException if the value is not a known name
 	 */
-	public static DigitalUnit fromName(String value) {
-		for (DigitalUnit unit : values()) {
-			if (value != null && unit.name.equalsIgnoreCase(value.trim())) {
-				return unit;
+	public static DigitalUnit fromName(@Nullable String value) {
+		if (StringUtils.hasText(value)) {
+			for (DigitalUnit unit : values()) {
+				if (unit.name.equalsIgnoreCase(value.trim())) {
+					return unit;
+				}
 			}
 		}
 		throw new IllegalArgumentException("Unknown name '" + value + "'");

@@ -16,11 +16,12 @@
 
 package org.springframework.boot;
 
-import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
@@ -38,14 +39,14 @@ public enum DigitalAmountStyle {
 	 */
 	SIMPLE("^\\s*([\\+\\-]?\\d+)\\s*([a-zA-Z]{0,2})\\s*$") {
 		@Override
-		public DigitalAmount parse(CharSequence value, DigitalUnit unit) {
+		public DigitalAmount parse(@NonNull CharSequence value,
+				@Nullable DigitalUnit unit) {
 			Assert.notNull(value, () -> "Digital Amount pattern must not be null");
 			try {
 				Matcher matcher = matcher(value);
 				Assert.state(matcher.matches(),
-						"Does not match simple Digital Amount " + "pattern");
-				long amount = NumberUtils
-						.parseNumber(matcher.group(1).toLowerCase(Locale.US), Long.class);
+						"Does not match simple Digital Amount pattern");
+				long amount = NumberUtils.parseNumber(matcher.group(1), Long.class);
 				String abbreviation = matcher.group(2);
 				if (StringUtils.hasText(abbreviation)) {
 					unit = DigitalUnit.fromAbbreviation(abbreviation);
@@ -60,7 +61,7 @@ public enum DigitalAmountStyle {
 		}
 
 		@Override
-		public String print(DigitalAmount value, DigitalUnit unit) {
+		public String print(@NonNull DigitalAmount value, @Nullable DigitalUnit unit) {
 			Assert.notNull(value, () -> "Digital Amount must not be null");
 			if (unit == null) {
 				unit = DigitalUnit.BYTES;
@@ -90,7 +91,7 @@ public enum DigitalAmountStyle {
 	 * @param value the value to parse
 	 * @return a {@code DigitalAmount}
 	 */
-	public final DigitalAmount parse(CharSequence value) {
+	public final DigitalAmount parse(@NonNull CharSequence value) {
 		return parse(value, null);
 	}
 
@@ -101,14 +102,15 @@ public enum DigitalAmountStyle {
 	 * {@link DigitalUnit#BYTES}
 	 * @return a {@code DigitalAmount}
 	 */
-	public abstract DigitalAmount parse(CharSequence value, DigitalUnit unit);
+	public abstract DigitalAmount parse(@NonNull CharSequence value,
+			@Nullable DigitalUnit unit);
 
 	/**
 	 * Print the specified {@code DigitalAmount}.
 	 * @param value the value to print
 	 * @return the printed result
 	 */
-	public final String print(DigitalAmount value) {
+	public final String print(@NonNull DigitalAmount value) {
 		return print(value, null);
 	}
 
@@ -119,7 +121,8 @@ public enum DigitalAmountStyle {
 	 * {@link DigitalUnit#BYTES} will be used.
 	 * @return the printed result
 	 */
-	public abstract String print(DigitalAmount value, DigitalUnit unit);
+	public abstract String print(@NonNull DigitalAmount value,
+			@Nullable DigitalUnit unit);
 
 	/**
 	 * Detect the style from the given source value.
@@ -127,7 +130,7 @@ public enum DigitalAmountStyle {
 	 * @return the digital amount style
 	 * @throws IllegalStateException if the value is not a known style
 	 */
-	public static DigitalAmountStyle detect(CharSequence value) {
+	public static DigitalAmountStyle detect(@NonNull CharSequence value) {
 		Assert.notNull(value, "Digital Amount pattern must not be null");
 		for (DigitalAmountStyle candidate : values()) {
 			if (candidate.matches(value)) {

@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -35,10 +36,13 @@ import org.springframework.util.Assert;
  */
 public final class DigitalAmount implements Comparable<DigitalAmount>, Serializable {
 
-	private final long bytes;
+	/**
+	 * amount in terms of bytes.
+	 */
+	private final long amount;
 
-	private DigitalAmount(long bytes) {
-		this.bytes = bytes;
+	private DigitalAmount(long amount) {
+		this.amount = amount;
 	}
 
 	/**
@@ -46,7 +50,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return the total amount of the bytes.
 	 */
 	public long toBytes() {
-		return this.bytes;
+		return this.amount;
 	}
 
 	/**
@@ -54,7 +58,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return the total amount of the kilobytes.
 	 */
 	public long toKilobytes() {
-		return DigitalUnit.BYTES.toKilobytes(this.bytes);
+		return DigitalUnit.BYTES.toKilobytes(this.amount);
 	}
 
 	/**
@@ -62,7 +66,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return the total amount of the megabytes.
 	 */
 	public long toMegabytes() {
-		return DigitalUnit.BYTES.toMegabytes(this.bytes);
+		return DigitalUnit.BYTES.toMegabytes(this.amount);
 	}
 
 	/**
@@ -70,7 +74,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return the total amount of the gigabytes.
 	 */
 	public long toGigabytes() {
-		return DigitalUnit.BYTES.toGigabytes(this.bytes);
+		return DigitalUnit.BYTES.toGigabytes(this.amount);
 	}
 
 	/**
@@ -78,7 +82,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return the total amount of the terabytes.
 	 */
 	public long toTerabytes() {
-		return DigitalUnit.BYTES.toTerabytes(this.bytes);
+		return DigitalUnit.BYTES.toTerabytes(this.amount);
 	}
 
 	/**
@@ -86,7 +90,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return true if this {@code DigitalAmount} has a total amount less than zero
 	 */
 	public boolean isNegative() {
-		return this.bytes < 0;
+		return this.amount < 0;
 	}
 
 	/**
@@ -94,7 +98,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return true if this {@code DigitalAmount} has a total amount greater than zero
 	 */
 	public boolean isPositive() {
-		return this.bytes > 0;
+		return this.amount > 0;
 	}
 
 	/**
@@ -102,7 +106,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return true if this {@code DigitalAmount} has a total amount equal to zero
 	 */
 	public boolean isZero() {
-		return this.bytes == 0;
+		return this.amount == 0;
 	}
 
 	/**
@@ -112,7 +116,8 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return an {@code Optional} describing the value if a value matches the given
 	 * predicate, otherwise an empty {@code Optional}
 	 */
-	public Optional<DigitalAmount> filter(Predicate<? super DigitalAmount> predicate) {
+	public Optional<DigitalAmount> filter(
+			@NonNull Predicate<? super DigitalAmount> predicate) {
 		Assert.notNull(predicate, () -> "Predicate must not be null");
 		if (predicate.test(this)) {
 			return Optional.of(this);
@@ -126,7 +131,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @param mapper a mapping function to apply to the value.
 	 * @return the result of applying a mapping function
 	 */
-	public <T> T map(Function<? super DigitalAmount, ? extends T> mapper) {
+	public <T> T map(@NonNull Function<? super DigitalAmount, ? extends T> mapper) {
 		Assert.notNull(mapper, () -> "Mapper must not be null");
 		return mapper.apply(this);
 	}
@@ -138,7 +143,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @param unit {@code DigitalUnit} of this amount.
 	 * @return {@code this + other}
 	 */
-	public DigitalAmount add(long amount, DigitalUnit unit) {
+	public DigitalAmount add(long amount, @NonNull DigitalUnit unit) {
 		return add(fromUnit(amount, unit));
 	}
 
@@ -149,7 +154,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @param unit {@code DigitalUnit} of this amount.
 	 * @return {@code this - other}
 	 */
-	public DigitalAmount subtract(long amount, DigitalUnit unit) {
+	public DigitalAmount subtract(long amount, @NonNull DigitalUnit unit) {
 		return subtract(fromUnit(amount, unit));
 	}
 
@@ -159,9 +164,9 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @param other value to be added to this {@code DigitalAmount}.
 	 * @return {@code this + other}
 	 */
-	public DigitalAmount add(DigitalAmount other) {
+	public DigitalAmount add(@NonNull DigitalAmount other) {
 		Assert.notNull(other, () -> "Digital Amount must not be null");
-		return new DigitalAmount(Math.addExact(this.bytes, other.bytes));
+		return new DigitalAmount(Math.addExact(this.amount, other.amount));
 	}
 
 	/**
@@ -170,15 +175,15 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @param other value to be subtracted from this {@code DigitalAmount}.
 	 * @return {@code this - other}
 	 */
-	public DigitalAmount subtract(DigitalAmount other) {
+	public DigitalAmount subtract(@NonNull DigitalAmount other) {
 		Assert.notNull(other, () -> "Digital Amount must not be null");
-		return new DigitalAmount(Math.subtractExact(this.bytes, other.bytes));
+		return new DigitalAmount(Math.subtractExact(this.amount, other.amount));
 	}
 
 	@Override
 	public int compareTo(@NonNull DigitalAmount other) {
 		Assert.notNull(other, () -> "Digital Amount must not be null");
-		return Long.compare(this.bytes, other.bytes);
+		return Long.compare(this.amount, other.amount);
 	}
 
 	@Override
@@ -190,12 +195,12 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 			return false;
 		}
 		DigitalAmount that = (DigitalAmount) o;
-		return this.bytes == that.bytes;
+		return this.amount == that.amount;
 	}
 
 	@Override
 	public int hashCode() {
-		return Long.hashCode(this.bytes);
+		return Long.hashCode(this.amount);
 	}
 
 	/**
@@ -205,7 +210,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return the printed result
 	 * @see DigitalAmountStyle
 	 */
-	public String print(DigitalUnit unit) {
+	public String print(@Nullable DigitalUnit unit) {
 		return DigitalAmountStyle.SIMPLE.print(this, unit);
 	}
 
@@ -219,8 +224,9 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * {@link DigitalAmountStyle#SIMPLE}.
 	 * @param value the value to parse
 	 * @return a {@code DigitalAmount}
+	 * @see #parse(CharSequence, DigitalUnit)
 	 */
-	public static DigitalAmount parse(CharSequence value) {
+	public static DigitalAmount parse(@NonNull CharSequence value) {
 		return parse(value, DigitalUnit.BYTES);
 	}
 
@@ -232,7 +238,8 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * {@link DigitalUnit#BYTES}
 	 * @return a {@code DigitalAmount}
 	 */
-	public static DigitalAmount parse(CharSequence value, DigitalUnit unit) {
+	public static DigitalAmount parse(@NonNull CharSequence value,
+			@Nullable DigitalUnit unit) {
 		return DigitalAmountStyle.SIMPLE.parse(value, unit);
 	}
 
@@ -292,7 +299,7 @@ public final class DigitalAmount implements Comparable<DigitalAmount>, Serializa
 	 * @return a {@code DigitalAmount}
 	 * @throws ArithmeticException if the result overflows a long
 	 */
-	public static DigitalAmount fromUnit(long amount, DigitalUnit unit) {
+	public static DigitalAmount fromUnit(long amount, @NonNull DigitalUnit unit) {
 		Assert.notNull(unit, () -> "Digital Unit must not be null");
 		return new DigitalAmount(unit.toBytes(amount));
 	}

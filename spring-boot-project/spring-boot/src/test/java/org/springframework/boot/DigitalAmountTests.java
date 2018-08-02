@@ -278,7 +278,6 @@ public class DigitalAmountTests {
 
 	@Test
 	public void subtract() {
-
 		assertThat(DigitalAmount.fromTerabytes(1).subtract(DigitalAmount.fromGigabytes(1))
 				.subtract(DigitalAmount.fromMegabytes(10))
 				.subtract(DigitalAmount.fromKilobytes(10)
