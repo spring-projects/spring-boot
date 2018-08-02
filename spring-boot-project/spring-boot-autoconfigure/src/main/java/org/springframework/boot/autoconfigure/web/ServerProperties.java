@@ -52,6 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Aurélien Leboulanger
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Artsiom Yudovin
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -360,6 +361,11 @@ public class ServerProperties {
 		private int acceptCount = 0;
 
 		/**
+		 * Maximum amount of request body to swallow.
+		 */
+		private int maxSwallowSize = 0;
+
+		/**
 		 * Comma-separated list of additional patterns that match jars to ignore for TLD
 		 * scanning. The special '?' and '*' characters can be used in the pattern to
 		 * match one and only one character and zero or more characters respectively.
@@ -501,6 +507,14 @@ public class ServerProperties {
 
 		public void setAcceptCount(int acceptCount) {
 			this.acceptCount = acceptCount;
+		}
+
+		public int getMaxSwallowSize() {
+			return this.maxSwallowSize;
+		}
+
+		public void setMaxSwallowSize(int maxSwallowSize) {
+			this.maxSwallowSize = maxSwallowSize;
 		}
 
 		public List<String> getAdditionalTldSkipPatterns() {
