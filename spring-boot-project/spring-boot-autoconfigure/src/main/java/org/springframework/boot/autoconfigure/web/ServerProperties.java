@@ -330,6 +330,11 @@ public class ServerProperties {
 		private int maxHttpHeaderSize = 0;
 
 		/**
+		 * Maximum amount of request body bytes to swallow.
+		 */
+		private int maxSwallowSize = 4096;
+
+		/**
 		 * Whether requests to the context root should be redirected by appending a / to
 		 * the path.
 		 */
@@ -489,6 +494,14 @@ public class ServerProperties {
 
 		public int getMaxHttpHeaderSize() {
 			return this.maxHttpHeaderSize;
+		}
+
+		public int getMaxSwallowSize() {
+			return this.maxSwallowSize;
+		}
+
+		public void setMaxSwallowSize(int maxSwallowSize) {
+			this.maxSwallowSize = maxSwallowSize;
 		}
 
 		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {

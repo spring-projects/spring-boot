@@ -28,6 +28,7 @@ import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +50,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  * @author Phillip Webb
  * @author Rob Tompkins
+ * @author Artsiom Yudovin
+ * @author Stephane Nicoll
  */
 public class TomcatWebServerFactoryCustomizerTests {
 
@@ -65,6 +68,15 @@ public class TomcatWebServerFactoryCustomizerTests {
 		ConfigurationPropertySources.attach(this.environment);
 		this.customizer = new TomcatWebServerFactoryCustomizer(this.environment,
 				this.serverProperties);
+	}
+
+	@Test
+	public void defaultsAreConsistent() {
+		customizeAndRunServer((server) -> {
+			assertThat(((AbstractHttp11Protocol<?>) server.getTomcat().getConnector()
+					.getProtocolHandler()).getMaxSwallowSize()).isEqualTo(
+							this.serverProperties.getTomcat().getMaxSwallowSize());
+		});
 	}
 
 	@Test
@@ -105,6 +117,14 @@ public class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer(
 				(server) -> assertThat(server.getTomcat().getConnector().getMaxPostSize())
 						.isEqualTo(10000));
+	}
+
+	@Test
+	public void customMaxSwallowSize() {
+		bind("server.tomcat.max-swallow-size=10");
+		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
+				.getTomcat().getConnector().getProtocolHandler()).getMaxSwallowSize())
+						.isEqualTo(10));
 	}
 
 	@Test

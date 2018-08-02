@@ -46,6 +46,7 @@ import org.springframework.util.StringUtils;
  * @author Yulin Qin
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer implements
@@ -85,6 +86,8 @@ public class TomcatWebServerFactoryCustomizer implements
 		propertyMapper.from(() -> determineMaxHttpHeaderSize()).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
+		propertyMapper.from(tomcatProperties::getMaxSwallowSize)
+				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpPostSize)
 				.when((maxHttpPostSize) -> maxHttpPostSize != 0)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
@@ -212,6 +215,17 @@ public class TomcatWebServerFactoryCustomizer implements
 			if (handler instanceof AbstractHttp11Protocol) {
 				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
 				protocol.setMaxHttpHeaderSize(maxHttpHeaderSize);
+			}
+		});
+	}
+
+	private void customizeMaxSwallowSize(ConfigurableTomcatWebServerFactory factory,
+			int maxSwallowSize) {
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractHttp11Protocol) {
+				AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+				protocol.setMaxSwallowSize(maxSwallowSize);
 			}
 		});
 	}
