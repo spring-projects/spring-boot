@@ -100,6 +100,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jmx.default-domain= # JMX domain name.
 	spring.jmx.enabled=true # Expose management beans to the JMX domain.
 	spring.jmx.server=mbeanServer # MBeanServer bean name.
+	spring.jmx.unique-names=false # Set if unique runtime object names should be ensured.
 
 	# Email ({sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[MailProperties])
 	spring.mail.default-encoding=UTF-8 # Default MimeMessage encoding.
