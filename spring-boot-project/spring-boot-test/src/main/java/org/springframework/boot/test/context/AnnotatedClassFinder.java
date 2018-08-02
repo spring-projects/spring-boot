@@ -41,6 +41,8 @@ public final class AnnotatedClassFinder {
 	private static final Map<String, Class<?>> cache = Collections
 			.synchronizedMap(new Cache(40));
 
+	private final Class<? extends Annotation> annotationType;
+
 	private final ClassPathScanningCandidateComponentProvider scanner;
 
 	/**
@@ -49,6 +51,7 @@ public final class AnnotatedClassFinder {
 	 */
 	public AnnotatedClassFinder(Class<? extends Annotation> annotationType) {
 		Assert.notNull(annotationType, "AnnotationType must not be null");
+		this.annotationType = annotationType;
 		this.scanner = new ClassPathScanningCandidateComponentProvider(false);
 		this.scanner.addIncludeFilter(new AnnotationTypeFilter(annotationType));
 		this.scanner.setResourcePattern("*.class");
@@ -88,8 +91,8 @@ public final class AnnotatedClassFinder {
 			Set<BeanDefinition> components = this.scanner.findCandidateComponents(source);
 			if (!components.isEmpty()) {
 				Assert.state(components.size() == 1,
-						() -> "Found multiple @SpringBootConfiguration annotated classes "
-								+ components);
+						() -> "Found multiple @" + this.annotationType.getSimpleName()
+								+ " annotated classes " + components);
 				return ClassUtils.resolveClassName(
 						components.iterator().next().getBeanClassName(), null);
 			}
