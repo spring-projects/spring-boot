@@ -291,6 +291,12 @@
       "defaultValue": "mbeanServer"
     },
     {
+      "name": "spring.jmx.unique-names",
+      "type": "java.lang.Boolean",
+      "description": "Wether if unique runtime object names should be ensured.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.jpa.open-in-view",
       "defaultValue": true
     },
