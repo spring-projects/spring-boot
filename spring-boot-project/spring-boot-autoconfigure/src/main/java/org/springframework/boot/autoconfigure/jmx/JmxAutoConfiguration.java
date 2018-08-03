@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })

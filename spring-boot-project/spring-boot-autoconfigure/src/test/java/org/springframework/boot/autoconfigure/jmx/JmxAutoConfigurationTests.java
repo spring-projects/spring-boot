@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JmxAutoConfiguration}.
  *
  * @author Christian Dupuis
+ * @author Artsiom Yudovin
  */
 public class JmxAutoConfigurationTests {
 
