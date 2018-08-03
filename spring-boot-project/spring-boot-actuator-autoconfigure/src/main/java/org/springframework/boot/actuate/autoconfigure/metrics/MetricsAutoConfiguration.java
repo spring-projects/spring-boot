@@ -30,6 +30,9 @@ import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.info.ApplicationInfoMetrics;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -46,6 +49,9 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics.
@@ -140,6 +146,13 @@ public class MetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public FileDescriptorMetrics fileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
+		}
+
+		@Bean
+		@ConditionalOnProperty(name = "management.metrics.binders.info.enabled", matchIfMissing = true)
+		@ConditionalOnMissingBean
+		public ApplicationInfoMetrics applicationInfoMetrics(ObjectProvider<List<InfoContributor>> infoContributors) {
+			return new ApplicationInfoMetrics(infoContributors.getIfAvailable(Collections::emptyList));
 		}
 
 	}

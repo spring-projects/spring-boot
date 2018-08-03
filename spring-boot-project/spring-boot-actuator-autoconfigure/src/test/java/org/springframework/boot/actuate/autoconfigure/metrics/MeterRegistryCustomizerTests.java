@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.atlas.AtlasMeterRegistry;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,6 +78,19 @@ public class MeterRegistryCustomizerTests {
 				});
 	}
 
+	@Test
+	public void infoContributorsAreTakenIntoAccount() {
+		this.contextRunner
+				.withUserConfiguration(InfoContributorCustomizerConfiguration.class)
+				.run((context) -> {
+					MeterRegistry registry = context
+							.getBean(MeterRegistry.class);
+					final Gauge gauge = registry.get("application.info").tags("my.own.info", "a thing").gauge();
+
+					assertThat(gauge).isNotNull();
+				});
+	}
+
 	@Configuration
 	static class MeterRegistryCustomizerConfiguration {
 
@@ -99,6 +114,15 @@ public class MeterRegistryCustomizerTests {
 
 		}
 
+	}
+
+	@Configuration
+	static class InfoContributorCustomizerConfiguration {
+
+		@Bean
+		public InfoContributor myInfoContributor() {
+			return builder -> builder.withDetail("my.own.info", "a thing");
+		}
 	}
 
 }
