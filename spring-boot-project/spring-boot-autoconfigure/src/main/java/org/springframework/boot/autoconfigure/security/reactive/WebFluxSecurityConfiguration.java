@@ -31,6 +31,7 @@ import org.springframework.security.web.server.WebFilterChainProxy;
  *
  * @author Madhura Bhave
  */
+@Configuration
 @ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class })
 @ConditionalOnMissingBean(WebFilterChainProxy.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
@@ -38,7 +39,7 @@ class WebFluxSecurityConfiguration {
 
 	@Configuration
 	@EnableWebFluxSecurity
-	class EnableWebFluxSecurityConfiguration {
+	static class EnableWebFluxSecurityConfiguration {
 
 	}
 
