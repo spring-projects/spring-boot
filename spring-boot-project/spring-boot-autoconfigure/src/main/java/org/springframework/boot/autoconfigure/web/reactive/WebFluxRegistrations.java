@@ -17,15 +17,14 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 /**
- * Interface to register key components of the {@link WebMvcConfigurationSupport} in place
- * of the default ones provided by Spring MVC.
+ * Interface to register key components of the {@link WebFluxAutoConfiguration} in place
+ * of the default ones provided by Spring WebFlux.
  * <p>
  * All custom instances are later processed by Boot and Spring WebFlux configurations. A
  * single instance of this component should be registered, otherwise making it impossible
- * to choose from redundant MVC components.
+ * to choose from redundant WebFlux components.
  *
  * @author Artsiom Yudovin
  * @since 2.0.1
@@ -44,7 +43,7 @@ public interface WebFluxRegistrations {
 
 	/**
 	 * Return the custom {@link RequestMappingHandlerAdapter} that should be used and
-	 * processed by the WebeFlux configuration.
+	 * processed by the WebFlux configuration.
 	 * @return the custom {@link RequestMappingHandlerAdapter} instance
 	 */
 	default RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
