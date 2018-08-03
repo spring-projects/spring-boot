@@ -35,6 +35,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Madhura Bhave
  * @since 2.0.0
  */
+@Configuration
 @ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 @ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)

@@ -55,7 +55,7 @@ public class ServletEndpointManagementContextConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(DispatcherServlet.class)
-	public class WebMvcServletEndpointManagementContextConfiguration {
+	public static class WebMvcServletEndpointManagementContextConfiguration {
 
 		private final ApplicationContext context;
 
@@ -80,7 +80,7 @@ public class ServletEndpointManagementContextConfiguration {
 	@Configuration
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
-	public class JerseyServletEndpointManagementContextConfiguration {
+	public static class JerseyServletEndpointManagementContextConfiguration {
 
 		@Bean
 		public ServletEndpointRegistrar servletEndpointRegistrar(

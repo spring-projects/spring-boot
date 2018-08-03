@@ -44,6 +44,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * @author Andy Wilkinson
  * @since 1.3.0
  */
+@Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebSocketMessageBrokerConfigurer.class)
 @AutoConfigureAfter(JacksonAutoConfiguration.class)

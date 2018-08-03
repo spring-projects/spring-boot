@@ -44,6 +44,7 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -54,6 +55,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@Configuration
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 @EnableConfigurationProperties(JmxEndpointProperties.class)
 public class JmxEndpointAutoConfiguration {

@@ -83,7 +83,7 @@ class ServletManagementChildContextConfiguration {
 	@Configuration
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
 	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN, search = SearchStrategy.ANCESTORS)
-	class ServletManagementContextSecurityConfiguration {
+	static class ServletManagementContextSecurityConfiguration {
 
 		@Bean
 		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
