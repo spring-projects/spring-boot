@@ -38,6 +38,7 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.XADataSourceWrapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -51,6 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.2.0
  */
+@Configuration
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({ DataSource.class, TransactionManager.class,

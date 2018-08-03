@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 
@@ -33,6 +34,7 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
  * @author Madhura Bhave
  * @since 1.2.0
  */
+@Configuration
 @ConditionalOnClass(PersistenceExceptionTranslationPostProcessor.class)
 public class PersistenceExceptionTranslationAutoConfiguration {
 

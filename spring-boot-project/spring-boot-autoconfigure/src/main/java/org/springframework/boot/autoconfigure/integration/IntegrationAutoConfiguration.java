@@ -132,6 +132,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration component scan configuration.
 	 */
+	@Configuration
 	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanConfiguration {
