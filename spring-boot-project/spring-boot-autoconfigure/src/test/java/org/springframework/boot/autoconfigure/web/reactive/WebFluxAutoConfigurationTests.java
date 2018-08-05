@@ -22,7 +22,6 @@ import java.util.List;
 import javax.validation.ValidatorFactory;
 
 import org.joda.time.DateTime;
-
 import org.junit.Test;
 
 import org.springframework.beans.DirectFieldAccessor;
