@@ -133,7 +133,7 @@ public class EmbeddedLdapAutoConfigurationTests {
 					assertThat(context.getBeanNamesForType(LdapTemplate.class).length)
 							.isEqualTo(1);
 					LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
-					assertThat(ldapTemplate.list("ou=company1,c=Sweden,dc=spring,dc=org"))
+					assertThat(ldapTemplate.list("ou=company1,c=Sweden"))
 							.hasSize(4);
 				});
 	}

@@ -106,6 +106,7 @@ public class EmbeddedLdapAutoConfiguration {
 			source.setUserDn(this.embeddedProperties.getCredential().getUsername());
 			source.setPassword(this.embeddedProperties.getCredential().getPassword());
 		}
+		source.setBase(this.embeddedProperties.getBaseDn().get(0));
 		source.setUrls(this.properties.determineUrls(this.environment));
 		return source;
 	}
