@@ -16,14 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import java.time.Duration;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +66,11 @@ import org.springframework.web.reactive.result.method.annotation.ArgumentResolve
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolver;
+
+import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebFlux WebFlux}.
@@ -247,6 +246,13 @@ public class WebFluxAutoConfiguration {
 			return ValidatorAdapter.get(getApplicationContext(), getValidator());
 		}
 
+		@Bean
+		@Override
+		public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
+			RequestMappingHandlerAdapter adapter = super.requestMappingHandlerAdapter();
+			return adapter;
+		}
+
 		@Override
 		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
 			if (this.webFluxRegistrations != null && this.webFluxRegistrations
@@ -255,6 +261,12 @@ public class WebFluxAutoConfiguration {
 			}
 
 			return super.createRequestMappingHandlerAdapter();
+		}
+
+		@Bean
+		@Override
+		public RequestMappingHandlerMapping requestMappingHandlerMapping() {
+			return super.requestMappingHandlerMapping();
 		}
 
 		@Override
