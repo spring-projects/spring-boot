@@ -1988,7 +1988,8 @@ endpoint and obtain basic information about the last 100 request-response exchan
 [[production-ready-http-tracing-custom]]
 === Custom HTTP tracing
 To customize the items that are included in each trace, use the
-`management.trace.http.include` configuration property.
+`management.trace.http.include` configuration property. For advanced customization,
+consider registering your own `HttpExchangeTracer` implementation.
 
 By default, an `InMemoryHttpTraceRepository` that stores traces for the last 100
 request-response exchanges is used. If you need to expand the capacity, you can define

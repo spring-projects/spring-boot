@@ -127,8 +127,11 @@ public class HttpExchangeTracer {
 
 		@Override
 		public Map<String, List<String>> getHeaders() {
-			return getHeadersIfIncluded(Include.REQUEST_HEADERS,
-					this.delegate::getHeaders, this::includedHeader);
+			Map<String, List<String>> headers = getHeadersIfIncluded(
+					Include.REQUEST_HEADERS, this.delegate::getHeaders,
+					this::includedHeader);
+			postProcessRequestHeaders(headers);
+			return headers;
 		}
 
 		private boolean includedHeader(String name) {
