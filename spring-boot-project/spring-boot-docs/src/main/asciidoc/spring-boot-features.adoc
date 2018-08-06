@@ -3276,12 +3276,26 @@ Provider can be configured with the `issuer-uri`:
 
 
 [[boot-features-security-oauth2-server]]
-==== Server
+==== Resource Server
+If you have `spring-security-oauth2-resource-server` on your classpath, you can take advantage of
+some auto-configuration to make it easy to set up an OAuth2 Resource Server. This configuration
+makes use of the properties under `OAuth2ResourceServerProperties`.
+
+For the OAuth2 Resource Server auto-configuration to kick in, you can
+provide a bean of type `JwtDecoder` yourself or configure a JWK Set URI as follows:
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.resource.jwt.jwk.set-uri=https://example.com/oauth2/default/v1/keys
+----
+
+
+==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0
-Authorization Server or Resource Server. However, this functionality is available from
+Authorization Server. However, this functionality is available from
 the https://projects.spring.io/spring-security-oauth/[Spring Security OAuth] project,
 which will eventually be superseded by Spring Security completely. Until then, you can
-use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 server;
+use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 authorization server;
 see its https://docs.spring.io/spring-security-oauth2-boot[documentation] for instructions.
 
 
