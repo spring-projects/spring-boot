@@ -22,6 +22,7 @@ import javax.management.ObjectName;
 
 import org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory;
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
+import org.springframework.core.env.Environment;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -40,11 +41,30 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 	private final String contextId;
 
+	private final boolean uniqueNames;
+
 	DefaultEndpointObjectNameFactory(JmxEndpointProperties properties,
-			MBeanServer mBeanServer, String contextId) {
+			Environment environment, MBeanServer mBeanServer, String contextId) {
 		this.properties = properties;
 		this.mBeanServer = mBeanServer;
 		this.contextId = contextId;
+		this.uniqueNames = determineUniqueNames(environment, properties);
+	}
+
+	@SuppressWarnings("deprecation")
+	private static boolean determineUniqueNames(Environment environment,
+			JmxEndpointProperties properties) {
+		Boolean uniqueName = environment.getProperty("spring.jmx.unique-names",
+				Boolean.class);
+		Boolean endpointUniqueNames = properties.getUniqueNames();
+		if (uniqueName == null) {
+			return (endpointUniqueNames != null) ? endpointUniqueNames : false;
+		}
+		else if (endpointUniqueNames != null & !uniqueName.equals(endpointUniqueNames)) {
+			throw new IllegalArgumentException(
+					"Configuration mismatch, 'management.endpoints.jmx.unique-names' is deprecated, use only 'spring.jmx.unique-names'");
+		}
+		return uniqueName;
 	}
 
 	@Override
@@ -57,7 +77,7 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 		if (this.mBeanServer != null && hasMBean(baseName)) {
 			builder.append(",context=" + this.contextId);
 		}
-		if (this.properties.isUniqueNames()) {
+		if (this.uniqueNames) {
 			String identity = ObjectUtils.getIdentityHexString(endpoint);
 			builder.append(",identity=" + identity);
 		}

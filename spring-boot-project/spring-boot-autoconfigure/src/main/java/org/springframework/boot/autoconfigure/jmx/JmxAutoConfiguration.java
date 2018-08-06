@@ -94,11 +94,9 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 		if (StringUtils.hasLength(defaultDomain)) {
 			namingStrategy.setDefaultDomain(defaultDomain);
 		}
-
 		boolean uniqueName = this.environment.getProperty("spring.jmx.unique-names",
 				Boolean.class, false);
 		namingStrategy.setEnsureUniqueRuntimeObjectNames(uniqueName);
-
 		return namingStrategy;
 	}
 

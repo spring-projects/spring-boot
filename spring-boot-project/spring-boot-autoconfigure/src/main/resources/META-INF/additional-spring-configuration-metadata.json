@@ -293,7 +293,7 @@
     {
       "name": "spring.jmx.unique-names",
       "type": "java.lang.Boolean",
-      "description": "Whether to ensure that ObjectNames are modified in case of conflict.",
+      "description": "Whether unique runtime object names should be ensured.",
       "defaultValue": false
     },
     {

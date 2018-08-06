@@ -22,7 +22,9 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.mock.env.MockEnvironment;
@@ -38,6 +40,9 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 public class DefaultEndpointObjectNameFactoryTests {
+
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
 
 	private final MockEnvironment environment = new MockEnvironment();
 
@@ -72,12 +77,35 @@ public class DefaultEndpointObjectNameFactoryTests {
 
 	@Test
 	public void generateObjectNameWithUniqueNames() {
+		this.environment.setProperty("spring.jmx.unique-names", "true");
+		assertUniqueObjectName();
+	}
+
+	@Test
+	@Deprecated
+	public void generateObjectNameWithUniqueNamesDeprecatedProperty() {
 		this.properties.setUniqueNames(true);
+		assertUniqueObjectName();
+	}
+
+	private void assertUniqueObjectName() {
 		ExposableJmxEndpoint endpoint = endpoint("test");
 		String id = ObjectUtils.getIdentityHexString(endpoint);
 		ObjectName objectName = generateObjectName(endpoint);
 		assertThat(objectName.toString()).isEqualTo(
 				"org.springframework.boot:type=Endpoint,name=Test,identity=" + id);
+	}
+
+	@Test
+	@Deprecated
+	public void generateObjectNameWithUniqueNamesDeprecatedPropertyMismatchMainProperty() {
+		this.environment.setProperty("spring.jmx.unique-names", "false");
+		this.properties.setUniqueNames(true);
+
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("spring.jmx.unique-names");
+		this.thrown.expectMessage("management.endpoints.jmx.unique-names");
+		generateObjectName(endpoint("test"));
 	}
 
 	@Test
@@ -107,8 +135,8 @@ public class DefaultEndpointObjectNameFactoryTests {
 
 	private ObjectName generateObjectName(ExposableJmxEndpoint endpoint) {
 		try {
-			return new DefaultEndpointObjectNameFactory(this.properties, this.mBeanServer,
-					this.contextId).getObjectName(endpoint);
+			return new DefaultEndpointObjectNameFactory(this.properties, this.environment,
+					this.mBeanServer, this.contextId).getObjectName(endpoint);
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new AssertionError("Invalid object name", ex);

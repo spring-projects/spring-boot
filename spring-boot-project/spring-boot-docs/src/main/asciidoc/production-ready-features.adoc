@@ -1200,17 +1200,16 @@ The name of the MBean is usually generated from the `id` of the endpoint. For ex
 `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
 
 If your application contains more than one Spring `ApplicationContext`, you may find that
-names clash. To solve this problem, you can set the
-`management.endpoints.jmx.unique-names` property to `true` so that MBean names are always
-unique.
+names clash. To solve this problem, you can set the `spring.jmx.unique-names` property to
+`true` so that MBean names are always unique.
 
 You can also customize the JMX domain under which endpoints are exposed. The following
 settings show an example of doing so in `application.properties`:
 
 [source,properties,indent=0]
 ----
+	spring.jmx.unique-names=true
 	management.endpoints.jmx.domain=com.example.myapp
-	management.endpoints.jmx.unique-names=true
 ----
 
 
