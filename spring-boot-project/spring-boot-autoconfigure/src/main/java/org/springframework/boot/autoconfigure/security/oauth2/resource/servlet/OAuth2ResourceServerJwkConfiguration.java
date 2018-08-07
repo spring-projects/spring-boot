@@ -33,8 +33,7 @@ class OAuth2ResourceServerJwkConfiguration {
 
 	private final OAuth2ResourceServerProperties properties;
 
-	public OAuth2ResourceServerJwkConfiguration(
-			OAuth2ResourceServerProperties properties) {
+	OAuth2ResourceServerJwkConfiguration(OAuth2ResourceServerProperties properties) {
 		this.properties = properties;
 	}
 
