@@ -3286,7 +3286,10 @@ following example:
 	spring.security.oauth2.resource.jwt.jwk.set-uri=https://example.com/oauth2/default/v1/keys
 ----
 
-Alternatively, you can define your own `JwtDecoder` bean.
+The same properties are applicable for both servlet and reactive applications.
+
+Alternatively, you can define your own `JwtDecoder` bean for servlet applications
+or a `ReactiveJwtDecoder` for reactive applications.
 
 
 
