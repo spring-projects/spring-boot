@@ -46,14 +46,8 @@ do as they were designed before this was clarified.
 | https://camunda.org/[Camunda BPM]
 | https://github.com/camunda/camunda-bpm-spring-boot-starter
 
-| Central Authentication Service (CAS) client
-| https://github.com/Unicon/cas-client-autoconfig-support
-
 | Charon reverse proxy
 | https://github.com/mkopylec/charon-spring-boot-starter
-
-| https://citrusframework.org/[Citrus] simulator
-| https://github.com/christophd/citrus-simulator
 
 | https://cloudant.com/[Cloudant]
 | https://github.com/icha024/cloudant-spring-boot-starter
@@ -72,9 +66,6 @@ do as they were designed before this was clarified.
 
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
-
-| http://ff4j.org/[Feature Flipping For Java (FF4J)]
-| https://github.com/clun/ff4j/
 
 | https://www.flowable.org/[Flowable]
 | https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters
@@ -97,14 +88,8 @@ do as they were designed before this was clarified.
 | http://hdiv.org/[HDIV]
 | https://github.com/hdiv/spring-boot-starter-hdiv
 
-| Hiatus for Spring Boot
-| https://github.com/jihor/hiatus-spring-boot
-
 | http://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
-
-| https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
-| https://github.com/domix/spring-boot-starter-jade4j
 
 | https://github.com/javamelody/javamelody/wiki[JavaMelody] monitoring
 | https://github.com/javamelody/javamelody/wiki/SpringBootStarter
@@ -118,32 +103,11 @@ do as they were designed before this was clarified.
 | http://www.liquigraph.org/[Liquigraph]
 | https://github.com/liquigraph/liquigraph
 
-| http://log4jdbc.brunorozendo.com/[Log4jdbc]
-| https://github.com/candrews/log4jdbc-spring-boot-starter
-
 | https://logback.qos.ch/access.html[Logback-access]
 | https://github.com/akihyro/logback-access-spring-boot-starter
 
-| https://github.com/membrane/service-proxy[Membrane Service Proxy]
-| https://github.com/membrane/membrane-spring-boot-starter
-
-| http://modelmapper.org/[ModelMapper]
-| https://github.com/jmnarloch/modelmapper-spring-boot-starter
-
-| http://secondmarket.github.io/mongeez/[Mongeez]
-| https://github.com/hzpz/mongeez-spring-boot-starter/
-
-| https://www.mulesoft.com/platform/soa/mule-esb-open-source-esb[Mule ESB]
-| https://github.com/denschu/mule-spring-boot-starter
-
 | http://mybatis.org/mybatis-3/[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
-
-| https://github.com/facebook/nifty[Nifty] (Thrift on Netty)
-| https://github.com/bigdullrock/nifty-spring-boot-starter
-
-| https://github.com/nutzam/nutz[Nutz.Dao]
-| https://github.com/nutzam/nutzmore
 
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
@@ -154,14 +118,8 @@ do as they were designed before this was clarified.
 | http://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
-| https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
-| https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
-
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/resteasy/resteasy-spring-boot
-
-| http://restfb.com/[RestFB] Messenger
-| https://github.com/marsbits/restfbmessenger
 
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
@@ -177,9 +135,6 @@ do as they were designed before this was clarified.
 
 | https://github.com/structurizr/java[Structurizr]
 | https://github.com/Catalysts/structurizr-extensions
-
-| http://teiid.org/[Teiid]
-| https://github.com/teiid/teiid-spring-boot
 
 | https://vaadin.com/[Vaadin]
 | https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
