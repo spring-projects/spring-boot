@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for Spring Security's OAuth 2 resource server.
+ * Support for Spring Security's OAuth2 resource server.
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
