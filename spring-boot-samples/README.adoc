@@ -134,6 +134,9 @@ The following sample applications are provided:
 | link:spring-boot-sample-metrics-redis[spring-boot-sample-metrics-redis]
 | Exports metrics to Redis
 
+| link:spring-boot-sample-oauth2-resource-server[spring-boot-sample-oauth2-resource-server]
+| Configure an OAuth2 resource server
+
 | link:spring-boot-sample-parent-context[spring-boot-sample-parent-context]
 | Application that uses an `ApplicationContext` with a parent
 

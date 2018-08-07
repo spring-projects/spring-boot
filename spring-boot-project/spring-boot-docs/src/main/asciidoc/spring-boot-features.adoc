@@ -3277,17 +3277,17 @@ Provider can be configured with the `issuer-uri`:
 
 [[boot-features-security-oauth2-server]]
 ==== Resource Server
-If you have `spring-security-oauth2-resource-server` on your classpath, you can take advantage of
-some auto-configuration to make it easy to set up an OAuth2 Resource Server. This configuration
-makes use of the properties under `OAuth2ResourceServerProperties`.
-
-For the OAuth2 Resource Server auto-configuration to kick in, you can
-provide a bean of type `JwtDecoder` yourself or configure a JWK Set URI as follows:
+If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can
+set up an OAuth2 Resource Server as long as a JWK Set URI is specified, as shown in the
+following example:
 
 [source,properties,indent=0]
 ----
 	spring.security.oauth2.resource.jwt.jwk.set-uri=https://example.com/oauth2/default/v1/keys
 ----
+
+Alternatively, you can define your own `JwtDecoder` bean.
+
 
 
 ==== Authorization Server

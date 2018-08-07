@@ -21,30 +21,23 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * OAuth 2.0 resource server properties.
  *
  * @author Madhura Bhave
+ * @since 2.1.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.resource")
 public class OAuth2ResourceServerProperties {
 
-	private Jwt jwt = new Jwt();
+	private final Jwt jwt = new Jwt();
 
 	public Jwt getJwt() {
 		return this.jwt;
 	}
 
-	public void setJwt(Jwt jwt) {
-		this.jwt = jwt;
-	}
-
 	public static class Jwt {
 
-		private Jwk jwk = new Jwk();
+		private final Jwk jwk = new Jwk();
 
 		public Jwk getJwk() {
 			return this.jwk;
-		}
-
-		public void setJwk(Jwk jwk) {
-			this.jwk = jwk;
 		}
 
 	}
@@ -52,7 +45,7 @@ public class OAuth2ResourceServerProperties {
 	public static class Jwk {
 
 		/**
-		 * The URI to get verification keys to verify the JWT token.
+		 * JSON Web Key URI to use to verify the JWT token.
 		 */
 		private String setUri;
 
