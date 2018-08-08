@@ -17,9 +17,11 @@
 package org.springframework.boot.actuate.flyway;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +40,7 @@ import org.springframework.context.ApplicationContext;
  * @author Eddú Meléndez
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Endpoint(id = "flyway")
@@ -164,9 +167,10 @@ public class FlywayEndpoint {
 			this.script = info.getScript();
 			this.state = info.getState();
 			this.installedBy = info.getInstalledBy();
-			this.installedOn = Instant.ofEpochMilli(info.getInstalledOn().getTime());
 			this.installedRank = info.getInstalledRank();
 			this.executionTime = info.getExecutionTime();
+			this.installedOn = Optional.ofNullable(info.getInstalledOn())
+					.map(Date::getTime).map(Instant::ofEpochMilli).orElse(null);
 		}
 
 		private String nullSafeToString(Object obj) {
