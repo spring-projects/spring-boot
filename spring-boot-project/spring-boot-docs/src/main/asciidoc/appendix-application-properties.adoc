@@ -169,6 +169,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.task.execution.pool.queue-capacity= # Queue capacity. An unbounded capacity does not increase the pool and therefore ignores the "max-size" property.
 	spring.task.execution.thread-name-prefix=task- # Prefix to use for the names of newly created threads.
 
+	# TASK SCHEDULING  ({sc-spring-boot-autoconfigure}/task/TaskSchedulingProperties.{sc-ext}[TaskSchedulingProperties])
+	spring.task.scheduling.pool.size=1 # Maximum allowed number of threads.
+	spring.task.scheduling.thread-name-prefix=scheduling- # Prefix to use for the names of newly created threads.
+
 	# ----------------------------------------
 	# WEB PROPERTIES
 	# ----------------------------------------
