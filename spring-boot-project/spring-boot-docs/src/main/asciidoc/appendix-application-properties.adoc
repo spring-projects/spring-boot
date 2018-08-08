@@ -1332,6 +1332,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.db.enabled=true # Whether to enable database health check.
 	management.health.cassandra.enabled=true # Whether to enable Cassandra health check.
 	management.health.couchbase.enabled=true # Whether to enable Couchbase health check.
+	management.health.couchbase.timeout=1000ms # Timeout for getting the Bucket information from the server.
 	management.health.defaults.enabled=true # Whether to enable default health indicators.
 	management.health.diskspace.enabled=true # Whether to enable disk space health check.
 	management.health.diskspace.path= # Path used to compute the available disk space.
