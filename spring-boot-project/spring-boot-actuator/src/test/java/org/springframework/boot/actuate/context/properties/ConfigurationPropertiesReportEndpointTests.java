@@ -44,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesReportEndpointTests {
 
@@ -121,11 +122,47 @@ public class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
+	public void nonCamelCaseProperty() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
+			assertThat(nestedProperties.get("myURL")).isEqualTo("https://example.com");
+		});
+	}
+
+	@Test
+	public void simpleBoolean() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
+			assertThat(nestedProperties.get("simpleBoolean")).isEqualTo(true);
+		});
+	}
+
+	@Test
 	public void mixedBoolean() {
 		load((context, properties) -> {
 			Map<String, Object> nestedProperties = properties.getBeans()
 					.get("testProperties").getProperties();
 			assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
+		});
+	}
+
+	@Test
+	public void mixedCase() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
+			assertThat(nestedProperties.get("mIxedCase")).isEqualTo("mixed");
+		});
+	}
+
+	@Test
+	public void singleLetterProperty() {
+		load((context, properties) -> {
+			Map<String, Object> nestedProperties = properties.getBeans()
+					.get("testProperties").getProperties();
+			assertThat(nestedProperties.get("z")).isEqualTo("zzz");
 		});
 	}
 
@@ -219,7 +256,15 @@ public class ConfigurationPropertiesReportEndpointTests {
 
 		private String myTestProperty = "654321";
 
+		private String myURL = "https://example.com";
+
+		private boolean simpleBoolean = true;
+
 		private Boolean mixedBoolean = true;
+
+		private String mIxedCase = "mixed";
+
+		private String z = "zzz";
 
 		private Map<String, Object> secrets = new HashMap<>();
 
@@ -254,12 +299,44 @@ public class ConfigurationPropertiesReportEndpointTests {
 			this.myTestProperty = myTestProperty;
 		}
 
-		public boolean isMixedBoolean() {
-			return (this.mixedBoolean != null) ? this.mixedBoolean : false;
+		public String getMyURL() {
+			return this.myURL;
+		}
+
+		public void setMyURL(String myURL) {
+			this.myURL = myURL;
+		}
+
+		public boolean isSimpleBoolean() {
+			return this.simpleBoolean;
+		}
+
+		public void setSimpleBoolean(boolean simpleBoolean) {
+			this.simpleBoolean = simpleBoolean;
 		}
 
 		public void setMixedBoolean(Boolean mixedBoolean) {
 			this.mixedBoolean = mixedBoolean;
+		}
+
+		public boolean isMixedBoolean() {
+			return (this.mixedBoolean != null) ? this.mixedBoolean : false;
+		}
+
+		public String getmIxedCase() {
+			return this.mIxedCase;
+		}
+
+		public void setmIxedCase(String mIxedCase) {
+			this.mIxedCase = mIxedCase;
+		}
+
+		public String getZ() {
+			return this.z;
+		}
+
+		public void setZ(String z) {
+			this.z = z;
 		}
 
 		public Map<String, Object> getSecrets() {
