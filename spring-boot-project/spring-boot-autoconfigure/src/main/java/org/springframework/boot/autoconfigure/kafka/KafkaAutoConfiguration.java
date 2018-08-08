@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.kafka.streams.StreamsBuilder;
@@ -151,8 +152,14 @@ public class KafkaAutoConfiguration {
 		@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 		public Properties defaultKafkaStreamsConfig(KafkaProperties properties) {
 			Properties streamsConfig = new Properties();
-			properties.buildStreamsProperties()
-					.forEach((k, v) -> streamsConfig.put(k, v.toString()));
+			properties.buildStreamsProperties().forEach((k, v) -> {
+				String value = v.toString();
+				if (v instanceof List && value.length() > 1) {
+					// trim [...] - revert to comma-delimited list
+					value = value.substring(1, value.length() - 1);
+				}
+				streamsConfig.put(k, value);
+			});
 			return streamsConfig;
 		}
 

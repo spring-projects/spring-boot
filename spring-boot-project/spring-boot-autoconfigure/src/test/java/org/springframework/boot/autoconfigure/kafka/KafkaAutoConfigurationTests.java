@@ -279,25 +279,27 @@ public class KafkaAutoConfigurationTests {
 	@Test
 	public void streamsProperties() {
 		this.contextRunner.withPropertyValues("spring.kafka.clientId=cid",
-						"spring.application.name=appName",
-						"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
-						"spring.kafka.streams.cache-max-bytes-buffering=42",
-						"spring.kafka.streams.client-id=override",
-						"spring.kafka.streams.properties.fiz.buz=fix.fox",
-						"spring.kafka.streams.replication-factor=2",
-						"spring.kafka.streams.state-dir=/tmp/state",
-						"spring.kafka.streams.ssl.key-password=p7",
-						"spring.kafka.streams.ssl.key-store-location=classpath:ksLocP",
-						"spring.kafka.streams.ssl.key-store-password=p8",
-						"spring.kafka.streams.ssl.key-store-type=PKCS12",
-						"spring.kafka.streams.ssl.trust-store-location=classpath:tsLocP",
-						"spring.kafka.streams.ssl.trust-store-password=p9",
-						"spring.kafka.streams.ssl.trust-store-type=PKCS12",
-						"spring.kafka.streams.ssl.protocol=TLSv1.2")
-				.run((context) -> {
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+				"spring.application.name=appName",
+				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
+				"spring.kafka.streams.cache-max-bytes-buffering=42",
+				"spring.kafka.streams.client-id=override",
+				"spring.kafka.streams.properties.fiz.buz=fix.fox",
+				"spring.kafka.streams.replication-factor=2",
+				"spring.kafka.streams.state-dir=/tmp/state",
+				"spring.kafka.streams.ssl.key-password=p7",
+				"spring.kafka.streams.ssl.key-store-location=classpath:ksLocP",
+				"spring.kafka.streams.ssl.key-store-password=p8",
+				"spring.kafka.streams.ssl.key-store-type=PKCS12",
+				"spring.kafka.streams.ssl.trust-store-location=classpath:tsLocP",
+				"spring.kafka.streams.ssl.trust-store-password=p9",
+				"spring.kafka.streams.ssl.trust-store-type=PKCS12",
+				"spring.kafka.streams.ssl.protocol=TLSv1.2").run((context) -> {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							Properties.class);
+					assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
+							.isEqualTo("localhost:9092, localhost:9093");
 					assertThat(
 							configs.get(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG))
 									.isEqualTo("42");
