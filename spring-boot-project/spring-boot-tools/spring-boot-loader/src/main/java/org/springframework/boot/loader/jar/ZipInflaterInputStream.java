@@ -30,12 +30,19 @@ import java.util.zip.InflaterInputStream;
  */
 class ZipInflaterInputStream extends InflaterInputStream {
 
+	private final Inflater inflater;
+
 	private boolean extraBytesWritten;
 
 	private int available;
 
 	ZipInflaterInputStream(InputStream inputStream, int size) {
-		super(inputStream, new Inflater(true), getInflaterBufferSize(size));
+		this(inputStream, new Inflater(true), size);
+	}
+
+	private ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size) {
+		super(inputStream, inflater, getInflaterBufferSize(size));
+		this.inflater = inflater;
 		this.available = size;
 	}
 
@@ -54,6 +61,12 @@ class ZipInflaterInputStream extends InflaterInputStream {
 			this.available -= result;
 		}
 		return result;
+	}
+
+	@Override
+	public void close() throws IOException {
+		super.close();
+		this.inflater.end();
 	}
 
 	@Override
