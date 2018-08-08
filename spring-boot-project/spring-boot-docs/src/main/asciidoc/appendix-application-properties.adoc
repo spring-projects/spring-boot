@@ -1114,6 +1114,20 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.ssl.trust-store-location= # Location of the trust store file.
 	spring.kafka.ssl.trust-store-password= # Store password for the trust store file.
 	spring.kafka.ssl.trust-store-type= # Type of the trust store.
+	spring.kafka.streams.auto-startup= # Whether or not to auto-start the streams factory bean; default false.
+	spring.kafka.streams.cache-max-bytes-buffering= # Maximum number of memory bytes to be used for buffering across all threads.
+	spring.kafka.streams.client-id= # ID to pass to the server when making requests. Used for server-side logging.
+	spring.kafka.streams.properties.*= # Additional Kafka properties used to configure the streams.
+	spring.kafka.streams.replication-factor= # The replication factor for change log topics and repartition topics created by the stream processing application.
+	spring.kafka.streams.ssl.key-password= # Password of the private key in the key store file.
+	spring.kafka.streams.ssl.key-store-location= # Location of the key store file.
+	spring.kafka.streams.ssl.key-store-password= # Store password for the key store file.
+	spring.kafka.streams.ssl.key-store-type= # Type of the key store.
+	spring.kafka.streams.ssl.protocol= # SSL protocol to use.
+	spring.kafka.streams.ssl.trust-store-location= # Location of the trust store file.
+	spring.kafka.streams.ssl.trust-store-password= # Store password for the trust store file.
+	spring.kafka.streams.ssl.trust-store-type= # Type of the trust store.
+	spring.kafka.streams.state-dir= # Directory location for the state store.
 	spring.kafka.template.default-topic= # Default topic to which messages are sent.
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])

@@ -31,6 +31,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.streams.StreamsConfig;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -79,6 +80,8 @@ public class KafkaProperties {
 
 	private final Admin admin = new Admin();
 
+	private final Streams streams = new Streams();
+
 	private final Listener listener = new Listener();
 
 	private final Ssl ssl = new Ssl();
@@ -121,6 +124,10 @@ public class KafkaProperties {
 
 	public Admin getAdmin() {
 		return this.admin;
+	}
+
+	public Streams getStreams() {
+		return this.streams;
 	}
 
 	public Ssl getSsl() {
@@ -190,6 +197,19 @@ public class KafkaProperties {
 	public Map<String, Object> buildAdminProperties() {
 		Map<String, Object> properties = buildCommonProperties();
 		properties.putAll(this.admin.buildProperties());
+		return properties;
+	}
+
+	/**
+	 * Create an initial map of streams properties from the state of this instance.
+	 * <p>
+	 * This allows you to add additional properties, if necessary.
+	 * @return the streams properties initialized with the customizations defined on this
+	 * instance
+	 */
+	public Map<String, Object> buildStreamsProperties() {
+		Map<String, Object> properties = buildCommonProperties();
+		properties.putAll(this.streams.buildProperties());
 		return properties;
 	}
 
@@ -631,6 +651,137 @@ public class KafkaProperties {
 
 	}
 
+	/**
+	 * High (and some medium) priority Streams properties and a general properties bucket.
+	 */
+	public static class Streams {
+
+		private final Ssl ssl = new Ssl();
+
+		/**
+		 * Kafka streams application.id property; default spring.application.name.
+		 */
+		private String applicationId = "${spring.application.name}";
+
+		/**
+		 * Whether or not to auto-start the streams factory bean; default false.
+		 */
+		private boolean autoStartup;
+
+		/**
+		 * Comma-delimited list of host:port pairs to use for establishing the initial
+		 * connection to the Kafka cluster.
+		 */
+		private List<String> bootstrapServers;
+
+		/**
+		 * Maximum number of memory bytes to be used for buffering across all threads.
+		 */
+		private Integer cacheMaxBytesBuffering;
+
+		/**
+		 * ID to pass to the server when making requests. Used for server-side logging.
+		 */
+		private String clientId;
+
+		/**
+		 * The replication factor for change log topics and repartition topics created by
+		 * the stream processing application.
+		 */
+		private Integer replicationFactor;
+
+		/**
+		 * Directory location for the state store.
+		 */
+		private String stateDir;
+
+		/**
+		 * Additional Kafka properties used to configure the streams.
+		 */
+		private final Map<String, String> properties = new HashMap<>();
+
+		public Ssl getSsl() {
+			return this.ssl;
+		}
+
+		public String getApplicationId() {
+			return this.applicationId;
+		}
+
+		public void setApplicationId(String applicationId) {
+			this.applicationId = applicationId;
+		}
+
+		public boolean isAutoStartup() {
+			return this.autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
+		}
+
+		public List<String> getBootstrapServers() {
+			return this.bootstrapServers;
+		}
+
+		public void setBootstrapServers(List<String> bootstrapServers) {
+			this.bootstrapServers = bootstrapServers;
+		}
+
+		public Integer getCacheMaxBytesBuffering() {
+			return this.cacheMaxBytesBuffering;
+		}
+
+		public void setCacheMaxBytesBuffering(Integer cacheMaxBytesBuffering) {
+			this.cacheMaxBytesBuffering = cacheMaxBytesBuffering;
+		}
+
+		public String getClientId() {
+			return this.clientId;
+		}
+
+		public void setClientId(String clientId) {
+			this.clientId = clientId;
+		}
+
+		public Integer getReplicationFactor() {
+			return this.replicationFactor;
+		}
+
+		public void setReplicationFactor(Integer replicationFactor) {
+			this.replicationFactor = replicationFactor;
+		}
+
+		public String getStateDir() {
+			return this.stateDir;
+		}
+
+		public void setStateDir(String stateDir) {
+			this.stateDir = stateDir;
+		}
+
+		public Map<String, String> getProperties() {
+			return this.properties;
+		}
+
+		public Map<String, Object> buildProperties() {
+			Properties properties = new Properties();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(this::getApplicationId)
+					.to(properties.in(StreamsConfig.APPLICATION_ID_CONFIG));
+			map.from(this::getBootstrapServers)
+					.to(properties.in(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
+			map.from(this::getCacheMaxBytesBuffering)
+					.to(properties.in(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG));
+			map.from(this::getClientId).to(properties.in(StreamsConfig.CLIENT_ID_CONFIG));
+			map.from(this::getReplicationFactor)
+					.to(properties.in(StreamsConfig.REPLICATION_FACTOR_CONFIG));
+			map.from(this::getStateDir).to(properties.in(StreamsConfig.STATE_DIR_CONFIG));
+			return properties.with(this.ssl, this.properties);
+		}
+
+	}
+
 	public static class Template {
 
 		/**
@@ -1011,6 +1162,7 @@ public class KafkaProperties {
 
 	}
 
+	@SuppressWarnings("serial")
 	private static class Properties extends HashMap<String, Object> {
 
 		public <V> java.util.function.Consumer<V> in(String key) {
