@@ -169,8 +169,12 @@ public class FlywayEndpoint {
 			this.installedBy = info.getInstalledBy();
 			this.installedRank = info.getInstalledRank();
 			this.executionTime = info.getExecutionTime();
-			this.installedOn = Optional.ofNullable(info.getInstalledOn())
-					.map(Date::getTime).map(Instant::ofEpochMilli).orElse(null);
+			this.installedOn = toEpochMilli(info.getInstalledOn());
+		}
+
+		private Instant toEpochMilli(Date installedOn) {
+			return (installedOn != null) ?
+					Instant.ofEpochMilli(installedOn.getTime()) : null;
 		}
 
 		private String nullSafeToString(Object obj) {
