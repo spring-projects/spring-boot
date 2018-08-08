@@ -62,7 +62,7 @@ public class SampleReactiveOAuth2ResourceServerApplicationTests {
 	@Test
 	public void getWhenValidTokenShouldBeOk() {
 		this.webTestClient.get().uri("/")
-				.headers(headers -> headers.setBearerAuth(VALID_TOKEN)).exchange()
+				.headers((headers) -> headers.setBearerAuth(VALID_TOKEN)).exchange()
 				.expectStatus().isOk().expectBody(String.class)
 				.isEqualTo("Hello, subject!");
 	}
