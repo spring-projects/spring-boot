@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -173,8 +172,8 @@ public class FlywayEndpoint {
 		}
 
 		private Instant toEpochMilli(Date installedOn) {
-			return (installedOn != null) ?
-					Instant.ofEpochMilli(installedOn.getTime()) : null;
+			return (installedOn != null) ? Instant.ofEpochMilli(installedOn.getTime())
+					: null;
 		}
 
 		private String nullSafeToString(Object obj) {
