@@ -260,7 +260,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.tomcat.max-connections=0 # Maximum number of connections that the server accepts and processes at any given time.
 	server.tomcat.max-http-header-size=0 # Maximum size, in bytes, of the HTTP message header.
 	server.tomcat.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post content.
-	server.tomcat.max-swallow-size=4096 # Maximum amount of request body bytes to swallow.
+	server.tomcat.max-swallow-size=2097152 # Maximum amount of request body bytes to swallow.
 	server.tomcat.max-threads=0 # Maximum number of worker threads.
 	server.tomcat.min-spare-threads=0 # Minimum number of worker threads.
 	server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
