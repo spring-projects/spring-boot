@@ -332,7 +332,7 @@ public class ServerProperties {
 		/**
 		 * Maximum amount of request body bytes to swallow.
 		 */
-		private int maxSwallowSize = 4096;
+		private int maxSwallowSize = 2097152;
 
 		/**
 		 * Whether requests to the context root should be redirected by appending a / to
