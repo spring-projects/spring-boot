@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -28,6 +32,7 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 2.0.0
  */
 @Endpoint(id = "health")
@@ -63,6 +68,14 @@ public class HealthEndpoint {
 		return (indicator != null) ? indicator.health() : null;
 	}
 
+	@ReadOperation
+	public Health healthForComponents(@Selector String... components) {
+		HealthAggregator aggregator = new OrderedHealthAggregator();
+		Map<String, Health> healths = getNestedHealthIndicators(this.healthIndicator,
+				components);
+		return aggregator.aggregate(healths);
+	}
+
 	/**
 	 * Return the {@link Health} of a particular {@code instance} managed by the specified
 	 * {@code component} or {@code null} if that particular component is not a
@@ -84,6 +97,21 @@ public class HealthEndpoint {
 			String name) {
 		if (healthIndicator instanceof CompositeHealthIndicator) {
 			return ((CompositeHealthIndicator) healthIndicator).getRegistry().get(name);
+		}
+		return null;
+	}
+
+	private Map<String, Health> getNestedHealthIndicators(HealthIndicator healthIndicator,
+			String... names) {
+		if (healthIndicator instanceof CompositeHealthIndicator) {
+			Map<String, HealthIndicator> healthIndicators = ((CompositeHealthIndicator) healthIndicator)
+					.getRegistry().get(Arrays.asList(names));
+
+			Map<String, Health> healths = new LinkedHashMap<>();
+			for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
+				healths.put(entry.getKey(), entry.getValue().health());
+			}
+			return healths;
 		}
 		return null;
 	}

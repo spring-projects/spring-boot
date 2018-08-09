@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class HealthEndpointTests {
 
@@ -105,6 +106,22 @@ public class HealthEndpointTests {
 				Collections.singletonMap("test", () -> Health.up().build())));
 		Health health = endpoint.healthForComponentInstance("test", "does-not-exist");
 		assertThat(health).isNull();
+	}
+
+	@Test
+	public void callSpecificComponents() {
+		Map<String, HealthIndicator> healthIndicators = new HashMap<>();
+		healthIndicators.put("one", one);
+		healthIndicators.put("two", two);
+		HealthEndpoint endpoint = new HealthEndpoint(
+				createHealthIndicator(healthIndicators));
+		Health health = endpoint.healthForComponents("one", "two");
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsOnlyKeys("one", "two");
+		Health upHealth = (Health) health.getDetails().get("one");
+		assertThat(upHealth.getDetails()).containsOnly(entry("first", "1"));
+		Health upAgainHealth = (Health) health.getDetails().get("two");
+		assertThat(upAgainHealth.getDetails()).containsOnly(entry("second", "2"));
 	}
 
 	private HealthIndicator createHealthIndicator(

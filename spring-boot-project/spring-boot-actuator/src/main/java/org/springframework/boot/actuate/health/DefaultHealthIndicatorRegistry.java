@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
 
@@ -27,6 +29,7 @@ import org.springframework.util.Assert;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 2.1.0
  */
 public class DefaultHealthIndicatorRegistry implements HealthIndicatorRegistry {
@@ -79,6 +82,20 @@ public class DefaultHealthIndicatorRegistry implements HealthIndicatorRegistry {
 		Assert.notNull(name, "Name must not be null");
 		synchronized (this.monitor) {
 			return this.healthIndicators.get(name);
+		}
+	}
+
+	@Override
+	public Map<String, HealthIndicator> get(List<String> names) {
+		Assert.notEmpty(names, "Name must not be empty");
+		synchronized (this.monitor) {
+			return names.stream()
+					.map((name) -> this.healthIndicators.entrySet().stream()
+							.filter((entry) -> entry.getKey().equals(name))
+							.collect(Collectors.toMap(Map.Entry::getKey,
+									Map.Entry::getValue)))
+					.flatMap((map) -> map.entrySet().stream())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		}
 	}
 

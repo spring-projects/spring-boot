@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +27,7 @@ import java.util.Map;
  * @author Andy Wilkinson
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 2.1.0
  */
 public interface HealthIndicatorRegistry {
@@ -56,6 +58,8 @@ public interface HealthIndicatorRegistry {
 	 * the given {@code name}.
 	 */
 	HealthIndicator get(String name);
+
+	Map<String, HealthIndicator> get(List<String> names);
 
 	/**
 	 * Returns a snapshot of the registered health indicators and their names. The
