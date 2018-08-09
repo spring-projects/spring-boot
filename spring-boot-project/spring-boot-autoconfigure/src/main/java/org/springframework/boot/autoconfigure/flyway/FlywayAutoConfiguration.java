@@ -180,9 +180,9 @@ public class FlywayAutoConfiguration {
 		}
 
 		private void checkLocationExists(Flyway flyway) {
-			String[] locations = new LocationResolver(flyway.getDataSource())
-					.resolveLocations(this.properties.getLocations());
 			if (this.properties.isCheckLocation()) {
+				String[] locations = new LocationResolver(flyway.getDataSource())
+						.resolveLocations(this.properties.getLocations());
 				Assert.state(locations.length != 0,
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation(locations);
