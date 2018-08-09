@@ -168,16 +168,15 @@ public class FlywayEndpoint {
 			this.installedBy = info.getInstalledBy();
 			this.installedRank = info.getInstalledRank();
 			this.executionTime = info.getExecutionTime();
-			this.installedOn = toEpochMilli(info.getInstalledOn());
-		}
-
-		private Instant toEpochMilli(Date installedOn) {
-			return (installedOn != null) ? Instant.ofEpochMilli(installedOn.getTime())
-					: null;
+			this.installedOn = nullSafeToInstant(info.getInstalledOn());
 		}
 
 		private String nullSafeToString(Object obj) {
 			return (obj != null) ? obj.toString() : null;
+		}
+
+		private Instant nullSafeToInstant(Date date) {
+			return (date != null) ? Instant.ofEpochMilli(date.getTime()) : null;
 		}
 
 		public MigrationType getType() {
