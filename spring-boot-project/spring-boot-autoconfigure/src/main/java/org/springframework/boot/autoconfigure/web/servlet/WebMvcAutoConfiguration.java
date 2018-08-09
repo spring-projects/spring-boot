@@ -135,6 +135,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Stephane Nicoll
  * @author Kristine Jetzke
  * @author Bruce Brouwer
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -153,6 +154,7 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
+	@ConditionalOnProperty(prefix = "spring.mvc.hiddenmethod.filter", name = "enabled", matchIfMissing = true)
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
