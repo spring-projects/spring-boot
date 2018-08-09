@@ -454,5 +454,31 @@
 				<spring.profiles.active>integration</spring.profiles.active>
 			</properties>
 		</profile>
+		<profile>
+			<id>java9-10</id>
+			<activation>
+				<jdk>[9,10]</jdk>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+					<optional>true</optional>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>java11+</id>
+			<activation>
+				<jdk>[11,)</jdk>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-runtime</artifactId>
+					<optional>true</optional>
+				</dependency>
+			</dependencies>
+		</profile>
 	</profiles>
 </project>

@@ -720,22 +720,5 @@
 				<m2e.cdi.activation>false</m2e.cdi.activation>
 			</properties>
 		</profile>
-		<profile>
-			<id>java9</id>
-			<activation>
-				<jdk>[9,)</jdk>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>--add-modules java.base,java.xml.bind</argLine>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 	</profiles>
 </project>
