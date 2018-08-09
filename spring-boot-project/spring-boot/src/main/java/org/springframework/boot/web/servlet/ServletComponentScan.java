@@ -22,17 +22,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.annotation.WebServlet;
-
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * Enables scanning for Servlet components ({@link WebFilter filters}, {@link WebServlet
- * servlets}, and {@link WebListener listeners}). Scanning is only performed when using an
- * embedded web server.
+ * Enables scanning for Servlet components ({@link javax.servlet.annotation.WebFilter
+ * filters}, {@link javax.servlet.annotation.WebServlet servlets}, and
+ * {@link javax.servlet.annotation.WebListener listeners}). Scanning is only performed
+ * when using an embedded web server.
  * <p>
  * Typically, one of {@code value}, {@code basePackages}, or {@code basePackageClasses}
  * should be specified to control the packages to be scanned for components. In their
@@ -40,9 +37,9 @@ import org.springframework.core.annotation.AliasFor;
  *
  * @author Andy Wilkinson
  * @since 1.3.0
- * @see WebServlet
- * @see WebFilter
- * @see WebListener
+ * @see javax.servlet.annotation.WebServlet
+ * @see javax.servlet.annotation.WebFilter
+ * @see javax.servlet.annotation.WebListener
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
