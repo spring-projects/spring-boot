@@ -37,6 +37,7 @@ org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnal
 org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BindFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.ConnectorStartFailureAnalyzer,\
+org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PortInUseFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer
