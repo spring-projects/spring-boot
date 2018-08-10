@@ -35,6 +35,7 @@ class OAuth2ResourceServerWebSecurityConfiguration {
 	@ConditionalOnBean(JwtDecoder.class)
 	static class OAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
+		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests().anyRequest().authenticated().and().oauth2()
 					.resourceServer().jwt();
