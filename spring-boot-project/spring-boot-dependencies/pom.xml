@@ -1919,6 +1919,13 @@
 				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>${hibernate-validator.version}</version>
+				<exclusions>
+					<!-- https://hibernate.atlassian.net/browse/HV-1644 -->
+					<exclusion>
+						<groupId>org.openjfx</groupId>
+						<artifactId>javafx.base</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate.validator</groupId>
