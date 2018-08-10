@@ -1308,6 +1308,45 @@ while supporting a much richer format.
 
 
 
+[[boot-features-external-config-conversion-datasize]]
+===== Converting Data Sizes
+Spring Framework has a `DataSize` value type that allows to express size in bytes. If you
+expose a `DataSize` property, the following formats in application properties are
+available:
+
+* A regular `long` representation (using bytes as the default unit unless a
+`@DataSizeUnit` has been specified)
+* A more readable format where the value and the unit are coupled (e.g. `10MB` means 10
+megabytes)
+
+Consider the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=example]
+----
+
+To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent. A size threshold
+of 256 bytes can be specified as `256` or `256B`.
+
+You can also use any of the supported unit. These are:
+
+* `B` for bytes
+* `KB` for kilobytes
+* `MB` for megabytes
+* `GB` for gigabytes
+* `TB` for terabytes
+
+The default unit is bytes and can be overridden using `@DataSizeUnit` as illustrated
+in the sample above.
+
+TIP: If you are upgrading from a previous version that is simply using `Long` to express
+the size, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes alongside
+the switch to `DataSize`. Doing so gives a transparent upgrade path while supporting a
+much richer format.
+
+
+
 [[boot-features-external-config-validation]]
 ==== @ConfigurationProperties Validation
 Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are
