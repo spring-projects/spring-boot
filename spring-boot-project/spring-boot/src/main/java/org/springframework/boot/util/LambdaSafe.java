@@ -187,7 +187,7 @@ public final class LambdaSafe {
 			if (argument == null) {
 				return false;
 			}
-			Class<? extends Object> argumentType = argument.getClass();
+			Class<?> argumentType = argument.getClass();
 			// On Java 8, the message starts with the class name: "java.lang.String cannot
 			// be cast..."
 			if (message.startsWith(argumentType.getName())) {
@@ -208,9 +208,7 @@ public final class LambdaSafe {
 				Object module = ReflectionUtils.invokeMethod(CLASS_GET_MODULE,
 						argumentType);
 				Object moduleName = ReflectionUtils.invokeMethod(MODULE_GET_NAME, module);
-				if (message.startsWith(moduleName + "/" + argumentType.getName())) {
-					return true;
-				}
+				return message.startsWith(moduleName + "/" + argumentType.getName());
 			}
 			return false;
 		}
