@@ -37,6 +37,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings).
@@ -330,9 +331,9 @@ public class ServerProperties {
 		private int maxHttpHeaderSize = 0;
 
 		/**
-		 * Maximum amount of request body bytes to swallow.
+		 * Maximum amount of request body to swallow.
 		 */
-		private int maxSwallowSize = 2097152;
+		private DataSize maxSwallowSize = DataSize.ofMegaBytes(2);
 
 		/**
 		 * Whether requests to the context root should be redirected by appending a / to
@@ -496,11 +497,11 @@ public class ServerProperties {
 			return this.maxHttpHeaderSize;
 		}
 
-		public int getMaxSwallowSize() {
+		public DataSize getMaxSwallowSize() {
 			return this.maxSwallowSize;
 		}
 
-		public void setMaxSwallowSize(int maxSwallowSize) {
+		public void setMaxSwallowSize(DataSize maxSwallowSize) {
 			this.maxSwallowSize = maxSwallowSize;
 		}
 
