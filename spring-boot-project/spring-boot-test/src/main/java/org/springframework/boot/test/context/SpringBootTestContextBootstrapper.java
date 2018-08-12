@@ -71,6 +71,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  * @since 1.4.0
  * @see SpringBootTest
  * @see TestConfiguration
@@ -265,7 +266,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		return result;
 	}
 
-	private List<String> getAndProcessPropertySourceProperties(
+	protected List<String> getAndProcessPropertySourceProperties(
 			MergedContextConfiguration mergedConfig) {
 		List<String> propertySourceProperties = new ArrayList<>(
 				Arrays.asList(mergedConfig.getPropertySourceProperties()));
