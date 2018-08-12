@@ -28,12 +28,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 
 /**
@@ -60,7 +60,7 @@ import org.springframework.test.context.BootstrapWith;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@BootstrapWith(SpringBootTestContextBootstrapper.class)
+@BootstrapWith(JsonTestContextBootstrapper.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(JsonExcludeFilter.class)
 @AutoConfigureCache
@@ -68,6 +68,13 @@ import org.springframework.test.context.BootstrapWith;
 @AutoConfigureJsonTesters
 @ImportAutoConfiguration
 public @interface JsonTest {
+
+	/**
+	 * Properties in form {@literal key=value} that should be added to the Spring
+	 * {@link Environment} before the test runs.
+	 * @return the properties to add
+	 */
+	String[] properties() default {};
 
 	/**
 	 * Determines if default filtering should be used with

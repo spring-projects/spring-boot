@@ -35,6 +35,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -64,6 +65,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * annotation.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 2.0.0
  * @see AutoConfigureWebFlux
  * @see AutoConfigureWebTestClient
@@ -81,6 +83,13 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @AutoConfigureWebTestClient
 @ImportAutoConfiguration
 public @interface WebFluxTest {
+
+	/**
+	 * Properties in form {@literal key=value} that should be added to the Spring
+	 * {@link Environment} before the test runs.
+	 * @return the properties to add
+	 */
+	String[] properties() default {};
 
 	/**
 	 * Specifies the controllers to test. This is an alias of {@link #controllers()} which

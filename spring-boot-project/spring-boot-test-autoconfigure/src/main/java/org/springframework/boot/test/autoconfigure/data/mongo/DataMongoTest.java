@@ -30,9 +30,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -49,13 +49,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  *
  * @author Michael Simons
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 1.5.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@BootstrapWith(SpringBootTestContextBootstrapper.class)
+@BootstrapWith(DataMongoTestContextBootstrapper.class)
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(DataMongoTypeExcludeFilter.class)
@@ -63,6 +64,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @AutoConfigureDataMongo
 @ImportAutoConfiguration
 public @interface DataMongoTest {
+
+	/**
+	 * Properties in form {@literal key=value} that should be added to the Spring
+	 * {@link Environment} before the test runs.
+	 * @return the properties to add
+	 */
+	String[] properties() default {};
 
 	/**
 	 * Determines if default filtering should be used with
