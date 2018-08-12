@@ -338,10 +338,10 @@ content into your application. Rather, pick only the properties that you need.
 
 	# MULTIPART ({sc-spring-boot-autoconfigure}/web/servlet/MultipartProperties.{sc-ext}[MultipartProperties])
 	spring.servlet.multipart.enabled=true # Whether to enable support of multipart uploads.
-	spring.servlet.multipart.file-size-threshold=0 # Threshold after which files are written to disk. Values can use the suffixes "MB" or "KB" to indicate megabytes or kilobytes, respectively.
+	spring.servlet.multipart.file-size-threshold=0 # Threshold after which files are written to disk.
 	spring.servlet.multipart.location= # Intermediate location of uploaded files.
-	spring.servlet.multipart.max-file-size=1MB # Max file size. Values can use the suffixes "MB" or "KB" to indicate megabytes or kilobytes, respectively.
-	spring.servlet.multipart.max-request-size=10MB # Max request size. Values can use the suffixes "MB" or "KB" to indicate megabytes or kilobytes, respectively.
+	spring.servlet.multipart.max-file-size=1MB # Max file size.
+	spring.servlet.multipart.max-request-size=10MB # Max request size.
 	spring.servlet.multipart.resolve-lazily=false # Whether to resolve the multipart request lazily at the time of file or parameter access.
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])

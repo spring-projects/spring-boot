@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,15 @@ import javax.servlet.MultipartConfigElement;
 
 import org.junit.Test;
 
+import org.springframework.util.unit.DataSize;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MultipartConfigFactory}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class MultipartConfigFactoryTests {
 
@@ -40,6 +43,7 @@ public class MultipartConfigFactoryTests {
 	}
 
 	@Test
+	@Deprecated
 	public void create() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setLocation("loc");
@@ -54,15 +58,40 @@ public class MultipartConfigFactoryTests {
 	}
 
 	@Test
+	@Deprecated
 	public void createWithStringSizes() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setMaxFileSize("1");
-		factory.setMaxRequestSize("2kB");
-		factory.setFileSizeThreshold("3Mb");
+		factory.setMaxRequestSize("2KB");
+		factory.setFileSizeThreshold("3MB");
 		MultipartConfigElement config = factory.createMultipartConfig();
 		assertThat(config.getMaxFileSize()).isEqualTo(1L);
 		assertThat(config.getMaxRequestSize()).isEqualTo(2 * 1024L);
 		assertThat(config.getFileSizeThreshold()).isEqualTo(3 * 1024 * 1024);
+	}
+
+	@Test
+	public void createWithDataSizes() {
+		MultipartConfigFactory factory = new MultipartConfigFactory();
+		factory.setMaxFileSize(DataSize.ofBytes(1));
+		factory.setMaxRequestSize(DataSize.ofKiloBytes(2));
+		factory.setFileSizeThreshold(DataSize.ofMegaBytes(3));
+		MultipartConfigElement config = factory.createMultipartConfig();
+		assertThat(config.getMaxFileSize()).isEqualTo(1L);
+		assertThat(config.getMaxRequestSize()).isEqualTo(2 * 1024L);
+		assertThat(config.getFileSizeThreshold()).isEqualTo(3 * 1024 * 1024);
+	}
+
+	@Test
+	public void createWithNegativeDataSizes() {
+		MultipartConfigFactory factory = new MultipartConfigFactory();
+		factory.setMaxFileSize(DataSize.ofBytes(-1));
+		factory.setMaxRequestSize(DataSize.ofKiloBytes(-2));
+		factory.setFileSizeThreshold(DataSize.ofMegaBytes(-3));
+		MultipartConfigElement config = factory.createMultipartConfig();
+		assertThat(config.getMaxFileSize()).isEqualTo(-1L);
+		assertThat(config.getMaxRequestSize()).isEqualTo(-1);
+		assertThat(config.getFileSizeThreshold()).isEqualTo(0);
 	}
 
 }
