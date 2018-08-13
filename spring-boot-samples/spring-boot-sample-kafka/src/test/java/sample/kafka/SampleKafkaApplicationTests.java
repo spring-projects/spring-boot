@@ -48,8 +48,7 @@ public class SampleKafkaApplicationTests {
 				&& System.currentTimeMillis() < end) {
 			Thread.sleep(250);
 		}
-		assertThat(this.outputCapture.toString().contains("A simple test message"))
-				.isTrue();
+		assertThat(this.outputCapture.toString()).contains("A simple test message");
 	}
 
 }
