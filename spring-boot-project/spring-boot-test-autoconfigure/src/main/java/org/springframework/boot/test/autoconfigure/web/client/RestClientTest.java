@@ -60,6 +60,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 1.4.0
  */
 @Target(ElementType.TYPE)
