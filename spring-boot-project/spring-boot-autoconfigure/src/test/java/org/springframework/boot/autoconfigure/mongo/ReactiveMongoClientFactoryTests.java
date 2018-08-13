@@ -113,6 +113,14 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
+	public void retryWritesIsPropagatedFromUri() {
+		MongoProperties properties = new MongoProperties();
+		properties.setUri("mongodb://localhost/test?retryWrites=true");
+		MongoClient client = createMongoClient(properties);
+		assertThat(client.getSettings().getRetryWrites()).isTrue();
+	}
+
+	@Test
 	public void uriCannotBeSetWithCredentials() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
