@@ -2243,7 +2243,7 @@ integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
- * https://freemarker.org/docs/[FreeMarker]
+ * https://freemarker.apache.org/docs/[FreeMarker]
  * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
  * http://www.thymeleaf.org[Thymeleaf]
  * https://mustache.github.io/[Mustache]
@@ -2674,7 +2674,7 @@ Thymeleaf, FreeMarker, and Mustache.
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
- * http://freemarker.org/docs/[FreeMarker]
+ * https://freemarker.apache.org/docs/[FreeMarker]
  * http://www.thymeleaf.org[Thymeleaf]
  * http://mustache.github.io/[Mustache]
 
