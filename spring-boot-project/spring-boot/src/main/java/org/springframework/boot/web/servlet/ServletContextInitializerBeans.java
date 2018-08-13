@@ -78,6 +78,7 @@ public class ServletContextInitializerBeans
 
 	private List<ServletContextInitializer> sortedList;
 
+	@SafeVarargs
 	public ServletContextInitializerBeans(ListableBeanFactory beanFactory,
 			Class<? extends ServletContextInitializer>... initializerTypes) {
 		this.initializers = new LinkedMultiValueMap<>();
@@ -260,6 +261,7 @@ public class ServletContextInitializerBeans
 	 *
 	 * @param <T> the type of the Bean to adapt
 	 */
+	@FunctionalInterface
 	protected interface RegistrationBeanAdapter<T> {
 
 		RegistrationBean createRegistrationBean(String name, T source,
