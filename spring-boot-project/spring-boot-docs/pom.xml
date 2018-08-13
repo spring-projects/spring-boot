@@ -947,13 +947,13 @@
 									<quiet>true</quiet>
 									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>
 									<links>
-										<link>https://docs.oracle.com/javase/8/docs/api/</link>
-										<link>https://docs.oracle.com/javaee/7/api/</link>
-										<link>https://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
-										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
-										<link>https://tomcat.apache.org/tomcat-8.5-doc/api/</link>
-										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}/</link>
-										<link>http://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
+										<link>https://docs.oracle.com/javase/8/docs/api</link>
+										<link>https://docs.oracle.com/javaee/7/api</link>
+										<link>https://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api</link>
+										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api</link>
+										<link>https://tomcat.apache.org/tomcat-8.5-doc/api</link>
+										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}</link>
+										<link>https://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}</link>
 									</links>
 								</configuration>
 							</execution>
