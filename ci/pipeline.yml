@@ -27,6 +27,13 @@ resources:
     password: ((github-password))
     branch: ((branch))
     ignore_paths: ["ci/images/*"]
+- name: git-pull-request
+  type: pull-request
+  source:
+    access_token: ((github-access-token))
+    repo: ((github-repo-name))
+    base: ((branch))
+    ignore_paths: ["ci/*"]
 - name: ci-images-git-repo
   type: git
   source:
@@ -161,6 +168,47 @@ jobs:
         properties:
           "zip.type": "docs"
           "zip.deployed": "false"
+- name: build-pull-requests
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-ci-image
+  - get: git-repo
+    resource: git-pull-request
+    trigger: true
+    version: every
+  - do:
+    - put: git-pull-request
+      params:
+        path: git-repo
+        status: pending
+    - task: build-project
+      timeout: 1h30m
+      image: spring-boot-ci-image
+      file: git-repo/ci/tasks/build-pr-project.yml
+    - aggregate:
+      - task: build-samples
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-samples.yml
+      - task: build-integration-tests
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: 1h30m
+        image: spring-boot-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_success:
+      put: git-pull-request
+      params:
+        path: git-repo
+        status: success
+    on_failure:
+      put: git-pull-request
+      params:
+        path: git-repo
+        status: failure
 - name: jdk9-build
   serial: true
   public: true
@@ -393,3 +441,5 @@ groups:
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
 - name: "CI Images"
   jobs: ["build-spring-boot-ci-images"]
+- name: "Build Pull Requests"
+  jobs: ["build-pull-requests"]
