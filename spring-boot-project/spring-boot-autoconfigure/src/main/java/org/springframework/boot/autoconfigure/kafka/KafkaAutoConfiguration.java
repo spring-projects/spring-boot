@@ -17,11 +17,11 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import org.apache.kafka.streams.StreamsBuilder;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,8 +32,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
+import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -147,33 +149,52 @@ public class KafkaAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(StreamsBuilder.class)
-	public static class KafkaStreamsConfiguration {
+	public static class KafkaStreamsAutoConfiguration {
 
 		@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-		public Properties defaultKafkaStreamsConfig(KafkaProperties properties) {
-			Properties streamsConfig = new Properties();
-			properties.buildStreamsProperties().forEach((k, v) -> {
-				String value = v.toString();
-				if (v instanceof List && value.length() > 1) {
-					// trim [...] - revert to comma-delimited list
-					value = value.substring(1, value.length() - 1);
+		public KafkaStreamsConfiguration defaultKafkaStreamsConfig(
+				KafkaProperties properties, Environment environment) {
+
+			Map<String, Object> streamsProperties = properties.buildStreamsProperties();
+			if (properties.getStreams().getApplicationId() == null) {
+				if (environment.getProperty("spring.application.id") != null) {
+					streamsProperties.put("application.id",
+							environment.getProperty("spring.application.name"));
 				}
-				streamsConfig.put(k, value);
-			});
-			return streamsConfig;
+			}
+			return new KafkaStreamsConfiguration(streamsProperties);
 		}
 
 		@Bean
-		public Object kafkaStreamsFactoryBeanConfigurer(
+		public KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
 				StreamsBuilderFactoryBean factoryBean, KafkaProperties properties) {
 
-			factoryBean.setAutoStartup(properties.getStreams().isAutoStartup());
-			return null;
+			return new KafkaStreamsFactoryBeanConfigurer(factoryBean, properties);
 		}
 
 		@Configuration
 		@EnableKafkaStreams
-		public static class EnableKafkaStreamsConfiguration {
+		public static class EnableKafkaStreamsAutoConfiguration {
+
+		}
+
+		static class KafkaStreamsFactoryBeanConfigurer implements InitializingBean {
+
+			private final StreamsBuilderFactoryBean factoryBean;
+
+			private final KafkaProperties properties;
+
+			KafkaStreamsFactoryBeanConfigurer(StreamsBuilderFactoryBean factoryBean,
+					KafkaProperties properties) {
+				this.factoryBean = factoryBean;
+				this.properties = properties;
+			}
+
+			@Override
+			public void afterPropertiesSet() throws Exception {
+				this.factoryBean
+						.setAutoStartup(this.properties.getStreams().isAutoStartup());
+			}
 
 		}
 

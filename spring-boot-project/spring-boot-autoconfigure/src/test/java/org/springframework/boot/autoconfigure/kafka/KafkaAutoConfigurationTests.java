@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
+import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
@@ -297,7 +298,7 @@ public class KafkaAutoConfigurationTests {
 				"spring.kafka.streams.ssl.protocol=TLSv1.2").run((context) -> {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
-							Properties.class);
+							KafkaStreamsConfiguration.class).asProperties();
 					assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
 							.isEqualTo("localhost:9092, localhost:9093");
 					assertThat(

@@ -31,7 +31,6 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.streams.StreamsConfig;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -58,7 +57,7 @@ public class KafkaProperties {
 
 	/**
 	 * Comma-delimited list of host:port pairs to use for establishing the initial
-	 * connection to the Kafka cluster.
+	 * connection to the Kafka cluster. Applies to all components unless overridden.
 	 */
 	private List<String> bootstrapServers = new ArrayList<>(
 			Collections.singletonList("localhost:9092"));
@@ -231,7 +230,7 @@ public class KafkaProperties {
 
 		/**
 		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connection to the Kafka cluster.
+		 * connection to the Kafka cluster. Overrides the global property, for consumers.
 		 */
 		private List<String> bootstrapServers;
 
@@ -441,7 +440,7 @@ public class KafkaProperties {
 
 		/**
 		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connection to the Kafka cluster.
+		 * connection to the Kafka cluster. Overrides the global property, for producers.
 		 */
 		private List<String> bootstrapServers;
 
@@ -661,16 +660,16 @@ public class KafkaProperties {
 		/**
 		 * Kafka streams application.id property; default spring.application.name.
 		 */
-		private String applicationId = "${spring.application.name}";
+		private String applicationId;
 
 		/**
-		 * Whether or not to auto-start the streams factory bean; default false.
+		 * Whether or not to auto-start the streams factory bean.
 		 */
 		private boolean autoStartup;
 
 		/**
 		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connection to the Kafka cluster.
+		 * connection to the Kafka cluster. Overrides the global property, for streams.
 		 */
 		private List<String> bootstrapServers;
 
@@ -767,16 +766,15 @@ public class KafkaProperties {
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(this::getApplicationId)
-					.to(properties.in(StreamsConfig.APPLICATION_ID_CONFIG));
+			map.from(this::getApplicationId).to(properties.in("application.id"));
 			map.from(this::getBootstrapServers)
-					.to(properties.in(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
+					.to(properties.in(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
 			map.from(this::getCacheMaxBytesBuffering)
-					.to(properties.in(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG));
-			map.from(this::getClientId).to(properties.in(StreamsConfig.CLIENT_ID_CONFIG));
-			map.from(this::getReplicationFactor)
-					.to(properties.in(StreamsConfig.REPLICATION_FACTOR_CONFIG));
-			map.from(this::getStateDir).to(properties.in(StreamsConfig.STATE_DIR_CONFIG));
+					.to(properties.in("cache.max.bytes.buffering"));
+			map.from(this::getClientId)
+					.to(properties.in(CommonClientConfigs.CLIENT_ID_CONFIG));
+			map.from(this::getReplicationFactor).to(properties.in("replication.factor"));
+			map.from(this::getStateDir).to(properties.in("state.dir"));
 			return properties.with(this.ssl, this.properties);
 		}
 

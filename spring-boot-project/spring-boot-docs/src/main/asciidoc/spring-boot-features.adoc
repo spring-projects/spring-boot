@@ -5632,10 +5632,11 @@ The following component creates a listener endpoint on the `someTopic` topic:
 Spring for Apache Kafka provides a factory bean to create a `StreamsBuilder` object and
 manage the lifecycle of its streams; the factory bean is created when
 `@EnableKafkaStreams` is present on a `@Configuration` class.
-The factory bean requires a `Properties` object for streams configuration.
+The factory bean requires a `KafkaStreamsConfiguration` object for streams configuration.
 
 If Spring Boot detects the `kafka-streams` jar on the classpath, it will auto-configure
-the `Properties` bean from the `KafkaProperties` object.
+the `KafkaStreamsConfiguration` bean from the `KafkaProperties` object as well as enabling
+the creation of the factory bean by spring-kafka.
 
 There are two required Kafka properties for streams (`bootstrap.servers` and
 `application.id`); by default, the `application.id` is set to the `spring.application.name`
@@ -5659,6 +5660,10 @@ public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {
 }
 ----
 ====
+
+By default, the factory bean `autoStartup` property is false; to automatically start the
+streams managed by the `StreamsBuilder` object it creates, set property
+`spting.kafka.streams.auto-startup=true`.
 
 
 [[boot-features-kafka-extra-props]]
