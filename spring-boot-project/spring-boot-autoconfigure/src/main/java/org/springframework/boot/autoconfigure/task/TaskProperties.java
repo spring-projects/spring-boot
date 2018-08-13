@@ -50,8 +50,8 @@ public class TaskProperties {
 	public static class Pool {
 
 		/**
-		 * Queue capacity. A unbounded capacity does not increase the pool and therefore
-		 * ignores the "max-size" parameter.
+		 * Queue capacity. An unbounded capacity does not increase the pool and therefore
+		 * ignores the "max-size" property.
 		 */
 		private int queueCapacity = Integer.MAX_VALUE;
 
