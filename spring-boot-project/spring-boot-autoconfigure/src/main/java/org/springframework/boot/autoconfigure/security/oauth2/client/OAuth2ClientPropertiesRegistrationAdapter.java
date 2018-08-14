@@ -85,7 +85,8 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 			String issuer = provider.getIssuerUri();
 			if (issuer != null) {
 				String cleanedIssuer = cleanIssuerPath(issuer);
-				Builder builder = ClientRegistrations.fromOidcIssuerLocation(cleanedIssuer)
+				Builder builder = ClientRegistrations
+						.fromOidcIssuerLocation(cleanedIssuer)
 						.registrationId(registrationId);
 				return getBuilder(builder, provider);
 			}
