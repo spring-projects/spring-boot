@@ -69,7 +69,7 @@
 		<hazelcast.version>3.10.3</hazelcast.version>
 		<hazelcast-hibernate5.version>1.2.3</hazelcast-hibernate5.version>
 		<hibernate.version>5.3.3.Final</hibernate.version>
-		<hibernate-validator.version>6.0.11.Final</hibernate-validator.version>
+		<hibernate-validator.version>6.0.12.Final</hibernate-validator.version>
 		<hikaricp.version>3.2.0</hikaricp.version>
 		<hsqldb.version>2.4.1</hsqldb.version>
 		<htmlunit.version>2.31</htmlunit.version>
@@ -1097,6 +1097,12 @@
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>${mysql.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.google.protobuf</groupId>
+						<artifactId>protobuf-java</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>net.bytebuddy</groupId>
@@ -1919,13 +1925,6 @@
 				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>${hibernate-validator.version}</version>
-				<exclusions>
-					<!-- https://hibernate.atlassian.net/browse/HV-1644 -->
-					<exclusion>
-						<groupId>org.openjfx</groupId>
-						<artifactId>javafx.base</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate.validator</groupId>

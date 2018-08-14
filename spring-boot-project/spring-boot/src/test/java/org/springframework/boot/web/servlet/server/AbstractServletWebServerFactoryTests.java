@@ -426,7 +426,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer(registration);
 		this.webServer.start();
 		TrustStrategy trustStrategy = new SerialNumberValidatingTrustSelfSignedStrategy(
-				"77e7c302");
+				"3a3aaec8");
 		SSLContext sslContext = new SSLContextBuilder()
 				.loadTrustMaterial(null, trustStrategy).build();
 		HttpClient httpClient = HttpClients.custom()
@@ -558,7 +558,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(getSsl(ClientAuth.WANT, "password", "classpath:test.jks"));
+		factory.setSsl(getSsl(ClientAuth.WANT, "password", "classpath:test.jks", null,
+				new String[] { "TLSv1.2" }, null));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -692,7 +693,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols,
 			String[] ciphers) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks", null,
+		factory.setSsl(getSsl(null, "password", "src/test/resources/restricted.jks", null,
 				protocols, ciphers));
 		this.webServer = factory.getWebServer(
 				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));

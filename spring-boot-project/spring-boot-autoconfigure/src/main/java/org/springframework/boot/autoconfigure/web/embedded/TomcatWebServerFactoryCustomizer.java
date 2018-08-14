@@ -37,6 +37,7 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Customization for Tomcat-specific features common for both Servlet and Reactive
@@ -86,7 +87,8 @@ public class TomcatWebServerFactoryCustomizer implements
 		propertyMapper.from(() -> determineMaxHttpHeaderSize()).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
-		propertyMapper.from(tomcatProperties::getMaxSwallowSize)
+		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull()
+				.asInt(DataSize::toBytes)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpPostSize)
 				.when((maxHttpPostSize) -> maxHttpPostSize != 0)

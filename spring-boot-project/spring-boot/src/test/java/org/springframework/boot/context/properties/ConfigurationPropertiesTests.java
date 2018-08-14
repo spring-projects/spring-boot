@@ -49,6 +49,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
+import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -72,6 +73,8 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
+import org.springframework.util.unit.DataUnit;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -765,6 +768,14 @@ public class ConfigurationPropertiesTests {
 		load(FileProperties.class, "test.file=.");
 		FileProperties bean = this.context.getBean(FileProperties.class);
 		assertThat(bean.getFile()).isEqualTo(new File("."));
+	}
+
+	@Test
+	public void loadWhenBindingToDataSizeShouldBind() {
+		load(DataSizeProperties.class, "test.size=10GB", "test.another-size=5");
+		DataSizeProperties bean = this.context.getBean(DataSizeProperties.class);
+		assertThat(bean.getSize()).isEqualTo(DataSize.ofGigaBytes(10));
+		assertThat(bean.getAnotherSize()).isEqualTo(DataSize.ofKiloBytes(5));
 	}
 
 	@Test
@@ -1688,6 +1699,33 @@ public class ConfigurationPropertiesTests {
 
 		public void setFile(File file) {
 			this.file = file;
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class DataSizeProperties {
+
+		private DataSize size;
+
+		@DataSizeUnit(DataUnit.KILOBYTES)
+		private DataSize anotherSize;
+
+		public DataSize getSize() {
+			return this.size;
+		}
+
+		public void setSize(DataSize size) {
+			this.size = size;
+		}
+
+		public DataSize getAnotherSize() {
+			return this.anotherSize;
+		}
+
+		public void setAnotherSize(DataSize anotherSize) {
+			this.anotherSize = anotherSize;
 		}
 
 	}

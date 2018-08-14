@@ -45,6 +45,7 @@ import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -239,6 +240,8 @@ public class SpringApplication {
 
 	private boolean allowBeanDefinitionOverriding;
 
+	private boolean isCustomEnvironment = false;
+
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
@@ -364,12 +367,22 @@ public class SpringApplication {
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
-		if (this.webApplicationType == WebApplicationType.NONE) {
+		if (!this.isCustomEnvironment) {
 			environment = new EnvironmentConverter(getClassLoader())
-					.convertToStandardEnvironmentIfNecessary(environment);
+					.convertEnvironmentIfNecessary(environment, deduceEnvironmentClass());
 		}
 		ConfigurationPropertySources.attach(environment);
 		return environment;
+	}
+
+	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
+		if (this.webApplicationType == WebApplicationType.SERVLET) {
+			return StandardServletEnvironment.class;
+		}
+		if (this.webApplicationType == WebApplicationType.REACTIVE) {
+			return StandardReactiveWebEnvironment.class;
+		}
+		return StandardEnvironment.class;
 	}
 
 	private void prepareContext(ConfigurableApplicationContext context,
@@ -468,6 +481,9 @@ public class SpringApplication {
 		}
 		if (this.webApplicationType == WebApplicationType.SERVLET) {
 			return new StandardServletEnvironment();
+		}
+		if (this.webApplicationType == WebApplicationType.REACTIVE) {
+			return new StandardReactiveWebEnvironment();
 		}
 		return new StandardEnvironment();
 	}
@@ -1071,6 +1087,7 @@ public class SpringApplication {
 	 * @param environment the environment
 	 */
 	public void setEnvironment(ConfigurableEnvironment environment) {
+		this.isCustomEnvironment = true;
 		this.environment = environment;
 	}
 

@@ -455,15 +455,20 @@ public class ConfigFileApplicationListener
 					if (canLoadFileExtension(loader, location)) {
 						load(loader, location, profile,
 								filterFactory.getDocumentFilter(profile), consumer);
+						return;
 					}
 				}
 			}
+			Set<String> processedExtensions = new HashSet<>();
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
 				for (String fileExtension : loader.getFileExtensions()) {
-					String prefix = location + name;
-					fileExtension = "." + fileExtension;
-					loadForFileExtension(loader, prefix, fileExtension, profile,
-							filterFactory, consumer);
+					if (!processedExtensions.contains(fileExtension)) {
+						processedExtensions.add(fileExtension);
+						String prefix = location + name;
+						fileExtension = "." + fileExtension;
+						loadForFileExtension(loader, prefix, fileExtension, profile,
+								filterFactory, consumer);
+					}
 				}
 			}
 		}
