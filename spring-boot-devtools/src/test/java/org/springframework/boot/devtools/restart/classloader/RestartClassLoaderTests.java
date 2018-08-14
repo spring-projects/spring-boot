@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarOutputStream;
@@ -214,13 +214,8 @@ public class RestartClassLoaderTests {
 	}
 
 	private <T> List<T> toList(Enumeration<T> enumeration) {
-		List<T> list = new ArrayList<T>();
-		if (enumeration != null) {
-			while (enumeration.hasMoreElements()) {
-				list.add(enumeration.nextElement());
-			}
-		}
-		return list;
+		return ((enumeration != null) ? Collections.list(enumeration)
+				: Collections.<T>emptyList());
 	}
 
 }
