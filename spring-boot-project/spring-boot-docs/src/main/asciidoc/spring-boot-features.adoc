@@ -3694,6 +3694,12 @@ The following example shows a typical Spring Data repository interface definitio
 	}
 ----
 
+Spring Data JPA repositories support three different modes of bootstrapping: default,
+deferred, and lazy. To enable deferred or lazy bootstrapping, set the
+`spring.data.jpa.repositories.bootstrap-mode` to `deferred` or `lazy` respectively. When
+using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder`
+will use the context's async task executor, if any, as the bootstrap executor.
+
 TIP: We have barely scratched the surface of Spring Data JPA. For complete details, see
 the https://docs.spring.io/spring-data/jpa/docs/current/reference/html/[Spring Data JPA
 reference documentation].

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
@@ -54,6 +55,8 @@ public class EntityManagerFactoryBuilder {
 	private final Map<String, Object> jpaProperties;
 
 	private final URL persistenceUnitRootLocation;
+
+	private AsyncTaskExecutor bootstrapExecutor;
 
 	private EntityManagerFactoryBeanCallback callback;
 
@@ -92,6 +95,16 @@ public class EntityManagerFactoryBuilder {
 
 	public Builder dataSource(DataSource dataSource) {
 		return new Builder(dataSource);
+	}
+
+	/**
+	 * Configure the bootstrap executor to be used by the
+	 * {@link LocalContainerEntityManagerFactoryBean}.
+	 * @param bootstrapExecutor the executor
+	 * @since 2.1.0
+	 */
+	public void setBootstrapExecutor(AsyncTaskExecutor bootstrapExecutor) {
+		this.bootstrapExecutor = bootstrapExecutor;
 	}
 
 	/**
@@ -229,6 +242,10 @@ public class EntityManagerFactoryBuilder {
 			if (rootLocation != null) {
 				entityManagerFactoryBean
 						.setPersistenceUnitRootLocation(rootLocation.toString());
+			}
+			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
+				entityManagerFactoryBean.setBootstrapExecutor(
+						EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
 			if (EntityManagerFactoryBuilder.this.callback != null) {
 				EntityManagerFactoryBuilder.this.callback
