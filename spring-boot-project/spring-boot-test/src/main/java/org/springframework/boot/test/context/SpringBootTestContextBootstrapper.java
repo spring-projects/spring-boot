@@ -266,7 +266,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		return result;
 	}
 
-	protected List<String> getAndProcessPropertySourceProperties(
+	private List<String> getAndProcessPropertySourceProperties(
 			MergedContextConfiguration mergedConfig) {
 		List<String> propertySourceProperties = new ArrayList<>(
 				Arrays.asList(mergedConfig.getPropertySourceProperties()));
