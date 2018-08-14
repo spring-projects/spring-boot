@@ -25,9 +25,9 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
-import org.springframework.security.config.oauth2.client.oidc.OidcConfigurationProvider;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrations;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.util.StringUtils;
@@ -85,7 +85,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 			String issuer = provider.getIssuerUri();
 			if (issuer != null) {
 				String cleanedIssuer = cleanIssuerPath(issuer);
-				Builder builder = OidcConfigurationProvider.issuer(cleanedIssuer)
+				Builder builder = ClientRegistrations.fromOidcIssuerLocation(cleanedIssuer)
 						.registrationId(registrationId);
 				return getBuilder(builder, provider);
 			}
