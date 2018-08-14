@@ -213,7 +213,7 @@ public class Handler extends URLStreamHandler {
 	private void setFile(URL context, String file) {
 		String path = normalize(file);
 		String query = null;
-		int queryIndex = path.lastIndexOf('?');
+		int queryIndex = path.indexOf('?');
 		if (queryIndex != -1) {
 			query = path.substring(queryIndex + 1);
 			path = path.substring(0, queryIndex);
