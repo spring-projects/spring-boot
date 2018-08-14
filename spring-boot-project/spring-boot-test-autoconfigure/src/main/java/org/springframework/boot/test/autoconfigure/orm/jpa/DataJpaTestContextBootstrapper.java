@@ -55,7 +55,7 @@ public class DataJpaTestContextBootstrapper extends SpringBootTestContextBootstr
 			MergedContextConfiguration mergedConfig,
 			List<String> propertySourceProperties) {
 		Class<?> testClass = mergedConfig.getTestClass();
-		String[] properties = getDataJpaTestProperties(testClass);
+		String[] properties = getProperties(testClass);
 		if (!ObjectUtils.isEmpty(properties)) {
 			// Added first so that inlined properties from @TestPropertySource take
 			// precedence
@@ -63,12 +63,13 @@ public class DataJpaTestContextBootstrapper extends SpringBootTestContextBootstr
 		}
 	}
 
-	protected String[] getDataJpaTestProperties(Class<?> testClass) {
+	@Override
+	protected String[] getProperties(Class<?> testClass) {
 		DataJpaTest annotation = getDataJpaAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	protected DataJpaTest getDataJpaAnnotation(Class<?> testClass) {
+	private DataJpaTest getDataJpaAnnotation(Class<?> testClass) {
 		return AnnotatedElementUtils.getMergedAnnotation(testClass, DataJpaTest.class);
 	}
 

@@ -55,7 +55,7 @@ public class JdbcTestContextBootstrapper extends SpringBootTestContextBootstrapp
 			MergedContextConfiguration mergedConfig,
 			List<String> propertySourceProperties) {
 		Class<?> testClass = mergedConfig.getTestClass();
-		String[] properties = getJdbcTestProperties(testClass);
+		String[] properties = getProperties(testClass);
 		if (!ObjectUtils.isEmpty(properties)) {
 			// Added first so that inlined properties from @TestPropertySource take
 			// precedence
@@ -63,12 +63,13 @@ public class JdbcTestContextBootstrapper extends SpringBootTestContextBootstrapp
 		}
 	}
 
-	protected String[] getJdbcTestProperties(Class<?> testClass) {
+	@Override
+	protected String[] getProperties(Class<?> testClass) {
 		JdbcTest annotation = getJdbcAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	protected JdbcTest getJdbcAnnotation(Class<?> testClass) {
+	private JdbcTest getJdbcAnnotation(Class<?> testClass) {
 		return AnnotatedElementUtils.getMergedAnnotation(testClass, JdbcTest.class);
 	}
 

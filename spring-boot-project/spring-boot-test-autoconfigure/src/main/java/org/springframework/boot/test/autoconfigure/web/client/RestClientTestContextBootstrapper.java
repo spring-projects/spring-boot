@@ -55,7 +55,7 @@ public class RestClientTestContextBootstrapper extends SpringBootTestContextBoot
 			MergedContextConfiguration mergedConfig,
 			List<String> propertySourceProperties) {
 		Class<?> testClass = mergedConfig.getTestClass();
-		String[] properties = getRestClientTestProperties(testClass);
+		String[] properties = getProperties(testClass);
 		if (!ObjectUtils.isEmpty(properties)) {
 			// Added first so that inlined properties from @TestPropertySource take
 			// precedence
@@ -63,12 +63,13 @@ public class RestClientTestContextBootstrapper extends SpringBootTestContextBoot
 		}
 	}
 
-	protected String[] getRestClientTestProperties(Class<?> testClass) {
+	@Override
+	protected String[] getProperties(Class<?> testClass) {
 		RestClientTest annotation = getRestClientAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	protected RestClientTest getRestClientAnnotation(Class<?> testClass) {
+	private RestClientTest getRestClientAnnotation(Class<?> testClass) {
 		return AnnotatedElementUtils.getMergedAnnotation(testClass, RestClientTest.class);
 	}
 
