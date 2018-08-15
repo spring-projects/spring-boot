@@ -71,7 +71,6 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Brian Clozel
  * @author Madhura Bhave
- * @author Artsiom Yudovin
  * @since 1.4.0
  * @see SpringBootTest
  * @see TestConfiguration

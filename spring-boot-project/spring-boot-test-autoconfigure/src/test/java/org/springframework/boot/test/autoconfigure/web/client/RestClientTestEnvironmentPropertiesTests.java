@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@JdbcTest(properties = "spring.profiles.active=test")
+@RestClientTest(properties = "spring.profiles.active=test")
 public class RestClientTestEnvironmentPropertiesTests {
 
 	@Autowired

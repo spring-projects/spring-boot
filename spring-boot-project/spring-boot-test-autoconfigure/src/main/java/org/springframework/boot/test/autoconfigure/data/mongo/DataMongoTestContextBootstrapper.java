@@ -29,11 +29,11 @@ public class DataMongoTestContextBootstrapper extends SpringBootTestContextBoots
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		DataMongoTest annotation = getJdbcAnnotation(testClass);
+		DataMongoTest annotation = getDataMongoTestAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	private DataMongoTest getJdbcAnnotation(Class<?> testClass) {
+	private DataMongoTest getDataMongoTestAnnotation(Class<?> testClass) {
 		return AnnotatedElementUtils.getMergedAnnotation(testClass, DataMongoTest.class);
 	}
 
