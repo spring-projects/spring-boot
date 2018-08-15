@@ -25,7 +25,6 @@ import sun.misc.Signal;
  * @since 1.1.0
  */
 @SuppressWarnings("restriction")
-@UsesUnsafeJava
 public final class SignalUtils {
 
 	private static final Signal SIG_INT = new Signal("INT");
