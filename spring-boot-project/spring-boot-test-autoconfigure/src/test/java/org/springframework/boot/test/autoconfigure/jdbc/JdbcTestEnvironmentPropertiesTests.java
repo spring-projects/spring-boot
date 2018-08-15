@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@JdbcTest("spring.profiles.active=test")
+@JdbcTest(properties = "spring.profiles.active=test")
 public class JdbcTestEnvironmentPropertiesTests {
 
 	@Autowired

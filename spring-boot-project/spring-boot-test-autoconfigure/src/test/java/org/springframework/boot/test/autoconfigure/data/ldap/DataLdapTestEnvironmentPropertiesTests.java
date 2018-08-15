@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.data.ldap;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,13 +26,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Add properties to {@link Environment} via {@link DataJpaTest}.
+ * Add properties to {@link Environment} via {@link DataLdapTest}.
  *
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest(properties = "spring.profiles.active=test")
-public class DataJpaTestEnvironmentPropertiesTests {
+@DataLdapTest(properties = "spring.profiles.active=test")
+public class DataLdapTestEnvironmentPropertiesTests {
 
 	@Autowired
 	private Environment environment;

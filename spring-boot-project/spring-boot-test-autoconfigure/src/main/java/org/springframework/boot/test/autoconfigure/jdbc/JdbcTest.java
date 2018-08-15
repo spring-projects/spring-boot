@@ -78,18 +78,10 @@ import org.springframework.transaction.annotation.Transactional;
 public @interface JdbcTest {
 
 	/**
-	 * Alias for {@link #properties()}.
-	 * @return the properties to apply
-	 */
-	@AliasFor("properties")
-	String[] value() default {};
-
-	/**
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
 	 * @return the properties to add
 	 */
-	@AliasFor("value")
 	String[] properties() default {};
 
 	/**
