@@ -440,8 +440,7 @@ public class RestTemplateBuilderTests {
 	public void connectTimeoutCanBeNullToUseDefault() {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(SimpleClientHttpRequestFactory.class)
-				.setConnectTimeout(Duration.ofSeconds(5)).setConnectTimeout(null).build()
-				.getRequestFactory();
+				.setConnectTimeout(null).build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "connectTimeout"))
 				.isEqualTo(-1);
 	}
@@ -449,9 +448,8 @@ public class RestTemplateBuilderTests {
 	@Test
 	public void readTimeoutCanBeNullToUseDefault() {
 		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(SimpleClientHttpRequestFactory.class)
-				.setReadTimeout(Duration.ofSeconds(5)).setReadTimeout(null).build()
-				.getRequestFactory();
+				.requestFactory(SimpleClientHttpRequestFactory.class).setReadTimeout(null)
+				.build().getRequestFactory();
 		assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout"))
 				.isEqualTo(-1);
 	}

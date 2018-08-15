@@ -4638,7 +4638,7 @@ URLs of your server in your application.properties, as shown in the following ex
 If you need to customize connection settings, you can use the `spring.ldap.base` and
 `spring.ldap.base-environment` properties.
 
-A `LdapContextSource` is auto-configured based on these settings. If you need to customize
+An `LdapContextSource` is auto-configured based on these settings. If you need to customize
 it, for instance to use a `PooledContextSource`, you can still inject the auto-configured
 `LdapContextSource`. Make sure to flag your customized `ContextSource` as `@Primary` so
 that the auto-configured `LdapTemplate` uses it.
@@ -6156,7 +6156,7 @@ following example:
 
 This changes the thread pool to use a bounded queue so that when the queue is full (100
 tasks), the thread pool increases to maximum 16 threads. Shrinking of the pool is more
-aggressive as well as threads are reclaimed when they are idle for 10 seconds (rather than
+aggressive as threads are reclaimed when they are idle for 10 seconds (rather than
 60 seconds by default).
 
 
@@ -6334,8 +6334,8 @@ web application.
 * `RANDOM_PORT`: Loads a `WebServerApplicationContext` and provides a real web
 environment. Embedded servers are started and listen on a random port.
 * `DEFINED_PORT`: Loads a `WebServerApplicationContext` and provides a real web
-environment. Embedded servers  are started and listen on a defined port (from your
-`application.properties` or on the default port of `8080`).
+environment. Embedded servers are started and listen on a defined port (from your
+`application.properties`) or on the default port of `8080`.
 * `NONE`: Loads an `ApplicationContext` by using `SpringApplication` but does not provide
 _any_ web environment (mock or otherwise).
 
