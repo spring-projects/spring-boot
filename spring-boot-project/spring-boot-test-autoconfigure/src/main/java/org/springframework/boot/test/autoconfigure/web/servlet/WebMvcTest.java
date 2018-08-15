@@ -66,6 +66,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} rather than this annotation.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @see AutoConfigureWebMvc
  * @see AutoConfigureMockMvc
  * @see AutoConfigureCache

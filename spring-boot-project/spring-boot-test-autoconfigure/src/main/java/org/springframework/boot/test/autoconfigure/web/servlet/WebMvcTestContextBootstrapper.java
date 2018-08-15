@@ -26,6 +26,7 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
  * {@link TestContextBootstrapper} for {@link WebMvcTest @WebMvcTest} support.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 public class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
@@ -38,11 +39,11 @@ public class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstra
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		WebMvcTest annotation = getWebMvcAnnotation(testClass);
+		WebMvcTest annotation = getWebMvcTestAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	private WebMvcTest getWebMvcAnnotation(Class<?> testClass) {
+	private WebMvcTest getWebMvcTestAnnotation(Class<?> testClass) {
 		return AnnotatedElementUtils.getMergedAnnotation(testClass, WebMvcTest.class);
 	}
 
