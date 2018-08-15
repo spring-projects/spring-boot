@@ -16,15 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link TestContextBootstrapper} for {@link RestClientTest @RestClientTest} support.
@@ -32,36 +26,6 @@ import org.springframework.util.StringUtils;
  * @author Artsiom Yudovin
  */
 public class RestClientTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected MergedContextConfiguration processMergedContextConfiguration(
-			MergedContextConfiguration mergedConfig) {
-		Class<?>[] classes = getOrFindConfigurationClasses(mergedConfig);
-		List<String> propertySourceProperties = getAndProcessPropertySourceProperties(
-				mergedConfig);
-		mergedConfig = createModifiedConfig(mergedConfig, classes,
-				StringUtils.toStringArray(propertySourceProperties));
-
-		return mergedConfig;
-	}
-
-	/**
-	 * Post process the property source properties, adding or removing elements as
-	 * required.
-	 * @param mergedConfig the merged context configuration
-	 * @param propertySourceProperties the property source properties to process
-	 */
-	protected void processPropertySourceProperties(
-			MergedContextConfiguration mergedConfig,
-			List<String> propertySourceProperties) {
-		Class<?> testClass = mergedConfig.getTestClass();
-		String[] properties = getProperties(testClass);
-		if (!ObjectUtils.isEmpty(properties)) {
-			// Added first so that inlined properties from @TestPropertySource take
-			// precedence
-			propertySourceProperties.addAll(0, Arrays.asList(properties));
-		}
-	}
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
