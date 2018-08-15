@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.neo4j;
+package org.springframework.boot.test.autoconfigure.data.redis;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
- * {@link TestContextBootstrapper} for {@link DataNeo4jTest @DataNeo4jTest} support.
+ * {@link TestContextBootstrapper} for {@link DataRedisTest @DataRedisTest} support.
  *
  * @author Artsiom Yudovin
  */
-public class DataNeo4jTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+public class DataRedisTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		DataNeo4jTest annotation = getDataNeo4jTestAnnotation(testClass);
+		DataRedisTest annotation = getDataRedisTestAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	private DataNeo4jTest getDataNeo4jTestAnnotation(Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, DataNeo4jTest.class);
+	private DataRedisTest getDataRedisTestAnnotation(Class<?> testClass) {
+		return AnnotatedElementUtils.getMergedAnnotation(testClass, DataRedisTest.class);
 	}
 
 }

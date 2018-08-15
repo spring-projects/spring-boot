@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.neo4j;
+package org.springframework.boot.test.autoconfigure.data.redis;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.Neo4jContainer;
+import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
@@ -32,17 +32,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Add properties to {@link Environment} via {@link DataNeo4jTest}.
+ * Add properties to {@link Environment} via {@link DataRedisTest}.
  *
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = DataNeo4jTestEnvironmentPropertiesTests.Initializer.class)
-@DataNeo4jTest(properties = "spring.profiles.active=test")
-public class DataNeo4jTestEnvironmentPropertiesTests {
+@ContextConfiguration(initializers = DataRedisTestEnvironmentPropertiesTests.Initializer.class)
+@DataRedisTest(properties = "spring.profiles.active=test")
+public class DataRedisTestEnvironmentPropertiesTests {
 
 	@ClassRule
-	public static Neo4jContainer neo4j = new Neo4jContainer();
+	public static RedisContainer redis = new RedisContainer();
 
 	@Autowired
 	private Environment environment;
@@ -59,8 +59,7 @@ public class DataNeo4jTestEnvironmentPropertiesTests {
 		@Override
 		public void initialize(
 				ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues
-					.of("spring.data.neo4j.uri=bolt://localhost:" + neo4j.getMappedPort())
+			TestPropertyValues.of("spring.redis.port=" + redis.getMappedPort())
 					.applyTo(configurableApplicationContext.getEnvironment());
 		}
 
