@@ -315,12 +315,12 @@ public class ConfigurationPropertiesReportEndpointTests {
 			this.simpleBoolean = simpleBoolean;
 		}
 
-		public void setMixedBoolean(Boolean mixedBoolean) {
-			this.mixedBoolean = mixedBoolean;
-		}
-
 		public boolean isMixedBoolean() {
 			return (this.mixedBoolean != null) ? this.mixedBoolean : false;
+		}
+
+		public void setMixedBoolean(Boolean mixedBoolean) {
+			this.mixedBoolean = mixedBoolean;
 		}
 
 		public String getmIxedCase() {

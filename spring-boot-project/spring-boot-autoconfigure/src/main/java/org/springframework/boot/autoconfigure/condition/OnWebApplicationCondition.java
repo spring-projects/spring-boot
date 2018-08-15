@@ -62,14 +62,14 @@ class OnWebApplicationCondition extends SpringBootCondition {
 
 	private ConditionOutcome isWebApplication(ConditionContext context,
 			AnnotatedTypeMetadata metadata, boolean required) {
-		Type type = deduceType(metadata);
-		if (Type.SERVLET == type) {
+		switch (deduceType(metadata)) {
+		case SERVLET:
 			return isServletWebApplication(context);
-		}
-		else if (Type.REACTIVE == type) {
+
+		case REACTIVE:
 			return isReactiveWebApplication(context);
-		}
-		else {
+
+		default:
 			return isAnyWebApplication(context, required);
 		}
 	}
@@ -88,10 +88,7 @@ class OnWebApplicationCondition extends SpringBootCondition {
 			return new ConditionOutcome(reactiveOutcome.isMatch(),
 					message.because(reactiveOutcome.getMessage()));
 		}
-		boolean finalOutcome = (required
-				? servletOutcome.isMatch() && reactiveOutcome.isMatch()
-				: servletOutcome.isMatch() || reactiveOutcome.isMatch());
-		return new ConditionOutcome(finalOutcome,
+		return new ConditionOutcome(servletOutcome.isMatch() || reactiveOutcome.isMatch(),
 				message.because(servletOutcome.getMessage()).append("and")
 						.append(reactiveOutcome.getMessage()));
 	}
