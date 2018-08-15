@@ -56,9 +56,9 @@ public class TaskExecutorBuilderTests {
 
 	@Test
 	public void poolSettingsShouldApply() {
-		ThreadPoolTaskExecutor executor = this.builder.allowCoreThreadTimeOut(true)
-				.queueCapacity(10).corePoolSize(4).maxPoolSize(8)
-				.allowCoreThreadTimeOut(true).keepAlive(Duration.ofMinutes(1)).build();
+		ThreadPoolTaskExecutor executor = this.builder.queueCapacity(10).corePoolSize(4)
+				.maxPoolSize(8).allowCoreThreadTimeOut(true)
+				.keepAlive(Duration.ofMinutes(1)).build();
 		DirectFieldAccessor dfa = new DirectFieldAccessor(executor);
 		assertThat(dfa.getPropertyValue("queueCapacity")).isEqualTo(10);
 		assertThat(executor.getCorePoolSize()).isEqualTo(4);
@@ -107,10 +107,10 @@ public class TaskExecutorBuilderTests {
 	public void customizersShouldBeAppliedLast() {
 		TaskDecorator taskDecorator = mock(TaskDecorator.class);
 		ThreadPoolTaskExecutor executor = spy(new ThreadPoolTaskExecutor());
-		this.builder.allowCoreThreadTimeOut(true).queueCapacity(10).corePoolSize(4)
-				.maxPoolSize(8).allowCoreThreadTimeOut(true)
-				.keepAlive(Duration.ofMinutes(1)).threadNamePrefix("test-")
-				.taskDecorator(taskDecorator).additionalCustomizers((taskExecutor) -> {
+		this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8)
+				.allowCoreThreadTimeOut(true).keepAlive(Duration.ofMinutes(1))
+				.threadNamePrefix("test-").taskDecorator(taskDecorator)
+				.additionalCustomizers((taskExecutor) -> {
 					verify(taskExecutor).setQueueCapacity(10);
 					verify(taskExecutor).setCorePoolSize(4);
 					verify(taskExecutor).setMaxPoolSize(8);

@@ -79,7 +79,6 @@ public class LiquibaseEndpointTests {
 
 	private boolean getAutoCommit(DataSource dataSource) throws SQLException {
 		try (Connection connection = dataSource.getConnection()) {
-			System.out.println(connection);
 			return connection.getAutoCommit();
 		}
 	}

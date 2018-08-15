@@ -90,7 +90,7 @@ public class TaskExecutorBuilder {
 	}
 
 	/**
-	 * Set the capacity of the queue. A unbounded capacity does not increase the pool and
+	 * Set the capacity of the queue. An unbounded capacity does not increase the pool and
 	 * therefore ignores {@link #maxPoolSize(int) maxPoolSize}.
 	 * @param queueCapacity the queue capacity to set
 	 * @return a new builder instance
@@ -134,7 +134,7 @@ public class TaskExecutorBuilder {
 	/**
 	 * Set whether core threads are allow to time out. When enabled, this enables dynamic
 	 * growing and shrinking of the pool.
-	 * @param allowCoreThreadTimeOut if core thread are allowed to time out
+	 * @param allowCoreThreadTimeOut if core threads are allowed to time out
 	 * @return a new builder instance
 	 */
 	public TaskExecutorBuilder allowCoreThreadTimeOut(boolean allowCoreThreadTimeOut) {
@@ -262,7 +262,7 @@ public class TaskExecutorBuilder {
 	 * @param <T> the type of task executor
 	 * @param taskExecutorClass the template type to create
 	 * @return a configured {@link ThreadPoolTaskExecutor} instance.
-	 * @see TaskExecutorBuilder#build()
+	 * @see #build()
 	 * @see #configure(ThreadPoolTaskExecutor)
 	 */
 	public <T extends ThreadPoolTaskExecutor> T build(Class<T> taskExecutorClass) {
@@ -274,8 +274,8 @@ public class TaskExecutorBuilder {
 	 * @param <T> the type of task executor
 	 * @param taskExecutor the {@link ThreadPoolTaskExecutor} to configure
 	 * @return the task executor instance
-	 * @see TaskExecutorBuilder#build()
-	 * @see TaskExecutorBuilder#build(Class)
+	 * @see #build()
+	 * @see #build(Class)
 	 */
 	public <T extends ThreadPoolTaskExecutor> T configure(T taskExecutor) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();

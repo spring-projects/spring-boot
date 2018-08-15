@@ -109,19 +109,19 @@ public class TaskExecutorAutoConfigurationTests {
 	}
 
 	@Test
-	public void taskExecutorWhenHasCustomTaskExecutorShouldBAckOff() {
+	public void taskExecutorWhenHasCustomTaskExecutorShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorConfig.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(Executor.class);
 					assertThat(context.getBean(Executor.class))
-							.isSameAs(context.getBean("customTaskExecutorBuilder"));
+							.isSameAs(context.getBean("customTaskExecutor"));
 				});
 	}
 
 	@Test
 	public void taskExecutorBuilderShouldApplyCustomizer() {
-		this.contextRunner.withUserConfiguration(CustomTaskExecutorConfig.class,
-				TaskExecutorCustomizerConfig.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(TaskExecutorCustomizerConfig.class)
+				.run((context) -> {
 					TaskExecutorCustomizer customizer = context
 							.getBean(TaskExecutorCustomizer.class);
 					ThreadPoolTaskExecutor executor = context
@@ -138,8 +138,8 @@ public class TaskExecutorAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
-					String text = bean.echo("test").get();
-					assertThat(text).contains("executor-test-").contains("test");
+					String text = bean.echo("something").get();
+					assertThat(text).contains("executor-test-").contains("something");
 				});
 	}
 
@@ -188,7 +188,7 @@ public class TaskExecutorAutoConfigurationTests {
 	static class CustomTaskExecutorConfig {
 
 		@Bean
-		public Executor customTaskExecutorBuilder() {
+		public Executor customTaskExecutor() {
 			return new SyncTaskExecutor();
 		}
 
