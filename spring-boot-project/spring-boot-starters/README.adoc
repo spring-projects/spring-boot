@@ -91,6 +91,9 @@ do as they were designed before this was clarified.
 | http://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
+| https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
+| https://github.com/domix/jade4j-spring-boot-starter
+
 | https://github.com/javamelody/javamelody/wiki[JavaMelody] monitoring
 | https://github.com/javamelody/javamelody/wiki/SpringBootStarter
 
