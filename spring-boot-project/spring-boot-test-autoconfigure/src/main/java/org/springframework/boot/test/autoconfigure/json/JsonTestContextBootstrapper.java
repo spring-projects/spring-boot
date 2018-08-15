@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.jooq;
+package org.springframework.boot.test.autoconfigure.json;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
- * {@link TestContextBootstrapper} for {@link JooqTest @JooqTest} support.
+ * {@link TestContextBootstrapper} for {@link JsonTest @JsonTest} support.
  *
  * @author Artsiom Yudovin
  */
-public class JooqTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+public class JsonTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		JooqTest annotation = getJooqTestAnnotation(testClass);
+		JsonTest annotation = getJsonTestAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	private JooqTest getJooqTestAnnotation(Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, JooqTest.class);
+	private JsonTest getJsonTestAnnotation(Class<?> testClass) {
+		return AnnotatedElementUtils.getMergedAnnotation(testClass, JsonTest.class);
 	}
 
 }
