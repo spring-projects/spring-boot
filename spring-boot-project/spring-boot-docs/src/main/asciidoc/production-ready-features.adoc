@@ -1496,8 +1496,8 @@ server] to use can be provided using:
 ==== JMX
 Micrometer provides a hierarchical mapping to
 {micrometer-registry-documentation}/jmx[JMX], primarily as a cheap and portable way to
-view metrics locally.By default, metrics are exported to the `metrics` JMX domain. The
-domain to use can be provided provided using:
+view metrics locally. By default, metrics are exported to the `metrics` JMX domain. The
+domain to use can be provided using:
 
 [source,properties,indent=0]
 ----
