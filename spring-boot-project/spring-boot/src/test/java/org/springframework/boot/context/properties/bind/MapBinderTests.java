@@ -616,7 +616,7 @@ public class MapBinderTests {
 	}
 
 	@Test
-	public void bindToImmutableMapShouldReturnPopulatedCollection() {
+	public void bindToImmutableMapShouldReturnPopulatedMap() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values.c", "d");
 		source.put("foo.values.e", "f");
