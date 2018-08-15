@@ -19,7 +19,10 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitInfo;
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
@@ -32,7 +35,11 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceSchemaCreatedEvent;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.orm.jpa.JpaDialect;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * {@link BeanPostProcessor} used to fire {@link DataSourceSchemaCreatedEvent}s. Should
@@ -55,6 +62,10 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
+		if (bean instanceof LocalContainerEntityManagerFactoryBean) {
+			LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
+			factory.setJpaVendorAdapter(new DataSourceSchemeCreatedPublisher(factory));
+		}
 		return bean;
 	}
 
@@ -71,9 +82,6 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (bean instanceof HibernateProperties) {
 			this.hibernateProperties = (HibernateProperties) bean;
 		}
-		if (bean instanceof EntityManagerFactory) {
-			publishEventIfRequired((EntityManagerFactory) bean);
-		}
 		return bean;
 	}
 
@@ -88,8 +96,8 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	private DataSource findDataSource(EntityManagerFactory entityManagerFactory) {
 		Object dataSource = entityManagerFactory.getProperties()
 				.get("javax.persistence.nonJtaDataSource");
-		return (dataSource != null && dataSource instanceof DataSource)
-				? (DataSource) dataSource : this.dataSource;
+		return (dataSource instanceof DataSource) ? (DataSource) dataSource
+				: this.dataSource;
 	}
 
 	private boolean isInitializingDatabase(DataSource dataSource) {
@@ -127,6 +135,68 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 				// cascade of bean instantiation that we would rather avoid.
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
+			}
+		}
+
+	}
+
+	final class DataSourceSchemeCreatedPublisher implements JpaVendorAdapter {
+
+		private final JpaVendorAdapter delegate;
+
+		private final LocalContainerEntityManagerFactoryBean factory;
+
+		private DataSourceSchemeCreatedPublisher(
+				LocalContainerEntityManagerFactoryBean factory) {
+			this.delegate = factory.getJpaVendorAdapter();
+			this.factory = factory;
+		}
+
+		@Override
+		public PersistenceProvider getPersistenceProvider() {
+			return this.delegate.getPersistenceProvider();
+		}
+
+		@Override
+		public String getPersistenceProviderRootPackage() {
+			return this.delegate.getPersistenceProviderRootPackage();
+		}
+
+		@Override
+		public Map<String, ?> getJpaPropertyMap(PersistenceUnitInfo pui) {
+			return this.delegate.getJpaPropertyMap(pui);
+		}
+
+		@Override
+		public Map<String, ?> getJpaPropertyMap() {
+			return this.delegate.getJpaPropertyMap();
+		}
+
+		@Override
+		public JpaDialect getJpaDialect() {
+			return this.delegate.getJpaDialect();
+		}
+
+		@Override
+		public Class<? extends EntityManagerFactory> getEntityManagerFactoryInterface() {
+			return this.delegate.getEntityManagerFactoryInterface();
+		}
+
+		@Override
+		public Class<? extends EntityManager> getEntityManagerInterface() {
+			return this.delegate.getEntityManagerInterface();
+		}
+
+		@Override
+		public void postProcessEntityManagerFactory(EntityManagerFactory emf) {
+			this.delegate.postProcessEntityManagerFactory(emf);
+			AsyncTaskExecutor bootstrapExecutor = this.factory.getBootstrapExecutor();
+			if (bootstrapExecutor != null) {
+				bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this
+						.publishEventIfRequired(emf));
+			}
+			else {
+				DataSourceInitializedPublisher.this.publishEventIfRequired(emf);
 			}
 		}
 
