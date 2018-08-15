@@ -17,9 +17,9 @@ spring:
             provider: github
             scope: user:email
             redirect-uri-template: http://localhost:8080/login/oauth2/code/github
-          google-oidc:
-            client-id: ${GOOGLE-CLIENT-ID}
-            client-secret: ${GOOGLE-CLIENT-SECRET}
+          yahoo-oidc:
+            client-id: ${YAHOO-CLIENT-ID}
+            client-secret: ${YAHOO-CLIENT-SECRET}
         provider:
-          google-oidc:
-            issuer-uri: https://accounts.google.com
+          yahoo-oidc:
+            issuer-uri: https://api.login.yahoo.com/
