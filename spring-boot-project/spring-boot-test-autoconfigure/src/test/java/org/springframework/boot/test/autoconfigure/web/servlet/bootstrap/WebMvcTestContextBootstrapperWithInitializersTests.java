@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.client.bootstrap;
+package org.springframework.boot.test.autoconfigure.web.servlet.bootstrap;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTestContextBootstrapper;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTestContextBootstrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -31,15 +31,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link RestClientTestContextBootstrapper} with
+ * Integration tests for {@link WebMvcTestContextBootstrapper} with
  * {@link ApplicationContextInitializer}.
  *
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@BootstrapWith(RestClientTestContextBootstrapper.class)
-@ContextConfiguration(initializers = RestClientTestContextBootstrapperWithInitializersTests.CustomInitializer.class)
-public class RestClientTestContextBootstrapperWithInitializersTests {
+@BootstrapWith(WebMvcTestContextBootstrapper.class)
+@ContextConfiguration(initializers = WebMvcTestContextBootstrapperWithInitializersTests.CustomInitializer.class)
+public class WebMvcTestContextBootstrapperWithInitializersTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -47,7 +47,7 @@ public class RestClientTestContextBootstrapperWithInitializersTests {
 	@Test
 	public void foundConfiguration() {
 		Object bean = this.context
-				.getBean(RestClientTestContextBootstrapperExampleConfig.class);
+				.getBean(WebMvcTestContextBootstrapperExampleConfig.class);
 		assertThat(bean).isNotNull();
 	}
 

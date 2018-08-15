@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.client.bootstrap;
+package org.springframework.boot.test.autoconfigure.web.servlet.bootstrap;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTestContextBootstrapper;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTestContextBootstrapper;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,33 +29,30 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link RestClientTestContextBootstrapper} with
- * {@link ApplicationContextInitializer}.
+ * Tests for {@link WebMvcTestContextBootstrapper} + {@code @ContextConfiguration} (in its
+ * own package so we can test detection).
  *
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@BootstrapWith(RestClientTestContextBootstrapper.class)
-@ContextConfiguration(initializers = RestClientTestContextBootstrapperWithInitializersTests.CustomInitializer.class)
-public class RestClientTestContextBootstrapperWithInitializersTests {
+@BootstrapWith(WebMvcTestContextBootstrapper.class)
+@ContextConfiguration
+public class WebMvcTestContextBootstrapperWithContextConfigurationTests {
 
 	@Autowired
 	private ApplicationContext context;
 
+	@Autowired
+	private WebMvcTestContextBootstrapperExampleConfig config;
+
 	@Test
-	public void foundConfiguration() {
-		Object bean = this.context
-				.getBean(RestClientTestContextBootstrapperExampleConfig.class);
-		assertThat(bean).isNotNull();
+	public void findConfigAutomatically() {
+		assertThat(this.config).isNotNull();
 	}
 
-	public static class CustomInitializer
-			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-		@Override
-		public void initialize(ConfigurableApplicationContext applicationContext) {
-		}
-
+	@Test
+	public void contextWasCreatedViaSpringApplication() {
+		assertThat(this.context.getId()).startsWith("application");
 	}
 
 }
