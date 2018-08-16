@@ -92,6 +92,9 @@ content into your application. Rather, pick only the properties that you need.
 	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 
+	# INSIGHTS
+	spring.insights.web.log-request-details=false # Whether logging of (potentially sensitive) request details at DEBUG and TRACE level is allowed.
+
 	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
 	spring.info.build.location=classpath:META-INF/build-info.properties # Location of the generated build-info.properties file.
 	spring.info.git.location=classpath:git.properties # Location of the generated git.properties file.

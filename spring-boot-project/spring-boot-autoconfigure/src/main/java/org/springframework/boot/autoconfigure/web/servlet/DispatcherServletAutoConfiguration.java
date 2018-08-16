@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.insights.InsightsProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -81,24 +82,31 @@ public class DispatcherServletAutoConfiguration {
 	@Configuration
 	@Conditional(DefaultDispatcherServletCondition.class)
 	@ConditionalOnClass(ServletRegistration.class)
-	@EnableConfigurationProperties(WebMvcProperties.class)
+	@EnableConfigurationProperties({ WebMvcProperties.class, InsightsProperties.class })
 	protected static class DispatcherServletConfiguration {
 
 		private final WebMvcProperties webMvcProperties;
 
-		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties) {
+		private final InsightsProperties insightsProperties;
+
+		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties,
+				InsightsProperties insightsProperties) {
 			this.webMvcProperties = webMvcProperties;
+			this.insightsProperties = insightsProperties;
 		}
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServlet dispatcherServlet() {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
+			dispatcherServlet.setShouldHandleFailure(true);
 			dispatcherServlet.setDispatchOptionsRequest(
 					this.webMvcProperties.isDispatchOptionsRequest());
 			dispatcherServlet.setDispatchTraceRequest(
 					this.webMvcProperties.isDispatchTraceRequest());
 			dispatcherServlet.setThrowExceptionIfNoHandlerFound(
 					this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
+			dispatcherServlet.setEnableLoggingRequestDetails(
+					this.insightsProperties.getWeb().isLogRequestDetails());
 			return dispatcherServlet;
 		}
 

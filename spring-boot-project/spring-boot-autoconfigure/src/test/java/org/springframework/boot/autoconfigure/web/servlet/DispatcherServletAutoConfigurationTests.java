@@ -170,11 +170,15 @@ public class DispatcherServletAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			DispatcherServlet dispatcherServlet = context
 					.getBean(DispatcherServlet.class);
+			assertThat(dispatcherServlet).extracting("shouldHandleFailure")
+					.containsExactly(true);
 			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound")
 					.containsExactly(false);
 			assertThat(dispatcherServlet).extracting("dispatchOptionsRequest")
 					.containsExactly(true);
 			assertThat(dispatcherServlet).extracting("dispatchTraceRequest")
+					.containsExactly(false);
+			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails")
 					.containsExactly(false);
 			assertThat(new DirectFieldAccessor(
 					context.getBean("dispatcherServletRegistration"))
