@@ -132,14 +132,13 @@ public class TaskExecutorAutoConfigurationTests {
 
 	@Test
 	public void enableAsyncUsesAutoConfiguredOneByDefault() {
-		this.contextRunner
-				.withPropertyValues("spring.task.thread-name-prefix=executor-test-")
+		this.contextRunner.withPropertyValues("spring.task.thread-name-prefix=task-test-")
 				.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
 					String text = bean.echo("something").get();
-					assertThat(text).contains("executor-test-").contains("something");
+					assertThat(text).contains("task-test-").contains("something");
 				});
 	}
 

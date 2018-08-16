@@ -33,7 +33,7 @@ public class TaskProperties {
 	/**
 	 * Prefix to use for the names of newly created threads.
 	 */
-	private String threadNamePrefix = "executor-";
+	private String threadNamePrefix = "task-";
 
 	public Pool getPool() {
 		return this.pool;
