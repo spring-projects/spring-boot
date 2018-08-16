@@ -24,34 +24,30 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 /**
- * Integration tests for advanced configuration of {@link AutoConfigureRestDocs} with Mock
- * MVC.
+ * Integration tests for {@link RestDocsAutoConfiguration} with {@link WebTestClient}.
  *
- * @author Andy Wilkinson
  * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = RestDocsTestController.class, secure = false)
-@AutoConfigureRestDocs
-public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
+@WebFluxTest
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
+public class WebTestClientRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Before
 	public void deleteSnippets() {
@@ -59,21 +55,19 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 	}
 
 	@Autowired
-	private MockMvc mvc;
-
-	@Autowired
-	private RestDocumentationResultHandler documentationHandler;
+	private WebTestClient webTestClient;
 
 	@Test
-	public void snippetGeneration() throws Exception {
-		this.mvc.perform(get("/")).andDo(this.documentationHandler.document(links(
-				linkWithRel("self").description("Canonical location of this resource"))));
-		File defaultSnippetsDir = new File(
-				"target/generated-snippets/snippet-generation");
+	public void defaultSnippetsAreWritten() throws Exception {
+		this.webTestClient.get().uri("/").exchange().expectBody()
+				.consumeWith(document("default-snippets"));
+		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.md"))
-				.has(contentContaining("'http://localhost:8080/'"));
-		assertThat(new File(defaultSnippetsDir, "links.md")).isFile();
+				.has(contentContaining("'https://api.example.com/'"));
+		assertThat(new File(defaultSnippetsDir, "http-request.md"))
+				.has(contentContaining("api.example.com"));
+		assertThat(new File(defaultSnippetsDir, "http-response.md")).isFile();
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
 
@@ -90,13 +84,13 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 		}
 
 		@Bean
-		public RestDocsMockMvcConfigurationCustomizer templateFormatCustomizer() {
+		public RestDocsWebTestClientConfigurationCustomizer templateFormatCustomizer() {
 			return (configurer) -> configurer.snippets()
 					.withTemplateFormat(TemplateFormats.markdown());
 		}
 
 		@Bean
-		public RestDocsMockMvcConfigurationCustomizer defaultSnippetsCustomizer() {
+		public RestDocsWebTestClientConfigurationCustomizer defaultSnippetsCustomizer() {
 			return (configurer) -> configurer.snippets().withAdditionalDefaults(
 					responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
