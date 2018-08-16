@@ -171,7 +171,7 @@ public class DispatcherServletAutoConfigurationTests {
 			DispatcherServlet dispatcherServlet = context
 					.getBean(DispatcherServlet.class);
 			assertThat(dispatcherServlet).extracting("shouldHandleFailure")
-					.containsExactly(true);
+					.containsExactly(false);
 			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound")
 					.containsExactly(false);
 			assertThat(dispatcherServlet).extracting("dispatchOptionsRequest")
