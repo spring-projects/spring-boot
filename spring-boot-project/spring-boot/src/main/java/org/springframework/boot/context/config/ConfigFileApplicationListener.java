@@ -156,11 +156,6 @@ public class ConfigFileApplicationListener
 	}
 
 	@Override
-	public boolean supportsSourceType(Class<?> aClass) {
-		return true;
-	}
-
-	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {
 			onApplicationEnvironmentPreparedEvent(
