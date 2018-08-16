@@ -61,6 +61,13 @@ resources:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((branch))
+- name: spring-boot-jdk11-ci-image
+  type: docker-image
+  source:
+    repository: ((docker-hub-organization))/spring-boot-jdk11-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: ((branch))
 - name: artifactory-repo
   type: artifactory-resource
   source:
@@ -89,6 +96,13 @@ resources:
     access_token: ((github-access-token))
     branch: ((branch))
     context: jdk10-build
+- name: repo-status-jdk11-build
+  type: github-status-resource
+  source:
+    repository: ((github-repo-name))
+    access_token: ((github-access-token))
+    branch: ((branch))
+    context: jdk11-build
 - name: slack-alert
   type: slack-notification
   source:
@@ -107,6 +121,9 @@ jobs:
   - put: spring-boot-jdk10-ci-image
     params:
       build: ci-images-git-repo/ci/images/spring-boot-jdk10-ci-image
+  - put: spring-boot-jdk11-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/spring-boot-jdk11-ci-image
 - name: build
   serial: true
   public: true
@@ -301,6 +318,52 @@ jobs:
       silent: true
       icon_emoji: ":concourse:"
       username: concourse-ci
+- name: jdk11-build
+  serial: true
+  public: true
+  plan:
+  - get: spring-boot-jdk11-ci-image
+  - get: git-repo
+    trigger: true
+  - put: repo-status-jdk11-build
+    params: { state: "pending", commit: "git-repo" }
+  - do:
+    - task: build-project
+      privileged: true
+      timeout: 1h30m
+      image: spring-boot-jdk11-ci-image
+      file: git-repo/ci/tasks/build-project.yml
+    - aggregate:
+      - task: build-samples
+        timeout: 1h30m
+        image: spring-boot-jdk11-ci-image
+        file: git-repo/ci/tasks/build-samples.yml
+      - task: build-integration-tests
+        timeout: 1h30m
+        image: spring-boot-jdk11-ci-image
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        timeout: 1h30m
+        image: spring-boot-jdk11-ci-image
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_failure:
+      do:
+      - put: repo-status-jdk11-build
+        params: { state: "failure", commit: "git-repo" }
+      - put: slack-alert
+        params:
+          text: ":concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>"
+          silent: true
+          icon_emoji: ":concourse:"
+          username: concourse-ci
+  - put: repo-status-jdk11-build
+    params: { state: "success", commit: "git-repo" }
+  - put: slack-alert
+    params:
+      text: ":concourse-succeeded: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} was successful!>"
+      silent: true
+      icon_emoji: ":concourse:"
+      username: concourse-ci
 - name: stage-milestone
   serial: true
   plan:
@@ -436,7 +499,7 @@ jobs:
       BINTRAY_REPO: ((bintray-repo))
 groups:
 - name: "Build"
-  jobs: ["build", "jdk9-build", "jdk10-build"]
+  jobs: ["build", "jdk9-build", "jdk10-build", "jdk11-build"]
 - name: "Release"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
 - name: "CI Images"
