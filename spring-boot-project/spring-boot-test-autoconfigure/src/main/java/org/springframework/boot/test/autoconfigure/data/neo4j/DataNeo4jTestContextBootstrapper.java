@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Artsiom Yudovin
  */
-public class DataNeo4jTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+class DataNeo4jTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		DataNeo4jTest annotation = getDataNeo4jTestAnnotation(testClass);
+		DataNeo4jTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
+				DataNeo4jTest.class);
 		return (annotation != null) ? annotation.properties() : null;
-	}
-
-	private DataNeo4jTest getDataNeo4jTestAnnotation(Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, DataNeo4jTest.class);
 	}
 
 }

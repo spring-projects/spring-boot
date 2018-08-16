@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.orm.jpa;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,13 +26,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Add properties to {@link Environment} via {@link DataJpaTest}.
+ * Tests for the {@link JdbcTest#properties properties} attribute of
+ * {@link JdbcTest @JdbcTest}.
  *
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@DataJpaTest(properties = "spring.profiles.active=test")
-public class DataJpaTestEnvironmentPropertiesTests {
+@JdbcTest(properties = "spring.profiles.active=test")
+public class JdbcTestPropertiesIntegrationTests {
 
 	@Autowired
 	private Environment environment;

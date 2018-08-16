@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Add properties to {@link Environment} via {@link DataRedisTest}.
+ * Tests for the {@link DataRedisTest#properties properties} attribute of
+ * {@link DataRedisTest @DataRedisTest}.
  *
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = DataRedisTestEnvironmentPropertiesTests.Initializer.class)
+@ContextConfiguration(initializers = DataRedisTestPropertiesIntegrationTests.Initializer.class)
 @DataRedisTest(properties = "spring.profiles.active=test")
-public class DataRedisTestEnvironmentPropertiesTests {
+public class DataRedisTestPropertiesIntegrationTests {
 
 	@ClassRule
 	public static RedisContainer redis = new RedisContainer();

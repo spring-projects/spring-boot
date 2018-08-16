@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.test.context.TestContextBootstrapper;
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
  */
-public class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(
@@ -39,12 +39,9 @@ public class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstr
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		WebFluxTest annotation = getWebFluxTestAnnotation(testClass);
+		WebFluxTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
+				WebFluxTest.class);
 		return (annotation != null) ? annotation.properties() : null;
-	}
-
-	private WebFluxTest getWebFluxTestAnnotation(Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, WebFluxTest.class);
 	}
 
 }

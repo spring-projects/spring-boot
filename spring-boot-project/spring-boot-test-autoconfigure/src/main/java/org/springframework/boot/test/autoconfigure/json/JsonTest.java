@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import org.springframework.test.context.BootstrapWith;
  * {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters} annotation.
  *
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @see AutoConfigureJson
  * @see AutoConfigureJsonTesters
  * @see AutoConfigureCache
@@ -73,6 +74,7 @@ public @interface JsonTest {
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
 	 * @return the properties to add
+	 * @since 2.1.0
 	 */
 	String[] properties() default {};
 

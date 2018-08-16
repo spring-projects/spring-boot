@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.reactive;
+package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,13 +26,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Add properties to {@link Environment} via {@link WebFluxTest}.
+ * Tests for the {@link WebMvcTest#properties properties} attribute of
+ * {@link WebMvcTest @WebMvcTest}.
  *
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@WebFluxTest(properties = "spring.profiles.active=test")
-public class WebFluxTestEnvironmentPropertiesTests {
+@WebMvcTest(properties = "spring.profiles.active=test")
+public class WebMvcTestPropertiesIntegrationTests {
 
 	@Autowired
 	private Environment environment;

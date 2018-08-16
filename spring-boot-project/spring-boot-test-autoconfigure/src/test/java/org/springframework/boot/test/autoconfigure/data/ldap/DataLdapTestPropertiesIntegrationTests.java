@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.servlet;
+package org.springframework.boot.test.autoconfigure.data.ldap;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,13 +26,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Add properties to {@link Environment} via {@link WebMvcTest}.
+ * Tests for the {@link DataLdapTest#properties properties} attribute of
+ * {@link DataLdapTest @DataLdapTest}.
  *
  * @author Artsiom Yudovin
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(properties = "spring.profiles.active=test")
-public class WebMvcTestEnvironmentPropertiesTests {
+@DataLdapTest(properties = "spring.profiles.active=test")
+public class DataLdapTestPropertiesIntegrationTests {
 
 	@Autowired
 	private Environment environment;

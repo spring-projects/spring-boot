@@ -403,8 +403,10 @@ sensible overriding of values. Properties are considered in the following order:
 on your home directory (`~/.spring-boot-devtools.properties` when devtools is active).
 . {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`]
 annotations on your tests.
-. {dc-spring-boot-test}/context/SpringBootTest.{dc-ext}[`@SpringBootTest#properties`]
-annotation attribute on your tests.
+. `properties` attribute on your tests. Available on
+{dc-spring-boot-test}/context/SpringBootTest.{dc-ext}[`@SpringBootTest`] and the
+<<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test
+annotations for testing a particular slice of your application>>.
 . Command line arguments.
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment
 variable or system property).
