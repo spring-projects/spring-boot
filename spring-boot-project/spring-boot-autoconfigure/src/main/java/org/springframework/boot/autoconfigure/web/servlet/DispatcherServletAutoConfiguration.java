@@ -98,7 +98,6 @@ public class DispatcherServletAutoConfiguration {
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServlet dispatcherServlet() {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
-			dispatcherServlet.setShouldHandleFailure(true);
 			dispatcherServlet.setDispatchOptionsRequest(
 					this.webMvcProperties.isDispatchOptionsRequest());
 			dispatcherServlet.setDispatchTraceRequest(
