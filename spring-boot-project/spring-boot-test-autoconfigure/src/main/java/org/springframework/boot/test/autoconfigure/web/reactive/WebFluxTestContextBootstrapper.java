@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.reactive;
 
 import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 
@@ -25,14 +26,25 @@ import org.springframework.test.context.TestContextBootstrapper;
  * {@link TestContextBootstrapper} for {@link WebFluxTest @WebFluxTest} support.
  *
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
-class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+public class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(
 			MergedContextConfiguration mergedConfig) {
 		return new ReactiveWebMergedContextConfiguration(
 				super.processMergedContextConfiguration(mergedConfig));
+	}
+
+	@Override
+	protected String[] getProperties(Class<?> testClass) {
+		WebFluxTest annotation = getWebFluxTestAnnotation(testClass);
+		return (annotation != null) ? annotation.properties() : null;
+	}
+
+	private WebFluxTest getWebFluxTestAnnotation(Class<?> testClass) {
+		return AnnotatedElementUtils.getMergedAnnotation(testClass, WebFluxTest.class);
 	}
 
 }

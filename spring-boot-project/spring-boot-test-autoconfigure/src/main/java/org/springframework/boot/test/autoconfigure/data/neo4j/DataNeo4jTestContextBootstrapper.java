@@ -14,37 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.servlet;
+package org.springframework.boot.test.autoconfigure.data.neo4j;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
-import org.springframework.test.context.web.WebMergedContextConfiguration;
 
 /**
- * {@link TestContextBootstrapper} for {@link WebMvcTest @WebMvcTest} support.
+ * {@link TestContextBootstrapper} for {@link DataNeo4jTest @DataNeo4jTest} support.
  *
- * @author Phillip Webb
  * @author Artsiom Yudovin
  */
-public class WebMvcTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected MergedContextConfiguration processMergedContextConfiguration(
-			MergedContextConfiguration mergedConfig) {
-		return new WebMergedContextConfiguration(
-				super.processMergedContextConfiguration(mergedConfig), "");
-	}
+public class DataNeo4jTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		WebMvcTest annotation = getWebMvcTestAnnotation(testClass);
+		DataNeo4jTest annotation = getDataNeo4jTestAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	private WebMvcTest getWebMvcTestAnnotation(Class<?> testClass) {
-		return AnnotatedElementUtils.getMergedAnnotation(testClass, WebMvcTest.class);
+	private DataNeo4jTest getDataNeo4jTestAnnotation(Class<?> testClass) {
+		return AnnotatedElementUtils.getMergedAnnotation(testClass, DataNeo4jTest.class);
 	}
 
 }
