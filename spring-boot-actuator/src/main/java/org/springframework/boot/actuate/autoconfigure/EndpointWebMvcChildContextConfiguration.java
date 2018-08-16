@@ -65,6 +65,7 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 /**
  * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
@@ -317,6 +318,9 @@ public class EndpointWebMvcChildContextConfiguration {
 					.values());
 			list.remove(this);
 			AnnotationAwareOrderComparator.sort(list);
+			if (list.isEmpty()) {
+				list.add(new DefaultHandlerExceptionResolver());
+			}
 			return list;
 		}
 
