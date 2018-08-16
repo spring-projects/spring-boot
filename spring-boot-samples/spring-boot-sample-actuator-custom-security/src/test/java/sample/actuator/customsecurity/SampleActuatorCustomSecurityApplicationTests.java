@@ -146,8 +146,7 @@ public class SampleActuatorCustomSecurityApplicationTests {
 		ResponseEntity<Object> entity = beansRestTemplate()
 				.getForEntity("/actuator/beans", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		entity = beansRestTemplate()
-				.getForEntity("/actuator/beans/", Object.class);
+		entity = beansRestTemplate().getForEntity("/actuator/beans/", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
