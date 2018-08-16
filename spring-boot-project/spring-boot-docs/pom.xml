@@ -1123,42 +1123,6 @@
 						</configuration>
 					</plugin>
 					<plugin>
-						<groupId>org.codehaus.gmavenplus</groupId>
-						<artifactId>gmavenplus-plugin</artifactId>
-						<executions>
-							<execution>
-								<goals>
-									<goal>execute</goal>
-								</goals>
-								<phase>generate-resources</phase>
-							</execution>
-						</executions>
-						<configuration>
-							<scripts>
-								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
-								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
-								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
-							</scripts>
-						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy</artifactId>
-								<version>${groovy.version}</version>
-							</dependency>
-							<dependency>
-								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy-ant</artifactId>
-								<version>${groovy.version}</version>
-							</dependency>
-							<dependency>
-								<groupId>org.springframework</groupId>
-								<artifactId>spring-core</artifactId>
-								<version>${spring.version}</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-					<plugin>
 						<groupId>org.asciidoctor</groupId>
 						<artifactId>asciidoctor-maven-plugin</artifactId>
 						<executions>
@@ -1415,6 +1379,55 @@
 								</configuration>
 							</execution>
 						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>full-groovy</id>
+			<activation>
+				<jdk>[1.8,10]</jdk>
+				<property>
+					<name>full</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.gmavenplus</groupId>
+						<artifactId>gmavenplus-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<phase>generate-resources</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<scripts>
+								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
+							</scripts>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>org.codehaus.groovy</groupId>
+								<artifactId>groovy</artifactId>
+								<version>${groovy.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.codehaus.groovy</groupId>
+								<artifactId>groovy-ant</artifactId>
+								<version>${groovy.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-core</artifactId>
+								<version>${spring.version}</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>
