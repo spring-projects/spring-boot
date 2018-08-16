@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,6 +32,7 @@ import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
+import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.junit.Test;
 
@@ -39,6 +41,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
@@ -279,23 +282,26 @@ public class KafkaAutoConfigurationTests {
 
 	@Test
 	public void streamsProperties() {
-		this.contextRunner.withPropertyValues("spring.kafka.clientId=cid",
-				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
-				"spring.application.name=appName",
-				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
-				"spring.kafka.streams.cache-max-bytes-buffering=42",
-				"spring.kafka.streams.client-id=override",
-				"spring.kafka.streams.properties.fiz.buz=fix.fox",
-				"spring.kafka.streams.replication-factor=2",
-				"spring.kafka.streams.state-dir=/tmp/state",
-				"spring.kafka.streams.ssl.key-password=p7",
-				"spring.kafka.streams.ssl.key-store-location=classpath:ksLocP",
-				"spring.kafka.streams.ssl.key-store-password=p8",
-				"spring.kafka.streams.ssl.key-store-type=PKCS12",
-				"spring.kafka.streams.ssl.trust-store-location=classpath:tsLocP",
-				"spring.kafka.streams.ssl.trust-store-password=p9",
-				"spring.kafka.streams.ssl.trust-store-type=PKCS12",
-				"spring.kafka.streams.ssl.protocol=TLSv1.2").run((context) -> {
+		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.kafka.client-id=cid",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.application.name=appName",
+						"spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
+						"spring.kafka.streams.auto-startup=false",
+						"spring.kafka.streams.cache-max-bytes-buffering=42",
+						"spring.kafka.streams.client-id=override",
+						"spring.kafka.streams.properties.fiz.buz=fix.fox",
+						"spring.kafka.streams.replication-factor=2",
+						"spring.kafka.streams.state-dir=/tmp/state",
+						"spring.kafka.streams.ssl.key-password=p7",
+						"spring.kafka.streams.ssl.key-store-location=classpath:ksLocP",
+						"spring.kafka.streams.ssl.key-store-password=p8",
+						"spring.kafka.streams.ssl.key-store-type=PKCS12",
+						"spring.kafka.streams.ssl.trust-store-location=classpath:tsLocP",
+						"spring.kafka.streams.ssl.trust-store-password=p9",
+						"spring.kafka.streams.ssl.trust-store-type=PKCS12",
+						"spring.kafka.streams.ssl.protocol=TLSv1.2")
+				.run((context) -> {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class).asProperties();
@@ -337,6 +343,63 @@ public class KafkaAutoConfigurationTests {
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME))
 									.isNotNull();
 				});
+	}
+
+	@Test
+	public void streamsApplicationIdUsesMainApplicationNameByDefault() {
+		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.streams.auto-startup=false")
+				.run((context) -> {
+					Properties configs = context.getBean(
+							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
+							KafkaStreamsConfiguration.class).asProperties();
+					assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
+							.isEqualTo("localhost:9092, localhost:9093");
+					assertThat(configs.get(StreamsConfig.APPLICATION_ID_CONFIG))
+							.isEqualTo("my-test-app");
+				});
+	}
+
+	@Test
+	public void streamsWithCustomKafkaConfiguration() {
+		this.contextRunner
+				.withUserConfiguration(EnableKafkaStreamsConfiguration.class,
+						TestKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.streams.auto-startup=false")
+				.run((context) -> {
+					Properties configs = context.getBean(
+							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
+							KafkaStreamsConfiguration.class).asProperties();
+					assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
+							.isEqualTo("localhost:9094, localhost:9095");
+					assertThat(configs.get(StreamsConfig.APPLICATION_ID_CONFIG))
+							.isEqualTo("test-id");
+				});
+	}
+
+	@Test
+	public void streamsApplicationIdIsMandatory() {
+		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure()
+							.hasMessageContaining("spring.kafka.streams.application-id")
+							.hasMessageContaining(
+									"This property is mandatory and fallback 'spring.application.name' is not set either.");
+
+				});
+	}
+
+	@Test
+	public void streamsApplicationIdIsNotMandatoryIfEnableKafkaStreamsIsNotSet() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasNotFailed();
+			assertThat(context).doesNotHaveBean(StreamsBuilder.class);
+		});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -466,6 +529,27 @@ public class KafkaAutoConfigurationTests {
 		@Bean
 		public RecordMessageConverter myMessageConverter() {
 			return mock(RecordMessageConverter.class);
+		}
+
+	}
+
+	@Configuration
+	@EnableKafkaStreams
+	protected static class EnableKafkaStreamsConfiguration {
+
+	}
+
+	@Configuration
+	protected static class TestKafkaStreamsConfiguration {
+
+		@Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
+		public KafkaStreamsConfiguration kafkaStreamsConfiguration() {
+			Map<String, Object> streamsProperties = new HashMap<>();
+			streamsProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+					"localhost:9094, localhost:9095");
+			streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-id");
+
+			return new KafkaStreamsConfiguration(streamsProperties);
 		}
 
 	}

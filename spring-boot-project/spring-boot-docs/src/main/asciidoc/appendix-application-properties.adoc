@@ -1105,7 +1105,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.ssl.trust-store-location= # Location of the trust store file.
 	spring.kafka.ssl.trust-store-password= # Store password for the trust store file.
 	spring.kafka.ssl.trust-store-type= # Type of the trust store.
-	spring.kafka.streams.auto-startup= # Whether or not to auto-start the streams factory bean.
+	spring.kafka.streams.application-id = # Kafka streams application.id property; default spring.application.name.
+	spring.kafka.streams.auto-startup=true # Whether or not to auto-start the streams factory bean.
 	spring.kafka.streams.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster. Overrides the global property, for streams.
 	spring.kafka.streams.cache-max-bytes-buffering= # Maximum number of memory bytes to be used for buffering across all threads.
 	spring.kafka.streams.client-id= # ID to pass to the server when making requests. Used for server-side logging.

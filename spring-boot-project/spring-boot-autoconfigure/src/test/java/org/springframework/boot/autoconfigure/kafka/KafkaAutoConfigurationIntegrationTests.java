@@ -28,9 +28,12 @@ import org.junit.Test;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.StreamsBuilderFactoryBean;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.messaging.handler.annotation.Header;
@@ -41,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link KafkaAutoConfiguration}.
  *
  * @author Gary Russell
+ * @author Stephane Nicoll
  */
 public class KafkaAutoConfigurationIntegrationTests {
 
@@ -83,6 +87,14 @@ public class KafkaAutoConfigurationIntegrationTests {
 		producer.close();
 	}
 
+	@Test
+	public void testStreams() {
+		load(KafkaStreamsConfig.class, "spring.application.name:my-app",
+				"spring.kafka.bootstrap-servers:" + getEmbeddedKafkaBrokersAsString());
+		assertThat(this.context.getBean(StreamsBuilderFactoryBean.class).isAutoStartup())
+				.isTrue();
+	}
+
 	private void load(Class<?> config, String... environment) {
 		this.context = doLoad(new Class<?>[] { config }, environment);
 	}
@@ -101,7 +113,8 @@ public class KafkaAutoConfigurationIntegrationTests {
 		return embeddedKafka.getEmbeddedKafka().getBrokersAsString();
 	}
 
-	public static class KafkaConfig {
+	@Configuration
+	static class KafkaConfig {
 
 		@Bean
 		public Listener listener() {
@@ -112,6 +125,12 @@ public class KafkaAutoConfigurationIntegrationTests {
 		public NewTopic adminCreated() {
 			return new NewTopic(ADMIN_CREATED_TOPIC, 10, (short) 1);
 		}
+
+	}
+
+	@Configuration
+	@EnableKafkaStreams
+	static class KafkaStreamsConfig {
 
 	}
 

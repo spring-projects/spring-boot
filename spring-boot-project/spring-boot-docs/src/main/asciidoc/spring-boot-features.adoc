@@ -5634,44 +5634,34 @@ The following component creates a listener endpoint on the `someTopic` topic:
 	}
 ----
 
-[[boot-deatures-kafka-streams]]
+[[boot-features-kafka-streams]]
 ==== Kafka Streams
-
 Spring for Apache Kafka provides a factory bean to create a `StreamsBuilder` object and
-manage the lifecycle of its streams; the factory bean is created when
-`@EnableKafkaStreams` is present on a `@Configuration` class.
-The factory bean requires a `KafkaStreamsConfiguration` object for streams configuration.
+manage the lifecycle of its streams. Spring Boot auto-configures the required
+`KafkaStreamsConfiguration` bean as long as `kafka-streams` in on the classpath and kafka
+streams is enabled via the @EnableKafkaStreams` annotation.
 
-If Spring Boot detects the `kafka-streams` jar on the classpath, it will auto-configure
-the `KafkaStreamsConfiguration` bean from the `KafkaProperties` object as well as enabling
-the creation of the factory bean by spring-kafka.
+Enabling Kafka Streams means that the application id and bootstrap servers must be set.
+The former can be configured using `spring.kafka.streams.application-id`, defaulting to
+`spring.application.name` if not set. The later can be set globally or
+specifically overridden just for streams.
 
-There are two required Kafka properties for streams (`bootstrap.servers` and
-`application.id`); by default, the `application.id` is set to the `spring.application.name`
-property, if present.
-The `bootstrap.servers` can be set globally or specifically overridden just for streams.
-Several other properties are specifically available as boot properties; other arbitrary
-Kafka properties can be set using the `spring.kafka.streams.properties` property.
-See <<boot-features-kafka-extra-props>> for more information.
+Several additional properties are available using dedicated properties; other arbitrary
+Kafka properties can be set using the `spring.kafka.streams.properties` namespace. See
+also <<boot-features-kafka-extra-props>> for more information.
 
-To use the factory bean, simply wire its `StreamsBuilder` into your `@Bean` s.
+To use the factory bean, simply wire `StreamsBuilder` into your `@Bean` as shown in the
+following example:
 
-====
-[source, java]
+[source,java,indent=0]
 ----
-@Bean
-public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {
-	KStream<Integer, String> stream = streamsBuilder.stream("ks1In");
-	stream.map((k, v) -> new KeyValue(k, v.toUpperCase()))
-			.to("ks1Out", Produced.with(Serdes.Integer(), new JsonSerde<>()));
-	return stream;
-}
+include::{code-examples}/kafka/KafkaStreamsBeanExample.java[tag=configuration]
 ----
-====
 
-By default, the factory bean `autoStartup` property is false; to automatically start the
-streams managed by the `StreamsBuilder` object it creates, set property
-`spting.kafka.streams.auto-startup=true`.
+By default, the streams managed by the `StreamBuilder` object it creates are started
+automatically. You can customize this behaviour using the
+`spring.kafka.streams.auto-startup` property.
+
 
 
 [[boot-features-kafka-extra-props]]

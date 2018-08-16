@@ -665,7 +665,7 @@ public class KafkaProperties {
 		/**
 		 * Whether or not to auto-start the streams factory bean.
 		 */
-		private boolean autoStartup;
+		private boolean autoStartup = true;
 
 		/**
 		 * Comma-delimited list of host:port pairs to use for establishing the initial
