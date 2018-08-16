@@ -14,33 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.reactive;
+package org.springframework.boot.test.autoconfigure.jooq;
 
-import org.springframework.boot.test.context.ReactiveWebMergedContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
- * {@link TestContextBootstrapper} for {@link WebFluxTest @WebFluxTest} support.
+ * {@link TestContextBootstrapper} for {@link JooqTest @JooqTest} support.
  *
- * @author Stephane Nicoll
  * @author Artsiom Yudovin
  */
-class WebFluxTestContextBootstrapper extends SpringBootTestContextBootstrapper {
-
-	@Override
-	protected MergedContextConfiguration processMergedContextConfiguration(
-			MergedContextConfiguration mergedConfig) {
-		return new ReactiveWebMergedContextConfiguration(
-				super.processMergedContextConfiguration(mergedConfig));
-	}
+class JooqTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		WebFluxTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
-				WebFluxTest.class);
+		JooqTest annotation = AnnotatedElementUtils.getMergedAnnotation(testClass,
+				JooqTest.class);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 

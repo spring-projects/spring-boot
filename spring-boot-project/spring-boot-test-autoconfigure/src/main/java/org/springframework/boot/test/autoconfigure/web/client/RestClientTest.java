@@ -30,10 +30,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -60,13 +60,14 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  * @since 1.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@BootstrapWith(SpringBootTestContextBootstrapper.class)
+@BootstrapWith(RestClientTestContextBootstrapper.class)
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(RestClientExcludeFilter.class)
@@ -75,6 +76,14 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfigureMockRestServiceServer
 @ImportAutoConfiguration
 public @interface RestClientTest {
+
+	/**
+	 * Properties in form {@literal key=value} that should be added to the Spring
+	 * {@link Environment} before the test runs.
+	 * @return the properties to add
+	 * @since 2.1.0
+	 */
+	String[] properties() default {};
 
 	/**
 	 * Specifies the components to test. This is an alias of {@link #components()} which
