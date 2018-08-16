@@ -6146,14 +6146,14 @@ asynchronous task execution (`@EnableAsync`) and Spring MVC asynchronous request
 processing.
 
 The thread pool uses 8 core threads that can grow and shrink according to the load. Those
-default settings can be fine-tuned using the `spring.task` namespace as shown in the
-following example:
+default settings can be fine-tuned using the `spring.task.execution` namespace as shown in
+the following example:
 
 [source,properties,indent=0]
 ----
-	spring.task.pool.max-threads=16
-	spring.task.pool.queue-capacity=100
-	spring.task.pool.keep-alive=10s
+	spring.task.execution.pool.max-threads=16
+	spring.task.execution.pool.queue-capacity=100
+	spring.task.execution.pool.keep-alive=10s
 ----
 
 This changes the thread pool to use a bounded queue so that when the queue is full (100

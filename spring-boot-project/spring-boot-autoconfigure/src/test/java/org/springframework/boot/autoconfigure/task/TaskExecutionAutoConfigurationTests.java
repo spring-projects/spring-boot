@@ -45,24 +45,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link TaskExecutorAutoConfiguration}.
+ * Tests for {@link TaskExecutionAutoConfiguration}.
  *
  * @author Stephane Nicoll
  */
-public class TaskExecutorAutoConfigurationTests {
+public class TaskExecutionAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
-					AutoConfigurations.of(TaskExecutorAutoConfiguration.class));
+					AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
 
 	@Test
 	public void taskExecutorBuilderShouldApplyCustomSettings() {
 		this.contextRunner
-				.withPropertyValues("spring.task.pool.queue-capacity=10",
-						"spring.task.pool.core-size=2", "spring.task.pool.max-size=4",
-						"spring.task.pool.allow-core-thread-timeout=true",
-						"spring.task.pool.keep-alive=5s",
-						"spring.task.thread-name-prefix=mytest-")
+				.withPropertyValues("spring.task.execution.pool.queue-capacity=10",
+						"spring.task.execution.pool.core-size=2",
+						"spring.task.execution.pool.max-size=4",
+						"spring.task.execution.pool.allow-core-thread-timeout=true",
+						"spring.task.execution.pool.keep-alive=5s",
+						"spring.task.execution.thread-name-prefix=mytest-")
 				.run(assertTaskExecutor((taskExecutor) -> {
 					DirectFieldAccessor dfa = new DirectFieldAccessor(taskExecutor);
 					assertThat(dfa.getPropertyValue("queueCapacity")).isEqualTo(10);
@@ -132,7 +133,8 @@ public class TaskExecutorAutoConfigurationTests {
 
 	@Test
 	public void enableAsyncUsesAutoConfiguredOneByDefault() {
-		this.contextRunner.withPropertyValues("spring.task.thread-name-prefix=task-test-")
+		this.contextRunner
+				.withPropertyValues("spring.task.execution.thread-name-prefix=task-test-")
 				.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);

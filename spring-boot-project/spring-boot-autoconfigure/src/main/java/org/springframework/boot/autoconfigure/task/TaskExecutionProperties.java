@@ -24,9 +24,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for task execution.
  *
  * @author Stephane Nicoll
+ * @since 2.1.0
  */
-@ConfigurationProperties("spring.task")
-public class TaskProperties {
+@ConfigurationProperties("spring.task.execution")
+public class TaskExecutionProperties {
 
 	private final Pool pool = new Pool();
 
