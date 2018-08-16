@@ -38,8 +38,19 @@ diverge from the defaults.
 == System Requirements
 By default, Spring Boot {spring-boot-version} requires http://www.java.com[Java 7] and
 Spring Framework {spring-version} or above. You can use Spring Boot with Java 6 with some
-additional configuration. See <<howto.adoc#howto-use-java-6>> for more details. Explicit
-build support is provided for Maven (3.2+), and Gradle 2 (2.9 or later) and 3.
+additional configuration. See <<howto.adoc#howto-use-java-6>> for more details.
+
+Explicit build support is provided for the following build tools:
+
+|===
+|Build Tool |Version
+
+|Maven
+|3.2+
+
+|Gradle
+|[2.9, 3.x]
+|===
 
 TIP: Although you can use Spring Boot with Java 6 or 7, we generally recommend Java 8 if
 at all possible.
