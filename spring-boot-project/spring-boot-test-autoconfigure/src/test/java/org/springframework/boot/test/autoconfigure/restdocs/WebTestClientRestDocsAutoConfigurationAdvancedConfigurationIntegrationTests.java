@@ -26,8 +26,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
-import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
@@ -74,23 +76,22 @@ public class WebTestClientRestDocsAutoConfigurationAdvancedConfigurationIntegrat
 	}
 
 	@TestConfiguration
-	public static class CustomizationConfiguration
-			implements RestDocsWebTestClientConfigurationCustomizer {
+	public static class CustomizationConfiguration {
 
-		@Override
-		public void customize(WebTestClientRestDocumentationConfigurer configurer) {
-			configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
+		@Bean
+		public RestDocumentationResultHandler restDocumentation() {
+			return MockMvcRestDocumentation.document("{method-name}");
 		}
 
-	}
+		@Bean
+		public RestDocsWebTestClientConfigurationCustomizer templateFormatCustomizer() {
+			return (configurer) -> configurer.snippets()
+					.withTemplateFormat(TemplateFormats.markdown());
+		}
 
-	@TestConfiguration
-	public static class CustomizationConfiguration2
-			implements RestDocsWebTestClientConfigurationCustomizer {
-
-		@Override
-		public void customize(WebTestClientRestDocumentationConfigurer configurer) {
-			configurer.snippets().withAdditionalDefaults(
+		@Bean
+		public RestDocsWebTestClientConfigurationCustomizer defaultSnippetsCustomizer() {
+			return (configurer) -> configurer.snippets().withAdditionalDefaults(
 					responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 

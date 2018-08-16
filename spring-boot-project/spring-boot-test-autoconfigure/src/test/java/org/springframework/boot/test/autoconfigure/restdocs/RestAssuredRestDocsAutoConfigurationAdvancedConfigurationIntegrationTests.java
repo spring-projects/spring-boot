@@ -29,7 +29,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileSystemUtils;
@@ -87,23 +89,22 @@ public class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegratio
 	}
 
 	@TestConfiguration
-	public static class CustomizationConfiguration
-			implements RestDocsRestAssuredConfigurationCustomizer {
+	public static class CustomizationConfiguration {
 
-		@Override
-		public void customize(RestAssuredRestDocumentationConfigurer configurer) {
-			configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
+		@Bean
+		public RestDocumentationResultHandler restDocumentation() {
+			return MockMvcRestDocumentation.document("{method-name}");
 		}
 
-	}
+		@Bean
+		public RestDocsRestAssuredConfigurationCustomizer templateFormatCustomizer() {
+			return (configurer) -> configurer.snippets()
+					.withTemplateFormat(TemplateFormats.markdown());
+		}
 
-	@TestConfiguration
-	public static class CustomizationConfiguration2
-			implements RestDocsRestAssuredConfigurationCustomizer {
-
-		@Override
-		public void customize(RestAssuredRestDocumentationConfigurer configurer) {
-			configurer.snippets().withAdditionalDefaults(
+		@Bean
+		public RestDocsRestAssuredConfigurationCustomizer defaultSnippetsCustomizer() {
+			return (configurer) -> configurer.snippets().withAdditionalDefaults(
 					responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 

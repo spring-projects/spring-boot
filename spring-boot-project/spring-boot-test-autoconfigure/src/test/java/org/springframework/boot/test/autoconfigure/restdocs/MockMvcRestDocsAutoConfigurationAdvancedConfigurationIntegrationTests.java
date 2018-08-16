@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -47,6 +46,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  * MVC.
  *
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RestDocsTestController.class, secure = false)
@@ -82,28 +82,22 @@ public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTes
 	}
 
 	@TestConfiguration
-	public static class CustomizationConfiguration
-			implements RestDocsMockMvcConfigurationCustomizer {
+	public static class CustomizationConfiguration {
 
 		@Bean
 		public RestDocumentationResultHandler restDocumentation() {
 			return MockMvcRestDocumentation.document("{method-name}");
 		}
 
-		@Override
-		public void customize(MockMvcRestDocumentationConfigurer configurer) {
-			configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
+		@Bean
+		public RestDocsMockMvcConfigurationCustomizer templateFormatCustomizer() {
+			return (configurer) -> configurer.snippets()
+					.withTemplateFormat(TemplateFormats.markdown());
 		}
 
-	}
-
-	@TestConfiguration
-	public static class CustomizationConfiguration2
-			implements RestDocsMockMvcConfigurationCustomizer {
-
-		@Override
-		public void customize(MockMvcRestDocumentationConfigurer configurer) {
-			configurer.snippets().withAdditionalDefaults(
+		@Bean
+		public RestDocsMockMvcConfigurationCustomizer defaultSnippetsCustomizer() {
+			return (configurer) -> configurer.snippets().withAdditionalDefaults(
 					responseFields(fieldWithPath("_links.self").description("Main URL")));
 		}
 
