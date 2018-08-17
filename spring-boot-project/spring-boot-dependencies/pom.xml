@@ -116,7 +116,7 @@
 		<junit.version>4.12</junit.version>
 		<junit-jupiter.version>5.2.0</junit-jupiter.version>
 		<kafka.version>2.0.0</kafka.version>
-		<kotlin.version>1.2.51</kotlin.version>
+		<kotlin.version>1.2.60</kotlin.version>
 		<lettuce.version>5.1.0.M1</lettuce.version>
 		<liquibase.version>3.6.2</liquibase.version>
 		<log4j2.version>2.11.1</log4j2.version>
