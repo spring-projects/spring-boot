@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -86,9 +87,7 @@ class TypeUtils {
 	private TypeMirror getDeclaredType(Types types, Class<?> typeClass,
 			int numberOfTypeArgs) {
 		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
-		for (int i = 0; i < typeArgs.length; i++) {
-			typeArgs[i] = types.getWildcardType(null, null);
-		}
+		Arrays.setAll(typeArgs, i -> types.getWildcardType(null, null));
 		TypeElement typeElement = this.env.getElementUtils()
 				.getTypeElement(typeClass.getName());
 		try {
