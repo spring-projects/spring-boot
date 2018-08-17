@@ -89,7 +89,7 @@ public class WebConversionService extends DefaultFormattingConversionService {
 		DateTimeFormatterRegistrar dateTime = new DateTimeFormatterRegistrar();
 		if (this.dateFormat != null) {
 			dateTime.setDateFormatter(DateTimeFormatter.ofPattern(this.dateFormat)
-					.withResolverStyle(ResolverStyle.STRICT));
+					.withResolverStyle(ResolverStyle.SMART));
 		}
 		dateTime.registerFormatters(this);
 	}
