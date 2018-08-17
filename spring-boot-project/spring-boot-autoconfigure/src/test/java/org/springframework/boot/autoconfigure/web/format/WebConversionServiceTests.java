@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link WebConversionService}.
  *
  * @author Brian Clozel
+ * @author Madhura Bhave
  */
 public class WebConversionServiceTests {
 
@@ -42,6 +43,14 @@ public class WebConversionServiceTests {
 		java.time.LocalDate localDate = java.time.LocalDate.of(2018, 1, 1);
 		assertThat(conversionService.convert(localDate, String.class))
 				.isEqualTo("01*01*2018");
+	}
+
+	@Test
+	public void convertFromStringToDate() {
+		WebConversionService conversionService = new WebConversionService("yyyy-MM-dd");
+		java.time.LocalDate date = conversionService.convert("2018-01-01",
+				java.time.LocalDate.class);
+		assertThat(date).isEqualTo(java.time.LocalDate.of(2018, 1, 1));
 	}
 
 }
