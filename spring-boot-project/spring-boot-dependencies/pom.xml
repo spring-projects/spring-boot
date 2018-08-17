@@ -50,7 +50,7 @@
 		<commons-lang3.version>3.7</commons-lang3.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.6.0</commons-pool2.version>
-		<couchbase-client.version>2.6.0</couchbase-client.version>
+		<couchbase-client.version>2.6.1</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
 		<derby.version>10.14.2.0</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
