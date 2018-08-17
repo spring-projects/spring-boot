@@ -71,6 +71,7 @@ import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -118,6 +119,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Eddú Meléndez
  * @author Kristine Jetzke
+ * @author Artsiom Yudovin
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -570,6 +572,20 @@ public class WebMvcAutoConfigurationTests {
 				.withPropertyValues("spring.mvc.formcontent.putfilter.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(HttpPutFormContentFilter.class));
+	}
+
+	@Test
+	public void hiddenHttpMethodFilterCanBeDisabled() {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.hiddenmethod.filter.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(HiddenHttpMethodFilter.class));
+	}
+
+	@Test
+	public void hiddenHttpMethodFilterEnabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(HiddenHttpMethodFilter.class));
 	}
 
 	@Test
