@@ -141,7 +141,7 @@
 		<querydsl.version>4.2.1</querydsl.version>
 		<rabbit-amqp-client.version>5.3.0</rabbit-amqp-client.version>
 		<reactor-bom.version>Californium-M2</reactor-bom.version>
-		<rest-assured.version>3.1.0</rest-assured.version>
+		<rest-assured.version>3.1.1</rest-assured.version>
 		<reactive-streams.version>1.0.2</reactive-streams.version>
 		<rxjava.version>1.3.8</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
