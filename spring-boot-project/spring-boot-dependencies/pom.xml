@@ -135,7 +135,7 @@
 		<netty.version>4.1.28.Final</netty.version>
 		<netty-tcnative.version>2.0.13.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
-		<pooled-jms-version>1.0.2</pooled-jms-version>
+		<pooled-jms-version>1.0.3</pooled-jms-version>
 		<postgresql.version>42.2.4</postgresql.version>
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
