@@ -464,6 +464,16 @@
       "name": "spring.mvc.formcontent.putfilter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HttpPutFormContentFilter.",
+      "defaultValue": true,
+      "deprecation" : {
+        "replacement" : "spring.mvc.formcontent.filter.enabled",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.mvc.formcontent.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's FormContentFilter.",
       "defaultValue": true
     },
     {

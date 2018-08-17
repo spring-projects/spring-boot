@@ -45,7 +45,7 @@ import org.springframework.boot.test.context.assertj.AssertableWebApplicationCon
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
-import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
+import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -71,8 +71,8 @@ import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
-import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
@@ -551,27 +551,26 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void httpPutFormContentFilterIsAutoConfigured() {
+	public void formContentFilterIsAutoConfigured() {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(OrderedHttpPutFormContentFilter.class));
+				.hasSingleBean(OrderedFormContentFilter.class));
 	}
 
 	@Test
-	public void httpPutFormContentFilterCanBeOverridden() {
-		this.contextRunner.withUserConfiguration(CustomHttpPutFormContentFilter.class)
+	public void formContentFilterCanBeOverridden() {
+		this.contextRunner.withUserConfiguration(CustomFormContentFilter.class)
 				.run((context) -> {
-					assertThat(context)
-							.doesNotHaveBean(OrderedHttpPutFormContentFilter.class);
-					assertThat(context).hasSingleBean(HttpPutFormContentFilter.class);
+					assertThat(context).doesNotHaveBean(OrderedFormContentFilter.class);
+					assertThat(context).hasSingleBean(FormContentFilter.class);
 				});
 	}
 
 	@Test
-	public void httpPutFormContentFilterCanBeDisabled() {
+	public void formContentFilterCanBeDisabled() {
 		this.contextRunner
-				.withPropertyValues("spring.mvc.formcontent.putfilter.enabled=false")
+				.withPropertyValues("spring.mvc.formcontent.filter.enabled=false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(HttpPutFormContentFilter.class));
+						.doesNotHaveBean(FormContentFilter.class));
 	}
 
 	@Test
@@ -1076,11 +1075,11 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomHttpPutFormContentFilter {
+	static class CustomFormContentFilter {
 
 		@Bean
-		public HttpPutFormContentFilter customHttpPutFormContentFilter() {
-			return new HttpPutFormContentFilter();
+		public FormContentFilter customFormContentFilter() {
+			return new FormContentFilter();
 		}
 
 	}

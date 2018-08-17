@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,16 @@ package org.springframework.boot.web.servlet.filter;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.Ordered;
-import org.springframework.web.filter.HttpPutFormContentFilter;
+import org.springframework.web.filter.FormContentFilter;
 
 /**
- * {@link HttpPutFormContentFilter} that also implements {@link Ordered}.
+ * {@link FormContentFilter} that also implements {@link Ordered}.
  *
  * @author Joao Pedro Evangelista
- * @since 2.0.0
+ * @author Brian Clozel
+ * @since 2.1.0
  */
-public class OrderedHttpPutFormContentFilter extends HttpPutFormContentFilter
-		implements Ordered {
+public class OrderedFormContentFilter extends FormContentFilter implements Ordered {
 
 	/**
 	 * Higher order to ensure the filter is applied before Spring Security.
