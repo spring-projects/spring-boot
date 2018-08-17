@@ -467,6 +467,12 @@
       "defaultValue": true
     },
     {
+      "name": "spring.mvc.hiddenmethod.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
+      "defaultValue": true
+    },
+    {
       "name" : "spring.mvc.media-types",
       "type" : "java.util.Map<java.lang.String,org.springframework.http.MediaType>",
       "description" : "Maps file extensions to media types for content negotiation, e.g. yml to text/yaml.",
