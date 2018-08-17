@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,9 +58,7 @@ public class SessionsEndpointWebIntegrationTests {
 
 	@Test
 	public void sessionsForUsernameNoResults() {
-		given(repository.findByIndexNameAndIndexValue(
-				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
-						.willReturn(Collections.emptyMap());
+		given(repository.findByPrincipalName("user")).willReturn(Collections.emptyMap());
 		client.get()
 				.uri((builder) -> builder.path("/actuator/sessions")
 						.queryParam("username", "user").build())
@@ -70,9 +68,8 @@ public class SessionsEndpointWebIntegrationTests {
 
 	@Test
 	public void sessionsForUsernameFound() {
-		given(repository.findByIndexNameAndIndexValue(
-				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "user"))
-						.willReturn(Collections.singletonMap(session.getId(), session));
+		given(repository.findByPrincipalName("user"))
+				.willReturn(Collections.singletonMap(session.getId(), session));
 		client.get()
 				.uri((builder) -> builder.path("/actuator/sessions")
 						.queryParam("username", "user").build())
