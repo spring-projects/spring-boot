@@ -33,6 +33,7 @@ import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
@@ -370,6 +371,33 @@ public class WebFluxAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void customRequestMappingHandlerMapping() {
+		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class)
+				.run((context) -> assertThat(context)
+						.getBean(RequestMappingHandlerMapping.class)
+						.isInstanceOf(MyRequestMappingHandlerMapping.class));
+	}
+
+	@Test
+	public void customRequestMappingHandlerAdapter() {
+		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class)
+				.run((context) -> assertThat(context)
+						.getBean(RequestMappingHandlerAdapter.class)
+						.isInstanceOf(MyRequestMappingHandlerAdapter.class));
+	}
+
+	@Test
+	public void multipleWebFluxRegistrations() {
+		this.contextRunner.withUserConfiguration(MultipleWebFluxRegistrations.class)
+				.run((context) -> {
+					assertThat(context.getBean(RequestMappingHandlerMapping.class))
+							.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
+					assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+							.isNotInstanceOf(MyRequestMappingHandlerAdapter.class);
+				});
+	}
+
 	@Configuration
 	protected static class CustomArgumentResolvers {
 
@@ -482,6 +510,57 @@ public class WebFluxAutoConfigurationTests {
 		public HiddenHttpMethodFilter customHiddenHttpMethodFilter() {
 			return mock(HiddenHttpMethodFilter.class);
 		}
+
+	}
+
+	@Configuration
+	static class CustomRequestMappingHandlerAdapter {
+
+		@Bean
+		public WebFluxRegistrations webMvcRegistrationsHandlerAdapter() {
+			return new WebFluxRegistrations() {
+
+				@Override
+				public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
+					return new WebFluxAutoConfigurationTests.MyRequestMappingHandlerAdapter();
+				}
+
+			};
+		}
+
+	}
+
+	private static class MyRequestMappingHandlerAdapter
+			extends RequestMappingHandlerAdapter {
+
+	}
+
+	@Configuration
+	@Import({ WebFluxAutoConfigurationTests.CustomRequestMappingHandlerMapping.class,
+			WebFluxAutoConfigurationTests.CustomRequestMappingHandlerAdapter.class })
+	static class MultipleWebFluxRegistrations {
+
+	}
+
+	@Configuration
+	static class CustomRequestMappingHandlerMapping {
+
+		@Bean
+		public WebFluxRegistrations webMvcRegistrationsHandlerMapping() {
+			return new WebFluxRegistrations() {
+
+				@Override
+				public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+					return new MyRequestMappingHandlerMapping();
+				}
+
+			};
+		}
+
+	}
+
+	private static class MyRequestMappingHandlerMapping
+			extends RequestMappingHandlerMapping {
 
 	}
 
