@@ -119,7 +119,7 @@
 		<kotlin.version>1.2.51</kotlin.version>
 		<lettuce.version>5.1.0.M1</lettuce.version>
 		<liquibase.version>3.6.2</liquibase.version>
-		<log4j2.version>2.11.0</log4j2.version>
+		<log4j2.version>2.11.1</log4j2.version>
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.18.0</lombok.version>
 		<mariadb.version>2.2.6</mariadb.version>
