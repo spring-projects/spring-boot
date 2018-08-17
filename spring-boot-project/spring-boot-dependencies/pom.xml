@@ -51,7 +51,7 @@
 		<commons-pool2.version>2.5.0</commons-pool2.version>
 		<couchbase-client.version>2.5.9</couchbase-client.version>
 		<couchbase-cache-client.version>2.1.0</couchbase-cache-client.version>
-		<derby.version>10.14.1.0</derby.version>
+		<derby.version>10.14.2.0</derby.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<dropwizard-metrics.version>3.2.6</dropwizard-metrics.version>
 		<ehcache.version>2.10.5</ehcache.version>
