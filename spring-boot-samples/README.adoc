@@ -110,9 +110,6 @@ The following sample applications are provided:
 | link:spring-boot-sample-jta-jndi[spring-boot-sample-jta-jndi]
 | JTA transactions using a `TransactionManager` and `DataSource` from JNDI
 
-| link:spring-boot-sample-jta-narayana[spring-boot-sample-jta-narayana]
-| JTA transactions with Narayana
-
 | link:spring-boot-sample-junit-jupiter[spring-boot-sample-junit-jupiter]
 | Demonstrates JUnit Jupiter-based testing
 

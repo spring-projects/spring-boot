@@ -917,21 +917,6 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jta.bitronix.properties.skip-corrupted-logs=false # Skip corrupted transactions log entries.
 	spring.jta.bitronix.properties.warn-about-zero-resource-transaction=true # Whether to log a warning for transactions executed without a single enlisted resource.
 
-	# NARAYANA ({sc-spring-boot}/jta/narayana/NarayanaProperties.{sc-ext}[NarayanaProperties])
-	spring.jta.narayana.default-timeout=60s # Transaction timeout. If a duration suffix is not specified, seconds will be used.
-	spring.jta.narayana.expiry-scanners=com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner # Comma-separated list of expiry scanners.
-	spring.jta.narayana.log-dir= # Transaction object store directory.
-	spring.jta.narayana.one-phase-commit=true # Whether to enable one phase commit optimization.
-	spring.jta.narayana.periodic-recovery-period=120s # Interval in which periodic recovery scans are performed. If a duration suffix is not specified, seconds will be used.
-	spring.jta.narayana.recovery-backoff-period=10s # Back off period between first and second phases of the recovery scan. If a duration suffix is not specified, seconds will be used.
-	spring.jta.narayana.recovery-db-pass= # Database password to be used by the recovery manager.
-	spring.jta.narayana.recovery-db-user= # Database username to be used by the recovery manager.
-	spring.jta.narayana.recovery-jms-pass= # JMS password to be used by the recovery manager.
-	spring.jta.narayana.recovery-jms-user= # JMS username to be used by the recovery manager.
-	spring.jta.narayana.recovery-modules= # Comma-separated list of recovery modules.
-	spring.jta.narayana.transaction-manager-id=1 # Unique transaction manager id.
-	spring.jta.narayana.xa-resource-orphan-filters= # Comma-separated list of orphan filters.
-
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
 	spring.mongodb.embedded.features=sync_delay # Comma-separated list of features to enable.
 	spring.mongodb.embedded.storage.database-dir= # Directory used for data storage.

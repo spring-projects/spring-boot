@@ -54,7 +54,6 @@
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
-		<module>spring-boot-sample-jta-narayana</module>
 		<module>spring-boot-sample-jta-jndi</module>
 		<module>spring-boot-sample-junit-jupiter</module>
 		<module>spring-boot-sample-kafka</module>

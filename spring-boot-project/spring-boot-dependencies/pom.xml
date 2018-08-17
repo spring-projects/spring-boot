@@ -129,7 +129,6 @@
 		<mongodb.version>3.8.0</mongodb.version>
 		<mssql-jdbc.version>6.4.0.jre8</mssql-jdbc.version>
 		<mysql.version>8.0.12</mysql.version>
-		<narayana.version>5.8.2.Final</narayana.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.1.0</neo4j-ogm.version>
 		<netty.version>4.1.28.Final</netty.version>
@@ -448,11 +447,6 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-bitronix</artifactId>
-				<version>${revision}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-jta-narayana</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
@@ -2202,26 +2196,6 @@
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
 				<version>${jboss-logging.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.narayana.jta</groupId>
-				<artifactId>jdbc</artifactId>
-				<version>${narayana.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.narayana.jta</groupId>
-				<artifactId>jms</artifactId>
-				<version>${narayana.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.narayana.jta</groupId>
-				<artifactId>jta</artifactId>
-				<version>${narayana.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.narayana.jts</groupId>
-				<artifactId>narayana-jts-integration</artifactId>
-				<version>${narayana.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jdom</groupId>

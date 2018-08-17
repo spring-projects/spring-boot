@@ -5936,31 +5936,6 @@ property with a different value for each instance of your application.
 
 
 
-[[boot-features-jta-narayana]]
-=== Using a Narayana Transaction Manager
-http://narayana.io/[Narayana] is a popular open source JTA transaction manager
-implementation supported by JBoss. You can use the `spring-boot-starter-jta-narayana`
-starter to add the appropriate Narayana dependencies to your project. As with Atomikos and
-Bitronix, Spring Boot automatically configures Narayana and post-processes your beans to
-ensure that startup and shutdown ordering is correct.
-
-By default, Narayana transaction logs are written to a `transaction-logs` directory in
-your application home directory (the directory in which your application jar file
-resides). You can customize the location of this directory by setting a
-`spring.jta.log-dir` property in your `application.properties` file. Properties starting
-with `spring.jta.narayana.properties` can also be used to customize the Narayana
-configuration. See the
-{dc-spring-boot}/jta/narayana/NarayanaProperties.{dc-ext}[`NarayanaProperties` Javadoc]
-for complete details.
-
-NOTE: To ensure that multiple transaction managers can safely coordinate the same
-resource managers, each Narayana instance must be configured with a unique ID. By
-default, this ID is set to `1`. To ensure uniqueness in production, you should configure
-the `spring.jta.transaction-manager-id` property with a different value for each instance
-of your application.
-
-
-
 [[boot-features-jta-javaee]]
 === Using a Java EE Managed Transaction Manager
 If you package your Spring Boot application as a `war` or `ear` file and deploy it to a
