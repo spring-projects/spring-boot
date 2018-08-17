@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.insights;
+package org.springframework.boot.autoconfigure.insight;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties properties} for .
+ * Configuration properties for customizing application insights.
  *
  * @author Brian Clozel
  * @since 2.1.0
@@ -39,7 +39,7 @@ public class InsightsProperties {
 		 * Whether logging of (potentially sensitive) request details at DEBUG and TRACE
 		 * level is allowed.
 		 */
-		private boolean logRequestDetails = false;
+		private boolean logRequestDetails;
 
 		public boolean isLogRequestDetails() {
 			return this.logRequestDetails;

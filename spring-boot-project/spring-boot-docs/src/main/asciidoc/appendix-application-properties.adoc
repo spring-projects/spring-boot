@@ -92,7 +92,7 @@ content into your application. Rather, pick only the properties that you need.
 	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 
-	# INSIGHTS
+	# INSIGHTS ({sc-spring-boot-autoconfigure}/insight/InsightsProperties.{sc-ext}[InsightsProperties])
 	spring.insights.web.log-request-details=false # Whether logging of (potentially sensitive) request details at DEBUG and TRACE level is allowed.
 
 	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
