@@ -55,6 +55,7 @@
 		<module>spring-boot-starter-mail</module>
 		<module>spring-boot-starter-mustache</module>
 		<module>spring-boot-starter-actuator</module>
+		<module>spring-boot-starter-oauth2-oidc-client</module>
 		<module>spring-boot-starter-parent</module>
 		<module>spring-boot-starter-quartz</module>
 		<module>spring-boot-starter-reactor-netty</module>
