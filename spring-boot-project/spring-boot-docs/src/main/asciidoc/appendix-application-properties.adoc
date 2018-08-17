@@ -92,6 +92,9 @@ content into your application. Rather, pick only the properties that you need.
 	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 
+	# INSIGHTS ({sc-spring-boot-autoconfigure}/insight/InsightsProperties.{sc-ext}[InsightsProperties])
+	spring.insights.web.log-request-details=false # Whether logging of (potentially sensitive) request details at DEBUG and TRACE level is allowed.
+
 	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
 	spring.info.build.location=classpath:META-INF/build-info.properties # Location of the generated build-info.properties file.
 	spring.info.git.location=classpath:git.properties # Location of the generated git.properties file.
@@ -100,6 +103,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jmx.default-domain= # JMX domain name.
 	spring.jmx.enabled=true # Expose management beans to the JMX domain.
 	spring.jmx.server=mbeanServer # MBeanServer bean name.
+	spring.jmx.unique-names=false # Whether unique runtime object names should be ensured.
 
 	# Email ({sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[MailProperties])
 	spring.mail.default-encoding=UTF-8 # Default MimeMessage encoding.
@@ -160,6 +164,17 @@ content into your application. Rather, pick only the properties that you need.
 	spring.sendgrid.proxy.host= # SendGrid proxy host.
 	spring.sendgrid.proxy.port= # SendGrid proxy port.
 
+	# TASK EXECUTION  ({sc-spring-boot-autoconfigure}/task/TaskExecutionProperties.{sc-ext}[TaskExecutionProperties])
+	spring.task.execution.pool.allow-core-thread-timeout=true # Whether core threads are allowed to time out. This enables dynamic growing and shrinking of the pool.
+	spring.task.execution.pool.core-size=8 # Core number of threads.
+	spring.task.execution.pool.keep-alive=60s # Time limit for which threads may remain idle before being terminated.
+	spring.task.execution.pool.max-size= # Maximum allowed number of threads. If tasks are filling up the queue, the pool can expand up to that size to accommodate the load. Ignored if the queue is unbounded.
+	spring.task.execution.pool.queue-capacity= # Queue capacity. An unbounded capacity does not increase the pool and therefore ignores the "max-size" property.
+	spring.task.execution.thread-name-prefix=task- # Prefix to use for the names of newly created threads.
+
+	# TASK SCHEDULING  ({sc-spring-boot-autoconfigure}/task/TaskSchedulingProperties.{sc-ext}[TaskSchedulingProperties])
+	spring.task.scheduling.pool.size=1 # Maximum allowed number of threads.
+	spring.task.scheduling.thread-name-prefix=scheduling- # Prefix to use for the names of newly created threads.
 
 	# ----------------------------------------
 	# WEB PROPERTIES
@@ -252,7 +267,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.tomcat.max-connections=0 # Maximum number of connections that the server accepts and processes at any given time.
 	server.tomcat.max-http-header-size=0 # Maximum size, in bytes, of the HTTP message header.
 	server.tomcat.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post content.
-	server.tomcat.max-swallow-size=4096 # Maximum amount of request body bytes to swallow.
+	server.tomcat.max-swallow-size=2MB # Maximum amount of request body to swallow.
 	server.tomcat.max-threads=0 # Maximum number of worker threads.
 	server.tomcat.min-spare-threads=0 # Minimum number of worker threads.
 	server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
@@ -330,10 +345,10 @@ content into your application. Rather, pick only the properties that you need.
 
 	# MULTIPART ({sc-spring-boot-autoconfigure}/web/servlet/MultipartProperties.{sc-ext}[MultipartProperties])
 	spring.servlet.multipart.enabled=true # Whether to enable support of multipart uploads.
-	spring.servlet.multipart.file-size-threshold=0 # Threshold after which files are written to disk. Values can use the suffixes "MB" or "KB" to indicate megabytes or kilobytes, respectively.
+	spring.servlet.multipart.file-size-threshold=0 # Threshold after which files are written to disk.
 	spring.servlet.multipart.location= # Intermediate location of uploaded files.
-	spring.servlet.multipart.max-file-size=1MB # Max file size. Values can use the suffixes "MB" or "KB" to indicate megabytes or kilobytes, respectively.
-	spring.servlet.multipart.max-request-size=10MB # Max request size. Values can use the suffixes "MB" or "KB" to indicate megabytes or kilobytes, respectively.
+	spring.servlet.multipart.max-file-size=1MB # Max file size.
+	spring.servlet.multipart.max-request-size=10MB # Max request size.
 	spring.servlet.multipart.resolve-lazily=false # Whether to resolve the multipart request lazily at the time of file or parameter access.
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
@@ -414,6 +429,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.mvc.dispatch-options-request=true # Whether to dispatch OPTIONS requests to the FrameworkServlet doService method.
 	spring.mvc.favicon.enabled=true # Whether to enable resolution of favicon.ico.
 	spring.mvc.formcontent.putfilter.enabled=true # Whether to enable Spring's HttpPutFormContentFilter.
+	spring.mvc.hiddenmethod.filter.enabled=true # Whether to enable Spring's HiddenHttpMethodFilter.
 	spring.mvc.ignore-default-model-on-redirect=true # Whether the content of the "default" model should be ignored during redirect scenarios.
 	spring.mvc.locale= # Locale to use. By default, this locale is overridden by the "Accept-Language" header.
 	spring.mvc.locale-resolver=accept-header # Define how the locale should be resolved.
@@ -520,6 +536,9 @@ content into your application. Rather, pick only the properties that you need.
 	# SECURITY OAUTH2 CLIENT ({sc-spring-boot-autoconfigure}/security/oauth2/client/OAuth2ClientProperties.{sc-ext}[OAuth2ClientProperties])
 	spring.security.oauth2.client.provider.*= # OAuth provider details.
 	spring.security.oauth2.client.registration.*= # OAuth client registrations.
+
+	# SECURITY OAUTH2 RESOURCE SERVER ({sc-spring-boot-autoconfigure}/security/oauth2/resource/OAuth2ResourceServerProperties.{sc-ext}[OAuth2ResourceServerProperties])
+	spring.security.oauth2.resource.jwt.jwk.set-uri= # JSON Web Key URI to use to verify the JWT token.
 
 	# ----------------------------------------
 	# DATA PROPERTIES
@@ -760,6 +779,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jdbc.template.query-timeout= # Query timeout. Default is to use the JDBC driver's default configuration. If a duration suffix is not specified, seconds will be used.
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
+	spring.data.jpa.repositories.boostrap-mode=default # Bootstrap mode for JPA repositories.
 	spring.data.jpa.repositories.enabled=true # Whether to enable JPA repositories.
 	spring.jpa.database= # Target database to operate on, auto-detected by default. Can be alternatively set using the "databasePlatform" property.
 	spring.jpa.database-platform= # Name of the target database to operate on, auto-detected by default. Can be alternatively set using the "Database" enum.
@@ -1206,7 +1226,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.endpoints.jmx.exposure.include=* # Endpoint IDs that should be included or '*' for all.
 	management.endpoints.jmx.exposure.exclude= # Endpoint IDs that should be excluded or '*' for all.
 	management.endpoints.jmx.static-names= # Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
-	management.endpoints.jmx.unique-names=false # Whether to ensure that ObjectNames are modified in case of conflict.
 
 	# ENDPOINTS WEB CONFIGURATION ({sc-spring-boot-actuator-autoconfigure}/endpoint/web/WebEndpointProperties.{sc-ext}[WebEndpointProperties])
 	management.endpoints.web.exposure.include=health,info # Endpoint IDs that should be included or '*' for all.
@@ -1322,6 +1341,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.db.enabled=true # Whether to enable database health check.
 	management.health.cassandra.enabled=true # Whether to enable Cassandra health check.
 	management.health.couchbase.enabled=true # Whether to enable Couchbase health check.
+	management.health.couchbase.timeout=1000ms # Timeout for getting the Bucket information from the server.
 	management.health.defaults.enabled=true # Whether to enable default health indicators.
 	management.health.diskspace.enabled=true # Whether to enable disk space health check.
 	management.health.diskspace.path= # Path used to compute the available disk space.

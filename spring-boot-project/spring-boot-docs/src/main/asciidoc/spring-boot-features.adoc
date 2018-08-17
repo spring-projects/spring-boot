@@ -403,8 +403,10 @@ sensible overriding of values. Properties are considered in the following order:
 on your home directory (`~/.spring-boot-devtools.properties` when devtools is active).
 . {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`]
 annotations on your tests.
-. {dc-spring-boot-test}/context/SpringBootTest.{dc-ext}[`@SpringBootTest#properties`]
-annotation attribute on your tests.
+. `properties` attribute on your tests. Available on
+{dc-spring-boot-test}/context/SpringBootTest.{dc-ext}[`@SpringBootTest`] and the
+<<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test
+annotations for testing a particular slice of your application>>.
 . Command line arguments.
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment
 variable or system property).
@@ -1305,6 +1307,45 @@ TIP: If you are upgrading from a previous version that is simply using `Long` to
 the duration, make sure to define the unit (using `@DurationUnit`) if it isn't
 milliseconds alongside the switch to `Duration`. Doing so gives a transparent upgrade path
 while supporting a much richer format.
+
+
+
+[[boot-features-external-config-conversion-datasize]]
+===== Converting Data Sizes
+Spring Framework has a `DataSize` value type that allows to express size in bytes. If you
+expose a `DataSize` property, the following formats in application properties are
+available:
+
+* A regular `long` representation (using bytes as the default unit unless a
+`@DataSizeUnit` has been specified)
+* A more readable format where the value and the unit are coupled (e.g. `10MB` means 10
+megabytes)
+
+Consider the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=example]
+----
+
+To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent. A size threshold
+of 256 bytes can be specified as `256` or `256B`.
+
+You can also use any of the supported unit. These are:
+
+* `B` for bytes
+* `KB` for kilobytes
+* `MB` for megabytes
+* `GB` for gigabytes
+* `TB` for terabytes
+
+The default unit is bytes and can be overridden using `@DataSizeUnit` as illustrated
+in the sample above.
+
+TIP: If you are upgrading from a previous version that is simply using `Long` to express
+the size, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes alongside
+the switch to `DataSize`. Doing so gives a transparent upgrade path while supporting a
+much richer format.
 
 
 
@@ -2243,7 +2284,7 @@ integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
- * https://freemarker.org/docs/[FreeMarker]
+ * https://freemarker.apache.org/docs/[FreeMarker]
  * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
  * http://www.thymeleaf.org[Thymeleaf]
  * https://mustache.github.io/[Mustache]
@@ -2674,7 +2715,7 @@ Thymeleaf, FreeMarker, and Mustache.
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
- * http://freemarker.org/docs/[FreeMarker]
+ * https://freemarker.apache.org/docs/[FreeMarker]
  * http://www.thymeleaf.org[Thymeleaf]
  * http://mustache.github.io/[Mustache]
 
@@ -3276,12 +3317,29 @@ Provider can be configured with the `issuer-uri`:
 
 
 [[boot-features-security-oauth2-server]]
-==== Server
+==== Resource Server
+If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can
+set up an OAuth2 Resource Server as long as a JWK Set URI is specified, as shown in the
+following example:
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.resource.jwt.jwk.set-uri=https://example.com/oauth2/default/v1/keys
+----
+
+The same properties are applicable for both servlet and reactive applications.
+
+Alternatively, you can define your own `JwtDecoder` bean for servlet applications
+or a `ReactiveJwtDecoder` for reactive applications.
+
+
+
+==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0
-Authorization Server or Resource Server. However, this functionality is available from
+Authorization Server. However, this functionality is available from
 the https://projects.spring.io/spring-security-oauth/[Spring Security OAuth] project,
 which will eventually be superseded by Spring Security completely. Until then, you can
-use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 server;
+use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 authorization server;
 see its https://docs.spring.io/spring-security-oauth2-boot[documentation] for instructions.
 
 
@@ -3635,6 +3693,12 @@ The following example shows a typical Spring Data repository interface definitio
 
 	}
 ----
+
+Spring Data JPA repositories support three different modes of bootstrapping: default,
+deferred, and lazy. To enable deferred or lazy bootstrapping, set the
+`spring.data.jpa.repositories.bootstrap-mode` to `deferred` or `lazy` respectively. When
+using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder`
+will use the context's async task executor, if any, as the bootstrap executor.
 
 TIP: We have barely scratched the surface of Spring Data JPA. For complete details, see
 the https://docs.spring.io/spring-data/jpa/docs/current/reference/html/[Spring Data JPA
@@ -4582,7 +4646,7 @@ URLs of your server in your application.properties, as shown in the following ex
 If you need to customize connection settings, you can use the `spring.ldap.base` and
 `spring.ldap.base-environment` properties.
 
-A `LdapContextSource` is auto-configured based on these settings. If you need to customize
+An `LdapContextSource` is auto-configured based on these settings. If you need to customize
 it, for instance to use a `PooledContextSource`, you can still inject the auto-configured
 `LdapContextSource`. Make sure to flag your customized `ContextSource` as `@Primary` so
 that the auto-configured `LdapTemplate` uses it.
@@ -6080,6 +6144,38 @@ in a similar manner, as shown in the following example:
 
 
 
+[[boot-features-task-execution-scheduling]]
+== Task Execution and Scheduling
+In the absence of a `TaskExecutor` bean in the context, Spring Boot auto-configures a
+`ThreadPoolTaskExecutor` with sensible defaults that can be automatically associated to
+asynchronous task execution (`@EnableAsync`) and Spring MVC asynchronous request
+processing.
+
+The thread pool uses 8 core threads that can grow and shrink according to the load. Those
+default settings can be fine-tuned using the `spring.task.execution` namespace as shown in
+the following example:
+
+[source,properties,indent=0]
+----
+	spring.task.execution.pool.max-threads=16
+	spring.task.execution.pool.queue-capacity=100
+	spring.task.execution.pool.keep-alive=10s
+----
+
+This changes the thread pool to use a bounded queue so that when the queue is full (100
+tasks), the thread pool increases to maximum 16 threads. Shrinking of the pool is more
+aggressive as threads are reclaimed when they are idle for 10 seconds (rather than
+60 seconds by default).
+
+A `ThreadPoolTaskScheduler` can also be auto-configured if need to be to be associated to
+scheduled task execution (`@EnableScheduling`). The thread pool uses one thread by default
+and those settings can be fine-tuned using the `spring.task.scheduling` namespace.
+
+Both a `TaskExecutorBuilder` and `TaskSchedulerBuilder` bean are made available in the
+context if a custom executor or scheduler needs to be created.
+
+
+
 [[boot-features-integration]]
 == Spring Integration
 Spring Boot offers several conveniences for working with {spring-integration}[Spring
@@ -6252,8 +6348,8 @@ web application.
 * `RANDOM_PORT`: Loads a `WebServerApplicationContext` and provides a real web
 environment. Embedded servers are started and listen on a random port.
 * `DEFINED_PORT`: Loads a `WebServerApplicationContext` and provides a real web
-environment. Embedded servers  are started and listen on a defined port (from your
-`application.properties` or on the default port of `8080`).
+environment. Embedded servers are started and listen on a defined port (from your
+`application.properties`) or on the default port of `8080`.
 * `NONE`: Loads an `ApplicationContext` by using `SpringApplication` but does not provide
 _any_ web environment (mock or otherwise).
 

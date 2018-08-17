@@ -20,10 +20,8 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -31,6 +29,7 @@ import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpLogging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
@@ -39,7 +38,6 @@ import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.all;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -79,8 +77,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 
 	private static final Map<HttpStatus.Series, String> SERIES_VIEWS;
 
-	private static final Log logger = LogFactory
-			.getLog(DefaultErrorWebExceptionHandler.class);
+	private static final Log logger = HttpLogging
+			.forLogName(DefaultErrorWebExceptionHandler.class);
 
 	static {
 		Map<HttpStatus.Series, String> views = new EnumMap<>(HttpStatus.Series.class);
@@ -206,30 +204,15 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 */
 	protected void logError(ServerRequest request, HttpStatus errorStatus) {
 		Throwable ex = getError(request);
-		log(request, ex, (errorStatus.is5xxServerError() ? logger::error : logger::warn));
-	}
-
-	private void log(ServerRequest request, Throwable ex,
-			BiConsumer<Object, Throwable> logger) {
-		if (ex instanceof ResponseStatusException) {
-			logger.accept(buildMessage(request, ex), null);
-		}
-		else {
-			logger.accept(buildMessage(request, null), ex);
+		if (logger.isDebugEnabled()) {
+			logger.debug(request.exchange().getLogPrefix() + formatError(ex, request));
 		}
 	}
 
-	private String buildMessage(ServerRequest request, Throwable ex) {
-		StringBuilder message = new StringBuilder("Failed to handle request [");
-		message.append(request.methodName());
-		message.append(" ");
-		message.append(request.uri());
-		message.append("]");
-		if (ex != null) {
-			message.append(": ");
-			message.append(ex.getMessage());
-		}
-		return message.toString();
+	private String formatError(Throwable ex, ServerRequest request) {
+		String reason = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+		return "Resolved [" + reason + "] for HTTP " + request.methodName() + " "
+				+ request.path();
 	}
 
 }

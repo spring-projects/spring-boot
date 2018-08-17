@@ -36,7 +36,8 @@ import org.springframework.core.env.Environment;
  * should have. The table below shows when a condition matches according to the property
  * value and the {@link #havingValue()} attribute:
  *
- * <table summary="having values" border="1">
+ * <table border="1">
+ * <caption>Having values</caption>
  * <tr>
  * <th>Property Value</th>
  * <th>{@code havingValue=""}</th>

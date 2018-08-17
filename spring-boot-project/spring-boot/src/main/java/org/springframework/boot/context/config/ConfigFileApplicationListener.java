@@ -156,11 +156,6 @@ public class ConfigFileApplicationListener
 	}
 
 	@Override
-	public boolean supportsSourceType(Class<?> aClass) {
-		return true;
-	}
-
-	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {
 			onApplicationEnvironmentPreparedEvent(
@@ -455,15 +450,20 @@ public class ConfigFileApplicationListener
 					if (canLoadFileExtension(loader, location)) {
 						load(loader, location, profile,
 								filterFactory.getDocumentFilter(profile), consumer);
+						return;
 					}
 				}
 			}
+			Set<String> processedExtensions = new HashSet<>();
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
 				for (String fileExtension : loader.getFileExtensions()) {
-					String prefix = location + name;
-					fileExtension = "." + fileExtension;
-					loadForFileExtension(loader, prefix, fileExtension, profile,
-							filterFactory, consumer);
+					if (!processedExtensions.contains(fileExtension)) {
+						processedExtensions.add(fileExtension);
+						String prefix = location + name;
+						fileExtension = "." + fileExtension;
+						loadForFileExtension(loader, prefix, fileExtension, profile,
+								filterFactory, consumer);
+					}
 				}
 			}
 		}
@@ -676,12 +676,9 @@ public class ConfigFileApplicationListener
 		 * @param processedProfiles the processed profiles
 		 */
 		private void resetEnvironmentProfiles(List<Profile> processedProfiles) {
-			String[] names = processedProfiles.stream().filter((profile) -> {
-				if (profile != null && !profile.isDefaultProfile()) {
-					return true;
-				}
-				return false;
-			}).map(Profile::getName).toArray(String[]::new);
+			String[] names = processedProfiles.stream()
+					.filter((profile) -> profile != null && !profile.isDefaultProfile())
+					.map(Profile::getName).toArray(String[]::new);
 			this.environment.setActiveProfiles(names);
 		}
 

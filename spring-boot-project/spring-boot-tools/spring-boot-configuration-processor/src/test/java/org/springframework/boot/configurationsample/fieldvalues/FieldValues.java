@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.time.Duration;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.util.MimeType;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Sample object containing fields with initial values.
@@ -122,5 +123,17 @@ public class FieldValues {
 	private Duration durationHours = Duration.ofHours(40);
 
 	private Duration durationDays = Duration.ofDays(50);
+
+	private DataSize dataSizeNone;
+
+	private DataSize dataSizeBytes = DataSize.ofBytes(5);
+
+	private DataSize dataSizeKiloBytes = DataSize.ofKiloBytes(10);
+
+	private DataSize dataSizeMegaBytes = DataSize.ofMegaBytes(20);
+
+	private DataSize dataSizeGigaBytes = DataSize.ofGigaBytes(30);
+
+	private DataSize dataSizeTeraBytes = DataSize.ofTeraBytes(40);
 
 }

@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BeanDefinitionOverrideFailureAnalyzerTests {
 
 	@Test
-	public void bindExceptionWithFieldErrorsDueToValidationFailure() {
+	public void analyzeBeanDefinitionOverrideException() {
 		FailureAnalysis analysis = performAnalysis(BeanOverrideConfiguration.class);
 		String description = analysis.getDescription();
 		assertThat(description).contains("The bean 'testBean', defined in "

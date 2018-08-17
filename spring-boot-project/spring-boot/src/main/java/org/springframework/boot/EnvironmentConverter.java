@@ -26,7 +26,6 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
@@ -34,6 +33,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *
  * @author Ethan Rubinson
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 final class EnvironmentConverter {
 
@@ -61,46 +61,44 @@ final class EnvironmentConverter {
 	}
 
 	/**
-	 * Converts the given {@code environment} to a {@link StandardEnvironment}. If the
-	 * environment is already a {@code StandardEnvironment} and is not a
-	 * {@link ConfigurableWebEnvironment} no conversion is performed and it is returned
-	 * unchanged.
+	 * Converts the given {@code environment} to the given {@link StandardEnvironment}
+	 * type. If the environment is already of the same type, no conversion is performed
+	 * and it is returned unchanged.
 	 * @param environment the Environment to convert
+	 * @param conversionType the type to convert the Environment to
 	 * @return the converted Environment
 	 */
-	StandardEnvironment convertToStandardEnvironmentIfNecessary(
-			ConfigurableEnvironment environment) {
-		if (environment instanceof StandardEnvironment
-				&& !isWebEnvironment(environment, this.classLoader)) {
+	StandardEnvironment convertEnvironmentIfNecessary(ConfigurableEnvironment environment,
+			Class<? extends StandardEnvironment> conversionType) {
+		if (conversionType.equals(environment.getClass())) {
 			return (StandardEnvironment) environment;
 		}
-		return convertToStandardEnvironment(environment);
+		return convertEnvironment(environment, conversionType);
 	}
 
-	private boolean isWebEnvironment(ConfigurableEnvironment environment,
-			ClassLoader classLoader) {
-		try {
-			Class<?> webEnvironmentClass = ClassUtils
-					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
-			return (webEnvironmentClass.isInstance(environment));
-		}
-		catch (Throwable ex) {
-			return false;
-		}
-	}
-
-	private StandardEnvironment convertToStandardEnvironment(
-			ConfigurableEnvironment environment) {
-		StandardEnvironment result = new StandardEnvironment();
+	private StandardEnvironment convertEnvironment(ConfigurableEnvironment environment,
+			Class<? extends StandardEnvironment> conversionType) {
+		StandardEnvironment result = createEnvironment(conversionType);
 		result.setActiveProfiles(environment.getActiveProfiles());
 		result.setConversionService(environment.getConversionService());
-		copyNonServletPropertySources(environment, result);
+		copyPropertySources(environment, result);
 		return result;
 	}
 
-	private void copyNonServletPropertySources(ConfigurableEnvironment source,
+	private StandardEnvironment createEnvironment(
+			Class<? extends StandardEnvironment> conversionType) {
+		try {
+			return conversionType.newInstance();
+		}
+		catch (Exception ex) {
+			return new StandardEnvironment();
+		}
+	}
+
+	private void copyPropertySources(ConfigurableEnvironment source,
 			StandardEnvironment target) {
-		removeAllPropertySources(target.getPropertySources());
+		removePropertySources(target.getPropertySources(),
+				isServletEnvironment(target.getClass(), this.classLoader));
 		for (PropertySource<?> propertySource : source.getPropertySources()) {
 			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
 				target.getPropertySources().addLast(propertySource);
@@ -108,13 +106,31 @@ final class EnvironmentConverter {
 		}
 	}
 
-	private void removeAllPropertySources(MutablePropertySources propertySources) {
+	private boolean isServletEnvironment(Class<?> conversionType,
+			ClassLoader classLoader) {
+		try {
+			Class<?> webEnvironmentClass = ClassUtils
+					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
+			return webEnvironmentClass.isAssignableFrom(conversionType);
+		}
+		catch (Throwable ex) {
+			return false;
+		}
+	}
+
+	private void removePropertySources(MutablePropertySources propertySources,
+			boolean isServletEnvironment) {
 		Set<String> names = new HashSet<>();
 		for (PropertySource<?> propertySource : propertySources) {
 			names.add(propertySource.getName());
 		}
 		for (String name : names) {
-			propertySources.remove(name);
+			if (!isServletEnvironment) {
+				propertySources.remove(name);
+			}
+			else if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(name)) {
+				propertySources.remove(name);
+			}
 		}
 	}
 

@@ -44,6 +44,10 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties(ServerProperties.class)
 public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 
+	/**
+	 * Nested configuration if Tomcat is being used.
+	 */
+	@Configuration
 	@ConditionalOnClass({ Tomcat.class, UpgradeProtocol.class })
 	public static class TomcatWebServerFactoryCustomizerConfiguration {
 

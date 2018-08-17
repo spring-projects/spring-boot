@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
+import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -42,6 +43,7 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
@@ -67,6 +69,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  */
 public class WebFluxAutoConfigurationTests {
 
@@ -353,6 +356,22 @@ public class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	public void hiddenHttpMethodFilterIsAutoConfigured() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(OrderedHiddenHttpMethodFilter.class));
+	}
+
+	@Test
+	public void hiddenHttpMethodFilterCanBeOverridden() {
+		this.contextRunner.withUserConfiguration(CustomHiddenHttpMethodFilter.class)
+				.run((context) -> {
+					assertThat(context)
+							.doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
+					assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
+				});
+	}
+
+	@Test
 	public void customRequestMappingHandlerMapping() {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class)
 				.run((context) -> assertThat(context)
@@ -480,6 +499,16 @@ public class WebFluxAutoConfigurationTests {
 		@Bean
 		public Validator customValidator() {
 			return mock(Validator.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomHiddenHttpMethodFilter {
+
+		@Bean
+		public HiddenHttpMethodFilter customHiddenHttpMethodFilter() {
+			return mock(HiddenHttpMethodFilter.class);
 		}
 
 	}

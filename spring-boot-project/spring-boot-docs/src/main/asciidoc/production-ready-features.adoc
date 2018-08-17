@@ -1200,17 +1200,16 @@ The name of the MBean is usually generated from the `id` of the endpoint. For ex
 `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
 
 If your application contains more than one Spring `ApplicationContext`, you may find that
-names clash. To solve this problem, you can set the
-`management.endpoints.jmx.unique-names` property to `true` so that MBean names are always
-unique.
+names clash. To solve this problem, you can set the `spring.jmx.unique-names` property to
+`true` so that MBean names are always unique.
 
 You can also customize the JMX domain under which endpoints are exposed. The following
 settings show an example of doing so in `application.properties`:
 
 [source,properties,indent=0]
 ----
+	spring.jmx.unique-names=true
 	management.endpoints.jmx.domain=com.example.myapp
-	management.endpoints.jmx.unique-names=true
 ----
 
 
@@ -1497,8 +1496,8 @@ server] to use can be provided using:
 ==== JMX
 Micrometer provides a hierarchical mapping to
 {micrometer-registry-documentation}/jmx[JMX], primarily as a cheap and portable way to
-view metrics locally.By default, metrics are exported to the `metrics` JMX domain. The
-domain to use can be provided provided using:
+view metrics locally. By default, metrics are exported to the `metrics` JMX domain. The
+domain to use can be provided using:
 
 [source,properties,indent=0]
 ----
@@ -1989,7 +1988,8 @@ endpoint and obtain basic information about the last 100 request-response exchan
 [[production-ready-http-tracing-custom]]
 === Custom HTTP tracing
 To customize the items that are included in each trace, use the
-`management.trace.http.include` configuration property.
+`management.trace.http.include` configuration property. For advanced customization,
+consider registering your own `HttpExchangeTracer` implementation.
 
 By default, an `InMemoryHttpTraceRepository` that stores traces for the last 100
 request-response exchanges is used. If you need to expand the capacity, you can define
@@ -2084,7 +2084,7 @@ services use self-signed certificates, you need to set the following property:
 
 === Custom context path
 
-If the server's context-path has been configured to anything other then `/`, the Cloud
+If the server's context-path has been configured to anything other than `/`, the Cloud
 Foundry endpoints will not be available at the root of the application. For example, if
 `server.servlet.context-path=/app`, Cloud Foundry endpoints will be available at
 `/app/cloudfoundryapplication/*`.

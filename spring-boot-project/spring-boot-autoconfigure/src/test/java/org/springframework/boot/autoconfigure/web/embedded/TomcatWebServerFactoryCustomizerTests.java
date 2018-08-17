@@ -41,6 +41,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,8 +75,9 @@ public class TomcatWebServerFactoryCustomizerTests {
 	public void defaultsAreConsistent() {
 		customizeAndRunServer((server) -> {
 			assertThat(((AbstractHttp11Protocol<?>) server.getTomcat().getConnector()
-					.getProtocolHandler()).getMaxSwallowSize()).isEqualTo(
-							this.serverProperties.getTomcat().getMaxSwallowSize());
+					.getProtocolHandler()).getMaxSwallowSize())
+							.isEqualTo(this.serverProperties.getTomcat()
+									.getMaxSwallowSize().toBytes());
 		});
 	}
 
@@ -121,10 +123,10 @@ public class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	public void customMaxSwallowSize() {
-		bind("server.tomcat.max-swallow-size=10");
+		bind("server.tomcat.max-swallow-size=10MB");
 		customizeAndRunServer((server) -> assertThat(((AbstractHttp11Protocol<?>) server
 				.getTomcat().getConnector().getProtocolHandler()).getMaxSwallowSize())
-						.isEqualTo(10));
+						.isEqualTo(DataSize.ofMegaBytes(10).toBytes()));
 	}
 
 	@Test

@@ -31,6 +31,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
+import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.data.repository.config.RepositoryConfigurationDelegate;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 import org.springframework.data.util.Streamable;
@@ -72,6 +73,13 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 				return AbstractRepositoryConfigurationSourceSupport.this
 						.getBasePackages();
 			}
+
+			@Override
+			public BootstrapMode getBootstrapMode() {
+				return AbstractRepositoryConfigurationSourceSupport.this
+						.getBootstrapMode();
+			}
+
 		};
 	}
 
@@ -96,6 +104,15 @@ public abstract class AbstractRepositoryConfigurationSourceSupport
 	 * @return the repository configuration extension
 	 */
 	protected abstract RepositoryConfigurationExtension getRepositoryConfigurationExtension();
+
+	/**
+	 * The {@link BootstrapMode} for the particular repository support. Defaults to
+	 * {@link BootstrapMode#DEFAULT}.
+	 * @return the bootstrap mode
+	 */
+	protected BootstrapMode getBootstrapMode() {
+		return BootstrapMode.DEFAULT;
+	}
 
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {

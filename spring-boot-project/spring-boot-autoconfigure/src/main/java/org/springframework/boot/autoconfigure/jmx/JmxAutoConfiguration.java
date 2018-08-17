@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian Dupuis
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })
@@ -93,6 +94,9 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 		if (StringUtils.hasLength(defaultDomain)) {
 			namingStrategy.setDefaultDomain(defaultDomain);
 		}
+		boolean uniqueNames = this.environment.getProperty("spring.jmx.unique-names",
+				Boolean.class, false);
+		namingStrategy.setEnsureUniqueRuntimeObjectNames(uniqueNames);
 		return namingStrategy;
 	}
 

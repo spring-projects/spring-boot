@@ -104,6 +104,7 @@ public class RemoteDevToolsAutoConfiguration {
 	/**
 	 * Configuration for remote update and restarts.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartConfiguration {
 

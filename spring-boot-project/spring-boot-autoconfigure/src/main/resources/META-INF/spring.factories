@@ -96,7 +96,9 @@ org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration,\
+org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,\
@@ -105,7 +107,10 @@ org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
+org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration,\

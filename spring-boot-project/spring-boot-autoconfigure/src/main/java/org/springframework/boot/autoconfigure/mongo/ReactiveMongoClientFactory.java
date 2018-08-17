@@ -159,6 +159,7 @@ public class ReactiveMongoClientFactory {
 		if (connection.getApplicationName() != null) {
 			builder.applicationName(connection.getApplicationName());
 		}
+		builder.retryWrites(connection.getRetryWrites());
 		return builder;
 	}
 

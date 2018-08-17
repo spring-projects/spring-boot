@@ -30,9 +30,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,13 +52,14 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Michael Simons
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@BootstrapWith(SpringBootTestContextBootstrapper.class)
+@BootstrapWith(JooqTestContextBootstrapper.class)
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(JooqTypeExcludeFilter.class)
@@ -66,6 +67,14 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureJooq
 @ImportAutoConfiguration
 public @interface JooqTest {
+
+	/**
+	 * Properties in form {@literal key=value} that should be added to the Spring
+	 * {@link Environment} before the test runs.
+	 * @return the properties to add
+	 * @since 2.1.0
+	 */
+	String[] properties() default {};
 
 	/**
 	 * Determines if default filtering should be used with

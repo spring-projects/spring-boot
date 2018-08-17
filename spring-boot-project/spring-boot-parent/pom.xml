@@ -342,7 +342,7 @@
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
 					<artifactId>gmavenplus-plugin</artifactId>
-					<version>1.5</version>
+					<version>1.6.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -736,17 +736,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
-			<id>java10</id>
-			<activation>
-				<jdk>10</jdk>
-			</activation>
-			<properties>
-				<maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
-				<maven-site-plugin.version>3.7</maven-site-plugin.version>
-				<maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
-			</properties>
 		</profile>
 	</profiles>
 </project>

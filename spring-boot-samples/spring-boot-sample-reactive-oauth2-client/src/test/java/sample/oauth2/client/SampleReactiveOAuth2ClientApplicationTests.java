@@ -29,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
 		"APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
-		"GOOGLE-CLIENT-ID=my-google-client-id",
-		"GOOGLE-CLIENT-SECRET=my-google-client-secret" })
+		"YAHOO-CLIENT-ID=my-google-client-id",
+		"YAHOO-CLIENT-SECRET=my-google-client-secret" })
 public class SampleReactiveOAuth2ClientApplicationTests {
 
 	@Autowired
@@ -47,7 +47,7 @@ public class SampleReactiveOAuth2ClientApplicationTests {
 		byte[] body = this.webTestClient.get().uri("/login").exchange().expectStatus()
 				.isOk().returnResult(String.class).getResponseBodyContent();
 		String bodyString = new String(body);
-		assertThat(bodyString).contains("/oauth2/authorization/google");
+		assertThat(bodyString).contains("/oauth2/authorization/yahoo");
 		assertThat(bodyString).contains("/oauth2/authorization/github-client-1");
 		assertThat(bodyString).contains("/oauth2/authorization/github-client-2");
 	}

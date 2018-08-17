@@ -29,6 +29,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
@@ -175,6 +176,8 @@ public class DispatcherServletAutoConfigurationTests {
 					.containsExactly(true);
 			assertThat(dispatcherServlet).extracting("dispatchTraceRequest")
 					.containsExactly(false);
+			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails")
+					.containsExactly(false);
 			assertThat(new DirectFieldAccessor(
 					context.getBean("dispatcherServletRegistration"))
 							.getPropertyValue("loadOnStartup")).isEqualTo(-1);
@@ -210,8 +213,8 @@ public class DispatcherServletAutoConfigurationTests {
 		@Bean
 		public MultipartConfigElement multipartConfig() {
 			MultipartConfigFactory factory = new MultipartConfigFactory();
-			factory.setMaxFileSize("128KB");
-			factory.setMaxRequestSize("128KB");
+			factory.setMaxFileSize(DataSize.ofKiloBytes(128));
+			factory.setMaxRequestSize(DataSize.ofKiloBytes(128));
 			return factory.createMultipartConfig();
 		}
 

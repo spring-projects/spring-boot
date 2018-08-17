@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
+import java.util.List;
+
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 
@@ -58,14 +60,16 @@ public class RestDocsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public MockMvcRestDocumentationConfigurer restDocsMockMvcConfigurer(
-				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizerProvider,
+				ObjectProvider<List<RestDocsMockMvcConfigurationCustomizer>> configurationCustomizerProvider,
 				RestDocumentationContextProvider contextProvider) {
 			MockMvcRestDocumentationConfigurer configurer = MockMvcRestDocumentation
 					.documentationConfiguration(contextProvider);
-			RestDocsMockMvcConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
+			List<RestDocsMockMvcConfigurationCustomizer> configurationCustomizers = configurationCustomizerProvider
 					.getIfAvailable();
-			if (configurationCustomizer != null) {
-				configurationCustomizer.customize(configurer);
+			if (configurationCustomizers != null) {
+				configurationCustomizers
+						.forEach((configurationCustomizer) -> configurationCustomizer
+								.customize(configurer));
 			}
 			return configurer;
 		}
@@ -90,14 +94,16 @@ public class RestDocsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public RequestSpecification restDocsRestAssuredConfigurer(
-				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizerProvider,
+				ObjectProvider<List<RestDocsRestAssuredConfigurationCustomizer>> configurationCustomizerProvider,
 				RestDocumentationContextProvider contextProvider) {
 			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
 					.documentationConfiguration(contextProvider);
-			RestDocsRestAssuredConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
+			List<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizers = configurationCustomizerProvider
 					.getIfAvailable();
-			if (configurationCustomizer != null) {
-				configurationCustomizer.customize(configurer);
+			if (configurationCustomizers != null) {
+				configurationCustomizers
+						.forEach((configurationCustomizer) -> configurationCustomizer
+								.customize(configurer));
 			}
 			return new RequestSpecBuilder().addFilter(configurer).build();
 		}
@@ -119,14 +125,16 @@ public class RestDocsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public WebTestClientRestDocumentationConfigurer restDocsWebTestClientConfigurer(
-				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizerProvider,
+				ObjectProvider<List<RestDocsWebTestClientConfigurationCustomizer>> configurationCustomizerProvider,
 				RestDocumentationContextProvider contextProvider) {
 			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
 					.documentationConfiguration(contextProvider);
-			RestDocsWebTestClientConfigurationCustomizer configurationCustomizer = configurationCustomizerProvider
+			List<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizers = configurationCustomizerProvider
 					.getIfAvailable();
-			if (configurationCustomizer != null) {
-				configurationCustomizer.customize(configurer);
+			if (configurationCustomizers != null) {
+				configurationCustomizers
+						.forEach((configurationCustomizer) -> configurationCustomizer
+								.customize(configurer));
 			}
 			return configurer;
 		}

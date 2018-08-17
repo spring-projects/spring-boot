@@ -99,6 +99,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new DurationToStringConverter());
 		registry.addConverter(new NumberToDurationConverter());
 		registry.addConverter(new DurationToNumberConverter());
+		registry.addConverter(new StringToDataSizeConverter());
 		registry.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
 	}
 

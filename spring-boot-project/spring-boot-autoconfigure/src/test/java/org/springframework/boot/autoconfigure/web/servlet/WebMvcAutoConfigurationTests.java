@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -36,6 +37,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
@@ -52,6 +54,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -68,6 +71,7 @@ import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.accept.PathExtensionContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -75,6 +79,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -114,6 +119,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Eddú Meléndez
  * @author Kristine Jetzke
+ * @author Artsiom Yudovin
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -472,6 +478,63 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void asyncTaskExecutorWithApplicationTaskExecutor() {
+		this.contextRunner
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(RequestMappingHandlerAdapter.class),
+							"taskExecutor"))
+									.isSameAs(context.getBean("applicationTaskExecutor"));
+				});
+	}
+
+	@Test
+	public void asyncTaskExecutorWithNonMatchApplicationTaskExecutorBean() {
+		this.contextRunner
+				.withUserConfiguration(CustomApplicationTaskExecutorConfig.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean(AsyncTaskExecutor.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(RequestMappingHandlerAdapter.class),
+							"taskExecutor")).isNotSameAs(
+									context.getBean("applicationTaskExecutor"));
+				});
+	}
+
+	@Test
+	public void asyncTaskExecutorWithMvcConfigurerCanOverrideExecutor() {
+		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(RequestMappingHandlerAdapter.class),
+							"taskExecutor"))
+									.isSameAs(context.getBean(
+											CustomAsyncTaskExecutorConfigurer.class).taskExecutor);
+				});
+	}
+
+	@Test
+	public void asyncTaskExecutorWithCustomNonApplicationTaskExecutor() {
+		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
+				.withConfiguration(
+						AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(RequestMappingHandlerAdapter.class),
+							"taskExecutor"))
+									.isNotSameAs(context.getBean("customTaskExecutor"));
+				});
+	}
+
+	@Test
 	public void customMediaTypes() {
 		this.contextRunner
 				.withPropertyValues(
@@ -509,6 +572,20 @@ public class WebMvcAutoConfigurationTests {
 				.withPropertyValues("spring.mvc.formcontent.putfilter.enabled=false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(HttpPutFormContentFilter.class));
+	}
+
+	@Test
+	public void hiddenHttpMethodFilterCanBeDisabled() {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.hiddenmethod.filter.enabled=false")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(HiddenHttpMethodFilter.class));
+	}
+
+	@Test
+	public void hiddenHttpMethodFilterEnabledByDefault() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(HiddenHttpMethodFilter.class));
 	}
 
 	@Test
@@ -1120,6 +1197,38 @@ public class WebMvcAutoConfigurationTests {
 		@Override
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			configurer.favorPathExtension(true);
+		}
+
+	}
+
+	@Configuration
+	static class CustomApplicationTaskExecutorConfig {
+
+		@Bean
+		public Executor applicationTaskExecutor() {
+			return mock(Executor.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomAsyncTaskExecutorConfig {
+
+		@Bean
+		public AsyncTaskExecutor customTaskExecutor() {
+			return mock(AsyncTaskExecutor.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomAsyncTaskExecutorConfigurer implements WebMvcConfigurer {
+
+		private final AsyncTaskExecutor taskExecutor = mock(AsyncTaskExecutor.class);
+
+		@Override
+		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+			configurer.setTaskExecutor(this.taskExecutor);
 		}
 
 	}

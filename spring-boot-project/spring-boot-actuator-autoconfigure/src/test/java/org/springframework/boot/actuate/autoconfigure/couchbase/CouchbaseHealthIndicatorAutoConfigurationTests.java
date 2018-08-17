@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link CouchbaseHealthIndicatorAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class CouchbaseHealthIndicatorAutoConfigurationTests {
 
@@ -48,6 +50,17 @@ public class CouchbaseHealthIndicatorAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(CouchbaseHealthIndicator.class)
 				.doesNotHaveBean(ApplicationHealthIndicator.class));
+	}
+
+	@Test
+	public void runWithCustomTimeoutShouldCreateIndicator() {
+		this.contextRunner.withPropertyValues("management.health.couchbase.timeout=2s")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(CouchbaseHealthIndicator.class);
+					assertThat(ReflectionTestUtils.getField(
+							context.getBean(CouchbaseHealthIndicator.class), "timeout"))
+									.isEqualTo(2000L);
+				});
 	}
 
 	@Test

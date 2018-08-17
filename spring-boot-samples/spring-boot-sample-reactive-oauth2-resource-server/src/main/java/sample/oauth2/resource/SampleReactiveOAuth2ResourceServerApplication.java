@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Language feature annotations.
- */
-package org.springframework.boot.lang;
+package sample.oauth2.resource;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SampleReactiveOAuth2ResourceServerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SampleReactiveOAuth2ResourceServerApplication.class);
+	}
+
+}

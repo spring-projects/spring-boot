@@ -46,9 +46,9 @@ if [[ $RELEASE_TYPE = "RELEASE" ]]; then
 
 	echo "Waiting for artifacts to be published"
 	ARTIFACTS_PUBLISHED=false
-	WAIT_TIME=5
+	WAIT_TIME=10
 	COUNTER=0
-	while [ $ARTIFACTS_PUBLISHED == "false" ] && [ $COUNTER -lt 60 ]; do
+	while [ $ARTIFACTS_PUBLISHED == "false" ] && [ $COUNTER -lt 120 ]; do
 		result=$( curl -s https://api.bintray.com/packages/"${BINTRAY_SUBJECT}"/"${BINTRAY_REPO}"/"${groupId}" )
 		versions=$( echo "$result" | jq -r '.versions' )
 		exists=$( echo "$versions" | grep "$version" -o || true )

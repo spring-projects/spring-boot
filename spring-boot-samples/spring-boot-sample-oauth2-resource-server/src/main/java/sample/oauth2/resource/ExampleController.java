@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package sample.oauth2.resource;
 
-package org.springframework.boot.loader.tools;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+@RestController
+public class ExampleController {
 
-/**
- * Indicates that the annotated element uses unsafe Java calls.
- *
- * @author Phillip Webb
- */
-@Retention(RetentionPolicy.CLASS)
-@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE })
-@Documented
-@interface UsesUnsafeJava {
+	@GetMapping("/")
+	public String index(@AuthenticationPrincipal Jwt jwt) {
+		return String.format("Hello, %s!", jwt.getSubject());
+	}
 
 }

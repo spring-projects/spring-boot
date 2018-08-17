@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
@@ -41,6 +42,7 @@ import org.springframework.data.couchbase.core.CouchbaseOperations;
  * {@link CouchbaseHealthIndicator}.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
 @Configuration
@@ -49,20 +51,32 @@ import org.springframework.data.couchbase.core.CouchbaseOperations;
 @ConditionalOnEnabledHealthIndicator("couchbase")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
 @AutoConfigureAfter(CouchbaseDataAutoConfiguration.class)
+@EnableConfigurationProperties(CouchbaseHealthIndicatorProperties.class)
 public class CouchbaseHealthIndicatorAutoConfiguration extends
 		CompositeHealthIndicatorConfiguration<CouchbaseHealthIndicator, CouchbaseOperations> {
 
 	private final Map<String, CouchbaseOperations> couchbaseOperations;
 
+	private final CouchbaseHealthIndicatorProperties properties;
+
 	public CouchbaseHealthIndicatorAutoConfiguration(
-			Map<String, CouchbaseOperations> couchbaseOperations) {
+			Map<String, CouchbaseOperations> couchbaseOperations,
+			CouchbaseHealthIndicatorProperties properties) {
 		this.couchbaseOperations = couchbaseOperations;
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "couchbaseHealthIndicator")
 	public HealthIndicator couchbaseHealthIndicator() {
 		return createHealthIndicator(this.couchbaseOperations);
+	}
+
+	@Override
+	protected CouchbaseHealthIndicator createHealthIndicator(
+			CouchbaseOperations couchbaseOperations) {
+		return new CouchbaseHealthIndicator(couchbaseOperations,
+				this.properties.getTimeout());
 	}
 
 }

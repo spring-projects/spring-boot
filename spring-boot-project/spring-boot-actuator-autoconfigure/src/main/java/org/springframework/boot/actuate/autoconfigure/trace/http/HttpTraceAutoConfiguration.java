@@ -54,6 +54,7 @@ public class HttpTraceAutoConfiguration {
 		return new HttpExchangeTracer(traceProperties.getInclude());
 	}
 
+	@Configuration
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	static class ServletTraceFilterConfiguration {
 
@@ -66,6 +67,7 @@ public class HttpTraceAutoConfiguration {
 
 	}
 
+	@Configuration
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	static class ReactiveTraceFilterConfiguration {
 
