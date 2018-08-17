@@ -71,6 +71,8 @@ import org.springframework.web.reactive.resource.ResourceResolver;
 import org.springframework.web.reactive.resource.VersionResourceResolver;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
+import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
 /**
@@ -226,8 +228,12 @@ public class WebFluxAutoConfiguration {
 
 		private final WebFluxProperties webFluxProperties;
 
-		public EnableWebFluxConfiguration(WebFluxProperties webFluxProperties) {
+		private final WebFluxRegistrations webFluxRegistrations;
+
+		public EnableWebFluxConfiguration(WebFluxProperties webFluxProperties,
+				ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
 			this.webFluxProperties = webFluxProperties;
+			this.webFluxRegistrations = webFluxRegistrations.getIfUnique();
 		}
 
 		@Bean
@@ -247,6 +253,24 @@ public class WebFluxAutoConfiguration {
 				return super.webFluxValidator();
 			}
 			return ValidatorAdapter.get(getApplicationContext(), getValidator());
+		}
+
+		@Override
+		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
+			if (this.webFluxRegistrations != null && this.webFluxRegistrations
+					.getRequestMappingHandlerAdapter() != null) {
+				return this.webFluxRegistrations.getRequestMappingHandlerAdapter();
+			}
+			return super.createRequestMappingHandlerAdapter();
+		}
+
+		@Override
+		protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
+			if (this.webFluxRegistrations != null && this.webFluxRegistrations
+					.getRequestMappingHandlerMapping() != null) {
+				return this.webFluxRegistrations.getRequestMappingHandlerMapping();
+			}
+			return super.createRequestMappingHandlerMapping();
 		}
 
 	}
