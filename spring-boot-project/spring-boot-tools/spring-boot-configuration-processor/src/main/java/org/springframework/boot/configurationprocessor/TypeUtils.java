@@ -128,16 +128,6 @@ class TypeUtils {
 				|| this.env.getTypeUtils().isAssignable(type, this.mapType);
 	}
 
-	public boolean isEnclosedIn(Element candidate, TypeElement element) {
-		if (candidate == null || element == null) {
-			return false;
-		}
-		if (candidate.equals(element)) {
-			return true;
-		}
-		return isEnclosedIn(candidate.getEnclosingElement(), element);
-	}
-
 	public String getJavaDoc(Element element) {
 		String javadoc = (element != null)
 				? this.env.getElementUtils().getDocComment(element) : null;
