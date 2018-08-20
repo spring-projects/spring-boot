@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  * @since 1.3.0
  */
 public class EntityManagerFactoryBuilder {
@@ -243,7 +244,9 @@ public class EntityManagerFactoryBuilder {
 
 	/**
 	 * A callback for new entity manager factory beans created by a Builder.
+	 * {@link EntityManagerFactoryBeanCallback} will be removed in 2.1.0
 	 */
+	@Deprecated
 	@FunctionalInterface
 	@Deprecated
 	public interface EntityManagerFactoryBeanCallback {
