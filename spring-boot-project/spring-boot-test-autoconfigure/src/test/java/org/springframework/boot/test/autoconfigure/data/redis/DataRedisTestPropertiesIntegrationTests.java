@@ -49,7 +49,7 @@ public class DataRedisTestPropertiesIntegrationTests {
 	private Environment environment;
 
 	@Test
-	public void environmentWitNewProfile() {
+	public void environmentWithNewProfile() {
 		String profile = this.environment.getActiveProfiles()[0];
 		assertThat(profile).isEqualTo("test");
 	}

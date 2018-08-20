@@ -71,7 +71,7 @@ public class JpaRepositoriesAutoConfiguration {
 
 	@Bean
 	@Conditional(BootstrapExecutorCondition.class)
-	public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBoostrapExecutorCustomizer(
+	public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			ObjectProvider<AsyncTaskExecutor> taskExecutor) {
 		return (builder) -> builder.setBootstrapExecutor(taskExecutor.getIfAvailable());
 	}

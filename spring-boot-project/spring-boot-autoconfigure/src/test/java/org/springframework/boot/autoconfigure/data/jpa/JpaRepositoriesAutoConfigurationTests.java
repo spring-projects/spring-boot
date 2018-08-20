@@ -87,7 +87,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenBootstrappingModeIsLazyBoostrapExecutorIsConfigured() {
+	public void whenBootstrappingModeIsLazyBootstrapExecutorIsConfigured() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=lazy")
 				.run((context) -> assertThat(
@@ -96,7 +96,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenBootstrappingModeIsDeferredBoostrapExecutorIsConfigured() {
+	public void whenBootstrappingModeIsDeferredBootstrapExecutorIsConfigured() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues(
 						"spring.data.jpa.repositories.bootstrap-mode=deferred")
@@ -106,7 +106,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenBootstrappingModeIsDefaultBoostrapExecutorIsNotConfigured() {
+	public void whenBootstrappingModeIsDefaultBootstrapExecutorIsNotConfigured() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=default")
 				.run((context) -> assertThat(
