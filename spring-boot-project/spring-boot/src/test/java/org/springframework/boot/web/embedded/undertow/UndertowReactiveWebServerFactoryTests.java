@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,9 +77,7 @@ public class UndertowReactiveWebServerFactoryTests
 		UndertowReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
-		for (int i = 0; i < customizers.length; i++) {
-			customizers[i] = mock(UndertowBuilderCustomizer.class);
-		}
+		Arrays.setAll(customizers, i -> mock(UndertowBuilderCustomizer.class));
 		factory.setBuilderCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addBuilderCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
