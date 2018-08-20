@@ -98,6 +98,7 @@ public class EntityManagerFactoryBuilder {
 	 * An optional callback for new entity manager factory beans.
 	 * @param callback the entity manager factory bean callback
 	 */
+	@Deprecated
 	public void setCallback(EntityManagerFactoryBeanCallback callback) {
 		this.callback = callback;
 	}
@@ -200,6 +201,7 @@ public class EntityManagerFactoryBuilder {
 			return this;
 		}
 
+		@SuppressWarnings("deprecation")
 		public LocalContainerEntityManagerFactoryBean build() {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
@@ -243,6 +245,7 @@ public class EntityManagerFactoryBuilder {
 	 * A callback for new entity manager factory beans created by a Builder.
 	 */
 	@FunctionalInterface
+	@Deprecated
 	public interface EntityManagerFactoryBeanCallback {
 
 		void execute(LocalContainerEntityManagerFactoryBean factory);

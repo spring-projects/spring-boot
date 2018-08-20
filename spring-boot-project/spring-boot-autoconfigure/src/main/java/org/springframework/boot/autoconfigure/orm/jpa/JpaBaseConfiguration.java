@@ -116,6 +116,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@SuppressWarnings("deprecation")
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager) {
@@ -151,6 +152,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
 	}
 
+	@Deprecated
 	protected EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback() {
 		return null;
 	}
