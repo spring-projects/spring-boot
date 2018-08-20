@@ -17,6 +17,7 @@
 package org.springframework.boot.testsupport.web.servlet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -114,9 +115,7 @@ public abstract class MockServletWebServer {
 
 	public Servlet[] getServlets() {
 		Servlet[] servlets = new Servlet[this.registeredServlets.size()];
-		for (int i = 0; i < servlets.length; i++) {
-			servlets[i] = this.registeredServlets.get(i).getServlet();
-		}
+		Arrays.setAll(servlets, (i) -> this.registeredServlets.get(i).getServlet());
 		return servlets;
 	}
 
