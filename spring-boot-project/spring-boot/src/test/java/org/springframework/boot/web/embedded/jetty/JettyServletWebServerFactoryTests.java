@@ -75,9 +75,7 @@ public class JettyServletWebServerFactoryTests
 	public void jettyConfigurations() throws Exception {
 		JettyServletWebServerFactory factory = getFactory();
 		Configuration[] configurations = new Configuration[4];
-		for (int i = 0; i < configurations.length; i++) {
-			configurations[i] = mock(Configuration.class);
-		}
+		Arrays.setAll(configurations, i -> mock(Configuration.class));
 		factory.setConfigurations(Arrays.asList(configurations[0], configurations[1]));
 		factory.addConfigurations(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer();
@@ -91,9 +89,7 @@ public class JettyServletWebServerFactoryTests
 	public void jettyCustomizations() {
 		JettyServletWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
-		for (int i = 0; i < configurations.length; i++) {
-			configurations[i] = mock(JettyServerCustomizer.class);
-		}
+		Arrays.setAll(configurations, i -> mock(JettyServerCustomizer.class));
 		factory.setServerCustomizers(Arrays.asList(configurations[0], configurations[1]));
 		factory.addServerCustomizers(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer();
