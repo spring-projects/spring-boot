@@ -58,8 +58,6 @@ public class EntityManagerFactoryBuilder {
 
 	private AsyncTaskExecutor bootstrapExecutor;
 
-	private EntityManagerFactoryBeanCallback callback;
-
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
@@ -105,15 +103,6 @@ public class EntityManagerFactoryBuilder {
 	 */
 	public void setBootstrapExecutor(AsyncTaskExecutor bootstrapExecutor) {
 		this.bootstrapExecutor = bootstrapExecutor;
-	}
-
-	/**
-	 * An optional callback for new entity manager factory beans.
-	 * @param callback the entity manager factory bean callback
-	 */
-	@Deprecated
-	public void setCallback(EntityManagerFactoryBeanCallback callback) {
-		this.callback = callback;
 	}
 
 	/**
@@ -214,7 +203,6 @@ public class EntityManagerFactoryBuilder {
 			return this;
 		}
 
-		@SuppressWarnings("deprecation")
 		public LocalContainerEntityManagerFactoryBean build() {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
@@ -249,23 +237,8 @@ public class EntityManagerFactoryBuilder {
 				entityManagerFactoryBean.setBootstrapExecutor(
 						EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
-			if (EntityManagerFactoryBuilder.this.callback != null) {
-				EntityManagerFactoryBuilder.this.callback
-						.execute(entityManagerFactoryBean);
-			}
 			return entityManagerFactoryBean;
 		}
-
-	}
-
-	/**
-	 * A callback for new entity manager factory beans created by a Builder.
-	 */
-	@FunctionalInterface
-	@Deprecated
-	public interface EntityManagerFactoryBeanCallback {
-
-		void execute(LocalContainerEntityManagerFactoryBean factory);
 
 	}
 
