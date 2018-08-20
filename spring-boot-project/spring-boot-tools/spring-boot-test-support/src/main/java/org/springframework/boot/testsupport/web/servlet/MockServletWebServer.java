@@ -115,7 +115,7 @@ public abstract class MockServletWebServer {
 
 	public Servlet[] getServlets() {
 		Servlet[] servlets = new Servlet[this.registeredServlets.size()];
-		Arrays.setAll(servlets, i -> this.registeredServlets.get(i).getServlet());
+		Arrays.setAll(servlets, (i) -> this.registeredServlets.get(i).getServlet());
 		return servlets;
 	}
 
