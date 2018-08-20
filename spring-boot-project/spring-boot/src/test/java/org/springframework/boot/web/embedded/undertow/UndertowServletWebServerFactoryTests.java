@@ -102,7 +102,7 @@ public class UndertowServletWebServerFactoryTests
 	public void builderCustomizers() {
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
-		Arrays.setAll(customizers, i -> mock(UndertowBuilderCustomizer.class));
+		Arrays.setAll(customizers, (i) -> mock(UndertowBuilderCustomizer.class));
 		factory.setBuilderCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addBuilderCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer();
@@ -132,7 +132,7 @@ public class UndertowServletWebServerFactoryTests
 	public void deploymentInfo() {
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowDeploymentInfoCustomizer[] customizers = new UndertowDeploymentInfoCustomizer[4];
-		Arrays.setAll(customizers, i -> mock(UndertowDeploymentInfoCustomizer.class));
+		Arrays.setAll(customizers, (i) -> mock(UndertowDeploymentInfoCustomizer.class));
 		factory.setDeploymentInfoCustomizers(
 				Arrays.asList(customizers[0], customizers[1]));
 		factory.addDeploymentInfoCustomizers(customizers[2], customizers[3]);

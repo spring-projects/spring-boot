@@ -55,7 +55,7 @@ public class TomcatReactiveWebServerFactoryTests
 	public void tomcatCustomizers() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer[] listeners = new TomcatContextCustomizer[4];
-		Arrays.setAll(listeners, i -> mock(TomcatContextCustomizer.class));
+		Arrays.setAll(listeners, (i) -> mock(TomcatContextCustomizer.class));
 		factory.setTomcatContextCustomizers(Arrays.asList(listeners[0], listeners[1]));
 		factory.addContextCustomizers(listeners[2], listeners[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
@@ -87,7 +87,7 @@ public class TomcatReactiveWebServerFactoryTests
 	public void tomcatListeners() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		LifecycleListener[] listeners = new LifecycleListener[4];
-		Arrays.setAll(listeners, i -> mock(LifecycleListener.class));
+		Arrays.setAll(listeners, (i) -> mock(LifecycleListener.class));
 		factory.setContextLifecycleListeners(Arrays.asList(listeners[0], listeners[1]));
 		factory.addContextLifecycleListeners(listeners[2], listeners[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
@@ -118,7 +118,7 @@ public class TomcatReactiveWebServerFactoryTests
 		TomcatReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatConnectorCustomizer[] listeners = new TomcatConnectorCustomizer[4];
-		Arrays.setAll(listeners, i -> mock(TomcatConnectorCustomizer.class));
+		Arrays.setAll(listeners, (i) -> mock(TomcatConnectorCustomizer.class));
 		factory.setTomcatConnectorCustomizers(Arrays.asList(listeners[0], listeners[1]));
 		factory.addConnectorCustomizers(listeners[2], listeners[3]);
 		this.webServer = factory.getWebServer(handler);

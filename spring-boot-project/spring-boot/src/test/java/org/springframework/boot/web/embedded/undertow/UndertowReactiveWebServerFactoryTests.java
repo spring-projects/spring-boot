@@ -77,7 +77,7 @@ public class UndertowReactiveWebServerFactoryTests
 		UndertowReactiveWebServerFactory factory = getFactory();
 		HttpHandler handler = mock(HttpHandler.class);
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
-		Arrays.setAll(customizers, i -> mock(UndertowBuilderCustomizer.class));
+		Arrays.setAll(customizers, (i) -> mock(UndertowBuilderCustomizer.class));
 		factory.setBuilderCustomizers(Arrays.asList(customizers[0], customizers[1]));
 		factory.addBuilderCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
