@@ -46,7 +46,7 @@ final class OriginTrackedFieldError extends FieldError implements OriginProvider
 	@Override
 	public String toString() {
 		if (this.origin == null) {
-			return toString();
+			return super.toString();
 		}
 		return super.toString() + "; origin " + this.origin;
 	}
