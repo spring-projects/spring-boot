@@ -124,7 +124,6 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
 				persistenceUnitManager.getIfAvailable());
-		builder.setCallback(getVendorCallback());
 		for (EntityManagerFactoryBuilderCustomizer customizer : customizers
 				.getIfAvailable(Collections::emptyList)) {
 			customizer.customize(builder);
@@ -155,10 +154,6 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	 * @param vendorProperties the vendor properties to customize
 	 */
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
-	}
-
-	protected EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback() {
-		return null;
 	}
 
 	protected String[] getPackagesToScan() {
