@@ -87,7 +87,7 @@ class TypeUtils {
 	private TypeMirror getDeclaredType(Types types, Class<?> typeClass,
 			int numberOfTypeArgs) {
 		TypeMirror[] typeArgs = new TypeMirror[numberOfTypeArgs];
-		Arrays.setAll(typeArgs, i -> types.getWildcardType(null, null));
+		Arrays.setAll(typeArgs, (i) -> types.getWildcardType(null, null));
 		TypeElement typeElement = this.env.getElementUtils()
 				.getTypeElement(typeClass.getName());
 		try {
