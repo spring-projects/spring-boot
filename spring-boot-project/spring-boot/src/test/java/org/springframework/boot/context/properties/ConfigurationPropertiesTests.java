@@ -783,6 +783,26 @@ public class ConfigurationPropertiesTests {
 		load(PersonProperties.class, "test=boot");
 	}
 
+	@Test
+	public void loadWhenConfigurationPropertiesContainsMapWithPositiveAndNegativeIntegerKeys() {
+		// gh-14136
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.map.x.[-1].a", "baz");
+		source.put("test.map.x.1.a", "bar");
+		source.put("test.map.x.1.b", 1);
+		sources.addLast(new MapPropertySource("test", source));
+		load(WithIntegerMapProperties.class);
+		WithIntegerMapProperties bean = this.context
+				.getBean(WithIntegerMapProperties.class);
+		Map<Integer, Foo> x = bean.getMap().get("x");
+		assertThat(x.get(-1).getA()).isEqualTo("baz");
+		assertThat(x.get(-1).getB()).isEqualTo(0);
+		assertThat(x.get(1).getA()).isEqualTo("bar");
+		assertThat(x.get(1).getB()).isEqualTo(1);
+	}
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
 			String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
@@ -1558,6 +1578,22 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class WithIntegerMapProperties {
+
+		private Map<String, Map<Integer, Foo>> map;
+
+		public Map<String, Map<Integer, Foo>> getMap() {
+			return this.map;
+		}
+
+		public void setMap(Map<String, Map<Integer, Foo>> map) {
+			this.map = map;
+		}
+
+	}
+
+	@EnableConfigurationProperties
 	@ConfigurationProperties(prefix = "com.example", ignoreUnknownFields = false)
 	static class SimplePrefixedProperties {
 
@@ -1792,6 +1828,30 @@ public class ConfigurationPropertiesTests {
 		Person(String firstName, String lastName) {
 			this.firstName = firstName;
 			this.lastName = lastName;
+		}
+
+	}
+
+	static class Foo {
+
+		private String a;
+
+		private int b;
+
+		public String getA() {
+			return this.a;
+		}
+
+		public void setA(String a) {
+			this.a = a;
+		}
+
+		public int getB() {
+			return this.b;
+		}
+
+		public void setB(int b) {
+			this.b = b;
 		}
 
 	}
