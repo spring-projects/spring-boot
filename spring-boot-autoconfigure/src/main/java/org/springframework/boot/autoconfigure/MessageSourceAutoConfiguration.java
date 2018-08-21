@@ -86,6 +86,7 @@ public class MessageSourceAutoConfiguration {
 	 */
 	private boolean alwaysUseMessageFormat = false;
 
+	@ConditionalOnMissingBean
 	@Bean
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
