@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.client")
 public class OAuth2ClientProperties {
@@ -60,9 +61,6 @@ public class OAuth2ClientProperties {
 	private void validateRegistration(Registration registration) {
 		if (!StringUtils.hasText(registration.getClientId())) {
 			throw new IllegalStateException("Client id must not be empty.");
-		}
-		if (!StringUtils.hasText(registration.getClientSecret())) {
-			throw new IllegalStateException("Client secret must not be empty.");
 		}
 	}
 
