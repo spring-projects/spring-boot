@@ -779,7 +779,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.jdbc.template.query-timeout= # Query timeout. Default is to use the JDBC driver's default configuration. If a duration suffix is not specified, seconds will be used.
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
-	spring.data.jpa.repositories.boostrap-mode=default # Bootstrap mode for JPA repositories.
+	spring.data.jpa.repositories.bootstrap-mode=default # Bootstrap mode for JPA repositories.
 	spring.data.jpa.repositories.enabled=true # Whether to enable JPA repositories.
 	spring.jpa.database= # Target database to operate on, auto-detected by default. Can be alternatively set using the "databasePlatform" property.
 	spring.jpa.database-platform= # Name of the target database to operate on, auto-detected by default. Can be alternatively set using the "Database" enum.
@@ -988,13 +988,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.artemis.password= # Login password of the broker.
 	spring.artemis.pool.block-if-full=true # Whether to block when a connection is requested and the pool is full. Set it to false to throw a "JMSException" instead.
 	spring.artemis.pool.block-if-full-timeout=-1ms # Blocking period before throwing an exception if the pool is still full.
-	spring.artemis.pool.create-connection-on-startup=true # Whether to create a connection on startup. Can be used to warm up the pool on startup.
 	spring.artemis.pool.enabled=false # Whether a JmsPoolConnectionFactory should be created, instead of a regular ConnectionFactory.
-	spring.artemis.pool.expiry-timeout=0ms # Connection expiration timeout.
 	spring.artemis.pool.idle-timeout=30s # Connection idle timeout.
 	spring.artemis.pool.max-connections=1 # Maximum number of pooled connections.
 	spring.artemis.pool.max-sessions-per-connection=500 # Maximum number of pooled sessions per connection in the pool.
-	spring.artemis.pool.reconnect-on-exception=true # Reset the connection when a "JMSException" occurs.
 	spring.artemis.pool.time-between-expiration-check=-1ms # Time to sleep between runs of the idle connection eviction thread. When negative, no idle connection eviction thread runs.
 	spring.artemis.pool.use-anonymous-producers=true # Whether to use only one anonymous "MessageProducer" instance. Set it to false to create one "MessageProducer" every time one is required.
 	spring.artemis.port=61616 # Artemis broker port.
