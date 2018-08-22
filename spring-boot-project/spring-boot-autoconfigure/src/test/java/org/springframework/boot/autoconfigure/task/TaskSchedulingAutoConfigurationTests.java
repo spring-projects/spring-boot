@@ -54,7 +54,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithNoTakExecutorAutoConfiguresOne() {
+	public void enableSchedulingWithNoTaskExecutorAutoConfiguresOne() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.task.scheduling.thread-name-prefix=scheduling-test-")
@@ -68,7 +68,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithNoTakExecutorAppliesCustomizers() {
+	public void enableSchedulingWithNoTaskExecutorAppliesCustomizers() {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.task.scheduling.thread-name-prefix=scheduling-test-")
@@ -84,7 +84,7 @@ public class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	public void enableSchedulingWithExistingTakSchedulerBacksOff() {
+	public void enableSchedulingWithExistingTaskSchedulerBacksOff() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class,
 				TaskSchedulerConfiguration.class).run((context) -> {
 					assertThat(context).hasSingleBean(TaskScheduler.class);
