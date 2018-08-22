@@ -20,14 +20,17 @@ import javax.net.SocketFactory;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.client.MongoClients;
 import org.junit.Test;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -78,6 +81,17 @@ public class MongoAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void doesNotCreateMongoClientWhenAlreadyDefined() {
+
+		this.contextRunner
+				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
+				.withUserConfiguration(ConfigurationWithClientMongoClient.class)
+				.run((context) -> assertThatExceptionOfType(
+						NoSuchBeanDefinitionException.class)
+								.isThrownBy(() -> context.getBean(MongoClient.class)));
+	}
+
 	@Configuration
 	static class OptionsConfig {
 
@@ -100,6 +114,15 @@ public class MongoAutoConfigurationTests {
 		@Bean
 		public SocketFactory mySocketFactory() {
 			return mock(SocketFactory.class);
+		}
+
+	}
+
+	static class ConfigurationWithClientMongoClient {
+
+		@Bean
+		com.mongodb.client.MongoClient mongoClient() {
+			return MongoClients.create();
 		}
 
 	}
