@@ -53,13 +53,21 @@ public class SampleOAuth2ClientApplicationTests {
 	}
 
 	@Test
-	public void loginShouldHaveBothOAuthClientsToChooseFrom() {
+	public void loginShouldHaveBothOAuth2LoginClientsToChooseFrom() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("/oauth2/authorization/yahoo");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-1");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-2");
+	}
+
+	@Test
+	public void authorizationCodeClientIsPresent() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login",
+				String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("/oauth2/authorization/github-repos");
 	}
 
 }

@@ -7,6 +7,10 @@ org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingL
 org.springframework.context.ApplicationListener=\
 org.springframework.boot.autoconfigure.BackgroundPreinitializer
 
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesEnvironmentPostProcessor
+
 # Auto Configuration Import Listeners
 org.springframework.boot.autoconfigure.AutoConfigurationImportListener=\
 org.springframework.boot.autoconfigure.condition.ConditionEvaluationReportAutoConfigurationImportListener

@@ -33,7 +33,7 @@ public class ReactiveOAuth2ClientRegistrationRepositoryConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
-	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration";
+	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration.login";
 
 	@Test
 	public void clientRegistrationRepositoryBeanShouldNotBeCreatedWhenPropertiesAbsent() {

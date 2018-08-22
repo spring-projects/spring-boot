@@ -37,7 +37,7 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 			.withConfiguration(
 					AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class));
 
-	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration";
+	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration.login";
 
 	@Test
 	public void autoConfigurationShouldImportConfigurations() {

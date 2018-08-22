@@ -3219,42 +3219,66 @@ https://oauth.net/2/[OAuth2] is a widely used authorization framework that is su
 Spring.
 
 
+
 [[boot-features-security-oauth2-client]]
 ==== Client
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of
-some auto-configuration to make it easy to set up an OAuth2 Client. This configuration
-makes use of the properties under `OAuth2ClientProperties`. The same properties are applicable
-for both servlet and reactive applications.
+some auto-configuration to make it easy to set up an OAuth2/Open ID Connect clients. This configuration
+makes use of the properties under `OAuth2ClientProperties`.
 
-You can register multiple OAuth2 clients and providers under the
-`spring.security.oauth2.client` prefix, as shown in the following example:
+You can register multiple OAuth2/OpenID Connect providers under the `spring.security.oauth2.client.provider`
+prefix, as shown in the following example:
 
 [source,properties,indent=0]
 ----
-	spring.security.oauth2.client.registration.my-client-1.client-id=abcd
-	spring.security.oauth2.client.registration.my-client-1.client-secret=password
-	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
-	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
-	spring.security.oauth2.client.registration.my-client-1.scope=user
-	spring.security.oauth2.client.registration.my-client-1.redirect-uri-template=http://my-redirect-uri.com
-	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
-	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
-
-	spring.security.oauth2.client.registration.my-client-2.client-id=abcd
-	spring.security.oauth2.client.registration.my-client-2.client-secret=password
-	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
-	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
-	spring.security.oauth2.client.registration.my-client-2.scope=email
-	spring.security.oauth2.client.registration.my-client-2.redirect-uri-template=http://my-redirect-uri.com
-	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
-	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
-
 	spring.security.oauth2.client.provider.my-oauth-provider.authorization-uri=http://my-auth-server/oauth/authorize
 	spring.security.oauth2.client.provider.my-oauth-provider.token-uri=http://my-auth-server/oauth/token
 	spring.security.oauth2.client.provider.my-oauth-provider.user-info-uri=http://my-auth-server/userinfo
 	spring.security.oauth2.client.provider.my-oauth-provider.user-info-authentication-method=header
 	spring.security.oauth2.client.provider.my-oauth-provider.jwk-set-uri=http://my-auth-server/token_keys
 	spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
+----
+
+For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery],
+the configuration can be further simplified. The provider needs to be configured with an `issuer-uri` which is the
+URI that the it asserts as its Issuer Identifier. For example, if the
+`issuer-uri` provided is "https://example.com", then an `OpenID Provider Configuration Request`
+will be made to "https://example.com/.well-known/openid-configuration". The result is expected
+to be an `OpenID Provider Configuration Response`. The following example shows how an OpenID Connect
+Provider can be configured with the `issuer-uri`:
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.client.provider.oidc-provider.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
+----
+
+
+
+[[boot-features-security-oauth2-login-client-registration]]
+===== OpenID Connect Login client registration
+
+You can register multiple Open ID Connect clients under the
+`spring.security.oauth2.client.registration.login` prefix, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.client.registration.login.my-client-1.client-id=abcd
+	spring.security.oauth2.client.registration.login.my-client-1.client-secret=password
+	spring.security.oauth2.client.registration.login.my-client-1.client-name=Client for user scope
+	spring.security.oauth2.client.registration.login.my-client-1.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.login.my-client-1.scope=user
+	spring.security.oauth2.client.registration.login.my-client-1.redirect-uri-template=http://localhost:8080/login/oauth2/code/my-client-1
+	spring.security.oauth2.client.registration.login.my-client-1.client-authentication-method=basic
+	spring.security.oauth2.client.registration.login.my-client-1.authorization-grant-type=authorization_code
+
+	spring.security.oauth2.client.registration.login.my-client-2.client-id=abcd
+	spring.security.oauth2.client.registration.login.my-client-2.client-secret=password
+	spring.security.oauth2.client.registration.login.my-client-2.client-name=Client for email scope
+	spring.security.oauth2.client.registration.login.my-client-2.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.login.my-client-2.scope=email
+	spring.security.oauth2.client.registration.login.my-client-2.redirect-uri-template=http://localhost:8080/login/oauth2/code/my-client-2
+	spring.security.oauth2.client.registration.login.my-client-2.client-authentication-method=basic
+	spring.security.oauth2.client.registration.login.my-client-2.authorization-grant-type=authorization_code
 ----
 
 By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes URLs
@@ -3280,6 +3304,40 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ----
 
+The same properties are applicable to both servlet and reactive applications.
+
+
+[[boot-features-security-oauth2-authorization-code-client-registration]]
+===== OAuth2 Authorization Code client registration
+
+You can register multiple OAuth2 `authorization_code` clients under the
+`spring.security.oauth2.client.registration.authorization-code` prefix, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.client.registration.authorization-code.my-client-1.client-id=abcd
+	spring.security.oauth2.client.registration.authorization-code.my-client-1.client-secret=password
+	spring.security.oauth2.client.registration.authorization-code.my-client-1.client-name=Client for user scope
+	spring.security.oauth2.client.registration.authorization-code.my-client-1.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.authorization-code.my-client-1.scope=user
+	spring.security.oauth2.client.registration.authorization-code.my-client-1.redirect-uri=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.authorization-code.my-client-1.client-authentication-method=basic
+	spring.security.oauth2.client.registration.authorization-code.my-client-1.authorization-grant-type=authorization_code
+
+	spring.security.oauth2.client.registration.authorization-code.my-client-2.client-id=abcd
+	spring.security.oauth2.client.registration.authorization-code.my-client-2.client-secret=password
+	spring.security.oauth2.client.registration.authorization-code.my-client-2.client-name=Client for email scope
+	spring.security.oauth2.client.registration.authorization-code.my-client-2.provider=my-oauth-provider
+	spring.security.oauth2.client.registration.authorization-code.my-client-2.scope=email
+	spring.security.oauth2.client.registration.authorization-code.my-client-2.redirect-uri=http://my-redirect-uri.com
+	spring.security.oauth2.client.registration.authorization-code.my-client-2.client-authentication-method=basic
+	spring.security.oauth2.client.registration.authorization-code.my-client-2.authorization-grant-type=authorization_code
+----
+
+
+
+[[boot-features-security-oauth2-common-providers]]
+===== OAuth2 client registration for common providers
 For common OAuth2 and OpenID providers, including Google, Github, Facebook, and Okta,
 we provide a set of provider defaults (`google`, `github`, `facebook`, and `okta`,
 respectively).
@@ -3292,27 +3350,12 @@ In other words, the two configurations in the following example use the Google p
 
 [source,properties,indent=0]
 ----
-	spring.security.oauth2.client.registration.my-client.client-id=abcd
-	spring.security.oauth2.client.registration.my-client.client-secret=password
-	spring.security.oauth2.client.registration.my-client.provider=google
+	spring.security.oauth2.client.registration.login.my-client.client-id=abcd
+	spring.security.oauth2.client.registration.login.my-client.client-secret=password
+	spring.security.oauth2.client.registration.login.my-client.provider=google
 
-	spring.security.oauth2.client.registration.google.client-id=abcd
-	spring.security.oauth2.client.registration.google.client-secret=password
-----
-
-For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery],
-the configuration can be further simplified. The provider needs to be configured with an `issuer-uri` which is the
-URI that the it asserts as its Issuer Identifier. For example, if the
-`issuer-uri` provided is "https://example.com", then an `OpenID Provider Configuration Request`
-will be made to "https://example.com/.well-known/openid-configuration". The result is expected
-to be an `OpenID Provider Configuration Response`. The following example shows how an OpenID Connect
-Provider can be configured with the `issuer-uri`:
-
-[source,properties,indent=0]
-----
-	spring.security.oauth2.client.registration.oidc-provider.client-id=abcd
-	spring.security.oauth2.client.registration.oidc-provider.client-secret=password
-	spring.security.oauth2.client.provider.oidc-provider.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
+	spring.security.oauth2.client.registration.login.google.client-id=abcd
+	spring.security.oauth2.client.registration.login.google.client-secret=password
 ----
 
 

@@ -547,6 +547,15 @@
       "defaultValue": "on-save"
     },
     {
+      "name" : "spring.security.oauth2.client.registration",
+      "type" : "java.util.Map<java.lang.String,org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.LoginClientRegistration>",
+      "description" : "Maps client registration-id to a client registration.",
+      "deprecation" : {
+        "replacement" : "spring.security.oauth2.client.registration.login",
+        "level" : "warning"
+      }
+    },
+    {
       "name": "spring.session.servlet.filter-dispatcher-types",
       "defaultValue": [
         "async",
