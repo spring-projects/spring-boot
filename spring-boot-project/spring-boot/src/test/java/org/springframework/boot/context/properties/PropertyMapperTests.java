@@ -120,24 +120,24 @@ public class PropertyMapperTests {
 
 	@Test
 	public void whenTrueWhenValueIsTrueShouldMap() {
-		Boolean result = this.map.from(() -> true).whenTrue().toInstance(Boolean::new);
+		Boolean result = this.map.from(true).whenTrue().toInstance(Boolean::new);
 		assertThat(result).isTrue();
 	}
 
 	@Test
 	public void whenTrueWhenValueIsFalseShouldNotMap() {
-		this.map.from(() -> false).whenTrue().toCall(Assert::fail);
+		this.map.from(false).whenTrue().toCall(Assert::fail);
 	}
 
 	@Test
 	public void whenFalseWhenValueIsFalseShouldMap() {
-		Boolean result = this.map.from(() -> false).whenFalse().toInstance(Boolean::new);
+		Boolean result = this.map.from(false).whenFalse().toInstance(Boolean::new);
 		assertThat(result).isFalse();
 	}
 
 	@Test
 	public void whenFalseWhenValueIsTrueShouldNotMap() {
-		this.map.from(() -> true).whenFalse().toCall(Assert::fail);
+		this.map.from(true).whenFalse().toCall(Assert::fail);
 	}
 
 	@Test
@@ -147,30 +147,29 @@ public class PropertyMapperTests {
 
 	@Test
 	public void whenHasTextWhenValueIsEmptyShouldNotMap() {
-		this.map.from(() -> "").whenHasText().toCall(Assert::fail);
+		this.map.from("").whenHasText().toCall(Assert::fail);
 	}
 
 	@Test
 	public void whenHasTextWhenValueHasTextShouldMap() {
-		Integer result = this.map.from(() -> 123).whenHasText().toInstance(Integer::new);
+		Integer result = this.map.from(123).whenHasText().toInstance(Integer::new);
 		assertThat(result).isEqualTo(123);
 	}
 
 	@Test
 	public void whenEqualToWhenValueIsEqualShouldMatch() {
-		String result = this.map.from(() -> "123").whenEqualTo("123")
-				.toInstance(String::new);
+		String result = this.map.from("123").whenEqualTo("123").toInstance(String::new);
 		assertThat(result).isEqualTo("123");
 	}
 
 	@Test
 	public void whenEqualToWhenValueIsNotEqualShouldNotMatch() {
-		this.map.from(() -> "123").whenEqualTo("321").toCall(Assert::fail);
+		this.map.from("123").whenEqualTo("321").toCall(Assert::fail);
 	}
 
 	@Test
 	public void whenInstanceOfWhenValueIsTargetTypeShouldMatch() {
-		Long result = this.map.from(() -> 123L).whenInstanceOf(Long.class)
+		Long result = this.map.from(123L).whenInstanceOf(Long.class)
 				.toInstance((value) -> value + 1);
 		assertThat(result).isEqualTo(124L);
 	}
@@ -183,14 +182,13 @@ public class PropertyMapperTests {
 
 	@Test
 	public void whenWhenValueMatchesShouldMap() {
-		String result = this.map.from(() -> "123").when("123"::equals)
-				.toInstance(String::new);
+		String result = this.map.from("123").when("123"::equals).toInstance(String::new);
 		assertThat(result).isEqualTo("123");
 	}
 
 	@Test
 	public void whenWhenValueDoesNotMatchShouldNotMap() {
-		this.map.from(() -> "123").when("321"::equals).toCall(Assert::fail);
+		this.map.from("123").when("321"::equals).toCall(Assert::fail);
 	}
 
 	@Test
