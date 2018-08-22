@@ -1290,7 +1290,7 @@ To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equi
 read timeout of 500ms can be specified in any of the following form: `500`, `PT0.5S` and
 `500ms`.
 
-You can also use any of the supported unit. These are:
+You can also use any of the supported units. These are:
 
 * `ns` for nanoseconds
 * `us` for microseconds
@@ -1331,7 +1331,7 @@ include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=exampl
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent. A size threshold
 of 256 bytes can be specified as `256` or `256B`.
 
-You can also use any of the supported unit. These are:
+You can also use any of the supported units. These are:
 
 * `B` for bytes
 * `KB` for kilobytes
