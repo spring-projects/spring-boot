@@ -80,7 +80,7 @@ public class ApplicationHome {
 					return ClassUtils.forName(startClass, getClass().getClassLoader());
 				}
 			}
-			catch (Exception ex) {
+			catch (Throwable ex) {
 			}
 		}
 		return null;
@@ -98,7 +98,7 @@ public class ApplicationHome {
 			}
 			return null;
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 			return null;
 		}
 	}
@@ -112,7 +112,7 @@ public class ApplicationHome {
 				}
 			}
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 		}
 		return false;
 	}
