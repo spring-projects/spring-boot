@@ -317,7 +317,7 @@ public final class EndpointRequest {
 
 		public RequestMatcher antPath(RequestMatcherProvider matcherProvider,
 				String... parts) {
-			StringBuffer pattern = new StringBuffer(this.prefix);
+			StringBuilder pattern = new StringBuilder(this.prefix);
 			for (String part : parts) {
 				pattern.append(part);
 			}
