@@ -92,6 +92,18 @@ public final class PropertyMapper {
 	}
 
 	/**
+	 * Return a new {@link Source} from the specified value that can be used to perform
+	 * the mapping.
+	 * @param <T> the source type
+	 * @param value the value
+	 * @return a {@link Source} that can be used to complete the mapping
+	 * @see #from(Supplier)
+	 */
+	public <T> Source<T> from(T value) {
+		return from(() -> value);
+	}
+
+	/**
 	 * Return a new {@link Source} from the specified value supplier that can be used to
 	 * perform the mapping.
 	 * @param <T> the source type
