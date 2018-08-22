@@ -167,8 +167,8 @@ public class TaskSchedulerBuilder {
 	 */
 	public <T extends ThreadPoolTaskScheduler> T configure(T taskScheduler) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(() -> this.poolSize).to(taskScheduler::setPoolSize);
-		map.from(() -> this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
+		map.from(this.poolSize).to(taskScheduler::setPoolSize);
+		map.from(this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
 
 		if (!CollectionUtils.isEmpty(this.taskSchedulerCustomizers)) {
 			for (TaskSchedulerCustomizer customizer : this.taskSchedulerCustomizers) {
