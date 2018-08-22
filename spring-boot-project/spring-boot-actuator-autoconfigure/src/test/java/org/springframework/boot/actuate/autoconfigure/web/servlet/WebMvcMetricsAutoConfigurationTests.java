@@ -20,37 +20,52 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.Rule;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link WebMvcMetricsAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Dmytro Nosan
  */
 public class WebMvcMetricsAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void backsOffWhenMeterRegistryIsMissing() {
@@ -92,6 +107,37 @@ public class WebMvcMetricsAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void afterMaxUrisReachedFurtherUrisAreDenied() {
+		this.contextRunner
+				.withUserConfiguration(TestController.class,
+						MeterRegistryConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
+				.run((context) -> {
+
+					assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+					Filter filter = context.getBean(FilterRegistrationBean.class)
+							.getFilter();
+					assertThat(filter).isInstanceOf(WebMvcMetricsFilter.class);
+
+					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context)
+							.addFilters(filter).build();
+
+					for (int i = 0; i < 3; i++) {
+						mockMvc.perform(MockMvcRequestBuilders.get("/test" + i))
+								.andExpect(status().isOk());
+					}
+
+					MeterRegistry registry = context.getBean(MeterRegistry.class);
+					assertThat(registry.get("http.server.requests").meters()).hasSize(2);
+					assertThat(this.output.toString())
+							.contains("Reached the maximum number of URI tags "
+									+ "for 'http.server.requests'");
+				});
+	}
+
 	@Configuration
 	static class MeterRegistryConfiguration {
 
@@ -124,6 +170,26 @@ public class WebMvcMetricsAutoConfigurationTests {
 		public Iterable<Tag> getLongRequestTags(HttpServletRequest request,
 				Object handler) {
 			return Collections.emptyList();
+		}
+
+	}
+
+	@RestController
+	static class TestController {
+
+		@GetMapping("test0")
+		public String test0() {
+			return "test0";
+		}
+
+		@GetMapping("test1")
+		public String test1() {
+			return "test1";
+		}
+
+		@GetMapping("test2")
+		public String test2() {
+			return "test2";
 		}
 
 	}

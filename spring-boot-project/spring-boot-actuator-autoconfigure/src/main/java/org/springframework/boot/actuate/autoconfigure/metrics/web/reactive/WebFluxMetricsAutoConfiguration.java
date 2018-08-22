@@ -17,9 +17,11 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
@@ -31,12 +33,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring
  * WebFlux MVC annotation-based programming model request mappings.
  *
  * @author Jon Schneider
+ * @author Dmytro Nosan
  * @since 2.0.0
  */
 @Configuration
@@ -57,6 +61,16 @@ public class WebFluxMetricsAutoConfiguration {
 			WebFluxTagsProvider tagConfigurer, MetricsProperties properties) {
 		return new MetricsWebFilter(registry, tagConfigurer,
 				properties.getWeb().getServer().getRequestsMetricName());
+	}
+
+	@Bean
+	@Order(0)
+	public MeterFilter metricsHttpServerUriTagFilter(MetricsProperties properties) {
+		String metricName = properties.getWeb().getServer().getRequestsMetricName();
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
+				.format("Reached the maximum number of URI tags for '%s'.", metricName));
+		return MeterFilter.maximumAllowableTags(metricName, "uri",
+				properties.getWeb().getServer().getMaxUriTags(), filter);
 	}
 
 }

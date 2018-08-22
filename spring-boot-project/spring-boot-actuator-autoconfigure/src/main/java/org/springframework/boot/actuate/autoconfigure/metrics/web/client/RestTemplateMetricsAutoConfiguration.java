@@ -16,17 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
-import io.micrometer.core.instrument.config.MeterFilterReply;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
@@ -76,43 +71,12 @@ public class RestTemplateMetricsAutoConfiguration {
 	@Order(0)
 	public MeterFilter metricsWebClientUriTagFilter(MetricsProperties properties) {
 		String metricName = properties.getWeb().getClient().getRequestsMetricName();
-		MeterFilter denyFilter = new MaximumUriTagsReachedMeterFilter(metricName);
+		MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String.format(
+				"Reached the maximum number of URI tags for '%s'. "
+						+ "Are you using uriVariables on RestTemplate calls?",
+				metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
 				properties.getWeb().getClient().getMaxUriTags(), denyFilter);
-	}
-
-	/**
-	 * {@link MeterFilter} to deny further URI tags and log a warning.
-	 */
-	private static class MaximumUriTagsReachedMeterFilter implements MeterFilter {
-
-		private final Logger logger = LoggerFactory
-				.getLogger(MaximumUriTagsReachedMeterFilter.class);
-
-		private final String metricName;
-
-		private final AtomicBoolean alreadyWarned = new AtomicBoolean(false);
-
-		MaximumUriTagsReachedMeterFilter(String metricName) {
-			this.metricName = metricName;
-		}
-
-		@Override
-		public MeterFilterReply accept(Id id) {
-			if (this.alreadyWarned.compareAndSet(false, true)) {
-				logWarning();
-			}
-			return MeterFilterReply.DENY;
-		}
-
-		private void logWarning() {
-			if (this.logger.isWarnEnabled()) {
-				this.logger.warn(
-						"Reached the maximum number of URI tags for '" + this.metricName
-								+ "'. Are you using uriVariables on RestTemplate calls?");
-			}
-		}
-
 	}
 
 }
