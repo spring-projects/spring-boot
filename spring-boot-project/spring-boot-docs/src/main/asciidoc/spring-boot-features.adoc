@@ -5785,13 +5785,14 @@ Finally, the most extreme (and rarely used) option is to create your own
 == Calling REST Services with `WebClient`
 If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to
 call remote REST services. Compared to `RestTemplate`, this client has a more functional
-feel and is fully reactive. You can create your own client instance with the builder,
-`WebClient.create()`. See the {spring-reference}web.html#web-reactive-client[relevant
-section on WebClient].
+feel and is fully reactive. You can leanr more about the `WebClient` in the dedicated
+{spring-reference}web-reactive.html#webflux-client[section in the Spring Framework docs].
 
-Spring Boot creates and pre-configures such a builder for you. For example, client HTTP
-codecs are configured in the same fashion as the server ones (see
-<<boot-features-webflux-httpcodecs,WebFlux HTTP codecs auto-configuration>>).
+Spring Boot creates and pre-configures a `WebClient.Builder` for you; it is strongly
+advised to inject it in your components and use it to create `WebClient` instances.
+Spring Boot is configuring that builder to share HTTP resources, reflect codecs
+setup in the same fashion as the server ones (see
+<<boot-features-webflux-httpcodecs,WebFlux HTTP codecs auto-configuration>>), and more.
 
 The following code shows a typical example:
 
@@ -5814,6 +5815,21 @@ The following code shows a typical example:
 	}
 ----
 
+
+[[boot-features-webclient-runtime]]
+=== WebClient Runtime
+
+Spring Boot will auto-detect which `ClientHttpConnector` to drive `WebClient`, depending
+on the libraries available on the application classpath.
+
+Developers can override this choice by defining their own `ClientHttpConnector` bean;
+in this case, and depending on your HTTP client library of choice, you should also
+define a resource factory bean that manages the HTTP resources for that client.
+For example, a `ReactorResourceFactory` bean for the Reactor Netty client.
+
+You can learn more about the
+{spring-reference}web-reactive.html#webflux-client-builder[`WebClient` configuration
+options in the Spring Framework reference documentation].
 
 
 [[boot-features-webclient-customization]]
