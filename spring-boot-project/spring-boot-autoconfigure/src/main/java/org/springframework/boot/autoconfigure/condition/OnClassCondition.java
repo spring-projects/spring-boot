@@ -158,7 +158,7 @@ class OnClassCondition extends SpringBootCondition
 		MultiValueMap<String, Object> attributes = metadata
 				.getAllAnnotationAttributes(annotationType.getName(), true);
 		if (attributes == null) {
-			return Collections.emptyList();
+			return null;
 		}
 		List<String> candidates = new ArrayList<>();
 		addAll(candidates, attributes.get("value"));

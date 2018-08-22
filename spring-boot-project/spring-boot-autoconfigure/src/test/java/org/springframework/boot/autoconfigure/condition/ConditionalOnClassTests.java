@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.Collection;
+
 import org.junit.Test;
 
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -66,6 +68,20 @@ public class ConditionalOnClassTests {
 	public void testOnClassConditionWithCombinedXml() {
 		this.contextRunner.withUserConfiguration(CombinedXmlConfiguration.class)
 				.run(this::hasBarBean);
+	}
+
+	@Test
+	public void onClassConditionOutputShouldNotContainConditionalOnMissingClassInMessage() {
+		this.contextRunner.withUserConfiguration(BasicConfiguration.class)
+				.run((context) -> {
+					Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
+							.get(context.getSourceApplicationContext().getBeanFactory())
+							.getConditionAndOutcomesBySource().values();
+					String message = conditionAndOutcomes.iterator().next().iterator()
+							.next().getOutcome().getMessage();
+					assertThat(message).doesNotContain(
+							"@ConditionalOnMissingClass did not find unwanted class");
+				});
 	}
 
 	private void hasBarBean(AssertableApplicationContext context) {
