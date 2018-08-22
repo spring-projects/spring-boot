@@ -17,7 +17,11 @@
 package org.springframework.boot.autoconfigure.kafka;
 
 import java.io.IOException;
+import java.util.Map;
 
+import org.apache.kafka.streams.StreamsBuilder;
+
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -28,12 +32,17 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
+import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
+import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.core.StreamsBuilderFactoryBean;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
@@ -136,6 +145,59 @@ public class KafkaAutoConfiguration {
 		KafkaAdmin kafkaAdmin = new KafkaAdmin(this.properties.buildAdminProperties());
 		kafkaAdmin.setFatalIfBrokerNotAvailable(this.properties.getAdmin().isFailFast());
 		return kafkaAdmin;
+	}
+
+	@Configuration
+	@ConditionalOnClass(StreamsBuilder.class)
+	public static class KafkaStreamsAutoConfiguration {
+
+		@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
+		public KafkaStreamsConfiguration defaultKafkaStreamsConfig(
+				KafkaProperties properties, Environment environment) {
+
+			Map<String, Object> streamsProperties = properties.buildStreamsProperties();
+			if (properties.getStreams().getApplicationId() == null) {
+				if (environment.getProperty("spring.application.id") != null) {
+					streamsProperties.put("application.id",
+							environment.getProperty("spring.application.name"));
+				}
+			}
+			return new KafkaStreamsConfiguration(streamsProperties);
+		}
+
+		@Bean
+		public KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
+				StreamsBuilderFactoryBean factoryBean, KafkaProperties properties) {
+
+			return new KafkaStreamsFactoryBeanConfigurer(factoryBean, properties);
+		}
+
+		@Configuration
+		@EnableKafkaStreams
+		public static class EnableKafkaStreamsAutoConfiguration {
+
+		}
+
+		static class KafkaStreamsFactoryBeanConfigurer implements InitializingBean {
+
+			private final StreamsBuilderFactoryBean factoryBean;
+
+			private final KafkaProperties properties;
+
+			KafkaStreamsFactoryBeanConfigurer(StreamsBuilderFactoryBean factoryBean,
+					KafkaProperties properties) {
+				this.factoryBean = factoryBean;
+				this.properties = properties;
+			}
+
+			@Override
+			public void afterPropertiesSet() throws Exception {
+				this.factoryBean
+						.setAutoStartup(this.properties.getStreams().isAutoStartup());
+			}
+
+		}
+
 	}
 
 }

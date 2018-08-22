@@ -5634,6 +5634,44 @@ The following component creates a listener endpoint on the `someTopic` topic:
 	}
 ----
 
+[[boot-deatures-kafka-streams]]
+==== Kafka Streams
+
+Spring for Apache Kafka provides a factory bean to create a `StreamsBuilder` object and
+manage the lifecycle of its streams; the factory bean is created when
+`@EnableKafkaStreams` is present on a `@Configuration` class.
+The factory bean requires a `KafkaStreamsConfiguration` object for streams configuration.
+
+If Spring Boot detects the `kafka-streams` jar on the classpath, it will auto-configure
+the `KafkaStreamsConfiguration` bean from the `KafkaProperties` object as well as enabling
+the creation of the factory bean by spring-kafka.
+
+There are two required Kafka properties for streams (`bootstrap.servers` and
+`application.id`); by default, the `application.id` is set to the `spring.application.name`
+property, if present.
+The `bootstrap.servers` can be set globally or specifically overridden just for streams.
+Several other properties are specifically available as boot properties; other arbitrary
+Kafka properties can be set using the `spring.kafka.streams.properties` property.
+See <<boot-features-kafka-extra-props>> for more information.
+
+To use the factory bean, simply wire its `StreamsBuilder` into your `@Bean` s.
+
+====
+[source, java]
+----
+@Bean
+public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {
+	KStream<Integer, String> stream = streamsBuilder.stream("ks1In");
+	stream.map((k, v) -> new KeyValue(k, v.toUpperCase()))
+			.to("ks1Out", Produced.with(Serdes.Integer(), new JsonSerde<>()));
+	return stream;
+}
+----
+====
+
+By default, the factory bean `autoStartup` property is false; to automatically start the
+streams managed by the `StreamsBuilder` object it creates, set property
+`spting.kafka.streams.auto-startup=true`.
 
 
 [[boot-features-kafka-extra-props]]
@@ -5643,13 +5681,14 @@ The properties supported by auto configuration are shown in
 (hyphenated or camelCase) map directly to the Apache Kafka dotted properties. Refer to the
 Apache Kafka documentation for details.
 
-The first few of these properties apply to both producers and consumers but can be
-specified at the producer or consumer level if you wish to use different values for each.
+The first few of these properties apply to all components (producers, consumers, admins,
+and streams) but can be
+specified at the component level if you wish to use different values.
 Apache Kafka designates properties with an importance of HIGH, MEDIUM, or LOW. Spring Boot
 auto-configuration supports all HIGH importance properties, some selected MEDIUM and LOW
 properties, and any properties that do not have a default value.
 
-Only a subset of the properties supported by Kafka are available through the
+Only a subset of the properties supported by Kafka are available directly through the
 `KafkaProperties` class. If you wish to configure the producer or consumer with additional
 properties that are not directly supported, use the following properties:
 
@@ -5659,11 +5698,13 @@ properties that are not directly supported, use the following properties:
 	spring.kafka.admin.properties.prop.two=second
 	spring.kafka.consumer.properties.prop.three=third
 	spring.kafka.producer.properties.prop.four=fourth
+	spring.kafka.streams.properties.prop.five=fifth
 ----
 
 This sets the common `prop.one` Kafka property to `first` (applies to producers,
 consumers and admins), the `prop.two` admin property to `second`, the `prop.three`
-consumer property to `third` and the `prop.four` producer property to `fourth`.
+consumer property to `third`, the `prop.four` producer property to `fourth` and the
+`prop.five` streams property to `fifth`.
 
 You can also configure the Spring Kafka `JsonDeserializer` as follows:
 
