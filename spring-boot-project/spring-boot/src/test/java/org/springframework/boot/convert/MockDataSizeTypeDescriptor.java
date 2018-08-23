@@ -27,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Create a mock {@link TypeDescriptor} with optional {@link DataUnit} annotation.
+ * Create a mock {@link TypeDescriptor} with optional {@link DataSizeUnit} annotation.
  *
  * @author Stephane Nicoll
  */
