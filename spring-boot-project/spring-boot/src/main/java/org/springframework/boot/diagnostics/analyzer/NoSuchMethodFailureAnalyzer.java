@@ -86,9 +86,9 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 
 	private List<URL> findCandidates(String className) {
 		try {
-			return Collections.list((NoSuchMethodFailureAnalyzer.class.getClassLoader()
+			return Collections.list(NoSuchMethodFailureAnalyzer.class.getClassLoader()
 					.getResources(ClassUtils.convertClassNameToResourcePath(className)
-							+ ".class")));
+							+ ".class"));
 		}
 		catch (Throwable ex) {
 			return null;
