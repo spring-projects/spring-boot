@@ -5822,6 +5822,12 @@ The following code shows a typical example:
 Spring Boot will auto-detect which `ClientHttpConnector` to drive `WebClient`, depending
 on the libraries available on the application classpath.
 
+The `spring-boot-starter-webflux` depends on `io.projectreactor.netty:reactor-netty` by
+default, which brings both server and client implementations. If you choose to use Jetty
+as a reactive server instead, you should add a dependency on the Jetty Reactive HTTP
+client library, `org.eclipse.jetty:jetty-reactive-httpclient`, because it will
+automatically share HTTP resources with the server.
+
 Developers can override this choice by defining their own `ClientHttpConnector` bean;
 in this case, and depending on your HTTP client library of choice, you should also
 define a resource factory bean that manages the HTTP resources for that client.

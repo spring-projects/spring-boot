@@ -39,7 +39,8 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @Configuration
 @ConditionalOnClass(WebClient.class)
-@Import({ ClientHttpConnectorConfiguration.ReactorNetty.class })
+@Import({ ClientHttpConnectorConfiguration.ReactorNetty.class,
+		ClientHttpConnectorConfiguration.JettyClient.class })
 public class ClientHttpConnectorAutoConfiguration {
 
 	@Bean

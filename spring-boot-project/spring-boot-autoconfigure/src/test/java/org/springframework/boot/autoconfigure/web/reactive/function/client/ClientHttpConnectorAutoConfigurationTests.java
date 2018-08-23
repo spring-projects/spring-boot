@@ -21,6 +21,9 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -54,6 +57,51 @@ public class ClientHttpConnectorAutoConfigurationTests {
 			verify(builder, times(1))
 					.clientConnector(any(ReactorClientHttpConnector.class));
 		});
+	}
+
+	@Test
+	public void shouldNotOverrideCustomClientConnector() {
+		this.contextRunner.withUserConfiguration(CustomClientHttpConnectorConfig.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ClientHttpConnector.class)
+							.hasBean("customConnector")
+							.doesNotHaveBean(ReactorResourceFactory.class);
+					WebClientCustomizer clientCustomizer = context
+							.getBean(WebClientCustomizer.class);
+					WebClient.Builder builder = mock(WebClient.Builder.class);
+					clientCustomizer.customize(builder);
+					verify(builder, times(1))
+							.clientConnector(any(ClientHttpConnector.class));
+				});
+	}
+
+	@Test
+	public void shouldUseCustomReactorResourceFactory() {
+		this.contextRunner.withUserConfiguration(CustomReactorResourceConfig.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(ReactorClientHttpConnector.class)
+						.hasSingleBean(ReactorResourceFactory.class)
+						.hasBean("customReactorResourceFactory"));
+	}
+
+	@Configuration
+	static class CustomClientHttpConnectorConfig {
+
+		@Bean
+		public ClientHttpConnector customConnector() {
+			return mock(ClientHttpConnector.class);
+		}
+
+	}
+
+	@Configuration
+	static class CustomReactorResourceConfig {
+
+		@Bean
+		public ReactorResourceFactory customReactorResourceFactory() {
+			return new ReactorResourceFactory();
+		}
+
 	}
 
 }
