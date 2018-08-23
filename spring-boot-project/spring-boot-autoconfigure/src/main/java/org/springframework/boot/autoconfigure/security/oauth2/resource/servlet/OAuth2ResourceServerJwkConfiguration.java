@@ -21,12 +21,15 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoderJwkSupport;
 
 /**
- * Configures a {@link JwtDecoder} when a JWK Set URI is available.
+ * Configures a {@link JwtDecoder} when a JWK Set URI is available or Oidc Issuer
+ * Location.
  *
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  */
 @Configuration
 class OAuth2ResourceServerJwkConfiguration {
@@ -40,9 +43,17 @@ class OAuth2ResourceServerJwkConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "spring.security.oauth2.resource.jwt.jwk.set-uri")
 	@ConditionalOnMissingBean
-	public JwtDecoder jwtDecoder() {
+	public JwtDecoder jwtDecoderByUri() {
 		return new NimbusJwtDecoderJwkSupport(
 				this.properties.getJwt().getJwk().getSetUri());
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "spring.security.oauth2.resource.jwt.jwk.oidc-issuer-location")
+	@ConditionalOnMissingBean
+	public JwtDecoder jwtDecoderByOidcIssuerLocation() {
+		return JwtDecoders.fromOidcIssuerLocation(
+				this.properties.getJwt().getJwk().getOidcIssuerLocation());
 	}
 
 }
