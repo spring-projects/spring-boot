@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -94,15 +95,30 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
+	public void testErrorForMachineClientTraceParamTrue() {
+		errorForMachineClientOnTraceParam(() -> createUrl("?trace=true"), true);
+	}
+
+	@Test
+	public void testErrorForMachineClientTraceParamFalse() {
+		errorForMachineClientOnTraceParam(() -> createUrl("?trace=false"), false);
+	}
+
+	@Test
+	public void testErrorForMachineClientTraceParamAbsent() {
+		errorForMachineClientOnTraceParam(() -> createUrl(""), false);
+	}
+
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClientTraceParamStacktrace() {
+	private void errorForMachineClientOnTraceParam(Supplier<String> url,
+			boolean expectedTrace) {
 		load("--server.error.include-exception=true",
 				"--server.error.include-stacktrace=on-trace-param");
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity(createUrl("?trace=true"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(url.get(),
+				Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertThat(entity.getBody().containsKey("trace")).isTrue();
+		assertThat(entity.getBody().containsKey("trace")).isEqualTo(expectedTrace);
 	}
 
 	@Test
