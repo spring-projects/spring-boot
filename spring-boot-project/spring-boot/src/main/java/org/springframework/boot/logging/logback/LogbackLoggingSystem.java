@@ -302,7 +302,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 				return codeSource.getLocation();
 			}
 		}
-		catch (SecurityException ex) {
+		catch (Throwable ex) {
 			// Unable to determine location
 		}
 		return "unknown location";
