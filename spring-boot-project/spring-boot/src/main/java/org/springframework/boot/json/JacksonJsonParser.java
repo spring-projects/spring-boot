@@ -36,6 +36,20 @@ public class JacksonJsonParser extends AbstractJsonParser {
 
 	private ObjectMapper objectMapper; // Late binding
 
+	/**
+	 * Creates a instance with the specified {@link ObjectMapper}.
+	 * @param objectMapper the object mapper to use
+	 */
+	public JacksonJsonParser(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
+	}
+
+	/**
+	 * Creates an instance with a default {@link ObjectMapper} that is created lazily.
+	 */
+	public JacksonJsonParser() {
+	}
+
 	@Override
 	public Map<String, Object> parseMap(String json) {
 		return tryParse(() -> getObjectMapper().readValue(json, MAP_TYPE),

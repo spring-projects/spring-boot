@@ -79,6 +79,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private ApplicationContext context;
 
+	private ObjectMapper objectMapper;
+
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
@@ -94,13 +96,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	private ApplicationConfigurationProperties extract(ApplicationContext context) {
-		ObjectMapper mapper = new ObjectMapper();
-		configureObjectMapper(mapper);
 		Map<String, ContextConfigurationProperties> contextProperties = new HashMap<>();
 		ApplicationContext target = context;
 		while (target != null) {
 			contextProperties.put(target.getId(),
-					describeConfigurationProperties(target, mapper));
+					describeConfigurationProperties(target, getObjectMapper()));
 			target = target.getParent();
 		}
 		return new ApplicationConfigurationProperties(contextProperties);
@@ -177,6 +177,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		applyConfigurationPropertiesFilter(mapper);
 		applySerializationModifier(mapper);
+	}
+
+	private ObjectMapper getObjectMapper() {
+		if (this.objectMapper == null) {
+			this.objectMapper = new ObjectMapper();
+			configureObjectMapper(this.objectMapper);
+		}
+		return this.objectMapper;
 	}
 
 	/**
