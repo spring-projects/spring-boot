@@ -57,6 +57,7 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
+import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.ResourceChainRegistration;
@@ -243,6 +244,11 @@ public class WebFluxAutoConfiguration {
 					this.webFluxProperties.getDateFormat());
 			addFormatters(conversionService);
 			return conversionService;
+		}
+
+		@Override
+		public DispatcherHandler webHandler() {
+			return new SingleContextDispatcherHandler();
 		}
 
 		@Bean
