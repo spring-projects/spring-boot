@@ -49,11 +49,11 @@ class OAuth2ResourceServerJwkConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.security.oauth2.resource.jwt.jwk.oidc-issuer-location")
+	@ConditionalOnProperty(name = "spring.security.oauth2.resource.jwt.oidc-issuer-location")
 	@ConditionalOnMissingBean
 	public JwtDecoder jwtDecoderByOidcIssuerLocation() {
-		return JwtDecoders.fromOidcIssuerLocation(
-				this.properties.getJwt().getJwk().getOidcIssuerLocation());
+		return JwtDecoders
+				.fromOidcIssuerLocation(this.properties.getJwt().getOidcIssuerLocation());
 	}
 
 }

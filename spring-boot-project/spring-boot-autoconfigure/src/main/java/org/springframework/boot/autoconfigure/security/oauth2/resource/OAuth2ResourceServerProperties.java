@@ -37,8 +37,21 @@ public class OAuth2ResourceServerProperties {
 
 		private final Jwk jwk = new Jwk();
 
+		/**
+		 * Oidc issuer location.
+		 */
+		private String oidcIssuerLocation;
+
 		public Jwk getJwk() {
 			return this.jwk;
+		}
+
+		public String getOidcIssuerLocation() {
+			return this.oidcIssuerLocation;
+		}
+
+		public void setOidcIssuerLocation(String oidcIssuerLocation) {
+			this.oidcIssuerLocation = oidcIssuerLocation;
 		}
 
 	}
@@ -50,25 +63,12 @@ public class OAuth2ResourceServerProperties {
 		 */
 		private String setUri;
 
-		/**
-		 * Oidc issuer location.
-		 */
-		private String oidcIssuerLocation;
-
 		public String getSetUri() {
 			return this.setUri;
 		}
 
 		public void setSetUri(String setUri) {
 			this.setUri = setUri;
-		}
-
-		public String getOidcIssuerLocation() {
-			return this.oidcIssuerLocation;
-		}
-
-		public void setOidcIssuerLocation(String oidcIssuerLocation) {
-			this.oidcIssuerLocation = oidcIssuerLocation;
 		}
 
 	}
