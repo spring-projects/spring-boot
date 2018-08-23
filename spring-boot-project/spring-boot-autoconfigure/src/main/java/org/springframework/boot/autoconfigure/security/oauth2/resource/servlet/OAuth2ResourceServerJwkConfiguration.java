@@ -38,11 +38,10 @@ class OAuth2ResourceServerJwkConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.security.oauth2.resource.jwt.jwk.set-uri")
+	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 	@ConditionalOnMissingBean
 	public JwtDecoder jwtDecoder() {
-		return new NimbusJwtDecoderJwkSupport(
-				this.properties.getJwt().getJwk().getSetUri());
+		return new NimbusJwtDecoderJwkSupport(this.properties.getJwt().getJwkSetUri());
 	}
 
 }

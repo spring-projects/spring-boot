@@ -538,7 +538,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.security.oauth2.client.registration.*= # OAuth client registrations.
 
 	# SECURITY OAUTH2 RESOURCE SERVER ({sc-spring-boot-autoconfigure}/security/oauth2/resource/OAuth2ResourceServerProperties.{sc-ext}[OAuth2ResourceServerProperties])
-	spring.security.oauth2.resource.jwt.jwk.set-uri= # JSON Web Key URI to use to verify the JWT token.
+	spring.security.oauth2.resourceserver.jwt.jwk-set-uri= # JSON Web Key URI to use to verify the JWT token.
 
 	# ----------------------------------------
 	# DATA PROPERTIES

@@ -1,8 +1,7 @@
 spring:
   security:
     oauth2:
-      resource:
+      resourceserver:
         jwt:
-          jwk:
           # To run the application, replace this with a valid JWK Set URI
-            set-uri: https://example.com/oauth2/default/v1/keys
+          jwk-set-uri: https://example.com/oauth2/default/v1/keys

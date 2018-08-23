@@ -3324,7 +3324,7 @@ following example:
 
 [source,properties,indent=0]
 ----
-	spring.security.oauth2.resource.jwt.jwk.set-uri=https://example.com/oauth2/default/v1/keys
+	spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://example.com/oauth2/default/v1/keys
 ----
 
 The same properties are applicable for both servlet and reactive applications.
