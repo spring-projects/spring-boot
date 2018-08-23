@@ -28,8 +28,6 @@ import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
-import org.springframework.boot.test.context.assertj.ApplicationContextAssert;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
@@ -46,7 +44,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
-import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
@@ -401,26 +398,6 @@ public class WebFluxAutoConfigurationTests {
 				});
 	}
 
-	@Test
-	public void shouldNotGetHandlerMappingsFromParentContext() {
-		ApplicationContextRunner parentRunner = new ApplicationContextRunner()
-				.withUserConfiguration(CustomHandlerMapping.class);
-		parentRunner.run((parent) -> {
-			this.contextRunner.withParent(parent).run((context) -> {
-				assertThat(parent).hasSingleBean(HandlerMapping.class);
-				assertThat(context).getBeans(HandlerMapping.class).hasSize(4);
-				assertThat(context)
-						.getBeans(HandlerMapping.class,
-								ApplicationContextAssert.Scope.NO_ANCESTORS)
-						.doesNotContainKey("customHandlerMapping");
-				assertThat(context).hasSingleBean(DispatcherHandler.class);
-				DispatcherHandler dispatcherHandler = context
-						.getBean(DispatcherHandler.class);
-				assertThat(dispatcherHandler.getHandlerMappings()).hasSize(3);
-			});
-		});
-	}
-
 	@Configuration
 	protected static class CustomArgumentResolvers {
 
@@ -584,16 +561,6 @@ public class WebFluxAutoConfigurationTests {
 
 	private static class MyRequestMappingHandlerMapping
 			extends RequestMappingHandlerMapping {
-
-	}
-
-	@Configuration
-	static class CustomHandlerMapping {
-
-		@Bean
-		public HandlerMapping customHandlerMapping() {
-			return mock(HandlerMapping.class);
-		}
 
 	}
 
