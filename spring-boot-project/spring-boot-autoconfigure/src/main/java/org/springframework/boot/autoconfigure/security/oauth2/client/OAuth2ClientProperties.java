@@ -204,6 +204,11 @@ public class OAuth2ClientProperties {
 		private String userNameAttribute;
 
 		/**
+		 * Authentication method for the provider
+		 */
+		private String authenticationMethod;
+
+		/**
 		 * JWK set URI for the provider.
 		 */
 		private String jwkSetUri;
@@ -243,6 +248,14 @@ public class OAuth2ClientProperties {
 
 		public void setUserNameAttribute(String userNameAttribute) {
 			this.userNameAttribute = userNameAttribute;
+		}
+
+		public String getAuthenticationMethod() {
+			return authenticationMethod;
+		}
+
+		public void setAuthenticationMethod(String authenticationMethod) {
+			this.authenticationMethod = authenticationMethod;
 		}
 
 		public String getJwkSetUri() {
