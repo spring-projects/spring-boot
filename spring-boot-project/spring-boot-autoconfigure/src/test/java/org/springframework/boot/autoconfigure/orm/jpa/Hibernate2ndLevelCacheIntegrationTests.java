@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory;
+import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,13 +32,13 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for Hibernate 2nd level cache with ehcache2.
+ * Tests for Hibernate 2nd level cache with jcache.
  *
  * @author Stephane Nicoll
  */
 @RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions("ehcache-3*.jar")
-public class Hibernate2ndLevelCacheEhCacheIntegrationTests {
+@ClassPathExclusions("ehcache-2*.jar")
+public class Hibernate2ndLevelCacheIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class,
@@ -48,11 +48,15 @@ public class Hibernate2ndLevelCacheEhCacheIntegrationTests {
 			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
-	public void hibernate2ndLevelCacheWithEhCache2() {
-		this.contextRunner
-				.withPropertyValues("spring.cache.type=ehcache",
-						"spring.jpa.properties.hibernate.cache.region.factory_class="
-								+ SingletonEhCacheRegionFactory.class.getName())
+	public void hibernate2ndLevelCacheWithJCacheAndEhCache3() {
+		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
+		String configLocation = "ehcache3.xml";
+		this.contextRunner.withPropertyValues("spring.cache.type=jcache",
+				"spring.cache.jcache.provider=" + cachingProviderFqn,
+				"spring.cache.jcache.config=" + configLocation,
+				"spring.jpa.properties.hibernate.cache.region.factory_class=jcache",
+				"spring.jpa.properties.hibernate.cache.provider=" + cachingProviderFqn,
+				"spring.jpa.properties.hibernate.javax.cache.uri=" + configLocation)
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
