@@ -35,7 +35,9 @@ import javax.transaction.UserTransaction;
 import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -52,6 +54,8 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -148,13 +152,7 @@ public class HibernateJpaAutoConfigurationTests
 	public void jtaDefaultPlatform() {
 		contextRunner()
 				.withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
-				.run((context) -> {
-					Map<String, Object> jpaPropertyMap = context
-							.getBean(LocalContainerEntityManagerFactoryBean.class)
-							.getJpaPropertyMap();
-					assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"))
-							.isInstanceOf(SpringJtaPlatform.class);
-				});
+				.run(assertJtaPlatform(SpringJtaPlatform.class));
 	}
 
 	@Test
@@ -164,14 +162,23 @@ public class HibernateJpaAutoConfigurationTests
 						"spring.jpa.properties.hibernate.transaction.jta.platform:"
 								+ TestJtaPlatform.class.getName())
 				.withConfiguration(AutoConfigurations.of(JtaAutoConfiguration.class))
-				.run((context) -> {
-					Map<String, Object> jpaPropertyMap = context
-							.getBean(LocalContainerEntityManagerFactoryBean.class)
-							.getJpaPropertyMap();
-					assertThat((String) jpaPropertyMap
-							.get("hibernate.transaction.jta.platform"))
-									.isEqualTo(TestJtaPlatform.class.getName());
-				});
+				.run(assertJtaPlatform(TestJtaPlatform.class));
+	}
+
+	@Test
+	public void jtaNotUsedByTheApplication() {
+		contextRunner().run(assertJtaPlatform(NoJtaPlatform.class));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertJtaPlatform(
+			Class<? extends JtaPlatform> expectedType) {
+		return (context) -> {
+			SessionFactoryImpl sessionFactory = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class)
+					.getNativeEntityManagerFactory().unwrap(SessionFactoryImpl.class);
+			assertThat(sessionFactory.getServiceRegistry().getService(JtaPlatform.class))
+					.isInstanceOf(expectedType);
+		};
 	}
 
 	@Test
