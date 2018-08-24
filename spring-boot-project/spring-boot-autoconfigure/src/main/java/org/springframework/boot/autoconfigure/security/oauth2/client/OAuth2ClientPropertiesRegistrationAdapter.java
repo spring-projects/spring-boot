@@ -28,6 +28,7 @@ import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrations;
+import org.springframework.security.oauth2.core.AuthenticationMethod;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.util.StringUtils;
@@ -39,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Thiago Hirata
  * @author Madhura Bhave
+ * @author MyeongHyeon Lee
  * @since 2.1.0
  */
 public final class OAuth2ClientPropertiesRegistrationAdapter {
@@ -131,6 +133,8 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		map.from(provider::getAuthorizationUri).to(builder::authorizationUri);
 		map.from(provider::getTokenUri).to(builder::tokenUri);
 		map.from(provider::getUserInfoUri).to(builder::userInfoUri);
+		map.from(provider::getUserInfoAuthenticationMethod).as(AuthenticationMethod::new)
+				.to(builder::userInfoAuthenticationMethod);
 		map.from(provider::getJwkSetUri).to(builder::jwkSetUri);
 		map.from(provider::getUserNameAttribute).to(builder::userNameAttributeName);
 		return builder;
