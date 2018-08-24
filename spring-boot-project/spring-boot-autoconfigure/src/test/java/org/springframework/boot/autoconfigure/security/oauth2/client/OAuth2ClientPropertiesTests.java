@@ -45,7 +45,7 @@ public class OAuth2ClientPropertiesTests {
 	}
 
 	@Test
-	public void clientSecretAbsentNotThrowsException() {
+	public void clientSecretAbsentShouldNotThrowException() {
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setClientId("foo");
 		registration.setProvider("google");
