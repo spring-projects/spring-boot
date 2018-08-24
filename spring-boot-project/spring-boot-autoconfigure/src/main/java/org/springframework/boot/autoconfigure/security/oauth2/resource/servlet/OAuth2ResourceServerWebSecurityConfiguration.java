@@ -37,8 +37,8 @@ class OAuth2ResourceServerWebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated().and().oauth2()
-					.resourceServer().jwt();
+			http.authorizeRequests().anyRequest().authenticated().and()
+					.oauth2ResourceServer().jwt();
 		}
 
 	}

@@ -42,8 +42,8 @@ class ReactiveOAuth2ResourceServerWebSecurityConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-		http.authorizeExchange().anyExchange().authenticated().and().oauth2()
-				.resourceServer().jwt().jwtDecoder(this.jwtDecoder);
+		http.authorizeExchange().anyExchange().authenticated().and()
+				.oauth2ResourceServer().jwt().jwtDecoder(this.jwtDecoder);
 		return http.build();
 	}
 

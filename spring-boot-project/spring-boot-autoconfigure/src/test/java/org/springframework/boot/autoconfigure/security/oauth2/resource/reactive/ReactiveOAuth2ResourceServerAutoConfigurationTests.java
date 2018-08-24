@@ -146,7 +146,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		SecurityWebFilterChain testSpringSecurityFilterChain(ServerHttpSecurity http,
 				ReactiveJwtDecoder decoder) {
 			http.authorizeExchange().pathMatchers("/message/**").hasRole("ADMIN")
-					.anyExchange().authenticated().and().oauth2().resourceServer().jwt()
+					.anyExchange().authenticated().and().oauth2ResourceServer().jwt()
 					.jwtDecoder(decoder);
 			return http.build();
 		}
