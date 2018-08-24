@@ -41,9 +41,9 @@ public class OAuth2ResourceServerProperties {
 		private String jwkSetUri;
 
 		/**
-		 * Oidc issuer location.
+		 * URI that an OpenID Connect Provider asserts as its Issuer Identifier.
 		 */
-		private String oidcIssuerLocation;
+		private String issuerUri;
 
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
@@ -53,12 +53,12 @@ public class OAuth2ResourceServerProperties {
 			this.jwkSetUri = jwkSetUri;
 		}
 
-		public String getOidcIssuerLocation() {
-			return this.oidcIssuerLocation;
+		public String getIssuerUri() {
+			return this.issuerUri;
 		}
 
-		public void setOidcIssuerLocation(String oidcIssuerLocation) {
-			this.oidcIssuerLocation = oidcIssuerLocation;
+		public void setIssuerUri(String issuerUri) {
+			this.issuerUri = issuerUri;
 		}
 
 	}

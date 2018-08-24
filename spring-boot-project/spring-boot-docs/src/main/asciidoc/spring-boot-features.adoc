@@ -3320,12 +3320,17 @@ Provider can be configured with the `issuer-uri`:
 [[boot-features-security-oauth2-server]]
 ==== Resource Server
 If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can
-set up an OAuth2 Resource Server as long as a JWK Set URI is specified, as shown in the
-following example:
+set up an OAuth2 Resource Server as long as a JWK Set URI or OIDC Issuer URI is specified,
+as shown in the following examples:
 
 [source,properties,indent=0]
 ----
 	spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://example.com/oauth2/default/v1/keys
+----
+
+[source,properties,indent=0]
+----
+	spring.security.oauth2.resourceserver.jwt.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
 ----
 
 The same properties are applicable for both servlet and reactive applications.

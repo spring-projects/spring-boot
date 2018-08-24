@@ -539,7 +539,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SECURITY OAUTH2 RESOURCE SERVER ({sc-spring-boot-autoconfigure}/security/oauth2/resource/OAuth2ResourceServerProperties.{sc-ext}[OAuth2ResourceServerProperties])
 	spring.security.oauth2.resourceserver.jwt.jwk-set-uri= # JSON Web Key URI to use to verify the JWT token.
-    spring.security.oauth2.resource.jwt.oidc-issuer-location= # Location for issuer oidc
+    spring.security.oauth2.resource.jwt.issuer-uri= # URI that an OpenID Connect Provider asserts as its Issuer Identifier.
 
 	# ----------------------------------------
 	# DATA PROPERTIES
