@@ -2055,7 +2055,7 @@ converters. You can also override default converters in the same way.
 ==== Custom JSON Serializers and Deserializers
 If you use Jackson to serialize and deserialize JSON data, you might want to write your
 own `JsonSerializer` and `JsonDeserializer` classes. Custom serializers are usually
-http://wiki.fasterxml.com/JacksonHowToCustomDeserializers[registered with Jackson through
+https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through
 a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes
 it easier to directly register Spring Beans.
 

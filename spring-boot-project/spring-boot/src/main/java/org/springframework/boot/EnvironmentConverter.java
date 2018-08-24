@@ -125,10 +125,8 @@ final class EnvironmentConverter {
 			names.add(propertySource.getName());
 		}
 		for (String name : names) {
-			if (!isServletEnvironment) {
-				propertySources.remove(name);
-			}
-			else if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(name)) {
+			if (!isServletEnvironment
+					|| !SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(name)) {
 				propertySources.remove(name);
 			}
 		}

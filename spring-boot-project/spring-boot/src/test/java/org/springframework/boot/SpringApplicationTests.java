@@ -1124,9 +1124,9 @@ public class SpringApplicationTests {
 	public void webApplicationConfiguredViaAPropertyHasTheCorrectTypeOfContextAndEnvironment() {
 		ConfigurableApplicationContext context = new SpringApplication(
 				ExampleWebConfig.class).run("--spring.main.web-application-type=servlet");
-		assertThat(context).isInstanceOfAny(WebApplicationContext.class);
+		assertThat(context).isInstanceOf(WebApplicationContext.class);
 		assertThat(context.getEnvironment())
-				.isInstanceOfAny(StandardServletEnvironment.class);
+				.isInstanceOf(StandardServletEnvironment.class);
 	}
 
 	@Test
@@ -1134,9 +1134,9 @@ public class SpringApplicationTests {
 		ConfigurableApplicationContext context = new SpringApplication(
 				ExampleReactiveWebConfig.class)
 						.run("--spring.main.web-application-type=reactive");
-		assertThat(context).isInstanceOfAny(ReactiveWebApplicationContext.class);
+		assertThat(context).isInstanceOf(ReactiveWebApplicationContext.class);
 		assertThat(context.getEnvironment())
-				.isInstanceOfAny(StandardReactiveWebEnvironment.class);
+				.isInstanceOf(StandardReactiveWebEnvironment.class);
 	}
 
 	@Test
@@ -1144,9 +1144,9 @@ public class SpringApplicationTests {
 		ConfigurableApplicationContext context = new SpringApplication(
 				ExampleReactiveWebConfig.class)
 						.run("--spring.profiles.active=withwebapplicationtype");
-		assertThat(context).isInstanceOfAny(ReactiveWebApplicationContext.class);
+		assertThat(context).isInstanceOf(ReactiveWebApplicationContext.class);
 		assertThat(context.getEnvironment())
-				.isInstanceOfAny(StandardReactiveWebEnvironment.class);
+				.isInstanceOf(StandardReactiveWebEnvironment.class);
 	}
 
 	@Test
