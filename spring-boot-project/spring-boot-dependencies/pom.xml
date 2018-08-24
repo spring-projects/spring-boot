@@ -104,6 +104,7 @@
 		<jetty.version>9.4.11.v20180605</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.5.24.2</jetty-el.version>
+		<jetty-reactive-httpclient.version>1.0.1</jetty-reactive-httpclient.version>
 		<jmustache.version>1.14</jmustache.version>
 		<jna.version>4.5.2</jna.version>
 		<joda-time.version>2.10</joda-time.version>
@@ -1755,6 +1756,11 @@
 				<version>${jetty.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-reactive-httpclient</artifactId>
+				<version>${jetty-reactive-httpclient.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty.orbit</groupId>

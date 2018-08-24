@@ -50,13 +50,13 @@ public class SampleReactiveOAuth2ResourceServerApplicationTests {
 		server.start();
 		String url = server.url("/.well-known/jwks.json").toString();
 		server.enqueue(mockResponse());
-		System.setProperty("spring.security.oauth2.resource.jwt.jwk.set-uri", url);
+		System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", url);
 	}
 
 	@AfterClass
 	public static void shutdown() throws Exception {
 		server.shutdown();
-		System.clearProperty("spring.security.oauth2.resource.jwt.jwk.set-uri");
+		System.clearProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri");
 	}
 
 	@Test

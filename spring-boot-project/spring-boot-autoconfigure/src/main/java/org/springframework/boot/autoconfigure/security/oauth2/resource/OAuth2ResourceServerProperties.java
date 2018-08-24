@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Artsiom Yudovin
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "spring.security.oauth2.resource")
+@ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
 public class OAuth2ResourceServerProperties {
 
 	private final Jwt jwt = new Jwt();
@@ -35,15 +35,22 @@ public class OAuth2ResourceServerProperties {
 
 	public static class Jwt {
 
-		private final Jwk jwk = new Jwk();
+		/**
+		 * JSON Web Key URI to use to verify the JWT token.
+		 */
+		private String jwkSetUri;
 
 		/**
 		 * Oidc issuer location.
 		 */
 		private String oidcIssuerLocation;
 
-		public Jwk getJwk() {
-			return this.jwk;
+		public String getJwkSetUri() {
+			return this.jwkSetUri;
+		}
+
+		public void setJwkSetUri(String jwkSetUri) {
+			this.jwkSetUri = jwkSetUri;
 		}
 
 		public String getOidcIssuerLocation() {
@@ -52,23 +59,6 @@ public class OAuth2ResourceServerProperties {
 
 		public void setOidcIssuerLocation(String oidcIssuerLocation) {
 			this.oidcIssuerLocation = oidcIssuerLocation;
-		}
-
-	}
-
-	public static class Jwk {
-
-		/**
-		 * JSON Web Key URI to use to verify the JWT token.
-		 */
-		private String setUri;
-
-		public String getSetUri() {
-			return this.setUri;
-		}
-
-		public void setSetUri(String setUri) {
-			this.setUri = setUri;
 		}
 
 	}

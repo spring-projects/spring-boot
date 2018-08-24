@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -74,14 +75,6 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private static final String[] NO_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.NoJtaPlatform" };
-
-	/**
-	 * {@code WebSphereExtendedJtaPlatform} implementations for various Hibernate
-	 * versions.
-	 */
-	private static final String[] WEBSPHERE_JTA_PLATFORM_CLASSES = {
-			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
-			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform" };
 
 	private final HibernateProperties hibernateProperties;
 
@@ -157,19 +150,14 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private void configureJtaPlatform(Map<String, Object> vendorProperties)
 			throws LinkageError {
 		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
-		if (jtaTransactionManager != null) {
-			if (runningOnWebSphere()) {
-				// We can never use SpringJtaPlatform on WebSphere as
-				// WebSphereUowTransactionManager has a null TransactionManager
-				// which will cause Hibernate to NPE
-				configureWebSphereTransactionPlatform(vendorProperties);
-			}
-			else {
-				configureSpringJtaPlatform(vendorProperties, jtaTransactionManager);
-			}
-		}
-		else {
+		// Make sure Hibernate doesn't attempt to auto-detect a JTA platform
+		if (jtaTransactionManager == null) {
 			vendorProperties.put(JTA_PLATFORM, getNoJtaPlatformManager());
+		}
+		// As of Hibernate 5.2, Hibernate can fully integrate with the WebSphere
+		// transaction manager on its own.
+		else if (!runningOnWebSphere()) {
+			configureSpringJtaPlatform(vendorProperties, jtaTransactionManager);
 		}
 	}
 
@@ -191,15 +179,6 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		return ClassUtils.isPresent(
 				"com.ibm.websphere.jtaextensions.ExtendedJTATransaction",
 				getClass().getClassLoader());
-	}
-
-	private void configureWebSphereTransactionPlatform(
-			Map<String, Object> vendorProperties) {
-		vendorProperties.put(JTA_PLATFORM, getWebSphereJtaPlatformManager());
-	}
-
-	private Object getWebSphereJtaPlatformManager() {
-		return getJtaPlatformManager(WEBSPHERE_JTA_PLATFORM_CLASSES);
 	}
 
 	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
@@ -233,11 +212,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	}
 
 	private Object getNoJtaPlatformManager() {
-		return getJtaPlatformManager(NO_JTA_PLATFORM_CLASSES);
-	}
-
-	private Object getJtaPlatformManager(String[] candidates) {
-		for (String candidate : candidates) {
+		for (String candidate : NO_JTA_PLATFORM_CLASSES) {
 			try {
 				return Class.forName(candidate).newInstance();
 			}
@@ -245,7 +220,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				// Continue searching
 			}
 		}
-		throw new IllegalStateException("Could not configure JTA platform");
+		throw new IllegalStateException("No available JtaPlatform candidates amongst"
+				+ Arrays.toString(NO_JTA_PLATFORM_CLASSES));
 	}
 
 	private static class NamingStrategiesHibernatePropertiesCustomizer

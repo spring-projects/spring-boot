@@ -39,11 +39,10 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.security.oauth2.resource.jwt.jwk.set-uri")
+	@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 	@ConditionalOnMissingBean
 	public ReactiveJwtDecoder jwtDecoder() {
-		return new NimbusReactiveJwtDecoder(
-				this.properties.getJwt().getJwk().getSetUri());
+		return new NimbusReactiveJwtDecoder(this.properties.getJwt().getJwkSetUri());
 	}
 
 }

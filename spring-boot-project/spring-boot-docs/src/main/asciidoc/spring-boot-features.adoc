@@ -1290,7 +1290,7 @@ To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equi
 read timeout of 500ms can be specified in any of the following form: `500`, `PT0.5S` and
 `500ms`.
 
-You can also use any of the supported unit. These are:
+You can also use any of the supported units. These are:
 
 * `ns` for nanoseconds
 * `us` for microseconds
@@ -1331,7 +1331,7 @@ include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=exampl
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent. A size threshold
 of 256 bytes can be specified as `256` or `256B`.
 
-You can also use any of the supported unit. These are:
+You can also use any of the supported units. These are:
 
 * `B` for bytes
 * `KB` for kilobytes
@@ -3324,7 +3324,7 @@ following example:
 
 [source,properties,indent=0]
 ----
-	spring.security.oauth2.resource.jwt.jwk.set-uri=https://example.com/oauth2/default/v1/keys
+	spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://example.com/oauth2/default/v1/keys
 ----
 
 The same properties are applicable for both servlet and reactive applications.
@@ -5821,6 +5821,12 @@ The following code shows a typical example:
 
 Spring Boot will auto-detect which `ClientHttpConnector` to drive `WebClient`, depending
 on the libraries available on the application classpath.
+
+The `spring-boot-starter-webflux` depends on `io.projectreactor.netty:reactor-netty` by
+default, which brings both server and client implementations. If you choose to use Jetty
+as a reactive server instead, you should add a dependency on the Jetty Reactive HTTP
+client library, `org.eclipse.jetty:jetty-reactive-httpclient`, because it will
+automatically share HTTP resources with the server.
 
 Developers can override this choice by defining their own `ClientHttpConnector` bean;
 in this case, and depending on your HTTP client library of choice, you should also

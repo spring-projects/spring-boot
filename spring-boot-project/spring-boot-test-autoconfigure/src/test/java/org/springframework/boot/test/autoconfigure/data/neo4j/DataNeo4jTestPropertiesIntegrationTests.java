@@ -50,8 +50,7 @@ public class DataNeo4jTestPropertiesIntegrationTests {
 
 	@Test
 	public void environmentWithNewProfile() {
-		String profile = this.environment.getActiveProfiles()[0];
-		assertThat(profile).isEqualTo("test");
+		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
 	}
 
 	static class Initializer
