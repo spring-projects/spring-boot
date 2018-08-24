@@ -544,6 +544,24 @@ JSON request body. When exposed via JMX, the parameters are mapped to the parame
 the MBean's operations. Parameters are required by default. They can be made optional
 by annotating them with `@org.springframework.lang.Nullable`.
 
+Each root property in the JSON request body can be mapped to a parameter of the endpoint.
+Consider the following JSON request body:
+
+[source,json,indent=0]
+----
+	{
+		"name": "test",
+		"counter": 42
+	}
+----
+
+This can be used to invoke a write operation that takes a `String test` and `int counter`
+parameters.
+
+TIP: Because endpoints are technology agnostic, only simple types can be specified in the
+method signature. In particular declaring a single parameter with a custom type defining a
+`name` and `counter` properties is not supported.
+
 NOTE: To allow the input to be mapped to the operation method's parameters, Java code
 implementing an endpoint should be compiled with `-parameters`, and Kotlin code
 implementing an endpoint should be compiled with `-java-parameters`. This will happen
