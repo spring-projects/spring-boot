@@ -24,6 +24,7 @@ import org.junit.rules.ExpectedException;
  * Tests for {@link OAuth2ClientProperties}.
  *
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  */
 public class OAuth2ClientPropertiesTests {
 
@@ -44,13 +45,11 @@ public class OAuth2ClientPropertiesTests {
 	}
 
 	@Test
-	public void clientSecretAbsentThrowsException() {
+	public void clientSecretAbsentNotThrowsException() {
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		registration.setClientId("foo");
 		registration.setProvider("google");
 		this.properties.getRegistration().put("foo", registration);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Client secret must not be empty.");
 		this.properties.validate();
 	}
 
