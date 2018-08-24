@@ -94,7 +94,7 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 		setupMockResponse(cleanIssuerPath);
 		this.contextRunner
 				.withPropertyValues(
-						"spring.security.oauth2.resource.jwt.oidc-issuer-location=http://"
+						"spring.security.oauth2.resourceserver.jwt.oidc-issuer-location=http://"
 								+ this.server.getHostName() + ":" + this.server.getPort())
 				.run((context) -> {
 					assertThat(context.getBean(JwtDecoder.class))
@@ -120,7 +120,7 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 	@Test
 	public void jwtDecoderBeanIsConditionalOnMissingBeanOidcIssuerLocation() {
 		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resource.jwt.oidc-issuer-location=http://jwk-oidc-issuer-location.com")
+				"spring.security.oauth2.resourceserver.jwt.oidc-issuer-location=http://jwk-oidc-issuer-location.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNotNull());
 	}
@@ -137,7 +137,7 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 	@Test
 	public void autoConfigurationShouldBeConditionalOnJwtAuthenticationTokenClassOidcIssuerLocation() {
 		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resource.jwt.oidc-issuer-location=http://jwk-oidc-issuer-location.com")
+				"spring.security.oauth2.resourceserver.jwt.oidc-issuer-location=http://jwk-oidc-issuer-location.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.withClassLoader(new FilteredClassLoader(JwtAuthenticationToken.class))
 				.run((context) -> assertThat(getBearerTokenFilter(context)).isNull());
