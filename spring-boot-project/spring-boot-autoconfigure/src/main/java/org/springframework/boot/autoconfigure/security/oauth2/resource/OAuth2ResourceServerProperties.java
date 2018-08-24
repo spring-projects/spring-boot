@@ -21,6 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * OAuth 2.0 resource server properties.
  *
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  * @since 2.1.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
@@ -39,12 +40,25 @@ public class OAuth2ResourceServerProperties {
 		 */
 		private String jwkSetUri;
 
+		/**
+		 * Oidc issuer location.
+		 */
+		private String oidcIssuerLocation;
+
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
 
 		public void setJwkSetUri(String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
+		}
+
+		public String getOidcIssuerLocation() {
+			return this.oidcIssuerLocation;
+		}
+
+		public void setOidcIssuerLocation(String oidcIssuerLocation) {
+			this.oidcIssuerLocation = oidcIssuerLocation;
 		}
 
 	}
