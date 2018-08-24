@@ -5785,7 +5785,7 @@ Finally, the most extreme (and rarely used) option is to create your own
 == Calling REST Services with `WebClient`
 If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to
 call remote REST services. Compared to `RestTemplate`, this client has a more functional
-feel and is fully reactive. You can leanr more about the `WebClient` in the dedicated
+feel and is fully reactive. You can learn more about the `WebClient` in the dedicated
 {spring-reference}web-reactive.html#webflux-client[section in the Spring Framework docs].
 
 Spring Boot creates and pre-configures a `WebClient.Builder` for you; it is strongly
