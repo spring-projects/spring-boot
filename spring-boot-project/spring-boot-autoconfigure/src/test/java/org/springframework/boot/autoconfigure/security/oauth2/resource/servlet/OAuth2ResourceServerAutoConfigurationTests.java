@@ -92,10 +92,9 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 		String issuer = this.server.url("").toString();
 		String cleanIssuerPath = cleanIssuerPath(issuer);
 		setupMockResponse(cleanIssuerPath);
-		this.contextRunner
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.oidc-issuer-location=http://"
-								+ this.server.getHostName() + ":" + this.server.getPort())
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.oidc-issuer-location=http://"
+						+ this.server.getHostName() + ":" + this.server.getPort())
 				.run((context) -> {
 					assertThat(context.getBean(JwtDecoder.class))
 							.isInstanceOf(NimbusJwtDecoderJwkSupport.class);
@@ -111,17 +110,17 @@ public class OAuth2ResourceServerAutoConfigurationTests {
 		String issuer = this.server.url("").toString();
 		String cleanIssuerPath = cleanIssuerPath(issuer);
 		setupMockResponse(cleanIssuerPath);
-		this.contextRunner
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.oidc-issuer-location=http://"
-								+ this.server.getHostName() + ":" + this.server.getPort(),
-						"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.oidc-issuer-location=http://"
+						+ this.server.getHostName() + ":" + this.server.getPort(),
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
 				.run((context) -> {
 					assertThat(context.getBean(JwtDecoder.class))
 							.isInstanceOf(NimbusJwtDecoderJwkSupport.class);
 					assertThat(getBearerTokenFilter(context)).isNotNull();
 					assertThat(context.containsBean("jwtDecoder")).isTrue();
-					assertThat(context.containsBean("jwtDecoderByOidcIssuerLocation")).isFalse();
+					assertThat(context.containsBean("jwtDecoderByOidcIssuerLocation"))
+							.isFalse();
 				});
 	}
 
