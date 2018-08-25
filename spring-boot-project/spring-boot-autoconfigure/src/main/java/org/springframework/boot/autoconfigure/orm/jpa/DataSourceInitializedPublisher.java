@@ -64,7 +64,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 			throws BeansException {
 		if (bean instanceof LocalContainerEntityManagerFactoryBean) {
 			LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
-			factory.setJpaVendorAdapter(new DataSourceSchemeCreatedPublisher(factory));
+			factory.setJpaVendorAdapter(new DataSourceSchemaCreatedPublisher(factory));
 		}
 		return bean;
 	}
@@ -140,13 +140,13 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	}
 
-	final class DataSourceSchemeCreatedPublisher implements JpaVendorAdapter {
+	final class DataSourceSchemaCreatedPublisher implements JpaVendorAdapter {
 
 		private final JpaVendorAdapter delegate;
 
 		private final LocalContainerEntityManagerFactoryBean factory;
 
-		private DataSourceSchemeCreatedPublisher(
+		private DataSourceSchemaCreatedPublisher(
 				LocalContainerEntityManagerFactoryBean factory) {
 			this.delegate = factory.getJpaVendorAdapter();
 			this.factory = factory;
