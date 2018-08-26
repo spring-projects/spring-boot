@@ -5645,7 +5645,7 @@ The following component creates a listener endpoint on the `someTopic` topic:
 Spring for Apache Kafka provides a factory bean to create a `StreamsBuilder` object and
 manage the lifecycle of its streams. Spring Boot auto-configures the required
 `KafkaStreamsConfiguration` bean as long as `kafka-streams` in on the classpath and kafka
-streams is enabled via the @EnableKafkaStreams` annotation.
+streams is enabled via the `@EnableKafkaStreams` annotation.
 
 Enabling Kafka Streams means that the application id and bootstrap servers must be set.
 The former can be configured using `spring.kafka.streams.application-id`, defaulting to
