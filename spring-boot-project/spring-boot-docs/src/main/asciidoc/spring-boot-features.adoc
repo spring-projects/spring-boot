@@ -6201,11 +6201,11 @@ tasks), the thread pool increases to maximum 16 threads. Shrinking of the pool i
 aggressive as threads are reclaimed when they are idle for 10 seconds (rather than
 60 seconds by default).
 
-A `ThreadPoolTaskScheduler` can also be auto-configured if need to be to be associated to
+A `ThreadPoolTaskScheduler` can also be auto-configured if need to be associated to
 scheduled task execution (`@EnableScheduling`). The thread pool uses one thread by default
 and those settings can be fine-tuned using the `spring.task.scheduling` namespace.
 
-Both a `TaskExecutorBuilder` and `TaskSchedulerBuilder` bean are made available in the
+Both a `TaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in the
 context if a custom executor or scheduler needs to be created.
 
 

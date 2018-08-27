@@ -52,7 +52,7 @@ public class PropertyMapperTests {
 	}
 
 	@Test
-	public void fromValueAsIntShouldAdaptSupplier() {
+	public void fromValueAsIntShouldAdaptValue() {
 		Integer result = this.map.from("123").asInt(Long::valueOf)
 				.toInstance(Integer::new);
 		assertThat(result).isEqualTo(123);
