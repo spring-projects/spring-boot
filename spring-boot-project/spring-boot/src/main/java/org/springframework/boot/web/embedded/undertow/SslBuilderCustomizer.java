@@ -84,10 +84,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 						Sequence.of(this.ssl.getCiphers()));
 			}
 		}
-		catch (NoSuchAlgorithmException ex) {
-			throw new IllegalStateException(ex);
-		}
-		catch (KeyManagementException ex) {
+		catch (NoSuchAlgorithmException | KeyManagementException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
