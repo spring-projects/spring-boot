@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +52,7 @@ public class AutoConfigurations extends Configurations implements Ordered {
 		List<String> sorted = SORTER.getInPriorityOrder(names);
 		return sorted.stream()
 				.map((className) -> ClassUtils.resolveClassName(className, null))
-				.collect(Collectors.toList());
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
