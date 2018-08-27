@@ -48,4 +48,9 @@ public class WebFluxTestAllControllersIntegrationTests {
 				.expectBody(String.class).isEqualTo("two");
 	}
 
+	@Test
+	public void webExceptionHandling() {
+		this.webClient.get().uri("/one/error").exchange().expectStatus().isBadRequest();
+	}
+
 }

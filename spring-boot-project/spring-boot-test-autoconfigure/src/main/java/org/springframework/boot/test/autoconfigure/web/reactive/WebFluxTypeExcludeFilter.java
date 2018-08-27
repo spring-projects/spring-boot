@@ -32,6 +32,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.server.WebExceptionHandler;
 
 /**
  * {@link TypeExcludeFilter} for {@link WebFluxTest @WebFluxTest}.
@@ -49,6 +50,7 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(WebFluxConfigurer.class);
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
+		includes.add(WebExceptionHandler.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 

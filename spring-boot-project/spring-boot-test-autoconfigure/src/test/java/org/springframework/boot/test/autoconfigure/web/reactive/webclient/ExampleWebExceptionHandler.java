@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebExceptionHandler;
 
 /**
- * Example {@link Controller} used with {@link WebFluxTest} tests.
+ * Example {@link WebExceptionHandler} used with {@link WebFluxTest} tests.
  *
- * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
-@RestController
-public class ExampleController1 {
+@Component
+public class ExampleWebExceptionHandler implements WebExceptionHandler {
 
-	@GetMapping("/one")
-	public Mono<String> one() {
-		return Mono.just("one");
-	}
-
-	@GetMapping("/one/error")
-	public Mono<String> error() {
-		throw new RuntimeException("foo");
+	@Override
+	public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+		exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
+		return exchange.getResponse().setComplete();
 	}
 
 }
