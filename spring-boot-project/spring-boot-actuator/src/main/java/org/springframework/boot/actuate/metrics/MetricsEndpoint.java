@@ -158,7 +158,7 @@ public class MetricsEndpoint {
 	private <K, V, T> List<T> asList(Map<K, V> map, BiFunction<K, V, T> mapper) {
 		return map.entrySet().stream()
 				.map((entry) -> mapper.apply(entry.getKey(), entry.getValue()))
-				.collect(Collectors.toCollection(ArrayList::new));
+				.collect(Collectors.toList());
 	}
 
 	/**
