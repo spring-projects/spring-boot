@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.task;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Test;
 
@@ -158,7 +158,7 @@ public class TaskSchedulingAutoConfigurationTests {
 
 	static class TestBean {
 
-		private final Set<String> threadNames = new HashSet<>();
+		private final Set<String> threadNames = ConcurrentHashMap.newKeySet();
 
 		@Scheduled(fixedRate = 10)
 		public void accumulate() {

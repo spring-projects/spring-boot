@@ -22,11 +22,14 @@ import java.util.Set;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link TaskSchedulerBuilder}.
@@ -55,8 +58,9 @@ public class TaskSchedulerBuilderTests {
 
 	@Test
 	public void threadNamePrefixShouldApply() {
-		ThreadPoolTaskScheduler executor = this.builder.threadNamePrefix("test-").build();
-		assertThat(executor.getThreadNamePrefix()).isEqualTo("test-");
+		ThreadPoolTaskScheduler scheduler = this.builder.threadNamePrefix("test-")
+				.build();
+		assertThat(scheduler.getThreadNamePrefix()).isEqualTo("test-");
 	}
 
 	@Test
@@ -75,30 +79,30 @@ public class TaskSchedulerBuilderTests {
 
 	@Test
 	public void customizersShouldApply() {
-		TaskSchedulerCustomizer customizer = Mockito.mock(TaskSchedulerCustomizer.class);
-		ThreadPoolTaskScheduler executor = this.builder.customizers(customizer).build();
-		Mockito.verify(customizer).customize(executor);
+		TaskSchedulerCustomizer customizer = mock(TaskSchedulerCustomizer.class);
+		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer).build();
+		verify(customizer).customize(scheduler);
 	}
 
 	@Test
 	public void customizersShouldBeAppliedLast() {
-		ThreadPoolTaskScheduler scheduler = Mockito.spy(new ThreadPoolTaskScheduler());
+		ThreadPoolTaskScheduler scheduler = spy(new ThreadPoolTaskScheduler());
 		this.builder.poolSize(4).threadNamePrefix("test-")
 				.additionalCustomizers((taskScheduler) -> {
-					Mockito.verify(taskScheduler).setPoolSize(4);
-					Mockito.verify(taskScheduler).setThreadNamePrefix("test-");
+					verify(taskScheduler).setPoolSize(4);
+					verify(taskScheduler).setThreadNamePrefix("test-");
 				});
 		this.builder.configure(scheduler);
 	}
 
 	@Test
 	public void customizersShouldReplaceExisting() {
-		TaskSchedulerCustomizer customizer1 = Mockito.mock(TaskSchedulerCustomizer.class);
-		TaskSchedulerCustomizer customizer2 = Mockito.mock(TaskSchedulerCustomizer.class);
-		ThreadPoolTaskScheduler executor = this.builder.customizers(customizer1)
+		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
+		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
+		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		Mockito.verifyZeroInteractions(customizer1);
-		Mockito.verify(customizer2).customize(executor);
+		verifyZeroInteractions(customizer1);
+		verify(customizer2).customize(scheduler);
 	}
 
 	@Test
@@ -117,12 +121,12 @@ public class TaskSchedulerBuilderTests {
 
 	@Test
 	public void additionalCustomizersShouldAddToExisting() {
-		TaskSchedulerCustomizer customizer1 = Mockito.mock(TaskSchedulerCustomizer.class);
-		TaskSchedulerCustomizer customizer2 = Mockito.mock(TaskSchedulerCustomizer.class);
+		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
+		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
 				.additionalCustomizers(customizer2).build();
-		Mockito.verify(customizer1).customize(scheduler);
-		Mockito.verify(customizer2).customize(scheduler);
+		verify(customizer1).customize(scheduler);
+		verify(customizer2).customize(scheduler);
 	}
 
 }
