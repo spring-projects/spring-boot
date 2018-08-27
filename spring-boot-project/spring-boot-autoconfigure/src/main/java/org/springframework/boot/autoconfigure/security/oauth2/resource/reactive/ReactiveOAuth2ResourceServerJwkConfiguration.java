@@ -17,16 +17,20 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.IssuerUriCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 
 /**
  * Configures a {@link ReactiveJwtDecoder} when a JWK Set URI is available.
  *
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  */
 @Configuration
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -43,6 +47,14 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 	@ConditionalOnMissingBean
 	public ReactiveJwtDecoder jwtDecoder() {
 		return new NimbusReactiveJwtDecoder(this.properties.getJwt().getJwkSetUri());
+	}
+
+	@Bean
+	@Conditional(IssuerUriCondition.class)
+	@ConditionalOnMissingBean
+	public ReactiveJwtDecoder jwtDecoderByIssuerUri() {
+		return ReactiveJwtDecoders
+				.fromOidcIssuerLocation(this.properties.getJwt().getIssuerUri());
 	}
 
 }

@@ -15,9 +15,18 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.After;
 import org.junit.Test;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -25,6 +34,9 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -47,6 +59,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ReactiveOAuth2ResourceServerAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  */
 public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
@@ -54,6 +67,15 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations
 					.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
 			.withUserConfiguration(TestConfig.class);
+
+	private MockWebServer server;
+
+	@After
+	public void cleanup() throws Exception {
+		if (this.server != null) {
+			this.server.shutdown();
+		}
+	}
 
 	@Test
 	public void autoConfigurationShouldConfigureResourceServer() {
@@ -67,6 +89,39 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	public void autoConfigurationShouldConfigureResourceServerUsingOidcIssuerUri()
+			throws IOException {
+		this.server = new MockWebServer();
+		this.server.start();
+		String issuer = this.server.url("").toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
+								+ this.server.getHostName() + ":" + this.server.getPort())
+				.run((context) -> {
+					assertThat(context.getBean(ReactiveJwtDecoder.class))
+							.isInstanceOf(NimbusReactiveJwtDecoder.class);
+					assertFilterConfiguredWithJwtAuthenticationManager(context);
+				});
+	}
+
+	@Test
+	public void autoConfigurationWhenBothSetUriAndIssuerUriPresentShouldUseSetUri() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com",
+				"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://jwk-oidc-issuer-location.com")
+				.run((context) -> {
+					assertThat(context.getBean(ReactiveJwtDecoder.class))
+							.isInstanceOf(NimbusReactiveJwtDecoder.class);
+					assertFilterConfiguredWithJwtAuthenticationManager(context);
+					assertThat(context.containsBean("jwtDecoder")).isTrue();
+					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isFalse();
+				});
+	}
+
+	@Test
 	public void autoConfigurationWhenJwkSetUriNullShouldNotFail() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
@@ -76,6 +131,14 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	public void jwtDecoderBeanIsConditionalOnMissingBean() {
 		this.contextRunner.withPropertyValues(
 				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
+				.withUserConfiguration(JwtDecoderConfig.class)
+				.run((this::assertFilterConfiguredWithJwtAuthenticationManager));
+	}
+
+	@Test
+	public void jwtDecoderByIssuerUriBeanIsConditionalOnMissingBean() {
+		this.contextRunner.withPropertyValues(
+				"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://jwk-oidc-issuer-location.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
 				.run((this::assertFilterConfiguredWithJwtAuthenticationManager));
 	}
@@ -117,6 +180,42 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		assertThat(authenticationManager)
 				.isInstanceOf(JwtReactiveAuthenticationManager.class);
 
+	}
+
+	private String cleanIssuerPath(String issuer) {
+		if (issuer.endsWith("/")) {
+			return issuer.substring(0, issuer.length() - 1);
+		}
+		return issuer;
+	}
+
+	private void setupMockResponse(String issuer) throws JsonProcessingException {
+		MockResponse mockResponse = new MockResponse()
+				.setResponseCode(HttpStatus.OK.value())
+				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
+				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		this.server.enqueue(mockResponse);
+	}
+
+	private Map<String, Object> getResponse(String issuer) {
+		Map<String, Object> response = new HashMap<>();
+		response.put("authorization_endpoint", "https://example.com/o/oauth2/v2/auth");
+		response.put("claims_supported", Collections.emptyList());
+		response.put("code_challenge_methods_supported", Collections.emptyList());
+		response.put("id_token_signing_alg_values_supported", Collections.emptyList());
+		response.put("issuer", issuer);
+		response.put("jwks_uri", "https://example.com/oauth2/v3/certs");
+		response.put("response_types_supported", Collections.emptyList());
+		response.put("revocation_endpoint", "https://example.com/o/oauth2/revoke");
+		response.put("scopes_supported", Collections.singletonList("openid"));
+		response.put("subject_types_supported", Collections.singletonList("public"));
+		response.put("grant_types_supported",
+				Collections.singletonList("authorization_code"));
+		response.put("token_endpoint", "https://example.com/oauth2/v4/token");
+		response.put("token_endpoint_auth_methods_supported",
+				Collections.singletonList("client_secret_basic"));
+		response.put("userinfo_endpoint", "https://example.com/oauth2/v3/userinfo");
+		return response;
 	}
 
 	@EnableWebFluxSecurity
