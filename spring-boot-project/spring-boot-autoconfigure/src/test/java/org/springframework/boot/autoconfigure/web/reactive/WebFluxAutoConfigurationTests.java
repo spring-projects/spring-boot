@@ -517,7 +517,7 @@ public class WebFluxAutoConfigurationTests {
 	static class CustomRequestMappingHandlerAdapter {
 
 		@Bean
-		public WebFluxRegistrations webMvcRegistrationsHandlerAdapter() {
+		public WebFluxRegistrations webFluxRegistrationsHandlerAdapter() {
 			return new WebFluxRegistrations() {
 
 				@Override
@@ -546,7 +546,7 @@ public class WebFluxAutoConfigurationTests {
 	static class CustomRequestMappingHandlerMapping {
 
 		@Bean
-		public WebFluxRegistrations webMvcRegistrationsHandlerMapping() {
+		public WebFluxRegistrations webFluxRegistrationsHandlerMapping() {
 			return new WebFluxRegistrations() {
 
 				@Override

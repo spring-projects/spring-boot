@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for task scheduling.
  *
  * @author Stephane Nicoll
+ * @since 2.1.0
  */
 @ConfigurationProperties("spring.task.scheduling")
 public class TaskSchedulingProperties {
