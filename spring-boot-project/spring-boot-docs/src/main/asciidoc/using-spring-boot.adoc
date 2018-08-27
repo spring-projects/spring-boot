@@ -58,6 +58,8 @@ defaults. The parent project provides the following features:
 the spring-boot-dependencies pom, that manages the versions of common dependencies. This
 dependency management lets you omit <version> tags for those dependencies when used in
 your own pom.
+* An execution of the {spring-boot-maven-plugin-site}/repackage-mojo.html[`repackage`
+goal] with a `repackage` execution id.
 * Sensible
 https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource
 filtering].
