@@ -136,7 +136,7 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void jwtDecoderBeanIsConditionalOnMissingBeanUsingOidcIssuerUri() {
+	public void jwtDecoderByIssuerUriBeanIsConditionalOnMissingBean() {
 		this.contextRunner.withPropertyValues(
 				"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://jwk-oidc-issuer-location.com")
 				.withUserConfiguration(JwtDecoderConfig.class)
@@ -155,39 +155,9 @@ public class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoConfigurationShouldBeConditionalOnBearerTokenAuthenticationTokenClassUsingOidcIssuerUri() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://jwk-oidc-issuer-location.com")
-				.withUserConfiguration(JwtDecoderConfig.class)
-				.withClassLoader(
-						new FilteredClassLoader(BearerTokenAuthenticationToken.class))
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN));
-	}
-
-	@Test
 	public void autoConfigurationWhenSecurityWebFilterChainConfigPresentShouldNotAddOne() {
 		this.contextRunner.withPropertyValues(
 				"spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://jwk-set-uri.com")
-				.withUserConfiguration(SecurityWebFilterChainConfig.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(SecurityWebFilterChain.class);
-					assertThat(context).hasBean("testSpringSecurityFilterChain");
-				});
-	}
-
-	@Test
-	public void autoConfigurationWhenSecurityWebFilterChainConfigPresentShouldNotAddOneUsingOidcIssuerUri()
-			throws IOException {
-		this.server = new MockWebServer();
-		this.server.start();
-		String issuer = this.server.url("").toString();
-		String cleanIssuerPath = cleanIssuerPath(issuer);
-		setupMockResponse(cleanIssuerPath);
-		this.contextRunner
-				.withPropertyValues(
-						"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://"
-								+ this.server.getHostName() + ":" + this.server.getPort())
 				.withUserConfiguration(SecurityWebFilterChainConfig.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(SecurityWebFilterChain.class);
