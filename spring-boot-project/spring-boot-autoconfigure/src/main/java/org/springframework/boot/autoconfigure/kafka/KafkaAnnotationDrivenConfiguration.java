@@ -26,7 +26,10 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
+import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
 /**
  * Configuration for Kafka annotation-driven support.
@@ -45,12 +48,24 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final KafkaTemplate<Object, Object> kafkaTemplate;
 
+	private final KafkaAwareTransactionManager<Object, Object> transactionManager;
+
+	private final ErrorHandler errorHandler;
+
+	private final AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
+
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> messageConverter,
-			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate) {
+			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate,
+			ObjectProvider<KafkaAwareTransactionManager<Object, Object>> kafkaTransactionManager,
+			ObjectProvider<ErrorHandler> errorHandler,
+			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor) {
 		this.properties = properties;
 		this.messageConverter = messageConverter.getIfUnique();
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
+		this.transactionManager = kafkaTransactionManager.getIfUnique();
+		this.errorHandler = errorHandler.getIfUnique();
+		this.afterRollbackProcessor = afterRollbackProcessor.getIfUnique();
 	}
 
 	@Bean
@@ -60,6 +75,9 @@ class KafkaAnnotationDrivenConfiguration {
 		configurer.setKafkaProperties(this.properties);
 		configurer.setMessageConverter(this.messageConverter);
 		configurer.setReplyTemplate(this.kafkaTemplate);
+		configurer.setErrorHandler(this.errorHandler);
+		configurer.setTransactionManager(this.transactionManager);
+		configurer.setAfterRollbackProcessor(this.afterRollbackProcessor);
 		return configurer;
 	}
 
