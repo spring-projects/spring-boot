@@ -23,8 +23,11 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
+import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
 /**
  * Configure {@link ConcurrentKafkaListenerContainerFactory} with sensible defaults.
@@ -40,6 +43,12 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private RecordMessageConverter messageConverter;
 
 	private KafkaTemplate<Object, Object> replyTemplate;
+
+	private KafkaAwareTransactionManager<Object, Object> transactionManager;
+
+	private ErrorHandler errorHandler;
+
+	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -66,6 +75,32 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link KafkaAwareTransactionManager} to use.
+	 * @param transactionManager the transaction manager
+	 */
+	public void setTransactionManager(
+			KafkaAwareTransactionManager<Object, Object> transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	/**
+	 * Set the {@link ErrorHandler} to use.
+	 * @param errorHandler the error handler
+	 */
+	public void setErrorHandler(ErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
+	}
+
+	/**
+	 * Set the {@link AfterRollbackProcessor} to use.
+	 * @param afterRollbackProcessor the after rollback processor
+	 */
+	public void setAfterRollbackProcessor(
+			AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
+		this.afterRollbackProcessor = afterRollbackProcessor;
+	}
+
+	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param listenerFactory the {@link ConcurrentKafkaListenerContainerFactory} instance
@@ -89,6 +124,9 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.replyTemplate).whenNonNull().to(factory::setReplyTemplate);
 		map.from(properties::getType).whenEqualTo(Listener.Type.BATCH)
 				.toCall(() -> factory.setBatchListener(true));
+		map.from(this.errorHandler).whenNonNull().to(factory::setErrorHandler);
+		map.from(this.afterRollbackProcessor).whenNonNull()
+				.to(factory::setAfterRollbackProcessor);
 	}
 
 	private void configureContainer(ContainerProperties container) {
@@ -109,6 +147,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 				.as(Number::intValue).to(container::setMonitorInterval);
 		map.from(properties::getLogContainerConfig).whenNonNull()
 				.to(container::setLogContainerConfig);
+		map.from(this.transactionManager).whenNonNull()
+				.to(container::setTransactionManager);
 	}
 
 }
