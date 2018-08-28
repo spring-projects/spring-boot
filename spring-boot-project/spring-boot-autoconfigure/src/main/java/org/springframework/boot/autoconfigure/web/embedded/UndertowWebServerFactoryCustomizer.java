@@ -27,6 +27,7 @@ import org.springframework.boot.web.embedded.undertow.ConfigurableUndertowWebSer
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Customization for Undertow-specific features common for both Servlet and Reactive
@@ -83,7 +84,8 @@ public class UndertowWebServerFactoryCustomizer implements
 				.to(factory::setAccessLogRotate);
 		propertyMapper.from(this::getOrDeduceUseForwardHeaders)
 				.to(factory::setUseForwardHeaders);
-		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
+		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
+				.asInt(DataSize::toBytes)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
 		propertyMapper.from(undertowProperties::getMaxHttpPostSize).when(this::isPositive)

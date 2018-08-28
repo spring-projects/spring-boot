@@ -53,6 +53,7 @@ import org.springframework.util.unit.DataSize;
  * @author Aurélien Leboulanger
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Chentao Qu
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -81,9 +82,9 @@ public class ServerProperties {
 	private String serverHeader;
 
 	/**
-	 * Maximum size, in bytes, of the HTTP message header.
+	 * Maximum size of the HTTP message header.
 	 */
-	private int maxHttpHeaderSize = 0; // bytes
+	private DataSize maxHttpHeaderSize = DataSize.ofKiloBytes(8L);
 
 	/**
 	 * Time that connectors wait for another HTTP request before closing the connection.
@@ -141,11 +142,11 @@ public class ServerProperties {
 		this.serverHeader = serverHeader;
 	}
 
-	public int getMaxHttpHeaderSize() {
+	public DataSize getMaxHttpHeaderSize() {
 		return this.maxHttpHeaderSize;
 	}
 
-	public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+	public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
 	}
 
@@ -327,7 +328,9 @@ public class ServerProperties {
 
 		/**
 		 * Maximum size, in bytes, of the HTTP message header.
+		 * @deprecated since 2.1.0 in favor of {@link ServerProperties#maxHttpHeaderSize}
 		 */
+		@Deprecated
 		private int maxHttpHeaderSize = 0;
 
 		/**
