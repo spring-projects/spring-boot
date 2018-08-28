@@ -149,6 +149,40 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 		this.beanDefinitions.clear();
 	}
 
+	private RootBeanDefinition getBeanDefinition(String name) {
+		try {
+			return (RootBeanDefinition) this.beanFactory.getMergedBeanDefinition(name);
+		}
+		catch (BeanDefinitionStoreException ex) {
+			logIgnoredError("unresolvable metadata in bean definition", name, ex);
+			return null;
+		}
+	}
+
+	private void logIgnoredError(String message, String name, Exception ex) {
+		if (BeanTypeRegistry.logger.isDebugEnabled()) {
+			BeanTypeRegistry.logger.debug("Ignoring " + message + " '" + name + "'", ex);
+		}
+	}
+
+	private boolean requiresEagerInit(String factoryBeanName) {
+		return (factoryBeanName != null && this.beanFactory.isFactoryBean(factoryBeanName)
+				&& !this.beanFactory.containsSingleton(factoryBeanName));
+	}
+
+	private void updateTypesIfNecessary() {
+		Iterator<String> names = this.beanFactory.getBeanNamesIterator();
+		while (names.hasNext()) {
+			String name = names.next();
+			if (!this.beanTypes.containsKey(name)) {
+				addBeanType(name);
+			}
+			else {
+				updateBeanType(name);
+			}
+		}
+	}
+
 	private void addBeanType(String name) {
 		if (this.beanFactory.containsSingleton(name)) {
 			this.beanTypes.put(name, this.beanFactory.getType(name));
@@ -165,13 +199,17 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 		}
 	}
 
-	private RootBeanDefinition getBeanDefinition(String name) {
-		try {
-			return (RootBeanDefinition) this.beanFactory.getMergedBeanDefinition(name);
+	private void updateBeanType(String name) {
+		if (this.beanFactory.isAlias(name) || this.beanFactory.containsSingleton(name)) {
+			return;
 		}
-		catch (BeanDefinitionStoreException ex) {
-			logIgnoredError("unresolvable metadata in bean definition", name, ex);
-			return null;
+		RootBeanDefinition beanDefinition = getBeanDefinition(name);
+		if (beanDefinition == null) {
+			return;
+		}
+		RootBeanDefinition previous = this.beanDefinitions.put(name, beanDefinition);
+		if (previous != null && !beanDefinition.equals(previous)) {
+			addBeanTypeForNonAliasDefinition(name, beanDefinition);
 		}
 	}
 
@@ -197,41 +235,6 @@ final class BeanTypeRegistry implements SmartInitializingSingleton {
 		catch (CannotLoadBeanClassException ex) {
 			// Probably contains a placeholder
 			logIgnoredError("bean class loading failure for bean", name, ex);
-		}
-	}
-
-	private void logIgnoredError(String message, String name, Exception ex) {
-		if (BeanTypeRegistry.logger.isDebugEnabled()) {
-			BeanTypeRegistry.logger.debug("Ignoring " + message + " '" + name + "'", ex);
-		}
-	}
-
-	private boolean requiresEagerInit(String factoryBeanName) {
-		return (factoryBeanName != null && this.beanFactory.isFactoryBean(factoryBeanName)
-				&& !this.beanFactory.containsSingleton(factoryBeanName));
-	}
-
-	private void updateTypesIfNecessary() {
-		Iterator<String> names = this.beanFactory.getBeanNamesIterator();
-		while (names.hasNext()) {
-			String name = names.next();
-			if (!this.beanTypes.containsKey(name)) {
-				addBeanType(name);
-			}
-			else {
-				if (!this.beanFactory.isAlias(name)
-						&& !this.beanFactory.containsSingleton(name)) {
-					RootBeanDefinition beanDefinition = getBeanDefinition(name);
-					if (beanDefinition != null) {
-						RootBeanDefinition existingDefinition = this.beanDefinitions
-								.put(name, beanDefinition);
-						if (existingDefinition != null
-								&& !beanDefinition.equals(existingDefinition)) {
-							addBeanTypeForNonAliasDefinition(name, beanDefinition);
-						}
-					}
-				}
-			}
 		}
 	}
 

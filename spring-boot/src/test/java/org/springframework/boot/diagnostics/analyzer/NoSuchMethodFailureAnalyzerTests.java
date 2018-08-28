@@ -30,7 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * @author awilkinson
+ * Tests for {@link NoSuchMethodFailureAnalyzer}.
+ *
+ * @author Andy Wilkinson
  */
 @RunWith(ModifiedClassPathRunner.class)
 @ClassPathOverrides("javax.servlet:servlet-api:2.5")

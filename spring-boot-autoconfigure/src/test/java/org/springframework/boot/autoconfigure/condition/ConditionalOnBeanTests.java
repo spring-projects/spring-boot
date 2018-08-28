@@ -347,7 +347,6 @@ public class ConditionalOnBeanTests {
 	public static class ConsumingConfiguration {
 
 		ConsumingConfiguration(String testBean) {
-
 		}
 
 	}
