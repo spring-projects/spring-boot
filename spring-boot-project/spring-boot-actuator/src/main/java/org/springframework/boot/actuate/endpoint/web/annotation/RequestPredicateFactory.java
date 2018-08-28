@@ -62,8 +62,8 @@ class RequestPredicateFactory {
 	}
 
 	private String getPath(String rootPath, Method method) {
-		return rootPath + Stream.of(method.getParameters()).filter(this::hasSelector)
-				.map(this::slashName).collect(Collectors.joining());
+		return Stream.of(method.getParameters()).filter(this::hasSelector)
+				.map(this::slashName).collect(Collectors.joining("", rootPath, ""));
 	}
 
 	private boolean hasSelector(Parameter parameter) {
