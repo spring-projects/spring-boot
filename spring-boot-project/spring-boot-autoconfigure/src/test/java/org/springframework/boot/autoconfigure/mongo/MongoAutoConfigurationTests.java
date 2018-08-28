@@ -20,6 +20,7 @@ import javax.net.SocketFactory;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.client.MongoClients;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -78,6 +79,17 @@ public class MongoAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	public void doesNotCreateMongoClientWhenAlreadyDefined() {
+		this.contextRunner
+				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
+				.withUserConfiguration(FallbackMongoClientConfig.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(MongoClient.class);
+					assertThat(context)
+							.hasSingleBean(com.mongodb.client.MongoClient.class);
+				});
+	}
+
 	@Configuration
 	static class OptionsConfig {
 
@@ -100,6 +112,15 @@ public class MongoAutoConfigurationTests {
 		@Bean
 		public SocketFactory mySocketFactory() {
 			return mock(SocketFactory.class);
+		}
+
+	}
+
+	static class FallbackMongoClientConfig {
+
+		@Bean
+		com.mongodb.client.MongoClient fallbackMongoClient() {
+			return MongoClients.create();
 		}
 
 	}

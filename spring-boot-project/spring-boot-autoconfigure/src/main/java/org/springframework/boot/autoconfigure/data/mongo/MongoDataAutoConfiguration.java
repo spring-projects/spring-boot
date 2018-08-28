@@ -22,21 +22,27 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration.AnyMongoClientAvailable;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoDbFactorySupport;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
@@ -63,11 +69,13 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Christoph Strobl
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ MongoClient.class, MongoTemplate.class })
-@ConditionalOnBean(MongoClient.class)
+@ConditionalOnClass({ MongoClient.class, com.mongodb.client.MongoClient.class,
+		MongoTemplate.class })
+@Conditional(AnyMongoClientAvailable.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @Import(MongoDataConfiguration.class)
 @AutoConfigureAfter(MongoAutoConfiguration.class)
@@ -81,9 +89,19 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoDbFactory.class)
-	public SimpleMongoDbFactory mongoDbFactory(MongoClient mongo) {
-		String database = this.properties.getMongoClientDatabase();
-		return new SimpleMongoDbFactory(mongo, database);
+	public MongoDbFactorySupport<?> mongoDbFactory(ObjectProvider<MongoClient> mongo,
+			ObjectProvider<com.mongodb.client.MongoClient> mongoClient) {
+		MongoClient preferredClient = mongo.getIfAvailable();
+		if (preferredClient != null) {
+			return new SimpleMongoDbFactory(preferredClient,
+					this.properties.getMongoClientDatabase());
+		}
+		com.mongodb.client.MongoClient fallbackClient = mongoClient.getIfAvailable();
+		if (fallbackClient != null) {
+			return new SimpleMongoClientDbFactory(fallbackClient,
+					this.properties.getMongoClientDatabase());
+		}
+		throw new IllegalStateException("Expected to find at least one MongoDB client.");
 	}
 
 	@Bean
@@ -162,6 +180,28 @@ public class MongoDataAutoConfiguration {
 		@Override
 		public MongoDbFactory withSession(ClientSession session) {
 			return this.mongoDbFactory.withSession(session);
+		}
+
+	}
+
+	/**
+	 * Check if either a {@link com.mongodb.MongoClient} or
+	 * {@link com.mongodb.client.MongoClient} bean is available.
+	 */
+	static class AnyMongoClientAvailable extends AnyNestedCondition {
+
+		AnyMongoClientAvailable() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnBean(MongoClient.class)
+		static class PreferredClientAvailable {
+
+		}
+
+		@ConditionalOnBean(com.mongodb.client.MongoClient.class)
+		static class FallbackClientAvailable {
+
 		}
 
 	}

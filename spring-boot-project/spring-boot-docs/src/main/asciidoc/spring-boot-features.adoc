@@ -4029,6 +4029,10 @@ example, you might declare the following settings in your `application.propertie
 	spring.data.mongodb.port=27017
 ----
 
+If you have defined your own `MongoClient`, it will be used to auto-configure a suitable
+`MongoDbFactory`. Both `com.mongodb.MongoClient` and `com.mongodb.client.MongoClient`
+are supported.
+
 NOTE: If you use the Mongo 3.0 Java driver, `spring.data.mongodb.host` and
 `spring.data.mongodb.port` are not supported. In such cases, `spring.data.mongodb.uri`
 should be used to provide all of the configuration.
