@@ -112,6 +112,9 @@ do as they were designed before this was clarified.
 | http://mybatis.org/mybatis-3/[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
+| http://narayana.io/[Narayana]
+| https://github.com/snowdrop/narayana-spring-boot
+
 | http://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
 
