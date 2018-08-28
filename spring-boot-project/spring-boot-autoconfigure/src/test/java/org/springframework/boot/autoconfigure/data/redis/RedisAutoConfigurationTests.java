@@ -151,15 +151,13 @@ public class RedisAutoConfigurationTests {
 
 	@Test
 	public void testRedisConfigurationWithPool() {
-		this.contextRunner
-				.withPropertyValues("spring.redis.host:foo",
-						"spring.redis.lettuce.pool.min-idle:1",
-						"spring.redis.lettuce.pool.max-idle:4",
-						"spring.redis.lettuce.pool.max-active:16",
-						"spring.redis.lettuce.pool.max-wait:2000",
-						"spring.redis.lettuce.shutdown-timeout:1000",
-						"spring.redis.lettuce.share-native-connection:false")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo",
+				"spring.redis.lettuce.pool.min-idle:1",
+				"spring.redis.lettuce.pool.max-idle:4",
+				"spring.redis.lettuce.pool.max-active:16",
+				"spring.redis.lettuce.pool.max-wait:2000",
+				"spring.redis.lettuce.shutdown-timeout:1000",
+				"spring.redis.lettuce.share-native-connection:false").run((context) -> {
 					LettuceConnectionFactory cf = context
 							.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");

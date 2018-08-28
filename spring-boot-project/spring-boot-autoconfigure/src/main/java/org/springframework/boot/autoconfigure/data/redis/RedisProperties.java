@@ -327,10 +327,7 @@ public class RedisProperties {
 		private Pool pool;
 
 		/**
-		 * If shareNativeConnection is true, the pool will be used to select a connection
-		 * for blocking and tx operations only, which should not share a connection. If
-		 * native connection sharing is false, the selected connection will be used for
-		 * all operations
+		 * Whether to enable share native connection
 		 */
 		private Boolean shareNativeConnection;
 
