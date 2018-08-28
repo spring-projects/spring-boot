@@ -106,14 +106,24 @@ public class OAuth2ClientProperties {
 		/**
 		 * Redirect URI. May be left blank when using a pre-defined provider.
 		 */
-		private String redirectUriTemplate;
+		private String redirectUri;
 
-		public String getRedirectUriTemplate() {
-			return this.redirectUriTemplate;
+		public String getRedirectUri() {
+			return this.redirectUri;
 		}
 
-		public void setRedirectUriTemplate(String redirectUriTemplate) {
-			this.redirectUriTemplate = redirectUriTemplate;
+		public void setRedirectUri(String redirectUri) {
+			this.redirectUri = redirectUri;
+		}
+
+		@Deprecated
+		public String getRedirectUriTemplate() {
+			return getRedirectUri();
+		}
+
+		@Deprecated
+		public void setRedirectUriTemplate(String redirectUri) {
+			setRedirectUri(redirectUri);
 		}
 
 	}

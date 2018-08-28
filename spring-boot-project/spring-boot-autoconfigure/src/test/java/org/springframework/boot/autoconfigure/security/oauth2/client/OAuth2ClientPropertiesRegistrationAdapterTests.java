@@ -78,7 +78,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		login.setClientSecret("clientSecret");
 		login.setClientAuthenticationMethod("post");
 		login.setAuthorizationGrantType("authorization_code");
-		login.setRedirectUriTemplate("http://example.com/redirect");
+		login.setRedirectUri("http://example.com/redirect");
 		login.setScope(Collections.singleton("scope"));
 		login.setClientName("clientName");
 		properties.getRegistration().getLogin().put("registration", login);
@@ -155,7 +155,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		login.setClientSecret("clientSecret");
 		login.setClientAuthenticationMethod("post");
 		login.setAuthorizationGrantType("authorization_code");
-		login.setRedirectUriTemplate("http://example.com/redirect");
+		login.setRedirectUri("http://example.com/redirect");
 		login.setScope(Collections.singleton("scope"));
 		login.setClientName("clientName");
 		properties.getRegistration().getLogin().put("registration", login);
@@ -314,7 +314,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		login.setClientId("clientId");
 		login.setClientSecret("clientSecret");
 		login.setClientAuthenticationMethod("post");
-		login.setRedirectUriTemplate("http://example.com/redirect");
+		login.setRedirectUri("http://example.com/redirect");
 		login.setScope(Collections.singleton("user"));
 		Provider provider = new Provider();
 		provider.setIssuerUri(issuer);

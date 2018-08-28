@@ -86,8 +86,8 @@ public class OAuth2ClientPropertiesEnvironmentPostProcessor
 				source);
 		addProperty(registrationId, "client-name", registration::getClientName, map,
 				source);
-		addProperty(registrationId, "redirect-uri-template",
-				registration::getRedirectUriTemplate, map, source);
+		addProperty(registrationId, "redirect-uri-template", registration::getRedirectUri,
+				map, source);
 		addProperty(registrationId, "authorization-grant-type",
 				registration::getAuthorizationGrantType, map, source);
 		addProperty(registrationId, "client-authentication-method",

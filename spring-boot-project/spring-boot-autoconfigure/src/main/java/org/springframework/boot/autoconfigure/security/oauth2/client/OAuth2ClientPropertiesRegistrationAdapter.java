@@ -97,7 +97,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 			Map<String, Provider> providers) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Builder builder = getBuilder(map, registrationId, properties, providers);
-		map.from(properties::getRedirectUriTemplate).to(builder::redirectUriTemplate);
+		map.from(properties::getRedirectUri).to(builder::redirectUriTemplate);
 		return builder.build();
 	}
 
