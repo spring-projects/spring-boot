@@ -29,6 +29,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -40,9 +41,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
- * Auto-configuration for Jersey server instrumentation.
+ * {@link EnableAutoConfiguration Auto-configuration} for Jersey server instrumentation.
  *
  * @author Michael Weirauch
+ * @author Michael Simons
  * @since 2.1.0
  */
 @Configuration
@@ -50,7 +52,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
-@ConditionalOnBean(MeterRegistry.class)
+@ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
 @EnableConfigurationProperties(JerseyServerMetricsProperties.class)
 public class JerseyServerMetricsAutoConfiguration {
 
@@ -61,7 +63,7 @@ public class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
-	public ResourceConfigCustomizer jerseyResourceConfigCustomizer(
+	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(
 			MeterRegistry meterRegistry, JerseyServerMetricsProperties properties,
 			JerseyTagsProvider tagsProvider) {
 		return (config) -> config.register(new MetricsApplicationEventListener(

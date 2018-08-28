@@ -18,29 +18,33 @@ package org.springframework.boot.actuate.autoconfigure.metrics.jersey2.server;
 
 import java.net.URI;
 
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.jersey2.server.DefaultJerseyTagsProvider;
+import io.micrometer.jersey2.server.JerseyTagsProvider;
 import io.micrometer.jersey2.server.MetricsApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.monitoring.RequestEvent;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,10 +53,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JerseyServerMetricsAutoConfiguration}.
  *
  * @author Michael Weirauch
+ * @author Michael Simons
  */
 public class JerseyServerMetricsAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.with(MetricsRun.simple()).withConfiguration(
+					AutoConfigurations.of(JerseyServerMetricsAutoConfiguration.class));
+
+	private final WebApplicationContextRunner webContextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
 					.withConfiguration(
 							AutoConfigurations.of(JerseyAutoConfiguration.class,
@@ -64,8 +73,29 @@ public class JerseyServerMetricsAutoConfigurationTests {
 					.withPropertyValues("server.port:0");
 
 	@Test
+	public void shouldOnlyBeActiveInWebApplicationContext() {
+		this.contextRunner.run((context) -> assertThat(context)
+				.doesNotHaveBean(ResourceConfigCustomizer.class));
+	}
+
+	@Test
+	public void shouldProvideAllNecessaryBeans() {
+		this.webContextRunner.run((context) -> assertThat(context)
+				.hasSingleBean(DefaultJerseyTagsProvider.class)
+				.hasSingleBean(ResourceConfigCustomizer.class));
+	}
+
+	@Test
+	public void shouldHonorExistingTagProvider() {
+		this.webContextRunner
+				.withUserConfiguration(CustomJerseyTagsProviderConfiguration.class)
+				.run((context) -> assertThat(context)
+						.hasSingleBean(CustomJerseyTagsProvider.class));
+	}
+
+	@Test
 	public void httpRequestsAreTimed() {
-		this.contextRunner.run((context) -> {
+		this.webContextRunner.run((context) -> {
 			doRequest(context);
 
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
@@ -77,7 +107,7 @@ public class JerseyServerMetricsAutoConfigurationTests {
 
 	@Test
 	public void noHttpRequestsTimedWhenJerseyInstrumentationMissingFromClasspath() {
-		this.contextRunner
+		this.webContextRunner
 				.withClassLoader(
 						new FilteredClassLoader(MetricsApplicationEventListener.class))
 				.run((context) -> {
@@ -98,18 +128,11 @@ public class JerseyServerMetricsAutoConfigurationTests {
 				String.class);
 	}
 
-	@Configuration
-	@ApplicationPath("/")
 	static class ResourceConfiguration {
 
 		@Bean
 		ResourceConfig resourceConfig() {
-			return new ResourceConfig();
-		}
-
-		@Bean
-		ResourceConfigCustomizer resourceConfigCustomizer() {
-			return (config) -> config.register(new TestResource());
+			return new ResourceConfig().register(new TestResource());
 		}
 
 		@Path("/users")
@@ -121,6 +144,29 @@ public class JerseyServerMetricsAutoConfigurationTests {
 				return id;
 			}
 
+		}
+
+	}
+
+	static class CustomJerseyTagsProviderConfiguration {
+
+		@Bean
+		JerseyTagsProvider customJerseyTagsProvider() {
+			return new CustomJerseyTagsProvider();
+		}
+
+	}
+
+	static class CustomJerseyTagsProvider implements JerseyTagsProvider {
+
+		@Override
+		public Iterable<Tag> httpRequestTags(RequestEvent event) {
+			return null;
+		}
+
+		@Override
+		public Iterable<Tag> httpLongRequestTags(RequestEvent event) {
+			return null;
 		}
 
 	}
