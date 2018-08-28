@@ -78,7 +78,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link KafkaAwareTransactionManager} to use.
 	 * @param transactionManager the transaction manager
 	 */
-	public void setTransactionManager(
+	void setTransactionManager(
 			KafkaAwareTransactionManager<Object, Object> transactionManager) {
 		this.transactionManager = transactionManager;
 	}
@@ -87,7 +87,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link ErrorHandler} to use.
 	 * @param errorHandler the error handler
 	 */
-	public void setErrorHandler(ErrorHandler errorHandler) {
+	void setErrorHandler(ErrorHandler errorHandler) {
 		this.errorHandler = errorHandler;
 	}
 
@@ -95,7 +95,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 * Set the {@link AfterRollbackProcessor} to use.
 	 * @param afterRollbackProcessor the after rollback processor
 	 */
-	public void setAfterRollbackProcessor(
+	void setAfterRollbackProcessor(
 			AfterRollbackProcessor<Object, Object> afterRollbackProcessor) {
 		this.afterRollbackProcessor = afterRollbackProcessor;
 	}
