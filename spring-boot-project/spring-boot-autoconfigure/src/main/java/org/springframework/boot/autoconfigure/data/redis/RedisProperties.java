@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marco Aust
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -325,6 +326,11 @@ public class RedisProperties {
 		 */
 		private Pool pool;
 
+		/**
+		 * Whether to enable share native connection.
+		 */
+		private Boolean shareNativeConnection;
+
 		public Duration getShutdownTimeout() {
 			return this.shutdownTimeout;
 		}
@@ -339,6 +345,14 @@ public class RedisProperties {
 
 		public void setPool(Pool pool) {
 			this.pool = pool;
+		}
+
+		public Boolean getShareNativeConnection() {
+			return this.shareNativeConnection;
+		}
+
+		public void setShareNativeConnection(Boolean shareNativeConnection) {
+			this.shareNativeConnection = shareNativeConnection;
 		}
 
 	}

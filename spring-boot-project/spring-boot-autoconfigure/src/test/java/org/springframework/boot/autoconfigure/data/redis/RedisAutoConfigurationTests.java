@@ -51,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Alen Turkovic
+ * @author Artsiom Yudovin
  */
 public class RedisAutoConfigurationTests {
 
@@ -155,7 +156,8 @@ public class RedisAutoConfigurationTests {
 				"spring.redis.lettuce.pool.max-idle:4",
 				"spring.redis.lettuce.pool.max-active:16",
 				"spring.redis.lettuce.pool.max-wait:2000",
-				"spring.redis.lettuce.shutdown-timeout:1000").run((context) -> {
+				"spring.redis.lettuce.shutdown-timeout:1000",
+				"spring.redis.lettuce.share-native-connection:false").run((context) -> {
 					LettuceConnectionFactory cf = context
 							.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
@@ -166,6 +168,7 @@ public class RedisAutoConfigurationTests {
 					assertThat(poolConfig.getMaxTotal()).isEqualTo(16);
 					assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(2000);
 					assertThat(cf.getShutdownTimeout()).isEqualTo(1000);
+					assertThat(cf.getShareNativeConnection()).isFalse();
 				});
 	}
 
