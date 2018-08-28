@@ -97,6 +97,7 @@
 		<module>spring-boot-sample-websocket-jetty</module>
 		<module>spring-boot-sample-websocket-tomcat</module>
 		<module>spring-boot-sample-websocket-undertow</module>
+		<module>spring-boot-sample-websocket-reactive</module>
 		<module>spring-boot-sample-webservices</module>
 		<module>spring-boot-sample-xml</module>
 	</modules>
