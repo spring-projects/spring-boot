@@ -93,7 +93,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 				}
 			}
 			catch (Exception ex) {
-				exitCode = (exitCode != 0 ? exitCode : 1);
+				exitCode = (exitCode != 0) ? exitCode : 1;
 				ex.printStackTrace();
 			}
 		}

@@ -73,11 +73,11 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	protected final File getValidDocumentRoot() {
 		File file = getDocumentRoot();
 		// If document root not explicitly set see if we are running from a war archive
-		file = (file != null ? file : getWarFileDocumentRoot());
+		file = (file != null) ? file : getWarFileDocumentRoot();
 		// If not a war archive maybe it is an exploded war
-		file = (file != null ? file : getExplodedWarFileDocumentRoot());
+		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
 		// Or maybe there is a document root in a well-known location
-		file = (file != null ? file : getCommonDocumentRoot());
+		file = (file != null) ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isDebugEnabled()) {
 			this.logger
 					.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
@@ -224,7 +224,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 
 	File getCodeSourceArchive(CodeSource codeSource) {
 		try {
-			URL location = (codeSource != null ? codeSource.getLocation() : null);
+			URL location = (codeSource != null) ? codeSource.getLocation() : null;
 			if (location == null) {
 				return null;
 			}
@@ -269,7 +269,7 @@ public abstract class AbstractEmbeddedServletContainerFactory
 	/**
 	 * Returns the absolute temp dir for given servlet container.
 	 * @param prefix servlet container name
-	 * @return The temp dir for given servlet container.
+	 * @return the temp dir for given servlet container.
 	 */
 	protected File createTempDir(String prefix) {
 		try {

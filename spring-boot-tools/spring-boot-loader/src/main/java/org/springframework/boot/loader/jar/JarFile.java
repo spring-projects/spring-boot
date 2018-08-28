@@ -154,7 +154,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Manifest getManifest() throws IOException {
-		Manifest manifest = (this.manifest != null ? this.manifest.get() : null);
+		Manifest manifest = (this.manifest != null) ? this.manifest.get() : null;
 		if (manifest == null) {
 			if (this.type == JarFileType.NESTED_DIRECTORY) {
 				manifest = new JarFile(this.getRootJarFile()).getManifest();
@@ -219,7 +219,7 @@ public class JarFile extends java.util.jar.JarFile {
 		if (ze instanceof JarEntry) {
 			return this.entries.getInputStream((JarEntry) ze, access);
 		}
-		return getInputStream((ze != null ? ze.getName() : null), access);
+		return getInputStream((ze != null) ? ze.getName() : null, access);
 	}
 
 	InputStream getInputStream(String name, ResourceAccess access) throws IOException {

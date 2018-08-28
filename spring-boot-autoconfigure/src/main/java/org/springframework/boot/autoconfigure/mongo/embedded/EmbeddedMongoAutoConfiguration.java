@@ -128,13 +128,13 @@ public class EmbeddedMongoAutoConfiguration {
 				this.embeddedProperties.getFeatures());
 		MongodConfigBuilder builder = new MongodConfigBuilder()
 				.version(featureAwareVersion);
-		if (this.embeddedProperties.getStorage() != null) {
-			builder.replication(
-					new Storage(this.embeddedProperties.getStorage().getDatabaseDir(),
-							this.embeddedProperties.getStorage().getReplSetName(),
-							this.embeddedProperties.getStorage().getOplogSize() != null
-									? this.embeddedProperties.getStorage().getOplogSize()
-									: 0));
+		org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties.Storage storage = this.embeddedProperties
+				.getStorage();
+		if (storage != null) {
+			String databaseDir = storage.getDatabaseDir();
+			String replSetName = storage.getReplSetName();
+			int oplogSize = (storage.getOplogSize() != null) ? storage.getOplogSize() : 0;
+			builder.replication(new Storage(databaseDir, replSetName, oplogSize));
 		}
 		Integer configuredPort = this.properties.getPort();
 		if (configuredPort != null && configuredPort > 0) {
@@ -239,8 +239,8 @@ public class EmbeddedMongoAutoConfiguration {
 				Set<Feature> features) {
 			Assert.notNull(version, "version must not be null");
 			this.version = version;
-			this.features = (features != null ? features
-					: Collections.<Feature>emptySet());
+			this.features = (features != null) ? features
+					: Collections.<Feature>emptySet();
 		}
 
 		@Override
@@ -251,20 +251,6 @@ public class EmbeddedMongoAutoConfiguration {
 		@Override
 		public boolean enabled(Feature feature) {
 			return this.features.contains(feature);
-		}
-
-		@Override
-		public String toString() {
-			return this.version;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + this.features.hashCode();
-			result = prime * result + this.version.hashCode();
-			return result;
 		}
 
 		@Override
@@ -283,6 +269,20 @@ public class EmbeddedMongoAutoConfiguration {
 				return equals;
 			}
 			return super.equals(obj);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + this.features.hashCode();
+			result = prime * result + this.version.hashCode();
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return this.version;
 		}
 
 	}

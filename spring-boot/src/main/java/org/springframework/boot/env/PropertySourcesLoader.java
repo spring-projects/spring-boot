@@ -141,7 +141,7 @@ public class PropertySourcesLoader {
 	}
 
 	private String generatePropertySourceName(String name, String profile) {
-		return (profile != null ? name + "#" + profile : name);
+		return (profile != null) ? name + "#" + profile : name;
 	}
 
 	private boolean canLoadFileExtension(PropertySourceLoader loader, Resource resource) {

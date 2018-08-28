@@ -163,8 +163,8 @@ public class TomcatEmbeddedServletContainerFactory
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		Tomcat tomcat = new Tomcat();
-		File baseDir = (this.baseDirectory != null ? this.baseDirectory
-				: createTempDir("tomcat"));
+		File baseDir = (this.baseDirectory != null) ? this.baseDirectory
+				: createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
@@ -188,7 +188,7 @@ public class TomcatEmbeddedServletContainerFactory
 
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File docBase = getValidDocumentRoot();
-		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
+		docBase = (docBase != null) ? docBase : createTempDir("tomcat-docbase");
 		final TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
@@ -196,7 +196,7 @@ public class TomcatEmbeddedServletContainerFactory
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
 		context.setParentClassLoader(
-				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
+				(this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
 						: ClassUtils.getDefaultClassLoader());
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
@@ -304,7 +304,7 @@ public class TomcatEmbeddedServletContainerFactory
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		connector.setPort(port);
 		if (StringUtils.hasText(this.getServerHeader())) {
 			connector.setAttribute("server", this.getServerHeader());

@@ -232,7 +232,7 @@ public class AutoConfigurationImportSelector
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(getEnvironment(),
 				"spring.autoconfigure.");
 		String[] exclude = resolver.getProperty("exclude", String[].class);
-		return (Arrays.asList(exclude != null ? exclude : new String[0]));
+		return Arrays.asList((exclude != null) ? exclude : new String[0]);
 	}
 
 	private List<String> sort(List<String> configurations,
@@ -298,7 +298,7 @@ public class AutoConfigurationImportSelector
 
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {
 		String[] value = attributes.getStringArray(name);
-		return Arrays.asList(value != null ? value : new String[0]);
+		return Arrays.asList((value != null) ? value : new String[0]);
 	}
 
 	private void fireAutoConfigurationImportEvents(List<String> configurations,

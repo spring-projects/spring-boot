@@ -114,8 +114,8 @@ class ProjectLibraries implements Libraries {
 
 	private Set<GradleLibrary> getLibraries(String configurationName,
 			LibraryScope scope) {
-		Configuration configuration = (configurationName != null
-				? this.project.getConfigurations().findByName(configurationName) : null);
+		Configuration configuration = (configurationName != null)
+				? this.project.getConfigurations().findByName(configurationName) : null;
 		if (configuration == null) {
 			return null;
 		}
@@ -234,16 +234,16 @@ class ProjectLibraries implements Libraries {
 		}
 
 		@Override
-		public int hashCode() {
-			return getFile().hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof GradleLibrary) {
 				return getFile().equals(((GradleLibrary) obj).getFile());
 			}
 			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return getFile().hashCode();
 		}
 
 		@Override
@@ -321,7 +321,7 @@ class ProjectLibraries implements Libraries {
 				String configurationName = (String) this.getTargetConfiguration
 						.invoke(projectDependency);
 				return projectDependency.getDependencyProject().getConfigurations()
-						.getByName(configurationName != null ? configurationName
+						.getByName((configurationName != null) ? configurationName
 								: Dependency.DEFAULT_CONFIGURATION);
 			}
 			catch (Exception ex) {

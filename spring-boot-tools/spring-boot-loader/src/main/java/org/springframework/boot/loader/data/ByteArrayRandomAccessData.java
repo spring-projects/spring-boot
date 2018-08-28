@@ -33,11 +33,11 @@ public class ByteArrayRandomAccessData implements RandomAccessData {
 	private final long length;
 
 	public ByteArrayRandomAccessData(byte[] bytes) {
-		this(bytes, 0, (bytes != null ? bytes.length : 0));
+		this(bytes, 0, (bytes != null) ? bytes.length : 0);
 	}
 
 	public ByteArrayRandomAccessData(byte[] bytes, long offset, long length) {
-		this.bytes = (bytes != null ? bytes : new byte[0]);
+		this.bytes = (bytes != null) ? bytes : new byte[0];
 		this.offset = offset;
 		this.length = length;
 	}

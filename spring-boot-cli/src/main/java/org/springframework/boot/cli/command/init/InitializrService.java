@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -241,7 +241,7 @@ class InitializrService {
 	private String getContent(HttpEntity entity) throws IOException {
 		ContentType contentType = ContentType.getOrDefault(entity);
 		Charset charset = contentType.getCharset();
-		charset = (charset != null ? charset : UTF_8);
+		charset = (charset != null) ? charset : UTF_8;
 		byte[] content = FileCopyUtils.copyToByteArray(entity.getContent());
 		return new String(content, charset);
 	}

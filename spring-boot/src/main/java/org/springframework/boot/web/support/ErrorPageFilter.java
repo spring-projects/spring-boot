@@ -207,8 +207,8 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	 * @since 1.5.0
 	 */
 	protected String getDescription(HttpServletRequest request) {
-		return "[" + request.getServletPath()
-				+ (request.getPathInfo() != null ? request.getPathInfo() : "") + "]";
+		String pathInfo = (request.getPathInfo() != null) ? request.getPathInfo() : "";
+		return "[" + request.getServletPath() + pathInfo + "]";
 	}
 
 	private void handleCommittedResponse(HttpServletRequest request, Throwable ex) {

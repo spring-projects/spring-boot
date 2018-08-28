@@ -24,7 +24,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
-		<spring-javaformat.version>0.0.2</spring-javaformat.version>
+		<spring-javaformat.version>0.0.6</spring-javaformat.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>

@@ -70,7 +70,7 @@ public class DefaultUserInfoRestTemplateFactory implements UserInfoRestTemplateF
 	public OAuth2RestTemplate getUserInfoRestTemplate() {
 		if (this.oauth2RestTemplate == null) {
 			this.oauth2RestTemplate = createOAuth2RestTemplate(
-					this.details != null ? this.details : DEFAULT_RESOURCE_DETAILS);
+					(this.details != null) ? this.details : DEFAULT_RESOURCE_DETAILS);
 			this.oauth2RestTemplate.getInterceptors()
 					.add(new AcceptJsonRequestInterceptor());
 			AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();

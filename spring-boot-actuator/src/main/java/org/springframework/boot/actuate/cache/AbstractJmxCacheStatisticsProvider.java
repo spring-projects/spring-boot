@@ -38,7 +38,7 @@ import org.springframework.cache.CacheManager;
  * Base {@link CacheStatisticsProvider} implementation that uses JMX to retrieve the cache
  * statistics.
  *
- * @param <C> The cache type
+ * @param <C> the cache type
  * @author Stephane Nicoll
  * @since 1.3.0
  */
@@ -56,7 +56,7 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache>
 	public CacheStatistics getCacheStatistics(CacheManager cacheManager, C cache) {
 		try {
 			ObjectName objectName = internalGetObjectName(cache);
-			return (objectName != null ? getCacheStatistics(objectName) : null);
+			return (objectName != null) ? getCacheStatistics(objectName) : null;
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new IllegalStateException(ex);

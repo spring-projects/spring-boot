@@ -60,11 +60,11 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		while (prefix != null && prefix.endsWith(".")) {
 			prefix = prefix.substring(0, prefix.length() - 1);
 		}
-		StringBuilder fullName = new StringBuilder(prefix != null ? prefix : "");
+		StringBuilder fullName = new StringBuilder((prefix != null) ? prefix : "");
 		if (fullName.length() > 0 && name != null) {
 			fullName.append(".");
 		}
-		fullName.append(name != null ? ConfigurationMetadata.toDashedCase(name) : "");
+		fullName.append((name != null) ? ConfigurationMetadata.toDashedCase(name) : "");
 		return fullName.toString();
 	}
 
@@ -132,17 +132,6 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		this.deprecation = deprecation;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder string = new StringBuilder(this.name);
-		buildToStringProperty(string, "type", this.type);
-		buildToStringProperty(string, "sourceType", this.sourceType);
-		buildToStringProperty(string, "description", this.description);
-		buildToStringProperty(string, "defaultValue", this.defaultValue);
-		buildToStringProperty(string, "deprecation", this.deprecation);
-		return string.toString();
-	}
-
 	protected void buildToStringProperty(StringBuilder string, String property,
 			Object value) {
 		if (value != null) {
@@ -182,6 +171,17 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder string = new StringBuilder(this.name);
+		buildToStringProperty(string, "type", this.type);
+		buildToStringProperty(string, "sourceType", this.sourceType);
+		buildToStringProperty(string, "description", this.description);
+		buildToStringProperty(string, "defaultValue", this.defaultValue);
+		buildToStringProperty(string, "deprecation", this.deprecation);
+		return string.toString();
+	}
+
 	private boolean nullSafeEquals(Object o1, Object o2) {
 		if (o1 == o2) {
 			return true;
@@ -193,7 +193,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 	}
 
 	private int nullSafeHashCode(Object o) {
-		return (o != null ? o.hashCode() : 0);
+		return (o != null) ? o.hashCode() : 0;
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.lang.UsesJava8;
  *
  * @author Dave Syer
  * @author Phillip Webb
- * @param <B> The buffer type
+ * @param <B> the buffer type
  */
 @UsesJava8
 abstract class Buffers<B extends Buffer<?>> {

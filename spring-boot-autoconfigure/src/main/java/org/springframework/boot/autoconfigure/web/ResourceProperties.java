@@ -241,7 +241,7 @@ public class ResourceProperties implements ResourceLoaderAware, InitializingBean
 
 		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
 				Boolean chainEnabled) {
-			return (fixedEnabled || contentEnabled ? Boolean.TRUE : chainEnabled);
+			return (fixedEnabled || contentEnabled) ? Boolean.TRUE : chainEnabled;
 		}
 
 	}

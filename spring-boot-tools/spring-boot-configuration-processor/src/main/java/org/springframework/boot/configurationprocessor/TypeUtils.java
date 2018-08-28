@@ -139,8 +139,8 @@ class TypeUtils {
 	}
 
 	public String getJavaDoc(Element element) {
-		String javadoc = (element != null
-				? this.env.getElementUtils().getDocComment(element) : null);
+		String javadoc = (element != null)
+				? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
 			javadoc = javadoc.replaceAll("[\r\n]+", "").trim();
 		}

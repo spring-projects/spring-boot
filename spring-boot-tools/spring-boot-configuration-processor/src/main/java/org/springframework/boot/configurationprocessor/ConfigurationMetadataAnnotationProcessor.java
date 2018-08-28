@@ -357,7 +357,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
 					this.typeUtils.getQualifiedName(returnElement),
 					this.typeUtils.getQualifiedName(element),
-					(getter != null ? getter.toString() : null)));
+					(getter != null) ? getter.toString() : null));
 			processTypeElement(nestedPrefix, (TypeElement) returnElement, source);
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 * @return the deduced name
 	 */
 	protected final String getOrDeduceName(Object value) {
-		return (this.name != null ? this.name : Conventions.getVariableName(value));
+		return (this.name != null) ? this.name : Conventions.getVariableName(value);
 	}
 
 	/**

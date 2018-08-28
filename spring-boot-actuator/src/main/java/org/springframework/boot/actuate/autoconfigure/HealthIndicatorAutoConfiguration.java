@@ -231,7 +231,7 @@ public class HealthIndicatorAutoConfiguration {
 		private String getValidationQuery(DataSource source) {
 			DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
 					.getDataSourcePoolMetadata(source);
-			return (poolMetadata != null ? poolMetadata.getValidationQuery() : null);
+			return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
 		}
 
 	}

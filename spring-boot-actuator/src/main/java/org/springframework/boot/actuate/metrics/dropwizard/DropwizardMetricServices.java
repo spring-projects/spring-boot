@@ -80,8 +80,8 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 	public DropwizardMetricServices(MetricRegistry registry,
 			ReservoirFactory reservoirFactory) {
 		this.registry = registry;
-		this.reservoirFactory = (reservoirFactory != null ? reservoirFactory
-				: ReservoirFactory.NONE);
+		this.reservoirFactory = (reservoirFactory != null) ? reservoirFactory
+				: ReservoirFactory.NONE;
 	}
 
 	@Override

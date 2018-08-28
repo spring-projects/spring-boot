@@ -159,7 +159,7 @@ public class MongoProperties {
 	}
 
 	public String determineUri() {
-		return (this.uri != null ? this.uri : DEFAULT_URI);
+		return (this.uri != null) ? this.uri : DEFAULT_URI;
 	}
 
 	public void setUri(String uri) {
@@ -226,7 +226,7 @@ public class MongoProperties {
 		if (options == null) {
 			options = MongoClientOptions.builder().build();
 		}
-		String host = (this.host != null ? this.host : "localhost");
+		String host = (this.host != null) ? this.host : "localhost";
 		return new MongoClient(Collections.singletonList(new ServerAddress(host, port)),
 				Collections.<MongoCredential>emptyList(), options);
 	}
@@ -242,13 +242,13 @@ public class MongoProperties {
 			}
 			List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 			if (hasCustomCredentials()) {
-				String database = (this.authenticationDatabase != null
-						? this.authenticationDatabase : getMongoClientDatabase());
+				String database = (this.authenticationDatabase != null)
+						? this.authenticationDatabase : getMongoClientDatabase();
 				credentials.add(MongoCredential.createCredential(this.username, database,
 						this.password));
 			}
-			String host = (this.host != null ? this.host : "localhost");
-			int port = (this.port != null ? this.port : DEFAULT_PORT);
+			String host = (this.host != null) ? this.host : "localhost";
+			int port = (this.port != null) ? this.port : DEFAULT_PORT;
 			return new MongoClient(
 					Collections.singletonList(new ServerAddress(host, port)), credentials,
 					options);

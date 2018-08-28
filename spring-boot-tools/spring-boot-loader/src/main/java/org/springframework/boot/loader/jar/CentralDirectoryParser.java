@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class CentralDirectoryParser {
 	 * Parse the source data, triggering {@link CentralDirectoryVisitor visitors}.
 	 * @param data the source data
 	 * @param skipPrefixBytes if prefix bytes should be skipped
-	 * @return The actual archive data without any prefix bytes
+	 * @return the actual archive data without any prefix bytes
 	 * @throws IOException on error
 	 */
 	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes)

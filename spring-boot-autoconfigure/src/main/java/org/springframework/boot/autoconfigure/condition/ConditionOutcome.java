@@ -123,12 +123,6 @@ public class ConditionOutcome {
 	}
 
 	@Override
-	public int hashCode() {
-		return ObjectUtils.hashCode(this.match) * 31
-				+ ObjectUtils.nullSafeHashCode(this.message);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -145,8 +139,14 @@ public class ConditionOutcome {
 	}
 
 	@Override
+	public int hashCode() {
+		return ObjectUtils.hashCode(this.match) * 31
+				+ ObjectUtils.nullSafeHashCode(this.message);
+	}
+
+	@Override
 	public String toString() {
-		return (this.message != null ? this.message.toString() : "");
+		return (this.message != null) ? this.message.toString() : "";
 	}
 
 	/**

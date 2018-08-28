@@ -77,7 +77,7 @@ public abstract class PropertySourceUtils {
 
 	private static String getSubKey(String name, String rootPrefixes,
 			RelaxedNames keyPrefix) {
-		rootPrefixes = (rootPrefixes != null ? rootPrefixes : "");
+		rootPrefixes = (rootPrefixes != null) ? rootPrefixes : "";
 		for (String rootPrefix : new RelaxedNames(rootPrefixes)) {
 			for (String candidateKeyPrefix : keyPrefix) {
 				if (name.startsWith(rootPrefix + candidateKeyPrefix)) {

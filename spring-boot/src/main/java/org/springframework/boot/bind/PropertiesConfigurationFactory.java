@@ -260,9 +260,9 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	private void doBindPropertiesToTarget() throws BindException {
-		RelaxedDataBinder dataBinder = (this.targetName != null
+		RelaxedDataBinder dataBinder = (this.targetName != null)
 				? new RelaxedDataBinder(this.target, this.targetName)
-				: new RelaxedDataBinder(this.target));
+				: new RelaxedDataBinder(this.target);
 		if (this.validator != null
 				&& this.validator.supports(dataBinder.getTarget().getClass())) {
 			dataBinder.setValidator(this.validator);
@@ -292,8 +292,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	private Iterable<String> getRelaxedTargetNames() {
-		return (this.target != null && StringUtils.hasLength(this.targetName)
-				? new RelaxedNames(this.targetName) : null);
+		return (this.target != null && StringUtils.hasLength(this.targetName))
+				? new RelaxedNames(this.targetName) : null;
 	}
 
 	private Set<String> getNames(Iterable<String> prefixes) {
@@ -365,7 +365,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			logger.error("Properties configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
 				logger.error(
-						this.messageSource != null
+						(this.messageSource != null)
 								? this.messageSource.getMessage(error,
 										Locale.getDefault()) + " (" + error + ")"
 								: error);

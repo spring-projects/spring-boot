@@ -225,7 +225,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 				properties.put(key, value.toString());
 			}
 			else {
-				properties.put(key, value != null ? value : "");
+				properties.put(key, (value != null) ? value : "");
 			}
 		}
 	}

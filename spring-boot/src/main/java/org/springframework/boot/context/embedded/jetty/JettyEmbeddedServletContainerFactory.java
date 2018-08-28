@@ -169,7 +169,7 @@ public class JettyEmbeddedServletContainerFactory
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = createServer(address);
 		configureWebAppContext(context, initializers);
@@ -404,12 +404,12 @@ public class JettyEmbeddedServletContainerFactory
 
 	private File getTempDirectory() {
 		String temp = System.getProperty("java.io.tmpdir");
-		return (temp != null ? new File(temp) : null);
+		return (temp != null) ? new File(temp) : null;
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
 		File root = getValidDocumentRoot();
-		root = (root != null ? root : createTempDir("jetty-docbase"));
+		root = (root != null) ? root : createTempDir("jetty-docbase");
 		try {
 			List<Resource> resources = new ArrayList<Resource>();
 			resources.add(
@@ -1013,7 +1013,7 @@ public class JettyEmbeddedServletContainerFactory
 				SessionDirectory sessionDirectory) {
 			SessionHandler handler = context.getSessionHandler();
 			Object manager = getSessionManager(handler);
-			setMaxInactiveInterval(manager, timeout > 0 ? timeout : -1);
+			setMaxInactiveInterval(manager, (timeout > 0) ? timeout : -1);
 			if (persist) {
 				Class<?> hashSessionManagerClass = ClassUtils.resolveClassName(
 						"org.eclipse.jetty.server.session.HashSessionManager",
@@ -1063,7 +1063,7 @@ public class JettyEmbeddedServletContainerFactory
 		public void configure(WebAppContext context, int timeout, boolean persist,
 				SessionDirectory sessionDirectory) {
 			SessionHandler handler = context.getSessionHandler();
-			handler.setMaxInactiveInterval(timeout > 0 ? timeout : -1);
+			handler.setMaxInactiveInterval((timeout > 0) ? timeout : -1);
 			if (persist) {
 				DefaultSessionCache cache = new DefaultSessionCache(handler);
 				FileSessionDataStore store = new FileSessionDataStore();

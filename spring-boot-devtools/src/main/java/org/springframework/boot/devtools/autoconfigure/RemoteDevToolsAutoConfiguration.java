@@ -95,9 +95,10 @@ public class RemoteDevToolsAutoConfiguration {
 	@Bean
 	public HandlerMapper remoteDevToolsHealthCheckHandlerMapper() {
 		Handler handler = new HttpStatusHandler();
-		return new UrlHandlerMapper((this.serverProperties.getContextPath() != null
-				? this.serverProperties.getContextPath() : "")
-				+ this.properties.getRemote().getContextPath(), handler);
+		String serverContextPath = (this.serverProperties.getContextPath() != null)
+				? this.serverProperties.getContextPath() : "";
+		String remoteContextPath = this.properties.getRemote().getContextPath();
+		return new UrlHandlerMapper(serverContextPath + remoteContextPath, handler);
 	}
 
 	@Bean
@@ -136,9 +137,10 @@ public class RemoteDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteRestartHandlerMapper")
 		public UrlHandlerMapper remoteRestartHandlerMapper(HttpRestartServer server) {
-			String url = (this.serverProperties.getContextPath() != null
-					? this.serverProperties.getContextPath() : "")
-					+ this.properties.getRemote().getContextPath() + "/restart";
+			String serverContextPath = (this.serverProperties.getContextPath() != null)
+					? this.serverProperties.getContextPath() : "";
+			String remoteContextPath = this.properties.getRemote().getContextPath();
+			String url = serverContextPath + remoteContextPath + "/restart";
 			logger.warn("Listening for remote restart updates on " + url);
 			Handler handler = new HttpRestartServerHandler(server);
 			return new UrlHandlerMapper(url, handler);
@@ -162,9 +164,10 @@ public class RemoteDevToolsAutoConfiguration {
 		@ConditionalOnMissingBean(name = "remoteDebugHandlerMapper")
 		public UrlHandlerMapper remoteDebugHandlerMapper(
 				@Qualifier("remoteDebugHttpTunnelServer") HttpTunnelServer server) {
-			String url = (this.serverProperties.getContextPath() != null
-					? this.serverProperties.getContextPath() : "")
-					+ this.properties.getRemote().getContextPath() + "/debug";
+			String serverContextPath = (this.serverProperties.getContextPath() != null)
+					? this.serverProperties.getContextPath() : "";
+			String remoteContextPath = this.properties.getRemote().getContextPath();
+			String url = serverContextPath + remoteContextPath + "/debug";
 			logger.warn("Listening for remote debug traffic on " + url);
 			Handler handler = new HttpTunnelServerHandler(server);
 			return new UrlHandlerMapper(url, handler);

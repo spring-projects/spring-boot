@@ -319,7 +319,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		DeploymentInfo info = ((DeploymentManager) ReflectionTestUtils
 				.getField(this.container, "manager")).getDeployment().getDeploymentInfo();
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
-		return (charsetName != null ? Charset.forName(charsetName) : null);
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 	@Override

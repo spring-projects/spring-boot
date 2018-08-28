@@ -55,7 +55,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * MVC on the classpath). Note that any endpoints having method signatures will break in a
  * non-servlet environment.
  *
- * @param <E> The endpoint type
+ * @param <E> the endpoint type
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Dave Syer
@@ -150,7 +150,7 @@ public abstract class AbstractEndpointHandlerMapping<E extends MvcEndpoint>
 		}
 		Assert.state(handler instanceof MvcEndpoint, "Only MvcEndpoints are supported");
 		String path = getPath((MvcEndpoint) handler);
-		return (path != null ? getEndpointPatterns(path, mapping) : null);
+		return (path != null) ? getEndpointPatterns(path, mapping) : null;
 	}
 
 	/**

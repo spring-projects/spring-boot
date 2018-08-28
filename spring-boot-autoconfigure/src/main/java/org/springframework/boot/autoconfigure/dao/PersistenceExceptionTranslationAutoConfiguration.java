@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class PersistenceExceptionTranslationAutoConfiguration {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 				"spring.aop.");
 		Boolean value = resolver.getProperty("proxyTargetClass", Boolean.class);
-		return (value != null ? value : true);
+		return (value != null) ? value : true;
 	}
 
 }

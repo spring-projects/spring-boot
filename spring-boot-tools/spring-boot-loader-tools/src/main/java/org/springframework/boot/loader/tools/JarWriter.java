@@ -157,8 +157,8 @@ public class JarWriter implements LoaderClassesWriter {
 
 	/**
 	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
-	 * @param entryName The name of the entry
-	 * @param inputStream The stream from which the entry's data can be read
+	 * @param entryName the name of the entry
+	 * @param inputStream the stream from which the entry's data can be read
 	 * @throws IOException if the write fails
 	 */
 	@Override
@@ -340,7 +340,7 @@ public class JarWriter implements LoaderClassesWriter {
 
 		@Override
 		public int read() throws IOException {
-			int read = (this.headerStream != null ? this.headerStream.read() : -1);
+			int read = (this.headerStream != null) ? this.headerStream.read() : -1;
 			if (read != -1) {
 				this.position++;
 				if (this.position >= this.headerLength) {
@@ -358,8 +358,8 @@ public class JarWriter implements LoaderClassesWriter {
 
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
-			int read = (this.headerStream != null ? this.headerStream.read(b, off, len)
-					: -1);
+			int read = (this.headerStream != null) ? this.headerStream.read(b, off, len)
+					: -1;
 			if (read <= 0) {
 				return readRemainder(b, off, len);
 			}

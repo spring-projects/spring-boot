@@ -233,8 +233,8 @@ public class ModifiedClassPathRunner extends BlockJUnit4ClassRunner {
 		private ClassPathEntryFilter(Class<?> testClass) throws Exception {
 			ClassPathExclusions exclusions = AnnotationUtils.findAnnotation(testClass,
 					ClassPathExclusions.class);
-			this.exclusions = (exclusions != null ? Arrays.asList(exclusions.value())
-					: Collections.<String>emptyList());
+			this.exclusions = (exclusions != null) ? Arrays.asList(exclusions.value())
+					: Collections.<String>emptyList();
 		}
 
 		private boolean isExcluded(URL url) throws Exception {

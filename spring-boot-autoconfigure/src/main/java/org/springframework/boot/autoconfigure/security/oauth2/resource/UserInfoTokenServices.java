@@ -115,7 +115,7 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 	 */
 	protected Object getPrincipal(Map<String, Object> map) {
 		Object principal = this.principalExtractor.extractPrincipal(map);
-		return (principal != null ? principal : "unknown");
+		return (principal != null) ? principal : "unknown";
 	}
 
 	@Override

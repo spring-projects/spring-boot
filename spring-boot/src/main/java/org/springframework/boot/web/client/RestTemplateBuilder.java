@@ -618,14 +618,14 @@ public class RestTemplateBuilder {
 
 	private <T> Set<T> append(Set<T> set, T addition) {
 		Set<T> result = new LinkedHashSet<T>(
-				set != null ? set : Collections.<T>emptySet());
+				(set != null) ? set : Collections.<T>emptySet());
 		result.add(addition);
 		return Collections.unmodifiableSet(result);
 	}
 
 	private <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<T>(
-				set != null ? set : Collections.<T>emptySet());
+				(set != null) ? set : Collections.<T>emptySet());
 		result.addAll(additions);
 		return Collections.unmodifiableSet(result);
 	}

@@ -87,8 +87,8 @@ public class YamlJavaBeanPropertyConstructor extends Constructor {
 				throws IntrospectionException {
 			Map<String, Property> forType = YamlJavaBeanPropertyConstructor.this.properties
 					.get(type);
-			Property property = (forType != null ? forType.get(name) : null);
-			return (property != null ? property : super.getProperty(type, name));
+			Property property = (forType != null) ? forType.get(name) : null;
+			return (property != null) ? property : super.getProperty(type, name);
 		}
 
 	}

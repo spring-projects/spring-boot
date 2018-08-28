@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,11 +145,25 @@ final class AsciiBytes {
 	}
 
 	@Override
-	public String toString() {
-		if (this.string == null) {
-			this.string = new String(this.bytes, this.offset, this.length, UTF_8);
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
 		}
-		return this.string;
+		if (this == obj) {
+			return true;
+		}
+		if (obj.getClass().equals(AsciiBytes.class)) {
+			AsciiBytes other = (AsciiBytes) obj;
+			if (this.length == other.length) {
+				for (int i = 0; i < this.length; i++) {
+					if (this.bytes[this.offset + i] != other.bytes[other.offset + i]) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -193,25 +207,11 @@ final class AsciiBytes {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
+	public String toString() {
+		if (this.string == null) {
+			this.string = new String(this.bytes, this.offset, this.length, UTF_8);
 		}
-		if (this == obj) {
-			return true;
-		}
-		if (obj.getClass().equals(AsciiBytes.class)) {
-			AsciiBytes other = (AsciiBytes) obj;
-			if (this.length == other.length) {
-				for (int i = 0; i < this.length; i++) {
-					if (this.bytes[this.offset + i] != other.bytes[other.offset + i]) {
-						return false;
-					}
-				}
-				return true;
-			}
-		}
-		return false;
+		return this.string;
 	}
 
 	static String toString(byte[] bytes) {

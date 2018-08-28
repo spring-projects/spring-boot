@@ -382,7 +382,7 @@ public class ServerProperties
 			return this.useForwardHeaders;
 		}
 		CloudPlatform platform = CloudPlatform.getActive(this.environment);
-		return (platform != null ? platform.isUsingForwardHeaders() : false);
+		return (platform != null) ? platform.isUsingForwardHeaders() : false;
 	}
 
 	public Integer getConnectionTimeout() {
@@ -830,8 +830,8 @@ public class ServerProperties
 			if (this.minSpareThreads > 0) {
 				customizeMinThreads(factory);
 			}
-			int maxHttpHeaderSize = (serverProperties.getMaxHttpHeaderSize() > 0
-					? serverProperties.getMaxHttpHeaderSize() : this.maxHttpHeaderSize);
+			int maxHttpHeaderSize = (serverProperties.getMaxHttpHeaderSize() > 0)
+					? serverProperties.getMaxHttpHeaderSize() : this.maxHttpHeaderSize;
 			if (maxHttpHeaderSize > 0) {
 				customizeMaxHttpHeaderSize(factory, maxHttpHeaderSize);
 			}

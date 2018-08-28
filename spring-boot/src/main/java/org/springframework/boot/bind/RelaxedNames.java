@@ -50,7 +50,7 @@ public final class RelaxedNames implements Iterable<String> {
 	 * using dashed notation (e.g. {@literal my-property-name}
 	 */
 	public RelaxedNames(String name) {
-		this.name = (name != null ? name : "");
+		this.name = (name != null) ? name : "";
 		initialize(RelaxedNames.this.name, this.values);
 	}
 
@@ -128,7 +128,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 			@Override
 			public String apply(String value) {
-				return (value.indexOf('-') != -1 ? value.replace('-', '_') : value);
+				return (value.indexOf('-') != -1) ? value.replace('-', '_') : value;
 			}
 
 		},
@@ -137,7 +137,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 			@Override
 			public String apply(String value) {
-				return (value.indexOf('_') != -1 ? value.replace('_', '.') : value);
+				return (value.indexOf('_') != -1) ? value.replace('_', '.') : value;
 			}
 
 		},
@@ -146,7 +146,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 			@Override
 			public String apply(String value) {
-				return (value.indexOf('.') != -1 ? value.replace('.', '_') : value);
+				return (value.indexOf('.') != -1) ? value.replace('.', '_') : value;
 			}
 
 		},
@@ -228,7 +228,7 @@ public final class RelaxedNames implements Iterable<String> {
 			for (String field : SEPARATED_TO_CAMEL_CASE_PATTERN.split(value)) {
 				field = (caseInsensitive ? field.toLowerCase(Locale.ENGLISH) : field);
 				builder.append(
-						builder.length() != 0 ? StringUtils.capitalize(field) : field);
+						(builder.length() != 0) ? StringUtils.capitalize(field) : field);
 			}
 			char lastChar = value.charAt(value.length() - 1);
 			for (char suffix : SUFFIXES) {
@@ -250,8 +250,8 @@ public final class RelaxedNames implements Iterable<String> {
 	public static RelaxedNames forCamelCase(String name) {
 		StringBuilder result = new StringBuilder();
 		for (char c : name.toCharArray()) {
-			result.append(Character.isUpperCase(c) && result.length() > 0
-					&& result.charAt(result.length() - 1) != '-'
+			result.append((Character.isUpperCase(c) && result.length() > 0
+					&& result.charAt(result.length() - 1) != '-')
 							? "-" + Character.toLowerCase(c) : c);
 		}
 		return new RelaxedNames(result.toString());

@@ -102,7 +102,7 @@ public class HttpEncodingProperties {
 	}
 
 	boolean shouldForce(Type type) {
-		Boolean force = (type != Type.REQUEST ? this.forceResponse : this.forceRequest);
+		Boolean force = (type != Type.REQUEST) ? this.forceResponse : this.forceRequest;
 		if (force == null) {
 			force = this.force;
 		}

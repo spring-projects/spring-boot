@@ -62,7 +62,7 @@ public final class MetricWriterMessageHandler implements MessageHandler {
 		else {
 			if (logger.isWarnEnabled()) {
 				logger.warn("Unsupported metric payload "
-						+ (payload != null ? payload.getClass().getName() : "null"));
+						+ ((payload != null) ? payload.getClass().getName() : "null"));
 			}
 		}
 	}

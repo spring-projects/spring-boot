@@ -58,7 +58,7 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 			return getDisabledResponse();
 		}
 		LoggerLevels levels = this.delegate.invoke(name);
-		return (levels != null ? levels : ResponseEntity.notFound().build());
+		return (levels != null) ? levels : ResponseEntity.notFound().build();
 	}
 
 	@ActuatorPostMapping("/{name:.*}")
@@ -79,8 +79,8 @@ public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 	private LogLevel getLogLevel(Map<String, String> configuration) {
 		String level = configuration.get("configuredLevel");
 		try {
-			return (level != null ? LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH))
-					: null);
+			return (level != null) ? LogLevel.valueOf(level.toUpperCase(Locale.ENGLISH))
+					: null;
 		}
 		catch (IllegalArgumentException ex) {
 			throw new InvalidLogLevelException(level);

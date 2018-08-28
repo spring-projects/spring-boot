@@ -91,7 +91,7 @@ class HotelServiceImpl implements HotelService {
 		@Override
 		public long getNumberOfReviewsWithRating(Rating rating) {
 			Long count = this.ratingCount.get(rating);
-			return (count != null ? count : 0);
+			return (count != null) ? count : 0;
 		}
 
 	}

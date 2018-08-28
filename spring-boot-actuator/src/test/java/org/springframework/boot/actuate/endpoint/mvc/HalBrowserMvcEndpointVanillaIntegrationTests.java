@@ -126,7 +126,7 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 			if (collections.contains(path)) {
 				continue;
 			}
-			path = (path.length() > 0 ? path : "/");
+			path = (path.length() > 0) ? path : "/";
 			this.mockMvc.perform(get(path).accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk()).andExpect(jsonPath("$._links.self.href")
 							.value("http://localhost" + endpoint.getPath()));

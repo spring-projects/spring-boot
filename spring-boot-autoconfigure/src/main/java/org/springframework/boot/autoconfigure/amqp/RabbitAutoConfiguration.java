@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ public class RabbitAutoConfiguration {
 
 		private boolean determineMandatoryFlag() {
 			Boolean mandatory = this.properties.getTemplate().getMandatory();
-			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
+			return (mandatory != null) ? mandatory : this.properties.isPublisherReturns();
 		}
 
 		private RetryTemplate createRetryTemplate(RabbitProperties.Retry properties) {

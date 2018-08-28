@@ -67,7 +67,7 @@ public class DependencyResolutionContext {
 			dependency = this.managedDependencyByGroupAndArtifact
 					.get(getIdentifier(groupId, artifactId));
 		}
-		return (dependency != null ? dependency.getArtifact().getVersion() : null);
+		return (dependency != null) ? dependency.getArtifact().getVersion() : null;
 	}
 
 	public List<Dependency> getManagedDependencies() {
@@ -104,10 +104,10 @@ public class DependencyResolutionContext {
 			this.managedDependencyByGroupAndArtifact.put(getIdentifier(aetherDependency),
 					aetherDependency);
 		}
-		this.dependencyManagement = (this.dependencyManagement != null
+		this.dependencyManagement = (this.dependencyManagement != null)
 				? new CompositeDependencyManagement(dependencyManagement,
 						this.dependencyManagement)
-				: dependencyManagement);
+				: dependencyManagement;
 		this.artifactCoordinatesResolver = new DependencyManagementArtifactCoordinatesResolver(
 				this.dependencyManagement);
 	}

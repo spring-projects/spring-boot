@@ -115,7 +115,7 @@ public class EndpointMBeanExporter extends MBeanExporter
 	 * @param objectMapper the object mapper
 	 */
 	public EndpointMBeanExporter(ObjectMapper objectMapper) {
-		this.objectMapper = (objectMapper != null ? objectMapper : new ObjectMapper());
+		this.objectMapper = (objectMapper != null) ? objectMapper : new ObjectMapper();
 		setAutodetect(false);
 		setNamingStrategy(this.defaultNamingStrategy);
 		setAssembler(this.assembler);
@@ -167,8 +167,8 @@ public class EndpointMBeanExporter extends MBeanExporter
 		for (Map.Entry<String, JmxEndpoint> entry : endpoints.entrySet()) {
 			String name = entry.getKey();
 			JmxEndpoint endpoint = entry.getValue();
-			Class<?> type = (endpoint.getEndpointType() != null
-					? endpoint.getEndpointType() : endpoint.getClass());
+			Class<?> type = (endpoint.getEndpointType() != null)
+					? endpoint.getEndpointType() : endpoint.getClass();
 			if (!this.registeredEndpoints.contains(type) && endpoint.isEnabled()) {
 				try {
 					registerBeanNameOrInstance(endpoint, name);

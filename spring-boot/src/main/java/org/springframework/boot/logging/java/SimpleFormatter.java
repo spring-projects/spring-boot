@@ -63,7 +63,7 @@ public class SimpleFormatter extends Formatter {
 
 	private String getThreadName() {
 		String name = Thread.currentThread().getName();
-		return (name != null ? name : "");
+		return (name != null) ? name : "";
 	}
 
 	private static String getOrUseDefault(String key, String defaultValue) {

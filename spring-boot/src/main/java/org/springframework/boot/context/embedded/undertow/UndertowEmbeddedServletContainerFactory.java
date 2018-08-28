@@ -314,8 +314,8 @@ public class UndertowEmbeddedServletContainerFactory
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			Ssl ssl = getSsl();
-			char[] keyPassword = (ssl.getKeyPassword() != null
-					? ssl.getKeyPassword().toCharArray() : null);
+			char[] keyPassword = (ssl.getKeyPassword() != null)
+					? ssl.getKeyPassword().toCharArray() : null;
 			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
@@ -375,13 +375,13 @@ public class UndertowEmbeddedServletContainerFactory
 
 	private KeyStore loadKeyStore(String type, String resource, String password)
 			throws Exception {
-		type = (type != null ? type : "JKS");
+		type = (type != null) ? type : "JKS";
 		if (resource == null) {
 			return null;
 		}
 		KeyStore store = KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password != null ? password.toCharArray() : null);
+		store.load(url.openStream(), (password != null) ? password.toCharArray() : null);
 		return store;
 	}
 
@@ -415,7 +415,7 @@ public class UndertowEmbeddedServletContainerFactory
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
-		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
+		int sessionTimeout = (getSessionTimeout() > 0) ? getSessionTimeout() : -1;
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
 	}
@@ -424,8 +424,8 @@ public class UndertowEmbeddedServletContainerFactory
 		try {
 			createAccessLogDirectoryIfNecessary();
 			XnioWorker worker = createWorker();
-			String prefix = (this.accessLogPrefix != null ? this.accessLogPrefix
-					: "access_log.");
+			String prefix = (this.accessLogPrefix != null) ? this.accessLogPrefix
+					: "access_log.";
 			final DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
 					worker, this.accessLogDirectory, prefix, this.accessLogSuffix,
 					this.accessLogRotate);
@@ -537,7 +537,7 @@ public class UndertowEmbeddedServletContainerFactory
 	private File getCanonicalDocumentRoot() {
 		try {
 			File root = getValidDocumentRoot();
-			root = (root != null ? root : createTempDir("undertow-docbase"));
+			root = (root != null) ? root : createTempDir("undertow-docbase");
 			return root.getCanonicalFile();
 		}
 		catch (IOException ex) {

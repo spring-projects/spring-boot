@@ -566,7 +566,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 				.getTomcat().getHost().findChildren()[0];
 		CharsetMapper mapper = ((TomcatEmbeddedContext) context).getCharsetMapper();
 		String charsetName = mapper.getCharset(locale);
-		return (charsetName != null ? Charset.forName(charsetName) : null);
+		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}
 
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory,

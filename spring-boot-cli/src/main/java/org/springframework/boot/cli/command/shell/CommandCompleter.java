@@ -129,7 +129,7 @@ public class CommandCompleter extends StringsCompleter {
 		OptionHelpLine(OptionHelp optionHelp) {
 			StringBuilder options = new StringBuilder();
 			for (String option : optionHelp.getOptions()) {
-				options.append(options.length() != 0 ? ", " : "");
+				options.append((options.length() != 0) ? ", " : "");
 				options.append(option);
 			}
 			this.options = options.toString();

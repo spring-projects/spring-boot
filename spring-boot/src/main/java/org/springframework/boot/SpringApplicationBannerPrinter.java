@@ -163,7 +163,7 @@ class SpringApplicationBannerPrinter {
 		@Override
 		public void printBanner(Environment environment, Class<?> sourceClass,
 				PrintStream out) {
-			sourceClass = (sourceClass != null ? sourceClass : this.sourceClass);
+			sourceClass = (sourceClass != null) ? sourceClass : this.sourceClass;
 			this.banner.printBanner(environment, sourceClass, out);
 		}
 

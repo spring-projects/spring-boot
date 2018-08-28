@@ -112,7 +112,7 @@ public class HalBrowserMvcEndpointManagementContextPathIntegrationTests {
 				continue;
 			}
 			path = (path.startsWith("/") ? path.substring(1) : path);
-			path = (path.length() > 0 ? path : "self");
+			path = (path.length() > 0) ? path : "self";
 			this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$._links.%s.href", path)

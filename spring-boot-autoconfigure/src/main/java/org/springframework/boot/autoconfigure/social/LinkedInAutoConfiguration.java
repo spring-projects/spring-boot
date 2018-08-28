@@ -70,7 +70,7 @@ public class LinkedInAutoConfiguration {
 		public LinkedIn linkedin(ConnectionRepository repository) {
 			Connection<LinkedIn> connection = repository
 					.findPrimaryConnection(LinkedIn.class);
-			return (connection != null ? connection.getApi() : null);
+			return (connection != null) ? connection.getApi() : null;
 		}
 
 		@Bean(name = { "connect/linkedinConnect", "connect/linkedinConnected" })

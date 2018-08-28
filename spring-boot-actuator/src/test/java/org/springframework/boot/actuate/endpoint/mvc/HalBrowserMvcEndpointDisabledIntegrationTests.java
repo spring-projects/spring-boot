@@ -86,7 +86,7 @@ public class HalBrowserMvcEndpointDisabledIntegrationTests {
 			if ("/actuator".equals(path) || endpoint instanceof HeapdumpMvcEndpoint) {
 				continue;
 			}
-			path = (path.length() > 0 ? path : "/");
+			path = (path.length() > 0) ? path : "/";
 			MockHttpServletRequestBuilder requestBuilder = get(path);
 			if (endpoint instanceof AuditEventsMvcEndpoint) {
 				requestBuilder.param("after", "2016-01-01T12:00:00+00:00");

@@ -106,8 +106,8 @@ public class ResourceBanner implements Banner {
 	}
 
 	protected String getApplicationVersion(Class<?> sourceClass) {
-		Package sourcePackage = (sourceClass != null ? sourceClass.getPackage() : null);
-		return (sourcePackage != null ? sourcePackage.getImplementationVersion() : null);
+		Package sourcePackage = (sourceClass != null) ? sourceClass.getPackage() : null;
+		return (sourcePackage != null) ? sourcePackage.getImplementationVersion() : null;
 	}
 
 	protected String getBootVersion() {
@@ -131,14 +131,14 @@ public class ResourceBanner implements Banner {
 		MutablePropertySources sources = new MutablePropertySources();
 		String applicationTitle = getApplicationTitle(sourceClass);
 		Map<String, Object> titleMap = Collections.<String, Object>singletonMap(
-				"application.title", (applicationTitle != null ? applicationTitle : ""));
+				"application.title", (applicationTitle != null) ? applicationTitle : "");
 		sources.addFirst(new MapPropertySource("title", titleMap));
 		return new PropertySourcesPropertyResolver(sources);
 	}
 
 	protected String getApplicationTitle(Class<?> sourceClass) {
-		Package sourcePackage = (sourceClass != null ? sourceClass.getPackage() : null);
-		return (sourcePackage != null ? sourcePackage.getImplementationTitle() : null);
+		Package sourcePackage = (sourceClass != null) ? sourceClass.getPackage() : null;
+		return (sourcePackage != null) ? sourcePackage.getImplementationTitle() : null;
 	}
 
 }

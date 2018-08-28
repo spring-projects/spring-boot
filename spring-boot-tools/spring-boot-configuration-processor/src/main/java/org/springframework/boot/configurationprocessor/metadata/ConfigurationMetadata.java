@@ -169,8 +169,8 @@ public class ConfigurationMetadata {
 
 	private List<ItemMetadata> getCandidates(String name) {
 		List<ItemMetadata> candidates = this.items.get(name);
-		return (candidates != null ? new ArrayList<ItemMetadata>(candidates)
-				: new ArrayList<ItemMetadata>());
+		return (candidates != null) ? new ArrayList<ItemMetadata>(candidates)
+				: new ArrayList<ItemMetadata>();
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {
@@ -181,7 +181,7 @@ public class ConfigurationMetadata {
 	}
 
 	public static String nestedPrefix(String prefix, String name) {
-		String nestedPrefix = (prefix != null ? prefix : "");
+		String nestedPrefix = (prefix != null) ? prefix : "";
 		String dashedName = toDashedCase(name);
 		nestedPrefix += ("".equals(nestedPrefix) ? dashedName : "." + dashedName);
 		return nestedPrefix;

@@ -25,7 +25,7 @@ public interface HotelSummary {
 	Double getAverageRating();
 
 	default Integer getAverageRatingRounded() {
-		return (getAverageRating() != null ? (int) Math.round(getAverageRating()) : null);
+		return (getAverageRating() != null) ? (int) Math.round(getAverageRating()) : null;
 	}
 
 }

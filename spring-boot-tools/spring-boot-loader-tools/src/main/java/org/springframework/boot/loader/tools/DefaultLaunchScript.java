@@ -95,7 +95,7 @@ public class DefaultLaunchScript implements LaunchScript {
 				value = (String) properties.get(name);
 			}
 			else {
-				value = (value != null ? value.substring(1) : matcher.group(0));
+				value = (value != null) ? value.substring(1) : matcher.group(0);
 			}
 			matcher.appendReplacement(expanded, value.replace("$", "\\$"));
 		}

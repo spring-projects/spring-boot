@@ -71,7 +71,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 		Assert.notNull(scanMethod, "Unable to find scan method");
 		try {
 			scanMethod.invoke(this.jarScanner, context, classloader, callback,
-					(jarsToSkip != null ? jarsToSkip : this.patterns));
+					(jarsToSkip != null) ? jarsToSkip : this.patterns);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Tomcat 7 reflection failed", ex);

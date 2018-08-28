@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ public final class RepositoryConfiguration {
 
 	/**
 	 * Creates a new {@code RepositoryConfiguration} instance.
-	 * @param name The name of the repository
-	 * @param uri The uri of the repository
+	 * @param name the name of the repository
+	 * @param uri the uri of the repository
 	 * @param snapshotsEnabled {@code true} if the repository should enable access to
 	 * snapshots, {@code false} otherwise
 	 */
@@ -52,12 +52,6 @@ public final class RepositoryConfiguration {
 	 */
 	public String getName() {
 		return this.name;
-	}
-
-	@Override
-	public String toString() {
-		return "RepositoryConfiguration [name=" + this.name + ", uri=" + this.uri
-				+ ", snapshotsEnabled=" + this.snapshotsEnabled + "]";
 	}
 
 	/**
@@ -77,11 +71,6 @@ public final class RepositoryConfiguration {
 	}
 
 	@Override
-	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.name);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -94,6 +83,17 @@ public final class RepositoryConfiguration {
 		}
 		RepositoryConfiguration other = (RepositoryConfiguration) obj;
 		return ObjectUtils.nullSafeEquals(this.name, other.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return ObjectUtils.nullSafeHashCode(this.name);
+	}
+
+	@Override
+	public String toString() {
+		return "RepositoryConfiguration [name=" + this.name + ", uri=" + this.uri
+				+ ", snapshotsEnabled=" + this.snapshotsEnabled + "]";
 	}
 
 }

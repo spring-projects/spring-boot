@@ -38,7 +38,7 @@ class DataConverter {
 	private final JavaType mapStringObject;
 
 	DataConverter(ObjectMapper objectMapper) {
-		this.objectMapper = (objectMapper != null ? objectMapper : new ObjectMapper());
+		this.objectMapper = (objectMapper != null) ? objectMapper : new ObjectMapper();
 		this.listObject = this.objectMapper.getTypeFactory()
 				.constructParametricType(List.class, Object.class);
 		this.mapStringObject = this.objectMapper.getTypeFactory()

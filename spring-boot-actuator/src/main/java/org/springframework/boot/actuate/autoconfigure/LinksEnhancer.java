@@ -74,7 +74,7 @@ class LinksEnhancer {
 	private void addEndpointLink(ResourceSupport resource, MvcEndpoint endpoint,
 			String rel) {
 		Class<?> type = endpoint.getEndpointType();
-		type = (type != null ? type : Object.class);
+		type = (type != null) ? type : Object.class;
 		if (StringUtils.hasText(rel)) {
 			String href = this.rootPath + endpoint.getPath();
 			resource.add(linkTo(type).slash(href).withRel(rel));

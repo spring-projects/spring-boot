@@ -152,7 +152,7 @@ public class SpringBootPluginExtension {
 	 * @return the Layout to use or null if not explicitly set
 	 */
 	public Layout convertLayout() {
-		return (this.layout != null ? this.layout.layout : null);
+		return (this.layout != null) ? this.layout.layout : null;
 	}
 
 	public String getMainClass() {

@@ -145,7 +145,7 @@ public class RepackageTask extends DefaultTask {
 		SpringBootPluginExtension extension = project.getExtensions()
 				.getByType(SpringBootPluginExtension.class);
 		ProjectLibraries libraries = new ProjectLibraries(project, extension,
-				this.excludeDevtools != null ? this.excludeDevtools
+				(this.excludeDevtools != null) ? this.excludeDevtools
 						: extension.isExcludeDevtools());
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
@@ -293,20 +293,20 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		private boolean isExecutable() {
-			return (RepackageTask.this.executable != null ? RepackageTask.this.executable
-					: this.extension.isExecutable());
+			return (RepackageTask.this.executable != null) ? RepackageTask.this.executable
+					: this.extension.isExecutable();
 		}
 
 		private File getEmbeddedLaunchScript() {
-			return (RepackageTask.this.embeddedLaunchScript != null
+			return (RepackageTask.this.embeddedLaunchScript != null)
 					? RepackageTask.this.embeddedLaunchScript
-					: this.extension.getEmbeddedLaunchScript());
+					: this.extension.getEmbeddedLaunchScript();
 		}
 
 		private Map<String, String> getEmbeddedLaunchScriptProperties() {
-			return (RepackageTask.this.embeddedLaunchScriptProperties != null
+			return (RepackageTask.this.embeddedLaunchScriptProperties != null)
 					? RepackageTask.this.embeddedLaunchScriptProperties
-					: this.extension.getEmbeddedLaunchScriptProperties());
+					: this.extension.getEmbeddedLaunchScriptProperties();
 		}
 
 	}

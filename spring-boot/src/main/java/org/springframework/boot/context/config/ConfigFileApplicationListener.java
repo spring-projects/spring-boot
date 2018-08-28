@@ -344,8 +344,8 @@ public class ConfigFileApplicationListener
 
 		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
-			this.resourceLoader = (resourceLoader != null ? resourceLoader
-					: new DefaultResourceLoader());
+			this.resourceLoader = (resourceLoader != null) ? resourceLoader
+					: new DefaultResourceLoader();
 		}
 
 		public void load() {
@@ -437,7 +437,7 @@ public class ConfigFileApplicationListener
 		}
 
 		private void load(String location, String name, Profile profile) {
-			String group = "profile=" + (profile != null ? profile : "");
+			String group = "profile=" + ((profile != null) ? profile : "");
 			if (!StringUtils.hasText(name)) {
 				// Try to load directly from the location
 				loadIntoGroup(group, location, profile);
@@ -488,7 +488,7 @@ public class ConfigFileApplicationListener
 				String name = "applicationConfig: [" + location + "]";
 				String group = "applicationConfig: [" + identifier + "]";
 				propertySource = this.propertiesLoader.load(resource, group, name,
-						(profile != null ? profile.getName() : null));
+						(profile != null) ? profile.getName() : null);
 				if (propertySource != null) {
 					msg.append("Loaded ");
 					handleProfileProperties(propertySource);
@@ -646,7 +646,7 @@ public class ConfigFileApplicationListener
 
 		private Set<String> asResolvedSet(String value, String fallback) {
 			List<String> list = Arrays.asList(StringUtils.trimArrayElements(
-					StringUtils.commaDelimitedListToStringArray(value != null
+					StringUtils.commaDelimitedListToStringArray((value != null)
 							? this.environment.resolvePlaceholders(value) : fallback)));
 			Collections.reverse(list);
 			return new LinkedHashSet<String>(list);
@@ -700,16 +700,6 @@ public class ConfigFileApplicationListener
 		}
 
 		@Override
-		public String toString() {
-			return this.name;
-		}
-
-		@Override
-		public int hashCode() {
-			return this.name.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (obj == this) {
 				return true;
@@ -718,6 +708,16 @@ public class ConfigFileApplicationListener
 				return false;
 			}
 			return ((Profile) obj).name.equals(this.name);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.name.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
 		}
 
 	}

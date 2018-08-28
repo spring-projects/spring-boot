@@ -340,7 +340,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private String getPath(ServletServerHttpRequest request) {
 			String path = (String) request.getServletRequest()
 					.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-			return (path != null ? path : "");
+			return (path != null) ? path : "";
 		}
 
 	}
@@ -355,8 +355,9 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 		@SuppressWarnings("unchecked")
 		EndpointResource(Object content, String path) {
-			this.content = (content instanceof Map ? null : content);
-			this.embedded = (Map<String, Object>) (this.content != null ? null : content);
+			this.content = (content instanceof Map) ? null : content;
+			this.embedded = (Map<String, Object>) ((this.content != null) ? null
+					: content);
 			add(linkTo(Object.class).slash(path).withSelfRel());
 		}
 

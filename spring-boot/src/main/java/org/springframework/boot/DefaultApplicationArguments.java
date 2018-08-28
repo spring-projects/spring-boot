@@ -62,7 +62,7 @@ public class DefaultApplicationArguments implements ApplicationArguments {
 	@Override
 	public List<String> getOptionValues(String name) {
 		List<String> values = this.source.getOptionValues(name);
-		return (values != null ? Collections.unmodifiableList(values) : null);
+		return (values != null) ? Collections.unmodifiableList(values) : null;
 	}
 
 	@Override

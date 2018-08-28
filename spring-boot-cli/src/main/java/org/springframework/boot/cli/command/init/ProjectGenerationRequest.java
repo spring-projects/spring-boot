@@ -418,7 +418,7 @@ class ProjectGenerationRequest {
 		}
 		if (this.output != null) {
 			int i = this.output.lastIndexOf('.');
-			return (i != -1 ? this.output.substring(0, i) : this.output);
+			return (i != -1) ? this.output.substring(0, i) : this.output;
 		}
 		return null;
 	}

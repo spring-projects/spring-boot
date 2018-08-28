@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ public final class RichGauge {
 	/**
 	 * Return either an exponential weighted moving average or a simple mean,
 	 * respectively, depending on whether the weight 'alpha' has been set for this gauge.
-	 * @return The average over all the accumulated values
+	 * @return the average over all the accumulated values
 	 */
 	public double getAverage() {
 		return this.average;

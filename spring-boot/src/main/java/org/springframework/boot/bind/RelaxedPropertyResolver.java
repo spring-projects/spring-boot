@@ -43,7 +43,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	public RelaxedPropertyResolver(PropertyResolver resolver, String prefix) {
 		Assert.notNull(resolver, "PropertyResolver must not be null");
 		this.resolver = resolver;
-		this.prefix = (prefix != null ? prefix : "");
+		this.prefix = (prefix != null) ? prefix : "";
 	}
 
 	@Override

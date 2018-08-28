@@ -32,8 +32,8 @@ class PatternPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 	private final String[] patterns;
 
 	PatternPropertyNamePatternsMatcher(Collection<String> patterns) {
-		this.patterns = (patterns != null ? patterns.toArray(new String[patterns.size()])
-				: new String[] {});
+		this.patterns = (patterns != null) ? patterns.toArray(new String[patterns.size()])
+				: new String[] {};
 	}
 
 	@Override

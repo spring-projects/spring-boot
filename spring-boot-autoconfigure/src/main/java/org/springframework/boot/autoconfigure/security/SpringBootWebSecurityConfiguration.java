@@ -283,7 +283,7 @@ public class SpringBootWebSecurityConfiguration {
 		private String[] getSecureApplicationPaths() {
 			List<String> list = new ArrayList<String>();
 			for (String path : this.security.getBasic().getPath()) {
-				path = (path != null ? path.trim() : "");
+				path = (path != null) ? path.trim() : "";
 				if (path.equals("/**")) {
 					return new String[] { path };
 				}

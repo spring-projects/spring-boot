@@ -469,7 +469,7 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	private String createLogForProfile(String profile) {
-		String suffix = (profile != null ? "-" + profile : "");
+		String suffix = (profile != null) ? "-" + profile : "";
 		String string = ".properties)";
 		return "Loaded config file '"
 				+ new File("target/test-classes/application" + suffix + ".properties")

@@ -65,7 +65,7 @@ public final class FailureAnalyzers {
 
 	FailureAnalyzers(ConfigurableApplicationContext context, ClassLoader classLoader) {
 		Assert.notNull(context, "Context must not be null");
-		this.classLoader = (classLoader != null ? classLoader : context.getClassLoader());
+		this.classLoader = (classLoader != null) ? classLoader : context.getClassLoader();
 		this.analyzers = loadFailureAnalyzers(this.classLoader);
 		prepareFailureAnalyzers(this.analyzers, context);
 	}

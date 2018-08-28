@@ -66,7 +66,7 @@ class AutoConfigurationSorter {
 			public int compare(String o1, String o2) {
 				int i1 = classes.get(o1).getOrder();
 				int i2 = classes.get(o2).getOrder();
-				return (i1 < i2 ? -1 : (i1 > i2 ? 1 : 0));
+				return (i1 < i2) ? -1 : (i1 > i2) ? 1 : 0;
 			}
 
 		});
@@ -174,8 +174,8 @@ class AutoConfigurationSorter {
 			}
 			Map<String, Object> attributes = getAnnotationMetadata()
 					.getAnnotationAttributes(AutoConfigureOrder.class.getName());
-			return (attributes != null ? (Integer) attributes.get("value")
-					: Ordered.LOWEST_PRECEDENCE);
+			return (attributes != null) ? (Integer) attributes.get("value")
+					: Ordered.LOWEST_PRECEDENCE;
 		}
 
 		private Set<String> readBefore() {

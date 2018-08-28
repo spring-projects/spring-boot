@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,7 +145,7 @@ public abstract class LoggingSystem {
 	/**
 	 * Detect and return the logging system in use. Supports Logback and Java Logging.
 	 * @param classLoader the classloader
-	 * @return The logging system
+	 * @return the logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
 		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);

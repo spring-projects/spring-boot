@@ -195,9 +195,8 @@ public class RedisAutoConfiguration {
 		}
 
 		private JedisConnectionFactory createJedisConnectionFactory() {
-			JedisPoolConfig poolConfig = (this.properties.getPool() != null
-					? jedisPoolConfig() : new JedisPoolConfig());
-
+			JedisPoolConfig poolConfig = (this.properties.getPool() != null)
+					? jedisPoolConfig() : new JedisPoolConfig();
 			if (getSentinelConfig() != null) {
 				return new JedisConnectionFactory(getSentinelConfig(), poolConfig);
 			}

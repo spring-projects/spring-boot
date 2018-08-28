@@ -65,8 +65,8 @@ public class BootRunTask extends JavaExec {
 	private void addResourcesIfNecessary() {
 		if (this.addResources) {
 			SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
-			final File outputDir = (mainSourceSet != null
-					? mainSourceSet.getOutput().getResourcesDir() : null);
+			final File outputDir = (mainSourceSet != null)
+					? mainSourceSet.getOutput().getResourcesDir() : null;
 			final Set<File> resources = new LinkedHashSet<File>();
 			if (mainSourceSet != null) {
 				resources.addAll(mainSourceSet.getResources().getSrcDirs());

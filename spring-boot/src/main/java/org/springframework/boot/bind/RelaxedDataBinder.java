@@ -86,7 +86,7 @@ public class RelaxedDataBinder extends DataBinder {
 	/**
 	 * Create a new {@link RelaxedDataBinder} instance.
 	 * @param target the target into which properties are bound
-	 * @param namePrefix An optional prefix to be used when reading properties
+	 * @param namePrefix an optional prefix to be used when reading properties
 	 */
 	public RelaxedDataBinder(Object target, String namePrefix) {
 		super(wrapTarget(target),
@@ -394,14 +394,14 @@ public class RelaxedDataBinder extends DataBinder {
 		if (propertyName == null) {
 			propertyName = resolveNestedPropertyName(target, prefix, name);
 		}
-		return (propertyName != null ? propertyName : name);
+		return (propertyName != null) ? propertyName : name;
 	}
 
 	private String resolveNestedPropertyName(BeanWrapper target, String prefix,
 			String name) {
 		StringBuilder candidate = new StringBuilder();
 		for (String field : name.split("[_\\-\\.]")) {
-			candidate.append(candidate.length() > 0 ? "." : "");
+			candidate.append((candidate.length() > 0) ? "." : "");
 			candidate.append(field);
 			String nested = resolvePropertyName(target, prefix, candidate.toString());
 			if (nested != null) {
@@ -739,7 +739,7 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 
 		private boolean isBenign(PropertyOrigin origin) {
-			String name = (origin != null ? origin.getSource().getName() : null);
+			String name = (origin != null) ? origin.getSource().getName() : null;
 			return BENIGN_PROPERTY_SOURCE_NAMES.contains(name);
 		}
 

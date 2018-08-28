@@ -90,7 +90,7 @@ public class BasicErrorController extends AbstractErrorController {
 				request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
-		return (modelAndView != null ? modelAndView : new ModelAndView("error", model));
+		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
 	}
 
 	@RequestMapping

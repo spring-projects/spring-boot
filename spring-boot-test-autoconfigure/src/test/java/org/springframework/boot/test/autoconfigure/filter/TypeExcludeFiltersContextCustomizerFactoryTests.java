@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,13 +123,13 @@ public class TypeExcludeFiltersContextCustomizerFactoryTests {
 		}
 
 		@Override
-		public int hashCode() {
-			return SimpleExclude.class.hashCode();
+		public boolean equals(Object obj) {
+			return obj.getClass().equals(getClass());
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			return obj.getClass().equals(getClass());
+		public int hashCode() {
+			return SimpleExclude.class.hashCode();
 		}
 
 	}

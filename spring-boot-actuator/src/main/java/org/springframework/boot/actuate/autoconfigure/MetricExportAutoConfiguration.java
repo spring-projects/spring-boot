@@ -95,7 +95,7 @@ public class MetricExportAutoConfiguration {
 			exporters.setReader(reader);
 			exporters.setWriters(writers);
 		}
-		exporters.setExporters(this.exporters != null ? this.exporters
+		exporters.setExporters((this.exporters != null) ? this.exporters
 				: Collections.<String, Exporter>emptyMap());
 		return exporters;
 	}
@@ -128,7 +128,7 @@ public class MetricExportAutoConfiguration {
 		public MetricExportProperties metricExportProperties() {
 			MetricExportProperties export = new MetricExportProperties();
 			export.getRedis().setPrefix("spring.metrics"
-					+ (this.prefix.length() > 0 ? "." : "") + this.prefix);
+					+ ((this.prefix.length() > 0) ? "." : "") + this.prefix);
 			export.getAggregate().setPrefix(this.prefix);
 			export.getAggregate().setKeyPattern(this.aggregateKeyPattern);
 			return export;
