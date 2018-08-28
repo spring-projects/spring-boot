@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -50,12 +51,16 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.kafka.transaction.ChainedKafkaTransactionManager;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -155,6 +160,10 @@ public class KafkaAutoConfigurationTests {
 					assertThat(configs.get("baz")).isEqualTo("qux");
 					assertThat(configs.get("foo.bar.baz")).isEqualTo("qux.fiz.buz");
 					assertThat(configs.get("fiz.buz")).isEqualTo("fix.fox");
+					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					assertThat(KafkaTestUtils.getPropertyValue(factory, "errorHandler"))
+							.isSameAs(context.getBean("errorHandler"));
 				});
 	}
 
@@ -485,6 +494,7 @@ public class KafkaAutoConfigurationTests {
 	@Test
 	public void testKafkaTemplateRecordMessageConverters() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
+				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test")
 				.run((context) -> {
 					KafkaTemplate<?, ?> kafkaTemplate = context
 							.getBean(KafkaTemplate.class);
@@ -496,6 +506,7 @@ public class KafkaAutoConfigurationTests {
 	@Test
 	public void testConcurrentKafkaListenerContainerFactoryWithCustomMessageConverters() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
+				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test")
 				.run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
@@ -503,6 +514,11 @@ public class KafkaAutoConfigurationTests {
 							kafkaListenerContainerFactory);
 					assertThat(dfa.getPropertyValue("messageConverter"))
 							.isSameAs(context.getBean("myMessageConverter"));
+					assertThat(kafkaListenerContainerFactory.getContainerProperties()
+							.getTransactionManager()).isSameAs(
+									context.getBean("chainedTransactionManager"));
+					assertThat(dfa.getPropertyValue("afterRollbackProcessor"))
+							.isSameAs(context.getBean("arp"));
 				});
 	}
 
@@ -521,6 +537,11 @@ public class KafkaAutoConfigurationTests {
 	@Configuration
 	protected static class TestConfiguration {
 
+		@Bean
+		public SeekToCurrentErrorHandler errorHandler() {
+			return new SeekToCurrentErrorHandler();
+		}
+
 	}
 
 	@Configuration
@@ -529,6 +550,22 @@ public class KafkaAutoConfigurationTests {
 		@Bean
 		public RecordMessageConverter myMessageConverter() {
 			return mock(RecordMessageConverter.class);
+		}
+
+		@Bean
+		@Primary
+		public PlatformTransactionManager chainedTransactionManager(
+				KafkaTransactionManager<String, String> kafkaTransactionManager) {
+
+			return new ChainedKafkaTransactionManager<String, String>(
+					kafkaTransactionManager);
+		}
+
+		@Bean
+		public AfterRollbackProcessor<Object, Object> arp() {
+			return (records, consumer, ex, recoverable) -> {
+				// no-op
+			};
 		}
 
 	}
