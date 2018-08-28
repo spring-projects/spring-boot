@@ -5627,8 +5627,7 @@ bean is defined, it is automatically associated to the auto-configured `KafkaTem
 When the Apache Kafka infrastructure is present, any bean can be annotated with
 `@KafkaListener` to create a listener endpoint. If no `KafkaListenerContainerFactory` has
 been defined, a default one is automatically configured with keys defined in
-`spring.kafka.listener.*`. Also, if a `RecordMessageConverter` bean is defined, it is
-automatically associated to the default factory.
+`spring.kafka.listener.*`.
 
 The following component creates a listener endpoint on the `someTopic` topic:
 
@@ -5644,6 +5643,16 @@ The following component creates a listener endpoint on the `someTopic` topic:
 
 	}
 ----
+
+If a `KafkaTransactionManager` bean is defined, it is automatically associated to the
+container factory. Similarly, if a `RecordMessageConverter`, `ErrorHandler` or
+`AfterRollbackProcessor` bean is defined, it is automatically associated to the default
+factory.
+
+TIP: A custom `ChainedKafkaTransactionManager` must be marked `@Primary` as it usually
+reference the auto-configured `KafkaTransactionManager` bean.
+
+
 
 [[boot-features-kafka-streams]]
 ==== Kafka Streams
