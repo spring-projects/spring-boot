@@ -7654,6 +7654,10 @@ container is responsible for the configuration of its WebSocket support.
 Spring Framework provides {spring-reference}web.html#websocket[rich WebSocket support]
 that can be easily accessed through the `spring-boot-starter-websocket` module.
 
+For Reactive WebSockets,
+{spring-reference}web-reactive.html#webflux-websocket[Spring WebFlux] offers rich support,
+which is accessible through the `spring-boot-starter-webflux` module.
+
 
 
 [[boot-features-webservices]]
