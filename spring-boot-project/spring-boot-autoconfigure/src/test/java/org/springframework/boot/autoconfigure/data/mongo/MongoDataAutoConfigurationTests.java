@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClients;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -39,7 +40,9 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy;
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
+import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.BasicMongoPersistentEntity;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -173,6 +176,16 @@ public class MongoDataAutoConfigurationTests {
 				.doesNotHaveBean(MongoDataAutoConfiguration.class));
 	}
 
+	@Test
+	public void createsMongoDbFactoryForMongoClientClientWhenBeanPresent() {
+
+		this.contextRunner.withUserConfiguration(WithMongoClientClientConfiguration.class)
+				.run((context) -> {
+					MongoDbFactory dbFactory = context.getBean(MongoDbFactory.class);
+					assertThat(dbFactory).isInstanceOf(SimpleMongoClientDbFactory.class);
+				});
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext,
 			Class<?>... types) {
@@ -194,6 +207,16 @@ public class MongoDataAutoConfigurationTests {
 	@Configuration
 	@EntityScan("org.springframework.boot.autoconfigure.data.mongo")
 	static class EntityScanConfig {
+
+	}
+
+	@Configuration
+	static class WithMongoClientClientConfiguration {
+
+		@Bean
+		com.mongodb.client.MongoClient mongoClient() {
+			return MongoClients.create();
+		}
 
 	}
 
