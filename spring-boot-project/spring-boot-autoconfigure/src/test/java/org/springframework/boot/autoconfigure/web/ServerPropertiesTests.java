@@ -168,6 +168,13 @@ public class ServerPropertiesTests {
 		assertThat(jetty.getAccesslog().isAppend()).isTrue();
 	}
 
+	@Test
+	public void customizeMaxHttpResponseHeaderSize() {
+		bind("server.jetty.max-http-response-header-size", "2048");
+		ServerProperties.Jetty jetty = this.properties.getJetty();
+		assertThat(jetty.getMaxHttpResponseHeaderSize()).isEqualTo(2048);
+	}
+
 	private void bind(String name, String value) {
 		bind(Collections.singletonMap(name, value));
 	}

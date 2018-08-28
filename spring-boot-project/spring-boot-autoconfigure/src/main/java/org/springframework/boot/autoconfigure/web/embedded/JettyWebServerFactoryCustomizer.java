@@ -73,9 +73,13 @@ public class JettyWebServerFactoryCustomizer implements
 				.to(factory::setAcceptors);
 		propertyMapper.from(jettyProperties::getSelectors).whenNonNull()
 				.to(factory::setSelectors);
-		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
-				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
-						maxHttpHeaderSize));
+		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive).to(
+				(maxHttpRequestHeaderSize) -> customizeMaxHttpRequestHeaderSize(factory,
+						maxHttpRequestHeaderSize));
+		propertyMapper.from(jettyProperties::getMaxHttpResponseHeaderSize)
+				.when(this::isPositive)
+				.to((maxHttpResponseHeaderSize) -> customizeMaxHttpResponseHeaderSize(
+						factory, maxHttpResponseHeaderSize));
 		propertyMapper.from(jettyProperties::getMaxHttpPostSize).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
@@ -112,8 +116,8 @@ public class JettyWebServerFactoryCustomizer implements
 		});
 	}
 
-	private void customizeMaxHttpHeaderSize(ConfigurableJettyWebServerFactory factory,
-			int maxHttpHeaderSize) {
+	private void customizeMaxHttpRequestHeaderSize(
+			ConfigurableJettyWebServerFactory factory, int maxHttpRequestHeaderSize) {
 		factory.addServerCustomizers(new JettyServerCustomizer() {
 
 			@Override
@@ -132,8 +136,34 @@ public class JettyWebServerFactoryCustomizer implements
 
 			private void customize(HttpConfiguration.ConnectionFactory factory) {
 				HttpConfiguration configuration = factory.getHttpConfiguration();
-				configuration.setRequestHeaderSize(maxHttpHeaderSize);
-				configuration.setResponseHeaderSize(maxHttpHeaderSize);
+				configuration.setRequestHeaderSize(maxHttpRequestHeaderSize);
+			}
+
+		});
+	}
+
+	private void customizeMaxHttpResponseHeaderSize(
+			ConfigurableJettyWebServerFactory factory,
+			Integer maxHttpResponseHeaderSize) {
+		factory.addServerCustomizers(new JettyServerCustomizer() {
+
+			@Override
+			public void customize(Server server) {
+				for (org.eclipse.jetty.server.Connector connector : server
+						.getConnectors()) {
+					for (ConnectionFactory connectionFactory : connector
+							.getConnectionFactories()) {
+						if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
+							customize(
+									(HttpConfiguration.ConnectionFactory) connectionFactory);
+						}
+					}
+				}
+			}
+
+			private void customize(HttpConfiguration.ConnectionFactory factory) {
+				HttpConfiguration configuration = factory.getHttpConfiguration();
+				configuration.setResponseHeaderSize(maxHttpResponseHeaderSize);
 			}
 
 		});
