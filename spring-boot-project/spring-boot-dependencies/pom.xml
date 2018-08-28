@@ -152,7 +152,7 @@
 		<sendgrid.version>4.2.1</sendgrid.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<snakeyaml.version>1.21</snakeyaml.version>
+		<snakeyaml.version>1.23</snakeyaml.version>
 		<solr.version>7.4.0</solr.version>
 		<spring.version>5.1.0.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>2.1.0.M2</spring-amqp.version>
