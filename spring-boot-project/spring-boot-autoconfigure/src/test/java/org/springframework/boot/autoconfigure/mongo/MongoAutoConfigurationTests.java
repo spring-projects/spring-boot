@@ -23,14 +23,12 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.client.MongoClients;
 import org.junit.Test;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -83,13 +81,13 @@ public class MongoAutoConfigurationTests {
 
 	@Test
 	public void doesNotCreateMongoClientWhenAlreadyDefined() {
-
 		this.contextRunner
 				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(ConfigurationWithClientMongoClient.class)
-				.run((context) -> assertThatExceptionOfType(
-						NoSuchBeanDefinitionException.class)
-								.isThrownBy(() -> context.getBean(MongoClient.class)));
+				.withUserConfiguration(FallbackMongoClientConfig.class).run((context) -> {
+					assertThat(context).doesNotHaveBean(MongoClient.class);
+					assertThat(context)
+							.hasSingleBean(com.mongodb.client.MongoClient.class);
+				});
 	}
 
 	@Configuration
@@ -118,10 +116,10 @@ public class MongoAutoConfigurationTests {
 
 	}
 
-	static class ConfigurationWithClientMongoClient {
+	static class FallbackMongoClientConfig {
 
 		@Bean
-		com.mongodb.client.MongoClient mongoClient() {
+		com.mongodb.client.MongoClient fallbackMongoClient() {
 			return MongoClients.create();
 		}
 

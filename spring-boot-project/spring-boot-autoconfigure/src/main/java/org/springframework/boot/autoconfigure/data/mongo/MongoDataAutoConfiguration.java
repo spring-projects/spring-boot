@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -32,7 +29,7 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration.AnySyncMongoClientAvailable;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration.AnyMongoClientAvailable;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -43,6 +40,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoDbFactorySupport;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -75,8 +73,9 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ MongoClient.class, MongoTemplate.class })
-@Conditional(AnySyncMongoClientAvailable.class)
+@ConditionalOnClass({ MongoClient.class, com.mongodb.client.MongoClient.class,
+		MongoTemplate.class })
+@Conditional(AnyMongoClientAvailable.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @Import(MongoDataConfiguration.class)
 @AutoConfigureAfter(MongoAutoConfiguration.class)
@@ -84,22 +83,25 @@ public class MongoDataAutoConfiguration {
 
 	private final MongoProperties properties;
 
-	private final MongoDbFactoryFactory dbFactoryFactory;
-
-	public MongoDataAutoConfiguration(ObjectProvider<MongoClient> mongoClientProvider,
-			ObjectProvider<com.mongodb.client.MongoClient> mongoClientClientProvider,
-			MongoProperties properties) {
-
+	public MongoDataAutoConfiguration(MongoProperties properties) {
 		this.properties = properties;
-		this.dbFactoryFactory = new MongoDbFactoryFactory(mongoClientProvider,
-				mongoClientClientProvider);
 	}
 
 	@Bean
-	@Conditional(AnySyncMongoClientAvailable.class)
 	@ConditionalOnMissingBean(MongoDbFactory.class)
-	public MongoDbFactory mongoDbFactory() {
-		return this.dbFactoryFactory.getFor(this.properties.getMongoClientDatabase());
+	public MongoDbFactorySupport<?> mongoDbFactory(ObjectProvider<MongoClient> mongo,
+			ObjectProvider<com.mongodb.client.MongoClient> mongoClient) {
+		MongoClient preferredClient = mongo.getIfAvailable();
+		if (preferredClient != null) {
+			return new SimpleMongoDbFactory(preferredClient,
+					this.properties.getMongoClientDatabase());
+		}
+		com.mongodb.client.MongoClient fallbackClient = mongoClient.getIfAvailable();
+		if (fallbackClient != null) {
+			return new SimpleMongoClientDbFactory(fallbackClient,
+					this.properties.getMongoClientDatabase());
+		}
+		throw new IllegalStateException("Expected to find at least one MongoDB client.");
 	}
 
 	@Bean
@@ -183,87 +185,23 @@ public class MongoDataAutoConfiguration {
 	}
 
 	/**
-	 * Check if either {@link com.mongodb.MongoClient} or
-	 * {@link com.mongodb.client.MongoClient} is already defined in the
-	 * {@link org.springframework.context.ApplicationContext}.
-	 *
-	 * @author Christoph Strobl
-	 * @since 2.1
+	 * Check if either a {@link com.mongodb.MongoClient} or
+	 * {@link com.mongodb.client.MongoClient} bean is available.
 	 */
-	static class AnySyncMongoClientAvailable extends AnyNestedCondition {
+	static class AnyMongoClientAvailable extends AnyNestedCondition {
 
-		AnySyncMongoClientAvailable() {
+		AnyMongoClientAvailable() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnBean(com.mongodb.MongoClient.class)
-		static class MongoClientPreferred {
+		@ConditionalOnBean(MongoClient.class)
+		static class PreferredClientAvailable {
 
 		}
 
 		@ConditionalOnBean(com.mongodb.client.MongoClient.class)
-		static class MongoClientClientPreferred {
+		static class FallbackClientAvailable {
 
-		}
-
-	}
-
-	/**
-	 * Encapsulation of {@link MongoDbFactory} creation depending on available beans
-	 * {@link com.mongodb.MongoClient} or {@link com.mongodb.client.MongoClient} expressed
-	 * via the given {@link ObjectProvider ObjectProviders}. Prefers the first available
-	 * MongoDB client creating a suitable instance of {@link MongoDbFactory} for it.
-	 *
-	 * @author Christoph Strobl
-	 * @since 2.1
-	 */
-	static class MongoDbFactoryFactory {
-
-		private final List<ObjectProvider<?>> clientProviders;
-
-		/**
-		 * Create new instance of {@link MongoDbFactoryFactory}.
-		 * @param clientProviders order matters here, as we choose the first available
-		 * one.
-		 */
-		MongoDbFactoryFactory(ObjectProvider<?>... clientProviders) {
-			this.clientProviders = Arrays.asList(clientProviders);
-		}
-
-		/**
-		 * Get the {@link MongoDbFactory} suitable for the first available MongoDB client.
-		 * @param database the name of the default database to return on
-		 * {@link MongoDbFactory#getDb()}.
-		 * @return new instance of {@link MongoDbFactory} suitable for the first available
-		 * MongoDB client.
-		 */
-		MongoDbFactory getFor(String database) {
-
-			Object client = findAvailableClientProvider();
-
-			if (client instanceof MongoClient) {
-				return new SimpleMongoDbFactory(MongoClient.class.cast(client), database);
-			}
-
-			if (client instanceof com.mongodb.client.MongoClient) {
-				return new SimpleMongoClientDbFactory(
-						com.mongodb.client.MongoClient.class.cast(client), database);
-			}
-
-			return null;
-		}
-
-		private Object findAvailableClientProvider() {
-
-			for (ObjectProvider<?> provider : this.clientProviders) {
-				Object client = provider.getIfAvailable();
-				if (client != null) {
-					return client;
-				}
-			}
-
-			throw new IllegalStateException(
-					"Expected to find at least one MongoDB client.");
 		}
 
 	}
