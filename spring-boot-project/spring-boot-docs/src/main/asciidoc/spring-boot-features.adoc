@@ -5617,8 +5617,9 @@ public class MyBean {
 }
 ----
 
-NOTE: If a `RecordMessageConverter` bean is defined, it is automatically associated to
-the auto-configured `KafkaTemplate`.
+NOTE: If the property `spring.kafka.producer.transaction-id-prefix` is defined, a
+`KafkaTransactionManager` is automatically configured. Also, if a `RecordMessageConverter`
+bean is defined, it is automatically associated to the auto-configured `KafkaTemplate`.
 
 
 [[boot-features-kafka-receiving-a-message]]
