@@ -327,7 +327,7 @@ public class RedisProperties {
 		private Pool pool;
 
 		/**
-		 * Whether to enable share native connection
+		 * Whether to enable share native connection.
 		 */
 		private Boolean shareNativeConnection;
 
