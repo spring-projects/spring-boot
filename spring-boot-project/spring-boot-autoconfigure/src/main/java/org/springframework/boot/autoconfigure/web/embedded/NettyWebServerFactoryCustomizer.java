@@ -38,8 +38,6 @@ import org.springframework.core.env.Environment;
 public class NettyWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<NettyReactiveWebServerFactory>, Ordered {
 
-	private static final Predicate<Integer> isStrictlyPositive = (n) -> n > 0;
-
 	private final Environment environment;
 
 	private final ServerProperties serverProperties;
@@ -77,7 +75,7 @@ public class NettyWebServerFactoryCustomizer
 	}
 
 	private boolean isStrictlyPositive(int n) {
-		return isStrictlyPositive.test(n);
+		return n > 0;
 	}
 
 	private int determineMaxHeaderSize() {
