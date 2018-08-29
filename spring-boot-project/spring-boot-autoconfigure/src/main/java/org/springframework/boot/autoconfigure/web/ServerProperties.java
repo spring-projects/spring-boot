@@ -53,6 +53,7 @@ import org.springframework.util.unit.DataSize;
  * @author Aurélien Leboulanger
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Samuel Ko
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -108,6 +109,8 @@ public class ServerProperties {
 	private final Jetty jetty = new Jetty();
 
 	private final Undertow undertow = new Undertow();
+
+	private final Netty netty = new Netty();
 
 	public Integer getPort() {
 		return this.port;
@@ -191,6 +194,10 @@ public class ServerProperties {
 
 	public Undertow getUndertow() {
 		return this.undertow;
+	}
+
+	public Netty getNetty() {
+		return this.netty;
 	}
 
 	/**
@@ -1094,6 +1101,78 @@ public class ServerProperties {
 				this.rotate = rotate;
 			}
 
+		}
+
+	}
+
+	/**
+	 * Netty properties.
+	 */
+	public static class Netty {
+
+		/**
+		 * Maximum initial line length, in bytes.
+		 */
+		private int maxInitialLineLength = 0;
+
+		/**
+		 * Maximum header size for a request, in bytes.
+		 */
+		private int maxHeaderSize = 0;
+
+		/**
+		 * Maximum chunk size for a request, in bytes.
+		 */
+		private int maxChunkSize = 0;
+
+		/**
+		 * Whether to validate headers for illegal characters and character sequences.
+		 */
+		private boolean validateHeaders;
+
+		/**
+		 * Initial buffer size for a request, in bytes.
+		 */
+		private int initialBufferSize;
+
+		public int getMaxInitialLineLength() {
+			return this.maxInitialLineLength;
+		}
+
+		public void setMaxInitialLineLength(int maxInitialLineLength) {
+			this.maxInitialLineLength = maxInitialLineLength;
+		}
+
+		public int getMaxHeaderSize() {
+			return this.maxHeaderSize;
+		}
+
+		public void setMaxHeaderSize(int maxHeaderSize) {
+			this.maxHeaderSize = maxHeaderSize;
+		}
+
+		public int getMaxChunkSize() {
+			return this.maxChunkSize;
+		}
+
+		public void setMaxChunkSize(int maxChunkSize) {
+			this.maxChunkSize = maxChunkSize;
+		}
+
+		public boolean getValidateHeaders() {
+			return this.validateHeaders;
+		}
+
+		public void setValidateHeaders(boolean validateHeaders) {
+			this.validateHeaders = validateHeaders;
+		}
+
+		public int getInitialBufferSize() {
+			return this.initialBufferSize;
+		}
+
+		public void setInitialBufferSize(int initialBufferSize) {
+			this.initialBufferSize = initialBufferSize;
 		}
 
 	}

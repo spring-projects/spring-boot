@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import reactor.netty.http.server.HttpRequestDecoderSpec;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
@@ -27,10 +32,13 @@ import org.springframework.core.env.Environment;
  * Customization for Netty-specific features.
  *
  * @author Brian Clozel
+ * @author Samuel Ko
  * @since 2.1.0
  */
 public class NettyWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<NettyReactiveWebServerFactory>, Ordered {
+
+	private static final Predicate<Integer> isStrictlyPositive = (n) -> n > 0;
 
 	private final Environment environment;
 
@@ -49,8 +57,58 @@ public class NettyWebServerFactoryCustomizer
 
 	@Override
 	public void customize(NettyReactiveWebServerFactory factory) {
+		factory.addServerCustomizers((httpServer) -> httpServer
+				.httpRequestDecoder(this.httpRequestDecoderSpecMapper));
+
 		factory.setUseForwardHeaders(
 				getOrDeduceUseForwardHeaders(this.serverProperties, this.environment));
+	}
+
+	Function<HttpRequestDecoderSpec, HttpRequestDecoderSpec> httpRequestDecoderSpecMapper = (
+			httpRequestDecoderSpec) -> httpRequestDecoderSpec
+					.maxChunkSize(determineMaxChunkSize())
+					.maxHeaderSize(determineMaxHeaderSize())
+					.maxInitialLineLength(determineMaxInitialLineLength())
+					.validateHeaders(determineValidateHeaders())
+					.initialBufferSize(determineInitialBufferSize());
+
+	private boolean determineValidateHeaders() {
+		return this.serverProperties.getNetty().getValidateHeaders();
+	}
+
+	private boolean isStrictlyPositive(int n) {
+		return isStrictlyPositive.test(n);
+	}
+
+	private int determineMaxHeaderSize() {
+		if (isStrictlyPositive(this.serverProperties.getMaxHttpHeaderSize())) {
+			return this.serverProperties.getMaxHttpHeaderSize();
+		}
+		else if (isStrictlyPositive(
+				this.serverProperties.getNetty().getMaxHeaderSize())) {
+			return this.serverProperties.getNetty().getMaxHeaderSize();
+		}
+
+		return HttpRequestDecoderSpec.DEFAULT_MAX_HEADER_SIZE;
+	}
+
+	private int determineInitialBufferSize() {
+		return isStrictlyPositive(this.serverProperties.getNetty().getInitialBufferSize())
+				? this.serverProperties.getNetty().getInitialBufferSize()
+				: HttpRequestDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE;
+	}
+
+	private int determineMaxInitialLineLength() {
+		return isStrictlyPositive(
+				this.serverProperties.getNetty().getMaxInitialLineLength())
+						? this.serverProperties.getNetty().getMaxInitialLineLength()
+						: HttpRequestDecoderSpec.DEFAULT_MAX_INITIAL_LINE_LENGTH;
+	}
+
+	private int determineMaxChunkSize() {
+		return isStrictlyPositive(this.serverProperties.getNetty().getMaxChunkSize())
+				? this.serverProperties.getNetty().getMaxChunkSize()
+				: HttpRequestDecoderSpec.DEFAULT_MAX_CHUNK_SIZE;
 	}
 
 	private boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
