@@ -65,50 +65,52 @@ public class NettyWebServerFactoryCustomizer
 		final ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
 		final PropertyMapper propertyMapper = PropertyMapper.get();
 
-		propertyMapper.from(nettyProperties::getMaxInitialLineLength).when(isStrictlyPositive)
+		propertyMapper.from(nettyProperties::getMaxInitialLineLength)
+				.when(isStrictlyPositive)
 				.to((maxInitialLineLength) -> customizeMaxInitialLineLength(factory,
 						maxInitialLineLength));
 		propertyMapper.from(determineMaxHeaderSize()).when(isStrictlyPositive)
 				.to((maxHeaderSize) -> customizeMaxHeaderSize(factory, maxHeaderSize));
 		propertyMapper.from(nettyProperties::getMaxChunkSize).when(isStrictlyPositive)
 				.to((maxChunkSize) -> customizeMaxChunkSize(factory, maxChunkSize));
-		propertyMapper.from(nettyProperties::getValidateHeaders)
-				.to((validateHeaders) -> customizeValidateHeaders(factory, validateHeaders));
-		propertyMapper.from(nettyProperties::getInitialBufferSize).when(isStrictlyPositive);
+		propertyMapper.from(nettyProperties::getValidateHeaders).to(
+				(validateHeaders) -> customizeValidateHeaders(factory, validateHeaders));
+		propertyMapper.from(nettyProperties::getInitialBufferSize)
+				.when(isStrictlyPositive);
 	}
 
 	private void customizeMaxChunkSize(NettyReactiveWebServerFactory factory,
 			int maxChunkSize) {
-		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
-				(httpRequestDecoderSpec) -> httpRequestDecoderSpec
+		factory.addServerCustomizers((httpServer) -> httpServer
+				.httpRequestDecoder((httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.maxChunkSize(maxChunkSize)));
 	}
 
 	private void customizeValidateHeaders(NettyReactiveWebServerFactory factory,
 			boolean validateHeaders) {
-		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
-				(httpRequestDecoderSpec) -> httpRequestDecoderSpec
+		factory.addServerCustomizers((httpServer) -> httpServer
+				.httpRequestDecoder((httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.validateHeaders(validateHeaders)));
 	}
 
 	private void customizeMaxHeaderSize(NettyReactiveWebServerFactory factory,
 			int maxHeaderSize) {
-		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
-				(httpRequestDecoderSpec) -> httpRequestDecoderSpec
+		factory.addServerCustomizers((httpServer) -> httpServer
+				.httpRequestDecoder((httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.maxHeaderSize(maxHeaderSize)));
 	}
 
 	private void customizeMaxInitialLineLength(NettyReactiveWebServerFactory factory,
 			int maxInitialLineLength) {
-		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
-				(httpRequestDecoderSpec) -> httpRequestDecoderSpec
+		factory.addServerCustomizers((httpServer) -> httpServer
+				.httpRequestDecoder((httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.maxInitialLineLength(maxInitialLineLength)));
 	}
 
-
 	private int determineMaxHeaderSize() {
-		return (this.serverProperties.getMaxHttpHeaderSize() > 0) ? this.serverProperties
-				.getMaxHttpHeaderSize() : this.serverProperties.getNetty().getMaxHeaderSize();
+		return (this.serverProperties.getMaxHttpHeaderSize() > 0)
+				? this.serverProperties.getMaxHttpHeaderSize()
+				: this.serverProperties.getNetty().getMaxHeaderSize();
 	}
 
 	private boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
