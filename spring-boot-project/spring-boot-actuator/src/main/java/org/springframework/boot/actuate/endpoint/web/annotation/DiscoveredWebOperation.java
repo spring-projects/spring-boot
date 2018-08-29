@@ -61,8 +61,8 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 	}
 
 	private String getId(String endpointId, Method method) {
-		return Stream.of(method.getParameters()).filter(this::hasSelector)
-				.map(this::dashName).collect(Collectors.joining("", endpointId, ""));
+		return endpointId + Stream.of(method.getParameters()).filter(this::hasSelector)
+				.map(this::dashName).collect(Collectors.joining());
 	}
 
 	private boolean hasSelector(Parameter parameter) {
