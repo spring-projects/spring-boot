@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import reactor.netty.http.server.HttpRequestDecoderSpec;
 
