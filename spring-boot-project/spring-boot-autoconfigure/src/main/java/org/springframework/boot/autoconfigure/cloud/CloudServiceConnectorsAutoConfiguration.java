@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.app.ApplicationInstanceInfo;
 import org.springframework.cloud.config.java.CloudScan;
@@ -31,28 +30,26 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Cloud.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Cloud Service Connectors.
  * <p>
- * Activates when there is no bean of type {@link Cloud} is configured in the context, the
- * {@link Cloud} type (this spring-cloud) is on the classpath, and the "cloud" profile is
+ * Activates when there is no bean of type {@link Cloud} and the "cloud" profile is
  * active.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of adding the
  * {@link CloudScan} annotation in one of the configuration file. Specifically, it adds a
  * bean for each service bound to the application and one for
- * {@link ApplicationInstanceInfo}
+ * {@link ApplicationInstanceInfo}.
  *
  * @author Ramnivas Laddad
  * @since 1.2.0
  */
 @Configuration
 @Profile("cloud")
-@AutoConfigureOrder(CloudAutoConfiguration.ORDER)
+@AutoConfigureOrder(CloudServiceConnectorsAutoConfiguration.ORDER)
 @ConditionalOnClass(CloudScanConfiguration.class)
 @ConditionalOnMissingBean(Cloud.class)
-@ConditionalOnProperty(prefix = "spring.cloud", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(CloudScanConfiguration.class)
-public class CloudAutoConfiguration {
+public class CloudServiceConnectorsAutoConfiguration {
 
 	// Cloud configuration needs to happen early (before data, mongo etc.)
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
