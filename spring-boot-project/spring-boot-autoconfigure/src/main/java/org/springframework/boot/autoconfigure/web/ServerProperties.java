@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
@@ -196,7 +197,7 @@ public class ServerProperties {
 	}
 
 	public Netty getNetty() {
-		return netty;
+		return this.netty;
 	}
 
 	/**
@@ -1133,7 +1134,7 @@ public class ServerProperties {
 		private int initialBufferSize;
 
 		public int getMaxInitialLineLength() {
-			return maxInitialLineLength;
+			return this.maxInitialLineLength;
 		}
 
 		public void setMaxInitialLineLength(int maxInitialLineLength) {
@@ -1141,7 +1142,7 @@ public class ServerProperties {
 		}
 
 		public int getMaxHeaderSize() {
-			return maxHeaderSize;
+			return this.maxHeaderSize;
 		}
 
 		public void setMaxHeaderSize(int maxHeaderSize) {
@@ -1149,7 +1150,7 @@ public class ServerProperties {
 		}
 
 		public int getMaxChunkSize() {
-			return maxChunkSize;
+			return this.maxChunkSize;
 		}
 
 		public void setMaxChunkSize(int maxChunkSize) {
@@ -1157,7 +1158,7 @@ public class ServerProperties {
 		}
 
 		public boolean getValidateHeaders() {
-			return validateHeaders;
+			return this.validateHeaders;
 		}
 
 		public void setValidateHeaders(boolean validateHeaders) {
@@ -1165,7 +1166,7 @@ public class ServerProperties {
 		}
 
 		public int getInitialBufferSize() {
-			return initialBufferSize;
+			return this.initialBufferSize;
 		}
 
 		public void setInitialBufferSize(int initialBufferSize) {

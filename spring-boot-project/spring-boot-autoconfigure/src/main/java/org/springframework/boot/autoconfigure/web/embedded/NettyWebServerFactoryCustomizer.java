@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.util.function.Predicate;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -35,7 +36,7 @@ import org.springframework.core.env.Environment;
 public class NettyWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<NettyReactiveWebServerFactory>, Ordered {
 
-	private static final Predicate<Integer> isStrictlyPositive = n -> n > 0;
+	private static final Predicate<Integer> isStrictlyPositive = (n) -> n > 0;
 
 	private final Environment environment;
 
@@ -61,53 +62,53 @@ public class NettyWebServerFactoryCustomizer
 	}
 
 	private void customizeHttpRequestDecoderSpec(NettyReactiveWebServerFactory factory) {
-		final ServerProperties.Netty nettyProperties = serverProperties.getNetty();
+		final ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
 		final PropertyMapper propertyMapper = PropertyMapper.get();
 
 		propertyMapper.from(nettyProperties::getMaxInitialLineLength).when(isStrictlyPositive)
-				.to(maxInitialLineLength -> customizeMaxInitialLineLength(factory,
+				.to((maxInitialLineLength) -> customizeMaxInitialLineLength(factory,
 						maxInitialLineLength));
 		propertyMapper.from(determineMaxHeaderSize()).when(isStrictlyPositive)
-				.to(maxHeaderSize -> customizeMaxHeaderSize(factory, maxHeaderSize));
+				.to((maxHeaderSize) -> customizeMaxHeaderSize(factory, maxHeaderSize));
 		propertyMapper.from(nettyProperties::getMaxChunkSize).when(isStrictlyPositive)
-				.to(maxChunkSize -> customizeMaxChunkSize(factory, maxChunkSize));
+				.to((maxChunkSize) -> customizeMaxChunkSize(factory, maxChunkSize));
 		propertyMapper.from(nettyProperties::getValidateHeaders)
-				.to(validateHeaders -> customizeValidateHeaders(factory, validateHeaders));
+				.to((validateHeaders) -> customizeValidateHeaders(factory, validateHeaders));
 		propertyMapper.from(nettyProperties::getInitialBufferSize).when(isStrictlyPositive);
 	}
 
 	private void customizeMaxChunkSize(NettyReactiveWebServerFactory factory,
 			int maxChunkSize) {
-		factory.addServerCustomizers(httpServer -> httpServer.httpRequestDecoder(
-				httpRequestDecoderSpec -> httpRequestDecoderSpec
+		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
+				(httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.maxChunkSize(maxChunkSize)));
 	}
 
 	private void customizeValidateHeaders(NettyReactiveWebServerFactory factory,
 			boolean validateHeaders) {
-		factory.addServerCustomizers(httpServer -> httpServer.httpRequestDecoder(
-				httpRequestDecoderSpec -> httpRequestDecoderSpec
+		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
+				(httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.validateHeaders(validateHeaders)));
 	}
 
 	private void customizeMaxHeaderSize(NettyReactiveWebServerFactory factory,
 			int maxHeaderSize) {
-		factory.addServerCustomizers(httpServer -> httpServer.httpRequestDecoder(
-				httpRequestDecoderSpec -> httpRequestDecoderSpec
+		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
+				(httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.maxHeaderSize(maxHeaderSize)));
 	}
 
 	private void customizeMaxInitialLineLength(NettyReactiveWebServerFactory factory,
 			int maxInitialLineLength) {
-		factory.addServerCustomizers(httpServer -> httpServer.httpRequestDecoder(
-				httpRequestDecoderSpec -> httpRequestDecoderSpec
+		factory.addServerCustomizers((httpServer) -> httpServer.httpRequestDecoder(
+				(httpRequestDecoderSpec) -> httpRequestDecoderSpec
 						.maxInitialLineLength(maxInitialLineLength)));
 	}
 
 
 	private int determineMaxHeaderSize() {
-		return serverProperties.getMaxHttpHeaderSize() > 0 ? serverProperties.getMaxHttpHeaderSize()
-				: serverProperties.getNetty().getMaxHeaderSize();
+		return (this.serverProperties.getMaxHttpHeaderSize() > 0) ? this.serverProperties
+				.getMaxHttpHeaderSize() : this.serverProperties.getNetty().getMaxHeaderSize();
 	}
 
 	private boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
