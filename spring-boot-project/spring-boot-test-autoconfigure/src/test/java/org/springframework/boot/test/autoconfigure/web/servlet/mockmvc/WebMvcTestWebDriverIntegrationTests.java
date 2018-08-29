@@ -27,6 +27,7 @@ import org.openqa.selenium.WebElement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -39,7 +40,8 @@ import static org.junit.Assert.fail;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(secure = false)
+@WebMvcTest
+@WithMockUser
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WebMvcTestWebDriverIntegrationTests {
 

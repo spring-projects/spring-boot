@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  * @author Eddú Meléndez
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = RestDocsTestController.class, secure = false)
+@WebMvcTest(controllers = RestDocsTestController.class)
 @AutoConfigureRestDocs
 public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 

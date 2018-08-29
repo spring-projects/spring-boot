@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(secure = false)
+@WebMvcTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WebMvcTestWebDriverCustomScopeIntegrationTests {
 
