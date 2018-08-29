@@ -1128,7 +1128,7 @@ public class ServerProperties {
 		/**
 		 * Whether to validate headers for illegal characters and character sequences.
 		 */
-		private boolean validateHeaders;
+		private boolean validateHeaders = true;
 
 		/**
 		 * Initial buffer size for a request, in bytes.
