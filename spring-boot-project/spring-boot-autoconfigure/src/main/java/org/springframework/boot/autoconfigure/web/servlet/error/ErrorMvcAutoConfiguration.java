@@ -253,13 +253,13 @@ public class ErrorMvcAutoConfiguration {
 
 		private String getMessage(Map<String, ?> model) {
 			Object path = model.get("path");
-			String message = "Cannot render error page for request [" + path + "]";
+			StringBuilder message = new StringBuilder(String.format("Cannot render error page for request [%s]", path));
 			if (model.get("message") != null) {
-				message += " and exception [" + model.get("message") + "]";
+				message.append(" and exception [" + model.get("message") + "]");
 			}
-			message += " as the response has already been committed.";
-			message += " As a result, the response may have the wrong status code.";
-			return message;
+			message.append(" as the response has already been committed.");
+			message.append(" As a result, the response may have the wrong status code.");
+			return message.toString();
 		}
 
 		private Map<String, Expression> getExpressions() {
