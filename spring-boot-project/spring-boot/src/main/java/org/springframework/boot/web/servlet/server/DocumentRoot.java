@@ -34,12 +34,12 @@ import org.apache.commons.logging.Log;
  */
 class DocumentRoot {
 	/**
-	 * classpath下的doc-root
+	 * Doc-root under classpath
 	 */
 	private static final String   DEFAULT_DOC_ROOT = Thread.currentThread().getContextClassLoader()
 			.getResource("").getFile();
 	/**
-	 * 本地工作空间的doc-root
+	 * Doc-root for local workspace
 	 */
 	private static final String   LOCAL_DOC_ROOT   = DEFAULT_DOC_ROOT.replace("target/classes",
 			"src/main/webapp");
