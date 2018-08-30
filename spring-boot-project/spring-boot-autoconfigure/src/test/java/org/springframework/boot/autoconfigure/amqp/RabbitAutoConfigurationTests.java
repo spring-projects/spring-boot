@@ -468,6 +468,7 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.listener.simple.maxConcurrency:10",
 						"spring.rabbitmq.listener.simple.prefetch:40",
 						"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
+						"spring.rabbitmq.listener.simple.missingQueuesFatal:false",
 						"spring.rabbitmq.listener.simple.idleEventInterval:5",
 						"spring.rabbitmq.listener.simple.transactionSize:20")
 				.run((context) -> {
@@ -500,6 +501,7 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.listener.direct.consumers-per-queue:5",
 						"spring.rabbitmq.listener.direct.prefetch:40",
 						"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
+						"spring.rabbitmq.listener.direct.missingQueuesFatal:false",
 						"spring.rabbitmq.listener.direct.idleEventInterval:5")
 				.run((context) -> {
 					DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
@@ -621,6 +623,7 @@ public class RabbitAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
 		assertThat(dfa.getPropertyValue("messageConverter"))
 				.isSameAs(context.getBean("myMessageConverter"));
+		assertThat(dfa.getPropertyValue("missingQueuesFatal")).isEqualTo(false);
 		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
 				.isEqualTo(Boolean.FALSE);
 		assertThat(dfa.getPropertyValue("idleEventInterval")).isEqualTo(5L);
