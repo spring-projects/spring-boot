@@ -54,7 +54,7 @@ class DocumentRoot {
 			DEFAULT_DOC_ROOT = new File(path);
 			LOCAL_DOC_ROOT = new File(path.replace("target/classes", "src/main/webapp"));
 		}
-		else{
+		else {
 			DEFAULT_DOC_ROOT = null;
 			LOCAL_DOC_ROOT = null;
 		}
