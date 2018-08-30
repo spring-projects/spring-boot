@@ -48,10 +48,17 @@ class DocumentRoot {
 			"static" };
 
 	static {
-		String path = Thread.currentThread().getContextClassLoader().getResource("")
-				.getFile();
-		DEFAULT_DOC_ROOT = new File(path);
-		LOCAL_DOC_ROOT = new File(path.replace("target/classes", "src/main/webapp"));
+		URL url = Thread.currentThread().getContextClassLoader().getResource("");
+		if (url == null) {
+			String path = url.getFile();
+			DEFAULT_DOC_ROOT = new File(path);
+			LOCAL_DOC_ROOT = new File(path.replace("target/classes", "src/main/webapp"));
+		}
+		else{
+			DEFAULT_DOC_ROOT = null;
+			LOCAL_DOC_ROOT = null;
+		}
+
 	}
 
 	private final Log logger;
@@ -95,13 +102,13 @@ class DocumentRoot {
 	 * @return doc-root
 	 */
 	private File getIDEADocumentRoot() {
-		if (LOCAL_DOC_ROOT.exists()) {
+		if (LOCAL_DOC_ROOT != null && LOCAL_DOC_ROOT.exists()) {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug("Currently running in the IDEA and found a workspace");
 			}
 			return LOCAL_DOC_ROOT;
 		}
-		else if (DEFAULT_DOC_ROOT.exists()) {
+		else if (DEFAULT_DOC_ROOT != null && DEFAULT_DOC_ROOT.exists()) {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug(
 						"Currently running in the IDEA, did not find the workspace, but found the doc-root"
