@@ -33,6 +33,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -42,8 +43,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * {@link TypeExcludeFilter} for {@link WebMvcTest @WebMvcTest}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
+
+	private static final String SECURITY_CONFIGURER = "org.springframework.security.config.annotation.web.WebSecurityConfigurer";
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
@@ -63,12 +67,34 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 
+	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER;
+
+	static {
+		Set<Class<?>> includes = new LinkedHashSet<>(DEFAULT_INCLUDES);
+		try {
+			includes.add(ClassUtils.forName(SECURITY_CONFIGURER, null));
+		}
+		catch (Exception ex) {
+		}
+		DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER = Collections.unmodifiableSet(includes);
+	}
+
 	private static final Set<Class<?>> DEFAULT_INCLUDES_AND_CONTROLLER;
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>(DEFAULT_INCLUDES);
 		includes.add(Controller.class);
 		DEFAULT_INCLUDES_AND_CONTROLLER = Collections.unmodifiableSet(includes);
+	}
+
+	private static final Set<Class<?>> DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER;
+
+	static {
+		Set<Class<?>> includes = new LinkedHashSet<>(
+				DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER);
+		includes.add(Controller.class);
+		DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER = Collections
+				.unmodifiableSet(includes);
 	}
 
 	private final WebMvcTest annotation;
@@ -101,6 +127,12 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 
 	@Override
 	protected Set<Class<?>> getDefaultIncludes() {
+		if (this.annotation.secure()) {
+			if (ObjectUtils.isEmpty(this.annotation.controllers())) {
+				return DEFAULT_INCLUDES_SECURITY_CONFIGURER_AND_CONTROLLER;
+			}
+			return DEFAULT_INCLUDES_AND_SECURITY_CONFIGURER;
+		}
 		if (ObjectUtils.isEmpty(this.annotation.controllers())) {
 			return DEFAULT_INCLUDES_AND_CONTROLLER;
 		}

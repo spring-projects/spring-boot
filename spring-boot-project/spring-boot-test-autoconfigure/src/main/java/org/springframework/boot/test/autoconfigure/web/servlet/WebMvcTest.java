@@ -141,7 +141,9 @@ public @interface WebMvcTest {
 
 	/**
 	 * If Spring Security's {@link MockMvc} support should be auto-configured when it is
-	 * on the classpath. Defaults to {@code true}.
+	 * on the classpath. Also determines if
+	 * {@link org.springframework.security.config.annotation.web.WebSecurityConfigurer}
+	 * classes should be included in the application context. Defaults to {@code true}.
 	 * @return if Spring Security's MockMvc support is auto-configured
 	 * @deprecated since 2.1.0 in favor of Spring Security's testing support
 	 */
