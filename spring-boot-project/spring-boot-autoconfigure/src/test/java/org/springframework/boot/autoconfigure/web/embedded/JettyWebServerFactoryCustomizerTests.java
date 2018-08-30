@@ -144,8 +144,8 @@ public class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void customizeMaxHttpResponseHeaderSize() {
-		bind("server.jetty.max-http-response-header-size=2048");
+	public void customizeMaxHttpHeaderSize() {
+		bind("server.max-http-header-size=2048");
 		JettyWebServer server = customizeAndGetServer();
 		for (Connector connector : server.getServer().getConnectors()) {
 			connector.getConnectionFactories().stream()
@@ -153,7 +153,7 @@ public class JettyWebServerFactoryCustomizerTests {
 					.forEach((cf) -> {
 						ConnectionFactory factory = (ConnectionFactory) cf;
 						HttpConfiguration configuration = factory.getHttpConfiguration();
-						assertThat(configuration.getResponseHeaderSize()).isEqualTo(2048);
+						assertThat(configuration.getRequestHeaderSize()).isEqualTo(2048);
 					});
 		}
 	}

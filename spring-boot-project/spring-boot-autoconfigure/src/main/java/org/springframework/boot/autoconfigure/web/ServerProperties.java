@@ -729,11 +729,6 @@ public class ServerProperties {
 		 */
 		private Integer selectors;
 
-		/**
-		 * Maximum size, in bytes, of the HTTP response header.
-		 */
-		private int maxHttpResponseHeaderSize;
-
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
@@ -760,14 +755,6 @@ public class ServerProperties {
 
 		public void setSelectors(Integer selectors) {
 			this.selectors = selectors;
-		}
-
-		public int getMaxHttpResponseHeaderSize() {
-			return this.maxHttpResponseHeaderSize;
-		}
-
-		public void setMaxHttpResponseHeaderSize(int maxHttpResponseHeaderSize) {
-			this.maxHttpResponseHeaderSize = maxHttpResponseHeaderSize;
 		}
 
 		/**
