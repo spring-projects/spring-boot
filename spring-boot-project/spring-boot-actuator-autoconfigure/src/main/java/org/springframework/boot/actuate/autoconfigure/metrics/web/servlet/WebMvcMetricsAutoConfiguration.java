@@ -61,6 +61,12 @@ import org.springframework.web.servlet.DispatcherServlet;
 @EnableConfigurationProperties(MetricsProperties.class)
 public class WebMvcMetricsAutoConfiguration {
 
+	private final MetricsProperties properties;
+
+	public WebMvcMetricsAutoConfiguration(MetricsProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(WebMvcTagsProvider.class)
 	public DefaultWebMvcTagsProvider webMvcTagsProvider() {
@@ -69,9 +75,9 @@ public class WebMvcMetricsAutoConfiguration {
 
 	@Bean
 	public FilterRegistrationBean<WebMvcMetricsFilter> webMvcMetricsFilter(
-			MeterRegistry registry, MetricsProperties properties,
-			WebMvcTagsProvider tagsProvider, WebApplicationContext context) {
-		Server serverProperties = properties.getWeb().getServer();
+			MeterRegistry registry, WebMvcTagsProvider tagsProvider,
+			WebApplicationContext context) {
+		Server serverProperties = this.properties.getWeb().getServer();
 		WebMvcMetricsFilter filter = new WebMvcMetricsFilter(context, registry,
 				tagsProvider, serverProperties.getRequestsMetricName(),
 				serverProperties.isAutoTimeRequests());
@@ -84,12 +90,12 @@ public class WebMvcMetricsAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	public MeterFilter metricsHttpServerUriTagFilter(MetricsProperties properties) {
-		String metricName = properties.getWeb().getServer().getRequestsMetricName();
+	public MeterFilter metricsHttpServerUriTagFilter() {
+		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
 		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
 				.format("Reached the maximum number of URI tags for '%s'.", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				properties.getWeb().getServer().getMaxUriTags(), filter);
+				this.properties.getWeb().getServer().getMaxUriTags(), filter);
 	}
 
 }

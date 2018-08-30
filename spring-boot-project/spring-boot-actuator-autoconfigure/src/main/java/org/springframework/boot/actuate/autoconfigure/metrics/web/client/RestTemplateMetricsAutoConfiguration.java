@@ -52,6 +52,12 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnBean(MeterRegistry.class)
 public class RestTemplateMetricsAutoConfiguration {
 
+	private final MetricsProperties properties;
+
+	public RestTemplateMetricsAutoConfiguration(MetricsProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(RestTemplateExchangeTagsProvider.class)
 	public DefaultRestTemplateExchangeTagsProvider restTemplateTagConfigurer() {
@@ -61,22 +67,20 @@ public class RestTemplateMetricsAutoConfiguration {
 	@Bean
 	public MetricsRestTemplateCustomizer metricsRestTemplateCustomizer(
 			MeterRegistry meterRegistry,
-			RestTemplateExchangeTagsProvider restTemplateTagConfigurer,
-			MetricsProperties properties) {
+			RestTemplateExchangeTagsProvider restTemplateTagConfigurer) {
 		return new MetricsRestTemplateCustomizer(meterRegistry, restTemplateTagConfigurer,
-				properties.getWeb().getClient().getRequestsMetricName());
+				this.properties.getWeb().getClient().getRequestsMetricName());
 	}
 
 	@Bean
 	@Order(0)
-	public MeterFilter metricsWebClientUriTagFilter(MetricsProperties properties) {
-		String metricName = properties.getWeb().getClient().getRequestsMetricName();
-		MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String.format(
-				"Reached the maximum number of URI tags for '%s'. "
-						+ "Are you using uriVariables on RestTemplate calls?",
-				metricName));
+	public MeterFilter metricsWebClientUriTagFilter() {
+		String metricName = this.properties.getWeb().getClient().getRequestsMetricName();
+		MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(() -> String
+				.format("Reached the maximum number of URI tags for '%s'. Are you using "
+						+ "'uriVariables' on RestTemplate calls?", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				properties.getWeb().getClient().getMaxUriTags(), denyFilter);
+				this.properties.getWeb().getClient().getMaxUriTags(), denyFilter);
 	}
 
 }

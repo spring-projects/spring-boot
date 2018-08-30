@@ -50,6 +50,12 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class WebFluxMetricsAutoConfiguration {
 
+	private final MetricsProperties properties;
+
+	public WebFluxMetricsAutoConfiguration(MetricsProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(WebFluxTagsProvider.class)
 	public DefaultWebFluxTagsProvider webfluxTagConfigurer() {
@@ -58,19 +64,19 @@ public class WebFluxMetricsAutoConfiguration {
 
 	@Bean
 	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
-			WebFluxTagsProvider tagConfigurer, MetricsProperties properties) {
+			WebFluxTagsProvider tagConfigurer) {
 		return new MetricsWebFilter(registry, tagConfigurer,
-				properties.getWeb().getServer().getRequestsMetricName());
+				this.properties.getWeb().getServer().getRequestsMetricName());
 	}
 
 	@Bean
 	@Order(0)
-	public MeterFilter metricsHttpServerUriTagFilter(MetricsProperties properties) {
-		String metricName = properties.getWeb().getServer().getRequestsMetricName();
+	public MeterFilter metricsHttpServerUriTagFilter() {
+		String metricName = this.properties.getWeb().getServer().getRequestsMetricName();
 		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(() -> String
 				.format("Reached the maximum number of URI tags for '%s'.", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				properties.getWeb().getServer().getMaxUriTags(), filter);
+				this.properties.getWeb().getServer().getMaxUriTags(), filter);
 	}
 
 }

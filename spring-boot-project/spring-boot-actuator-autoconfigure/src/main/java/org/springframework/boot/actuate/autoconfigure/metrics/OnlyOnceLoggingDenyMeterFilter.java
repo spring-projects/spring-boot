@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
 /**
  * {@link MeterFilter} to log only once a warning message and deny {@link Meter.Id}.
  *
+ * @author Jon Schneider
  * @author Dmytro Nosan
  * @since 2.0.5
  */
