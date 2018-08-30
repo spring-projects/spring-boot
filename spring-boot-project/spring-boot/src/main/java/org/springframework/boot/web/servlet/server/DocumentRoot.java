@@ -33,19 +33,23 @@ import org.apache.commons.logging.Log;
  * @see AbstractServletWebServerFactory
  */
 class DocumentRoot {
+
 	/**
 	 * Doc-root under classpath.
 	 */
-	private static final File   DEFAULT_DOC_ROOT;
+	private static final File DEFAULT_DOC_ROOT;
+
 	/**
 	 * Doc-root for local workspace.
 	 */
-	private static final File   LOCAL_DOC_ROOT;
+	private static final File LOCAL_DOC_ROOT;
+
 	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
 			"static" };
 
 	static {
-		String path = Thread.currentThread().getContextClassLoader().getResource("").getFile();
+		String path = Thread.currentThread().getContextClassLoader().getResource("")
+				.getFile();
 		DEFAULT_DOC_ROOT = new File(path);
 		LOCAL_DOC_ROOT = new File(path.replace("target/classes", "src/main/webapp"));
 	}
@@ -88,7 +92,6 @@ class DocumentRoot {
 
 	/**
 	 * This method takes effect when the user runs the system in the IDEA.
-	 *
 	 * @return doc-root
 	 */
 	private File getIDEADocumentRoot() {
@@ -100,8 +103,9 @@ class DocumentRoot {
 		}
 		else if (DEFAULT_DOC_ROOT.exists()) {
 			if (this.logger.isDebugEnabled()) {
-				this.logger.debug("Currently running in the IDEA, did not find the workspace, but found the doc-root" +
-						" under the classpath");
+				this.logger.debug(
+						"Currently running in the IDEA, did not find the workspace, but found the doc-root"
+								+ " under the classpath");
 			}
 			return DEFAULT_DOC_ROOT;
 		}
