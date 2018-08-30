@@ -50,6 +50,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  * @since 1.3.0
  */
 public class SpringApplicationJsonEnvironmentPostProcessor
@@ -97,17 +98,11 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	private void processJson(ConfigurableEnvironment environment,
 			JsonPropertyValue propertyValue) {
-		try {
-			JsonParser parser = JsonParserFactory.getJsonParser();
-			Map<String, Object> map = parser.parseMap(propertyValue.getJson());
-			if (!map.isEmpty()) {
-				addJsonPropertySource(environment,
-						new JsonPropertySource(propertyValue, flatten(map)));
-			}
-		}
-		catch (Exception ex) {
-			logger.warn("Cannot parse JSON for spring.application.json: "
-					+ propertyValue.getJson(), ex);
+		JsonParser parser = JsonParserFactory.getJsonParser();
+		Map<String, Object> map = parser.parseMap(propertyValue.getJson());
+		if (!map.isEmpty()) {
+			addJsonPropertySource(environment,
+					new JsonPropertySource(propertyValue, flatten(map)));
 		}
 	}
 
