@@ -97,12 +97,14 @@ class DocumentRoot {
 				this.logger.debug("Currently running in the IDEA and found a workspace");
 			}
 			return LOCAL_DOC_ROOT;
-		} else if (DEFAULT_DOC_ROOT.exists()) {
+		}
+		else if (DEFAULT_DOC_ROOT.exists()) {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug("Currently running in the IDEA, did not find the workspace, but found the doc-root under the classpath");
 			}
 			return DEFAULT_DOC_ROOT;
-		} else {
+		}
+		else {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug("Currently not running in the IDEA");
 			}
