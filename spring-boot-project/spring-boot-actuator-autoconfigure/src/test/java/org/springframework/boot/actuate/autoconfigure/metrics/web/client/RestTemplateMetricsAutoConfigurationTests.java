@@ -97,7 +97,7 @@ public class RestTemplateMetricsAutoConfigurationTests {
 							.hasSize(maxUriTags);
 					assertThat(this.out.toString())
 							.contains("Reached the maximum number of URI tags "
-									+ "for 'http.client.requests'");
+									+ "for 'http.client.requests'. Are you using uriVariables on RestTemplate calls?");
 				});
 	}
 

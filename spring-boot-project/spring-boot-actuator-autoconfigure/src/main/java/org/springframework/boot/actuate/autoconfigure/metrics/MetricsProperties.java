@@ -137,6 +137,13 @@ public class MetricsProperties {
 			 */
 			private String requestsMetricName = "http.server.requests";
 
+			/**
+			 * Maximum number of unique URI tag values allowed. After the max number of
+			 * tag values is reached, metrics with additional tag values are denied by
+			 * filter.
+			 */
+			private int maxUriTags = 100;
+
 			public boolean isAutoTimeRequests() {
 				return this.autoTimeRequests;
 			}
@@ -151,6 +158,14 @@ public class MetricsProperties {
 
 			public void setRequestsMetricName(String requestsMetricName) {
 				this.requestsMetricName = requestsMetricName;
+			}
+
+			public int getMaxUriTags() {
+				return this.maxUriTags;
+			}
+
+			public void setMaxUriTags(int maxUriTags) {
+				this.maxUriTags = maxUriTags;
 			}
 
 		}
