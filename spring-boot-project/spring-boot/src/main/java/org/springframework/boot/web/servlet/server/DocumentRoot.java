@@ -49,7 +49,7 @@ class DocumentRoot {
 
 	static {
 		URL url = Thread.currentThread().getContextClassLoader().getResource("");
-		if (url == null) {
+		if (url != null) {
 			String path = url.getFile();
 			DEFAULT_DOC_ROOT = new File(path);
 			LOCAL_DOC_ROOT = new File(path.replace("target/classes", "src/main/webapp"));
