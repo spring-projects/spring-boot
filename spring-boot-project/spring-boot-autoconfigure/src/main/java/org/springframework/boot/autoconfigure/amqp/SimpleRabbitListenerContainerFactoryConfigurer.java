@@ -43,6 +43,8 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer extends
 		map.from(config::getMaxConcurrency).whenNonNull()
 				.to(factory::setMaxConcurrentConsumers);
 		map.from(config::getTransactionSize).whenNonNull().to(factory::setTxSize);
+		map.from(config::getMissingQueuesFatal).whenNonNull()
+				.to(factory::setMissingQueuesFatal);
 	}
 
 }
