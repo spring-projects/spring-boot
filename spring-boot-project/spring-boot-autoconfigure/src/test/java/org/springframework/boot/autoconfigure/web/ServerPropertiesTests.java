@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -136,7 +137,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void testCustomizeHeaderSize() {
 		bind("server.max-http-header-size", "9999");
-		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(9999);
+		assertThat(this.properties.getMaxHttpHeaderSize())
+				.isEqualTo(DataSize.ofBytes(9999));
 	}
 
 	@Test
