@@ -33,7 +33,16 @@ import org.apache.commons.logging.Log;
  * @see AbstractServletWebServerFactory
  */
 class DocumentRoot {
-
+	/**
+	 * classpath下的doc-root
+	 */
+	private static final String   DEFAULT_DOC_ROOT = Thread.currentThread().getContextClassLoader()
+			.getResource("").getFile();
+	/**
+	 * 本地工作空间的doc-root
+	 */
+	private static final String   LOCAL_DOC_ROOT   = DEFAULT_DOC_ROOT.replace("target/classes",
+			"src/main/webapp");
 	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
 			"static" };
 
@@ -60,6 +69,7 @@ class DocumentRoot {
 	 */
 	public final File getValidDirectory() {
 		File file = this.directory;
+		file = (file != null) ? file : getIDEADocumentRoot();
 		file = (file != null) ? file : getWarFileDocumentRoot();
 		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
 		file = (file != null) ? file : getCommonDocumentRoot();
@@ -70,6 +80,31 @@ class DocumentRoot {
 			this.logger.debug("Document root: " + file);
 		}
 		return file;
+	}
+
+	/**
+	 * This method takes effect when the user runs the system in the IDEA.
+	 *
+	 * @return doc-root
+	 */
+	private File getIDEADocumentRoot() {
+		File docRoot = new File(LOCAL_DOC_ROOT);
+		if (docRoot.exists()) {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Currently running in the IDEA and found a workspace");
+			}
+			return docRoot;
+		} else if ((docRoot = new File(DEFAULT_DOC_ROOT)).exists()) {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Currently running in the IDEA, did not find the workspace, but found the doc-root under the classpath");
+			}
+			return docRoot;
+		} else {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Currently not running in the IDEA");
+			}
+			return null;
+		}
 	}
 
 	private File getWarFileDocumentRoot() {
