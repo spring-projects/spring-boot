@@ -16,17 +16,24 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
 import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -35,6 +42,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link WebFluxMetricsAutoConfiguration}
  *
  * @author Brian Clozel
+ * @author Dmytro Nosan
  */
 public class WebFluxMetricsAutoConfigurationTests {
 
@@ -42,6 +50,9 @@ public class WebFluxMetricsAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 					SimpleMetricsExportAutoConfiguration.class,
 					WebFluxMetricsAutoConfiguration.class));
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@Test
 	public void shouldProvideWebFluxMetricsBeans() {
@@ -56,6 +67,45 @@ public class WebFluxMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomWebFluxTagsProviderConfig.class)
 				.run((context) -> assertThat(context).getBeans(WebFluxTagsProvider.class)
 						.hasSize(1).containsKey("customWebFluxTagsProvider"));
+	}
+
+	@Test
+	public void afterMaxUrisReachedFurtherUrisAreDenied() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+				.withUserConfiguration(TestController.class)
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("http.server.requests").meters()).hasSize(2);
+					assertThat(this.output.toString())
+							.contains("Reached the maximum number of URI tags "
+									+ "for 'http.server.requests'");
+				});
+	}
+
+	@Test
+	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
+		this.contextRunner
+				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+				.withUserConfiguration(TestController.class)
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=5")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
+					assertThat(this.output.toString()).doesNotContain(
+							"Reached the maximum number of URI tags for 'http.server.requests'");
+				});
+	}
+
+	private MeterRegistry getInitializedMeterRegistry(
+			AssertableReactiveWebApplicationContext context) {
+		WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context)
+				.build();
+		for (int i = 0; i < 3; i++) {
+			webTestClient.get().uri("/test" + i).exchange().expectStatus().isOk();
+		}
+		return context.getBean(MeterRegistry.class);
 	}
 
 	@Configuration
