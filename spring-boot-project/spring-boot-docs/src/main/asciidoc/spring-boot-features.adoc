@@ -7709,7 +7709,20 @@ Undertow. If you deploy a war file to a standalone container, Spring Boot assume
 container is responsible for the configuration of its WebSocket support.
 
 Spring Framework provides {spring-reference}web.html#websocket[rich WebSocket support]
-that can be easily accessed through the `spring-boot-starter-websocket` module.
+for MVC web applications that can be easily accessed through the
+`spring-boot-starter-websocket` module.
+
+WebSocket support is also available for
+{spring-reference}web-reactive.html#webflux-websocket[reactive web applications] and
+requires to include the WebSocket API alongside `spring-boot-starter-webflux`:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>javax.websocket</groupId>
+		<artifactId>javax.websocket-api</artifactId>
+	</dependency>
+----
 
 
 
