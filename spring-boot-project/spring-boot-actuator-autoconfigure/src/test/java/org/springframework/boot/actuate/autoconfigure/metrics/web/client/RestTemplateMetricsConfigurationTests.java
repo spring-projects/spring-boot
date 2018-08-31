@@ -55,9 +55,8 @@ public class RestTemplateMetricsConfigurationTests {
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class)
-					.build();
-			validateRestTemplate(restTemplate, registry);
+			RestTemplateBuilder builder = context.getBean(RestTemplateBuilder.class);
+			validateRestTemplate(builder, registry);
 		});
 	}
 
@@ -65,11 +64,10 @@ public class RestTemplateMetricsConfigurationTests {
 	public void restTemplateCanBeCustomizedManually() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
-			RestTemplate restTemplate = new RestTemplateBuilder()
-					.customizers(context.getBean(MetricsRestTemplateCustomizer.class))
-					.build();
+			RestTemplateBuilder customBuilder = new RestTemplateBuilder()
+					.customizers(context.getBean(MetricsRestTemplateCustomizer.class));
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			validateRestTemplate(restTemplate, registry);
+			validateRestTemplate(customBuilder, registry);
 		});
 	}
 
@@ -96,8 +94,8 @@ public class RestTemplateMetricsConfigurationTests {
 					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
 					assertThat(this.out.toString()).doesNotContain(
 							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString()).doesNotContain(
-							"Are you using 'uriVariables' on RestTemplate calls?");
+					assertThat(this.out.toString())
+							.doesNotContain("Are you using 'uriVariables'?");
 				});
 	}
 
@@ -115,13 +113,23 @@ public class RestTemplateMetricsConfigurationTests {
 		return registry;
 	}
 
-	private void validateRestTemplate(RestTemplate restTemplate, MeterRegistry registry) {
-		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
-		server.expect(requestTo("/test")).andRespond(withStatus(HttpStatus.OK));
+	private void validateRestTemplate(RestTemplateBuilder builder,
+			MeterRegistry registry) {
+		RestTemplate restTemplate = mockRestTemplate(builder);
 		assertThat(registry.find("http.client.requests").meter()).isNull();
-		assertThat(restTemplate.getForEntity("/test", Void.class).getStatusCode())
-				.isEqualTo(HttpStatus.OK);
-		registry.get("http.client.requests").meter();
+		assertThat(restTemplate
+				.getForEntity("/projects/{project}", Void.class, "spring-boot")
+				.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(registry.get("http.client.requests").tags("uri", "/projects/{project}")
+				.meter()).isNotNull();
+	}
+
+	private RestTemplate mockRestTemplate(RestTemplateBuilder builder) {
+		RestTemplate restTemplate = builder.build();
+		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+		server.expect(requestTo("/projects/spring-boot"))
+				.andRespond(withStatus(HttpStatus.OK));
+		return restTemplate;
 	}
 
 }
