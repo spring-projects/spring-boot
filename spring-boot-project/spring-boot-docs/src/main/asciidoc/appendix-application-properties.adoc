@@ -549,7 +549,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.flyway.baseline-description= #
 	spring.flyway.baseline-on-migrate= #
 	spring.flyway.baseline-version=1 # Version to start migration
-	spring.flyway.batch = #
+	spring.flyway.batch= #
 	spring.flyway.check-location=true # Whether to check that migration scripts location exists.
 	spring.flyway.clean-disabled= #
 	spring.flyway.clean-on-validation-error= #
@@ -1106,9 +1106,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.ssl.trust-store-location= # Location of the trust store file.
 	spring.kafka.ssl.trust-store-password= # Store password for the trust store file.
 	spring.kafka.ssl.trust-store-type= # Type of the trust store.
-	spring.kafka.streams.application-id = # Kafka streams application.id property; default spring.application.name.
+	spring.kafka.streams.application-id= # Kafka streams application.id property; default spring.application.name.
 	spring.kafka.streams.auto-startup=true # Whether or not to auto-start the streams factory bean.
-	spring.kafka.streams.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster. Overrides the global property, for streams.
+	spring.kafka.streams.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for streams.
 	spring.kafka.streams.cache-max-bytes-buffering= # Maximum number of memory bytes to be used for buffering across all threads.
 	spring.kafka.streams.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.streams.properties.*= # Additional Kafka properties used to configure the streams.

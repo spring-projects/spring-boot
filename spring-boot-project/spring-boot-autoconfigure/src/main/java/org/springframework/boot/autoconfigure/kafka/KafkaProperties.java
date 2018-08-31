@@ -669,7 +669,7 @@ public class KafkaProperties {
 
 		/**
 		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connection to the Kafka cluster. Overrides the global property, for streams.
+		 * connections to the Kafka cluster. Overrides the global property, for streams.
 		 */
 		private List<String> bootstrapServers;
 
