@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Boot Sample - Websocket Example</title>
+    <style>
+        .row-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .colum-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item {
+            margin: 10px;
+        }
+
+
+        .with-scroll {
+            overflow: scroll;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>Web Socket Demo</h1>
+
+<div id="app" class="row-container">
+    <div class="item">
+        <h2>Sample 2 - Echo Server</h2>
+        <span class="row-container">
+            <textarea id="echo-text" cols="70" rows="20" v-model="echoText"></textarea>
+            <button v-on:click="sendMessage(echoText)">Echo</button>
+        </span>
+    </div>
+    <div class="colum-container item">
+        <li v-for="msg in messages">
+            {{msg}}
+        </li>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    let echoMessages = [];
+    let isReady = false;
+
+    let webClient = new WebSocket("ws://localhost:8080/ws/echo");
+    webClient.onopen = ev => {
+        isReady = true;
+    }
+
+    webClient.onmessage = ev => {
+        if (ev.data !== null || ev.data !== undefined) {
+            postEcho(ev.data);
+        }
+    }
+
+
+    function postEcho(message) {
+        echoMessages.push(message);
+    }
+
+    let app = new Vue({
+        el: '#app',
+        data: {
+            messages: echoMessages,
+            echoText: ""
+        },
+        methods: {
+            sendMessage: function (msg) {
+                webClient.send(msg);
+            }
+        }
+    })
+
+</script>
+</body>
+</html>

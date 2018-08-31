@@ -7724,6 +7724,12 @@ requires to include the WebSocket API alongside `spring-boot-starter-webflux`:
 	</dependency>
 ----
 
+For Reactive WebSockets,
+{spring-reference}web-reactive.html#webflux-websocket[Spring WebFlux] offers rich support,
+which is accessible through the `spring-boot-starter-webflux` module.
+See the `spring-boot-sample-websocket-reactive` sample project to see how WebSockets may
+be implemented using Spring WebFlux.
+
 
 
 [[boot-features-webservices]]
