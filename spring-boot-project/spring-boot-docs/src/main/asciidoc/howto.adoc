@@ -1417,6 +1417,31 @@ For more detail, see the following sections:
 
 
 
+[[howto-use-test-with-spring-security]]
+== Testing With Spring Security
+Spring Security provides support for running tests as a specific user.
+For example, the test in the snippet below will run with an authenticated user
+that has the `ADMIN` role.
+
+[source,java,indent=0]
+----
+	@Test
+	@WithMockUser(roles="ADMIN")
+	public void requestProtectedUrlWithUser() throws Exception {
+		mvc
+			.perform(get("/"))
+			...
+	}
+----
+
+Spring Security provides comprehensive integration with Spring MVC Test and
+this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
+
+For additional details on Spring Security's testing support, refer to Spring Security's
+https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#test[reference documentation]).
+
+
+
 [[howto-jersey]]
 == Jersey
 

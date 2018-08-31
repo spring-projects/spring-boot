@@ -6886,6 +6886,11 @@ that the driver exits after each test and that a new instance is injected. If yo
 not want this behavior, you can add `@Scope("singleton")` to your `WebDriver` `@Bean`
 definition.
 
+If you have Spring Security on the classpath, `@WebMvcTest` will also scan `WebSecurityConfigurer`
+beans. Instead of disabling security completely for such tests, you can use Spring Security's test support.
+More details on how to use Spring Security's `MockMvc` support can be found in
+this _<<howto.adoc#howto-use-test-with-spring-security>>_ how-to section.
+
 TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run
 <<boot-features-testing-spring-boot-applications-testing-with-running-server,
 full end-to-end tests with an actual server>>.
