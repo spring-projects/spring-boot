@@ -106,7 +106,8 @@ public @interface ConditionalOnProperty {
 
 	/**
 	 * A prefix that should be applied to each property. The prefix automatically ends
-	 * with a dot if not specified.
+	 * with a dot if not specified. A valid prefix is defined by one or more words
+	 * separated with dots (e.g. {@code "acme.system.feature"}).
 	 * @return the prefix
 	 */
 	String prefix() default "";
