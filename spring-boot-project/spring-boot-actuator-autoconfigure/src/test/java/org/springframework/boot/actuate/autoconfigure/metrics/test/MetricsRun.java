@@ -38,8 +38,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.Simp
 import org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebClientMetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -78,8 +77,7 @@ public final class MetricsRun {
 			RabbitMetricsAutoConfiguration.class, CacheMetricsAutoConfiguration.class,
 			DataSourcePoolMetricsAutoConfiguration.class,
 			HibernateMetricsAutoConfiguration.class,
-			RestTemplateMetricsAutoConfiguration.class,
-			WebClientMetricsAutoConfiguration.class,
+			HttpClientMetricsAutoConfiguration.class,
 			WebFluxMetricsAutoConfiguration.class, WebMvcMetricsAutoConfiguration.class);
 
 	private MetricsRun() {

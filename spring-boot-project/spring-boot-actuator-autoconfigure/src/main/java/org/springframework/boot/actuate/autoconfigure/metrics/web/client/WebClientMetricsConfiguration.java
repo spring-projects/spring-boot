@@ -14,46 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
+package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.reactive.client.DefaultWebClientExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.client.MetricsWebClientCustomizer;
 import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of
- * {@link org.springframework.web.reactive.function.client.WebClient}.
- * <p>
- * This is reusing the {@link io.micrometer.core.instrument.config.MeterFilter} defined in
- * {@link RestTemplateMetricsAutoConfiguration} for limiting the cardinality of "uri"
- * tags.
+ * Configure the instrumentation of {@link WebClient}.
  *
  * @author Brian Clozel
- * @since 2.1.0
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(WebClient.class)
-@AutoConfigureAfter({ MetricsAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class })
-@AutoConfigureBefore(WebClientAutoConfiguration.class)
-@ConditionalOnBean(MeterRegistry.class)
-public class WebClientMetricsAutoConfiguration {
+class WebClientMetricsConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

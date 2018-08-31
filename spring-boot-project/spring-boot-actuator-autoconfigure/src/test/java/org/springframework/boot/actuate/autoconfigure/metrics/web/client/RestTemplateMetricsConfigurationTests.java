@@ -37,12 +37,12 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 /**
- * Tests for {@link RestTemplateMetricsAutoConfiguration}.
+ * Tests for {@link RestTemplateMetricsConfiguration}.
  *
  * @author Stephane Nicoll
  * @author Jon Schneider
  */
-public class RestTemplateMetricsAutoConfigurationTests {
+public class RestTemplateMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.simple()).withConfiguration(
@@ -82,8 +82,8 @@ public class RestTemplateMetricsAutoConfigurationTests {
 					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
 					assertThat(this.out.toString()).contains(
 							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString()).contains(
-							"Are you using 'uriVariables' on RestTemplate calls?");
+					assertThat(this.out.toString())
+							.contains("Are you using 'uriVariables'?");
 				});
 	}
 

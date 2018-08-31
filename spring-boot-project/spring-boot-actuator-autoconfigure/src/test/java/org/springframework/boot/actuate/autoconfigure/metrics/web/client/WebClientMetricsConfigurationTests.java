@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
+package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Before;
@@ -42,11 +42,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WebClientMetricsAutoConfiguration}
+ * Tests for {@link WebClientMetricsConfiguration}
  *
  * @author Brian Clozel
  */
-public class WebClientMetricsAutoConfigurationTests {
+public class WebClientMetricsConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.simple())
@@ -103,9 +103,10 @@ public class WebClientMetricsAutoConfigurationTests {
 					}
 					assertThat(registry.get("http.client.requests").meters())
 							.hasSize(maxUriTags);
+					assertThat(this.out.toString()).contains(
+							"Reached the maximum number of URI tags for 'http.client.requests'.");
 					assertThat(this.out.toString())
-							.contains("Reached the maximum number of URI tags "
-									+ "for 'http.client.requests'");
+							.contains("Are you using 'uriVariables'?");
 				});
 	}
 
