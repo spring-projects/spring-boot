@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.FileSystemUtils;
@@ -50,6 +51,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RestDocsTestController.class)
+@WithMockUser
 @AutoConfigureRestDocs
 public class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
