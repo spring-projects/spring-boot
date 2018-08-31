@@ -37,7 +37,7 @@
 		<appengine-sdk.version>1.9.64</appengine-sdk.version>
 		<artemis.version>2.4.0</artemis.version>
 		<aspectj.version>1.8.13</aspectj.version>
-		<assertj.version>3.9.1</assertj.version>
+		<assertj.version>3.11.1</assertj.version>
 		<atomikos.version>4.0.6</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<byte-buddy.version>1.7.11</byte-buddy.version>
@@ -123,7 +123,7 @@
 		<lombok.version>1.16.22</lombok.version>
 		<mariadb.version>2.2.6</mariadb.version>
 		<micrometer.version>1.0.6</micrometer.version>
-		<mockito.version>2.15.0</mockito.version>
+		<mockito.version>2.21.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.7.1</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.6.4</mongodb.version>
 		<mssql-jdbc.version>6.2.2.jre8</mssql-jdbc.version>
