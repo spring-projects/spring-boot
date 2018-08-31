@@ -307,7 +307,7 @@ public class KafkaAutoConfigurationTests {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class).asProperties();
-					assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
+					assertThat(configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
 							.isEqualTo("localhost:9092, localhost:9093");
 					assertThat(
 							configs.get(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG))
@@ -357,7 +357,7 @@ public class KafkaAutoConfigurationTests {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class).asProperties();
-					assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
+					assertThat(configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
 							.isEqualTo("localhost:9092, localhost:9093");
 					assertThat(configs.get(StreamsConfig.APPLICATION_ID_CONFIG))
 							.isEqualTo("my-test-app");
@@ -376,7 +376,7 @@ public class KafkaAutoConfigurationTests {
 					Properties configs = context.getBean(
 							KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class).asProperties();
-					assertThat(configs.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))
+					assertThat(configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
 							.isEqualTo("localhost:9094, localhost:9095");
 					assertThat(configs.get(StreamsConfig.APPLICATION_ID_CONFIG))
 							.isEqualTo("test-id");
@@ -628,7 +628,7 @@ public class KafkaAutoConfigurationTests {
 		@Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 		public KafkaStreamsConfiguration kafkaStreamsConfiguration() {
 			Map<String, Object> streamsProperties = new HashMap<>();
-			streamsProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+			streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG,
 					"localhost:9094, localhost:9095");
 			streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-id");
 

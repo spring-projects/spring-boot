@@ -1326,7 +1326,7 @@ source for more details.
 
 [[howto-switch-off-the-spring-mvc-dispatcherservlet]]
 === Switch Off the Spring MVC DispatcherServlet
-By default, All content is served from the root of your application (`/`) down. If you
+By default, all content is served from the root of your application (`/`). If you
 would rather map to a different path, you can configure one as follows:
 
 [source,properties,indent=0,subs="verbatim"]
@@ -1334,7 +1334,7 @@ would rather map to a different path, you can configure one as follows:
 	spring.mvc.servlet.path=/acme
 ----
 
-If you have additional servlets you can declare a  `@Bean` of type `Servlet` or
+If you have additional servlets you can declare a `@Bean` of type `Servlet` or
 `ServletRegistrationBean` for each and Spring Boot will register them transparently to the
 container. Because servlets are registered that way, they can be mapped to a sub-context
 of the `DispatcherServlet` without invoking it.
