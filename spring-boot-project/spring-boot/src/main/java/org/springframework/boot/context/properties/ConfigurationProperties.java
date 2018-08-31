@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,8 @@ public @interface ConfigurationProperties {
 
 	/**
 	 * The name prefix of the properties that are valid to bind to this object. Synonym
-	 * for {@link #prefix()}.
+	 * for {@link #prefix()}. A valid prefix is defined by one or more words separated
+	 * with dots (e.g. {@code "acme.system.feature"}).
 	 * @return the name prefix of the properties to bind
 	 */
 	@AliasFor("prefix")
@@ -51,7 +52,8 @@ public @interface ConfigurationProperties {
 
 	/**
 	 * The name prefix of the properties that are valid to bind to this object. Synonym
-	 * for {@link #value()}.
+	 * for {@link #value()}. A valid prefix is defined by one or more words separated with
+	 * dots (e.g. {@code "acme.system.feature"}).
 	 * @return the name prefix of the properties to bind
 	 */
 	@AliasFor("value")
