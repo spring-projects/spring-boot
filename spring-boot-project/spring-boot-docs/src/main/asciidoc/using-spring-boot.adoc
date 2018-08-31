@@ -585,7 +585,7 @@ NOTE: `@SpringBootApplication` also provides aliases to customize the attributes
 
 [NOTE]
 ====
-None of these features are mandatory and you may chose to replace this single annotation
+None of these features are mandatory and you may choose to replace this single annotation
 by any of the features that it enables. For instance, you may not want to use component
 scan in your application:
 
