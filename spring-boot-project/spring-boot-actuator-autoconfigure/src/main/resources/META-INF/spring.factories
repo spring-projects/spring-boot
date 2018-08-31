@@ -71,7 +71,8 @@ org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceEndpointAutoC
 org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.web.WebMetricsClientFiltersAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration=\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration,\
