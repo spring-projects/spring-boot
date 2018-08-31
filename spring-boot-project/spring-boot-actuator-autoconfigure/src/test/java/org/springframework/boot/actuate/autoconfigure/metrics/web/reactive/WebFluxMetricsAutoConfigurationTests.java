@@ -42,7 +42,6 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link WebFluxMetricsAutoConfiguration}
  *
  * @author Brian Clozel
- * @author Dmytro Nosan
  */
 public class WebFluxMetricsAutoConfigurationTests {
 

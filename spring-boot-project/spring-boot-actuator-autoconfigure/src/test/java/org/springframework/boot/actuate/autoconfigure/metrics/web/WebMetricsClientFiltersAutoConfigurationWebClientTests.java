@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
+package org.springframework.boot.actuate.autoconfigure.metrics.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebClientMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.mock.http.client.reactive.MockClientHttpResponse;
@@ -40,19 +41,24 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WebClientMetricsAutoConfiguration}
+ * Tests for {@link WebMetricsClientFiltersAutoConfiguration}.
  *
- * @author Brian Clozel
+ * @author Stephane Nicoll
+ * @author Dmytro Nosan
  */
-public class WebClientMetricsAutoConfigurationTests {
+public class WebMetricsClientFiltersAutoConfigurationWebClientTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 					WebClientMetricsAutoConfiguration.class,
 					SimpleMetricsExportAutoConfiguration.class,
-					WebClientAutoConfiguration.class));
+					WebClientAutoConfiguration.class,
+					WebMetricsClientFiltersAutoConfiguration.class));
 
 	private ClientHttpConnector connector;
+
+	@Rule
+	public OutputCapture out = new OutputCapture();
 
 	@Before
 	public void setup() {
@@ -62,35 +68,43 @@ public class WebClientMetricsAutoConfigurationTests {
 	}
 
 	@Test
-	public void webClientCreatedWithBuilderIsInstrumented() {
-		this.contextRunner.run((context) -> {
-			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
-			WebClient webClient = builder.clientConnector(this.connector).build();
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			assertThat(registry.find("http.client.requests").meter()).isNull();
-			webClient.get().uri("http://example.org/projects/{project}", "spring-boot")
-					.exchange().block();
-			assertThat(registry.find("http.client.requests")
-					.tags("uri", "/projects/{project}").meter()).isNotNull();
-		});
+	public void afterMaxUrisReachedFurtherUrisAreDenied() {
+		this.contextRunner
+				.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
+					assertThat(this.out.toString())
+							.contains("Reached the maximum number of URI tags "
+									+ "for 'http.client.requests'. Are you using "
+									+ "'uriVariables' on RestTemplate/WebClient calls?");
+				});
 	}
 
 	@Test
-	public void shouldNotOverrideCustomTagsProvider() {
-		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class)
-				.run((context) -> assertThat(context)
-						.getBeans(WebClientExchangeTagsProvider.class).hasSize(1)
-						.containsKey("customTagsProvider"));
+	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
+		this.contextRunner
+				.withPropertyValues("management.metrics.web.client.max-uri-tags=5")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
+					assertThat(this.out.toString())
+							.doesNotContain("Reached the maximum number of URI tags "
+									+ "for 'http.client.requests'. Are you using "
+									+ "'uriVariables' on RestTemplate/WebClient calls?");
+				});
+
 	}
 
-	@Configuration
-	protected static class CustomTagsProviderConfig {
-
-		@Bean
-		public WebClientExchangeTagsProvider customTagsProvider() {
-			return mock(WebClientExchangeTagsProvider.class);
+	private MeterRegistry getInitializedMeterRegistry(
+			AssertableApplicationContext context) {
+		WebClient.Builder builder = context.getBean(WebClient.Builder.class);
+		WebClient webClient = builder.clientConnector(this.connector).build();
+		MeterRegistry registry = context.getBean(MeterRegistry.class);
+		for (int i = 0; i < 3; i++) {
+			webClient.get().uri("http://example.org/projects/" + i).exchange().block();
 		}
-
+		return registry;
 	}
 
 }

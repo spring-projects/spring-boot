@@ -17,16 +17,13 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -48,9 +45,6 @@ public class RestTemplateMetricsAutoConfigurationTests {
 			.with(MetricsRun.simple()).withConfiguration(
 					AutoConfigurations.of(RestTemplateAutoConfiguration.class));
 
-	@Rule
-	public OutputCapture out = new OutputCapture();
-
 	@Test
 	public void restTemplateCreatedWithBuilderIsInstrumented() {
 		this.contextRunner.run((context) -> {
@@ -71,48 +65,6 @@ public class RestTemplateMetricsAutoConfigurationTests {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			validateRestTemplate(restTemplate, registry);
 		});
-	}
-
-	@Test
-	public void afterMaxUrisReachedFurtherUrisAreDenied() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
-				.run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-					assertThat(this.out.toString()).contains(
-							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString()).contains(
-							"Are you using 'uriVariables' on RestTemplate calls?");
-				});
-	}
-
-	@Test
-	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
-		this.contextRunner
-				.withPropertyValues("management.metrics.web.client.max-uri-tags=5")
-				.run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-					assertThat(this.out.toString()).doesNotContain(
-							"Reached the maximum number of URI tags for 'http.client.requests'.");
-					assertThat(this.out.toString()).doesNotContain(
-							"Are you using 'uriVariables' on RestTemplate calls?");
-				});
-	}
-
-	private MeterRegistry getInitializedMeterRegistry(
-			AssertableApplicationContext context) {
-		MeterRegistry registry = context.getBean(MeterRegistry.class);
-		RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
-		MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
-		for (int i = 0; i < 3; i++) {
-			server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
-		}
-		for (int i = 0; i < 3; i++) {
-			restTemplate.getForObject("/test/" + i, String.class);
-		}
-		return registry;
 	}
 
 	private void validateRestTemplate(RestTemplate restTemplate, MeterRegistry registry) {
