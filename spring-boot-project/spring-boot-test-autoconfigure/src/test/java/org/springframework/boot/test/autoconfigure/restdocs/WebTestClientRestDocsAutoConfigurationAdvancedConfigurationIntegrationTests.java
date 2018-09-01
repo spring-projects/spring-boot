@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
@@ -46,6 +47,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  */
 @RunWith(SpringRunner.class)
 @WebFluxTest
+@WithMockUser
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
 public class WebTestClientRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
@@ -59,8 +61,8 @@ public class WebTestClientRestDocsAutoConfigurationAdvancedConfigurationIntegrat
 
 	@Test
 	public void defaultSnippetsAreWritten() throws Exception {
-		this.webTestClient.get().uri("/").exchange().expectBody()
-				.consumeWith(document("default-snippets"));
+		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful()
+				.expectBody().consumeWith(document("default-snippets"));
 		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.md"))

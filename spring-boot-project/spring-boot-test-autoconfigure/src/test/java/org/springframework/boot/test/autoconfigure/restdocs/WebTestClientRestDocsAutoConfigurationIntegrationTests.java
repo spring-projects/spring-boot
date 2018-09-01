@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.FileSystemUtils;
@@ -39,6 +40,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  */
 @RunWith(SpringRunner.class)
 @WebFluxTest
+@WithMockUser
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.example.com", uriPort = 443)
 public class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 
