@@ -668,6 +668,10 @@ following:
 * `text/xml`
 * `text/plain`
 * `text/css`
+* `text/javascript`
+* `application/javascript`
+* `application/json`
+* `application/xml`
 
 You can configure this behavior by setting the `server.compression.mime-types` property.
 
