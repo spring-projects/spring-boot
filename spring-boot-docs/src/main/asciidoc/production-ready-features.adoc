@@ -892,7 +892,7 @@ using Maven you would add the following:
 	<dependency>
 		<groupId>org.jolokia</groupId>
 		<artifactId>jolokia-core</artifactId>
- 	</dependency>
+	</dependency>
 ----
 
 Jolokia can then be accessed using `/jolokia` on your management HTTP server.
