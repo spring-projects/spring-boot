@@ -185,8 +185,9 @@ public class MongoDataAutoConfiguration {
 	}
 
 	/**
-	 * Check if either a {@link com.mongodb.MongoClient} or
-	 * {@link com.mongodb.client.MongoClient} bean is available.
+	 * Check if either a {@link MongoClient com.mongodb.MongoClient} or
+	 * {@link com.mongodb.client.MongoClient com.mongodb.client.MongoClient} bean is
+	 * available.
 	 */
 	static class AnyMongoClientAvailable extends AnyNestedCondition {
 
