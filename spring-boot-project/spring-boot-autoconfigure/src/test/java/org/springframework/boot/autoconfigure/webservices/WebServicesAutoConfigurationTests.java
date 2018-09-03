@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Eneias Silva
  */
 public class WebServicesAutoConfigurationTests {
 
@@ -96,6 +97,19 @@ public class WebServicesAutoConfigurationTests {
 	public void withWsdlBeans() {
 		this.contextRunner
 				.withPropertyValues("spring.webservices.wsdl-locations=classpath:/wsdl")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(SimpleWsdl11Definition.class))
+							.hasSize(1).containsKey("service");
+					assertThat(context.getBeansOfType(SimpleXsdSchema.class)).hasSize(1)
+							.containsKey("types");
+				});
+	}
+
+	@Test
+	public void withWsdlBeansAsList() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.webservices.wsdl-locations[0]=classpath:/wsdl")
 				.run((context) -> {
 					assertThat(context.getBeansOfType(SimpleWsdl11Definition.class))
 							.hasSize(1).containsKey("service");

@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.autoconfigure.webservices;
 
 import org.springframework.boot.autoconfigure.condition.AbstractListCondition;
 
 /**
- * Condition to determine if {@code spring.couchbase.bootstrap-hosts} is specified.
+ * Condition to determine if {@code spring.webservices.wsdl-locations} is specified.
  *
- * @author Stephane Nicoll
- * @author Madhura Bhave
  * @author Eneias Silva
  */
-class OnBootstrapHostsCondition extends AbstractListCondition {
+class OnWsdlLocationsCondition extends AbstractListCondition {
 
 	@Override
 	protected String getPropertyName() {
-		return "spring.couchbase.bootstrap-hosts";
+		return "spring.webservices.wsdl-locations";
 	}
 
 	@Override
 	protected String getClassName() {
-		return OnBootstrapHostsCondition.class.getName();
+		return OnWsdlLocationsCondition.class.getName();
 	}
 
 }
