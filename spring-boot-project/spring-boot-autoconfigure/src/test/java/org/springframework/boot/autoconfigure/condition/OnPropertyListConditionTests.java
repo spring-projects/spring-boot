@@ -26,11 +26,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OnListCondition}.
+ * Tests for {@link OnPropertyListCondition}.
  *
  * @author Stephane Nicoll
  */
-public class OnListConditionTests {
+public class OnPropertyListConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfig.class);
@@ -65,7 +65,7 @@ public class OnListConditionTests {
 	}
 
 	@Configuration
-	@Conditional(TestListCondition.class)
+	@Conditional(TestPropertyListCondition.class)
 	protected static class TestConfig {
 
 		@Bean
@@ -75,9 +75,9 @@ public class OnListConditionTests {
 
 	}
 
-	static class TestListCondition extends OnListCondition {
+	static class TestPropertyListCondition extends OnPropertyListCondition {
 
-		TestListCondition() {
+		TestPropertyListCondition() {
 			super("spring.test.my-list", () -> ConditionMessage.forCondition("test"));
 		}
 

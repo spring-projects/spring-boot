@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.couchbase;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
-import org.springframework.boot.autoconfigure.condition.OnListCondition;
+import org.springframework.boot.autoconfigure.condition.OnPropertyListCondition;
 
 /**
  * Condition to determine if {@code spring.couchbase.bootstrap-hosts} is specified.
@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.condition.OnListCondition;
  * @author Madhura Bhave
  * @author Eneias Silva
  */
-class OnBootstrapHostsCondition extends OnListCondition {
+class OnBootstrapHostsCondition extends OnPropertyListCondition {
 
 	OnBootstrapHostsCondition() {
 		super("spring.couchbase.bootstrap-hosts",

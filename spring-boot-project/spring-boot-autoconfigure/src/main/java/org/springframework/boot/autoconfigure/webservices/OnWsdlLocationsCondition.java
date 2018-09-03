@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.webservices;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
-import org.springframework.boot.autoconfigure.condition.OnListCondition;
+import org.springframework.boot.autoconfigure.condition.OnPropertyListCondition;
 
 /**
  * Condition to determine if {@code spring.webservices.wsdl-locations} is specified.
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.condition.OnListCondition;
  * @author Eneias Silva
  * @author Stephane Nicoll
  */
-class OnWsdlLocationsCondition extends OnListCondition {
+class OnWsdlLocationsCondition extends OnPropertyListCondition {
 
 	OnWsdlLocationsCondition() {
 		super("spring.webservices.wsdl-locations",

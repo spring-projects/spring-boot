@@ -34,7 +34,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Stephane Nicoll
  * @since 2.0.5
  */
-public class OnListCondition extends SpringBootCondition {
+public class OnPropertyListCondition extends SpringBootCondition {
 
 	private static final Bindable<List<String>> SIMPLE_LIST = Bindable
 			.listOf(String.class);
@@ -49,7 +49,7 @@ public class OnListCondition extends SpringBootCondition {
 	 * @param messageBuilder a message builder supplier that should provide a fresh
 	 * instance on each call
 	 */
-	protected OnListCondition(String propertyName,
+	protected OnPropertyListCondition(String propertyName,
 			Supplier<ConditionMessage.Builder> messageBuilder) {
 		this.propertyName = propertyName;
 		this.messageBuilder = messageBuilder;
