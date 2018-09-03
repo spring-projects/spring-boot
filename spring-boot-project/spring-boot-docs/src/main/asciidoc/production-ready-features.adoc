@@ -1230,7 +1230,7 @@ Maven, you would add the following dependency:
 	<dependency>
 		<groupId>org.jolokia</groupId>
 		<artifactId>jolokia-core</artifactId>
- 	</dependency>
+	</dependency>
 ----
 
 The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the
