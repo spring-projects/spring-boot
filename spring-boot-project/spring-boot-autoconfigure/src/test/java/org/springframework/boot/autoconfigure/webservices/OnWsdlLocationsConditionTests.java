@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.couchbase;
+package org.springframework.boot.autoconfigure.webservices;
 
 import org.junit.Test;
 
@@ -26,11 +26,12 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OnBootstrapHostsCondition}.
+ * Tests for {@link OnWsdlLocationsCondition}.
  *
+ * @author Eneias Silva
  * @author Stephane Nicoll
  */
-public class OnBootstrapHostsConditionTests {
+public class OnWsdlLocationsConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfig.class);
@@ -42,19 +43,19 @@ public class OnBootstrapHostsConditionTests {
 
 	@Test
 	public void bootstrapHostsDefinedAsCommaSeparated() {
-		this.contextRunner.withPropertyValues("spring.couchbase.bootstrap-hosts=value1")
+		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
 	public void bootstrapHostsDefinedAsList() {
 		this.contextRunner
-				.withPropertyValues("spring.couchbase.bootstrap-hosts[0]=value1")
+				.withPropertyValues("spring.webservices.wsdl-locations[0]=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration
-	@Conditional(OnBootstrapHostsCondition.class)
+	@Conditional(OnWsdlLocationsCondition.class)
 	protected static class TestConfig {
 
 		@Bean
