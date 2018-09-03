@@ -220,7 +220,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 				// Continue searching
 			}
 		}
-		throw new IllegalStateException("No available JtaPlatform candidates amongst"
+		throw new IllegalStateException("No available JtaPlatform candidates amongst "
 				+ Arrays.toString(NO_JTA_PLATFORM_CLASSES));
 	}
 
