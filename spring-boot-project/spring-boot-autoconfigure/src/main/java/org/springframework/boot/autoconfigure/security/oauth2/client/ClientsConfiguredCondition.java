@@ -41,7 +41,7 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 	private static final Bindable<Map<String, OAuth2ClientProperties.LoginClientRegistration>> STRING_LOGIN_REGISTRATION_MAP = Bindable
 			.mapOf(String.class, OAuth2ClientProperties.LoginClientRegistration.class);
 
-	private static final Bindable<Map<String, OAuth2ClientProperties.AuthorizationCodeClientRegistration>> STRING_AUTHORIZATIONCODE_REGISTRATION_MAP = Bindable
+	private static final Bindable<Map<String, OAuth2ClientProperties.AuthorizationCodeClientRegistration>> STRING_AUTHORIZATION_CODE_REGISTRATION_MAP = Bindable
 			.mapOf(String.class,
 					OAuth2ClientProperties.AuthorizationCodeClientRegistration.class);
 
@@ -71,7 +71,7 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 		Map<String, OAuth2ClientProperties.AuthorizationCodeClientRegistration> authCodeClientRegistrations = Binder
 				.get(environment)
 				.bind("spring.security.oauth2.client.registration.authorizationcode",
-						STRING_AUTHORIZATIONCODE_REGISTRATION_MAP)
+						STRING_AUTHORIZATION_CODE_REGISTRATION_MAP)
 				.orElse(Collections.emptyMap());
 		registrations.putAll(loginClientRegistrations);
 		registrations.putAll(authCodeClientRegistrations);

@@ -236,7 +236,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 	}
 
 	@Test
-	public void getClientRegistrationsWhenAuhtorizationCodeClientShouldAdapt() {
+	public void getClientRegistrationsWhenAuthorizationCodeClientShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.AuthorizationCodeClientRegistration registration = new OAuth2ClientProperties.AuthorizationCodeClientRegistration();
 		registration.setClientId("clientId");
