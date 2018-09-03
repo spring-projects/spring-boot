@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,20 @@
 
 package org.springframework.boot.autoconfigure.webservices;
 
-import org.springframework.boot.autoconfigure.condition.AbstractListCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.OnListCondition;
 
 /**
  * Condition to determine if {@code spring.webservices.wsdl-locations} is specified.
  *
  * @author Eneias Silva
+ * @author Stephane Nicoll
  */
-class OnWsdlLocationsCondition extends AbstractListCondition {
+class OnWsdlLocationsCondition extends OnListCondition {
 
-	@Override
-	protected String getPropertyName() {
-		return "spring.webservices.wsdl-locations";
-	}
-
-	@Override
-	protected String getClassName() {
-		return OnWsdlLocationsCondition.class.getName();
+	OnWsdlLocationsCondition() {
+		super("spring.webservices.wsdl-locations",
+				() -> ConditionMessage.forCondition("WSDL locations"));
 	}
 
 }

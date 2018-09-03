@@ -17,41 +17,56 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Abstract base class for list conditions.
+ * {@link Condition} that checks if a property whose value is a list is defined in the
+ * environment.
  *
  * @author Eneias Silva
- *
+ * @author Stephane Nicoll
+ * @since 2.0.5
  */
-public abstract class AbstractListCondition extends SpringBootCondition {
+public class OnListCondition extends SpringBootCondition {
 
-	private static final Bindable<List<String>> STRING_LIST = Bindable
+	private static final Bindable<List<String>> SIMPLE_LIST = Bindable
 			.listOf(String.class);
+
+	private final String propertyName;
+
+	private final Supplier<ConditionMessage.Builder> messageBuilder;
+
+	/**
+	 * Create a new instance with the property to check and the message builder to use.
+	 * @param propertyName the name of the property
+	 * @param messageBuilder a message builder supplier that should provide a fresh
+	 * instance on each call
+	 */
+	protected OnListCondition(String propertyName,
+			Supplier<ConditionMessage.Builder> messageBuilder) {
+		this.propertyName = propertyName;
+		this.messageBuilder = messageBuilder;
+	}
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		BindResult<?> property = Binder.get(context.getEnvironment())
-				.bind(getPropertyName(), STRING_LIST);
+				.bind(this.propertyName, SIMPLE_LIST);
+		ConditionMessage.Builder messageBuilder = this.messageBuilder.get();
 		if (property.isBound()) {
-			return ConditionOutcome.match(ConditionMessage.forCondition(getClassName())
-					.found("property").items(getPropertyName()));
+			return ConditionOutcome
+					.match(messageBuilder.found("property").items(this.propertyName));
 		}
-		return ConditionOutcome.noMatch(ConditionMessage.forCondition(getClassName())
-				.didNotFind("property").items(getPropertyName()));
+		return ConditionOutcome
+				.noMatch(messageBuilder.didNotFind("property").items(this.propertyName));
 	}
-
-
-	protected abstract String getPropertyName();
-
-
-	protected abstract String getClassName();
 
 }

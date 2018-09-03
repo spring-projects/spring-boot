@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.webservices;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
 
@@ -26,41 +26,59 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OnWsdlLocationsCondition}.
+ * Tests for {@link OnListCondition}.
  *
- * @author Eneias Silva
  * @author Stephane Nicoll
  */
-public class OnWsdlLocationsConditionTests {
+public class OnListConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfig.class);
 
 	@Test
-	public void bootstrapHostsNotDefined() {
+	public void propertyNotDefined() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
-	public void bootstrapHostsDefinedAsCommaSeparated() {
-		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations=value1")
+	public void propertyDefinedAsCommaSeparated() {
+		this.contextRunner.withPropertyValues("spring.test.my-list=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void bootstrapHostsDefinedAsList() {
-		this.contextRunner
-				.withPropertyValues("spring.webservices.wsdl-locations[0]=value1")
+	public void propertyDefinedAsList() {
+		this.contextRunner.withPropertyValues("spring.test.my-list[0]=value1")
+				.run((context) -> assertThat(context).hasBean("foo"));
+	}
+
+	@Test
+	public void propertyDefinedAsCommaSeparatedRelaxed() {
+		this.contextRunner.withPropertyValues("spring.test.my-list=value1")
+				.run((context) -> assertThat(context).hasBean("foo"));
+	}
+
+	@Test
+	public void propertyDefinedAsListRelaxed() {
+		this.contextRunner.withPropertyValues("spring.test.myList[0]=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration
-	@Conditional(OnWsdlLocationsCondition.class)
+	@Conditional(TestListCondition.class)
 	protected static class TestConfig {
 
 		@Bean
 		public String foo() {
 			return "foo";
+		}
+
+	}
+
+	static class TestListCondition extends OnListCondition {
+
+		TestListCondition() {
+			super("spring.test.my-list", () -> ConditionMessage.forCondition("test"));
 		}
 
 	}

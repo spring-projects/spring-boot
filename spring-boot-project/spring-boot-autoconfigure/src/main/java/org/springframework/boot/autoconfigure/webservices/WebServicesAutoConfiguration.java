@@ -55,7 +55,6 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
- * @author Eneias Silva
  * @since 1.4.0
  */
 @Configuration

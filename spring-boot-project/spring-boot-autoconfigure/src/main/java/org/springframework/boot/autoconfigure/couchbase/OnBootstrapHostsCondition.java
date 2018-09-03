@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
-import org.springframework.boot.autoconfigure.condition.AbstractListCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.OnListCondition;
 
 /**
  * Condition to determine if {@code spring.couchbase.bootstrap-hosts} is specified.
@@ -25,16 +26,11 @@ import org.springframework.boot.autoconfigure.condition.AbstractListCondition;
  * @author Madhura Bhave
  * @author Eneias Silva
  */
-class OnBootstrapHostsCondition extends AbstractListCondition {
+class OnBootstrapHostsCondition extends OnListCondition {
 
-	@Override
-	protected String getPropertyName() {
-		return "spring.couchbase.bootstrap-hosts";
-	}
-
-	@Override
-	protected String getClassName() {
-		return OnBootstrapHostsCondition.class.getName();
+	OnBootstrapHostsCondition() {
+		super("spring.couchbase.bootstrap-hosts",
+				() -> ConditionMessage.forCondition("Couchbase Bootstrap Hosts"));
 	}
 
 }
