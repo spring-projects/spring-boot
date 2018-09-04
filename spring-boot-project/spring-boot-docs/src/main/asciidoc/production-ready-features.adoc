@@ -555,7 +555,7 @@ Consider the following JSON request body:
 	}
 ----
 
-This can be used to invoke a write operation that takes a `String test` and `int counter`
+This can be used to invoke a write operation that takes `String name` and `int counter`
 parameters.
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the
