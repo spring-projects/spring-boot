@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties} for configuring Micrometer-based metrics.
  *
  * @author Jon Schneider
+ * @author Alexander Abramov
  * @since 2.0.0
  */
 @ConfigurationProperties("management.metrics")
@@ -198,6 +199,22 @@ public class MetricsProperties {
 		 */
 		private final Map<String, ServiceLevelAgreementBoundary[]> sla = new LinkedHashMap<>();
 
+		/**
+		 * The minimum value that this distribution summary is expected to observe.
+		 * Controls the number of buckets shipped by percentilesHistogram. Can be
+		 * specified as a long or as a Duration value (for timer meters, defaulting to ms
+		 * if no unit specified).
+		 */
+		private final Map<String, ServiceLevelAgreementBoundary> minimumExpectedValue = new LinkedHashMap<>();
+
+		/**
+		 * The maximum value that this distribution summary is expected to observe.
+		 * Controls the number of buckets shipped by percentilesHistogram. Can be
+		 * specified as a long or as a Duration value (for timer meters, defaulting to ms
+		 * if no unit specified).
+		 */
+		private final Map<String, ServiceLevelAgreementBoundary> maximumExpectedValue = new LinkedHashMap<>();
+
 		public Map<String, Boolean> getPercentilesHistogram() {
 			return this.percentilesHistogram;
 		}
@@ -208,6 +225,14 @@ public class MetricsProperties {
 
 		public Map<String, ServiceLevelAgreementBoundary[]> getSla() {
 			return this.sla;
+		}
+
+		public Map<String, ServiceLevelAgreementBoundary> getMinimumExpectedValue() {
+			return this.minimumExpectedValue;
+		}
+
+		public Map<String, ServiceLevelAgreementBoundary> getMaximumExpectedValue() {
+			return this.maximumExpectedValue;
 		}
 
 	}
