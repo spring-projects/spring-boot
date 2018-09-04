@@ -47,9 +47,7 @@ class ClientHttpConnectorConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public ReactorResourceFactory reactorResourceFactory() {
-			ReactorResourceFactory factory = new ReactorResourceFactory();
-			factory.setGlobalResources(false);
-			return factory;
+			return new ReactorResourceFactory();
 		}
 
 		@Bean
