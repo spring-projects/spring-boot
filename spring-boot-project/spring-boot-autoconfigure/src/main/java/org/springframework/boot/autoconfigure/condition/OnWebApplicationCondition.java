@@ -65,10 +65,8 @@ class OnWebApplicationCondition extends SpringBootCondition {
 		switch (deduceType(metadata)) {
 		case SERVLET:
 			return isServletWebApplication(context);
-
 		case REACTIVE:
 			return isReactiveWebApplication(context);
-
 		default:
 			return isAnyWebApplication(context, required);
 		}

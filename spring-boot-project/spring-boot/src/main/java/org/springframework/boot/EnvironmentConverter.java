@@ -42,7 +42,7 @@ final class EnvironmentConverter {
 	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
 
 	static {
-		final Set<String> names = new HashSet<>();
+		Set<String> names = new HashSet<>();
 		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
 		names.add(StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
 		names.add(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
@@ -65,20 +65,20 @@ final class EnvironmentConverter {
 	 * type. If the environment is already of the same type, no conversion is performed
 	 * and it is returned unchanged.
 	 * @param environment the Environment to convert
-	 * @param conversionType the type to convert the Environment to
+	 * @param type the type to convert the Environment to
 	 * @return the converted Environment
 	 */
 	StandardEnvironment convertEnvironmentIfNecessary(ConfigurableEnvironment environment,
-			Class<? extends StandardEnvironment> conversionType) {
-		if (conversionType.equals(environment.getClass())) {
+			Class<? extends StandardEnvironment> type) {
+		if (type.equals(environment.getClass())) {
 			return (StandardEnvironment) environment;
 		}
-		return convertEnvironment(environment, conversionType);
+		return convertEnvironment(environment, type);
 	}
 
 	private StandardEnvironment convertEnvironment(ConfigurableEnvironment environment,
-			Class<? extends StandardEnvironment> conversionType) {
-		StandardEnvironment result = createEnvironment(conversionType);
+			Class<? extends StandardEnvironment> type) {
+		StandardEnvironment result = createEnvironment(type);
 		result.setActiveProfiles(environment.getActiveProfiles());
 		result.setConversionService(environment.getConversionService());
 		copyPropertySources(environment, result);
@@ -86,9 +86,9 @@ final class EnvironmentConverter {
 	}
 
 	private StandardEnvironment createEnvironment(
-			Class<? extends StandardEnvironment> conversionType) {
+			Class<? extends StandardEnvironment> type) {
 		try {
-			return conversionType.newInstance();
+			return type.newInstance();
 		}
 		catch (Exception ex) {
 			return new StandardEnvironment();
