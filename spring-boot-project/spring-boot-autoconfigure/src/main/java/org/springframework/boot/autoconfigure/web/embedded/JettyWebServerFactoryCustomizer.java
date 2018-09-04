@@ -36,6 +36,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Customization for Jetty-specific features common for both Servlet and Reactive servers.
@@ -73,7 +74,8 @@ public class JettyWebServerFactoryCustomizer implements
 				.to(factory::setAcceptors);
 		propertyMapper.from(jettyProperties::getSelectors).whenNonNull()
 				.to(factory::setSelectors);
-		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
+		propertyMapper.from(properties::getMaxHttpHeaderSize).whenNonNull()
+				.asInt(DataSize::toBytes)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
 		propertyMapper.from(jettyProperties::getMaxHttpPostSize).when(this::isPositive)
@@ -133,7 +135,6 @@ public class JettyWebServerFactoryCustomizer implements
 			private void customize(HttpConfiguration.ConnectionFactory factory) {
 				HttpConfiguration configuration = factory.getHttpConfiguration();
 				configuration.setRequestHeaderSize(maxHttpHeaderSize);
-				configuration.setResponseHeaderSize(maxHttpHeaderSize);
 			}
 
 		});
