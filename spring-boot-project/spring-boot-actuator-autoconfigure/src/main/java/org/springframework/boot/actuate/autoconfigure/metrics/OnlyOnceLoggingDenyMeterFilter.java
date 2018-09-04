@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
 import org.slf4j.Logger;
@@ -28,7 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
- * {@link MeterFilter} to log only once a warning message and deny {@link Meter.Id}.
+ * {@link MeterFilter} to log only once a warning message and deny a {@link Meter}
+ * {@link Id}.
  *
  * @author Jon Schneider
  * @author Dmytro Nosan
@@ -49,7 +51,7 @@ public final class OnlyOnceLoggingDenyMeterFilter implements MeterFilter {
 	}
 
 	@Override
-	public MeterFilterReply accept(Meter.Id id) {
+	public MeterFilterReply accept(Id id) {
 		if (this.logger.isWarnEnabled()
 				&& this.alreadyWarned.compareAndSet(false, true)) {
 			this.logger.warn(this.message.get());

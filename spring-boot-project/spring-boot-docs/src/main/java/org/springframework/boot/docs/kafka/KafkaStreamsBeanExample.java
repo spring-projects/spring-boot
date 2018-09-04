@@ -42,7 +42,7 @@ public class KafkaStreamsBeanExample {
 		@Bean
 		public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {
 			KStream<Integer, String> stream = streamsBuilder.stream("ks1In");
-			stream.map((k, v) -> new KeyValue(k, v.toUpperCase())).to("ks1Out",
+			stream.map((k, v) -> new KeyValue<>(k, v.toUpperCase())).to("ks1Out",
 					Produced.with(Serdes.Integer(), new JsonSerde<>()));
 			return stream;
 		}

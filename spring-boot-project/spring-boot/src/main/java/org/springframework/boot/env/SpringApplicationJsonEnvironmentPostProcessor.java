@@ -21,9 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -73,9 +70,6 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	 * The default order for the processor.
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 5;
-
-	private static final Log logger = LogFactory
-			.getLog(SpringApplicationJsonEnvironmentPostProcessor.class);
 
 	private int order = DEFAULT_ORDER;
 
