@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
@@ -84,7 +85,7 @@ public class ServerProperties {
 	/**
 	 * Maximum size of the HTTP message header.
 	 */
-	private DataSize maxHttpHeaderSize = DataSize.ofKiloBytes(8L);
+	private DataSize maxHttpHeaderSize = DataSize.ofKiloBytes(8);
 
 	/**
 	 * Time that connectors wait for another HTTP request before closing the connection.
@@ -328,9 +329,7 @@ public class ServerProperties {
 
 		/**
 		 * Maximum size, in bytes, of the HTTP message header.
-		 * @deprecated since 2.1.0 in favor of {@link ServerProperties#maxHttpHeaderSize}
 		 */
-		@Deprecated
 		private int maxHttpHeaderSize = 0;
 
 		/**
@@ -496,8 +495,15 @@ public class ServerProperties {
 			this.maxConnections = maxConnections;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
 		public int getMaxHttpHeaderSize() {
 			return this.maxHttpHeaderSize;
+		}
+
+		@Deprecated
+		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public DataSize getMaxSwallowSize() {
@@ -506,10 +512,6 @@ public class ServerProperties {
 
 		public void setMaxSwallowSize(DataSize maxSwallowSize) {
 			this.maxSwallowSize = maxSwallowSize;
-		}
-
-		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
-			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public int getAcceptCount() {

@@ -116,6 +116,7 @@ public class TomcatWebServerFactoryCustomizer implements
 		return value > 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	private DataSize determineMaxHttpHeaderSize() {
 		return isPositive(this.serverProperties.getTomcat().getMaxHttpHeaderSize())
 				? DataSize
