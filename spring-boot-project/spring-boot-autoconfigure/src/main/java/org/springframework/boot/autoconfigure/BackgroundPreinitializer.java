@@ -42,6 +42,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  * @since 1.3.0
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
@@ -57,7 +58,13 @@ public class BackgroundPreinitializer
 	public void onApplicationEvent(SpringApplicationEvent event) {
 		if (event instanceof ApplicationStartingEvent
 				&& preinitializationStarted.compareAndSet(false, true)) {
-			performPreinitialization();
+
+			if (Boolean.getBoolean("spring.backgroundpreinitializer.ignore")) {
+				performPreinitialization(this.perform());
+			}
+			else {
+				performPreinitializationBackground(this.perform());
+			}
 		}
 		if ((event instanceof ApplicationReadyEvent
 				|| event instanceof ApplicationFailedEvent)
@@ -71,31 +78,21 @@ public class BackgroundPreinitializer
 		}
 	}
 
-	private void performPreinitialization() {
+	private void performPreinitialization(Runnable runnable) {
 		try {
-			Thread thread = new Thread(new Runnable() {
+			runnable.run();
+		}
+		catch (Exception ex) {
+			// This will fail on GAE where creating threads is prohibited. We can safely
+			// continue but startup will be slightly slower as the initialization will now
+			// happen on the main thread.
+			preinitializationComplete.countDown();
+		}
+	}
 
-				@Override
-				public void run() {
-					runSafely(new ConversionServiceInitializer());
-					runSafely(new ValidationInitializer());
-					runSafely(new MessageConverterInitializer());
-					runSafely(new MBeanFactoryInitializer());
-					runSafely(new JacksonInitializer());
-					runSafely(new CharsetInitializer());
-					preinitializationComplete.countDown();
-				}
-
-				public void runSafely(Runnable runnable) {
-					try {
-						runnable.run();
-					}
-					catch (Throwable ex) {
-						// Ignore
-					}
-				}
-
-			}, "background-preinit");
+	private void performPreinitializationBackground(Runnable runnable) {
+		try {
+			Thread thread = new Thread(runnable, "background-preinit");
 			thread.start();
 		}
 		catch (Exception ex) {
@@ -104,6 +101,32 @@ public class BackgroundPreinitializer
 			// happen on the main thread.
 			preinitializationComplete.countDown();
 		}
+	}
+
+	private Runnable perform() {
+		return new Runnable() {
+
+			@Override
+			public void run() {
+				runSafely(new ConversionServiceInitializer());
+				runSafely(new ValidationInitializer());
+				runSafely(new MessageConverterInitializer());
+				runSafely(new MBeanFactoryInitializer());
+				runSafely(new JacksonInitializer());
+				runSafely(new CharsetInitializer());
+				preinitializationComplete.countDown();
+			}
+
+			public void runSafely(Runnable runnable) {
+				try {
+					runnable.run();
+				}
+				catch (Throwable ex) {
+					// Ignore
+				}
+			}
+
+		};
 	}
 
 	/**
