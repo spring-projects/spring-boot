@@ -406,9 +406,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 					&& Character.isUpperCase(propertyName.charAt(1))) {
 				return propertyName;
 			}
-			else {
-				return StringUtils.capitalize(propertyName);
-			}
+			return StringUtils.capitalize(propertyName);
 		}
 
 	}
