@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Health}.
  *
  * @author Phillip Webb
+ * @author Michael Pratt
  */
 public class HealthTests {
 
@@ -85,6 +88,66 @@ public class HealthTests {
 	public void withDetails() {
 		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
 				.withDetail("c", "d").build();
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails().get("c")).isEqualTo("d");
+	}
+
+	@Test
+	public void withDetailsMap() {
+		Map<String, Object> details = new LinkedHashMap<>();
+		details.put("a", "b");
+		details.put("c", "d");
+
+		Health.Builder builder = Health.up();
+		builder.withDetails(details);
+
+		Health health = builder.build();
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails().get("c")).isEqualTo("d");
+	}
+
+	@Test
+	public void withDetailsMapDuplicateKeys() {
+		Map<String, Object> details = new LinkedHashMap<>();
+		details.put("a", "b");
+		details.put("c", "d");
+		details.put("a", "e");
+
+		Health.Builder builder = Health.up();
+		builder.withDetails(details);
+
+		Health health = builder.build();
+		assertThat(health.getDetails().get("a")).isEqualTo("e");
+		assertThat(health.getDetails().get("c")).isEqualTo("d");
+	}
+
+	@Test
+	public void withMultipleDetailsMaps() {
+		Map<String, Object> details1 = new LinkedHashMap<>();
+		details1.put("a", "b");
+		details1.put("c", "d");
+
+		Map<String, Object> details2 = new LinkedHashMap<>();
+		details2.put("1", "2");
+
+		Health.Builder builder = Health.up();
+		builder.withDetails(details1);
+		builder.withDetails(details2);
+
+		Health health = builder.build();
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails().get("c")).isEqualTo("d");
+		assertThat(health.getDetails().get("1")).isEqualTo("2");
+	}
+
+	@Test
+	public void mixWithDetailsUsage() {
+		Map<String, Object> details = new LinkedHashMap<>();
+		details.put("a", "b");
+
+		Health.Builder builder = Health.up().withDetails(details).withDetail("c", "d");
+
+		Health health = builder.build();
 		assertThat(health.getDetails().get("a")).isEqualTo("b");
 		assertThat(health.getDetails().get("c")).isEqualTo("d");
 	}
