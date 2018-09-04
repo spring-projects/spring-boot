@@ -20,8 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
@@ -47,9 +46,8 @@ import static org.mockito.Mockito.mock;
 public class WebFluxMetricsAutoConfigurationTests {
 
 	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-					SimpleMetricsExportAutoConfiguration.class,
-					WebFluxMetricsAutoConfiguration.class));
+			.with(MetricsRun.simple()).withConfiguration(
+					AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
 
 	@Rule
 	public OutputCapture output = new OutputCapture();

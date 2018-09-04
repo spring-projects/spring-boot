@@ -26,11 +26,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Rule;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter;
@@ -60,7 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class WebMvcMetricsAutoConfigurationTests {
 
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
+			.with(MetricsRun.simple()).withConfiguration(
 					AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class));
 
 	@Rule
@@ -68,25 +68,27 @@ public class WebMvcMetricsAutoConfigurationTests {
 
 	@Test
 	public void backsOffWhenMeterRegistryIsMissing() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(WebMvcMetricsAutoConfiguration.class));
+		new WebApplicationContextRunner()
+				.withConfiguration(
+						AutoConfigurations.of(WebMvcMetricsAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(WebMvcTagsProvider.class));
 	}
 
 	@Test
 	public void definesTagsProviderAndFilterWhenMeterRegistryIsPresent() {
-		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(DefaultWebMvcTagsProvider.class);
-					assertThat(context).hasSingleBean(FilterRegistrationBean.class);
-					assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
-							.isInstanceOf(WebMvcMetricsFilter.class);
-				});
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(DefaultWebMvcTagsProvider.class);
+			assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+			assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
+					.isInstanceOf(WebMvcMetricsFilter.class);
+		});
 	}
 
 	@Test
 	public void tagsProviderBacksOff() {
-		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class,
-				TagsProviderConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(TagsProviderConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(DefaultWebMvcTagsProvider.class);
 					assertThat(context).hasSingleBean(TestWebMvcTagsProvider.class);
 				});
@@ -94,23 +96,18 @@ public class WebMvcMetricsAutoConfigurationTests {
 
 	@Test
 	public void filterRegistrationHasExpectedDispatcherTypesAndOrder() {
-		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class)
-				.run((context) -> {
-					FilterRegistrationBean<?> registration = context
-							.getBean(FilterRegistrationBean.class);
-					assertThat(registration).hasFieldOrPropertyWithValue(
-							"dispatcherTypes",
-							EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC));
-					assertThat(registration.getOrder())
-							.isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
-				});
+		this.contextRunner.run((context) -> {
+			FilterRegistrationBean<?> registration = context
+					.getBean(FilterRegistrationBean.class);
+			assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
+					EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC));
+			assertThat(registration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
+		});
 	}
 
 	@Test
 	public void afterMaxUrisReachedFurtherUrisAreDenied() {
-		this.contextRunner
-				.withUserConfiguration(TestController.class,
-						MeterRegistryConfiguration.class)
+		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 						WebMvcAutoConfiguration.class))
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
@@ -125,9 +122,7 @@ public class WebMvcMetricsAutoConfigurationTests {
 
 	@Test
 	public void shouldNotDenyNorLogIfMaxUrisIsNotReached() {
-		this.contextRunner
-				.withUserConfiguration(TestController.class,
-						MeterRegistryConfiguration.class)
+		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 						WebMvcAutoConfiguration.class))
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=5")
@@ -152,16 +147,6 @@ public class WebMvcMetricsAutoConfigurationTests {
 					.andExpect(status().isOk());
 		}
 		return context.getBean(MeterRegistry.class);
-	}
-
-	@Configuration
-	static class MeterRegistryConfiguration {
-
-		@Bean
-		public MeterRegistry meterRegistry() {
-			return new SimpleMeterRegistry();
-		}
-
 	}
 
 	@Configuration

@@ -50,7 +50,8 @@ public class WebClientMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class,
+					HttpClientMetricsAutoConfiguration.class));
 
 	@Rule
 	public OutputCapture out = new OutputCapture();
