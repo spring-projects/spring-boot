@@ -64,13 +64,13 @@ public class MultipartProperties {
 	 * Max file size.
 	 */
 	@DataSizeUnit(DataUnit.MEGABYTES)
-	private DataSize maxFileSize = DataSize.ofMegaBytes(1);
+	private DataSize maxFileSize = DataSize.ofMegabytes(1);
 
 	/**
 	 * Max request size.
 	 */
 	@DataSizeUnit(DataUnit.MEGABYTES)
-	private DataSize maxRequestSize = DataSize.ofMegaBytes(10);
+	private DataSize maxRequestSize = DataSize.ofMegabytes(10);
 
 	/**
 	 * Threshold after which files are written to disk.

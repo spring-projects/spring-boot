@@ -56,9 +56,9 @@ public class NumberToDataSizeConverterTests {
 
 	@Test
 	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDataSize() {
-		assertThat(convert(10, DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKiloBytes(10));
-		assertThat(convert(+10, DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKiloBytes(10));
-		assertThat(convert(-10, DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKiloBytes(-10));
+		assertThat(convert(10, DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert(+10, DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert(-10, DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(-10));
 	}
 
 	private DataSize convert(Integer source) {

@@ -85,7 +85,7 @@ public class ServerProperties {
 	/**
 	 * Maximum size of the HTTP message header.
 	 */
-	private DataSize maxHttpHeaderSize = DataSize.ofKiloBytes(8);
+	private DataSize maxHttpHeaderSize = DataSize.ofKilobytes(8);
 
 	/**
 	 * Time that connectors wait for another HTTP request before closing the connection.
@@ -335,7 +335,7 @@ public class ServerProperties {
 		/**
 		 * Maximum amount of request body to swallow.
 		 */
-		private DataSize maxSwallowSize = DataSize.ofMegaBytes(2);
+		private DataSize maxSwallowSize = DataSize.ofMegabytes(2);
 
 		/**
 		 * Whether requests to the context root should be redirected by appending a / to

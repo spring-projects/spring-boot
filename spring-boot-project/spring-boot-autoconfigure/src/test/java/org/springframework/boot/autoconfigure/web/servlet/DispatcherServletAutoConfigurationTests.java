@@ -213,8 +213,8 @@ public class DispatcherServletAutoConfigurationTests {
 		@Bean
 		public MultipartConfigElement multipartConfig() {
 			MultipartConfigFactory factory = new MultipartConfigFactory();
-			factory.setMaxFileSize(DataSize.ofKiloBytes(128));
-			factory.setMaxRequestSize(DataSize.ofKiloBytes(128));
+			factory.setMaxFileSize(DataSize.ofKilobytes(128));
+			factory.setMaxRequestSize(DataSize.ofKilobytes(128));
 			return factory.createMultipartConfig();
 		}
 

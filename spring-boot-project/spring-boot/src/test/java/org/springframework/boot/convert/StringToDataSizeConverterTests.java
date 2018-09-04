@@ -57,31 +57,31 @@ public class StringToDataSizeConverterTests {
 	}
 
 	@Test
-	public void convertWhenSimpleKiloBytesShouldReturnDataSize() {
-		assertThat(convert("10KB")).isEqualTo(DataSize.ofKiloBytes(10));
-		assertThat(convert("+10KB")).isEqualTo(DataSize.ofKiloBytes(10));
-		assertThat(convert("-10KB")).isEqualTo(DataSize.ofKiloBytes(-10));
+	public void convertWhenSimpleKilobytesShouldReturnDataSize() {
+		assertThat(convert("10KB")).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert("+10KB")).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert("-10KB")).isEqualTo(DataSize.ofKilobytes(-10));
 	}
 
 	@Test
-	public void convertWhenSimpleMegaBytesShouldReturnDataSize() {
-		assertThat(convert("10MB")).isEqualTo(DataSize.ofMegaBytes(10));
-		assertThat(convert("+10MB")).isEqualTo(DataSize.ofMegaBytes(10));
-		assertThat(convert("-10MB")).isEqualTo(DataSize.ofMegaBytes(-10));
+	public void convertWhenSimpleMegabytesShouldReturnDataSize() {
+		assertThat(convert("10MB")).isEqualTo(DataSize.ofMegabytes(10));
+		assertThat(convert("+10MB")).isEqualTo(DataSize.ofMegabytes(10));
+		assertThat(convert("-10MB")).isEqualTo(DataSize.ofMegabytes(-10));
 	}
 
 	@Test
-	public void convertWhenSimpleGigaBytesShouldReturnDataSize() {
-		assertThat(convert("10GB")).isEqualTo(DataSize.ofGigaBytes(10));
-		assertThat(convert("+10GB")).isEqualTo(DataSize.ofGigaBytes(10));
-		assertThat(convert("-10GB")).isEqualTo(DataSize.ofGigaBytes(-10));
+	public void convertWhenSimpleGigabytesShouldReturnDataSize() {
+		assertThat(convert("10GB")).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(convert("+10GB")).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(convert("-10GB")).isEqualTo(DataSize.ofGigabytes(-10));
 	}
 
 	@Test
-	public void convertWhenSimpleTeraBytesShouldReturnDataSize() {
-		assertThat(convert("10TB")).isEqualTo(DataSize.ofTeraBytes(10));
-		assertThat(convert("+10TB")).isEqualTo(DataSize.ofTeraBytes(10));
-		assertThat(convert("-10TB")).isEqualTo(DataSize.ofTeraBytes(-10));
+	public void convertWhenSimpleTerabytesShouldReturnDataSize() {
+		assertThat(convert("10TB")).isEqualTo(DataSize.ofTerabytes(10));
+		assertThat(convert("+10TB")).isEqualTo(DataSize.ofTerabytes(10));
+		assertThat(convert("-10TB")).isEqualTo(DataSize.ofTerabytes(-10));
 	}
 
 	@Test
@@ -93,11 +93,11 @@ public class StringToDataSizeConverterTests {
 
 	@Test
 	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDataSize() {
-		assertThat(convert("10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKiloBytes(10));
+		assertThat(convert("10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
 		assertThat(convert("+10", DataUnit.KILOBYTES))
-				.isEqualTo(DataSize.ofKiloBytes(10));
+				.isEqualTo(DataSize.ofKilobytes(10));
 		assertThat(convert("-10", DataUnit.KILOBYTES))
-				.isEqualTo(DataSize.ofKiloBytes(-10));
+				.isEqualTo(DataSize.ofKilobytes(-10));
 	}
 
 	@Test

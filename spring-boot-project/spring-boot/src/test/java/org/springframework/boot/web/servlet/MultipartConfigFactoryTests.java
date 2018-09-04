@@ -74,8 +74,8 @@ public class MultipartConfigFactoryTests {
 	public void createWithDataSizes() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setMaxFileSize(DataSize.ofBytes(1));
-		factory.setMaxRequestSize(DataSize.ofKiloBytes(2));
-		factory.setFileSizeThreshold(DataSize.ofMegaBytes(3));
+		factory.setMaxRequestSize(DataSize.ofKilobytes(2));
+		factory.setFileSizeThreshold(DataSize.ofMegabytes(3));
 		MultipartConfigElement config = factory.createMultipartConfig();
 		assertThat(config.getMaxFileSize()).isEqualTo(1L);
 		assertThat(config.getMaxRequestSize()).isEqualTo(2 * 1024L);
@@ -86,8 +86,8 @@ public class MultipartConfigFactoryTests {
 	public void createWithNegativeDataSizes() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		factory.setMaxFileSize(DataSize.ofBytes(-1));
-		factory.setMaxRequestSize(DataSize.ofKiloBytes(-2));
-		factory.setFileSizeThreshold(DataSize.ofMegaBytes(-3));
+		factory.setMaxRequestSize(DataSize.ofKilobytes(-2));
+		factory.setFileSizeThreshold(DataSize.ofMegabytes(-3));
 		MultipartConfigElement config = factory.createMultipartConfig();
 		assertThat(config.getMaxFileSize()).isEqualTo(-1L);
 		assertThat(config.getMaxRequestSize()).isEqualTo(-1);

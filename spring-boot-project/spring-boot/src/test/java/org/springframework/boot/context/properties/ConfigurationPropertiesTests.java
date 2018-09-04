@@ -774,8 +774,8 @@ public class ConfigurationPropertiesTests {
 	public void loadWhenBindingToDataSizeShouldBind() {
 		load(DataSizeProperties.class, "test.size=10GB", "test.another-size=5");
 		DataSizeProperties bean = this.context.getBean(DataSizeProperties.class);
-		assertThat(bean.getSize()).isEqualTo(DataSize.ofGigaBytes(10));
-		assertThat(bean.getAnotherSize()).isEqualTo(DataSize.ofKiloBytes(5));
+		assertThat(bean.getSize()).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(bean.getAnotherSize()).isEqualTo(DataSize.ofKilobytes(5));
 	}
 
 	@Test

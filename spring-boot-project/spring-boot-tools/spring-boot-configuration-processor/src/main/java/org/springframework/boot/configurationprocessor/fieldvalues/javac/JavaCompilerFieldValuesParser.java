@@ -123,10 +123,10 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		static {
 			Map<String, String> values = new HashMap<>();
 			values.put("Bytes", "B");
-			values.put("KiloBytes", "KB");
-			values.put("MegaBytes", "MB");
-			values.put("GigaBytes", "GB");
-			values.put("TeraBytes", "TB");
+			values.put("Kilobytes", "KB");
+			values.put("Megabytes", "MB");
+			values.put("Gigabytes", "GB");
+			values.put("Terabytes", "TB");
 			DATA_SIZE_SUFFIX = Collections.unmodifiableMap(values);
 		}
 

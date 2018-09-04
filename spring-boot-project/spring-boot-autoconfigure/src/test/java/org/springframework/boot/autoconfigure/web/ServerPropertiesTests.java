@@ -138,14 +138,14 @@ public class ServerPropertiesTests {
 	public void testCustomizeHeaderSize() {
 		bind("server.max-http-header-size", "1MB");
 		assertThat(this.properties.getMaxHttpHeaderSize())
-				.isEqualTo(DataSize.ofMegaBytes(1));
+				.isEqualTo(DataSize.ofMegabytes(1));
 	}
 
 	@Test
 	public void testCustomizeHeaderSizeUseBytesByDefault() {
 		bind("server.max-http-header-size", "1024");
 		assertThat(this.properties.getMaxHttpHeaderSize())
-				.isEqualTo(DataSize.ofKiloBytes(1));
+				.isEqualTo(DataSize.ofKilobytes(1));
 	}
 
 	@Test
