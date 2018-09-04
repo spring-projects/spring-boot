@@ -350,6 +350,17 @@ public class RabbitProperties {
 		 */
 		private String algorithm;
 
+		/**
+		 * Whether to enable server side certificate validation.
+		 */
+		private boolean validateServerCertificate = true;
+
+		/**
+		 * Whether to enable hostname verification. Requires AMQP client 4.8 or above and
+		 * defaults to true when a suitable client version is used.
+		 */
+		private Boolean verifyHostname;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -412,6 +423,22 @@ public class RabbitProperties {
 
 		public void setAlgorithm(String sslAlgorithm) {
 			this.algorithm = sslAlgorithm;
+		}
+
+		public boolean isValidateServerCertificate() {
+			return this.validateServerCertificate;
+		}
+
+		public void setValidateServerCertificate(boolean validateServerCertificate) {
+			this.validateServerCertificate = validateServerCertificate;
+		}
+
+		public Boolean getVerifyHostname() {
+			return this.verifyHostname;
+		}
+
+		public void setVerifyHostname(Boolean verifyHostname) {
+			this.verifyHostname = verifyHostname;
 		}
 
 	}

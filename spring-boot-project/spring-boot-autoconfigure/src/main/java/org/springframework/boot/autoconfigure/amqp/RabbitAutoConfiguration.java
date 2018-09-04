@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 import com.rabbitmq.client.Channel;
 
@@ -41,6 +42,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
@@ -91,6 +93,11 @@ public class RabbitAutoConfiguration {
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class RabbitConnectionFactoryCreator {
 
+		// Only available in rabbitmq-java-client 5.4.0 +
+		private static final boolean CAN_ENABLE_HOSTNAME_VERIFICATION = ReflectionUtils
+				.findMethod(com.rabbitmq.client.ConnectionFactory.class,
+						"enableHostnameVerification") != null;
+
 		@Bean
 		public CachingConnectionFactory rabbitConnectionFactory(
 				RabbitProperties properties,
@@ -140,6 +147,13 @@ public class RabbitAutoConfiguration {
 				map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
 				map.from(ssl::getTrustStore).to(factory::setTrustStore);
 				map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
+				map.from(ssl::isValidateServerCertificate).to((validate) -> factory
+						.setSkipServerCertificateValidation(!validate));
+				map.from(ssl::getVerifyHostname).when(Objects::nonNull)
+						.to(factory::setEnableHostnameVerification);
+				if (ssl.getVerifyHostname() == null && CAN_ENABLE_HOSTNAME_VERIFICATION) {
+					factory.setEnableHostnameVerification(true);
+				}
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull()
 					.asInt(Duration::toMillis).to(factory::setConnectionTimeout);
