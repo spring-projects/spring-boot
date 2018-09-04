@@ -6723,7 +6723,7 @@ mapper, which can be one of the following libraries:
 * `Gson`
 * `Jsonb`
 
-TIP: A list of the auto-configuration that is enabled by `@JsonTest` can be
+TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 If you need to configure elements of the auto-configuration, you can use the
@@ -6906,7 +6906,7 @@ auto-configures the Spring WebFlux infrastructure and limits scanned beans to
 `WebFluxConfigurer`. Regular `@Component` beans are not scanned when the `@WebFluxTest`
 annotation is used.
 
-TIP: A list of the auto-configuration that is enabled by `@WebFluxTest` can be
+TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as Jackson `Module`, you can import
@@ -7066,7 +7066,7 @@ following example:
 `DataSource`. By default, it configures an in-memory embedded database and a
 `JdbcTemplate`. Regular `@Component` beans are not loaded into the `ApplicationContext`.
 
-TIP: A list of the auto-configuration that is enabled by `@JdbcTest` can be
+TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 By default, JDBC tests are transactional and roll back at the end of each test. See the
@@ -7107,7 +7107,7 @@ you can use `@AutoConfigureTestDatabase` to override those settings. (For more a
 jOOQ with Spring Boot, see "<<boot-features-jooq>>", earlier in this chapter.) Regular
 `@Component` beans are not loaded into the `ApplicationContext`.
 
-TIP: A list of the auto-configuration that is enabled by `@JooqTest` can be
+TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be
 <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 `@JooqTest` configures a `DSLContext`. Regular `@Component` beans are not loaded into the
@@ -7492,7 +7492,7 @@ include::{code-examples}/test/autoconfigure/restdocs/restassured/AdvancedConfigu
 ==== Additional Auto-configuration and Slicing
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the
 auto-configurations that should be included as part of a slice. Additional
-auto-configurations can be added by creating a custom `@AutoConfigure` annotation or
+auto-configurations can be added by creating a custom `@AutoConfigure...` annotation or
 simply by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
 [source,java,indent=0]

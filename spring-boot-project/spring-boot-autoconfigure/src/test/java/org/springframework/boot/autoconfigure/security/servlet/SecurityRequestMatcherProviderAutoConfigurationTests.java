@@ -40,7 +40,7 @@ public class SecurityRequestMatcherProviderAutoConfigurationTests {
 			.withUserConfiguration(TestConfiguration.class);
 
 	@Test
-	public void registersMvcRequestMatcherProviderForIfMvcPresent() {
+	public void registersMvcRequestMatcherProviderIfMvcPresent() {
 		this.contextRunner.run((context) -> assertThat(context)
 				.hasSingleBean(MvcRequestMatcherProvider.class));
 	}
