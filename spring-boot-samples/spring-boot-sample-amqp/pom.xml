@@ -14,7 +14,6 @@
 	<description>Spring Boot AMQP Sample</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<rabbit-amqp-client.version>5.4.0</rabbit-amqp-client.version>
 	</properties>
 	<dependencies>
 		<!-- Compile -->

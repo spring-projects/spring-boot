@@ -356,10 +356,9 @@ public class RabbitProperties {
 		private boolean validateServerCertificate = true;
 
 		/**
-		 * Whether to enable hostname verification. Requires AMQP client 4.8 or above and
-		 * defaults to true when a suitable client version is used.
+		 * Whether to enable hostname verification.
 		 */
-		private Boolean verifyHostname;
+		private boolean verifyHostname = true;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -433,11 +432,11 @@ public class RabbitProperties {
 			this.validateServerCertificate = validateServerCertificate;
 		}
 
-		public Boolean getVerifyHostname() {
+		public boolean getVerifyHostname() {
 			return this.verifyHostname;
 		}
 
-		public void setVerifyHostname(Boolean verifyHostname) {
+		public void setVerifyHostname(boolean verifyHostname) {
 			this.verifyHostname = verifyHostname;
 		}
 
