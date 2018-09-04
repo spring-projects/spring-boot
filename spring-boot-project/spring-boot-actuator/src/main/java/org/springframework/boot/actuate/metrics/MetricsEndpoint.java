@@ -34,11 +34,11 @@ import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * An {@link Endpoint} for exposing the metrics held by a {@link MeterRegistry}.
@@ -80,8 +80,6 @@ public class MetricsEndpoint {
 	@ReadOperation
 	public MetricResponse metric(@Selector String requiredMetricName,
 			@Nullable List<String> tag) {
-		Assert.isTrue(tag == null || tag.stream().allMatch((t) -> t.contains(":")),
-				"Each tag parameter must be in the form key:value");
 		List<Tag> tags = parseTags(tag);
 		List<Meter> meters = new ArrayList<>();
 		collectMeters(meters, this.registry, requiredMetricName, tags);
@@ -106,6 +104,11 @@ public class MetricsEndpoint {
 
 	private Tag parseTag(String tag) {
 		String[] parts = tag.split(":", 2);
+		if (parts.length != 2) {
+			throw new InvalidEndpointRequestException(
+					"Each tag parameter must be in the form 'key:value' but was: " + tag,
+					"Each tag parameter must be in the form 'key:value'");
+		}
 		return Tag.of(parts[0], parts[1]);
 	}
 
