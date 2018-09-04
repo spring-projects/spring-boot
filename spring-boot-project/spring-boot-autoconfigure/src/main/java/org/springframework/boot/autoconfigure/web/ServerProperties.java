@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
@@ -53,6 +54,7 @@ import org.springframework.util.unit.DataSize;
  * @author Aurélien Leboulanger
  * @author Brian Clozel
  * @author Olivier Lamy
+ * @author Chentao Qu
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -81,9 +83,9 @@ public class ServerProperties {
 	private String serverHeader;
 
 	/**
-	 * Maximum size, in bytes, of the HTTP message header.
+	 * Maximum size of the HTTP message header.
 	 */
-	private int maxHttpHeaderSize = 0; // bytes
+	private DataSize maxHttpHeaderSize = DataSize.ofKiloBytes(8);
 
 	/**
 	 * Time that connectors wait for another HTTP request before closing the connection.
@@ -141,11 +143,11 @@ public class ServerProperties {
 		this.serverHeader = serverHeader;
 	}
 
-	public int getMaxHttpHeaderSize() {
+	public DataSize getMaxHttpHeaderSize() {
 		return this.maxHttpHeaderSize;
 	}
 
-	public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+	public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
 		this.maxHttpHeaderSize = maxHttpHeaderSize;
 	}
 
@@ -493,8 +495,15 @@ public class ServerProperties {
 			this.maxConnections = maxConnections;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
 		public int getMaxHttpHeaderSize() {
 			return this.maxHttpHeaderSize;
+		}
+
+		@Deprecated
+		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public DataSize getMaxSwallowSize() {
@@ -503,10 +512,6 @@ public class ServerProperties {
 
 		public void setMaxSwallowSize(DataSize maxSwallowSize) {
 			this.maxSwallowSize = maxSwallowSize;
-		}
-
-		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
-			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public int getAcceptCount() {

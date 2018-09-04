@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConfiguration.ConnectionFactory;
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.RequestLog;
 import org.junit.Before;
@@ -138,6 +141,21 @@ public class JettyWebServerFactoryCustomizerTests {
 				ConfigurableJettyWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void customizeMaxHttpHeaderSize() {
+		bind("server.max-http-header-size=2048");
+		JettyWebServer server = customizeAndGetServer();
+		for (Connector connector : server.getServer().getConnectors()) {
+			connector.getConnectionFactories().stream()
+					.filter((factory) -> factory instanceof ConnectionFactory)
+					.forEach((cf) -> {
+						ConnectionFactory factory = (ConnectionFactory) cf;
+						HttpConfiguration configuration = factory.getHttpConfiguration();
+						assertThat(configuration.getRequestHeaderSize()).isEqualTo(2048);
+					});
+		}
 	}
 
 	private void bind(String... inlinedProperties) {
