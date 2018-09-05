@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  * @author Michael Pratt
+ * @author Stephane Nicoll
  */
 public class HealthTests {
 
@@ -57,7 +58,7 @@ public class HealthTests {
 		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
 				.build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails()).containsOnly(entry("a", "b"));
 	}
 
 	@Test
@@ -80,17 +81,15 @@ public class HealthTests {
 		RuntimeException ex = new RuntimeException("bang");
 		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
 				.withException(ex).build();
-		assertThat(health.getDetails().get("a")).isEqualTo("b");
-		assertThat(health.getDetails().get("error"))
-				.isEqualTo("java.lang.RuntimeException: bang");
+		assertThat(health.getDetails()).containsOnly(entry("a", "b"),
+				entry("error", "java.lang.RuntimeException: bang"));
 	}
 
 	@Test
 	public void withDetails() {
 		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
 				.withDetail("c", "d").build();
-		assertThat(health.getDetails().get("a")).isEqualTo("b");
-		assertThat(health.getDetails().get("c")).isEqualTo("d");
+		assertThat(health.getDetails()).containsOnly(entry("a", "b"), entry("c", "d"));
 	}
 
 	@Test
@@ -128,7 +127,7 @@ public class HealthTests {
 	public void unknownWithDetails() {
 		Health health = new Health.Builder().unknown().withDetail("a", "b").build();
 		assertThat(health.getStatus()).isEqualTo(Status.UNKNOWN);
-		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails()).containsOnly(entry("a", "b"));
 	}
 
 	@Test
@@ -142,7 +141,7 @@ public class HealthTests {
 	public void upWithDetails() {
 		Health health = new Health.Builder().up().withDetail("a", "b").build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails()).containsOnly(entry("a", "b"));
 	}
 
 	@Test
@@ -157,8 +156,8 @@ public class HealthTests {
 		RuntimeException ex = new RuntimeException("bang");
 		Health health = Health.down(ex).build();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("error"))
-				.isEqualTo("java.lang.RuntimeException: bang");
+		assertThat(health.getDetails())
+				.containsOnly(entry("error", "java.lang.RuntimeException: bang"));
 	}
 
 	@Test
