@@ -183,13 +183,11 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		RootBeanDefinition beanDefinition = createBeanDefinition(definition);
 		String beanName = getBeanName(beanFactory, registry, definition, beanDefinition);
 		String transformedBeanName = BeanFactoryUtils.transformedBeanName(beanName);
-		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1,
-				beanName);
 		if (registry.containsBeanDefinition(transformedBeanName)) {
 			registry.removeBeanDefinition(transformedBeanName);
 		}
 		registry.registerBeanDefinition(transformedBeanName, beanDefinition);
-		Object mock = createMock(definition, beanName);
+		Object mock = definition.createMock(beanName + " bean");
 		beanFactory.registerSingleton(transformedBeanName, mock);
 		this.mockitoBeans.add(mock);
 		this.beanNameRegistry.put(definition, beanName);
@@ -202,24 +200,10 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		RootBeanDefinition definition = new RootBeanDefinition(
 				mockDefinition.getTypeToMock().resolve());
 		definition.setTargetType(mockDefinition.getTypeToMock());
-		definition.setFactoryBeanName(BEAN_NAME);
-		definition.setFactoryMethodName("createMock");
-		definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-				mockDefinition);
 		if (mockDefinition.getQualifier() != null) {
 			mockDefinition.getQualifier().applyTo(definition);
 		}
 		return definition;
-	}
-
-	/**
-	 * Factory method used by defined beans to actually create the mock.
-	 * @param mockDefinition the mock definition
-	 * @param name the bean name
-	 * @return the mock instance
-	 */
-	protected final Object createMock(MockDefinition mockDefinition, String name) {
-		return mockDefinition.createMock(name + " bean");
 	}
 
 	private String getBeanName(ConfigurableListableBeanFactory beanFactory,
