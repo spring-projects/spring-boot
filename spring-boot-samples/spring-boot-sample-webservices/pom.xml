@@ -55,6 +55,10 @@
 			</activation>
 			<dependencies>
 				<dependency>
+					<groupId>javax.activation</groupId>
+					<artifactId>javax.activation-api</artifactId>
+				</dependency>
+				<dependency>
 					<groupId>org.glassfish.jaxb</groupId>
 					<artifactId>jaxb-runtime</artifactId>
 				</dependency>
