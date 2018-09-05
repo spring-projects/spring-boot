@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,6 +35,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  * Tests for the auto-configuration imported by {@link WebMvcTest}.
  *
  * @author Andy Wilkinson
+ * @author Etienne Dethoor
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -64,6 +66,12 @@ public class WebMvcTestAutoConfigurationIntegrationTests {
 	public void thymeleafAutoConfigurationWasImported() {
 		assertThat(this.applicationContext)
 				.has(importedAutoConfiguration(ThymeleafAutoConfiguration.class));
+	}
+
+	@Test
+	public void taskExecutionAutoConfigurationWasImported(){
+		assertThat(this.applicationContext)
+				.has(importedAutoConfiguration(TaskExecutionAutoConfiguration.class));
 	}
 
 }
