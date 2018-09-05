@@ -38,10 +38,12 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 
 /**
  * {@link ApplicationListener} to trigger early initialization in a background thread of
- * time consuming tasks.
+ * time consuming tasks. Set property spring.backgroundpreinitializer.ignore=true for
+ * disable background preinitializer.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  * @since 1.3.0
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
@@ -55,9 +57,11 @@ public class BackgroundPreinitializer
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (event instanceof ApplicationStartingEvent
-				&& preinitializationStarted.compareAndSet(false, true)) {
-			performPreinitialization();
+		if (!Boolean.getBoolean("spring.backgroundpreinitializer.ignore")) {
+			if (event instanceof ApplicationStartingEvent
+					&& preinitializationStarted.compareAndSet(false, true)) {
+				this.background(this.performPreinitialization());
+			}
 		}
 		if ((event instanceof ApplicationReadyEvent
 				|| event instanceof ApplicationFailedEvent)
@@ -71,31 +75,9 @@ public class BackgroundPreinitializer
 		}
 	}
 
-	private void performPreinitialization() {
+	private void background(Runnable runnable) {
 		try {
-			Thread thread = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					runSafely(new ConversionServiceInitializer());
-					runSafely(new ValidationInitializer());
-					runSafely(new MessageConverterInitializer());
-					runSafely(new MBeanFactoryInitializer());
-					runSafely(new JacksonInitializer());
-					runSafely(new CharsetInitializer());
-					preinitializationComplete.countDown();
-				}
-
-				public void runSafely(Runnable runnable) {
-					try {
-						runnable.run();
-					}
-					catch (Throwable ex) {
-						// Ignore
-					}
-				}
-
-			}, "background-preinit");
+			Thread thread = new Thread(runnable, "background-preinit");
 			thread.start();
 		}
 		catch (Exception ex) {
@@ -104,6 +86,32 @@ public class BackgroundPreinitializer
 			// happen on the main thread.
 			preinitializationComplete.countDown();
 		}
+	}
+
+	private Runnable performPreinitialization() {
+		return new Runnable() {
+
+			@Override
+			public void run() {
+				runSafely(new ConversionServiceInitializer());
+				runSafely(new ValidationInitializer());
+				runSafely(new MessageConverterInitializer());
+				runSafely(new MBeanFactoryInitializer());
+				runSafely(new JacksonInitializer());
+				runSafely(new CharsetInitializer());
+				preinitializationComplete.countDown();
+			}
+
+			public void runSafely(Runnable runnable) {
+				try {
+					runnable.run();
+				}
+				catch (Throwable ex) {
+					// Ignore
+				}
+			}
+
+		};
 	}
 
 	/**
