@@ -231,10 +231,11 @@ public final class Health {
 		}
 
 		/**
-		 * Add details from the given {@code details} map into existing details. Keys from
-		 * the given map will replace any existing keys if there are duplicates.
+		 * Record details from the given {@code details} map. Keys from the given map
+		 * replace any existing keys if there are duplicates.
 		 * @param details map of details
 		 * @return this {@link Builder} instance
+		 * @since 2.1.0
 		 */
 		public Builder withDetails(Map<String, ?> details) {
 			Assert.notNull(details, "Details must not be null");

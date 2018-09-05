@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link Health}.
@@ -97,59 +98,30 @@ public class HealthTests {
 		Map<String, Object> details = new LinkedHashMap<>();
 		details.put("a", "b");
 		details.put("c", "d");
-
-		Health.Builder builder = Health.up();
-		builder.withDetails(details);
-
-		Health health = builder.build();
-		assertThat(health.getDetails().get("a")).isEqualTo("b");
-		assertThat(health.getDetails().get("c")).isEqualTo("d");
+		Health health = Health.up().withDetails(details).build();
+		assertThat(health.getDetails()).containsOnly(entry("a", "b"), entry("c", "d"));
 	}
 
 	@Test
 	public void withDetailsMapDuplicateKeys() {
 		Map<String, Object> details = new LinkedHashMap<>();
-		details.put("a", "b");
 		details.put("c", "d");
 		details.put("a", "e");
-
-		Health.Builder builder = Health.up();
-		builder.withDetails(details);
-
-		Health health = builder.build();
-		assertThat(health.getDetails().get("a")).isEqualTo("e");
-		assertThat(health.getDetails().get("c")).isEqualTo("d");
+		Health health = Health.up().withDetail("a", "b").withDetails(details).build();
+		assertThat(health.getDetails()).containsOnly(entry("a", "e"), entry("c", "d"));
 	}
 
 	@Test
-	public void withMultipleDetailsMaps() {
+	public void withDetailsMultipleMaps() {
 		Map<String, Object> details1 = new LinkedHashMap<>();
 		details1.put("a", "b");
 		details1.put("c", "d");
-
 		Map<String, Object> details2 = new LinkedHashMap<>();
-		details2.put("1", "2");
-
-		Health.Builder builder = Health.up();
-		builder.withDetails(details1);
-		builder.withDetails(details2);
-
-		Health health = builder.build();
-		assertThat(health.getDetails().get("a")).isEqualTo("b");
-		assertThat(health.getDetails().get("c")).isEqualTo("d");
-		assertThat(health.getDetails().get("1")).isEqualTo("2");
-	}
-
-	@Test
-	public void mixWithDetailsUsage() {
-		Map<String, Object> details = new LinkedHashMap<>();
-		details.put("a", "b");
-
-		Health.Builder builder = Health.up().withDetails(details).withDetail("c", "d");
-
-		Health health = builder.build();
-		assertThat(health.getDetails().get("a")).isEqualTo("b");
-		assertThat(health.getDetails().get("c")).isEqualTo("d");
+		details1.put("a", "e");
+		details1.put("1", "2");
+		Health health = Health.up().withDetails(details1).withDetails(details2).build();
+		assertThat(health.getDetails()).containsOnly(entry("a", "e"), entry("c", "d"),
+				entry("1", "2"));
 	}
 
 	@Test
