@@ -49,18 +49,6 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>java9-10</id>
-			<activation>
-				<jdk>[9,10]</jdk>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>javax.xml.bind</groupId>
-					<artifactId>jaxb-api</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
 			<id>java11+</id>
 			<activation>
 				<jdk>[11,)</jdk>
