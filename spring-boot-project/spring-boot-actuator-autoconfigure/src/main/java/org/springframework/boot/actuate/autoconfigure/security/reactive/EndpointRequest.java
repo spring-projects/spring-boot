@@ -125,7 +125,7 @@ public final class EndpointRequest {
 
 		private final boolean includeLinks;
 
-		private ServerWebExchangeMatcher delegate;
+		private volatile ServerWebExchangeMatcher delegate;
 
 		private EndpointServerWebExchangeMatcher(boolean includeLinks) {
 			this(Collections.emptyList(), Collections.emptyList(), includeLinks);
@@ -246,7 +246,7 @@ public final class EndpointRequest {
 	public static final class LinksServerWebExchangeMatcher
 			extends ApplicationContextServerWebExchangeMatcher<WebEndpointProperties> {
 
-		private ServerWebExchangeMatcher delegate;
+		private volatile ServerWebExchangeMatcher delegate;
 
 		private LinksServerWebExchangeMatcher() {
 			super(WebEndpointProperties.class);
