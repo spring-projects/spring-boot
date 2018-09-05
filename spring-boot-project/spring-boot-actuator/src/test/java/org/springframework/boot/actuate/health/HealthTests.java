@@ -141,6 +141,18 @@ public class HealthTests {
 	}
 
 	@Test
+	public void mixWithDetailsUsage() {
+		Map<String, Object> details = new LinkedHashMap<>();
+		details.put("a", "b");
+
+		Health.Builder builder = Health.up().withDetails(details).withDetail("c", "d");
+
+		Health health = builder.build();
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails().get("c")).isEqualTo("d");
+	}
+
+	@Test
 	public void unknownWithDetails() {
 		Health health = new Health.Builder().unknown().withDetail("a", "b").build();
 		assertThat(health.getStatus()).isEqualTo(Status.UNKNOWN);
