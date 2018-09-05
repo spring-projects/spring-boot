@@ -140,6 +140,10 @@ public class RabbitAutoConfiguration {
 				map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
 				map.from(ssl::getTrustStore).to(factory::setTrustStore);
 				map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
+				map.from(ssl::isValidateServerCertificate).to((validate) -> factory
+						.setSkipServerCertificateValidation(!validate));
+				map.from(ssl::getVerifyHostname)
+						.to(factory::setEnableHostnameVerification);
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull()
 					.asInt(Duration::toMillis).to(factory::setConnectionTimeout);

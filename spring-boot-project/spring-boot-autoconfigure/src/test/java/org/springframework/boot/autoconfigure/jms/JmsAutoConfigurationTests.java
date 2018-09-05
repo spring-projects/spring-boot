@@ -150,6 +150,13 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	public void jmsListenerContainerFactoryWhenMultipleConnectionFactoryBeansShouldBackOff() {
+		this.contextRunner.withUserConfiguration(TestConfiguration10.class)
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(JmsListenerContainerFactory.class));
+	}
+
+	@Test
 	public void testJmsListenerContainerFactoryWithCustomSettings() {
 		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
 				.withPropertyValues("spring.jms.listener.autoStartup=false",
@@ -568,6 +575,21 @@ public class JmsAutoConfigurationTests {
 			factory.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
 			return factory;
 
+		}
+
+	}
+
+	@Configuration
+	protected static class TestConfiguration10 {
+
+		@Bean
+		public ConnectionFactory connectionFactory1() {
+			return new ActiveMQConnectionFactory();
+		}
+
+		@Bean
+		public ConnectionFactory connectionFactory2() {
+			return new ActiveMQConnectionFactory();
 		}
 
 	}

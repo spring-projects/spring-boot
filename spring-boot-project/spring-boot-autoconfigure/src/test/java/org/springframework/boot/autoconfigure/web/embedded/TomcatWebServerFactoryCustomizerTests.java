@@ -166,6 +166,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void customStaticResourceAllowCaching() {
 		bind("server.tomcat.resource.allow-caching=false");

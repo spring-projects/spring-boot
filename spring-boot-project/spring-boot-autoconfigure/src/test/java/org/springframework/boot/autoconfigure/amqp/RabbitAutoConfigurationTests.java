@@ -19,10 +19,14 @@ package org.springframework.boot.autoconfigure.amqp;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.SslContextFactory;
+import com.rabbitmq.client.TrustEverythingTrustManager;
 import org.aopalliance.aop.Advice;
 import org.junit.Rule;
 import org.junit.Test;
@@ -762,6 +766,45 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.ssl.trustStoreType=jks",
 						"spring.rabbitmq.ssl.trustStorePassword=secret")
 				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	public void enableSslWithValidateServerCertificateFalse() throws Exception {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
+						"spring.rabbitmq.ssl.validateServerCertificate=false")
+				.run((context) -> {
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					TrustManager trustManager = getTrustManager(rabbitConnectionFactory);
+					assertThat(trustManager)
+							.isInstanceOf(TrustEverythingTrustManager.class);
+				});
+	}
+
+	@Test
+	public void enableSslWithValidateServerCertificateDefault() throws Exception {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true").run((context) -> {
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					TrustManager trustManager = getTrustManager(rabbitConnectionFactory);
+					assertThat(trustManager)
+							.isNotInstanceOf(TrustEverythingTrustManager.class);
+				});
+	}
+
+	private TrustManager getTrustManager(
+			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory) {
+		SslContextFactory sslContextFactory = (SslContextFactory) ReflectionTestUtils
+				.getField(rabbitConnectionFactory, "sslContextFactory");
+		SSLContext sslContext = sslContextFactory.create("connection");
+		Object spi = ReflectionTestUtils.getField(sslContext, "contextSpi");
+		Object trustManager = ReflectionTestUtils.getField(spi, "trustManager");
+		while (trustManager.getClass().getName().endsWith("Wrapper")) {
+			trustManager = ReflectionTestUtils.getField(trustManager, "tm");
+		}
+		return (TrustManager) trustManager;
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(

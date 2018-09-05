@@ -350,6 +350,16 @@ public class RabbitProperties {
 		 */
 		private String algorithm;
 
+		/**
+		 * Whether to enable server side certificate validation.
+		 */
+		private boolean validateServerCertificate = true;
+
+		/**
+		 * Whether to enable hostname verification.
+		 */
+		private boolean verifyHostname = true;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -412,6 +422,22 @@ public class RabbitProperties {
 
 		public void setAlgorithm(String sslAlgorithm) {
 			this.algorithm = sslAlgorithm;
+		}
+
+		public boolean isValidateServerCertificate() {
+			return this.validateServerCertificate;
+		}
+
+		public void setValidateServerCertificate(boolean validateServerCertificate) {
+			this.validateServerCertificate = validateServerCertificate;
+		}
+
+		public boolean getVerifyHostname() {
+			return this.verifyHostname;
+		}
+
+		public void setVerifyHostname(boolean verifyHostname) {
+			this.verifyHostname = verifyHostname;
 		}
 
 	}

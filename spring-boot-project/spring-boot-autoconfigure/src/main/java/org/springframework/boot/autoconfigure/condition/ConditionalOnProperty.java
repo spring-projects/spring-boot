@@ -30,7 +30,6 @@ import org.springframework.core.env.Environment;
  * default the properties must be present in the {@link Environment} and
  * <strong>not</strong> equal to {@code false}. The {@link #havingValue()} and
  * {@link #matchIfMissing()} attributes allow further customizations.
- *
  * <p>
  * The {@link #havingValue} attribute can be used to specify the value that the property
  * should have. The table below shows when a condition matches according to the property
@@ -67,12 +66,10 @@ import org.springframework.core.env.Environment;
  * <td>yes</td>
  * </tr>
  * </table>
- *
  * <p>
  * If the property is not contained in the {@link Environment} at all, the
  * {@link #matchIfMissing()} attribute is consulted. By default missing attributes do not
  * match.
- *
  * <p>
  * This condition cannot be reliably used for matching collection properties. For example,
  * in the following configuration, the condition matches if {@code spring.example.values}

@@ -149,6 +149,11 @@ final class JavaPluginAction implements PluginApplicationAction {
 		compile.doFirst(new AdditionalMetadataLocationsConfigurer());
 	}
 
+	/**
+	 * Task {@link Action} to add additional meta-data locations. We need to use an
+	 * inner-class rather than a lambda due to
+	 * https://github.com/gradle/gradle/issues/5510.
+	 */
 	private static class AdditionalMetadataLocationsConfigurer implements Action<Task> {
 
 		@Override

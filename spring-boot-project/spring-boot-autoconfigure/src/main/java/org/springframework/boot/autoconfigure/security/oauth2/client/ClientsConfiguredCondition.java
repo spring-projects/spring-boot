@@ -63,7 +63,7 @@ public class ClientsConfiguredCondition extends SpringBootCondition {
 
 	private Map<String, OAuth2ClientProperties.BaseClientRegistration> getRegistrations(
 			Environment environment) {
-		Map<String, OAuth2ClientProperties.BaseClientRegistration> registrations = new HashMap();
+		Map<String, OAuth2ClientProperties.BaseClientRegistration> registrations = new HashMap<>();
 		Map<String, OAuth2ClientProperties.LoginClientRegistration> loginClientRegistrations = Binder
 				.get(environment).bind("spring.security.oauth2.client.registration.login",
 						STRING_LOGIN_REGISTRATION_MAP)

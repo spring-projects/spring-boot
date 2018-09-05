@@ -62,7 +62,7 @@
 		<freemarker.version>2.3.28</freemarker.version>
 		<elasticsearch.version>6.3.2</elasticsearch.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
-		<glassfish-jaxb.version>2.4.0-b180725.0644</glassfish-jaxb.version>
+		<glassfish-jaxb.version>2.3.0.1</glassfish-jaxb.version>
 		<groovy.version>2.5.2</groovy.version>
 		<gson.version>2.8.5</gson.version>
 		<h2.version>1.4.197</h2.version>
@@ -141,7 +141,7 @@
 		<postgresql.version>42.2.4</postgresql.version>
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
-		<rabbit-amqp-client.version>5.3.0</rabbit-amqp-client.version>
+		<rabbit-amqp-client.version>5.4.0</rabbit-amqp-client.version>
 		<reactor-bom.version>Californium-M2</reactor-bom.version>
 		<rest-assured.version>3.1.1</rest-assured.version>
 		<reactive-streams.version>1.0.2</reactive-streams.version>
@@ -156,7 +156,7 @@
 		<snakeyaml.version>1.23</snakeyaml.version>
 		<solr.version>7.4.0</solr.version>
 		<spring.version>5.1.0.BUILD-SNAPSHOT</spring.version>
-		<spring-amqp.version>2.1.0.M2</spring-amqp.version>
+		<spring-amqp.version>2.1.0.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-batch.version>4.1.0.M3</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.2.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Lovelace-RC2</spring-data-releasetrain.version>

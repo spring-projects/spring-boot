@@ -56,7 +56,7 @@ public class SpringBootMockMvcBuilderCustomizerTests {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(context);
 		this.customizer = new SpringBootMockMvcBuilderCustomizer(context);
 		this.customizer.customize(builder);
-		FilterRegistrationBean registrationBean = (FilterRegistrationBean) context
+		FilterRegistrationBean<?> registrationBean = (FilterRegistrationBean<?>) context
 				.getBean("filterRegistrationBean");
 		Filter testFilter = (Filter) context.getBean("testFilter");
 		Filter otherTestFilter = registrationBean.getFilter();

@@ -93,6 +93,7 @@ public final class MetricsRun {
 		return (contextRunner) -> apply(contextRunner, exportAutoConfigurations);
 	}
 
+	@SuppressWarnings("unchecked")
 	private static <T extends AbstractApplicationContextRunner<?, ?, ?>> T apply(
 			T contextRunner, Class<?>[] exportAutoConfigurations) {
 		for (Class<?> configuration : exportAutoConfigurations) {

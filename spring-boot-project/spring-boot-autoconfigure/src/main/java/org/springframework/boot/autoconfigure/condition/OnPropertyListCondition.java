@@ -36,7 +36,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 public class OnPropertyListCondition extends SpringBootCondition {
 
-	private static final Bindable<List<String>> SIMPLE_LIST = Bindable
+	private static final Bindable<List<String>> STRING_LIST = Bindable
 			.listOf(String.class);
 
 	private final String propertyName;
@@ -59,7 +59,7 @@ public class OnPropertyListCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		BindResult<?> property = Binder.get(context.getEnvironment())
-				.bind(this.propertyName, SIMPLE_LIST);
+				.bind(this.propertyName, STRING_LIST);
 		ConditionMessage.Builder messageBuilder = this.messageBuilder.get();
 		if (property.isBound()) {
 			return ConditionOutcome
