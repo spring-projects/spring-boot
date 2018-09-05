@@ -38,7 +38,8 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 
 /**
  * {@link ApplicationListener} to trigger early initialization in a background thread of
- * time consuming tasks.
+ * time consuming tasks. Set property spring.backgroundpreinitializer.ignore=true for
+ * disable background preinitializer.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -56,14 +57,10 @@ public class BackgroundPreinitializer
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (event instanceof ApplicationStartingEvent
-				&& preinitializationStarted.compareAndSet(false, true)) {
-
-			if (Boolean.getBoolean("spring.backgroundpreinitializer.ignore")) {
-				performPreinitialization(this.perform());
-			}
-			else {
-				performPreinitializationBackground(this.perform());
+		if (!Boolean.getBoolean("spring.backgroundpreinitializer.ignore")) {
+			if (event instanceof ApplicationStartingEvent
+					&& preinitializationStarted.compareAndSet(false, true)) {
+				this.background(this.performPreinitialization());
 			}
 		}
 		if ((event instanceof ApplicationReadyEvent
@@ -78,19 +75,7 @@ public class BackgroundPreinitializer
 		}
 	}
 
-	private void performPreinitialization(Runnable runnable) {
-		try {
-			runnable.run();
-		}
-		catch (Exception ex) {
-			// This will fail on GAE where creating threads is prohibited. We can safely
-			// continue but startup will be slightly slower as the initialization will now
-			// happen on the main thread.
-			preinitializationComplete.countDown();
-		}
-	}
-
-	private void performPreinitializationBackground(Runnable runnable) {
+	private void background(Runnable runnable) {
 		try {
 			Thread thread = new Thread(runnable, "background-preinit");
 			thread.start();
@@ -103,7 +88,7 @@ public class BackgroundPreinitializer
 		}
 	}
 
-	private Runnable perform() {
+	private Runnable performPreinitialization() {
 		return new Runnable() {
 
 			@Override

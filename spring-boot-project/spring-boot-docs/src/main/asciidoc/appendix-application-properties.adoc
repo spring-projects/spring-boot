@@ -69,7 +69,6 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SPRING CORE
 	spring.beaninfo.ignore=true # Whether to skip search of BeanInfo classes.
-    spring.backgroundpreinitializer.ignore=true # Whether background preinitializer should be ignored.
 
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
 	spring.cache.cache-names= # Comma-separated list of cache names to create if supported by the underlying cache manager.
