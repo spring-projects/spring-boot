@@ -1173,7 +1173,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.ssl.trust-store-password= # Password used to access the trust store.
 	spring.rabbitmq.ssl.trust-store-type=JKS # Trust store type.
 	spring.rabbitmq.ssl.validate-server-certificate=true # Whether to enable server side certificate validation.
-	spring.rabbitmq.ssl.verify-hostname= # Whether to enable hostname verification. Requires AMQP client 4.8 or above and defaults to true when a suitable client version is used.
+	spring.rabbitmq.ssl.verify-hostname=true # Whether to enable hostname verification.
 	spring.rabbitmq.template.exchange= # Name of the default exchange to use for send operations.
 	spring.rabbitmq.template.mandatory= # Whether to enable mandatory messages.
 	spring.rabbitmq.template.queue= # Name of the default queue to receive messages from when none is specified explicitly.
