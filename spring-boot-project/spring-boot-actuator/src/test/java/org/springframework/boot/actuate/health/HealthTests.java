@@ -107,6 +107,40 @@ public class HealthTests {
 	}
 
 	@Test
+	public void withDetailsMapDuplicateKeys() {
+		Map<String, Object> details = new LinkedHashMap<>();
+		details.put("a", "b");
+		details.put("c", "d");
+		details.put("a", "e");
+
+		Health.Builder builder = Health.up();
+		builder.withDetails(details);
+
+		Health health = builder.build();
+		assertThat(health.getDetails().get("a")).isEqualTo("e");
+		assertThat(health.getDetails().get("c")).isEqualTo("d");
+	}
+
+	@Test
+	public void withMultipleDetailsMaps() {
+		Map<String, Object> details1 = new LinkedHashMap<>();
+		details1.put("a", "b");
+		details1.put("c", "d");
+
+		Map<String, Object> details2 = new LinkedHashMap<>();
+		details2.put("1", "2");
+
+		Health.Builder builder = Health.up();
+		builder.withDetails(details1);
+		builder.withDetails(details2);
+
+		Health health = builder.build();
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails().get("c")).isEqualTo("d");
+		assertThat(health.getDetails().get("1")).isEqualTo("2");
+	}
+
+	@Test
 	public void unknownWithDetails() {
 		Health health = new Health.Builder().unknown().withDetail("a", "b").build();
 		assertThat(health.getStatus()).isEqualTo(Status.UNKNOWN);

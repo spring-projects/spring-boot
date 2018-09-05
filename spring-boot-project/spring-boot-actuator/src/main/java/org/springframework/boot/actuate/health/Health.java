@@ -236,7 +236,7 @@ public final class Health {
 		 * @param details map of details
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withDetails(Map<String, Object> details) {
+		public Builder withDetails(Map<String, ?> details) {
 			Assert.notNull(details, "Details must not be null");
 			this.details.putAll(details);
 			return this;
