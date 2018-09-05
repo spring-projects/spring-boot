@@ -139,7 +139,7 @@ do as they were designed before this was clarified.
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
 
-| https://github.com/pankajtandon/stripe-starter[Stripe Payment Gateway Starter]
+| https://github.com/stripe/stripe-java[Stripe API]
 | https://github.com/pankajtandon/stripe-starter
 
 | https://github.com/StripesFramework/stripes[Stripes]
