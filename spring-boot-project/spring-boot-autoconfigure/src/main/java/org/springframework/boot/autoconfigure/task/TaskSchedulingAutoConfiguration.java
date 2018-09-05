@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.task;
 
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -55,9 +53,11 @@ public class TaskSchedulingAutoConfiguration {
 	@ConditionalOnMissingBean
 	public TaskSchedulerBuilder taskSchedulerBuilder(TaskSchedulingProperties properties,
 			ObjectProvider<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
-		return new TaskSchedulerBuilder().poolSize(properties.getPool().getSize())
-				.threadNamePrefix(properties.getThreadNamePrefix()).customizers(
-						taskSchedulerCustomizers.stream().collect(Collectors.toList()));
+		TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
+		builder = builder.poolSize(properties.getPool().getSize());
+		builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
+		builder = builder.customizers(taskSchedulerCustomizers);
+		return builder;
 	}
 
 }

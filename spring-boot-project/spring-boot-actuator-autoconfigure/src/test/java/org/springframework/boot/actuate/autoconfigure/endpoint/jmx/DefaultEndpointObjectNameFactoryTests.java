@@ -101,7 +101,6 @@ public class DefaultEndpointObjectNameFactoryTests {
 	public void generateObjectNameWithUniqueNamesDeprecatedPropertyMismatchMainProperty() {
 		this.environment.setProperty("spring.jmx.unique-names", "false");
 		this.properties.setUniqueNames(true);
-
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("spring.jmx.unique-names");
 		this.thrown.expectMessage("management.endpoints.jmx.unique-names");

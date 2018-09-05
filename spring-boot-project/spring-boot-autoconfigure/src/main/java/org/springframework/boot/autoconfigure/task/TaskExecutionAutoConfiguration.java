@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.task;
 
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -66,14 +65,16 @@ public class TaskExecutionAutoConfiguration {
 	@ConditionalOnMissingBean
 	public TaskExecutorBuilder taskExecutorBuilder() {
 		TaskExecutionProperties.Pool pool = this.properties.getPool();
-		return new TaskExecutorBuilder().queueCapacity(pool.getQueueCapacity())
-				.corePoolSize(pool.getCoreSize()).maxPoolSize(pool.getMaxSize())
-				.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout())
-				.keepAlive(pool.getKeepAlive())
-				.threadNamePrefix(this.properties.getThreadNamePrefix())
-				.customizers(this.taskExecutorCustomizers.stream()
-						.collect(Collectors.toList()))
-				.taskDecorator(this.taskDecorator.getIfUnique());
+		TaskExecutorBuilder builder = new TaskExecutorBuilder();
+		builder = builder.queueCapacity(pool.getQueueCapacity());
+		builder = builder.corePoolSize(pool.getCoreSize());
+		builder = builder.maxPoolSize(pool.getMaxSize());
+		builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
+		builder = builder.keepAlive(pool.getKeepAlive());
+		builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
+		builder = builder.customizers(this.taskExecutorCustomizers);
+		builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
+		return builder;
 	}
 
 	@Bean(name = APPLICATION_TASK_EXECUTOR_BEAN_NAME)

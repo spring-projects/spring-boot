@@ -72,10 +72,8 @@ public class CodecsAutoConfiguration {
 
 		@Bean
 		public CodecCustomizer loggingCodecCustomizer(InsightsProperties properties) {
-			return (configurer) -> {
-				configurer.defaultCodecs().enableLoggingRequestDetails(
-						properties.getWeb().isLogRequestDetails());
-			};
+			return (configurer) -> configurer.defaultCodecs().enableLoggingRequestDetails(
+					properties.getWeb().isLogRequestDetails());
 		}
 
 	}

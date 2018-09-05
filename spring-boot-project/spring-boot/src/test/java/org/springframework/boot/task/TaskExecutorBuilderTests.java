@@ -48,13 +48,6 @@ public class TaskExecutorBuilderTests {
 	private TaskExecutorBuilder builder = new TaskExecutorBuilder();
 
 	@Test
-	public void createWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskExecutorCustomizers must not be null");
-		new TaskExecutorBuilder((TaskExecutorCustomizer[]) null);
-	}
-
-	@Test
 	public void poolSettingsShouldApply() {
 		ThreadPoolTaskExecutor executor = this.builder.queueCapacity(10).corePoolSize(4)
 				.maxPoolSize(8).allowCoreThreadTimeOut(true)
@@ -85,14 +78,14 @@ public class TaskExecutorBuilderTests {
 	@Test
 	public void customizersWhenCustomizersAreNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskExecutorCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.customizers((TaskExecutorCustomizer[]) null);
 	}
 
 	@Test
 	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskExecutorCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.customizers((Set<TaskExecutorCustomizer>) null);
 	}
 
@@ -135,14 +128,14 @@ public class TaskExecutorBuilderTests {
 	@Test
 	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskExecutorCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.additionalCustomizers((TaskExecutorCustomizer[]) null);
 	}
 
 	@Test
 	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskExecutorCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.additionalCustomizers((Set<TaskExecutorCustomizer>) null);
 	}
 

@@ -44,13 +44,6 @@ public class TaskSchedulerBuilderTests {
 	private TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
 
 	@Test
-	public void createWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskSchedulerCustomizers must not be null");
-		new TaskSchedulerBuilder((TaskSchedulerCustomizer[]) null);
-	}
-
-	@Test
 	public void poolSettingsShouldApply() {
 		ThreadPoolTaskScheduler scheduler = this.builder.poolSize(4).build();
 		assertThat(scheduler.getPoolSize()).isEqualTo(4);
@@ -66,14 +59,14 @@ public class TaskSchedulerBuilderTests {
 	@Test
 	public void customizersWhenCustomizersAreNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskSchedulerCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.customizers((TaskSchedulerCustomizer[]) null);
 	}
 
 	@Test
 	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskSchedulerCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.customizers((Set<TaskSchedulerCustomizer>) null);
 	}
 
@@ -108,14 +101,14 @@ public class TaskSchedulerBuilderTests {
 	@Test
 	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskSchedulerCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.additionalCustomizers((TaskSchedulerCustomizer[]) null);
 	}
 
 	@Test
 	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TaskSchedulerCustomizers must not be null");
+		this.thrown.expectMessage("Customizers must not be null");
 		this.builder.additionalCustomizers((Set<TaskSchedulerCustomizer>) null);
 	}
 

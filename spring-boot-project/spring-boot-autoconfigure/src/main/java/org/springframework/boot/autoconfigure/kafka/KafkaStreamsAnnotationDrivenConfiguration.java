@@ -56,15 +56,12 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		Map<String, Object> streamsProperties = this.properties.buildStreamsProperties();
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
-			if (applicationName != null) {
-				streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG,
-						applicationName);
-			}
-			else {
+			if (applicationName == null) {
 				throw new InvalidConfigurationPropertyValueException(
 						"spring.kafka.streams.application-id", null,
 						"This property is mandatory and fallback 'spring.application.name' is not set either.");
 			}
+			streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationName);
 		}
 		return new KafkaStreamsConfiguration(streamsProperties);
 	}

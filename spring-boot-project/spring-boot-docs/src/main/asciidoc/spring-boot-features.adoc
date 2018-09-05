@@ -5879,9 +5879,9 @@ The following code shows a typical example:
 ----
 
 
+
 [[boot-features-webclient-runtime]]
 === WebClient Runtime
-
 Spring Boot will auto-detect which `ClientHttpConnector` to drive `WebClient`, depending
 on the libraries available on the application classpath.
 
@@ -5899,6 +5899,7 @@ For example, a `ReactorResourceFactory` bean for the Reactor Netty client.
 You can learn more about the
 {spring-reference}web-reactive.html#webflux-client-builder[`WebClient` configuration
 options in the Spring Framework reference documentation].
+
 
 
 [[boot-features-webclient-customization]]
