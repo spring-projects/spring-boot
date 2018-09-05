@@ -967,6 +967,8 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.ssl.key-store-password= # Password used to access the key store.
 	spring.rabbitmq.ssl.trust-store= # Trust store that holds SSL certificates.
 	spring.rabbitmq.ssl.trust-store-password= # Password used to access the trust store.
+	spring.rabbitmq.ssl.validate-server-certificate=true # Whether to enable server side certificate validation.
+	spring.rabbitmq.ssl.verify-hostname= # Whether to enable hostname verification. Requires AMQP client 4.8 or above and defaults to true when a suitable client version is used.
 	spring.rabbitmq.template.mandatory=false # Enable mandatory messages.
 	spring.rabbitmq.template.receive-timeout=0 # Timeout for `receive()` methods.
 	spring.rabbitmq.template.reply-timeout=5000 # Timeout for `sendAndReceive()` methods.
