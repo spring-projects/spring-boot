@@ -34,8 +34,32 @@ import org.apache.commons.logging.Log;
  */
 class DocumentRoot {
 
+	/**
+	 * Doc-root under classpath.
+	 */
+	private static final File DEFAULT_DOC_ROOT;
+
+	/**
+	 * Doc-root for local workspace.
+	 */
+	private static final File LOCAL_DOC_ROOT;
+
 	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
 			"static" };
+
+	static {
+		URL url = Thread.currentThread().getContextClassLoader().getResource("");
+		if (url != null) {
+			String path = url.getFile();
+			DEFAULT_DOC_ROOT = new File(path);
+			LOCAL_DOC_ROOT = new File(path.replace("target/classes", "src/main/webapp"));
+		}
+		else {
+			DEFAULT_DOC_ROOT = null;
+			LOCAL_DOC_ROOT = null;
+		}
+
+	}
 
 	private final Log logger;
 
@@ -60,6 +84,7 @@ class DocumentRoot {
 	 */
 	public final File getValidDirectory() {
 		File file = this.directory;
+		file = (file != null) ? file : getIDEADocumentRoot();
 		file = (file != null) ? file : getWarFileDocumentRoot();
 		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
 		file = (file != null) ? file : getCommonDocumentRoot();
@@ -70,6 +95,33 @@ class DocumentRoot {
 			this.logger.debug("Document root: " + file);
 		}
 		return file;
+	}
+
+	/**
+	 * This method takes effect when the user runs the system in the IDEA.
+	 * @return doc-root
+	 */
+	private File getIDEADocumentRoot() {
+		if (LOCAL_DOC_ROOT != null && LOCAL_DOC_ROOT.exists()) {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Currently running in the IDEA and found a workspace");
+			}
+			return LOCAL_DOC_ROOT;
+		}
+		else if (DEFAULT_DOC_ROOT != null && DEFAULT_DOC_ROOT.exists()) {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug(
+						"Currently running in the IDEA, did not find the workspace, but found the doc-root"
+								+ " under the classpath");
+			}
+			return DEFAULT_DOC_ROOT;
+		}
+		else {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Currently not running in the IDEA");
+			}
+			return null;
+		}
 	}
 
 	private File getWarFileDocumentRoot() {
