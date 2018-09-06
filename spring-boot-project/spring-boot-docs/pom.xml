@@ -939,7 +939,7 @@
 									<links>
 										<link>https://docs.oracle.com/javase/8/docs/api</link>
 										<link>https://docs.oracle.com/javaee/7/api</link>
-										<link>https://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api</link>
+										<link>https://docs.spring.io/spring-framework/docs/${spring-framework.version}/javadoc-api</link>
 										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api</link>
 										<link>https://tomcat.apache.org/tomcat-8.5-doc/api</link>
 										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}</link>
@@ -1149,11 +1149,11 @@
 									<attributes>
 										<docinfo>true</docinfo>
 										<jooq-version>${jooq.version}</jooq-version>
-										<spring-version>${spring.version}</spring-version>
+										<spring-framework-version>${spring-framework.version}</spring-framework-version>
 										<spring-boot-version>${revision}</spring-boot-version>
 										<spring-boot-docs-version>${revision}</spring-boot-docs-version>
 										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
-										<spring-docs-version>${spring.version}</spring-docs-version>
+										<spring-docs-version>${spring-framework.version}</spring-docs-version>
 										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
 										<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
 										<github-tag>${github-tag}</github-tag>
@@ -1435,7 +1435,7 @@
 							<dependency>
 								<groupId>org.springframework</groupId>
 								<artifactId>spring-core</artifactId>
-								<version>${spring.version}</version>
+								<version>${spring-framework.version}</version>
 							</dependency>
 						</dependencies>
 					</plugin>

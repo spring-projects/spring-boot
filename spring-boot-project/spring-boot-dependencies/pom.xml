@@ -156,11 +156,13 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.23</snakeyaml.version>
 		<solr.version>7.4.0</solr.version>
+		<!-- deprecated in favour of "spring-framework.version" -->
 		<spring.version>5.1.0.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>2.1.0.BUILD-SNAPSHOT</spring-amqp.version>
 		<spring-batch.version>4.1.0.M3</spring-batch.version>
 		<spring-cloud-connectors.version>2.0.2.RELEASE</spring-cloud-connectors.version>
 		<spring-data-releasetrain.version>Lovelace-RC2</spring-data-releasetrain.version>
+		<spring-framework.version>${spring.version}</spring-framework.version>
 		<spring-hateoas.version>0.25.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.1.0.M2</spring-integration.version>
 		<spring-kafka.version>2.2.0.BUILD-SNAPSHOT</spring-kafka.version>
@@ -2538,12 +2540,12 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring-framework.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring-framework.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
