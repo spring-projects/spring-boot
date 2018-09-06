@@ -11,6 +11,7 @@ Andy Wilkinson
 :dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
 :gradle-userguide: https://docs.gradle.org/current/userguide
 :gradle-dsl: https://docs.gradle.org/current/dsl
+:gradle-api: https://docs.gradle.org/current/javadoc
 :application-plugin: {gradle-userguide}/application_plugin.html
 :groovy-plugin: {gradle-userguide}/groovy_plugin.html
 :java-plugin: {gradle-userguide}/java_plugin.html
