@@ -18,10 +18,9 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.concurrent.TimeUnit;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.ReadPreference;
-import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.connection.AsynchronousSocketChannelStreamFactoryFactory;
-import com.mongodb.connection.SocketSettings;
 import com.mongodb.connection.StreamFactory;
 import com.mongodb.connection.StreamFactoryFactory;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
@@ -83,7 +82,8 @@ public class MongoReactiveAutoConfigurationTests {
 				.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
 					MongoClient mongo = context.getBean(MongoClient.class);
-					MongoClientSettings settings = mongo.getSettings();
+					com.mongodb.async.client.MongoClientSettings settings = mongo
+							.getSettings();
 					assertThat(settings.getApplicationName()).isEqualTo("test-config");
 					assertThat(settings.getStreamFactoryFactory())
 							.isSameAs(context.getBean("myStreamFactoryFactory"));
@@ -120,8 +120,8 @@ public class MongoReactiveAutoConfigurationTests {
 		@Bean
 		public MongoClientSettings mongoClientSettings() {
 			return MongoClientSettings.builder().readPreference(ReadPreference.nearest())
-					.socketSettings(SocketSettings.builder()
-							.readTimeout(300, TimeUnit.SECONDS).build())
+					.applyToSocketSettings(
+							socket -> socket.readTimeout(300, TimeUnit.SECONDS))
 					.build();
 		}
 
