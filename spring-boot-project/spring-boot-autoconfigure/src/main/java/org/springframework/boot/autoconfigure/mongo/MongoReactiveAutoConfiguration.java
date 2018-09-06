@@ -20,7 +20,7 @@ import java.util.List;
 
 import javax.annotation.PreDestroy;
 
-import com.mongodb.async.client.MongoClientSettings;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
 import io.netty.channel.socket.SocketChannel;
