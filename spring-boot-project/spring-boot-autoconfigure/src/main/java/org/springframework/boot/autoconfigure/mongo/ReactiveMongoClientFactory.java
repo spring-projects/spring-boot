@@ -83,7 +83,7 @@ public class ReactiveMongoClientFactory {
 		Builder builder = builder(settings);
 		String host = (this.properties.getHost() != null) ? this.properties.getHost()
 				: "localhost";
-		builder.applyToClusterSettings(cluster -> cluster
+		builder.applyToClusterSettings((cluster) -> cluster
 				.hosts(Collections.singletonList(new ServerAddress(host, port))));
 		return createMongoClient(builder);
 	}
@@ -108,7 +108,7 @@ public class ReactiveMongoClientFactory {
 		int port = getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
 		ServerAddress serverAddress = new ServerAddress(host, port);
 		builder.applyToClusterSettings(
-				cluster -> cluster.hosts(Collections.singletonList(serverAddress)));
+				(cluster) -> cluster.hosts(Collections.singletonList(serverAddress)));
 		return createMongoClient(builder);
 	}
 

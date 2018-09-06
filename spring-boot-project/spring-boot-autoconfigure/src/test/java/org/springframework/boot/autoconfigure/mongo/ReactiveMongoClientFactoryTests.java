@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.Arrays;
 import java.util.List;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.MongoClientSettings;
 import com.mongodb.connection.ClusterSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.Rule;

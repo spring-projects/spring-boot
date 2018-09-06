@@ -121,7 +121,7 @@ public class MongoReactiveAutoConfigurationTests {
 		public MongoClientSettings mongoClientSettings() {
 			return MongoClientSettings.builder().readPreference(ReadPreference.nearest())
 					.applyToSocketSettings(
-							socket -> socket.readTimeout(300, TimeUnit.SECONDS))
+							(socket) -> socket.readTimeout(300, TimeUnit.SECONDS))
 					.build();
 		}
 
