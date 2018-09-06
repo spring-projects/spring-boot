@@ -1374,7 +1374,6 @@ content into your application. Rather, pick only the properties that you need.
 
 	# METRICS
 	management.metrics.binders.files.enabled=true # Whether to enable files metrics.
-	management.metrics.binders.integration.enabled=true # Whether to enable Spring Integration metrics.
 	management.metrics.binders.jvm.enabled=true # Whether to enable JVM metrics.
 	management.metrics.binders.logback.enabled=true # Whether to enable Logback metrics.
 	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
