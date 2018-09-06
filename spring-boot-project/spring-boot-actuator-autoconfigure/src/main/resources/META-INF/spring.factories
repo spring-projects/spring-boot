@@ -34,8 +34,11 @@ org.springframework.boot.actuate.autoconfigure.mail.MailHealthIndicatorAutoConfi
 org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.JvmMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.LogbackMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration,\

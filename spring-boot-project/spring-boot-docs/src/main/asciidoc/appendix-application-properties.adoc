@@ -1373,11 +1373,6 @@ content into your application. Rather, pick only the properties that you need.
 	management.info.git.mode=simple # Mode to use to expose git information.
 
 	# METRICS
-	management.metrics.binders.files.enabled=true # Whether to enable files metrics.
-	management.metrics.binders.jvm.enabled=true # Whether to enable JVM metrics.
-	management.metrics.binders.logback.enabled=true # Whether to enable Logback metrics.
-	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
-	management.metrics.binders.uptime.enabled=true # Whether to enable uptime metrics.
 	management.metrics.distribution.percentiles-histogram.*= # Whether meter IDs starting with the specified name should publish percentile histograms.
 	management.metrics.distribution.percentiles.*= # Specific computed non-aggregable percentiles to ship to the backend for meter IDs starting-with the specified name.
 	management.metrics.distribution.sla.*= # Specific SLA boundaries for meter IDs starting-with the specified name. The longest match wins, the key `all` can also be used to configure all meters.
