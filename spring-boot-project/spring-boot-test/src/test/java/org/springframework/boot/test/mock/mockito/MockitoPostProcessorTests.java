@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Andreas Neiser
  */
 public class MockitoPostProcessorTests {
 
