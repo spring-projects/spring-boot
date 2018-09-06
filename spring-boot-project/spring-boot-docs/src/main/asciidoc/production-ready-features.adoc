@@ -473,25 +473,6 @@ disabled to prevent the possibility of a clash with other mappings.
 
 
 
-[[production-ready-endpoints-custom-mapping]]
-=== Actuator Web Endpoint Paths
-By default, endpoints are exposed over HTTP under the `/actuator` path by using the ID of
-the endpoint. For example, the `beans` endpoint is exposed under `/actuator/beans`. If you
-want to map endpoints to a different path, you can use the
-`management.endpoints.web.path-mapping` property. Also, if you want change the base path,
-you can use `management.endpoints.web.base-path`.
-
-The following example remaps `/actuator/health` to `/healthcheck`:
-
-.application.properties
-[source,properties,indent=0]
-----
-	management.endpoints.web.base-path=/
-	management.endpoints.web.path-mapping.health=healthcheck
-----
-
-
-
 [[production-ready-endpoints-cors]]
 === CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
@@ -1085,14 +1066,12 @@ additional entry:
 ----
 
 
-
 [[production-ready-monitoring]]
 == Monitoring and Management over HTTP
 If you are developing a web application, Spring Boot Actuator auto-configures all
 enabled endpoints to be exposed over HTTP. The default convention is to use the `id` of
 the endpoint with a prefix of `/actuator` as the URL path. For example, `health` is
 exposed as `/actuator/health`.
-
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
 
 
@@ -1118,6 +1097,18 @@ different HTTP port>>, `management.endpoints.web.base-path` is relative to
 `server.servlet.context-path`. If `management.server.port` is configured,
 `management.endpoints.web.base-path` is relative to
 `management.server.servlet.context-path`.
+
+If you want to map endpoints to a different path, you can use the
+`management.endpoints.web.path-mapping` property.
+
+The following example remaps `/actuator/health` to `/healthcheck`:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.web.base-path=/
+	management.endpoints.web.path-mapping.health=healthcheck
+----
 
 
 
@@ -1200,6 +1191,14 @@ If you do not want to expose endpoints over HTTP, you can set the management por
 [source,properties,indent=0]
 ----
 	management.server.port=-1
+----
+
+This can be achieved using the `management.endpoints.web.exposure.exclude` property as well, as shown in
+following example:
+
+[source,properties,indent=0]
+----
+	management.endpoints.web.exposure.exclude=*
 ----
 
 
