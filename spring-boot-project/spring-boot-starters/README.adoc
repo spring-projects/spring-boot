@@ -130,6 +130,9 @@ do as they were designed before this was clarified.
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/resteasy/resteasy-spring-boot
 
+| https://github.com/rollbar/rollbar-java/[Rollbar]
+| https://github.com/olmero/rollbar-spring-boot-starter
+
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
 
