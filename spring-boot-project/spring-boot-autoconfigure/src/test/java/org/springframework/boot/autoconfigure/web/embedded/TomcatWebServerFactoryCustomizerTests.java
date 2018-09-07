@@ -235,7 +235,7 @@ public class TomcatWebServerFactoryCustomizerTests {
 	public void defaultBackgroundProcessorDelay() {
 		TomcatWebServer server = customizeAndGetServer();
 		assertThat(server.getTomcat().getEngine().getBackgroundProcessorDelay())
-				.isEqualTo(30);
+				.isEqualTo(10);
 	}
 
 	@Test

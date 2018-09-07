@@ -192,7 +192,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Whether to enable the default error page displayed in browsers in case of a server error.
 	server.http2.enabled=false # Whether to enable HTTP/2 support, if the current environment supports it.
-	server.jetty.acceptors= # Number of acceptor threads to use.
+	server.jetty.acceptors=-1 # Number of acceptor threads to use. When the value is -1, the default, the number of acceptors is derived from the operating environment.
 	server.jetty.accesslog.append=false # Append to log.
 	server.jetty.accesslog.date-format=dd/MMM/yyyy:HH:mm:ss Z # Timestamp format of the request log.
 	server.jetty.accesslog.enabled=false # Enable access log.
@@ -205,8 +205,8 @@ content into your application. Rather, pick only the properties that you need.
 	server.jetty.accesslog.log-server=false # Enable logging of the request hostname.
 	server.jetty.accesslog.retention-period=31 # Number of days before rotated log files are deleted.
 	server.jetty.accesslog.time-zone=GMT # Timezone of the request log.
-	server.jetty.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post or put content.
-	server.jetty.selectors= # Number of selector threads to use.
+	server.jetty.max-http-post-size=200000 # Maximum size, in bytes, of the HTTP post or put content.
+	server.jetty.selectors=-1 # Number of selector threads to use. When the value is -1, the default, the number of selectors is derived from the operating environment.
 	server.max-http-header-size=8KB # Maximum size of the HTTP message header.
 	server.port=8080 # Server HTTP port.
 	server.server-header= # Value to use for the Server response header (if empty, no header is sent).
@@ -243,7 +243,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.ssl.trust-store-password= # Password used to access the trust store.
 	server.ssl.trust-store-provider= # Provider for the trust store.
 	server.ssl.trust-store-type= # Type of the trust store.
-	server.tomcat.accept-count=0 # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+	server.tomcat.accept-count=100 # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
 	server.tomcat.accesslog.buffered=true # Whether to buffer output such that it is flushed only periodically.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be absolute or relative to the Tomcat base dir.
 	server.tomcat.accesslog.enabled=false # Enable access log.
@@ -255,7 +255,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.tomcat.accesslog.rotate=true # Whether to enable access log rotation.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
 	server.tomcat.additional-tld-skip-patterns= # Comma-separated list of additional patterns that match jars to ignore for TLD scanning.
-	server.tomcat.background-processor-delay=30s # Delay between the invocation of backgroundProcess methods. If a duration suffix is not specified, seconds will be used.
+	server.tomcat.background-processor-delay=10 # Delay in seconds between the invocation of backgroundProcess methods.
 	server.tomcat.basedir= # Tomcat base directory. If not specified, a temporary directory is used.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
@@ -264,15 +264,15 @@ content into your application. Rather, pick only the properties that you need.
 			172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # Regular expression matching trusted IP addresses.
-	server.tomcat.max-connections=0 # Maximum number of connections that the server accepts and processes at any given time.
-	server.tomcat.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post content.
+	server.tomcat.max-connections=10000 # Maximum number of connections that the server will accept and process at any given time.
+	server.tomcat.max-http-post-size=2097152 # Maximum size in bytes of the HTTP post content.
 	server.tomcat.max-swallow-size=2MB # Maximum amount of request body to swallow.
-	server.tomcat.max-threads=0 # Maximum number of worker threads.
-	server.tomcat.min-spare-threads=0 # Minimum number of worker threads.
+	server.tomcat.max-threads=200 # Maximum amount of worker threads.
+	server.tomcat.min-spare-threads=10 # Minimum amount of worker threads.
 	server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
 	server.tomcat.protocol-header= # Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 	server.tomcat.protocol-header-https-value=https # Value of the protocol header indicating whether the incoming request uses SSL.
-	server.tomcat.redirect-context-root= # Whether requests to the context root should be redirected by appending a / to the path.
+	server.tomcat.redirect-context-root=true # Whether requests to the context root should be redirected by appending a / to the path.
 	server.tomcat.remote-ip-header= # Name of the HTTP header from which the remote IP is extracted. For instance, `X-FORWARDED-FOR`.
 	server.tomcat.resource.allow-caching=true # Whether static resource caching is permitted for this web application.
 	server.tomcat.resource.cache-ttl= # Time-to-live of the static resource cache.
@@ -285,11 +285,11 @@ content into your application. Rather, pick only the properties that you need.
 	server.undertow.accesslog.rotate=true # Whether to enable access log rotation.
 	server.undertow.accesslog.suffix=log # Log file name suffix.
 	server.undertow.buffer-size= # Size of each buffer, in bytes.
-	server.undertow.direct-buffers= # Whether to allocate buffers outside the Java heap.
-	server.undertow.io-threads= # Number of I/O threads to create for the worker.
+	server.undertow.direct-buffers= # Allocate buffers outside the Java heap. The default is derived from the maximum amount of memory that is available to the JVM.
 	server.undertow.eager-filter-init=true # Whether servlet filters should be initialized on startup.
-	server.undertow.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post content.
-	server.undertow.worker-threads= # Number of worker threads.
+	server.undertow.io-threads= # Number of I/O threads to create for the worker. The default is derived from the number of available processors.
+	server.undertow.max-http-post-size=-1 # Maximum size in bytes of the HTTP post content. When the value is -1, the default, the size is unlimited.
+	server.undertow.worker-threads= # Number of worker threads. The default is 8 times the number of I/O threads.
 
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerProperties.{sc-ext}[FreeMarkerProperties])
 	spring.freemarker.allow-request-override=false # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
