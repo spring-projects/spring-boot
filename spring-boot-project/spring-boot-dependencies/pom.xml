@@ -143,7 +143,7 @@
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
 		<rabbit-amqp-client.version>5.4.1</rabbit-amqp-client.version>
-		<reactor-bom.version>Californium-BUILD-SNAPSHOT</reactor-bom.version>
+		<reactor-bom.version>Californium-RC1</reactor-bom.version>
 		<rest-assured.version>3.1.1</rest-assured.version>
 		<reactive-streams.version>1.0.2</reactive-streams.version>
 		<rxjava.version>1.3.8</rxjava.version>
