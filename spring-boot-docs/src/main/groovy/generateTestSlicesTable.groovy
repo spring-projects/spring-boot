@@ -94,7 +94,7 @@ Set<String> findMetaImporters(AnnotationMetadata annotationMetadata) {
 }
 
 boolean isAutoConfigurationImporter(String annotationType, AnnotationMetadata metadata) {
-	metadata.getMetaAnnotationTypes(annotationType).contains('org.springframework.boot.autoconfigure.ImportAutoConfiguration')
+	metadata.getMetaAnnotationTypes(annotationType)?.contains('org.springframework.boot.autoconfigure.ImportAutoConfiguration')
 }
 
 void writeTestSlicesTable(List<TestSlice> testSlices) {
