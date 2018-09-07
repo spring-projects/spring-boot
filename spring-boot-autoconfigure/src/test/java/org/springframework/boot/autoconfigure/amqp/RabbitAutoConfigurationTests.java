@@ -22,6 +22,7 @@ import javax.net.ssl.TrustManager;
 
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.NullTrustManager;
+import com.rabbitmq.client.TrustEverythingTrustManager;
 import org.aopalliance.aop.Advice;
 import org.junit.After;
 import org.junit.Rule;
@@ -65,8 +66,6 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link RabbitAutoConfiguration}.
  *
  * @author Greg Turnquist
- * @author Stephane Nicoll
- * @author Gary Russell
  * @author Stephane Nicoll
  */
 public class RabbitAutoConfigurationTests {
@@ -438,7 +437,7 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.ssl.validateServerCertificate=false");
 		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
 		TrustManager trustManager = getTrustManager(rabbitConnectionFactory);
-		assertThat(trustManager).isInstanceOf(NullTrustManager.class);
+		assertThat(trustManager).isInstanceOf(TrustEverythingTrustManager.class);
 	}
 
 	@Test
@@ -449,7 +448,7 @@ public class RabbitAutoConfigurationTests {
 		assertThat(trustManager).isNotInstanceOf(NullTrustManager.class);
 	}
 
-	private TrustManager getTrustManager(
+	protected TrustManager getTrustManager(
 			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory) {
 		Object sslContext = ReflectionTestUtils.getField(rabbitConnectionFactory,
 				"sslContext");
@@ -461,7 +460,7 @@ public class RabbitAutoConfigurationTests {
 		return (TrustManager) trustManager;
 	}
 
-	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
+	protected com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		return (com.rabbitmq.client.ConnectionFactory) new DirectFieldAccessor(
@@ -475,7 +474,7 @@ public class RabbitAutoConfigurationTests {
 		return expression.getValue();
 	}
 
-	private void load(Class<?> config, String... environment) {
+	protected void load(Class<?> config, String... environment) {
 		load(new Class<?>[] { config }, environment);
 	}
 
