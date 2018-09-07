@@ -469,8 +469,8 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.listener.simple.prefetch:40",
 						"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
 						"spring.rabbitmq.listener.simple.idleEventInterval:5",
-						"spring.rabbitmq.listener.simple.missingQueuesFatal:false",
-						"spring.rabbitmq.listener.simple.transactionSize:20")
+						"spring.rabbitmq.listener.simple.transactionSize:20",
+						"spring.rabbitmq.listener.simple.missingQueuesFatal:false")
 				.run((context) -> {
 					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 							.getBean("rabbitListenerContainerFactory",
@@ -481,6 +481,8 @@ public class RabbitAutoConfigurationTests {
 					assertThat(dfa.getPropertyValue("maxConcurrentConsumers"))
 							.isEqualTo(10);
 					assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
+					assertThat(dfa.getPropertyValue("missingQueuesFatal"))
+							.isEqualTo(false);
 					checkCommonProps(context, dfa);
 				});
 	}
@@ -502,7 +504,7 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.listener.direct.prefetch:40",
 						"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
 						"spring.rabbitmq.listener.direct.idleEventInterval:5",
-						"spring.rabbitmq.listener.direct.missingQueuesFatal:false")
+						"spring.rabbitmq.listener.direct.missingQueuesFatal:true")
 				.run((context) -> {
 					DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 							.getBean("rabbitListenerContainerFactory",
@@ -510,6 +512,8 @@ public class RabbitAutoConfigurationTests {
 					DirectFieldAccessor dfa = new DirectFieldAccessor(
 							rabbitListenerContainerFactory);
 					assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
+					assertThat(dfa.getPropertyValue("missingQueuesFatal"))
+							.isEqualTo(true);
 					checkCommonProps(context, dfa);
 				});
 	}
@@ -626,7 +630,6 @@ public class RabbitAutoConfigurationTests {
 		assertThat(dfa.getPropertyValue("defaultRequeueRejected"))
 				.isEqualTo(Boolean.FALSE);
 		assertThat(dfa.getPropertyValue("idleEventInterval")).isEqualTo(5L);
-		assertThat(dfa.getPropertyValue("missingQueuesFatal")).isEqualTo(false);
 		Advice[] adviceChain = (Advice[]) dfa.getPropertyValue("adviceChain");
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain.length).isEqualTo(1);

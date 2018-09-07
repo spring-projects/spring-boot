@@ -18,6 +18,12 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import org.junit.Test;
 
+import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.beans.DirectFieldAccessor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -25,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class RabbitPropertiesTests {
 
@@ -224,6 +231,30 @@ public class RabbitPropertiesTests {
 		this.properties.setPort(1234);
 		assertThat(this.properties.determineAddresses())
 				.isEqualTo("rabbit.example.com:1234");
+	}
+
+	@Test
+	public void simpleContainerUseConsistentDefaultValues() {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		SimpleMessageListenerContainer container = factory.createListenerContainer();
+		DirectFieldAccessor dfa = new DirectFieldAccessor(container);
+		RabbitProperties.SimpleContainer simple = this.properties.getListener()
+				.getSimple();
+		assertThat(simple.isAutoStartup()).isEqualTo(container.isAutoStartup());
+		assertThat(simple.isMissingQueuesFatal())
+				.isEqualTo(dfa.getPropertyValue("missingQueuesFatal"));
+	}
+
+	@Test
+	public void directContainerUseConsistentDefaultValues() {
+		DirectRabbitListenerContainerFactory factory = new DirectRabbitListenerContainerFactory();
+		DirectMessageListenerContainer container = factory.createListenerContainer();
+		DirectFieldAccessor dfa = new DirectFieldAccessor(container);
+		RabbitProperties.DirectContainer direct = this.properties.getListener()
+				.getDirect();
+		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
+		assertThat(direct.isMissingQueuesFatal())
+				.isEqualTo(dfa.getPropertyValue("missingQueuesFatal"));
 	}
 
 }

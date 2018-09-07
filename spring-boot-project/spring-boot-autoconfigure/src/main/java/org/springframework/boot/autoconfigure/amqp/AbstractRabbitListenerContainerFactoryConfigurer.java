@@ -116,9 +116,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		if (configuration.getIdleEventInterval() != null) {
 			factory.setIdleEventInterval(configuration.getIdleEventInterval().toMillis());
 		}
-		if (configuration.getMissingQueuesFatal() != null) {
-			factory.setMissingQueuesFatal(configuration.getMissingQueuesFatal());
-		}
+		factory.setMissingQueuesFatal(configuration.isMissingQueuesFatal());
 		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless())
