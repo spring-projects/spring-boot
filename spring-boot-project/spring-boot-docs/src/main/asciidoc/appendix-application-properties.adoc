@@ -1137,7 +1137,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.direct.consumers-per-queue= # Number of consumers per queue.
 	spring.rabbitmq.listener.direct.default-requeue-rejected= # Whether rejected deliveries are re-queued by default.
 	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published.
-	spring.rabbitmq.listener.direct.missing-queues-fatal= # Whether the context should be ended up with failure if there are no any queues available on the broker.
+	spring.rabbitmq.listener.direct.missing-queues-fatal= # Whether to fail if the queues declared by the container are not available on the broker.
 	spring.rabbitmq.listener.direct.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.direct.retry.enabled=false # Whether publishing retries are enabled.
 	spring.rabbitmq.listener.direct.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
@@ -1151,7 +1151,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.simple.default-requeue-rejected= # Whether rejected deliveries are re-queued by default.
 	spring.rabbitmq.listener.simple.idle-event-interval= # How often idle container events should be published.
 	spring.rabbitmq.listener.simple.max-concurrency= # Maximum number of listener invoker threads.
-	spring.rabbitmq.listener.simple.missing-queues-fatal= # Whether the context should be ended up with failure if there are no any queues available on the broker or the container should be stopped if queues have been removed while the container is running.
+	spring.rabbitmq.listener.simple.missing-queues-fatal= # Whether to fail if the queues declared by the container are not available on the broker.
 	spring.rabbitmq.listener.simple.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
 	spring.rabbitmq.listener.simple.retry.enabled=false # Whether publishing retries are enabled.
 	spring.rabbitmq.listener.simple.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.

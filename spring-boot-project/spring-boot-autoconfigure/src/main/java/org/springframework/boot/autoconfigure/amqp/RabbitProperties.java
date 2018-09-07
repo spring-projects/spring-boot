@@ -593,6 +593,12 @@ public class RabbitProperties {
 		private Duration idleEventInterval;
 
 		/**
+		 * Whether to fail if the queues declared by the container are not available on
+		 * the broker.
+		 */
+		private Boolean missingQueuesFatal;
+
+		/**
 		 * Optional properties for a retry interceptor.
 		 */
 		private final ListenerRetry retry = new ListenerRetry();
@@ -637,6 +643,14 @@ public class RabbitProperties {
 			this.idleEventInterval = idleEventInterval;
 		}
 
+		public Boolean getMissingQueuesFatal() {
+			return this.missingQueuesFatal;
+		}
+
+		public void setMissingQueuesFatal(Boolean missingQueuesFatal) {
+			this.missingQueuesFatal = missingQueuesFatal;
+		}
+
 		public ListenerRetry getRetry() {
 			return this.retry;
 		}
@@ -665,13 +679,6 @@ public class RabbitProperties {
 		 */
 		private Integer transactionSize;
 
-		/**
-		 * Whether the context should be ended up with failure if there are no any queues
-		 * available on the broker or the container should be stopped if queues have been
-		 * removed while the container is running.
-		 */
-		private Boolean missingQueuesFatal;
-
 		public Integer getConcurrency() {
 			return this.concurrency;
 		}
@@ -696,14 +703,6 @@ public class RabbitProperties {
 			this.transactionSize = transactionSize;
 		}
 
-		public Boolean getMissingQueuesFatal() {
-			return this.missingQueuesFatal;
-		}
-
-		public void setMissingQueuesFatal(Boolean missingQueuesFatal) {
-			this.missingQueuesFatal = missingQueuesFatal;
-		}
-
 	}
 
 	/**
@@ -716,26 +715,12 @@ public class RabbitProperties {
 		 */
 		private Integer consumersPerQueue;
 
-		/**
-		 * Whether the context should be ended up with failure if there are no any queues
-		 * available on the broker.
-		 */
-		private Boolean missingQueuesFatal;
-
 		public Integer getConsumersPerQueue() {
 			return this.consumersPerQueue;
 		}
 
 		public void setConsumersPerQueue(Integer consumersPerQueue) {
 			this.consumersPerQueue = consumersPerQueue;
-		}
-
-		public Boolean getMissingQueuesFatal() {
-			return this.missingQueuesFatal;
-		}
-
-		public void setMissingQueuesFatal(Boolean missingQueuesFatal) {
-			this.missingQueuesFatal = missingQueuesFatal;
 		}
 
 	}

@@ -40,8 +40,6 @@ public final class DirectRabbitListenerContainerFactoryConfigurer extends
 		configure(factory, connectionFactory, config);
 		map.from(config::getConsumersPerQueue).whenNonNull()
 				.to(factory::setConsumersPerQueue);
-		map.from(config::getMissingQueuesFatal).whenNonNull()
-				.to(factory::setMissingQueuesFatal);
 	}
 
 }
