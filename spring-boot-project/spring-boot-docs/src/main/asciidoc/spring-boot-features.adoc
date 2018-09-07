@@ -6491,6 +6491,10 @@ test method by default. However, as using this arrangement with either `RANDOM_P
 run in separate threads and, thus, in separate transactions. Any transaction initiated on
 the server does not roll back in this case.
 
+NOTE: `@SpringBootTest` with `webEnvironment = WebEnvironment.RANDOM_PORT` will also
+start the management server on a separate random port if your application uses a different
+port for the management server.
+
 
 
 [[boot-features-testing-spring-boot-applications-detecting-web-app-type]]
