@@ -593,6 +593,12 @@ public class RabbitProperties {
 		private Duration idleEventInterval;
 
 		/**
+		 * Whether to fail if the queues declared by the container are not available on
+		 * the broker.
+		 */
+		private Boolean missingQueuesFatal;
+
+		/**
 		 * Optional properties for a retry interceptor.
 		 */
 		private final ListenerRetry retry = new ListenerRetry();
@@ -635,6 +641,14 @@ public class RabbitProperties {
 
 		public void setIdleEventInterval(Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
+		}
+
+		public Boolean getMissingQueuesFatal() {
+			return this.missingQueuesFatal;
+		}
+
+		public void setMissingQueuesFatal(Boolean missingQueuesFatal) {
+			this.missingQueuesFatal = missingQueuesFatal;
 		}
 
 		public ListenerRetry getRetry() {
