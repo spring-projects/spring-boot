@@ -140,7 +140,7 @@
 		<neo4j-ogm.version>2.1.6</neo4j-ogm.version>
 		<postgresql.version>9.4.1212.jre7</postgresql.version>
 		<querydsl.version>4.1.4</querydsl.version>
-		<rabbit-amqp-client.version>4.8</rabbit-amqp-client.version>
+		<rabbit-amqp-client.version>4.8.0</rabbit-amqp-client.version>
 		<reactor.version>2.0.8.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.7.RELEASE</reactor-spring.version>
 		<selenium.version>2.53.1</selenium.version>
