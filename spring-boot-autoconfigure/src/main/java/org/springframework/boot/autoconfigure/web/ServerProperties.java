@@ -1049,7 +1049,12 @@ public class ServerProperties
 
 				@Override
 				public void customize(Context context) {
-					context.setMapperContextRootRedirectEnabled(redirectContextRoot);
+					try {
+						context.setMapperContextRootRedirectEnabled(redirectContextRoot);
+					}
+					catch (NoSuchMethodError ex) {
+						// Tomcat 7. Continue.
+					}
 				}
 
 			});
