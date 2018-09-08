@@ -143,6 +143,8 @@
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<pooled-jms-version>1.0.3</pooled-jms-version>
 		<postgresql.version>42.2.5</postgresql.version>
+		<!-- need to take care that this version harmonizes with micrometer ones -->
+		<prometheus-pushgateway.version>0.5.0</prometheus-pushgateway.version>
 		<quartz.version>2.3.0</quartz.version>
 		<querydsl.version>4.2.1</querydsl.version>
 		<rabbit-amqp-client.version>5.4.1</rabbit-amqp-client.version>
@@ -988,6 +990,11 @@
 				<groupId>io.netty</groupId>
 				<artifactId>netty-tcnative-boringssl-static</artifactId>
 				<version>${netty-tcnative.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.prometheus</groupId>
+				<artifactId>simpleclient_pushgateway</artifactId>
+				<version>${prometheus-pushgateway.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.projectreactor</groupId>

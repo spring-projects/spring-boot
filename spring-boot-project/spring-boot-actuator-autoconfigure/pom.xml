@@ -148,6 +148,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.prometheus</groupId>
+			<artifactId>simpleclient_pushgateway</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-signalfx</artifactId>
 			<optional>true</optional>
