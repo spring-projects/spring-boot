@@ -18,8 +18,8 @@ package org.springframework.boot.configurationprocessor.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 // Note: this class was written without inspecting the non-free org.json source code.
@@ -111,7 +111,7 @@ public class JSONObject {
 	 * Creates a {@code JSONObject} with no name/value mappings.
 	 */
 	public JSONObject() {
-		this.nameValuePairs = new HashMap<>();
+		this.nameValuePairs = new LinkedHashMap<>();
 	}
 
 	/**
