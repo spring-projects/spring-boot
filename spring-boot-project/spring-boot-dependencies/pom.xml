@@ -103,7 +103,7 @@
 		<jedis.version>2.9.0</jedis.version>
 		<jersey.version>2.27</jersey.version>
 		<jest.version>5.3.4</jest.version>
-		<jetty.version>9.4.11.v20180605</jetty.version>
+		<jetty.version>9.4.12.v20180830</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.5.24.2</jetty-el.version>
 		<jetty-reactive-httpclient.version>1.0.1</jetty-reactive-httpclient.version>
@@ -193,7 +193,7 @@
 		<!-- Plugin versions -->
 		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
 		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-		<git-commit-id-plugin.version>2.2.4</git-commit-id-plugin.version>
+		<git-commit-id-plugin.version>2.2.5</git-commit-id-plugin.version>
 		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
 		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
