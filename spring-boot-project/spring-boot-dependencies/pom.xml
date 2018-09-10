@@ -165,7 +165,7 @@
 		<spring-framework.version>${spring.version}</spring-framework.version>
 		<spring-hateoas.version>0.25.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.1.0.M2</spring-integration.version>
-		<spring-kafka.version>2.2.0.BUILD-SNAPSHOT</spring-kafka.version>
+		<spring-kafka.version>2.2.0.M3</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.2.RELEASE</spring-restdocs.version>
