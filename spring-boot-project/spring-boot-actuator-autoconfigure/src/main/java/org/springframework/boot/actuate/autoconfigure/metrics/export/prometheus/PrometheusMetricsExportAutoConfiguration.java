@@ -105,8 +105,8 @@ public class PrometheusMetricsExportAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(PushGateway.class)
-	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway", name = "enabled", havingValue = "true", matchIfMissing = false)
-	public static class PrometheusPushGatewayConfiguration {
+	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway", name = "enabled")
+	private static class PrometheusPushGatewayConfiguration {
 
 		@Bean
 		public PushGatewayHandler pushGatewayHandler(CollectorRegistry collectorRegistry,
@@ -130,7 +130,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 			private final ScheduledExecutorService executorService;
 
-			public PushGatewayHandler(CollectorRegistry collectorRegistry,
+			PushGatewayHandler(CollectorRegistry collectorRegistry,
 					PrometheusProperties prometheusProperties, Environment environment) {
 				this.collectorRegistry = collectorRegistry;
 				this.pushgatewayProperties = prometheusProperties.getPushgateway();
@@ -138,7 +138,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 						this.pushgatewayProperties.getBaseUrl());
 				this.environment = environment;
 				this.executorService = Executors.newSingleThreadScheduledExecutor((r) -> {
-					final Thread thread = new Thread(r);
+					Thread thread = new Thread(r);
 					thread.setDaemon(true);
 					thread.setName("micrometer-pushgateway");
 					return thread;
@@ -150,7 +150,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 			void push() {
 				try {
-					this.pushGateway.pushAdd(this.collectorRegistry, job(),
+					this.pushGateway.pushAdd(this.collectorRegistry, getJobName(),
 							this.pushgatewayProperties.getGroupingKeys());
 				}
 				catch (UnknownHostException ex) {
@@ -172,26 +172,30 @@ public class PrometheusMetricsExportAutoConfiguration {
 					push();
 				}
 				if (this.pushgatewayProperties.isDeleteOnShutdown()) {
-					try {
-						this.pushGateway.delete(job(),
-								this.pushgatewayProperties.getGroupingKeys());
-					}
-					catch (Throwable throwable) {
-						this.logger.error(
-								"Unable to delete metrics from Prometheus Pushgateway",
-								throwable);
-					}
+					delete();
 				}
 			}
 
-			private String job() {
+			private void delete() {
+				try {
+					this.pushGateway.delete(getJobName(),
+							this.pushgatewayProperties.getGroupingKeys());
+				}
+				catch (Throwable throwable) {
+					this.logger.error(
+							"Unable to delete metrics from Prometheus Pushgateway",
+							throwable);
+				}
+			}
+
+			private String getJobName() {
 				String job = this.pushgatewayProperties.getJob();
 				if (job == null) {
 					job = this.environment.getProperty("spring.application.name");
 				}
 				if (job == null) {
 					// There's a history of Prometheus spring integration defaulting the
-					// job name to "spring" from when
+					// getJobName name to "spring" from when
 					// Prometheus integration didn't exist in Spring itself.
 					job = "spring";
 				}
