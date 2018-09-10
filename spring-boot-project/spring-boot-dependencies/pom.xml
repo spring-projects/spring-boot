@@ -148,7 +148,7 @@
 		<reactive-streams.version>1.0.2</reactive-streams.version>
 		<rxjava.version>1.3.8</rxjava.version>
 		<rxjava-adapter.version>1.2.1</rxjava-adapter.version>
-		<rxjava2.version>2.2.0</rxjava2.version>
+		<rxjava2.version>2.2.2</rxjava2.version>
 		<selenium.version>3.14.0</selenium.version>
 		<selenium-htmlunit.version>2.32.1</selenium-htmlunit.version>
 		<sendgrid.version>4.2.1</sendgrid.version>
