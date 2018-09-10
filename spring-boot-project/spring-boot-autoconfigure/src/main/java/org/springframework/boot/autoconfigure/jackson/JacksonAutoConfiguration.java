@@ -213,7 +213,7 @@ public class JacksonAutoConfiguration {
 					jacksonProperties);
 		}
 
-		private static final class StandardJackson2ObjectMapperBuilderCustomizer
+		static final class StandardJackson2ObjectMapperBuilderCustomizer
 				implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
 
 			private final ApplicationContext applicationContext;
