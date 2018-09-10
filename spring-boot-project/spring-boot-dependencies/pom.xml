@@ -158,7 +158,7 @@
 		<spring-data-releasetrain.version>Kay-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.25.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>5.0.8.BUILD-SNAPSHOT</spring-integration.version>
-		<spring-kafka.version>2.1.8.RELEASE</spring-kafka.version>
+		<spring-kafka.version>2.1.9.RELEASE</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.2.RELEASE</spring-restdocs.version>
