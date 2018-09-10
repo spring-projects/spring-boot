@@ -56,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Brian Clozel
  * @author Olivier Lamy
  * @author Chentao Qu
+ * @author Andras Tornai
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -273,6 +274,13 @@ public class ServerProperties {
 		 * Regular expression matching trusted IP addresses.
 		 */
 		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
+				+ "100\\.6[4-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64/10
+				+ "100\\.7[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "100\\.8[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "100\\.9[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "100\\.10[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "100\\.11[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "100\\.12[0-7]{1}\\.\\d{1,3}\\.\\d{1,3}|"
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
