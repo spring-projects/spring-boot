@@ -126,7 +126,7 @@
 		<log4j2.version>2.11.1</log4j2.version>
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.18.2</lombok.version>
-		<mariadb.version>2.2.6</mariadb.version>
+		<mariadb.version>2.3.0</mariadb.version>
 		<micrometer.version>1.0.6</micrometer.version>
 		<mockito.version>2.21.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.9.0</mongo-driver-reactivestreams.version>
