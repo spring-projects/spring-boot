@@ -19,8 +19,9 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
@@ -37,6 +38,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * Tests for the auto-configuration imported by {@link WebMvcTest}.
  *
  * @author Andy Wilkinson
+ * @author Levi Puot Paul
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -73,7 +75,6 @@ public class WebMvcTestAutoConfigurationIntegrationTests {
 	public void taskExecutionAutoConfigurationWasImported() {
 		assertThat(this.applicationContext)
 				.has(importedAutoConfiguration(TaskExecutionAutoConfiguration.class));
-
 	}
 
 	@Test
@@ -83,6 +84,6 @@ public class WebMvcTestAutoConfigurationIntegrationTests {
 		assertThat(ReflectionTestUtils.getField(
 				this.applicationContext.getBean(RequestMappingHandlerAdapter.class),
 				"taskExecutor"))
-				.isSameAs(applicationContext.getBean("applicationTaskExecutor"));
+				.isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
 	}
 }
