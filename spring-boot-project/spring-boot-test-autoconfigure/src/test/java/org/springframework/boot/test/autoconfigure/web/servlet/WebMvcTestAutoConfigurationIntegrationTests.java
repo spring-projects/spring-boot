@@ -16,19 +16,22 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 /**
  * Tests for the auto-configuration imported by {@link WebMvcTest}.
@@ -66,4 +69,20 @@ public class WebMvcTestAutoConfigurationIntegrationTests {
 				.has(importedAutoConfiguration(ThymeleafAutoConfiguration.class));
 	}
 
+	@Test
+	public void taskExecutionAutoConfigurationWasImported() {
+		assertThat(this.applicationContext)
+				.has(importedAutoConfiguration(TaskExecutionAutoConfiguration.class));
+
+	}
+
+	@Test
+	public void asyncTaskExecutorWithApplicationTaskExecutor() {
+		assertThat(this.applicationContext.getBeansOfType(AsyncTaskExecutor.class))
+				.hasSize(1);
+		assertThat(ReflectionTestUtils.getField(
+				this.applicationContext.getBean(RequestMappingHandlerAdapter.class),
+				"taskExecutor"))
+				.isSameAs(applicationContext.getBean("applicationTaskExecutor"));
+	}
 }
