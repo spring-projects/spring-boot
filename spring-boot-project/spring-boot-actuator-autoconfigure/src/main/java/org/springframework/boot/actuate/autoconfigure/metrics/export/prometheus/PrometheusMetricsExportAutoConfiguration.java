@@ -106,7 +106,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(PushGateway.class)
 	@ConditionalOnProperty(prefix = "management.metrics.export.prometheus.pushgateway", name = "enabled")
-	private static class PrometheusPushGatewayConfiguration {
+	public static class PrometheusPushGatewayConfiguration {
 
 		@Bean
 		public PushGatewayHandler pushGatewayHandler(CollectorRegistry collectorRegistry,
@@ -115,7 +115,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 					environment);
 		}
 
-		public static class PushGatewayHandler {
+		private static class PushGatewayHandler {
 
 			private final Logger logger = LoggerFactory
 					.getLogger(PrometheusPushGatewayConfiguration.class);
