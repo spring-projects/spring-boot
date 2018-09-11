@@ -59,9 +59,6 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		devToolsProperties.put("server.error.include-stacktrace", "ALWAYS");
 		devToolsProperties.put("server.servlet.jsp.init-parameters.development", "true");
 		devToolsProperties.put("spring.reactor.stacktrace-mode.enabled", "true");
-		devToolsProperties.put("logging.level.org.springframework.web", "DEBUG");
-		devToolsProperties.put("logging.level.org.springframework.core.codec", "DEBUG");
-		devToolsProperties.put("logging.level.org.springframework.http", "DEBUG");
 		PROPERTIES = Collections.unmodifiableMap(devToolsProperties);
 	}
 
