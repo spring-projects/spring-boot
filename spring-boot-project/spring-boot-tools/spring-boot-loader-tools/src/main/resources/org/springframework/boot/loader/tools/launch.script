@@ -128,7 +128,7 @@ log_file="$LOG_FOLDER/$LOG_FILENAME"
 # shellcheck disable=SC2012
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
 
-# Issue an warning if the application will run as root
+# Issue a warning if the application will run as root
 [[ $(id -u ${run_user}) == "0" ]] && { echoYellow "Application is running as root (UID 0). This is considered insecure."; }
 
 # Find Java
