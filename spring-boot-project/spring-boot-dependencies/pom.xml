@@ -182,7 +182,7 @@
 		<thymeleaf-layout-dialect.version>2.3.0</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
 		<thymeleaf-extras-java8time.version>3.0.1.RELEASE</thymeleaf-extras-java8time.version>
-		<tomcat.version>9.0.11</tomcat.version>
+		<tomcat.version>9.0.12</tomcat.version>
 		<unboundid-ldapsdk.version>4.0.7</unboundid-ldapsdk.version>
 		<undertow.version>2.0.13.Final</undertow.version>
 		<webjars-hal-browser.version>3325375</webjars-hal-browser.version>
