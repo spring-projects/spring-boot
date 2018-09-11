@@ -92,9 +92,6 @@ content into your application. Rather, pick only the properties that you need.
 	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
 	spring.hazelcast.config= # The location of the configuration file to use to initialize Hazelcast.
 
-	# INSIGHTS ({sc-spring-boot-autoconfigure}/insight/InsightsProperties.{sc-ext}[InsightsProperties])
-	spring.insights.web.log-request-details=false # Whether logging of (potentially sensitive) request details at DEBUG and TRACE level is allowed.
-
 	# PROJECT INFORMATION ({sc-spring-boot-autoconfigure}/info/ProjectInfoProperties.{sc-ext}[ProjectInfoProperties])
 	spring.info.build.location=classpath:META-INF/build-info.properties # Location of the generated build-info.properties file.
 	spring.info.git.location=classpath:git.properties # Location of the generated git.properties file.
@@ -331,16 +328,15 @@ content into your application. Rather, pick only the properties that you need.
 	# SPRING HATEOAS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
 	spring.hateoas.use-hal-as-default-json-media-type=true # Whether application/hal+json responses should be sent to requests that accept application/json.
 
-	# HTTP message conversion
+	# HTTP ({sc-spring-boot-autoconfigure}/http/HttpEncodingProperties.{sc-ext}[HttpProperties])
 	spring.http.converters.preferred-json-mapper= # Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment.
-
-	# HTTP encoding ({sc-spring-boot-autoconfigure}/http/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
 	spring.http.encoding.charset=UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
 	spring.http.encoding.enabled=true # Whether to enable http encoding support.
 	spring.http.encoding.force= # Whether to force the encoding to the configured charset on HTTP requests and responses.
 	spring.http.encoding.force-request= # Whether to force the encoding to the configured charset on HTTP requests. Defaults to true when "force" has not been specified.
 	spring.http.encoding.force-response= # Whether to force the encoding to the configured charset on HTTP responses.
 	spring.http.encoding.mapping= # Locale in which to encode mapping.
+	spring.http.log-request-details=false # Whether logging of (potentially sensitive) request details at DEBUG and TRACE level is allowed.
 
 	# MULTIPART ({sc-spring-boot-autoconfigure}/web/servlet/MultipartProperties.{sc-ext}[MultipartProperties])
 	spring.servlet.multipart.enabled=true # Whether to enable support of multipart uploads.

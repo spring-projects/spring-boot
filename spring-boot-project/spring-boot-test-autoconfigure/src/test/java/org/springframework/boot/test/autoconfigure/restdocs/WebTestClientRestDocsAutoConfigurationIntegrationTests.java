@@ -52,8 +52,8 @@ public class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 
 	@Test
 	public void defaultSnippetsAreWritten() throws Exception {
-		this.webTestClient.get().uri("/").exchange().expectBody()
-				.consumeWith(document("default-snippets"));
+		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful()
+				.expectBody().consumeWith(document("default-snippets"));
 		File defaultSnippetsDir = new File("target/generated-snippets/default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(new File(defaultSnippetsDir, "curl-request.adoc"))

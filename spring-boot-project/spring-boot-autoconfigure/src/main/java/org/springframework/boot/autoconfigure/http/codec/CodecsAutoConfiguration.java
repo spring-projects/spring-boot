@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.insight.InsightsProperties;
+import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.codec.CodecCustomizer;
@@ -67,13 +67,13 @@ public class CodecsAutoConfiguration {
 	}
 
 	@Configuration
-	@EnableConfigurationProperties(InsightsProperties.class)
+	@EnableConfigurationProperties(HttpProperties.class)
 	static class LoggingCodecConfiguration {
 
 		@Bean
-		public CodecCustomizer loggingCodecCustomizer(InsightsProperties properties) {
-			return (configurer) -> configurer.defaultCodecs().enableLoggingRequestDetails(
-					properties.getWeb().isLogRequestDetails());
+		public CodecCustomizer loggingCodecCustomizer(HttpProperties properties) {
+			return (configurer) -> configurer.defaultCodecs()
+					.enableLoggingRequestDetails(properties.isLogRequestDetails());
 		}
 
 	}

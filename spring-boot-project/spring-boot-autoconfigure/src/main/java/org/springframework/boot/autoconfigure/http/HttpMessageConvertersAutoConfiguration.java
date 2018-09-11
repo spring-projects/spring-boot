@@ -74,21 +74,20 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(StringHttpMessageConverter.class)
-	@EnableConfigurationProperties(HttpEncodingProperties.class)
+	@EnableConfigurationProperties(HttpProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
 
-		private final HttpEncodingProperties encodingProperties;
+		private final HttpProperties.Encoding properties;
 
-		protected StringHttpMessageConverterConfiguration(
-				HttpEncodingProperties encodingProperties) {
-			this.encodingProperties = encodingProperties;
+		protected StringHttpMessageConverterConfiguration(HttpProperties httpProperties) {
+			this.properties = httpProperties.getEncoding();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		public StringHttpMessageConverter stringHttpMessageConverter() {
 			StringHttpMessageConverter converter = new StringHttpMessageConverter(
-					this.encodingProperties.getCharset());
+					this.properties.getCharset());
 			converter.setWriteAcceptCharset(false);
 			return converter;
 		}
