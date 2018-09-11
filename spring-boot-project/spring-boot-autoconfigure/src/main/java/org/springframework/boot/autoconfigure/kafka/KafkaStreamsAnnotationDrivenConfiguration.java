@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.core.StreamsBuilderFactoryBean;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 
 /**
  * Configuration for Kafka Streams annotation-driven support.
