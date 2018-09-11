@@ -57,7 +57,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * building it once needed.
 	 * @return the shared {@code ConversionService} instance (never {@code null})
 	 */
-	public static ConversionService getSharedInstance() {
+	public static ApplicationConversionService getSharedInstance() {
 		ApplicationConversionService sharedInstance = ApplicationConversionService.sharedInstance;
 		if (sharedInstance == null) {
 			synchronized (ApplicationConversionService.class) {

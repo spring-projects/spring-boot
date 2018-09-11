@@ -31,11 +31,13 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
@@ -367,6 +369,19 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder addCommandLineProperties(
 			boolean addCommandLineProperties) {
 		this.application.setAddCommandLineProperties(addCommandLineProperties);
+		return this;
+	}
+
+	/**
+	 * Flag to indicate if the {@link ApplicationConversionService} should be added to the
+	 * application context's {@link Environment}.
+	 * @param addConversionService if the conversion service should be added.
+	 * @return the current builder
+	 * @since 2.1.0
+	 */
+	public SpringApplicationBuilder setAddConversionService(
+			boolean addConversionService) {
+		this.application.setAddConversionService(addConversionService);
 		return this;
 	}
 

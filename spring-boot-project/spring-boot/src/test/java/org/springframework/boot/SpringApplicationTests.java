@@ -56,6 +56,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -595,6 +596,28 @@ public class SpringApplicationTests {
 		this.context = application.run("--foo=bar");
 		assertThat(environment).doesNotHave(
 				matchingPropertySource(PropertySource.class, "commandLineArgs"));
+	}
+
+	@Test
+	public void contextUsesApplicationConversionService() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run();
+		assertThat(this.context.getBeanFactory().getConversionService())
+				.isInstanceOf(ApplicationConversionService.class);
+		assertThat(this.context.getEnvironment().getConversionService())
+				.isInstanceOf(ApplicationConversionService.class);
+	}
+
+	@Test
+	public void contextWhenHasAddConversionServiceFalseUsesRegularConversionService() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAddConversionService(false);
+		this.context = application.run();
+		assertThat(this.context.getBeanFactory().getConversionService()).isNull();
+		assertThat(this.context.getEnvironment().getConversionService())
+				.isNotInstanceOf(ApplicationConversionService.class);
 	}
 
 	@Test

@@ -45,6 +45,7 @@ import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -213,6 +214,8 @@ public class SpringApplication {
 	private boolean logStartupInfo = true;
 
 	private boolean addCommandLineProperties = true;
+
+	private boolean addConversionService = true;
 
 	private Banner banner;
 
@@ -397,7 +400,6 @@ public class SpringApplication {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);
 		}
-
 		// Add boot specific singleton beans
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
@@ -503,6 +505,10 @@ public class SpringApplication {
 	 */
 	protected void configureEnvironment(ConfigurableEnvironment environment,
 			String[] args) {
+		if (this.addConversionService) {
+			environment.setConversionService(
+					ApplicationConversionService.getSharedInstance());
+		}
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
 	}
@@ -643,6 +649,10 @@ public class SpringApplication {
 				((DefaultResourceLoader) context)
 						.setClassLoader(this.resourceLoader.getClassLoader());
 			}
+		}
+		if (this.addConversionService) {
+			context.getBeanFactory().setConversionService(
+					ApplicationConversionService.getSharedInstance());
 		}
 	}
 
@@ -1044,6 +1054,16 @@ public class SpringApplication {
 	 */
 	public void setAddCommandLineProperties(boolean addCommandLineProperties) {
 		this.addCommandLineProperties = addCommandLineProperties;
+	}
+
+	/**
+	 * Sets if the {@link ApplicationConversionService} should be added to the application
+	 * context's {@link Environment}.
+	 * @param addConversionService if the application conversion service should be added
+	 * @since 2.1.0
+	 */
+	public void setAddConversionService(boolean addConversionService) {
+		this.addConversionService = addConversionService;
 	}
 
 	/**
