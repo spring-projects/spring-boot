@@ -579,7 +579,8 @@ public class ServerPropertiesTests {
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
 				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
+				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" //
+				+ "0:0:0:0:0:0:0:1|::1";
 		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
 
@@ -894,6 +895,12 @@ public class ServerPropertiesTests {
 		assertThat(
 				this.properties.getTomcat().getAccesslog().isRequestAttributesEnabled())
 						.isEqualTo(new AccessLogValve().getRequestAttributesEnabled());
+	}
+
+	@Test
+	public void tomcatInternalProxiesMatchesDefault() {
+		assertThat(this.properties.getTomcat().getInternalProxies())
+				.isEqualTo(new RemoteIpValve().getInternalProxies());
 	}
 
 	@Test

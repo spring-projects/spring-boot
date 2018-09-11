@@ -212,7 +212,8 @@ content into your application; rather pick only the properties that you need.
 			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
-			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses.
+			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
+			0:0:0:0:0:0:0:1|::1 # Regular expression that matches proxies that are to be trusted.
 	server.tomcat.max-connections=10000 # Maximum number of connections that the server will accept and process at any given time.
 	server.tomcat.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
 	server.tomcat.max-http-post-size=2097152 # Maximum size in bytes of the HTTP post content.
