@@ -115,7 +115,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 					environment);
 		}
 
-		private static class PushGatewayHandler {
+		static class PushGatewayHandler {
 
 			private final Logger logger = LoggerFactory
 					.getLogger(PrometheusPushGatewayConfiguration.class);
