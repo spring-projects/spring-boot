@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.web;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -51,7 +51,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 		WebMvcConfigurer.class })
 @ConditionalOnMissingBean(PageableHandlerMethodArgumentResolver.class)
 @EnableConfigurationProperties(SpringDataWebProperties.class)
-@AutoConfigureAfter(RepositoryRestMvcAutoConfiguration.class)
+@AutoConfigureBefore(RepositoryRestMvcAutoConfiguration.class)
 public class SpringDataWebAutoConfiguration {
 
 	private final SpringDataWebProperties properties;
