@@ -37,6 +37,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.valves.AccessLogValve;
+import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
@@ -258,6 +259,12 @@ public class ServerPropertiesTests {
 		assertThat(
 				this.properties.getTomcat().getAccesslog().isRequestAttributesEnabled())
 						.isEqualTo(new AccessLogValve().getRequestAttributesEnabled());
+	}
+
+	@Test
+	public void tomcatInternalProxiesMatchesDefault() {
+		assertThat(this.properties.getTomcat().getInternalProxies())
+				.isEqualTo(new RemoteIpValve().getInternalProxies());
 	}
 
 	@Test
