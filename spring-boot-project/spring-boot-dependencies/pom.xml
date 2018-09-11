@@ -156,7 +156,7 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<snakeyaml.version>1.23</snakeyaml.version>
 		<solr.version>7.4.0</solr.version>
-		<!-- deprecated in favour of "spring-framework.version" -->
+		<!-- deprecated in favor of "spring-framework.version" -->
 		<spring.version>5.1.0.RC3</spring.version>
 		<spring-amqp.version>2.1.0.M3</spring-amqp.version>
 		<spring-batch.version>4.1.0.M3</spring-batch.version>

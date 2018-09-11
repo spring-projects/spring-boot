@@ -60,6 +60,7 @@ class WebFluxTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 				includes.add(ClassUtils.forName(optionalInclude, null));
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
