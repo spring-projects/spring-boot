@@ -80,7 +80,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		bootStartScripts.getConventionMapping().map("defaultJvmOpts",
 				applicationConvention::getApplicationDefaultJvmArgs);
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
-		binCopySpec.setFileMode(0x755);
+		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
 	}
 
