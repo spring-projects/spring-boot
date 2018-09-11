@@ -170,7 +170,7 @@
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-restdocs.version>2.0.2.RELEASE</spring-restdocs.version>
 		<spring-retry.version>1.2.2.RELEASE</spring-retry.version>
-		<spring-security.version>5.1.0.BUILD-SNAPSHOT</spring-security.version>
+		<spring-security.version>5.1.0.RC2</spring-security.version>
 		<spring-session-bom.version>Bean-BUILD-SNAPSHOT</spring-session-bom.version>
 		<spring-ws.version>3.0.3.RELEASE</spring-ws.version>
 		<sqlite-jdbc.version>3.23.1</sqlite-jdbc.version>
