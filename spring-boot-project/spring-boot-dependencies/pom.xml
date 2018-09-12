@@ -102,7 +102,7 @@
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.9.0</jedis.version>
 		<jersey.version>2.27</jersey.version>
-		<jest.version>5.3.4</jest.version>
+		<jest.version>6.3.1</jest.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jetty-el.version>8.5.33</jetty-el.version>

@@ -37,7 +37,6 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.gradle.util.GUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -281,7 +280,7 @@ public abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
 				assertThat(entry.getTime())
-						.isEqualTo(GUtil.CONSTANT_TIME_FOR_ZIP_ENTRIES);
+						.isEqualTo(BootZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES);
 			}
 		}
 	}
