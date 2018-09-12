@@ -1731,6 +1731,46 @@ The following example shows potential logging settings in `application.propertie
 
 
 
+[[boot-features-custom-log-groups]]
+=== Log Groups
+It's often useful to be able to group related loggers together so that they can all be
+configured at the same time. For example, you might commonly change the logging levels for
+_all_ Tomcat related loggers, but you can't easily remember to top level packages.
+
+To help with this, Spring Boot allows you do define logging groups in your Spring
+`Environment`. For example, here's how you could define a "`tomcat`" group by adding
+it to your `appplication.properties`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	logging.group.tomcat=org.apache.catalina, org.apache.coyote, org.apache.tomcat
+----
+
+Once defined, you can change the level for all the loggers in the group with a single
+line:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	logging.level.tomcat=TRACE
+----
+
+Spring Boot includes the following pre-defined logging groups that can be used
+out-of-the-box:
+
+[cols="1,4"]
+|===
+|Name |Loggers
+
+|web
+|`org.springframework.core.codec`, `org.springframework.http`, `org.springframework.web`
+
+|sql
+|`org.springframework.jdbc.core`, `org.hibernate.SQL`
+
+|===
+
+
+
 [[boot-features-custom-log-configuration]]
 === Custom Log Configuration
 The various logging systems can be activated by including the appropriate libraries on

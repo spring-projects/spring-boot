@@ -94,6 +94,12 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
+      "name": "logging.group",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Log groups to quickly change multipe loggers at the same time. For instance, `logging.level.db=org.hibernate,org.springframework.jdbc`.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+    },
+    {
       "name": "logging.path",
       "type": "java.lang.String",
       "description": "Location of the log file. For instance, `/var/log`.",
