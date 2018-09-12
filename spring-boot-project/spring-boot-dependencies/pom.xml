@@ -44,7 +44,7 @@
 		<byte-buddy.version>1.8.22</byte-buddy.version>
 		<caffeine.version>2.6.2</caffeine.version>
 		<cassandra-driver.version>3.6.0</cassandra-driver.version>
-		<classmate.version>1.3.4</classmate.version>
+		<classmate.version>1.4.0</classmate.version>
 		<commons-codec.version>1.11</commons-codec.version>
 		<commons-dbcp2.version>2.5.0</commons-dbcp2.version>
 		<commons-lang3.version>3.8</commons-lang3.version>
