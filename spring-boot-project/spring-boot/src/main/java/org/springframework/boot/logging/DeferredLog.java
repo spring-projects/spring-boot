@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,36 +31,50 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DeferredLog implements Log {
 
-	private List<Line> lines = new ArrayList<>();
+	private volatile Log destination;
+
+	private final List<Line> lines = new ArrayList<>();
 
 	@Override
 	public boolean isTraceEnabled() {
-		return true;
+		synchronized (this.lines) {
+			return (this.destination != null) ? this.destination.isTraceEnabled() : true;
+		}
 	}
 
 	@Override
 	public boolean isDebugEnabled() {
-		return true;
+		synchronized (this.lines) {
+			return (this.destination != null) ? this.destination.isDebugEnabled() : true;
+		}
 	}
 
 	@Override
 	public boolean isInfoEnabled() {
-		return true;
+		synchronized (this.lines) {
+			return (this.destination != null) ? this.destination.isInfoEnabled() : true;
+		}
 	}
 
 	@Override
 	public boolean isWarnEnabled() {
-		return true;
+		synchronized (this.lines) {
+			return (this.destination != null) ? this.destination.isWarnEnabled() : true;
+		}
 	}
 
 	@Override
 	public boolean isErrorEnabled() {
-		return true;
+		synchronized (this.lines) {
+			return (this.destination != null) ? this.destination.isErrorEnabled() : true;
+		}
 	}
 
 	@Override
 	public boolean isFatalEnabled() {
-		return true;
+		synchronized (this.lines) {
+			return (this.destination != null) ? this.destination.isFatalEnabled() : true;
+		}
 	}
 
 	@Override
@@ -124,29 +138,104 @@ public class DeferredLog implements Log {
 	}
 
 	private void log(LogLevel level, Object message, Throwable t) {
-		this.lines.add(new Line(level, message, t));
+		synchronized (this.lines) {
+			if (this.destination != null) {
+				logTo(this.destination, level, message, t);
+			}
+			this.lines.add(new Line(level, message, t));
+		}
 	}
 
+	/**
+	 * Switch from deferred logging to immediate logging to the specified destination.
+	 * @param destination the new log destination
+	 */
+	public void switchTo(Class<?> destination) {
+		switchTo(LogFactory.getLog(destination));
+	}
+
+	/**
+	 * Switch from deferred logging to immediate logging to the specified destination.
+	 * @param destination the new log destination
+	 */
+	public void switchTo(Log destination) {
+		synchronized (this.lines) {
+			replayTo(destination);
+			this.destination = destination;
+		}
+	}
+
+	/**
+	 * Replay deferred logging to the specified destination.
+	 * @param destination the destination for the deferred log messages
+	 */
 	public void replayTo(Class<?> destination) {
 		replayTo(LogFactory.getLog(destination));
 	}
 
+	/**
+	 * Replay deferred logging to the specified destination.
+	 * @param destination the destination for the deferred log messages
+	 */
 	public void replayTo(Log destination) {
-		for (Line line : this.lines) {
-			line.replayTo(destination);
+		synchronized (this.lines) {
+			for (Line line : this.lines) {
+				logTo(destination, line.getLevel(), line.getMessage(),
+						line.getThrowable());
+			}
+			this.lines.clear();
 		}
-		this.lines.clear();
 	}
 
+	/**
+	 * Replay from a source log to a destination log when the source is deferred.
+	 * @param source the source logger
+	 * @param destination the destination logger class
+	 * @return the destination
+	 * @deprecated since 2.1.0 in favor of {@link #switchTo(Class)}
+	 */
+	@Deprecated
 	public static Log replay(Log source, Class<?> destination) {
 		return replay(source, LogFactory.getLog(destination));
 	}
 
+	/**
+	 * Replay from a source log to a destination log when the source is deferred.
+	 * @param source the source logger
+	 * @param destination the destination logger
+	 * @return the destination
+	 * @deprecated since 2.1.0 in favor of {@link #switchTo(Log)}
+	 */
+	@Deprecated
 	public static Log replay(Log source, Log destination) {
 		if (source instanceof DeferredLog) {
 			((DeferredLog) source).replayTo(destination);
 		}
 		return destination;
+	}
+
+	private static void logTo(Log log, LogLevel level, Object message,
+			Throwable throwable) {
+		switch (level) {
+		case TRACE:
+			log.trace(message, throwable);
+			return;
+		case DEBUG:
+			log.debug(message, throwable);
+			return;
+		case INFO:
+			log.info(message, throwable);
+			return;
+		case WARN:
+			log.warn(message, throwable);
+			return;
+		case ERROR:
+			log.error(message, throwable);
+			return;
+		case FATAL:
+			log.fatal(message, throwable);
+			return;
+		}
 	}
 
 	private static class Line {
@@ -163,27 +252,16 @@ public class DeferredLog implements Log {
 			this.throwable = throwable;
 		}
 
-		public void replayTo(Log log) {
-			switch (this.level) {
-			case TRACE:
-				log.trace(this.message, this.throwable);
-				return;
-			case DEBUG:
-				log.debug(this.message, this.throwable);
-				return;
-			case INFO:
-				log.info(this.message, this.throwable);
-				return;
-			case WARN:
-				log.warn(this.message, this.throwable);
-				return;
-			case ERROR:
-				log.error(this.message, this.throwable);
-				return;
-			case FATAL:
-				log.fatal(this.message, this.throwable);
-				return;
-			}
+		public LogLevel getLevel() {
+			return this.level;
+		}
+
+		public Object getMessage() {
+			return this.message;
+		}
+
+		public Throwable getThrowable() {
+			return this.throwable;
 		}
 
 	}

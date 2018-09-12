@@ -189,7 +189,7 @@ public class ConfigFileApplicationListener
 	}
 
 	private void onApplicationPreparedEvent(ApplicationEvent event) {
-		this.logger.replayTo(ConfigFileApplicationListener.class);
+		this.logger.switchTo(ConfigFileApplicationListener.class);
 		addPostProcessors(((ApplicationPreparedEvent) event).getApplicationContext());
 	}
 
