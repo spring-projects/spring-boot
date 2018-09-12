@@ -3,5 +3,12 @@ platform: linux
 inputs:
 - name: git-repo
 - name: artifactory-repo
+params:
+  BINTRAY_REPO:
+  BINTRAY_SUBJECT:
+  BINTRAY_USERNAME:
+  BINTRAY_PASSWORD:
+  SONATYPE_USERNAME:
+  SONATYPE_PASSWORD:
 run:
   path: git-repo/ci/scripts/sync-to-maven-central.sh

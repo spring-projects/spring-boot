@@ -3,5 +3,12 @@ platform: linux
 inputs:
 - name: git-repo
 - name: artifactory-repo
+params:
+  RELEASE_TYPE:
+  ARTIFACTORY_SERVER:
+  ARTIFACTORY_USERNAME:
+  ARTIFACTORY_PASSWORD:
+  BINTRAY_SUBJECT:
+  BINTRAY_REPO:
 run:
   path: git-repo/ci/scripts/promote.sh
