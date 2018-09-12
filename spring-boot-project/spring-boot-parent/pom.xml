@@ -216,7 +216,7 @@
 			<dependency>
 				<groupId>org.apache.maven.plugin-tools</groupId>
 				<artifactId>maven-plugin-annotations</artifactId>
-				<version>3.2</version>
+				<version>3.5.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
