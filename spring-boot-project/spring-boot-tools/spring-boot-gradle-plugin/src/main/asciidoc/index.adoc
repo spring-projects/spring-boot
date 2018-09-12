@@ -37,7 +37,7 @@ Andy Wilkinson
 The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle],
 allowing you to package executable jar or war archives, run Spring Boot applications, and
 use the dependency management provided by `spring-boot-dependencies`. Spring Boot's
-Gradle plugin requires Gradle 4.0 or later.
+Gradle plugin requires Gradle 4.4 or later.
 
 In addition to this user guide, {api-documentation}[API documentation] is also available.
 
