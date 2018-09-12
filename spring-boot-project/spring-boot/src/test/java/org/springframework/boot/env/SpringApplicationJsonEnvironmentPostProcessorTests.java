@@ -54,7 +54,6 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json=foo:bar");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
 
 	@Test
