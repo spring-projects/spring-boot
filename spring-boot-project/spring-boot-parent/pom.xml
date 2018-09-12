@@ -136,7 +136,7 @@
 			<dependency>
 				<groupId>org.apache.ivy</groupId>
 				<artifactId>ivy</artifactId>
-				<version>2.3.0</version>
+				<version>2.4.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
