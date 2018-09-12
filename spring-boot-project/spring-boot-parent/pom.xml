@@ -62,7 +62,7 @@
 			<dependency>
 				<groupId>com.nhaarman</groupId>
 				<artifactId>mockito-kotlin</artifactId>
-				<version>1.5.0</version>
+				<version>1.6.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.jetbrains.kotlin</groupId>
