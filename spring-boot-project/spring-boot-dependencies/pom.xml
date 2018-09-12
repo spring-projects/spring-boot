@@ -1372,7 +1372,8 @@
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>artemis-server</artifactId>
-				<version>${artemis.version}</version><exclusions>
+				<version>${artemis.version}</version>
+				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
