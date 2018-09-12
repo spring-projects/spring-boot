@@ -55,7 +55,7 @@ public class BackgroundPreinitializer
 
 	/**
 	 * System property that instructs Spring Boot how to run pre initialization. When the
-	 * property is set to {@code true}, no pre intialization happens and each item is
+	 * property is set to {@code true}, no pre-initialization happens and each item is
 	 * initialized in the foreground as it needs to. When the property is {@code false}
 	 * (default), pre initialization runs in a separate thread in the background.
 	 * @since 2.1.0

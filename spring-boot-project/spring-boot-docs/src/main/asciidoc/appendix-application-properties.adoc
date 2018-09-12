@@ -181,7 +181,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.address= # Network address to which the server should bind.
 	server.compression.enabled=false # Whether response compression is enabled.
 	server.compression.excluded-user-agents= # List of user-agents to exclude from compression.
-	server.compression.mime-types=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript # Comma-separated list of MIME types that should be compressed.
+	server.compression.mime-types=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml # Comma-separated list of MIME types that should be compressed.
 	server.compression.min-response-size=2048 # Minimum "Content-Length" value that is required for compression to be performed.
 	server.connection-timeout= # Time that connectors wait for another HTTP request before closing the connection. When not set, the connector's container-specific default is used. Use a value of -1 to indicate no (that is, an infinite) timeout.
 	server.error.include-exception=false # Include the "exception" attribute.
@@ -328,7 +328,7 @@ content into your application. Rather, pick only the properties that you need.
 	# SPRING HATEOAS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
 	spring.hateoas.use-hal-as-default-json-media-type=true # Whether application/hal+json responses should be sent to requests that accept application/json.
 
-	# HTTP ({sc-spring-boot-autoconfigure}/http/HttpEncodingProperties.{sc-ext}[HttpProperties])
+	# HTTP ({sc-spring-boot-autoconfigure}/http/HttpProperties.{sc-ext}[HttpProperties])
 	spring.http.converters.preferred-json-mapper= # Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment.
 	spring.http.encoding.charset=UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
 	spring.http.encoding.enabled=true # Whether to enable http encoding support.
