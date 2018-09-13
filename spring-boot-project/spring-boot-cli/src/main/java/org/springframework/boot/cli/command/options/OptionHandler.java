@@ -58,8 +58,7 @@ public class OptionHandler {
 	public OptionSpecBuilder option(String name, String description) {
 		OptionParser parser = getParser();
 		if (parser.recognizedOptions().containsKey(name)) {
-			throw new IllegalArgumentException(
-					"Option key -" + name + " duplicated.");
+			throw new IllegalArgumentException("Option key -" + name + " duplicated.");
 		}
 
 		return parser.accepts(name, description);
