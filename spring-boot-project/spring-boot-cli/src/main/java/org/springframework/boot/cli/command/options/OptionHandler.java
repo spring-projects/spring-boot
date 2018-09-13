@@ -59,7 +59,7 @@ public class OptionHandler {
 		OptionParser parser = getParser();
 		if (parser.recognizedOptions().containsKey(name)) {
 			throw new IllegalArgumentException(
-					"Option [" + name + "] is already defined.");
+					"Option key -" + name + " duplicated.");
 		}
 
 		return parser.accepts(name, description);
@@ -72,7 +72,7 @@ public class OptionHandler {
 		for (String alias : aliases) {
 			if (recognizedOptions.containsKey(alias)) {
 				throw new IllegalArgumentException(
-						"Option -" + alias + " is already defined.");
+						"Option key -" + alias + " duplicated.");
 			}
 		}
 
