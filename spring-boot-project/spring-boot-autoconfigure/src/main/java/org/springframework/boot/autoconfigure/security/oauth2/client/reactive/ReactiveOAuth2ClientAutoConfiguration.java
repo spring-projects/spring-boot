@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
@@ -52,6 +54,7 @@ import org.springframework.security.oauth2.client.web.server.ServerOAuth2Authori
 @Configuration
 @AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
+@Conditional(ReactiveOAuth2ClientAutoConfiguration.NonServletApplicationCondition.class)
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, ClientRegistration.class })
 public class ReactiveOAuth2ClientAutoConfiguration {
 
@@ -87,6 +90,19 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 			ReactiveOAuth2AuthorizedClientService authorizedClientService) {
 		return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(
 				authorizedClientService);
+	}
+
+	static class NonServletApplicationCondition extends NoneNestedConditions {
+
+		NonServletApplicationCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+		static class ServletApplicationCondition {
+
+		}
+
 	}
 
 }
