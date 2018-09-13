@@ -127,7 +127,7 @@ public class InitCommand extends OptionParsingCommand {
 			this.target = option(Arrays.asList("target"), "URL of the service to use")
 					.withRequiredArg()
 					.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
-			this.listCapabilities = option(Arrays.asList("list", "l"),
+			this.listCapabilities = option(Arrays.asList("list"),
 					"List the capabilities of the service. Use it to discover the "
 							+ "dependencies and the types that are available");
 			projectGenerationOptions();
