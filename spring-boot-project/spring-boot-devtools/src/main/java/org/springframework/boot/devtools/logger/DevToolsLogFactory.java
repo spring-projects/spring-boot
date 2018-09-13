@@ -19,6 +19,8 @@ package org.springframework.boot.devtools.logger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.context.ApplicationListener;
@@ -32,21 +34,21 @@ import org.springframework.data.domain.AbstractPageRequest;
  */
 public final class DevToolsLogFactory {
 
-	private static final Map<DeferredLog, Class<?>> logs = new LinkedHashMap<>();
+	private static final Map<Log, Class<?>> logs = new LinkedHashMap<>();
 
 	private DevToolsLogFactory() {
 	}
 
 	/**
-	 * Get a {@link DeferredLog} instance for the specified source that will be
-	 * automatically {@link DeferredLog#switchTo(Class) switched} then the
-	 * {@link AbstractPageRequest context is prepared}.
+	 * Get a {@link Log} instance for the specified source that will be automatically
+	 * {@link DeferredLog#switchTo(Class) switched} then the {@link AbstractPageRequest
+	 * context is prepared}.
 	 * @param source the source for logging
 	 * @return a {@link DeferredLog} instance
 	 */
-	public static DeferredLog getLog(Class<?> source) {
+	public static Log getLog(Class<?> source) {
 		synchronized (logs) {
-			DeferredLog log = new DeferredLog();
+			Log log = new DeferredLog();
 			logs.put(log, source);
 			return log;
 		}
@@ -60,7 +62,11 @@ public final class DevToolsLogFactory {
 		@Override
 		public void onApplicationEvent(ApplicationPreparedEvent event) {
 			synchronized (logs) {
-				logs.forEach((log, source) -> log.switchTo(source));
+				logs.forEach((log, source) -> {
+					if (log instanceof DeferredLog) {
+						((DeferredLog) log).switchTo(source);
+					}
+				});
 				logs.clear();
 			}
 		}

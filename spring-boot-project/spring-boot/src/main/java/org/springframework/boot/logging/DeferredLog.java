@@ -192,9 +192,7 @@ public class DeferredLog implements Log {
 	 * @param source the source logger
 	 * @param destination the destination logger class
 	 * @return the destination
-	 * @deprecated since 2.1.0 in favor of {@link #switchTo(Class)}
 	 */
-	@Deprecated
 	public static Log replay(Log source, Class<?> destination) {
 		return replay(source, LogFactory.getLog(destination));
 	}
@@ -204,9 +202,7 @@ public class DeferredLog implements Log {
 	 * @param source the source logger
 	 * @param destination the destination logger
 	 * @return the destination
-	 * @deprecated since 2.1.0 in favor of {@link #switchTo(Log)}
 	 */
-	@Deprecated
 	public static Log replay(Log source, Log destination) {
 		if (source instanceof DeferredLog) {
 			((DeferredLog) source).replayTo(destination);
