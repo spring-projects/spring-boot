@@ -34,6 +34,7 @@ import joptsimple.HelpFormatter;
 import joptsimple.OptionDescriptor;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
 
 import org.springframework.boot.cli.command.OptionParsingCommand;
@@ -55,11 +56,27 @@ public class OptionHandler {
 	private Collection<OptionHelp> optionHelp;
 
 	public OptionSpecBuilder option(String name, String description) {
-		return getParser().accepts(name, description);
+		OptionParser parser = getParser();
+		if (parser.recognizedOptions().containsKey(name)) {
+			throw new IllegalArgumentException(
+					"Option [" + name + "] is already defined.");
+		}
+
+		return parser.accepts(name, description);
 	}
 
 	public OptionSpecBuilder option(Collection<String> aliases, String description) {
-		return getParser().acceptsAll(aliases, description);
+		OptionParser parser = getParser();
+
+		Map<String, OptionSpec<?>> recognizedOptions = parser.recognizedOptions();
+		for (String alias : aliases) {
+			if (recognizedOptions.containsKey(alias)) {
+				throw new IllegalArgumentException(
+						"Option -" + alias + " is already defined.");
+			}
+		}
+
+		return parser.acceptsAll(aliases, description);
 	}
 
 	public OptionParser getParser() {
