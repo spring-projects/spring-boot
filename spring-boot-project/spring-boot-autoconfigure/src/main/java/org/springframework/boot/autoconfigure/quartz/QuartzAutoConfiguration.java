@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.quartz;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -72,12 +73,12 @@ public class QuartzAutoConfiguration {
 	private final ApplicationContext applicationContext;
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
-			ObjectProvider<List<SchedulerFactoryBeanCustomizer>> customizers,
+			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
 			ObjectProvider<JobDetail[]> jobDetails,
 			ObjectProvider<Map<String, Calendar>> calendars,
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
-		this.customizers = customizers.getIfAvailable();
+		this.customizers = customizers.stream().collect(Collectors.toList());
 		this.jobDetails = jobDetails.getIfAvailable();
 		this.calendars = calendars.getIfAvailable();
 		this.triggers = triggers.getIfAvailable();

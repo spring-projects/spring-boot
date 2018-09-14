@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,14 +71,13 @@ public class Neo4jDataAutoConfiguration {
 	@Bean
 	public SessionFactory sessionFactory(org.neo4j.ogm.config.Configuration configuration,
 			ApplicationContext applicationContext,
-			ObjectProvider<List<EventListener>> eventListeners) {
+			ObjectProvider<EventListener> eventListeners) {
 		SessionFactory sessionFactory = new SessionFactory(configuration,
 				getPackagesToScan(applicationContext));
-		List<EventListener> providedEventListeners = eventListeners.getIfAvailable();
-		if (providedEventListeners != null) {
-			for (EventListener eventListener : providedEventListeners) {
-				sessionFactory.register(eventListener);
-			}
+		List<EventListener> providedEventListeners = eventListeners.stream()
+				.collect(Collectors.toList());
+		for (EventListener eventListener : providedEventListeners) {
+			sessionFactory.register(eventListener);
 		}
 		return sessionFactory;
 	}

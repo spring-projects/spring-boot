@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jersey;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
@@ -99,10 +100,10 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	private String path;
 
 	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
-			ObjectProvider<List<ResourceConfigCustomizer>> customizers) {
+			ObjectProvider<ResourceConfigCustomizer> customizers) {
 		this.jersey = jersey;
 		this.config = config;
-		this.customizers = customizers.getIfAvailable();
+		this.customizers = customizers.stream().collect(Collectors.toList());
 	}
 
 	@PostConstruct
