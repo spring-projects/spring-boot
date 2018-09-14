@@ -34,8 +34,9 @@ import org.springframework.core.ResolvableType;
 
 /**
  * {@link ApplicationContextInitializer} that writes the {@link ConditionEvaluationReport}
- * to the log. Reports are logged at the {@link LogLevel#DEBUG DEBUG} level. A crash report
- * triggers an info output suggesting the user runs again with debug enabled to display the report.
+ * to the log. Reports are logged at the {@link LogLevel#DEBUG DEBUG} level. A crash
+ * report triggers an info output suggesting the user runs again with debug enabled to
+ * display the report.
  * <p>
  * This initializer is not intended to be shared across multiple application context
  * instances.
