@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -125,18 +126,19 @@ public class WebFluxAutoConfiguration {
 
 		public WebFluxConfig(ResourceProperties resourceProperties,
 				WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<List<HandlerMethodArgumentResolver>> resolvers,
-				ObjectProvider<List<CodecCustomizer>> codecCustomizers,
+				ObjectProvider<HandlerMethodArgumentResolver> resolvers,
+				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
-				ObjectProvider<List<ViewResolver>> viewResolvers) {
+				ObjectProvider<ViewResolver> viewResolvers) {
 			this.resourceProperties = resourceProperties;
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
-			this.argumentResolvers = resolvers.getIfAvailable();
-			this.codecCustomizers = codecCustomizers.getIfAvailable();
+			this.argumentResolvers = resolvers.stream().collect(Collectors.toList());
+			this.codecCustomizers = codecCustomizers.stream()
+					.collect(Collectors.toList());
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer
 					.getIfAvailable();
-			this.viewResolvers = viewResolvers.getIfAvailable();
+			this.viewResolvers = viewResolvers.stream().collect(Collectors.toList());
 		}
 
 		@Override

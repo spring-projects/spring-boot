@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -56,9 +57,10 @@ public class WebClientAutoConfiguration {
 	private final WebClient.Builder webClientBuilder;
 
 	public WebClientAutoConfiguration(
-			ObjectProvider<List<WebClientCustomizer>> customizerProvider) {
+			ObjectProvider<WebClientCustomizer> customizerProvider) {
 		this.webClientBuilder = WebClient.builder();
-		List<WebClientCustomizer> customizers = customizerProvider.getIfAvailable();
+		List<WebClientCustomizer> customizers = customizerProvider.stream()
+				.collect(Collectors.toList());
 		if (!CollectionUtils.isEmpty(customizers)) {
 			customizers = new ArrayList<>(customizers);
 			AnnotationAwareOrderComparator.sort(customizers);

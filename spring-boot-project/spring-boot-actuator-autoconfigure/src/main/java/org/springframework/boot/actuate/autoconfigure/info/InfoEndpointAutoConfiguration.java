@@ -16,8 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
@@ -42,9 +41,8 @@ public class InfoEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnEnabledEndpoint
-	public InfoEndpoint infoEndpoint(
-			ObjectProvider<List<InfoContributor>> infoContributors) {
-		return new InfoEndpoint(infoContributors.getIfAvailable(Collections::emptyList));
+	public InfoEndpoint infoEndpoint(ObjectProvider<InfoContributor> infoContributors) {
+		return new InfoEndpoint(infoContributors.stream().collect(Collectors.toList()));
 	}
 
 }

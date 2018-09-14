@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.admin;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.management.MalformedObjectNameException;
 
@@ -62,8 +63,8 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	private final Environment environment;
 
 	public SpringApplicationAdminJmxAutoConfiguration(
-			ObjectProvider<List<MBeanExporter>> mbeanExporters, Environment environment) {
-		this.mbeanExporters = mbeanExporters.getIfAvailable();
+			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment) {
+		this.mbeanExporters = mbeanExporters.stream().collect(Collectors.toList());
 		this.environment = environment;
 	}
 

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -48,11 +49,11 @@ public class RestTemplateAutoConfiguration {
 
 	private final ObjectProvider<HttpMessageConverters> messageConverters;
 
-	private final ObjectProvider<List<RestTemplateCustomizer>> restTemplateCustomizers;
+	private final ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers;
 
 	public RestTemplateAutoConfiguration(
 			ObjectProvider<HttpMessageConverters> messageConverters,
-			ObjectProvider<List<RestTemplateCustomizer>> restTemplateCustomizers) {
+			ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers) {
 		this.messageConverters = messageConverters;
 		this.restTemplateCustomizers = restTemplateCustomizers;
 	}
@@ -65,8 +66,8 @@ public class RestTemplateAutoConfiguration {
 		if (converters != null) {
 			builder = builder.messageConverters(converters.getConverters());
 		}
-		List<RestTemplateCustomizer> customizers = this.restTemplateCustomizers
-				.getIfAvailable();
+		List<RestTemplateCustomizer> customizers = this.restTemplateCustomizers.stream()
+				.collect(Collectors.toList());
 		if (!CollectionUtils.isEmpty(customizers)) {
 			customizers = new ArrayList<>(customizers);
 			AnnotationAwareOrderComparator.sort(customizers);

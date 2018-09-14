@@ -17,9 +17,8 @@
 package org.springframework.boot.autoconfigure.liquibase;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
@@ -75,9 +74,9 @@ public class LiquibaseAutoConfiguration {
 
 	@Bean
 	public LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(
-			ObjectProvider<List<SpringLiquibase>> liquibases) {
+			ObjectProvider<SpringLiquibase> liquibases) {
 		return new LiquibaseSchemaManagementProvider(
-				liquibases.getIfAvailable(Collections::emptyList));
+				liquibases.stream().collect(Collectors.toList()));
 	}
 
 	@Configuration
