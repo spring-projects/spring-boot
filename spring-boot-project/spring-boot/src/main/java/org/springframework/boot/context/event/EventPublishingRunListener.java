@@ -77,7 +77,8 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	@Override
 	public void contextPrepared(ConfigurableApplicationContext context) {
-
+		this.initialMulticaster.multicastEvent(new ApplicationContextInitializedEvent(
+				this.application, this.args, context));
 	}
 
 	@Override

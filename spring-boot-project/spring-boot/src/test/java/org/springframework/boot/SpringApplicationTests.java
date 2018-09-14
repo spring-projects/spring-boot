@@ -49,6 +49,7 @@ import org.springframework.beans.factory.support.BeanDefinitionOverrideException
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -383,6 +384,8 @@ public class SpringApplicationTests {
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartingEvent.class));
 		inOrder.verify(listener)
 				.onApplicationEvent(isA(ApplicationEnvironmentPreparedEvent.class));
+		inOrder.verify(listener)
+				.onApplicationEvent(isA(ApplicationContextInitializedEvent.class));
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationPreparedEvent.class));
 		inOrder.verify(listener).onApplicationEvent(isA(ContextRefreshedEvent.class));
 		inOrder.verify(listener).onApplicationEvent(isA(ApplicationStartedEvent.class));
@@ -1000,6 +1003,7 @@ public class SpringApplicationTests {
 		catch (ApplicationContextException ex) {
 			verifyListenerEvents(listener, ApplicationStartingEvent.class,
 					ApplicationEnvironmentPreparedEvent.class,
+					ApplicationContextInitializedEvent.class,
 					ApplicationPreparedEvent.class, ApplicationFailedEvent.class);
 		}
 	}
@@ -1019,6 +1023,7 @@ public class SpringApplicationTests {
 		catch (BeanCreationException ex) {
 			verifyListenerEvents(listener, ApplicationStartingEvent.class,
 					ApplicationEnvironmentPreparedEvent.class,
+					ApplicationContextInitializedEvent.class,
 					ApplicationPreparedEvent.class, ApplicationFailedEvent.class);
 		}
 	}
