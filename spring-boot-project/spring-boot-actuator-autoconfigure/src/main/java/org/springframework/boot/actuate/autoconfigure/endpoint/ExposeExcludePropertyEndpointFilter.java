@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +35,7 @@ import org.springframework.util.Assert;
  * {@link EndpointFilter} that will filter endpoints based on {@code include} and
  * {@code exclude} properties.
  *
- * @param <E> The endpoint type
+ * @param <E> the endpoint type
  * @author Phillip Webb
  * @since 2.0.0
  */
@@ -83,7 +82,7 @@ public class ExposeExcludePropertyEndpointFilter<E extends ExposableEndpoint<?>>
 			return Collections.emptySet();
 		}
 		return items.stream().map((item) -> item.toLowerCase(Locale.ENGLISH))
-				.collect(Collectors.toCollection(HashSet::new));
+				.collect(Collectors.toSet());
 	}
 
 	@Override

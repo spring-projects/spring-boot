@@ -20,6 +20,7 @@ import javax.net.SocketFactory;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.client.MongoClients;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -49,32 +50,38 @@ public class MongoAutoConfigurationTests {
 
 	@Test
 	public void optionsAdded() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.host:localhost")
-				.withUserConfiguration(OptionsConfig.class)
+		this.contextRunner.withUserConfiguration(OptionsConfig.class)
 				.run((context) -> assertThat(context.getBean(MongoClient.class)
 						.getMongoClientOptions().getSocketTimeout()).isEqualTo(300));
 	}
 
 	@Test
 	public void optionsAddedButNoHost() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(OptionsConfig.class)
+		this.contextRunner.withUserConfiguration(OptionsConfig.class)
 				.run((context) -> assertThat(context.getBean(MongoClient.class)
 						.getMongoClientOptions().getSocketTimeout()).isEqualTo(300));
 	}
 
 	@Test
 	public void optionsSslConfig() {
-		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(SslOptionsConfig.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(SslOptionsConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
 					MongoClient mongo = context.getBean(MongoClient.class);
 					MongoClientOptions options = mongo.getMongoClientOptions();
 					assertThat(options.isSslEnabled()).isTrue();
 					assertThat(options.getSocketFactory())
 							.isSameAs(context.getBean("mySocketFactory"));
+				});
+	}
+
+	@Test
+	public void doesNotCreateMongoClientWhenAlreadyDefined() {
+		this.contextRunner.withUserConfiguration(FallbackMongoClientConfig.class)
+				.run((context) -> {
+					assertThat(context).doesNotHaveBean(MongoClient.class);
+					assertThat(context)
+							.hasSingleBean(com.mongodb.client.MongoClient.class);
 				});
 	}
 
@@ -100,6 +107,15 @@ public class MongoAutoConfigurationTests {
 		@Bean
 		public SocketFactory mySocketFactory() {
 			return mock(SocketFactory.class);
+		}
+
+	}
+
+	static class FallbackMongoClientConfig {
+
+		@Bean
+		com.mongodb.client.MongoClient fallbackMongoClient() {
+			return MongoClients.create();
 		}
 
 	}

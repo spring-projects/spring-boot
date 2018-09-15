@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.activemq.artemis.core.remoting.impl.invm.TransportConstants;
 
-import org.springframework.boot.autoconfigure.jms.activemq.PooledConnectionFactoryProperties;
+import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -65,7 +65,7 @@ public class ArtemisProperties {
 	private final Embedded embedded = new Embedded();
 
 	@NestedConfigurationProperty
-	private final PooledConnectionFactoryProperties pool = new PooledConnectionFactoryProperties();
+	private final JmsPoolConnectionFactoryProperties pool = new JmsPoolConnectionFactoryProperties();
 
 	public ArtemisMode getMode() {
 		return this.mode;
@@ -111,7 +111,7 @@ public class ArtemisProperties {
 		return this.embedded;
 	}
 
-	public PooledConnectionFactoryProperties getPool() {
+	public JmsPoolConnectionFactoryProperties getPool() {
 		return this.pool;
 	}
 

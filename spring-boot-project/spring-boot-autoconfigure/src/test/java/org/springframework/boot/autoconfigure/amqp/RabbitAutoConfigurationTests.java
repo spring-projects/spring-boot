@@ -19,10 +19,14 @@ package org.springframework.boot.autoconfigure.amqp;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.SslContextFactory;
+import com.rabbitmq.client.TrustEverythingTrustManager;
 import org.aopalliance.aop.Advice;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +66,7 @@ import org.springframework.retry.interceptor.MethodInvocationRecoverer;
 import org.springframework.retry.policy.NeverRetryPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -320,6 +325,17 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRabbitTemplateDefaultQueue() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.template.queue:default-queue")
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					assertThat(ReflectionTestUtils.getField(rabbitTemplate, "queue"))
+							.isEqualTo("default-queue");
+				});
+	}
+
+	@Test
 	public void testRabbitTemplateMandatory() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.template.mandatory:true")
@@ -453,7 +469,8 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.listener.simple.prefetch:40",
 						"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
 						"spring.rabbitmq.listener.simple.idleEventInterval:5",
-						"spring.rabbitmq.listener.simple.transactionSize:20")
+						"spring.rabbitmq.listener.simple.transactionSize:20",
+						"spring.rabbitmq.listener.simple.missingQueuesFatal:false")
 				.run((context) -> {
 					SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 							.getBean("rabbitListenerContainerFactory",
@@ -464,6 +481,8 @@ public class RabbitAutoConfigurationTests {
 					assertThat(dfa.getPropertyValue("maxConcurrentConsumers"))
 							.isEqualTo(10);
 					assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
+					assertThat(dfa.getPropertyValue("missingQueuesFatal"))
+							.isEqualTo(false);
 					checkCommonProps(context, dfa);
 				});
 	}
@@ -484,7 +503,8 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.listener.direct.consumers-per-queue:5",
 						"spring.rabbitmq.listener.direct.prefetch:40",
 						"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
-						"spring.rabbitmq.listener.direct.idleEventInterval:5")
+						"spring.rabbitmq.listener.direct.idleEventInterval:5",
+						"spring.rabbitmq.listener.direct.missingQueuesFatal:true")
 				.run((context) -> {
 					DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 							.getBean("rabbitListenerContainerFactory",
@@ -492,6 +512,8 @@ public class RabbitAutoConfigurationTests {
 					DirectFieldAccessor dfa = new DirectFieldAccessor(
 							rabbitListenerContainerFactory);
 					assertThat(dfa.getPropertyValue("consumersPerQueue")).isEqualTo(5);
+					assertThat(dfa.getPropertyValue("missingQueuesFatal"))
+							.isEqualTo(true);
 					checkCommonProps(context, dfa);
 				});
 	}
@@ -750,6 +772,45 @@ public class RabbitAutoConfigurationTests {
 						"spring.rabbitmq.ssl.trustStoreType=jks",
 						"spring.rabbitmq.ssl.trustStorePassword=secret")
 				.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	public void enableSslWithValidateServerCertificateFalse() throws Exception {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
+						"spring.rabbitmq.ssl.validateServerCertificate=false")
+				.run((context) -> {
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					TrustManager trustManager = getTrustManager(rabbitConnectionFactory);
+					assertThat(trustManager)
+							.isInstanceOf(TrustEverythingTrustManager.class);
+				});
+	}
+
+	@Test
+	public void enableSslWithValidateServerCertificateDefault() throws Exception {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true").run((context) -> {
+					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(
+							context);
+					TrustManager trustManager = getTrustManager(rabbitConnectionFactory);
+					assertThat(trustManager)
+							.isNotInstanceOf(TrustEverythingTrustManager.class);
+				});
+	}
+
+	private TrustManager getTrustManager(
+			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory) {
+		SslContextFactory sslContextFactory = (SslContextFactory) ReflectionTestUtils
+				.getField(rabbitConnectionFactory, "sslContextFactory");
+		SSLContext sslContext = sslContextFactory.create("connection");
+		Object spi = ReflectionTestUtils.getField(sslContext, "contextSpi");
+		Object trustManager = ReflectionTestUtils.getField(spi, "trustManager");
+		while (trustManager.getClass().getName().endsWith("Wrapper")) {
+			trustManager = ReflectionTestUtils.getField(trustManager, "tm");
+		}
+		return (TrustManager) trustManager;
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory(

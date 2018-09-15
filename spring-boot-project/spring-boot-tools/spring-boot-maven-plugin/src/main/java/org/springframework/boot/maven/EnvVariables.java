@@ -49,7 +49,7 @@ class EnvVariables {
 	}
 
 	private static String getValue(String value) {
-		return (value != null ? value : "");
+		return (value != null) ? value : "";
 	}
 
 	public Map<String, String> asMap() {

@@ -38,7 +38,7 @@ public class HibernateSettings {
 	}
 
 	public String getDdlAuto() {
-		return (this.ddlAuto != null ? this.ddlAuto.get() : null);
+		return (this.ddlAuto != null) ? this.ddlAuto.get() : null;
 	}
 
 	public HibernateSettings hibernatePropertiesCustomizers(

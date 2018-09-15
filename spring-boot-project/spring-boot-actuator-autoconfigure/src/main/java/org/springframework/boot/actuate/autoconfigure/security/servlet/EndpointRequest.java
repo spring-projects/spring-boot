@@ -33,7 +33,8 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
+import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -137,28 +138,45 @@ public final class EndpointRequest {
 
 		private RequestMatcher createDelegate(WebApplicationContext context) {
 			try {
-				Set<String> servletPaths = getServletPaths(context);
-				RequestMatcherFactory requestMatcherFactory = new RequestMatcherFactory(
-						servletPaths);
-				return createDelegate(context, requestMatcherFactory);
+				String pathPrefix = getPathPrefix(context);
+				return createDelegate(context, new RequestMatcherFactory(pathPrefix));
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 				return EMPTY_MATCHER;
 			}
 		}
 
-		private Set<String> getServletPaths(WebApplicationContext context) {
+		private String getPathPrefix(WebApplicationContext context) {
 			try {
-				return context.getBean(DispatcherServletPathProvider.class)
-						.getServletPaths();
+				return context.getBean(DispatcherServletPath.class).getPrefix();
 			}
 			catch (NoSuchBeanDefinitionException ex) {
-				return Collections.singleton("");
+				return "";
 			}
 		}
 
 		protected abstract RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory);
+
+		protected List<RequestMatcher> getLinksMatchers(
+				RequestMatcherFactory requestMatcherFactory,
+				RequestMatcherProvider matcherProvider, String basePath) {
+			List<RequestMatcher> linksMatchers = new ArrayList<>();
+			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, basePath));
+			linksMatchers
+					.add(requestMatcherFactory.antPath(matcherProvider, basePath, "/"));
+			return linksMatchers;
+		}
+
+		protected RequestMatcherProvider getRequestMatcherProvider(
+				WebApplicationContext context) {
+			try {
+				return context.getBean(RequestMatcherProvider.class);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return AntPathRequestMatcher::new;
+			}
+		}
 
 	}
 
@@ -215,6 +233,7 @@ public final class EndpointRequest {
 				RequestMatcherFactory requestMatcherFactory) {
 			PathMappedEndpoints pathMappedEndpoints = context
 					.getBean(PathMappedEndpoints.class);
+			RequestMatcherProvider matcherProvider = getRequestMatcherProvider(context);
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
 				paths.addAll(pathMappedEndpoints.getAllPaths());
@@ -222,11 +241,11 @@ public final class EndpointRequest {
 			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			List<RequestMatcher> delegateMatchers = getDelegateMatchers(
-					requestMatcherFactory, paths);
-			if (this.includeLinks
-					&& StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.addAll(
-						requestMatcherFactory.antPath(pathMappedEndpoints.getBasePath()));
+					requestMatcherFactory, matcherProvider, paths);
+			String basePath = pathMappedEndpoints.getBasePath();
+			if (this.includeLinks && StringUtils.hasText(basePath)) {
+				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory,
+						matcherProvider, basePath));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
@@ -256,10 +275,10 @@ public final class EndpointRequest {
 		}
 
 		private List<RequestMatcher> getDelegateMatchers(
-				RequestMatcherFactory requestMatcherFactory, Set<String> paths) {
-			return paths.stream()
-					.flatMap(
-							(path) -> requestMatcherFactory.antPath(path, "/**").stream())
+				RequestMatcherFactory requestMatcherFactory,
+				RequestMatcherProvider matcherProvider, Set<String> paths) {
+			return paths.stream().map(
+					(path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
 					.collect(Collectors.toList());
 		}
 
@@ -275,10 +294,10 @@ public final class EndpointRequest {
 				RequestMatcherFactory requestMatcherFactory) {
 			WebEndpointProperties properties = context
 					.getBean(WebEndpointProperties.class);
-			if (StringUtils.hasText(properties.getBasePath())) {
-				List<RequestMatcher> matchers = requestMatcherFactory
-						.antPath(properties.getBasePath());
-				return new OrRequestMatcher(matchers);
+			String basePath = properties.getBasePath();
+			if (StringUtils.hasText(basePath)) {
+				return new OrRequestMatcher(getLinksMatchers(requestMatcherFactory,
+						getRequestMatcherProvider(context), basePath));
 			}
 			return EMPTY_MATCHER;
 		}
@@ -290,19 +309,19 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		private final Set<String> servletPaths = new LinkedHashSet<>();
+		private final String prefix;
 
-		RequestMatcherFactory(Set<String> servletPaths) {
-			this.servletPaths.addAll(servletPaths);
+		RequestMatcherFactory(String prefix) {
+			this.prefix = prefix;
 		}
 
-		List<RequestMatcher> antPath(String... parts) {
-			return this.servletPaths.stream()
-					.map((p) -> (StringUtils.hasText(p) && !p.equals("/") ? p : ""))
-					.distinct()
-					.map((path) -> Arrays.stream(parts)
-							.collect(Collectors.joining("", path, "")))
-					.map(AntPathRequestMatcher::new).collect(Collectors.toList());
+		public RequestMatcher antPath(RequestMatcherProvider matcherProvider,
+				String... parts) {
+			StringBuilder pattern = new StringBuilder(this.prefix);
+			for (String part : parts) {
+				pattern.append(part);
+			}
+			return matcherProvider.getRequestMatcher(pattern.toString());
 		}
 
 	}

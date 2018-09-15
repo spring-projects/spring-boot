@@ -38,8 +38,8 @@ class TraceableServerHttpResponse implements TraceableResponse {
 
 	@Override
 	public int getStatus() {
-		return (this.response.getStatusCode() != null
-				? this.response.getStatusCode().value() : 200);
+		return (this.response.getStatusCode() != null)
+				? this.response.getStatusCode().value() : 200;
 	}
 
 	@Override

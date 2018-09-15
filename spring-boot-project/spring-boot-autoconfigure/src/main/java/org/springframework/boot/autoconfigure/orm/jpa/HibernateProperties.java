@@ -127,7 +127,7 @@ public class HibernateProperties {
 		if (ddlAuto != null) {
 			return ddlAuto;
 		}
-		return (this.ddlAuto != null ? this.ddlAuto : defaultDdlAuto.get());
+		return (this.ddlAuto != null) ? this.ddlAuto : defaultDdlAuto.get();
 	}
 
 	public static class Naming {

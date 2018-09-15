@@ -132,10 +132,10 @@ public class Binder {
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
-		this.placeholdersResolver = (placeholdersResolver != null ? placeholdersResolver
-				: PlaceholdersResolver.NONE);
-		this.conversionService = (conversionService != null ? conversionService
-				: ApplicationConversionService.getSharedInstance());
+		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver
+				: PlaceholdersResolver.NONE;
+		this.conversionService = (conversionService != null) ? conversionService
+				: ApplicationConversionService.getSharedInstance();
 		this.propertyEditorInitializer = propertyEditorInitializer;
 	}
 
@@ -204,7 +204,7 @@ public class Binder {
 			BindHandler handler) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(target, "Target must not be null");
-		handler = (handler != null ? handler : BindHandler.DEFAULT);
+		handler = (handler != null) ? handler : BindHandler.DEFAULT;
 		Context context = new Context();
 		T bound = bind(name, target, handler, context, false);
 		return BindResult.of(bound);

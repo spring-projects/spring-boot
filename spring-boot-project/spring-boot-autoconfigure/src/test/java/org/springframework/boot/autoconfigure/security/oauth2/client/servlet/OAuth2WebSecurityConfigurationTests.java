@@ -39,7 +39,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationCodeGrantFilter;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -68,7 +68,28 @@ public class OAuth2WebSecurityConfigurationTests {
 					ClientRegistrationRepository expected = context
 							.getBean(ClientRegistrationRepository.class);
 					ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils
-							.getField(getAuthCodeFilters(context).get(0),
+							.getField(
+									getFilters(context,
+											OAuth2LoginAuthenticationFilter.class).get(0),
+									"clientRegistrationRepository");
+					assertThat(isEqual(expected.findByRegistrationId("first"),
+							actual.findByRegistrationId("first"))).isTrue();
+					assertThat(isEqual(expected.findByRegistrationId("second"),
+							actual.findByRegistrationId("second"))).isTrue();
+				});
+	}
+
+	@Test
+	public void securityConfigurerConfiguresAuthorizationCode() {
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
+					ClientRegistrationRepository expected = context
+							.getBean(ClientRegistrationRepository.class);
+					ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils
+							.getField(getFilters(context,
+									OAuth2AuthorizationCodeGrantFilter.class).get(0),
 									"clientRegistrationRepository");
 					assertThat(isEqual(expected.findByRegistrationId("first"),
 							actual.findByRegistrationId("first"))).isTrue();
@@ -79,10 +100,14 @@ public class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	public void securityConfigurerBacksOffWhenClientRegistrationBeanAbsent() {
-		this.contextRunner
-				.withUserConfiguration(TestConfig.class,
-						OAuth2WebSecurityConfiguration.class)
-				.run((context) -> assertThat(getAuthCodeFilters(context)).isEmpty());
+		this.contextRunner.withUserConfiguration(TestConfig.class,
+				OAuth2WebSecurityConfiguration.class).run((context) -> {
+					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class))
+							.isEmpty();
+					assertThat(
+							getFilters(context, OAuth2AuthorizationCodeGrantFilter.class))
+									.isEmpty();
+				});
 	}
 
 	@Test
@@ -107,7 +132,11 @@ public class OAuth2WebSecurityConfigurationTests {
 	public void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent() {
 		this.contextRunner.withUserConfiguration(TestWebSecurityConfigurerConfig.class,
 				OAuth2WebSecurityConfiguration.class).run((context) -> {
-					assertThat(getAuthCodeFilters(context)).isEmpty();
+					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class))
+							.isEmpty();
+					assertThat(
+							getFilters(context, OAuth2AuthorizationCodeGrantFilter.class))
+									.isEmpty();
 					assertThat(context).getBean(OAuth2AuthorizedClientService.class)
 							.isNotNull();
 				});
@@ -137,19 +166,14 @@ public class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Filter> getAuthCodeFilters(AssertableApplicationContext context) {
+	private List<Filter> getFilters(AssertableApplicationContext context,
+			Class<? extends Filter> filter) {
 		FilterChainProxy filterChain = (FilterChainProxy) context
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
 		List<Filter> filters = (List<Filter>) ReflectionTestUtils
 				.getField(filterChains.get(0), "filters");
-		List<Filter> oauth2Filters = filters.stream()
-				.filter((f) -> f instanceof OAuth2LoginAuthenticationFilter
-						|| f instanceof OAuth2AuthorizationRequestRedirectFilter)
-				.collect(Collectors.toList());
-		return oauth2Filters.stream()
-				.filter((f) -> f instanceof OAuth2LoginAuthenticationFilter)
-				.collect(Collectors.toList());
+		return filters.stream().filter(filter::isInstance).collect(Collectors.toList());
 	}
 
 	private boolean isEqual(ClientRegistration reg1, ClientRegistration reg2) {

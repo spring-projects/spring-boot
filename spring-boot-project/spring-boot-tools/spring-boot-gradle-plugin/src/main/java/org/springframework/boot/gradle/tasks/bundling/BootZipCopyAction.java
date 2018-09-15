@@ -53,7 +53,7 @@ import org.springframework.boot.loader.tools.FileUtils;
  */
 class BootZipCopyAction implements CopyAction {
 
-	private static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980,
+	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980,
 			Calendar.FEBRUARY, 1, 0, 0, 0).getTimeInMillis();
 
 	private final File output;
@@ -119,7 +119,6 @@ class BootZipCopyAction implements CopyAction {
 		return () -> true;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Spec<FileTreeElement> createExclusionSpec(
 			Spec<FileTreeElement> loaderEntries) {
 		return Specs.union(loaderEntries, this.exclusions);
@@ -284,8 +283,8 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private long getTime(FileCopyDetails details) {
-			return (this.preserveFileTimestamps ? details.getLastModified()
-					: CONSTANT_TIME_FOR_ZIP_ENTRIES);
+			return this.preserveFileTimestamps ? details.getLastModified()
+					: CONSTANT_TIME_FOR_ZIP_ENTRIES;
 		}
 
 	}

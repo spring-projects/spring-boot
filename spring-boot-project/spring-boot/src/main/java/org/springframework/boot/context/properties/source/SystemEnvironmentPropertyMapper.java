@@ -100,7 +100,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	private CharSequence processElementValue(CharSequence value) {
 		String result = value.toString().toLowerCase(Locale.ENGLISH);
-		return (isNumber(result) ? "[" + result + "]" : result);
+		return isNumber(result) ? "[" + result + "]" : result;
 	}
 
 	private static boolean isNumber(String string) {

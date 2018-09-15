@@ -58,6 +58,8 @@ defaults. The parent project provides the following features:
 the spring-boot-dependencies pom, that manages the versions of common dependencies. This
 dependency management lets you omit <version> tags for those dependencies when used in
 your own pom.
+* An execution of the {spring-boot-maven-plugin-site}/repackage-mojo.html[`repackage`
+goal] with a `repackage` execution id.
 * Sensible
 https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource
 filtering].
@@ -583,7 +585,7 @@ NOTE: `@SpringBootApplication` also provides aliases to customize the attributes
 
 [NOTE]
 ====
-None of these features are mandatory and you may chose to replace this single annotation
+None of these features are mandatory and you may choose to replace this single annotation
 by any of the features that it enables. For instance, you may not want to use component
 scan in your application:
 
@@ -780,6 +782,16 @@ Cache options are usually configured by settings in your `application.properties
 For example, Thymeleaf offers the `spring.thymeleaf.cache` property. Rather than needing
 to set these properties manually, the `spring-boot-devtools` module automatically applies
 sensible development-time configuration.
+
+Because you need more information about web requests while developing Spring MVC and
+Spring WebFlux applications, developer tools will enable `DEBUG` logging for the `web`
+logging group. This will give you information about the incoming request, which handler is
+processing it, the response outcome, etc. If you wish to log all request details
+(including potentially sensitive information), you can turn on the
+`spring.http.log-request-details` configuration property.
+
+NOTE: If you don't want property defaults to be applied you can set
+`spring.devtools.add-properties` to `false` in your `application.properties`.
 
 TIP: For a complete list of the properties that are applied by the devtools, see
 {sc-spring-boot-devtools}/env/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
@@ -982,7 +994,7 @@ authors.
 The `spring-boot-devtools` module includes an embedded LiveReload server that can be used
 to trigger a browser refresh when a resource is changed. LiveReload browser extensions
 are freely available for Chrome, Firefox and Safari from
-https://livereload.com/extensions/[livereload.com].
+http://livereload.com/extensions/[livereload.com].
 
 If you do not want to start the LiveReload server when your application runs, you can set
 the `spring.devtools.livereload.enabled` property to `false`.

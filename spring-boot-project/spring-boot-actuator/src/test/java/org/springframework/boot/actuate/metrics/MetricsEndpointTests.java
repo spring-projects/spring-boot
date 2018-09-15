@@ -27,7 +27,11 @@ import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +42,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jon Schneider
  */
 public class MetricsEndpointTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private final MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT,
 			new MockClock());
@@ -107,6 +114,12 @@ public class MetricsEndpointTests {
 		assertThat(response.getName()).isEqualTo("counter");
 		assertThat(availableTagKeys(response)).isEmpty();
 		assertThat(getCount(response)).hasValue(2.0);
+	}
+
+	@Test
+	public void metricWithInvalidTag() {
+		this.thrown.expect(InvalidEndpointRequestException.class);
+		this.endpoint.metric("counter", Collections.singletonList("key"));
 	}
 
 	@Test

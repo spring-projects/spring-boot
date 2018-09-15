@@ -34,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
 		"APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
-		"GOOGLE-CLIENT-ID=my-google-client-id",
-		"GOOGLE-CLIENT-SECRET=my-google-client-secret" })
+		"YAHOO-CLIENT-ID=my-yahoo-client-id",
+		"YAHOO-CLIENT-SECRET=my-yahoo-client-secret" })
 public class SampleOAuth2ClientApplicationTests {
 
 	@LocalServerPort
@@ -53,13 +53,21 @@ public class SampleOAuth2ClientApplicationTests {
 	}
 
 	@Test
-	public void loginShouldHaveBothOAuthClientsToChooseFrom() {
+	public void loginShouldHaveBothOAuth2LoginClientsToChooseFrom() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("/oauth2/authorization/google");
+		assertThat(entity.getBody()).contains("/oauth2/authorization/yahoo");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-1");
 		assertThat(entity.getBody()).contains("/oauth2/authorization/github-client-2");
+	}
+
+	@Test
+	public void authorizationCodeClientIsPresent() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/login",
+				String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).contains("/oauth2/authorization/github-repos");
 	}
 
 }

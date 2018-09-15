@@ -835,7 +835,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 		@ReadOperation
 		public String read(@Nullable Principal principal) {
-			return (principal != null ? principal.getName() : "None");
+			return (principal != null) ? principal.getName() : "None";
 		}
 
 	}
@@ -856,7 +856,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		public String read(SecurityContext securityContext) {
 			Principal principal = securityContext.getPrincipal();
-			return (principal != null ? principal.getName() : "None");
+			return (principal != null) ? principal.getName() : "None";
 		}
 
 	}

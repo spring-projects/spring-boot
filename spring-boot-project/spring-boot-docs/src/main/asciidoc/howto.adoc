@@ -668,6 +668,10 @@ following:
 * `text/xml`
 * `text/plain`
 * `text/css`
+* `text/javascript`
+* `application/javascript`
+* `application/json`
+* `application/xml`
 
 You can configure this behavior by setting the `server.compression.mime-types` property.
 
@@ -763,7 +767,7 @@ additional dependency.
 
 Spring Boot manages the version for the
 `io.netty:netty-tcnative-boringssl-static` "uber jar", containing native libraries for
-all platforms. Developers can choose to import only the required dependendencies using
+all platforms. Developers can choose to import only the required dependencies using
 a classifier (see http://netty.io/wiki/forked-tomcat-native.html[the Netty official
 documentation]).
 
@@ -1326,12 +1330,22 @@ source for more details.
 
 [[howto-switch-off-the-spring-mvc-dispatcherservlet]]
 === Switch Off the Spring MVC DispatcherServlet
-Spring Boot wants to serve all content from the root of your application (`/`) down. If
-you would rather map your own servlet to that URL, you can do it. However, you may lose
-some of the other Boot MVC features. To add your own servlet and map it to the root
-resource, declare a `@Bean` of type `Servlet` and give it the special bean name,
-`dispatcherServlet`. (You can also create a bean of a different type with that name if
-you want to switch it off and not replace it.)
+By default, all content is served from the root of your application (`/`). If you
+would rather map to a different path, you can configure one as follows:
+
+[source,properties,indent=0,subs="verbatim"]
+----
+	spring.mvc.servlet.path=/acme
+----
+
+If you have additional servlets you can declare a `@Bean` of type `Servlet` or
+`ServletRegistrationBean` for each and Spring Boot will register them transparently to the
+container. Because servlets are registered that way, they can be mapped to a sub-context
+of the `DispatcherServlet` without invoking it.
+
+Configuring the `DispatcherServlet` yourself is unusual but if you really need to do it, a
+`@Bean` of type `DispatcherServletPath` must be provided as well to provide the path of
+your custom `DispatcherServlet`.
 
 
 
@@ -1404,6 +1418,31 @@ For more detail, see the following sections:
 * {sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`]
 * {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`]
 * {sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
+
+
+
+[[howto-use-test-with-spring-security]]
+== Testing With Spring Security
+Spring Security provides support for running tests as a specific user.
+For example, the test in the snippet below will run with an authenticated user
+that has the `ADMIN` role.
+
+[source,java,indent=0]
+----
+	@Test
+	@WithMockUser(roles="ADMIN")
+	public void requestProtectedUrlWithUser() throws Exception {
+		mvc
+			.perform(get("/"))
+			...
+	}
+----
+
+Spring Security provides comprehensive integration with Spring MVC Test and
+this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
+
+For additional details on Spring Security's testing support, refer to Spring Security's
+https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#test[reference documentation]).
 
 
 
@@ -2237,7 +2276,7 @@ the following:
 
 [source,properties,indent=0]
 ----
-	spring.flyway.locations=db/migration/{vendor}
+	spring.flyway.locations=classpath:db/migration/{vendor}
 ----
 
 Rather than using `db/migration`, the preceding configuration sets the folder to use

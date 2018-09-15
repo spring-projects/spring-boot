@@ -147,7 +147,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public Set<String> getUnconditionalClasses() {
 		Set<String> filtered = new HashSet<>(this.unconditionalClasses);
-		filtered.removeIf(this.exclusions::contains);
+		filtered.removeAll(this.exclusions);
 		return Collections.unmodifiableSet(filtered);
 	}
 

@@ -205,7 +205,7 @@ public abstract class AbstractErrorWebExceptionHandler
 	}
 
 	private String htmlEscape(Object input) {
-		return (input != null ? HtmlUtils.htmlEscape(input.toString()) : null);
+		return (input != null) ? HtmlUtils.htmlEscape(input.toString()) : null;
 	}
 
 	@Override

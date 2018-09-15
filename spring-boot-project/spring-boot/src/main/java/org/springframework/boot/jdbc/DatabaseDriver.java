@@ -260,7 +260,7 @@ public enum DatabaseDriver {
 
 	/**
 	 * Find a {@link DatabaseDriver} for the given URL.
-	 * @param url JDBC URL
+	 * @param url the JDBC URL
 	 * @return the database driver or {@link #UNKNOWN} if not found
 	 */
 	public static DatabaseDriver fromJdbcUrl(String url) {

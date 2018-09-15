@@ -21,9 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -50,6 +47,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Artsiom Yudovin
  * @since 1.3.0
  */
 public class SpringApplicationJsonEnvironmentPostProcessor
@@ -73,9 +71,6 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 5;
 
-	private static final Log logger = LogFactory
-			.getLog(SpringApplicationJsonEnvironmentPostProcessor.class);
-
 	private int order = DEFAULT_ORDER;
 
 	@Override
@@ -97,23 +92,17 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	private void processJson(ConfigurableEnvironment environment,
 			JsonPropertyValue propertyValue) {
-		try {
-			JsonParser parser = JsonParserFactory.getJsonParser();
-			Map<String, Object> map = parser.parseMap(propertyValue.getJson());
-			if (!map.isEmpty()) {
-				addJsonPropertySource(environment,
-						new JsonPropertySource(propertyValue, flatten(map)));
-			}
-		}
-		catch (Exception ex) {
-			logger.warn("Cannot parse JSON for spring.application.json: "
-					+ propertyValue.getJson(), ex);
+		JsonParser parser = JsonParserFactory.getJsonParser();
+		Map<String, Object> map = parser.parseMap(propertyValue.getJson());
+		if (!map.isEmpty()) {
+			addJsonPropertySource(environment,
+					new JsonPropertySource(propertyValue, flatten(map)));
 		}
 	}
 
 	/**
 	 * Flatten the map keys using period separator.
-	 * @param map The map that should be flattened
+	 * @param map the map that should be flattened
 	 * @return the flattened map
 	 */
 	private Map<String, Object> flatten(Map<String, Object> map) {
@@ -124,7 +113,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor
 
 	private void flatten(String prefix, Map<String, Object> result,
 			Map<String, Object> map) {
-		String namePrefix = (prefix != null ? prefix + "." : "");
+		String namePrefix = (prefix != null) ? prefix + "." : "";
 		map.forEach((key, value) -> extract(namePrefix + key, result, value));
 	}
 

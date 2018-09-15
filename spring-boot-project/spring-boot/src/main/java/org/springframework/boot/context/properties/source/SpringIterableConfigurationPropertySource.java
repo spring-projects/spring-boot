@@ -95,7 +95,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {
 		Cache cache = getCache();
-		List<ConfigurationPropertyName> names = (cache != null ? cache.getNames() : null);
+		List<ConfigurationPropertyName> names = (cache != null) ? cache.getNames() : null;
 		if (names != null) {
 			return names;
 		}
@@ -112,7 +112,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private PropertyMapping[] getPropertyMappings(Cache cache) {
-		PropertyMapping[] result = (cache != null ? cache.getMappings() : null);
+		PropertyMapping[] result = (cache != null) ? cache.getMappings() : null;
 		if (result != null) {
 			return result;
 		}
@@ -192,11 +192,6 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		@Override
-		public int hashCode() {
-			return this.key.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -205,6 +200,11 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 				return false;
 			}
 			return ObjectUtils.nullSafeEquals(this.key, ((CacheKey) obj).key);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.key.hashCode();
 		}
 
 		public static CacheKey get(EnumerablePropertySource<?> source) {

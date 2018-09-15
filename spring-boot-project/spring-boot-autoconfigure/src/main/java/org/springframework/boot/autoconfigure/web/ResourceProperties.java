@@ -69,7 +69,7 @@ public class ResourceProperties {
 		String[] normalized = new String[staticLocations.length];
 		for (int i = 0; i < staticLocations.length; i++) {
 			String location = staticLocations[i];
-			normalized[i] = (location.endsWith("/") ? location : location + "/");
+			normalized[i] = location.endsWith("/") ? location : location + "/";
 		}
 		return normalized;
 	}
@@ -164,7 +164,7 @@ public class ResourceProperties {
 
 		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled,
 				Boolean chainEnabled) {
-			return (fixedEnabled || contentEnabled ? Boolean.TRUE : chainEnabled);
+			return (fixedEnabled || contentEnabled) ? Boolean.TRUE : chainEnabled;
 		}
 
 	}

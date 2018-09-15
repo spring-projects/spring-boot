@@ -109,8 +109,8 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 		for (String annotationName : ANNOTATION_NAMES) {
 			AnnotationAttributes merged = AnnotatedElementUtils
 					.getMergedAnnotationAttributes(source, annotationName);
-			Class<?>[] exclude = (merged != null ? merged.getClassArray("exclude")
-					: null);
+			Class<?>[] exclude = (merged != null) ? merged.getClassArray("exclude")
+					: null;
 			if (exclude != null) {
 				for (Class<?> excludeClass : exclude) {
 					exclusions.add(excludeClass.getName());

@@ -53,17 +53,14 @@ public class BuildInfo extends ConventionTask {
 	@TaskAction
 	public void generateBuildProperties() {
 		try {
-			new BuildPropertiesWriter(
-					new File(getDestinationDir(), "build-info.properties"))
-							.writeBuildProperties(new ProjectDetails(
-									this.properties.getGroup(),
-									this.properties.getArtifact() != null
-											? this.properties.getArtifact()
-											: "unspecified",
-									this.properties.getVersion(),
-									this.properties.getName(), this.properties.getTime(),
-									coerceToStringValues(
-											this.properties.getAdditional())));
+			new BuildPropertiesWriter(new File(getDestinationDir(),
+					"build-info.properties")).writeBuildProperties(new ProjectDetails(
+							this.properties.getGroup(),
+							(this.properties.getArtifact() != null)
+									? this.properties.getArtifact() : "unspecified",
+							this.properties.getVersion(), this.properties.getName(),
+							this.properties.getTime(),
+							coerceToStringValues(this.properties.getAdditional())));
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);
@@ -77,8 +74,8 @@ public class BuildInfo extends ConventionTask {
 	 */
 	@OutputDirectory
 	public File getDestinationDir() {
-		return (this.destinationDir != null ? this.destinationDir
-				: getProject().getBuildDir());
+		return (this.destinationDir != null) ? this.destinationDir
+				: getProject().getBuildDir();
 	}
 
 	/**

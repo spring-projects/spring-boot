@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarOutputStream;
@@ -212,13 +212,8 @@ public class RestartClassLoaderTests {
 	}
 
 	private <T> List<T> toList(Enumeration<T> enumeration) {
-		List<T> list = new ArrayList<>();
-		if (enumeration != null) {
-			while (enumeration.hasMoreElements()) {
-				list.add(enumeration.nextElement());
-			}
-		}
-		return list;
+		return (enumeration != null) ? Collections.list(enumeration)
+				: Collections.emptyList();
 	}
 
 }

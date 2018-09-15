@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package org.springframework.boot.test.context.example;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.SpringBootConfigurationFinderTests;
+import org.springframework.boot.test.context.AnnotatedClassFinderTests;
 
 /**
- * Example config used in {@link SpringBootConfigurationFinderTests}.
+ * Example config used in {@link AnnotatedClassFinderTests}.
  *
  * @author Phillip Webb
  */

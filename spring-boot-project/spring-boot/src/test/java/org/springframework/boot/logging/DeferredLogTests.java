@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,6 +165,15 @@ public class DeferredLogTests {
 		verify(this.log).fatal("2", null);
 		verifyNoMoreInteractions(this.log);
 		verifyZeroInteractions(log2);
+	}
+
+	@Test
+	public void switchTo() {
+		this.deferredLog.error(this.message, this.throwable);
+		this.deferredLog.switchTo(this.log);
+		this.deferredLog.info("Message2");
+		verify(this.log).error(this.message, this.throwable);
+		verify(this.log).info("Message2", null);
 	}
 
 }

@@ -50,6 +50,18 @@
       "defaultValue": true
     },
     {
+      "name": "spring.activemq.pool.maximum-active-session-per-connection",
+      "deprecation": {
+        "replacement": "spring.activemq.pool.max-sessions-per-connection"
+      }
+    },
+    {
+      "name": "spring.artemis.pool.maximum-active-session-per-connection",
+      "deprecation": {
+        "replacement": "spring.artemis.pool.max-sessions-per-connection"
+      }
+    },
+    {
       "name": "spring.application.admin.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable admin features for the application.",
@@ -143,6 +155,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Elasticsearch repositories.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.data.jpa.repositories.bootstrap-mode",
+      "type": "org.springframework.data.repository.config.BootstrapMode",
+      "description": "Bootstrap mode for JPA repositories.",
+      "defaultValue": "default"
     },
     {
       "name": "spring.data.jpa.repositories.enabled",
@@ -277,6 +295,12 @@
       "type": "java.lang.String",
       "description": "MBeanServer bean name.",
       "defaultValue": "mbeanServer"
+    },
+    {
+      "name": "spring.jmx.unique-names",
+      "type": "java.lang.Boolean",
+      "description": "Whether unique runtime object names should be ensured.",
+      "defaultValue": false
     },
     {
       "name": "spring.jpa.open-in-view",
@@ -440,6 +464,22 @@
       "name": "spring.mvc.formcontent.putfilter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HttpPutFormContentFilter.",
+      "defaultValue": true,
+      "deprecation" : {
+        "replacement" : "spring.mvc.formcontent.filter.enabled",
+        "level" : "error"
+      }
+    },
+    {
+      "name": "spring.mvc.formcontent.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's FormContentFilter.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.mvc.hiddenmethod.filter.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
       "defaultValue": true
     },
     {
@@ -507,6 +547,15 @@
       "defaultValue": "on-save"
     },
     {
+      "name" : "spring.security.oauth2.client.registration",
+      "type" : "java.util.Map<java.lang.String,org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.LoginClientRegistration>",
+      "description" : "Maps client registration-id to a client registration.",
+      "deprecation" : {
+        "replacement" : "spring.security.oauth2.client.registration.login",
+        "level" : "warning"
+      }
+    },
+    {
       "name": "spring.session.servlet.filter-dispatcher-types",
       "defaultValue": [
         "async",
@@ -567,14 +616,6 @@
       "defaultValue": true,
       "deprecation": {
         "replacement": "spring.flyway.enabled",
-        "level": "error"
-      }
-    },
-    {
-      "name": "flyway.encoding",
-      "type": "java.lang.String",
-      "deprecation": {
-        "replacement": "spring.flyway.encoding",
         "level": "error"
       }
     },

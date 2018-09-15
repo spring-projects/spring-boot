@@ -79,6 +79,7 @@ import org.springframework.context.annotation.Import;
  * @author Stephane Nicoll
  * @author Gary Russell
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -139,6 +140,10 @@ public class RabbitAutoConfiguration {
 				map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
 				map.from(ssl::getTrustStore).to(factory::setTrustStore);
 				map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
+				map.from(ssl::isValidateServerCertificate).to((validate) -> factory
+						.setSkipServerCertificateValidation(!validate));
+				map.from(ssl::getVerifyHostname)
+						.to(factory::setEnableHostnameVerification);
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull()
 					.asInt(Duration::toMillis).to(factory::setConnectionTimeout);
@@ -190,12 +195,13 @@ public class RabbitAutoConfiguration {
 					.to(template::setReplyTimeout);
 			map.from(properties::getExchange).to(template::setExchange);
 			map.from(properties::getRoutingKey).to(template::setRoutingKey);
+			map.from(properties::getQueue).whenNonNull().to(template::setQueue);
 			return template;
 		}
 
 		private boolean determineMandatoryFlag() {
 			Boolean mandatory = this.properties.getTemplate().getMandatory();
-			return (mandatory != null ? mandatory : this.properties.isPublisherReturns());
+			return (mandatory != null) ? mandatory : this.properties.isPublisherReturns();
 		}
 
 		@Bean

@@ -18,19 +18,24 @@ package org.springframework.boot.test.autoconfigure.web.reactive;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebHandler;
+import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -77,6 +82,41 @@ public class WebTestClientAutoConfigurationTests {
 					Object duration = ReflectionTestUtils.getField(webTestClient,
 							"timeout");
 					assertThat(duration).isEqualTo(Duration.of(15, ChronoUnit.MINUTES));
+				});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void shouldApplySpringSecurityConfigurer() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
+					WebTestClient webTestClient = context.getBean(WebTestClient.class);
+					WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils
+							.getField(webTestClient, "builder");
+					WebHttpHandlerBuilder httpHandlerBuilder = (WebHttpHandlerBuilder) ReflectionTestUtils
+							.getField(builder, "httpHandlerBuilder");
+					List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils
+							.getField(httpHandlerBuilder, "filters");
+					assertThat(filters.get(0).getClass().getName()).isEqualTo(
+							"org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers$MutatorFilter");
+				});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void shouldNotApplySpringSecurityConfigurerWhenSpringSecurityNotOnClassPath() {
+		FilteredClassLoader classLoader = new FilteredClassLoader(
+				SecurityMockServerConfigurers.class);
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withClassLoader(classLoader).run((context) -> {
+					WebTestClient webTestClient = context.getBean(WebTestClient.class);
+					WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils
+							.getField(webTestClient, "builder");
+					WebHttpHandlerBuilder httpHandlerBuilder = (WebHttpHandlerBuilder) ReflectionTestUtils
+							.getField(builder, "httpHandlerBuilder");
+					List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils
+							.getField(httpHandlerBuilder, "filters");
+					assertThat(filters.size()).isEqualTo(0);
 				});
 	}
 

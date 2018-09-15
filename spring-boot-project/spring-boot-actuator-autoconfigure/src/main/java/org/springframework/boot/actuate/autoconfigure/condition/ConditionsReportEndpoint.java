@@ -125,8 +125,8 @@ public class ConditionsReportEndpoint {
 			this.unconditionalClasses = report.getUnconditionalClasses();
 			report.getConditionAndOutcomesBySource().forEach(
 					(source, conditionAndOutcomes) -> add(source, conditionAndOutcomes));
-			this.parentId = (context.getParent() != null ? context.getParent().getId()
-					: null);
+			this.parentId = (context.getParent() != null) ? context.getParent().getId()
+					: null;
 		}
 
 		private void add(String source, ConditionAndOutcomes conditionAndOutcomes) {
@@ -209,7 +209,7 @@ public class ConditionsReportEndpoint {
 				this.message = outcome.getMessage();
 			}
 			else {
-				this.message = (outcome.isMatch() ? "matched" : "did not match");
+				this.message = outcome.isMatch() ? "matched" : "did not match";
 			}
 		}
 

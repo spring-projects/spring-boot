@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import reactor.netty.ChannelBindException;
 import reactor.netty.DisposableServer;
-import reactor.netty.http.HttpResources;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.boot.web.server.PortInUseException;
@@ -122,8 +121,6 @@ public class NettyWebServer implements WebServer {
 			else {
 				this.disposableServer.disposeNow();
 			}
-			// temporary fix for gh-9146
-			HttpResources.shutdown();
 			this.disposableServer = null;
 		}
 	}

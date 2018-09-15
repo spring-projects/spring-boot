@@ -49,9 +49,9 @@ public final class LambdaSafe {
 
 	static {
 		CLASS_GET_MODULE = ReflectionUtils.findMethod(Class.class, "getModule");
-		MODULE_GET_NAME = (CLASS_GET_MODULE != null
+		MODULE_GET_NAME = (CLASS_GET_MODULE != null)
 				? ReflectionUtils.findMethod(CLASS_GET_MODULE.getReturnType(), "getName")
-				: null);
+				: null;
 	}
 
 	private LambdaSafe() {
@@ -187,17 +187,28 @@ public final class LambdaSafe {
 			if (argument == null) {
 				return false;
 			}
-			Class<? extends Object> argumentType = argument.getClass();
+			Class<?> argumentType = argument.getClass();
+			// On Java 8, the message starts with the class name: "java.lang.String cannot
+			// be cast..."
 			if (message.startsWith(argumentType.getName())) {
+				return true;
+			}
+			// On Java 11, the message starts with "class ..." a.k.a. Class.toString()
+			if (message.startsWith(argumentType.toString())) {
+				return true;
+			}
+			// On Java 9, the message used to contain the module name:
+			// "java.base/java.lang.String cannot be cast..."
+			int moduleSeparatorIndex = message.indexOf('/');
+			if (moduleSeparatorIndex != -1 && message.startsWith(argumentType.getName(),
+					moduleSeparatorIndex + 1)) {
 				return true;
 			}
 			if (CLASS_GET_MODULE != null) {
 				Object module = ReflectionUtils.invokeMethod(CLASS_GET_MODULE,
 						argumentType);
 				Object moduleName = ReflectionUtils.invokeMethod(MODULE_GET_NAME, module);
-				if (message.startsWith(moduleName + "/" + argumentType.getName())) {
-					return true;
-				}
+				return message.startsWith(moduleName + "/" + argumentType.getName());
 			}
 			return false;
 		}
@@ -206,10 +217,10 @@ public final class LambdaSafe {
 			if (this.logger.isDebugEnabled()) {
 				Class<?> expectedType = ResolvableType.forClass(this.callbackType)
 						.resolveGeneric();
-				String message = "Non-matching " + (expectedType != null
-						? ClassUtils.getShortName(expectedType) + " type" : "type")
-						+ " for callback " + ClassUtils.getShortName(this.callbackType)
-						+ ": " + callback;
+				String expectedTypeName = (expectedType != null)
+						? ClassUtils.getShortName(expectedType) + " type" : "type";
+				String message = "Non-matching " + expectedTypeName + " for callback "
+						+ ClassUtils.getShortName(this.callbackType) + ": " + callback;
 				this.logger.debug(message, ex);
 			}
 		}
@@ -368,7 +379,7 @@ public final class LambdaSafe {
 	 * the callback wasn't suitable. Similar in design to {@link Optional} but allows for
 	 * {@code null} as a valid value.
 	 *
-	 * @param <R> The result type
+	 * @param <R> the result type
 	 */
 	public static final class InvocationResult<R> {
 
@@ -404,7 +415,7 @@ public final class LambdaSafe {
 		 * @return the result of the invocation or the fallback
 		 */
 		public R get(R fallback) {
-			return (this != NONE ? this.value : fallback);
+			return (this != NONE) ? this.value : fallback;
 		}
 
 		/**

@@ -46,9 +46,13 @@ final class DurationToNumberConverter implements GenericConverter {
 		if (source == null) {
 			return null;
 		}
-		DurationUnit unit = sourceType.getAnnotation(DurationUnit.class);
-		return convert((Duration) source, (unit != null ? unit.value() : null),
+		return convert((Duration) source, getDurationUnit(sourceType),
 				targetType.getObjectType());
+	}
+
+	private ChronoUnit getDurationUnit(TypeDescriptor sourceType) {
+		DurationUnit annotation = sourceType.getAnnotation(DurationUnit.class);
+		return (annotation != null) ? annotation.value() : null;
 	}
 
 	private Object convert(Duration source, ChronoUnit unit, Class<?> type) {

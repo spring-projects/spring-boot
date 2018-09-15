@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,15 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.event.EventListener;
+import org.springframework.context.event.GenericApplicationListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -48,7 +52,7 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware,
-		EnvironmentAware, InitializingBean, DisposableBean {
+		GenericApplicationListener, EnvironmentAware, InitializingBean, DisposableBean {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 
@@ -80,15 +84,43 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		this.environment = environment;
 	}
 
-	@EventListener
-	public void onApplicationReadyEvent(ApplicationReadyEvent event) {
+	@Override
+	public boolean supportsEventType(ResolvableType eventType) {
+		Class<?> type = eventType.getRawClass();
+		if (type == null) {
+			return false;
+		}
+		return ApplicationReadyEvent.class.isAssignableFrom(type)
+				|| WebServerInitializedEvent.class.isAssignableFrom(type);
+	}
+
+	@Override
+	public boolean supportsSourceType(@Nullable Class<?> sourceType) {
+		return true;
+	}
+
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ApplicationReadyEvent) {
+			onApplicationReadyEvent((ApplicationReadyEvent) event);
+		}
+		if (event instanceof WebServerInitializedEvent) {
+			onWebServerInitializedEvent((WebServerInitializedEvent) event);
+		}
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
+	}
+
+	void onApplicationReadyEvent(ApplicationReadyEvent event) {
 		if (this.applicationContext.equals(event.getApplicationContext())) {
 			this.ready = true;
 		}
 	}
 
-	@EventListener
-	public void onWebServerInitializedEvent(WebServerInitializedEvent event) {
+	void onWebServerInitializedEvent(WebServerInitializedEvent event) {
 		if (this.applicationContext.equals(event.getApplicationContext())) {
 			this.embeddedWebApplication = true;
 		}

@@ -52,8 +52,11 @@ public class OriginTrackedValue implements OriginProvider {
 	}
 
 	@Override
-	public String toString() {
-		return (this.value != null ? this.value.toString() : null);
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != getClass()) {
+			return false;
+		}
+		return ObjectUtils.nullSafeEquals(this.value, ((OriginTrackedValue) obj).value);
 	}
 
 	@Override
@@ -62,11 +65,8 @@ public class OriginTrackedValue implements OriginProvider {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null || obj.getClass() != getClass()) {
-			return false;
-		}
-		return ObjectUtils.nullSafeEquals(this.value, ((OriginTrackedValue) obj).value);
+	public String toString() {
+		return (this.value != null) ? this.value.toString() : null;
 	}
 
 	public static OriginTrackedValue of(Object value) {

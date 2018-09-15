@@ -398,6 +398,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-streams</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<optional>true</optional>
@@ -488,6 +493,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-reactive-httpclient</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty.http2</groupId>
 			<artifactId>http2-server</artifactId>
 			<optional>true</optional>
@@ -533,26 +543,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jdbc</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jms</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jta</groupId>
-			<artifactId>jta</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.narayana.jts</groupId>
-			<artifactId>narayana-jts-integration</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
 			<optional>true</optional>
@@ -590,6 +580,11 @@
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.messaginghub</groupId>
+			<artifactId>pooled-jms</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -729,12 +724,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-client</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-jose</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-oauth2-client</artifactId>
+			<artifactId>spring-security-oauth2-resource-server</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -937,13 +937,13 @@
 									<quiet>true</quiet>
 									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>
 									<links>
-										<link>https://docs.oracle.com/javase/8/docs/api/</link>
-										<link>https://docs.oracle.com/javaee/7/api/</link>
-										<link>https://docs.spring.io/spring-framework/docs/${spring.version}/javadoc-api/</link>
-										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
-										<link>https://tomcat.apache.org/tomcat-8.5-doc/api/</link>
-										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}/</link>
-										<link>http://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
+										<link>https://docs.oracle.com/javase/8/docs/api</link>
+										<link>https://docs.oracle.com/javaee/7/api</link>
+										<link>https://docs.spring.io/spring-framework/docs/${spring-framework.version}/javadoc-api</link>
+										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api</link>
+										<link>https://tomcat.apache.org/tomcat-8.5-doc/api</link>
+										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}</link>
+										<link>https://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}</link>
 									</links>
 								</configuration>
 							</execution>
@@ -1133,42 +1133,6 @@
 						</configuration>
 					</plugin>
 					<plugin>
-						<groupId>org.codehaus.gmavenplus</groupId>
-						<artifactId>gmavenplus-plugin</artifactId>
-						<executions>
-							<execution>
-								<goals>
-									<goal>execute</goal>
-								</goals>
-								<phase>generate-resources</phase>
-							</execution>
-						</executions>
-						<configuration>
-							<scripts>
-								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
-								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
-								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
-							</scripts>
-						</configuration>
-						<dependencies>
-							<dependency>
-								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy</artifactId>
-								<version>${groovy.version}</version>
-							</dependency>
-							<dependency>
-								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy-ant</artifactId>
-								<version>${groovy.version}</version>
-							</dependency>
-							<dependency>
-								<groupId>org.springframework</groupId>
-								<artifactId>spring-core</artifactId>
-								<version>${spring.version}</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-					<plugin>
 						<groupId>org.asciidoctor</groupId>
 						<artifactId>asciidoctor-maven-plugin</artifactId>
 						<executions>
@@ -1185,11 +1149,11 @@
 									<attributes>
 										<docinfo>true</docinfo>
 										<jooq-version>${jooq.version}</jooq-version>
-										<spring-version>${spring.version}</spring-version>
+										<spring-framework-version>${spring-framework.version}</spring-framework-version>
 										<spring-boot-version>${revision}</spring-boot-version>
 										<spring-boot-docs-version>${revision}</spring-boot-docs-version>
 										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
-										<spring-docs-version>${spring.version}</spring-docs-version>
+										<spring-docs-version>${spring-framework.version}</spring-docs-version>
 										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
 										<spring-webservices-docs-version>${spring-ws.version}</spring-webservices-docs-version>
 										<github-tag>${github-tag}</github-tag>
@@ -1425,6 +1389,55 @@
 								</configuration>
 							</execution>
 						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>full-groovy</id>
+			<activation>
+				<jdk>[1.8,10]</jdk>
+				<property>
+					<name>full</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.gmavenplus</groupId>
+						<artifactId>gmavenplus-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<phase>generate-resources</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<scripts>
+								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateStarterTables.groovy</script>
+								<script>file:///${project.basedir}/src/main/groovy/generateTestSlicesTable.groovy</script>
+							</scripts>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>org.codehaus.groovy</groupId>
+								<artifactId>groovy</artifactId>
+								<version>${groovy.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.codehaus.groovy</groupId>
+								<artifactId>groovy-ant</artifactId>
+								<version>${groovy.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-core</artifactId>
+								<version>${spring-framework.version}</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 				</plugins>
 			</build>

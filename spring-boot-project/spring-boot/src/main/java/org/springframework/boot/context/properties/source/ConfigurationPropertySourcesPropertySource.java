@@ -42,7 +42,7 @@ class ConfigurationPropertySourcesPropertySource
 	@Override
 	public Object getProperty(String name) {
 		ConfigurationProperty configurationProperty = findConfigurationProperty(name);
-		return (configurationProperty != null ? configurationProperty.getValue() : null);
+		return (configurationProperty != null) ? configurationProperty.getValue() : null;
 	}
 
 	@Override

@@ -102,7 +102,7 @@ public class HazelcastJpaDependencyAutoConfigurationTests {
 		String[] dependsOn = ((BeanDefinitionRegistry) context
 				.getSourceApplicationContext()).getBeanDefinition("entityManagerFactory")
 						.getDependsOn();
-		return (dependsOn != null ? Arrays.asList(dependsOn) : Collections.emptyList());
+		return (dependsOn != null) ? Arrays.asList(dependsOn) : Collections.emptyList();
 	}
 
 	@Configuration

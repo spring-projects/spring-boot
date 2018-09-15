@@ -36,7 +36,7 @@ final class StringSequence implements CharSequence {
 	private int hash;
 
 	StringSequence(String source) {
-		this(source, 0, source != null ? source.length() : -1);
+		this(source, 0, (source != null) ? source.length() : -1);
 	}
 
 	StringSequence(String source, int start, int end) {
@@ -107,23 +107,6 @@ final class StringSequence implements CharSequence {
 	}
 
 	@Override
-	public String toString() {
-		return this.source.substring(this.start, this.end);
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = this.hash;
-		if (hash == 0 && length() > 0) {
-			for (int i = this.start; i < this.end; i++) {
-				hash = 31 * hash + this.source.charAt(i);
-			}
-			this.hash = hash;
-		}
-		return hash;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -144,6 +127,23 @@ final class StringSequence implements CharSequence {
 			return true;
 		}
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = this.hash;
+		if (hash == 0 && length() > 0) {
+			for (int i = this.start; i < this.end; i++) {
+				hash = 31 * hash + this.source.charAt(i);
+			}
+			this.hash = hash;
+		}
+		return hash;
+	}
+
+	@Override
+	public String toString() {
+		return this.source.substring(this.start, this.end);
 	}
 
 }

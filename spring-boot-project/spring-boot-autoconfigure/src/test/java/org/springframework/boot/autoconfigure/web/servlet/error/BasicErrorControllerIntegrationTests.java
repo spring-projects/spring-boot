@@ -94,15 +94,29 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
+	public void testErrorForMachineClientTraceParamTrue() {
+		errorForMachineClientOnTraceParam("?trace=true", true);
+	}
+
+	@Test
+	public void testErrorForMachineClientTraceParamFalse() {
+		errorForMachineClientOnTraceParam("?trace=false", false);
+	}
+
+	@Test
+	public void testErrorForMachineClientTraceParamAbsent() {
+		errorForMachineClientOnTraceParam("", false);
+	}
+
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClientTraceParamStacktrace() {
+	private void errorForMachineClientOnTraceParam(String path, boolean expectedTrace) {
 		load("--server.error.include-exception=true",
 				"--server.error.include-stacktrace=on-trace-param");
-		ResponseEntity<Map> entity = new TestRestTemplate()
-				.getForEntity(createUrl("?trace=true"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl(path),
+				Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertThat(entity.getBody().containsKey("trace")).isTrue();
+		assertThat(entity.getBody().containsKey("trace")).isEqualTo(expectedTrace);
 	}
 
 	@Test

@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.Arrays;
 import java.util.List;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.async.client.MongoClientSettings;
 import com.mongodb.connection.ClusterSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.Rule;
@@ -113,6 +113,14 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	@Test
+	public void retryWritesIsPropagatedFromUri() {
+		MongoProperties properties = new MongoProperties();
+		properties.setUri("mongodb://localhost/test?retryWrites=true");
+		MongoClient client = createMongoClient(properties);
+		assertThat(client.getSettings().getRetryWrites()).isTrue();
+	}
+
+	@Test
 	public void uriCannotBeSetWithCredentials() {
 		MongoProperties properties = new MongoProperties();
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
@@ -188,13 +196,13 @@ public class ReactiveMongoClientFactoryTests {
 	}
 
 	private List<ServerAddress> extractServerAddresses(MongoClient client) {
-		MongoClientSettings settings = client.getSettings();
+		com.mongodb.async.client.MongoClientSettings settings = client.getSettings();
 		ClusterSettings clusterSettings = settings.getClusterSettings();
 		return clusterSettings.getHosts();
 	}
 
 	private MongoCredential extractMongoCredentials(MongoClient client) {
-		MongoClientSettings settings = client.getSettings();
+		com.mongodb.async.client.MongoClientSettings settings = client.getSettings();
 		return settings.getCredential();
 	}
 

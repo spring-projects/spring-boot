@@ -75,7 +75,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			MultiValueMap<String, Object> attributes = metadata
 					.getAllAnnotationAttributes(
 							EnableConfigurationProperties.class.getName(), false);
-			return collectClasses(attributes != null ? attributes.get("value")
+			return collectClasses((attributes != null) ? attributes.get("value")
 					: Collections.emptyList());
 		}
 
@@ -96,7 +96,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 		private String getName(Class<?> type) {
 			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
 					ConfigurationProperties.class);
-			String prefix = (annotation != null ? annotation.prefix() : "");
+			String prefix = (annotation != null) ? annotation.prefix() : "";
 			return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName()
 					: type.getName());
 		}

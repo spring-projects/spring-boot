@@ -188,9 +188,9 @@ public class JmsProperties {
 
 		public String formatConcurrency() {
 			if (this.concurrency == null) {
-				return (this.maxConcurrency != null ? "1-" + this.maxConcurrency : null);
+				return (this.maxConcurrency != null) ? "1-" + this.maxConcurrency : null;
 			}
-			return (this.maxConcurrency != null
+			return ((this.maxConcurrency != null)
 					? this.concurrency + "-" + this.maxConcurrency
 					: String.valueOf(this.concurrency));
 		}

@@ -365,8 +365,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			collect(attributes, "annotation", this.annotations);
 			collect(attributes, "ignored", this.ignoredTypes);
 			collect(attributes, "ignoredType", this.ignoredTypes);
-			this.strategy = (SearchStrategy) metadata
-					.getAnnotationAttributes(annotationType.getName()).get("search");
+			this.strategy = (SearchStrategy) attributes.getFirst("search");
 			BeanTypeDeductionException deductionException = null;
 			try {
 				if (this.types.isEmpty() && this.names.isEmpty()) {
@@ -444,7 +443,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		}
 
 		public SearchStrategy getStrategy() {
-			return (this.strategy != null ? this.strategy : SearchStrategy.ALL);
+			return (this.strategy != null) ? this.strategy : SearchStrategy.ALL;
 		}
 
 		public List<String> getNames() {

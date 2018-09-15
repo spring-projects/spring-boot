@@ -23,7 +23,7 @@ import io.micrometer.core.instrument.step.StepRegistryConfig;
 /**
  * Base class for {@link StepRegistryProperties} to {@link StepRegistryConfig} adapters.
  *
- * @param <T> The properties type
+ * @param <T> the properties type
  * @author Jon Schneider
  * @author Phillip Webb
  * @since 2.0.0

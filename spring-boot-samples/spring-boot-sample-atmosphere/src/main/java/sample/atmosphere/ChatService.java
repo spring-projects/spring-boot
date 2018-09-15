@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class ChatService {
 	@Disconnect
 	public void onDisconnect(AtmosphereResourceEvent event) {
 		this.logger.info("Client {} disconnected [{}]", event.getResource().uuid(),
-				(event.isCancelled() ? "cancelled" : "closed"));
+				event.isCancelled() ? "cancelled" : "closed");
 	}
 
 	@org.atmosphere.config.service.Message(encoders = JacksonEncoderDecoder.class, decoders = JacksonEncoderDecoder.class)

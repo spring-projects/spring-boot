@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Artsiom Yudovin
+ * @author MyeongHyeon Lee
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.client")
 public class OAuth2ClientProperties {
@@ -42,34 +44,115 @@ public class OAuth2ClientProperties {
 	/**
 	 * OAuth client registrations.
 	 */
-	private final Map<String, Registration> registration = new HashMap<>();
+	private final Registration registration = new Registration();
 
 	public Map<String, Provider> getProvider() {
 		return this.provider;
 	}
 
-	public Map<String, Registration> getRegistration() {
+	public Registration getRegistration() {
 		return this.registration;
 	}
 
 	@PostConstruct
 	public void validate() {
-		this.getRegistration().values().forEach(this::validateRegistration);
+		this.getRegistration().getLogin().values().forEach(this::validateRegistration);
+		this.getRegistration().getAuthorizationCode().values()
+				.forEach(this::validateRegistration);
 	}
 
-	private void validateRegistration(Registration registration) {
+	private void validateRegistration(BaseClientRegistration registration) {
 		if (!StringUtils.hasText(registration.getClientId())) {
 			throw new IllegalStateException("Client id must not be empty.");
 		}
-		if (!StringUtils.hasText(registration.getClientSecret())) {
-			throw new IllegalStateException("Client secret must not be empty.");
+	}
+
+	public static class Registration {
+
+		/**
+		 * OpenID Connect client registrations.
+		 */
+		private Map<String, LoginClientRegistration> login = new HashMap<>();
+
+		/**
+		 * OAuth2 authorization_code client registrations.
+		 */
+		private Map<String, AuthorizationCodeClientRegistration> authorizationCode = new HashMap<>();
+
+		public Map<String, LoginClientRegistration> getLogin() {
+			return this.login;
 		}
+
+		public void setLogin(Map<String, LoginClientRegistration> login) {
+			this.login = login;
+		}
+
+		public Map<String, AuthorizationCodeClientRegistration> getAuthorizationCode() {
+			return this.authorizationCode;
+		}
+
+		public void setAuthorizationCode(
+				Map<String, AuthorizationCodeClientRegistration> authorizationCode) {
+			this.authorizationCode = authorizationCode;
+		}
+
 	}
 
 	/**
-	 * A single client registration.
+	 * A single client registration for OpenID Connect login.
 	 */
-	public static class Registration {
+	public static class LoginClientRegistration extends BaseClientRegistration {
+
+		/**
+		 * Redirect URI. May be left blank when using a pre-defined provider.
+		 */
+		private String redirectUri;
+
+		public String getRedirectUri() {
+			return this.redirectUri;
+		}
+
+		public void setRedirectUri(String redirectUri) {
+			this.redirectUri = redirectUri;
+		}
+
+		@Deprecated
+		public String getRedirectUriTemplate() {
+			return getRedirectUri();
+		}
+
+		@Deprecated
+		public void setRedirectUriTemplate(String redirectUri) {
+			setRedirectUri(redirectUri);
+		}
+
+	}
+
+	/**
+	 * A single client registration for OAuth2 authorization_code flow.
+	 */
+	public static class AuthorizationCodeClientRegistration
+			extends BaseClientRegistration {
+
+		/**
+		 * Redirect URI for the registration.
+		 */
+		private String redirectUri;
+
+		public String getRedirectUri() {
+			return this.redirectUri;
+		}
+
+		public void setRedirectUri(String redirectUri) {
+			this.redirectUri = redirectUri;
+		}
+
+	}
+
+	/**
+	 * Base class for a single client registration.
+	 */
+	public static class BaseClientRegistration {
 
 		/**
 		 * Reference to the OAuth 2.0 provider to use. May reference an element from the
@@ -98,11 +181,6 @@ public class OAuth2ClientProperties {
 		 * Authorization grant type. May be left blank when using a pre-defined provider.
 		 */
 		private String authorizationGrantType;
-
-		/**
-		 * Redirect URI. May be left blank when using a pre-defined provider.
-		 */
-		private String redirectUriTemplate;
 
 		/**
 		 * Authorization scopes. May be left blank when using a pre-defined provider.
@@ -154,14 +232,6 @@ public class OAuth2ClientProperties {
 			this.authorizationGrantType = authorizationGrantType;
 		}
 
-		public String getRedirectUriTemplate() {
-			return this.redirectUriTemplate;
-		}
-
-		public void setRedirectUriTemplate(String redirectUriTemplate) {
-			this.redirectUriTemplate = redirectUriTemplate;
-		}
-
 		public Set<String> getScope() {
 			return this.scope;
 		}
@@ -196,6 +266,11 @@ public class OAuth2ClientProperties {
 		 * User info URI for the provider.
 		 */
 		private String userInfoUri;
+
+		/**
+		 * User info authentication method for the provider.
+		 */
+		private String userInfoAuthenticationMethod;
 
 		/**
 		 * Name of the attribute that will be used to extract the username from the call
@@ -235,6 +310,14 @@ public class OAuth2ClientProperties {
 
 		public void setUserInfoUri(String userInfoUri) {
 			this.userInfoUri = userInfoUri;
+		}
+
+		public String getUserInfoAuthenticationMethod() {
+			return this.userInfoAuthenticationMethod;
+		}
+
+		public void setUserInfoAuthenticationMethod(String userInfoAuthenticationMethod) {
+			this.userInfoAuthenticationMethod = userInfoAuthenticationMethod;
 		}
 
 		public String getUserNameAttribute() {

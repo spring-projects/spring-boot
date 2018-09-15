@@ -7,6 +7,10 @@ org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingL
 org.springframework.context.ApplicationListener=\
 org.springframework.boot.autoconfigure.BackgroundPreinitializer
 
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesEnvironmentPostProcessor
+
 # Auto Configuration Import Listeners
 org.springframework.boot.autoconfigure.AutoConfigurationImportListener=\
 org.springframework.boot.autoconfigure.condition.ConditionEvaluationReportAutoConfigurationImportListener
@@ -23,7 +27,7 @@ org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,\
 org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,\
 org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration,\
-org.springframework.boot.autoconfigure.cloud.CloudAutoConfiguration,\
+org.springframework.boot.autoconfigure.cloud.CloudServiceConnectorsAutoConfiguration,\
 org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration,\
@@ -97,6 +101,7 @@ org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.core.ReactorCoreAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,\
@@ -105,7 +110,11 @@ org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.session.SessionAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
+org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration,\
+org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration,\
@@ -116,6 +125,7 @@ org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration
 org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration,\

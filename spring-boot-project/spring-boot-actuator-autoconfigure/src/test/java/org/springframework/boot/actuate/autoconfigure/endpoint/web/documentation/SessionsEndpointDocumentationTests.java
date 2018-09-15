@@ -89,9 +89,7 @@ public class SessionsEndpointDocumentationTests
 		sessions.put(sessionOne.getId(), sessionOne);
 		sessions.put(sessionTwo.getId(), sessionTwo);
 		sessions.put(sessionThree.getId(), sessionThree);
-		given(this.sessionRepository.findByIndexNameAndIndexValue(
-				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, "alice"))
-						.willReturn(sessions);
+		given(this.sessionRepository.findByPrincipalName("alice")).willReturn(sessions);
 		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice"))
 				.andExpect(status().isOk())
 				.andDo(document("sessions/username",

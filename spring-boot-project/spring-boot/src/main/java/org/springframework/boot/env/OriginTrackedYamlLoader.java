@@ -105,7 +105,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private Object getValue(Object value) {
-			return (value != null ? value : "");
+			return (value != null) ? value : "";
 		}
 
 		private Origin getOrigin(Node node) {
@@ -124,7 +124,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 		KeyScalarNode(ScalarNode node) {
 			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(),
-					node.getStyle());
+					node.getScalarStyle());
 		}
 
 		public static NodeTuple get(NodeTuple nodeTuple) {

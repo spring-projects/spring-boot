@@ -34,16 +34,16 @@ public class ExampleBasicObject {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && obj.getClass() == getClass()) {
 			return this.value.equals(((ExampleBasicObject) obj).value);
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.value.hashCode();
 	}
 
 }

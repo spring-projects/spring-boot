@@ -118,21 +118,6 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 0;
-		result = prime * result + Boolean.hashCode(hasAnnotation());
-		for (FilterType filterType : FilterType.values()) {
-			result = prime * result
-					+ ObjectUtils.nullSafeHashCode(getFilters(filterType));
-		}
-		result = prime * result + Boolean.hashCode(isUseDefaultFilters());
-		result = prime * result + ObjectUtils.nullSafeHashCode(getDefaultIncludes());
-		result = prime * result + ObjectUtils.nullSafeHashCode(getComponentIncludes());
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -152,6 +137,21 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 				other.getDefaultIncludes());
 		result = result && ObjectUtils.nullSafeEquals(getComponentIncludes(),
 				other.getComponentIncludes());
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 0;
+		result = prime * result + Boolean.hashCode(hasAnnotation());
+		for (FilterType filterType : FilterType.values()) {
+			result = prime * result
+					+ ObjectUtils.nullSafeHashCode(getFilters(filterType));
+		}
+		result = prime * result + Boolean.hashCode(isUseDefaultFilters());
+		result = prime * result + ObjectUtils.nullSafeHashCode(getDefaultIncludes());
+		result = prime * result + ObjectUtils.nullSafeHashCode(getComponentIncludes());
 		return result;
 	}
 

@@ -60,6 +60,14 @@ public class EndpointRequestTests {
 	}
 
 	@Test
+	public void toAnyEndpointShouldMatchEndpointPathWithTrailingSlash() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
+		assertMatcher(matcher).matches("/actuator/foo/");
+		assertMatcher(matcher).matches("/actuator/bar/");
+		assertMatcher(matcher).matches("/actuator/");
+	}
+
+	@Test
 	public void toAnyEndpointWhenBasePathIsEmptyShouldNotMatchLinks() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "");
@@ -104,6 +112,7 @@ public class EndpointRequestTests {
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
 		assertMatcher(matcher).matches("/actuator");
+		assertMatcher(matcher).matches("/actuator/");
 	}
 
 	@Test

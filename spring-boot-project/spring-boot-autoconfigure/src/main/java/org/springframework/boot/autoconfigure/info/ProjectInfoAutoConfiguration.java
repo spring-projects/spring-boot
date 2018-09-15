@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class ProjectInfoAutoConfiguration {
 	}
 
 	protected Properties loadFrom(Resource location, String prefix) throws IOException {
-		String p = (prefix.endsWith(".") ? prefix : prefix + ".");
+		String p = prefix.endsWith(".") ? prefix : prefix + ".";
 		Properties source = PropertiesLoaderUtils.loadProperties(location);
 		Properties target = new Properties();
 		for (String key : source.stringPropertyNames()) {
@@ -91,7 +91,7 @@ public class ProjectInfoAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ResourceLoader loader = context.getResourceLoader();
-			loader = (loader != null ? loader : this.defaultResourceLoader);
+			loader = (loader != null) ? loader : this.defaultResourceLoader;
 			Environment environment = context.getEnvironment();
 			String location = environment.getProperty("spring.info.git.location");
 			if (location == null) {

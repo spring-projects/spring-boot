@@ -135,7 +135,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = (getPort() >= 0) ? getPort() : 0;
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = new Server(getThreadPool());
 		server.addConnector(createConnector(address, server));

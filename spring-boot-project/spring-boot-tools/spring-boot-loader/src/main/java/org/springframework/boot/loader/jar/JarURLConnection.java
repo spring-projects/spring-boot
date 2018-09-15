@@ -204,7 +204,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 				return this.jarFile.size();
 			}
 			JarEntry entry = getJarEntry();
-			return (entry != null ? (int) entry.getSize() : -1);
+			return (entry != null) ? (int) entry.getSize() : -1;
 		}
 		catch (IOException ex) {
 			return -1;
@@ -214,12 +214,12 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public Object getContent() throws IOException {
 		connect();
-		return (this.jarEntryName.isEmpty() ? this.jarFile : super.getContent());
+		return this.jarEntryName.isEmpty() ? this.jarFile : super.getContent();
 	}
 
 	@Override
 	public String getContentType() {
-		return (this.jarEntryName != null ? this.jarEntryName.getContentType() : null);
+		return (this.jarEntryName != null) ? this.jarEntryName.getContentType() : null;
 	}
 
 	@Override
@@ -241,7 +241,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 		try {
 			JarEntry entry = getJarEntry();
-			return (entry != null ? entry.getTime() : 0);
+			return (entry != null) ? entry.getTime() : 0;
 		}
 		catch (IOException ex) {
 			return 0;
@@ -386,9 +386,9 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 		private String deduceContentType() {
 			// Guess the content type, don't bother with streams as mark is not supported
-			String type = (isEmpty() ? "x-java/jar" : null);
-			type = (type != null ? type : guessContentTypeFromName(toString()));
-			type = (type != null ? type : "content/unknown");
+			String type = isEmpty() ? "x-java/jar" : null;
+			type = (type != null) ? type : guessContentTypeFromName(toString());
+			type = (type != null) ? type : "content/unknown";
 			return type;
 		}
 

@@ -101,7 +101,7 @@ public class BasicJsonTester {
 	 * Create JSON content from the specified String source. The source can contain the
 	 * JSON itself or, if it ends with {@code .json}, the name of a resource to be loaded
 	 * using {@code resourceLoadClass}.
-	 * @param source JSON content or a {@code .json} resource name
+	 * @param source the JSON content or a {@code .json} resource name
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(CharSequence source) {

@@ -407,7 +407,7 @@ public class ConfigFileApplicationListenerTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=dev", "spring.profiles.include=other");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
-		assertThat(this.environment.getActiveProfiles()).contains("dev", "other");
+		assertThat(this.environment.getActiveProfiles()).containsExactly("other", "dev");
 		assertThat(this.environment.getProperty("my.property"))
 				.isEqualTo("fromdevpropertiesfile");
 		validateProfilePrecedence(null, "other", "dev");
@@ -487,7 +487,7 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	private String createLogForProfile(String profile) {
-		String suffix = (profile != null ? "-" + profile : "");
+		String suffix = (profile != null) ? "-" + profile : "";
 		String string = ".properties)";
 		return "Loaded config file '"
 				+ new File("target/test-classes/application" + suffix + ".properties")
@@ -950,6 +950,21 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(environment.getProperty("message")).isEqualTo("multiprofile");
 	}
 
+	@Test
+	public void propertiesFromCustomPropertySourceLoaderShouldBeUsed() {
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("customloader1")).isEqualTo("true");
+	}
+
+	@Test
+	public void propertiesFromCustomPropertySourceLoaderShouldBeUsedWithSpecificResource() {
+		String location = "classpath:application.custom";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("customloader1")).isEqualTo("true");
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(
 			final String sourceName) {
 		return new Condition<ConfigurableEnvironment>(
@@ -1042,7 +1057,7 @@ public class ConfigFileApplicationListenerTests {
 		@Override
 		public void postProcessEnvironment(ConfigurableEnvironment environment,
 				SpringApplication application) {
-			assertThat(environment.getPropertySources()).hasSize(4);
+			assertThat(environment.getPropertySources()).hasSize(5);
 		}
 
 	}

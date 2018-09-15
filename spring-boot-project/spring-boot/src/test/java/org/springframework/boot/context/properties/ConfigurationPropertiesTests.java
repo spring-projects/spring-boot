@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -48,6 +49,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
+import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -71,6 +73,8 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
+import org.springframework.util.unit.DataUnit;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -350,6 +354,15 @@ public class ConfigurationPropertiesTests {
 		WithPropertyPlaceholderValueProperties bean = this.context
 				.getBean(WithPropertyPlaceholderValueProperties.class);
 		assertThat(bean.getValue()).isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWithPropertyPlaceholderShouldNotAlterPropertySourceOrder() {
+		load(WithPropertyPlaceholderWithLocalPropertiesValueConfiguration.class,
+				"com.example.bar=a");
+		SimplePrefixedProperties bean = this.context
+				.getBean(SimplePrefixedProperties.class);
+		assertThat(bean.getBar()).isEqualTo("a");
 	}
 
 	@Test
@@ -758,8 +771,36 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void loadWhenBindingToDataSizeShouldBind() {
+		load(DataSizeProperties.class, "test.size=10GB", "test.another-size=5");
+		DataSizeProperties bean = this.context.getBean(DataSizeProperties.class);
+		assertThat(bean.getSize()).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(bean.getAnotherSize()).isEqualTo(DataSize.ofKilobytes(5));
+	}
+
+	@Test
 	public void loadWhenTopLevelConverterNotFoundExceptionShouldNotFail() {
 		load(PersonProperties.class, "test=boot");
+	}
+
+	@Test
+	public void loadWhenConfigurationPropertiesContainsMapWithPositiveAndNegativeIntegerKeys() {
+		// gh-14136
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.map.x.[-1].a", "baz");
+		source.put("test.map.x.1.a", "bar");
+		source.put("test.map.x.1.b", 1);
+		sources.addLast(new MapPropertySource("test", source));
+		load(WithIntegerMapProperties.class);
+		WithIntegerMapProperties bean = this.context
+				.getBean(WithIntegerMapProperties.class);
+		Map<Integer, Foo> x = bean.getMap().get("x");
+		assertThat(x.get(-1).getA()).isEqualTo("baz");
+		assertThat(x.get(-1).getB()).isEqualTo(0);
+		assertThat(x.get(1).getA()).isEqualTo("bar");
+		assertThat(x.get(1).getB()).isEqualTo(1);
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
@@ -955,6 +996,21 @@ public class ConfigurationPropertiesTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer configurer() {
 			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(SimplePrefixedProperties.class)
+	static class WithPropertyPlaceholderWithLocalPropertiesValueConfiguration {
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer configurer() {
+			PropertySourcesPlaceholderConfigurer placeholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+			Properties properties = new Properties();
+			properties.put("com.example.bar", "b");
+			placeholderConfigurer.setProperties(properties);
+			return placeholderConfigurer;
 		}
 
 	}
@@ -1522,6 +1578,22 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class WithIntegerMapProperties {
+
+		private Map<String, Map<Integer, Foo>> map;
+
+		public Map<String, Map<Integer, Foo>> getMap() {
+			return this.map;
+		}
+
+		public void setMap(Map<String, Map<Integer, Foo>> map) {
+			this.map = map;
+		}
+
+	}
+
+	@EnableConfigurationProperties
 	@ConfigurationProperties(prefix = "com.example", ignoreUnknownFields = false)
 	static class SimplePrefixedProperties {
 
@@ -1667,6 +1739,33 @@ public class ConfigurationPropertiesTests {
 
 	}
 
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class DataSizeProperties {
+
+		private DataSize size;
+
+		@DataSizeUnit(DataUnit.KILOBYTES)
+		private DataSize anotherSize;
+
+		public DataSize getSize() {
+			return this.size;
+		}
+
+		public void setSize(DataSize size) {
+			this.size = size;
+		}
+
+		public DataSize getAnotherSize() {
+			return this.anotherSize;
+		}
+
+		public void setAnotherSize(DataSize anotherSize) {
+			this.anotherSize = anotherSize;
+		}
+
+	}
+
 	static class CustomPropertiesValidator implements Validator {
 
 		@Override
@@ -1729,6 +1828,30 @@ public class ConfigurationPropertiesTests {
 		Person(String firstName, String lastName) {
 			this.firstName = firstName;
 			this.lastName = lastName;
+		}
+
+	}
+
+	static class Foo {
+
+		private String a;
+
+		private int b;
+
+		public String getA() {
+			return this.a;
+		}
+
+		public void setA(String a) {
+			this.a = a;
+		}
+
+		public int getB() {
+			return this.b;
+		}
+
+		public void setB(int b) {
+			this.b = b;
 		}
 
 	}

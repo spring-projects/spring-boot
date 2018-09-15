@@ -78,6 +78,8 @@ org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration
 
 # AutoConfigureWebClient auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient=\
+org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration,\
 org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration
 
 # AutoConfigureWebFlux auto-configuration imports
@@ -128,6 +130,7 @@ org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfigurati
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
 org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
+org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,\

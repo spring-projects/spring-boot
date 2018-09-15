@@ -18,15 +18,19 @@ package org.springframework.boot.autoconfigure.web.embedded;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Customization for Netty-specific features.
  *
  * @author Brian Clozel
+ * @author Chentao Qu
  * @since 2.1.0
  */
 public class NettyWebServerFactoryCustomizer
@@ -51,6 +55,11 @@ public class NettyWebServerFactoryCustomizer
 	public void customize(NettyReactiveWebServerFactory factory) {
 		factory.setUseForwardHeaders(
 				getOrDeduceUseForwardHeaders(this.serverProperties, this.environment));
+		PropertyMapper propertyMapper = PropertyMapper.get();
+		propertyMapper.from(this.serverProperties::getMaxHttpHeaderSize).whenNonNull()
+				.asInt(DataSize::toBytes)
+				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpHeaderSize(factory,
+						maxHttpRequestHeaderSize));
 	}
 
 	private boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
@@ -60,6 +69,13 @@ public class NettyWebServerFactoryCustomizer
 		}
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		return platform != null && platform.isUsingForwardHeaders();
+	}
+
+	private void customizeMaxHttpHeaderSize(NettyReactiveWebServerFactory factory,
+			Integer maxHttpHeaderSize) {
+		factory.addServerCustomizers((NettyServerCustomizer) (httpServer) -> httpServer
+				.httpRequestDecoder((httpRequestDecoderSpec) -> httpRequestDecoderSpec
+						.maxHeaderSize(maxHttpHeaderSize)));
 	}
 
 }

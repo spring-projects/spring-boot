@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfigura
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -34,13 +35,14 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  * @since 1.2.0
  */
+@Configuration
 @ConditionalOnClass(javax.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
 		ActiveMQAutoConfiguration.class, ArtemisAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
 @Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class,
-		AtomikosJtaConfiguration.class, NarayanaJtaConfiguration.class })
+		AtomikosJtaConfiguration.class })
 @EnableConfigurationProperties(JtaProperties.class)
 public class JtaAutoConfiguration {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,9 @@ public class DefaultRepositorySystemSessionAutoConfiguration
 		ProxySelector existing = session.getProxySelector();
 		if (existing == null || !(existing instanceof CompositeProxySelector)) {
 			JreProxySelector fallback = new JreProxySelector();
-			ProxySelector selector = (existing != null
+			ProxySelector selector = (existing != null)
 					? new CompositeProxySelector(Arrays.asList(existing, fallback))
-					: fallback);
+					: fallback;
 			session.setProxySelector(selector);
 		}
 	}

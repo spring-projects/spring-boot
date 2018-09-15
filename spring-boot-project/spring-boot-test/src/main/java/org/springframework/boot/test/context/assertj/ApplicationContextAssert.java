@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * AssertJ {@link org.assertj.core.api.Assert assertions} that can be applied to an
  * {@link ApplicationContext}.
  *
- * @param <C> The application context type
+ * @param <C> the application context type
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 2.0.0
@@ -278,8 +278,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 					"%nExpecting:%n <%s>%nsingle bean of type:%n <%s>%nbut found:%n <%s>",
 					getApplicationContext(), type, names));
 		}
-		T bean = (names.length != 0 ? getApplicationContext().getBean(names[0], type)
-				: null);
+		T bean = (names.length != 0) ? getApplicationContext().getBean(names[0], type)
+				: null;
 		return Assertions.assertThat(bean).as("Bean of type <%s> from <%s>", type,
 				getApplicationContext());
 	}

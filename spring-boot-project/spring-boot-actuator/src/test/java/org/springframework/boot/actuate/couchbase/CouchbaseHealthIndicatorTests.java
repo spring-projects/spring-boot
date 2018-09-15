@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.springframework.boot.actuate.couchbase;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.bucket.BucketInfo;
@@ -51,7 +54,7 @@ public class CouchbaseHealthIndicatorTests {
 		given(bucketInfo.nodeList()).willReturn(
 				Collections.singletonList(InetAddress.getByName("127.0.0.1")));
 		BucketManager bucketManager = mock(BucketManager.class);
-		given(bucketManager.info()).willReturn(bucketInfo);
+		given(bucketManager.info(2000, TimeUnit.MILLISECONDS)).willReturn(bucketInfo);
 		Bucket bucket = mock(Bucket.class);
 		given(bucket.bucketManager()).willReturn(bucketManager);
 		ClusterInfo clusterInfo = mock(ClusterInfo.class);
@@ -61,7 +64,7 @@ public class CouchbaseHealthIndicatorTests {
 		given(couchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
 		given(couchbaseOperations.getCouchbaseClusterInfo()).willReturn(clusterInfo);
 		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
-				couchbaseOperations);
+				couchbaseOperations, Duration.ofSeconds(2));
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsOnly(entry("versions", "1.2.3"),
@@ -71,12 +74,28 @@ public class CouchbaseHealthIndicatorTests {
 	}
 
 	@Test
+	public void couchbaseTimeout() {
+		BucketManager bucketManager = mock(BucketManager.class);
+		given(bucketManager.info(1500, TimeUnit.MILLISECONDS)).willThrow(
+				new RuntimeException(new TimeoutException("timeout, expected")));
+		Bucket bucket = mock(Bucket.class);
+		given(bucket.bucketManager()).willReturn(bucketManager);
+		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
+		given(couchbaseOperations.getCouchbaseBucket()).willReturn(bucket);
+		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
+				couchbaseOperations, Duration.ofMillis(1500));
+		Health health = healthIndicator.health();
+		assertThat((String) health.getDetails().get("error"))
+				.contains("timeout, expected");
+	}
+
+	@Test
 	public void couchbaseIsDown() {
 		CouchbaseOperations couchbaseOperations = mock(CouchbaseOperations.class);
 		given(couchbaseOperations.getCouchbaseClusterInfo())
 				.willThrow(new IllegalStateException("test, expected"));
 		CouchbaseHealthIndicator healthIndicator = new CouchbaseHealthIndicator(
-				couchbaseOperations);
+				couchbaseOperations, Duration.ofSeconds(1));
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("test, expected");

@@ -78,12 +78,13 @@ public class ServletContextInitializerBeans
 
 	private List<ServletContextInitializer> sortedList;
 
+	@SafeVarargs
 	public ServletContextInitializerBeans(ListableBeanFactory beanFactory,
 			Class<? extends ServletContextInitializer>... initializerTypes) {
 		this.initializers = new LinkedMultiValueMap<>();
-		this.initializerTypes = (initializerTypes.length != 0
+		this.initializerTypes = (initializerTypes.length != 0)
 				? Arrays.asList(initializerTypes)
-				: Collections.singletonList(ServletContextInitializer.class));
+				: Collections.singletonList(ServletContextInitializer.class);
 		addServletContextInitializerBeans(beanFactory);
 		addAdaptableBeans(beanFactory);
 		List<ServletContextInitializer> sortedInitializers = this.initializers.values()
@@ -178,7 +179,7 @@ public class ServletContextInitializerBeans
 	private MultipartConfigElement getMultipartConfig(ListableBeanFactory beanFactory) {
 		List<Entry<String, MultipartConfigElement>> beans = getOrderedBeansOfType(
 				beanFactory, MultipartConfigElement.class);
-		return (beans.isEmpty() ? null : beans.get(0).getValue());
+		return beans.isEmpty() ? null : beans.get(0).getValue();
 	}
 
 	protected <T> void addAsRegistrationBean(ListableBeanFactory beanFactory,
@@ -260,6 +261,7 @@ public class ServletContextInitializerBeans
 	 *
 	 * @param <T> the type of the Bean to adapt
 	 */
+	@FunctionalInterface
 	protected interface RegistrationBeanAdapter<T> {
 
 		RegistrationBean createRegistrationBean(String name, T source,
@@ -282,7 +284,7 @@ public class ServletContextInitializerBeans
 		@Override
 		public RegistrationBean createRegistrationBean(String name, Servlet source,
 				int totalNumberOfSourceBeans) {
-			String url = (totalNumberOfSourceBeans != 1 ? "/" + name + "/" : "/");
+			String url = (totalNumberOfSourceBeans != 1) ? "/" + name + "/" : "/";
 			if (name.equals(DISPATCHER_SERVLET_NAME)) {
 				url = "/"; // always map the main dispatcherServlet to "/"
 			}

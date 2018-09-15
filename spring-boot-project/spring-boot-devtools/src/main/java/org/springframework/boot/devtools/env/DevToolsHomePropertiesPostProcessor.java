@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
 		File home = getHomeFolder();
-		File propertyFile = (home != null ? new File(home, FILE_NAME) : null);
+		File propertyFile = (home != null) ? new File(home, FILE_NAME) : null;
 		if (propertyFile != null && propertyFile.exists() && propertyFile.isFile()) {
 			FileSystemResource resource = new FileSystemResource(propertyFile);
 			Properties properties;

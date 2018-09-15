@@ -31,6 +31,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFacto
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TomcatMetrics}.
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
+@Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ TomcatMetrics.class, Manager.class })
 public class TomcatMetricsAutoConfiguration {
@@ -47,7 +49,8 @@ public class TomcatMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public TomcatMetrics tomcatMetrics() {
-		return new TomcatMetrics(this.context != null ? this.context.getManager() : null,
+		return new TomcatMetrics(
+				(this.context != null) ? this.context.getManager() : null,
 				Collections.emptyList());
 	}
 

@@ -31,11 +31,13 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
@@ -94,8 +96,8 @@ public class SpringApplicationBuilder {
 	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
 	 * given sources. Subclasses may override in order to provide a custom subclass of
 	 * {@link org.springframework.boot.SpringApplication}
-	 * @param sources The sources
-	 * @return The {@link org.springframework.boot.SpringApplication} instance
+	 * @param sources the sources
+	 * @return the {@link org.springframework.boot.SpringApplication} instance
 	 * @since 1.1.0
 	 */
 	protected SpringApplication createSpringApplication(Class<?>... sources) {
@@ -313,7 +315,7 @@ public class SpringApplicationBuilder {
 	/**
 	 * Sets the {@link Banner} instance which will be used to print the banner when no
 	 * static banner file is provided.
-	 * @param banner The banner to use
+	 * @param banner the banner to use
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder banner(Banner banner) {
@@ -371,6 +373,19 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
+	 * Flag to indicate if the {@link ApplicationConversionService} should be added to the
+	 * application context's {@link Environment}.
+	 * @param addConversionService if the conversion service should be added.
+	 * @return the current builder
+	 * @since 2.1.0
+	 */
+	public SpringApplicationBuilder setAddConversionService(
+			boolean addConversionService) {
+		this.application.setAddConversionService(addConversionService);
+		return this;
+	}
+
+	/**
 	 * Default properties for the environment in the form {@code key=value} or
 	 * {@code key:value}.
 	 * @param defaultProperties the properties to set.
@@ -384,8 +399,8 @@ public class SpringApplicationBuilder {
 		Map<String, Object> map = new HashMap<>();
 		for (String property : properties) {
 			int index = lowestIndexOf(property, ":", "=");
-			String key = (index > 0 ? property.substring(0, index) : property);
-			String value = (index > 0 ? property.substring(index + 1) : "");
+			String key = (index > 0) ? property.substring(0, index) : property;
+			String value = (index > 0) ? property.substring(index + 1) : "";
 			map.put(key, value);
 		}
 		return map;
@@ -396,7 +411,7 @@ public class SpringApplicationBuilder {
 		for (String candidate : candidates) {
 			int candidateIndex = property.indexOf(candidate);
 			if (candidateIndex > 0) {
-				index = (index != -1 ? Math.min(index, candidateIndex) : candidateIndex);
+				index = (index != -1) ? Math.min(index, candidateIndex) : candidateIndex;
 			}
 		}
 		return index;

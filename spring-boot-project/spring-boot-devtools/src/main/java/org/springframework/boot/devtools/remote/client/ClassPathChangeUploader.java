@@ -132,8 +132,8 @@ public class ClassPathChangeUploader
 
 	private void logUpload(ClassLoaderFiles classLoaderFiles) {
 		int size = classLoaderFiles.size();
-		logger.info(
-				"Uploaded " + size + " class " + (size != 1 ? "resources" : "resource"));
+		logger.info("Uploaded " + size + " class "
+				+ ((size != 1) ? "resources" : "resource"));
 	}
 
 	private byte[] serialize(ClassLoaderFiles classLoaderFiles) throws IOException {
@@ -160,10 +160,10 @@ public class ClassPathChangeUploader
 	private ClassLoaderFile asClassLoaderFile(ChangedFile changedFile)
 			throws IOException {
 		ClassLoaderFile.Kind kind = TYPE_MAPPINGS.get(changedFile.getType());
-		byte[] bytes = (kind != Kind.DELETED
-				? FileCopyUtils.copyToByteArray(changedFile.getFile()) : null);
-		long lastModified = (kind != Kind.DELETED ? changedFile.getFile().lastModified()
-				: System.currentTimeMillis());
+		byte[] bytes = (kind != Kind.DELETED)
+				? FileCopyUtils.copyToByteArray(changedFile.getFile()) : null;
+		long lastModified = (kind != Kind.DELETED) ? changedFile.getFile().lastModified()
+				: System.currentTimeMillis();
 		return new ClassLoaderFile(kind, lastModified, bytes);
 	}
 

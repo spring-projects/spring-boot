@@ -304,7 +304,7 @@ public class PropertiesLauncher extends Launcher {
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
 			// "" means the user wants root of archive but not current directory
-			path = ("".equals(path) ? "/" : path);
+			path = "".equals(path) ? "/" : path;
 			paths.add(path);
 		}
 		if (paths.isEmpty()) {
@@ -434,9 +434,9 @@ public class PropertiesLauncher extends Launcher {
 				return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
 			}
 		}
-		return (defaultValue != null
+		return (defaultValue != null)
 				? SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue)
-				: defaultValue);
+				: defaultValue;
 	}
 
 	@Override

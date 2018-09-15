@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,7 @@ public class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleServerHttpSecurity.class)).isFalse();
 	}
 
 	@Test
@@ -65,6 +67,7 @@ public class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleServerHttpSecurity.class)).isFalse();
 	}
 
 	@Test
@@ -77,6 +80,7 @@ public class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isTrue();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleServerHttpSecurity.class)).isTrue();
 	}
 
 	@Test
@@ -89,6 +93,7 @@ public class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
+		assertThat(excludes(filter, ExampleServerHttpSecurity.class)).isFalse();
 	}
 
 	@Test
@@ -101,6 +106,7 @@ public class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleWeb.class)).isFalse();
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
+		assertThat(excludes(filter, ExampleServerHttpSecurity.class)).isFalse();
 	}
 
 	private boolean excludes(WebFluxTypeExcludeFilter filter, Class<?> type)
@@ -161,6 +167,10 @@ public class WebFluxTypeExcludeFilterTests {
 
 	@Repository
 	static class ExampleRepository {
+
+	}
+
+	static class ExampleServerHttpSecurity extends ServerHttpSecurity {
 
 	}
 

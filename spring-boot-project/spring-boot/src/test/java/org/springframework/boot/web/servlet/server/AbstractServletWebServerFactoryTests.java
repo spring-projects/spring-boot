@@ -305,9 +305,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void multipleConfigurations() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		ServletContextInitializer[] initializers = new ServletContextInitializer[6];
-		for (int i = 0; i < initializers.length; i++) {
-			initializers[i] = mock(ServletContextInitializer.class);
-		}
+		Arrays.setAll(initializers, (i) -> mock(ServletContextInitializer.class));
 		factory.setInitializers(Arrays.asList(initializers[2], initializers[3]));
 		factory.addInitializers(initializers[4], initializers[5]);
 		this.webServer = factory.getWebServer(initializers[0], initializers[1]);
@@ -426,7 +424,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer(registration);
 		this.webServer.start();
 		TrustStrategy trustStrategy = new SerialNumberValidatingTrustSelfSignedStrategy(
-				"77e7c302");
+				"3a3aaec8");
 		SSLContext sslContext = new SSLContextBuilder()
 				.loadTrustMaterial(null, trustStrategy).build();
 		HttpClient httpClient = HttpClients.custom()
@@ -558,7 +556,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
-		factory.setSsl(getSsl(ClientAuth.WANT, "password", "classpath:test.jks"));
+		factory.setSsl(getSsl(ClientAuth.WANT, "password", "classpath:test.jks", null,
+				new String[] { "TLSv1.2" }, null));
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -692,7 +691,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols,
 			String[] ciphers) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks", null,
+		factory.setSsl(getSsl(null, "password", "src/test/resources/restricted.jks", null,
 				protocols, ciphers));
 		this.webServer = factory.getWebServer(
 				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
@@ -712,7 +711,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	private String getStoreType(String keyStore) {
-		return (keyStore.endsWith(".p12") ? "pkcs12" : null);
+		return keyStore.endsWith(".p12") ? "pkcs12" : null;
 	}
 
 	@Test

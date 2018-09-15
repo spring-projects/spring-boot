@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -129,8 +129,10 @@ public class RemoteClientConfiguration implements InitializingBean {
 	/**
 	 * LiveReload configuration.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
-	static class LiveReloadConfiguration {
+	static class LiveReloadConfiguration
+			implements ApplicationListener<ClassPathChangedEvent> {
 
 		@Autowired
 		private DevToolsProperties properties;
@@ -154,8 +156,8 @@ public class RemoteClientConfiguration implements InitializingBean {
 					Restarter.getInstance().getThreadFactory());
 		}
 
-		@EventListener
-		public void onClassPathChanged(ClassPathChangedEvent event) {
+		@Override
+		public void onApplicationEvent(ClassPathChangedEvent event) {
 			String url = this.remoteUrl + this.properties.getRemote().getContextPath();
 			this.executor.execute(new DelayedLiveReloadTrigger(optionalLiveReloadServer(),
 					this.clientHttpRequestFactory, url));
@@ -175,6 +177,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 	/**
 	 * Client configuration for remote update and restarts.
 	 */
+	@Configuration
 	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
 	static class RemoteRestartClientConfiguration {
 

@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.jms.JmsPoolConnectionFactoryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -72,7 +73,7 @@ public class ActiveMQProperties {
 	private Duration sendTimeout = Duration.ofMillis(0);
 
 	@NestedConfigurationProperty
-	private final PooledConnectionFactoryProperties pool = new PooledConnectionFactoryProperties();
+	private final JmsPoolConnectionFactoryProperties pool = new JmsPoolConnectionFactoryProperties();
 
 	private final Packages packages = new Packages();
 
@@ -132,7 +133,7 @@ public class ActiveMQProperties {
 		this.sendTimeout = sendTimeout;
 	}
 
-	public PooledConnectionFactoryProperties getPool() {
+	public JmsPoolConnectionFactoryProperties getPool() {
 		return this.pool;
 	}
 

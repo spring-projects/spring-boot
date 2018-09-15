@@ -39,8 +39,19 @@ configuration).
 [[getting-started-system-requirements]]
 == System Requirements
 Spring Boot {spring-boot-version} requires https://www.java.com[Java 8 or 9] and
-{spring-reference}[Spring Framework {spring-version}] or above. Explicit build support is
-provided for Maven 3.2+ and Gradle 4.
+{spring-reference}[Spring Framework {spring-framework-version}] or above.
+
+Explicit build support is provided for the following build tools:
+
+|===
+|Build Tool |Version
+
+|Maven
+|3.2+
+
+|Gradle
+|4.4+
+|===
 
 
 
@@ -188,8 +199,8 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 4. If you do not already have Gradle installed, you
-can follow the instructions at https://gradle.org.
+Spring Boot is compatible with Gradle 4.4 and later. If you do not already have Gradle
+installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
 Typically, your project declares dependencies to one or more
@@ -465,7 +476,7 @@ feature, add the following dependency to your project:
 	</dependency>
 ----
 
-WARNING: properties that are added late to the environment, such as when using
+WARNING: Properties that are added late to the environment, such as when using
 `@PropertySource`, will not be taken into account.
 
 NOTE: Once you're done with the migration, please make sure to remove this module from
@@ -493,7 +504,7 @@ problem, check there first.
 You can shortcut the steps below by going to https://start.spring.io and choosing the
 "Web" starter from the dependencies searcher. Doing so generates a new project structure
 so that you can <<getting-started-first-application-code,start coding right away>>. Check
-the https://github.com/spring-io/initializr[Spring Initializr documentation] for more
+the {spring-initializr-reference}/#user-guide[Spring Initializr documentation] for more
 details.
 ====
 

@@ -77,7 +77,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 	@Override
 	public Attributes getAttributes() throws IOException {
 		Manifest manifest = this.jarFile.getManifest();
-		return (manifest != null ? manifest.getAttributes(getName()) : null);
+		return (manifest != null) ? manifest.getAttributes(getName()) : null;
 	}
 
 	@Override

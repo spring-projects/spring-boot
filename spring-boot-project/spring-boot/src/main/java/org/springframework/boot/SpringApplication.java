@@ -45,6 +45,8 @@ import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -213,6 +215,8 @@ public class SpringApplication {
 
 	private boolean addCommandLineProperties = true;
 
+	private boolean addConversionService = true;
+
 	private Banner banner;
 
 	private ResourceLoader resourceLoader;
@@ -238,6 +242,8 @@ public class SpringApplication {
 	private Set<String> additionalProfiles = new HashSet<>();
 
 	private boolean allowBeanDefinitionOverriding;
+
+	private boolean isCustomEnvironment = false;
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -364,12 +370,23 @@ public class SpringApplication {
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
-		if (this.webApplicationType == WebApplicationType.NONE) {
+		if (!this.isCustomEnvironment) {
 			environment = new EnvironmentConverter(getClassLoader())
-					.convertToStandardEnvironmentIfNecessary(environment);
+					.convertEnvironmentIfNecessary(environment, deduceEnvironmentClass());
 		}
 		ConfigurationPropertySources.attach(environment);
 		return environment;
+	}
+
+	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
+		switch (this.webApplicationType) {
+		case SERVLET:
+			return StandardServletEnvironment.class;
+		case REACTIVE:
+			return StandardReactiveWebEnvironment.class;
+		default:
+			return StandardEnvironment.class;
+		}
 	}
 
 	private void prepareContext(ConfigurableApplicationContext context,
@@ -383,7 +400,6 @@ public class SpringApplication {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);
 		}
-
 		// Add boot specific singleton beans
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
@@ -466,10 +482,14 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		if (this.webApplicationType == WebApplicationType.SERVLET) {
+		switch (this.webApplicationType) {
+		case SERVLET:
 			return new StandardServletEnvironment();
+		case REACTIVE:
+			return new StandardReactiveWebEnvironment();
+		default:
+			return new StandardEnvironment();
 		}
-		return new StandardEnvironment();
 	}
 
 	/**
@@ -485,6 +505,10 @@ public class SpringApplication {
 	 */
 	protected void configureEnvironment(ConfigurableEnvironment environment,
 			String[] args) {
+		if (this.addConversionService) {
+			environment.setConversionService(
+					ApplicationConversionService.getSharedInstance());
+		}
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
 	}
@@ -563,8 +587,8 @@ public class SpringApplication {
 		if (this.bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
-		ResourceLoader resourceLoader = (this.resourceLoader != null ? this.resourceLoader
-				: new DefaultResourceLoader(getClassLoader()));
+		ResourceLoader resourceLoader = (this.resourceLoader != null)
+				? this.resourceLoader : new DefaultResourceLoader(getClassLoader());
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(
 				resourceLoader, this.banner);
 		if (this.bannerMode == Mode.LOG) {
@@ -625,6 +649,10 @@ public class SpringApplication {
 				((DefaultResourceLoader) context)
 						.setClassLoader(this.resourceLoader.getClassLoader());
 			}
+		}
+		if (this.addConversionService) {
+			context.getBeanFactory().setConversionService(
+					ApplicationConversionService.getSharedInstance());
 		}
 	}
 
@@ -995,7 +1023,7 @@ public class SpringApplication {
 	/**
 	 * Sets the {@link Banner} instance which will be used to print the banner when no
 	 * static banner file is provided.
-	 * @param banner The Banner instance to use
+	 * @param banner the Banner instance to use
 	 */
 	public void setBanner(Banner banner) {
 		this.banner = banner;
@@ -1026,6 +1054,16 @@ public class SpringApplication {
 	 */
 	public void setAddCommandLineProperties(boolean addCommandLineProperties) {
 		this.addCommandLineProperties = addCommandLineProperties;
+	}
+
+	/**
+	 * Sets if the {@link ApplicationConversionService} should be added to the application
+	 * context's {@link Environment}.
+	 * @param addConversionService if the application conversion service should be added
+	 * @since 2.1.0
+	 */
+	public void setAddConversionService(boolean addConversionService) {
+		this.addConversionService = addConversionService;
 	}
 
 	/**
@@ -1071,6 +1109,7 @@ public class SpringApplication {
 	 * @param environment the environment
 	 */
 	public void setEnvironment(ConfigurableEnvironment environment) {
+		this.isCustomEnvironment = true;
 		this.environment = environment;
 	}
 
@@ -1301,7 +1340,7 @@ public class SpringApplication {
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
-			exitCode = (exitCode != 0 ? exitCode : 1);
+			exitCode = (exitCode != 0) ? exitCode : 1;
 		}
 		return exitCode;
 	}

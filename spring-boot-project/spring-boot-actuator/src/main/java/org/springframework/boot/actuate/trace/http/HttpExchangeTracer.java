@@ -86,7 +86,7 @@ public class HttpExchangeTracer {
 	}
 
 	private <T> T getIfIncluded(Include include, Supplier<T> valueSupplier) {
-		return (this.includes.contains(include) ? valueSupplier.get() : null);
+		return this.includes.contains(include) ? valueSupplier.get() : null;
 	}
 
 	private <T> void setIfIncluded(Include include, Supplier<T> supplier,
@@ -127,8 +127,11 @@ public class HttpExchangeTracer {
 
 		@Override
 		public Map<String, List<String>> getHeaders() {
-			return getHeadersIfIncluded(Include.REQUEST_HEADERS,
-					this.delegate::getHeaders, this::includedHeader);
+			Map<String, List<String>> headers = getHeadersIfIncluded(
+					Include.REQUEST_HEADERS, this.delegate::getHeaders,
+					this::includedHeader);
+			postProcessRequestHeaders(headers);
+			return headers;
 		}
 
 		private boolean includedHeader(String name) {

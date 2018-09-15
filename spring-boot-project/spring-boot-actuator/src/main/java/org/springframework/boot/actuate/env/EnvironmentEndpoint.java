@@ -160,7 +160,7 @@ public class EnvironmentEndpoint {
 
 	private String getOrigin(OriginLookup<Object> lookup, String name) {
 		Origin origin = lookup.getOrigin(name);
-		return (origin != null ? origin.toString() : null);
+		return (origin != null) ? origin.toString() : null;
 	}
 
 	private PlaceholdersResolver getResolver() {

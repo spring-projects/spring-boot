@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,8 +161,7 @@ public class HttpTunnelConnectionTests {
 
 	private TunnelChannel openTunnel(boolean singleThreaded) throws Exception {
 		HttpTunnelConnection connection = new HttpTunnelConnection(this.url,
-				this.requestFactory,
-				(singleThreaded ? new CurrentThreadExecutor() : null));
+				this.requestFactory, singleThreaded ? new CurrentThreadExecutor() : null);
 		return connection.open(this.incomingChannel, this.closeable);
 	}
 

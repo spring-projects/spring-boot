@@ -16,8 +16,11 @@
 
 package org.springframework.boot.env;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
@@ -32,8 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Artsiom Yudovin
  */
 public class SpringApplicationJsonEnvironmentPostProcessorTests {
+
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
 
 	private SpringApplicationJsonEnvironmentPostProcessor processor = new SpringApplicationJsonEnvironmentPostProcessor();
 
@@ -41,6 +48,8 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void error() {
+		this.expected.expect(JsonParseException.class);
+		this.expected.expectMessage("Cannot parse JSON");
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json=foo:bar");

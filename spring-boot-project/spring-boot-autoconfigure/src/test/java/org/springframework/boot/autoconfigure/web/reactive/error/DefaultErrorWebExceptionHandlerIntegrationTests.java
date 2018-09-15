@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfig
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,10 +43,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Integration tests for {@link DefaultErrorWebExceptionHandler}
@@ -70,9 +66,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
-
 	@Test
 	public void jsonError() {
 		this.contextRunner.run((context) -> {
@@ -85,8 +78,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.jsonPath("path").isEqualTo(("/")).jsonPath("message")
 					.isEqualTo("Expected!").jsonPath("exception").doesNotExist()
 					.jsonPath("trace").doesNotExist();
-			this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
-					containsString("IllegalStateException")));
 		});
 	}
 
@@ -112,8 +103,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.expectHeader().contentType(MediaType.TEXT_HTML)
 					.expectBody(String.class).returnResult().getResponseBody();
 			assertThat(body).contains("status: 500").contains("message: Expected!");
-			this.output.expect(allOf(containsString("Failed to handle request [GET /]"),
-					containsString("IllegalStateException")));
 		});
 	}
 
@@ -129,9 +118,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isEqualTo(("/bind")).jsonPath("exception").doesNotExist()
 					.jsonPath("errors").isArray().jsonPath("message").isNotEmpty();
 		});
-		this.output.expect(allOf(containsString("Failed to handle request [POST /bind]"),
-				containsString("Validation failed for argument"),
-				containsString("Field error in object 'dummyBody' on field 'content'")));
 	}
 
 	@Test
@@ -197,7 +183,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase())
 							.jsonPath("exception")
 							.isEqualTo(ResponseStatusException.class.getName());
-					this.output.expect(not(containsString("ResponseStatusException")));
 				});
 	}
 
@@ -215,9 +200,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
 							.contains("<div>Expected!</div>");
-					this.output.expect(
-							allOf(containsString("Failed to handle request [GET /]"),
-									containsString("IllegalStateException")));
 				});
 	}
 
@@ -235,9 +217,6 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.returnResult().getResponseBody();
 					assertThat(body).contains("Whitelabel Error Page")
 							.doesNotContain("<script>").contains("&lt;script&gt;");
-					this.output.expect(
-							allOf(containsString("Failed to handle request [GET /html]"),
-									containsString("IllegalStateException")));
 				});
 	}
 

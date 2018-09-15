@@ -473,25 +473,6 @@ disabled to prevent the possibility of a clash with other mappings.
 
 
 
-[[production-ready-endpoints-custom-mapping]]
-=== Actuator Web Endpoint Paths
-By default, endpoints are exposed over HTTP under the `/actuator` path by using the ID of
-the endpoint. For example, the `beans` endpoint is exposed under `/actuator/beans`. If you
-want to map endpoints to a different path, you can use the
-`management.endpoints.web.path-mapping` property. Also, if you want change the base path,
-you can use `management.endpoints.web.base-path`.
-
-The following example remaps `/actuator/health` to `/healthcheck`:
-
-.application.properties
-[source,properties,indent=0]
-----
-	management.endpoints.web.base-path=/
-	management.endpoints.web.path-mapping.health=healthcheck
-----
-
-
-
 [[production-ready-endpoints-cors]]
 === CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
@@ -543,6 +524,24 @@ the values for these parameters are taken from the URL's query parameters and fr
 JSON request body. When exposed via JMX, the parameters are mapped to the parameters of
 the MBean's operations. Parameters are required by default. They can be made optional
 by annotating them with `@org.springframework.lang.Nullable`.
+
+Each root property in the JSON request body can be mapped to a parameter of the endpoint.
+Consider the following JSON request body:
+
+[source,json,indent=0]
+----
+	{
+		"name": "test",
+		"counter": 42
+	}
+----
+
+This can be used to invoke a write operation that takes `String name` and `int counter`
+parameters.
+
+TIP: Because endpoints are technology agnostic, only simple types can be specified in the
+method signature. In particular declaring a single parameter with a custom type defining a
+`name` and `counter` properties is not supported.
 
 NOTE: To allow the input to be mapped to the operation method's parameters, Java code
 implementing an endpoint should be compiled with `-parameters`, and Kotlin code
@@ -1067,14 +1066,12 @@ additional entry:
 ----
 
 
-
 [[production-ready-monitoring]]
 == Monitoring and Management over HTTP
 If you are developing a web application, Spring Boot Actuator auto-configures all
 enabled endpoints to be exposed over HTTP. The default convention is to use the `id` of
 the endpoint with a prefix of `/actuator` as the URL path. For example, `health` is
 exposed as `/actuator/health`.
-
 TIP: Actuator is supported natively with Spring MVC, Spring WebFlux, and Jersey.
 
 
@@ -1100,6 +1097,18 @@ different HTTP port>>, `management.endpoints.web.base-path` is relative to
 `server.servlet.context-path`. If `management.server.port` is configured,
 `management.endpoints.web.base-path` is relative to
 `management.server.servlet.context-path`.
+
+If you want to map endpoints to a different path, you can use the
+`management.endpoints.web.path-mapping` property.
+
+The following example remaps `/actuator/health` to `/healthcheck`:
+
+.application.properties
+[source,properties,indent=0]
+----
+	management.endpoints.web.base-path=/
+	management.endpoints.web.path-mapping.health=healthcheck
+----
 
 
 
@@ -1184,6 +1193,14 @@ If you do not want to expose endpoints over HTTP, you can set the management por
 	management.server.port=-1
 ----
 
+This can be achieved using the `management.endpoints.web.exposure.exclude` property as well, as shown in
+following example:
+
+[source,properties,indent=0]
+----
+	management.endpoints.web.exposure.exclude=*
+----
+
 
 
 [[production-ready-jmx]]
@@ -1200,17 +1217,16 @@ The name of the MBean is usually generated from the `id` of the endpoint. For ex
 `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
 
 If your application contains more than one Spring `ApplicationContext`, you may find that
-names clash. To solve this problem, you can set the
-`management.endpoints.jmx.unique-names` property to `true` so that MBean names are always
-unique.
+names clash. To solve this problem, you can set the `spring.jmx.unique-names` property to
+`true` so that MBean names are always unique.
 
 You can also customize the JMX domain under which endpoints are exposed. The following
 settings show an example of doing so in `application.properties`:
 
 [source,properties,indent=0]
 ----
+	spring.jmx.unique-names=true
 	management.endpoints.jmx.domain=com.example.myapp
-	management.endpoints.jmx.unique-names=true
 ----
 
 
@@ -1239,7 +1255,7 @@ Maven, you would add the following dependency:
 	<dependency>
 		<groupId>org.jolokia</groupId>
 		<artifactId>jolokia-core</artifactId>
- 	</dependency>
+	</dependency>
 ----
 
 The Jolokia endpoint can then be exposed by adding `jolokia` or `*` to the
@@ -1497,8 +1513,8 @@ server] to use can be provided using:
 ==== JMX
 Micrometer provides a hierarchical mapping to
 {micrometer-registry-documentation}/jmx[JMX], primarily as a cheap and portable way to
-view metrics locally.By default, metrics are exported to the `metrics` JMX domain. The
-domain to use can be provided provided using:
+view metrics locally. By default, metrics are exported to the `metrics` JMX domain. The
+domain to use can be provided using:
 
 [source,properties,indent=0]
 ----
@@ -1989,7 +2005,8 @@ endpoint and obtain basic information about the last 100 request-response exchan
 [[production-ready-http-tracing-custom]]
 === Custom HTTP tracing
 To customize the items that are included in each trace, use the
-`management.trace.http.include` configuration property.
+`management.trace.http.include` configuration property. For advanced customization,
+consider registering your own `HttpExchangeTracer` implementation.
 
 By default, an `InMemoryHttpTraceRepository` that stores traces for the last 100
 request-response exchanges is used. If you need to expand the capacity, you can define
@@ -2084,7 +2101,7 @@ services use self-signed certificates, you need to set the following property:
 
 === Custom context path
 
-If the server's context-path has been configured to anything other then `/`, the Cloud
+If the server's context-path has been configured to anything other than `/`, the Cloud
 Foundry endpoints will not be available at the root of the application. For example, if
 `server.servlet.context-path=/app`, Cloud Foundry endpoints will be available at
 `/app/cloudfoundryapplication/*`.

@@ -110,9 +110,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			setActiveProfiles(environment, config.getActiveProfiles());
 		}
-		ResourceLoader resourceLoader = (application.getResourceLoader() != null
+		ResourceLoader resourceLoader = (application.getResourceLoader() != null)
 				? application.getResourceLoader()
-				: new DefaultResourceLoader(getClass().getClassLoader()));
+				: new DefaultResourceLoader(getClass().getClassLoader());
 		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment,
 				resourceLoader, config.getPropertySourceLocations());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment,

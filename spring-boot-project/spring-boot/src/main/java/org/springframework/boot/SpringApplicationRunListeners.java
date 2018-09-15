@@ -99,7 +99,7 @@ class SpringApplicationRunListeners {
 			}
 			else {
 				String message = ex.getMessage();
-				message = (message != null ? message : "no error message");
+				message = (message != null) ? message : "no error message";
 				this.log.warn("Error handling failed (" + message + ")");
 			}
 		}

@@ -62,7 +62,7 @@ public class GitProperties extends InfoProperties {
 		if (id == null) {
 			return null;
 		}
-		return (id.length() > 7 ? id.substring(0, 7) : id);
+		return (id.length() > 7) ? id.substring(0, 7) : id;
 	}
 
 	/**

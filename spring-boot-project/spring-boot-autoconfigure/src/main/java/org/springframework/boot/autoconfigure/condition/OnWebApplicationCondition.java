@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,33 +62,33 @@ class OnWebApplicationCondition extends SpringBootCondition {
 
 	private ConditionOutcome isWebApplication(ConditionContext context,
 			AnnotatedTypeMetadata metadata, boolean required) {
+		switch (deduceType(metadata)) {
+		case SERVLET:
+			return isServletWebApplication(context);
+		case REACTIVE:
+			return isReactiveWebApplication(context);
+		default:
+			return isAnyWebApplication(context, required);
+		}
+	}
+
+	private ConditionOutcome isAnyWebApplication(ConditionContext context,
+			boolean required) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition(
 				ConditionalOnWebApplication.class, required ? "(required)" : "");
-		Type type = deduceType(metadata);
-		if (Type.SERVLET == type) {
-			return isServletWebApplication(context);
+		ConditionOutcome servletOutcome = isServletWebApplication(context);
+		if (servletOutcome.isMatch() && required) {
+			return new ConditionOutcome(servletOutcome.isMatch(),
+					message.because(servletOutcome.getMessage()));
 		}
-		else if (Type.REACTIVE == type) {
-			return isReactiveWebApplication(context);
+		ConditionOutcome reactiveOutcome = isReactiveWebApplication(context);
+		if (reactiveOutcome.isMatch() && required) {
+			return new ConditionOutcome(reactiveOutcome.isMatch(),
+					message.because(reactiveOutcome.getMessage()));
 		}
-		else {
-			ConditionOutcome servletOutcome = isServletWebApplication(context);
-			if (servletOutcome.isMatch() && required) {
-				return new ConditionOutcome(servletOutcome.isMatch(),
-						message.because(servletOutcome.getMessage()));
-			}
-			ConditionOutcome reactiveOutcome = isReactiveWebApplication(context);
-			if (reactiveOutcome.isMatch() && required) {
-				return new ConditionOutcome(reactiveOutcome.isMatch(),
-						message.because(reactiveOutcome.getMessage()));
-			}
-			boolean finalOutcome = (required
-					? servletOutcome.isMatch() && reactiveOutcome.isMatch()
-					: servletOutcome.isMatch() || reactiveOutcome.isMatch());
-			return new ConditionOutcome(finalOutcome,
-					message.because(servletOutcome.getMessage()).append("and")
-							.append(reactiveOutcome.getMessage()));
-		}
+		return new ConditionOutcome(servletOutcome.isMatch() || reactiveOutcome.isMatch(),
+				message.because(servletOutcome.getMessage()).append("and")
+						.append(reactiveOutcome.getMessage()));
 	}
 
 	private ConditionOutcome isServletWebApplication(ConditionContext context) {

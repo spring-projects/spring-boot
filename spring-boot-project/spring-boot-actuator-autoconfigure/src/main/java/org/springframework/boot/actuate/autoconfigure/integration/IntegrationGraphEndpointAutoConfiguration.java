@@ -26,8 +26,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.config.IntegrationConfigurationBeanFactoryPostProcessor;
 import org.springframework.integration.graph.IntegrationGraphServer;
-import org.springframework.integration.support.channel.HeaderChannelRegistry;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the
@@ -39,7 +39,7 @@ import org.springframework.integration.support.channel.HeaderChannelRegistry;
  */
 @Configuration
 @ConditionalOnClass(IntegrationGraphServer.class)
-@ConditionalOnBean(HeaderChannelRegistry.class)
+@ConditionalOnBean(IntegrationConfigurationBeanFactoryPostProcessor.class)
 @AutoConfigureAfter(IntegrationAutoConfiguration.class)
 public class IntegrationGraphEndpointAutoConfiguration {
 

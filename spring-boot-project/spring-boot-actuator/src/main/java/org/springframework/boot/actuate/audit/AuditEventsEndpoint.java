@@ -50,7 +50,7 @@ public class AuditEventsEndpoint {
 	}
 
 	private Instant getInstant(OffsetDateTime offsetDateTime) {
-		return (offsetDateTime != null ? offsetDateTime.toInstant() : null);
+		return (offsetDateTime != null) ? offsetDateTime.toInstant() : null;
 	}
 
 	/**

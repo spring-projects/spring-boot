@@ -169,21 +169,20 @@ public class FlywayAutoConfiguration {
 									+ " One type must be used exclusively.");
 				}
 			}
-			String[] locations = new LocationResolver(flyway.getDataSource())
-					.resolveLocations(this.properties.getLocations());
-			checkLocationExists(locations);
-			flyway.setLocations(locations);
+			checkLocationExists(flyway);
 			return flyway;
 		}
 
 		private String getProperty(Supplier<String> property,
 				Supplier<String> defaultValue) {
 			String value = property.get();
-			return (value != null ? value : defaultValue.get());
+			return (value != null) ? value : defaultValue.get();
 		}
 
-		private void checkLocationExists(String... locations) {
+		private void checkLocationExists(Flyway flyway) {
 			if (this.properties.isCheckLocation()) {
+				String[] locations = new LocationResolver(flyway.getDataSource())
+						.resolveLocations(this.properties.getLocations());
 				Assert.state(locations.length != 0,
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation(locations);

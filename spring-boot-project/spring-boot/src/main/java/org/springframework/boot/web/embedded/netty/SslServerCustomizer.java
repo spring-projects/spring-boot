@@ -94,8 +94,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = (ssl.getKeyPassword() != null
-					? ssl.getKeyPassword().toCharArray() : null);
+			char[] keyPassword = (ssl.getKeyPassword() != null)
+					? ssl.getKeyPassword().toCharArray() : null;
 			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
 			}
@@ -141,13 +141,13 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private KeyStore loadKeyStore(String type, String resource, String password)
 			throws Exception {
-		type = (type != null ? type : "JKS");
+		type = (type != null) ? type : "JKS";
 		if (resource == null) {
 			return null;
 		}
 		KeyStore store = KeyStore.getInstance(type);
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), password != null ? password.toCharArray() : null);
+		store.load(url.openStream(), (password != null) ? password.toCharArray() : null);
 		return store;
 	}
 

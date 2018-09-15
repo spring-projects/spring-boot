@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.couchbase;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import com.couchbase.client.java.bucket.BucketInfo;
 import com.couchbase.client.java.cluster.ClusterInfo;
 
@@ -35,26 +39,46 @@ import org.springframework.util.StringUtils;
  */
 public class CouchbaseHealthIndicator extends AbstractHealthIndicator {
 
-	private CouchbaseOperations operations;
+	private final CouchbaseOperations operations;
 
-	public CouchbaseHealthIndicator() {
-		super("Couchbase health check failed");
-	}
+	private final long timeout;
 
-	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations) {
+	/**
+	 * Create an indicator with the specified {@link CouchbaseOperations} and
+	 * {@code timeout}.
+	 * @param couchbaseOperations the couchbase operations
+	 * @param timeout the request timeout
+	 */
+	public CouchbaseHealthIndicator(CouchbaseOperations couchbaseOperations,
+			Duration timeout) {
 		super("Couchbase health check failed");
 		Assert.notNull(couchbaseOperations, "CouchbaseOperations must not be null");
+		Assert.notNull(timeout, "Timeout must not be null");
 		this.operations = couchbaseOperations;
+		this.timeout = timeout.toMillis();
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		ClusterInfo cluster = this.operations.getCouchbaseClusterInfo();
-		BucketInfo bucket = this.operations.getCouchbaseBucket().bucketManager().info();
+		BucketInfo bucket = getBucketInfo();
 		String versions = StringUtils
 				.collectionToCommaDelimitedString(cluster.getAllVersions());
 		String nodes = StringUtils.collectionToCommaDelimitedString(bucket.nodeList());
 		builder.up().withDetail("versions", versions).withDetail("nodes", nodes);
+	}
+
+	private BucketInfo getBucketInfo() throws Exception {
+		try {
+			return this.operations.getCouchbaseBucket().bucketManager().info(this.timeout,
+					TimeUnit.MILLISECONDS);
+		}
+		catch (RuntimeException ex) {
+			if (ex.getCause() instanceof TimeoutException) {
+				throw (TimeoutException) ex.getCause();
+			}
+			throw ex;
+		}
 	}
 
 }
