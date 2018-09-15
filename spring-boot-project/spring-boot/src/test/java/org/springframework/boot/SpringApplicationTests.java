@@ -126,6 +126,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Craig Burke
  * @author Madhura Bhave
  * @author Brian Clozel
+ * @author Artsiom Yudovin
  */
 public class SpringApplicationTests {
 

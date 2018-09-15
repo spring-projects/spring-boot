@@ -40,6 +40,7 @@ import org.springframework.util.ErrorHandler;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  */
 public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
 
