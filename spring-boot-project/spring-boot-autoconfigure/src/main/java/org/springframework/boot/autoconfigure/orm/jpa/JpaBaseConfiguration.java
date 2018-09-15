@@ -70,6 +70,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Kazuki Shimizu
  * @author Eddú Meléndez
  */
+@Configuration
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
