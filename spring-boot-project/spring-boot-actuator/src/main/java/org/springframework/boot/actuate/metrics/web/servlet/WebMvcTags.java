@@ -32,6 +32,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @author Brian Clozel
+ * @author Michael McFadyen
  * @since 2.0.0
  */
 public final class WebMvcTags {
@@ -47,6 +48,14 @@ public final class WebMvcTags {
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
 	private static final Tag STATUS_UNKNOWN = Tag.of("status", "UNKNOWN");
+
+	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
+
+	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
+
+	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
+
+	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
 
 	private static final Tag METHOD_UNKNOWN = Tag.of("method", "UNKNOWN");
 
@@ -64,7 +73,7 @@ public final class WebMvcTags {
 	}
 
 	/**
-	 * Creates a {@code method} tag based on the status of the given {@code response}.
+	 * Creates a {@code status} tag based on the status of the given {@code response}.
 	 * @param response the HTTP response
 	 * @return the status tag derived from the status of the response
 	 */
@@ -140,6 +149,29 @@ public final class WebMvcTags {
 					: exception.getClass().getName());
 		}
 		return EXCEPTION_NONE;
+	}
+
+	/**
+	 * Creates a {@code outcome} tag based on the status of the given {@code response}.
+	 * @param response the HTTP response
+	 * @return the outcome tag derived from the status of the response
+	 */
+	public static Tag outcome(HttpServletResponse response) {
+		if (response != null) {
+			int status = response.getStatus();
+			if (status < 400) {
+				return OUTCOME_SUCCESS;
+			}
+			else if (status < 500) {
+				return OUTCOME_CLIENT_ERROR;
+			}
+			else {
+				return OUTCOME_SERVER_ERROR;
+			}
+		}
+		else {
+			return OUTCOME_UNKNOWN;
+		}
 	}
 
 }
