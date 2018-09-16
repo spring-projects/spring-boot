@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
@@ -49,6 +50,9 @@ import org.springframework.util.FileCopyUtils;
  * @author Andy Wilkinson
  */
 public class GradleBuild implements TestRule {
+
+	private static final Pattern GRADLE_VERSION_PATTERN = Pattern
+			.compile("\\[Gradle .+\\]");
 
 	private final TemporaryFolder temp = new TemporaryFolder();
 
@@ -95,7 +99,7 @@ public class GradleBuild implements TestRule {
 	}
 
 	private String removeGradleVersion(String methodName) {
-		return methodName.replaceAll("\\[Gradle .+\\]", "").trim();
+		return GRADLE_VERSION_PATTERN.matcher(methodName).replaceAll("").trim();
 	}
 
 	private URL getScriptForTestClass(Class<?> testClass) {
