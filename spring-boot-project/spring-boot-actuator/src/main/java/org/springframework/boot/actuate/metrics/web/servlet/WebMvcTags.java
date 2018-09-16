@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
+import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,6 +51,10 @@ public final class WebMvcTags {
 	private static final Tag STATUS_UNKNOWN = Tag.of("status", "UNKNOWN");
 
 	private static final Tag METHOD_UNKNOWN = Tag.of("method", "UNKNOWN");
+
+	private static final Pattern TRAILING_SLASH_PATTERN = Pattern.compile("/$");
+
+	private static final Pattern MULTIPLE_SLASH_PATTERN = Pattern.compile("//+");
 
 	private WebMvcTags() {
 	}
@@ -124,7 +130,8 @@ public final class WebMvcTags {
 	private static String getPathInfo(HttpServletRequest request) {
 		String pathInfo = request.getPathInfo();
 		String uri = StringUtils.hasText(pathInfo) ? pathInfo : "/";
-		return uri.replaceAll("//+", "/").replaceAll("/$", "");
+		uri = MULTIPLE_SLASH_PATTERN.matcher(uri).replaceAll("/");
+		return TRAILING_SLASH_PATTERN.matcher(uri).replaceAll("");
 	}
 
 	/**

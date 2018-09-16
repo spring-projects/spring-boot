@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.metrics.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.regex.Pattern;
 
 import io.micrometer.core.instrument.Tag;
 
@@ -35,6 +36,8 @@ import org.springframework.web.client.RestTemplate;
  * @since 2.0.0
  */
 public final class RestTemplateExchangeTags {
+
+	private static final Pattern STRIP_URI_PATTERN = Pattern.compile("^https?://[^/]+/");
 
 	private RestTemplateExchangeTags() {
 	}
@@ -69,7 +72,7 @@ public final class RestTemplateExchangeTags {
 	}
 
 	private static String stripUri(String uri) {
-		return uri.replaceAll("^https?://[^/]+/", "");
+		return STRIP_URI_PATTERN.matcher(uri).replaceAll("");
 	}
 
 	private static String ensureLeadingSlash(String url) {
