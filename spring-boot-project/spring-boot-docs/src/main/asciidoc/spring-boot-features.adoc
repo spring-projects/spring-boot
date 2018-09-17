@@ -3966,6 +3966,7 @@ which is used when the jOOQ `Configuration` is created. You can define beans for
 following jOOQ Types:
 
 * `ConnectionProvider`
+* `ExecutorProvider`
 * `TransactionProvider`
 * `RecordMapperProvider`
 * `RecordUnmapperProvider`

@@ -16,8 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
-import javax.sql.DataSource;
 import java.util.concurrent.Executor;
+
+import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListener;
@@ -143,7 +144,8 @@ public class JooqAutoConfigurationTests {
 				TxManagerConfiguration.class, TestRecordMapperProvider.class,
 				TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,
 				TestExecuteListenerProvider.class, TestVisitListenerProvider.class,
-				TestTransactionListenerProvider.class, TestExecutorProvider.class).run((context) -> {
+				TestTransactionListenerProvider.class, TestExecutorProvider.class)
+				.run((context) -> {
 					DSLContext dsl = context.getBean(DSLContext.class);
 					assertThat(dsl.configuration().recordMapperProvider().getClass())
 							.isEqualTo(TestRecordMapperProvider.class);
