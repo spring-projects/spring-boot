@@ -35,6 +35,7 @@ import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
+import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
@@ -125,11 +126,8 @@ public class EmbeddedMongoAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public IMongodConfig embeddedMongoConfiguration() throws IOException {
-		IFeatureAwareVersion featureAwareVersion = Versions.withFeatures(
-				new GenericVersion(this.embeddedProperties.getVersion()),
-				this.embeddedProperties.getFeatures().toArray(new Feature[0]));
 		MongodConfigBuilder builder = new MongodConfigBuilder()
-				.version(featureAwareVersion);
+				.version(determineVersion());
 		EmbeddedMongoProperties.Storage storage = this.embeddedProperties.getStorage();
 		if (storage != null) {
 			String databaseDir = storage.getDatabaseDir();
@@ -148,6 +146,20 @@ public class EmbeddedMongoAutoConfiguration {
 					Network.getFreeServerPort(getHost()), Network.localhostIsIPv6()));
 		}
 		return builder.build();
+	}
+
+	private IFeatureAwareVersion determineVersion() {
+		if (this.embeddedProperties.getFeatures() == null) {
+			for (Version version : Version.values()) {
+				if (version.asInDownloadPath()
+						.equals(this.embeddedProperties.getVersion())) {
+					return version;
+				}
+			}
+		}
+		return Versions.withFeatures(
+				new GenericVersion(this.embeddedProperties.getVersion()),
+				this.embeddedProperties.getFeatures().toArray(new Feature[0]));
 	}
 
 	private InetAddress getHost() throws UnknownHostException {

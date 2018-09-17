@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import de.flapdoodle.embed.mongo.distribution.Feature;
@@ -40,15 +38,15 @@ public class EmbeddedMongoProperties {
 	/**
 	 * Version of Mongo to use.
 	 */
-	private String version = "3.2.2";
+	private String version = "3.6.5";
 
 	private final Storage storage = new Storage();
 
 	/**
-	 * Comma-separated list of features to enable.
+	 * Comma-separated list of features to enable. Uses the defaults of the configured
+	 * version by default.
 	 */
-	private Set<Feature> features = new HashSet<>(
-			Collections.singletonList(Feature.SYNC_DELAY));
+	private Set<Feature> features = null;
 
 	public String getVersion() {
 		return this.version;
