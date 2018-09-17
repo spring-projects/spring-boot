@@ -631,7 +631,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.cassandra.contact-points=localhost # Cluster node addresses.
 	spring.data.cassandra.fetch-size= # Queries default fetch size.
 	spring.data.cassandra.keyspace-name= # Keyspace name to use.
-	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
+	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy. The class must have a default constructor.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
 	spring.data.cassandra.pool.heartbeat-interval=30s # Heartbeat interval after which a message is sent on an idle connection to make sure it's still alive. If a duration suffix is not specified, seconds will be used.
@@ -639,9 +639,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.cassandra.pool.max-queue-size=256 # Maximum number of requests that get queued if no connection is available.
 	spring.data.cassandra.pool.pool-timeout=5000ms # Pool timeout when trying to acquire a connection from a host's pool.
 	spring.data.cassandra.read-timeout= # Socket option: read time out.
-	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
+	spring.data.cassandra.reconnection-policy= # Class name of the reconnection policy. The class must have a default constructor.
 	spring.data.cassandra.repositories.type=auto # Type of Cassandra repositories to enable.
-	spring.data.cassandra.retry-policy= # Class name of the retry policy.
+	spring.data.cassandra.retry-policy= # Class name of the retry policy. The class must have a default constructor.
 	spring.data.cassandra.serial-consistency-level= # Queries serial consistency level.
 	spring.data.cassandra.schema-action=none # Schema action to take at startup.
 	spring.data.cassandra.ssl=false # Enable SSL support.
