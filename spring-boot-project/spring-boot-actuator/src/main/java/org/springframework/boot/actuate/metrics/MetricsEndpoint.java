@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,8 +83,7 @@ public class MetricsEndpoint {
 			@Nullable List<String> tag) {
 		List<Tag> tags = parseTags(tag);
 		List<Meter> meters = new ArrayList<>();
-		collectMeters(meters, this.registry, requiredMetricName, tags);
-		if (meters.isEmpty()) {
+		if (!findFirstMatchingMeter(meters, this.registry, requiredMetricName, tags)) {
 			return null;
 		}
 		Map<Statistic, Double> samples = getSamples(meters);
@@ -112,15 +112,20 @@ public class MetricsEndpoint {
 		return Tag.of(parts[0], parts[1]);
 	}
 
-	private void collectMeters(List<Meter> meters, MeterRegistry registry, String name,
-			Iterable<Tag> tags) {
+	private boolean findFirstMatchingMeter(List<Meter> meters, MeterRegistry registry,
+			String name, Iterable<Tag> tags) {
 		if (registry instanceof CompositeMeterRegistry) {
-			((CompositeMeterRegistry) registry).getRegistries()
-					.forEach((member) -> collectMeters(meters, member, name, tags));
+			return ((CompositeMeterRegistry) registry).getRegistries().stream()
+					.anyMatch((r) -> findFirstMatchingMeter(meters, r, name, tags));
 		}
 		else {
-			meters.addAll(registry.find(name).tags(tags).meters());
+			Collection<Meter> meterFound = registry.find(name).tags(tags).meters();
+			if (meterFound != null && meterFound.size() > 0) {
+				meters.addAll(meterFound);
+				return true;
+			}
 		}
+		return false;
 	}
 
 	private Map<Statistic, Double> getSamples(List<Meter> meters) {
