@@ -82,7 +82,7 @@ public class CassandraProperties {
 	private Compression compression = Compression.NONE;
 
 	/**
-	 * Class name of the load balancing policy.
+	 * Class name of the load balancing policy. The class must have a default constructor.
 	 */
 	private Class<? extends LoadBalancingPolicy> loadBalancingPolicy;
 
@@ -102,12 +102,12 @@ public class CassandraProperties {
 	private int fetchSize = QueryOptions.DEFAULT_FETCH_SIZE;
 
 	/**
-	 * Reconnection policy class.
+	 * Class name of the reconnection policy. The class must have a default constructor.
 	 */
 	private Class<? extends ReconnectionPolicy> reconnectionPolicy;
 
 	/**
-	 * Class name of the retry policy.
+	 * Class name of the retry policy. The class must have a default constructor.
 	 */
 	private Class<? extends RetryPolicy> retryPolicy;
 
