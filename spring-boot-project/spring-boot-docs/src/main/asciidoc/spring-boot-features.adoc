@@ -8058,6 +8058,23 @@ example:
 include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=test-env]
 ----
 
+The runner can also be used to display the `ConditionEvaluationReport`. The report can be printed
+at `INFO` or `DEBUG` level. The following example shows how to use the `ConditionEvaluationReportLoggingListener`
+to print the report in auto-configuration tests.
+
+[source,java,indent=0]
+----
+	@Test
+	public void autoConfigTest {
+		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
+					LogLevel.INFO);
+			ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+					.withInitializer(initializer).run((context -> {
+							// Do something...
+					}));
+	}
+----
+
 
 
 ==== Simulating a Web Context

@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.testsupport.rule.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.fail;
 
 /**
@@ -48,6 +50,7 @@ import static org.junit.Assert.fail;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public class ConditionEvaluationReportLoggingListenerTests {
 
@@ -135,6 +138,26 @@ public class ConditionEvaluationReportLoggingListenerTests {
 		new ConditionEvaluationReportLoggingListener().initialize(context);
 		context.refresh();
 		assertThat(context.getBean(ConditionEvaluationReport.class)).isNotNull();
+	}
+
+	@Test
+	public void listenerWithInfoLevelShouldLogAtInfo() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
+				LogLevel.INFO);
+		initializer.initialize(context);
+		context.register(Config.class);
+		context.refresh();
+		initializer.onApplicationEvent(new ContextRefreshedEvent(context));
+		assertThat(this.outputCapture.toString())
+				.contains("CONDITIONS EVALUATION REPORT");
+	}
+
+	@Test
+	public void listenerSupportsOnlyInfoAndDebug() {
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(
+				() -> new ConditionEvaluationReportLoggingListener(LogLevel.TRACE))
+				.withMessage("LogLevel must be INFO or DEBUG");
 	}
 
 	@Test
