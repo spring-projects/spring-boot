@@ -36,7 +36,7 @@ public class ApplicationContextInitializedEvent extends SpringApplicationEvent {
 	 * Create a new {@link ApplicationContextInitializedEvent} instance.
 	 * @param application the current application
 	 * @param args the arguments the application is running with
-	 * @param context the context that was being created (maybe null)
+	 * @param context the context that has been initialized
 	 */
 	public ApplicationContextInitializedEvent(SpringApplication application,
 			String[] args, ConfigurableApplicationContext context) {
@@ -48,7 +48,7 @@ public class ApplicationContextInitializedEvent extends SpringApplicationEvent {
 	 * Return the application context.
 	 * @return the context
 	 */
-	public ConfigurableApplicationContext getContext() {
+	public ConfigurableApplicationContext getApplicationContext() {
 		return this.context;
 	}
 
