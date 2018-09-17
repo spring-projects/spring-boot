@@ -111,6 +111,8 @@ public class ConfigFileApplicationListener
 
 	private static final Set<String> NO_SEARCH_NAMES = Collections.singleton(null);
 
+	private static final Bindable<String[]> STRING_ARRAY = Bindable.of(String[].class);
+
 	/**
 	 * The "active profiles" property name.
 	 */
@@ -290,6 +292,8 @@ public class ConfigFileApplicationListener
 
 		private final ConfigurableEnvironment environment;
 
+		private final PropertySourcesPlaceholdersResolver placeholdersResolver;
+
 		private final ResourceLoader resourceLoader;
 
 		private final List<PropertySourceLoader> propertySourceLoaders;
@@ -306,6 +310,8 @@ public class ConfigFileApplicationListener
 
 		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
+			this.placeholdersResolver = new PropertySourcesPlaceholdersResolver(
+					this.environment);
 			this.resourceLoader = (resourceLoader != null) ? resourceLoader
 					: new DefaultResourceLoader();
 			this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(
@@ -577,10 +583,9 @@ public class ConfigFileApplicationListener
 			return loaded.stream().map((propertySource) -> {
 				Binder binder = new Binder(
 						ConfigurationPropertySources.from(propertySource),
-						new PropertySourcesPlaceholdersResolver(this.environment));
+						this.placeholdersResolver);
 				return new Document(propertySource,
-						binder.bind("spring.profiles", Bindable.of(String[].class))
-								.orElse(null),
+						binder.bind("spring.profiles", STRING_ARRAY).orElse(null),
 						getProfiles(binder, ACTIVE_PROFILES_PROPERTY),
 						getProfiles(binder, INCLUDE_PROFILES_PROPERTY));
 			}).collect(Collectors.toList());
@@ -610,7 +615,7 @@ public class ConfigFileApplicationListener
 		}
 
 		private Set<Profile> getProfiles(Binder binder, String name) {
-			return binder.bind(name, String[].class).map(this::asProfileSet)
+			return binder.bind(name, STRING_ARRAY).map(this::asProfileSet)
 					.orElse(Collections.emptySet());
 		}
 
