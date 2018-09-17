@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class BindConverter {
+final class BindConverter {
 
 	private static final Set<Class<?>> EXCLUDED_EDITORS;
 	static {
@@ -56,9 +56,11 @@ class BindConverter {
 		EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
 	}
 
+	private static BindConverter sharedInstance;
+
 	private final ConversionService conversionService;
 
-	BindConverter(ConversionService conversionService,
+	private BindConverter(ConversionService conversionService,
 			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
 		List<ConversionService> conversionServices = getConversionServices(
@@ -95,6 +97,21 @@ class BindConverter {
 		}
 		return (T) this.conversionService.convert(value, TypeDescriptor.forObject(value),
 				new ResolvableTypeDescriptor(type, annotations));
+	}
+
+	public static BindConverter get(ConversionService conversionService,
+			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+		if (conversionService == ApplicationConversionService.getSharedInstance()
+				&& propertyEditorInitializer == null) {
+			BindConverter instance = sharedInstance;
+			if (instance == null) {
+				instance = new BindConverter(conversionService,
+						propertyEditorInitializer);
+				sharedInstance = instance;
+			}
+			return instance;
+		}
+		return new BindConverter(conversionService, propertyEditorInitializer);
 	}
 
 	/**

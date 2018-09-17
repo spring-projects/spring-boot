@@ -392,7 +392,7 @@ public class Binder {
 		private ConfigurationProperty configurationProperty;
 
 		Context() {
-			this.converter = new BindConverter(Binder.this.conversionService,
+			this.converter = BindConverter.get(Binder.this.conversionService,
 					Binder.this.propertyEditorInitializer);
 		}
 
