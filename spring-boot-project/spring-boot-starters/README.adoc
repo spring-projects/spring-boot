@@ -139,6 +139,9 @@ do as they were designed before this was clarified.
 | https://github.com/savantly-net/sprout-platform[Sprout Platform]
 | https://github.com/savantly-net/sprout-platform/tree/master/spring/sprout-spring-boot-starter
 
+| https://github.com/fonimus/ssh-shell-spring-boot[Ssh Spring Shell]
+| https://github.com/fonimus/ssh-shell-spring-boot
+
 | SSH Daemon
 | https://github.com/anand1st/sshd-shell-spring-boot
 
