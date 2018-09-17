@@ -17,10 +17,12 @@
 package org.springframework.boot.autoconfigure.jooq;
 
 import javax.sql.DataSource;
+import java.util.concurrent.Executor;
 
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
+import org.jooq.ExecutorProvider;
 import org.jooq.Record;
 import org.jooq.RecordListener;
 import org.jooq.RecordListenerProvider;
@@ -141,12 +143,14 @@ public class JooqAutoConfigurationTests {
 				TxManagerConfiguration.class, TestRecordMapperProvider.class,
 				TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,
 				TestExecuteListenerProvider.class, TestVisitListenerProvider.class,
-				TestTransactionListenerProvider.class).run((context) -> {
+				TestTransactionListenerProvider.class, TestExecutorProvider.class).run((context) -> {
 					DSLContext dsl = context.getBean(DSLContext.class);
 					assertThat(dsl.configuration().recordMapperProvider().getClass())
 							.isEqualTo(TestRecordMapperProvider.class);
 					assertThat(dsl.configuration().recordUnmapperProvider().getClass())
 							.isEqualTo(TestRecordUnmapperProvider.class);
+					assertThat(dsl.configuration().executorProvider().getClass())
+							.isEqualTo(TestExecutorProvider.class);
 					assertThat(dsl.configuration().recordListenerProviders().length)
 							.isEqualTo(1);
 					assertThat(dsl.configuration().executeListenerProviders().length)
@@ -283,6 +287,15 @@ public class JooqAutoConfigurationTests {
 
 		@Override
 		public TransactionListener provide() {
+			return null;
+		}
+
+	}
+
+	protected static class TestExecutorProvider implements ExecutorProvider {
+
+		@Override
+		public Executor provide() {
 			return null;
 		}
 
