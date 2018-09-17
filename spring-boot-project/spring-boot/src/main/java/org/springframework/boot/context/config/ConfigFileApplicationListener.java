@@ -500,16 +500,19 @@ public class ConfigFileApplicationListener
 				Resource resource = this.resourceLoader.getResource(location);
 				if (resource == null || !resource.exists()) {
 					if (this.logger.isTraceEnabled()) {
-						this.logger.trace("Skipped missing config "
-								+ getDescription(location, resource, profile));
+						StringBuilder description = getDescription(
+								"Skipped missing config ", location, resource, profile);
+						this.logger.trace(description);
 					}
 					return;
 				}
 				if (!StringUtils.hasText(
 						StringUtils.getFilenameExtension(resource.getFilename()))) {
 					if (this.logger.isTraceEnabled()) {
-						this.logger.trace("Skipped empty config extension "
-								+ getDescription(location, resource, profile));
+						StringBuilder description = getDescription(
+								"Skipped empty config extension ", location, resource,
+								profile);
+						this.logger.trace(description);
 					}
 					return;
 				}
@@ -517,8 +520,9 @@ public class ConfigFileApplicationListener
 				List<Document> documents = loadDocuments(loader, name, resource);
 				if (CollectionUtils.isEmpty(documents)) {
 					if (this.logger.isTraceEnabled()) {
-						this.logger.trace("Skipped unloaded config "
-								+ getDescription(location, resource, profile));
+						StringBuilder description = getDescription(
+								"Skipped unloaded config ", location, resource, profile);
+						this.logger.trace(description);
 					}
 					return;
 				}
@@ -534,8 +538,9 @@ public class ConfigFileApplicationListener
 				if (!loaded.isEmpty()) {
 					loaded.forEach((document) -> consumer.accept(profile, document));
 					if (this.logger.isDebugEnabled()) {
-						this.logger.debug("Loaded config file "
-								+ getDescription(location, resource, profile));
+						StringBuilder description = getDescription("Loaded config file ",
+								location, resource, profile);
+						this.logger.debug(description);
 					}
 				}
 			}
@@ -581,23 +586,27 @@ public class ConfigFileApplicationListener
 			}).collect(Collectors.toList());
 		}
 
-		private String getDescription(String location, Resource resource,
-				Profile profile) {
-			String description = getDescription(location, resource);
-			return (profile != null) ? description + " for profile " + profile
-					: description;
-		}
-
-		private String getDescription(String location, Resource resource) {
+		private StringBuilder getDescription(String prefix, String location,
+				Resource resource, Profile profile) {
+			StringBuilder result = new StringBuilder(prefix);
 			try {
 				if (resource != null) {
 					String uri = resource.getURI().toASCIIString();
-					return String.format("'%s' (%s)", uri, location);
+					result.append("'");
+					result.append(uri);
+					result.append("' (");
+					result.append(location);
+					result.append(")");
 				}
 			}
 			catch (IOException ex) {
+				result.append(location);
 			}
-			return String.format("'%s'", location);
+			if (profile != null) {
+				result.append(" for profile ");
+				result.append(profile);
+			}
+			return result;
 		}
 
 		private Set<Profile> getProfiles(Binder binder, String name) {
