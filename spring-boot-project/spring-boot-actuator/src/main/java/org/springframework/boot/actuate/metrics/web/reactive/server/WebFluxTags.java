@@ -40,8 +40,6 @@ public final class WebFluxTags {
 
 	private static final Tag URI_ROOT = Tag.of("uri", "root");
 
-	private static final Tag URI_UNKNOWN = Tag.of("uri", "UNKNOWN");
-
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
 	private WebFluxTags() {
@@ -80,26 +78,23 @@ public final class WebFluxTags {
 	 * @return the uri tag derived from the exchange
 	 */
 	public static Tag uri(ServerWebExchange exchange) {
-		if (exchange != null) {
-			PathPattern pathPattern = exchange
-					.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-			if (pathPattern != null) {
-				return Tag.of("uri", pathPattern.getPatternString());
-			}
-			HttpStatus status = exchange.getResponse().getStatusCode();
-			if (status != null && status.is3xxRedirection()) {
-				return URI_REDIRECTION;
-			}
-			if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
-				return URI_NOT_FOUND;
-			}
-			String path = exchange.getRequest().getPath().value();
-			if (path.isEmpty()) {
-				return URI_ROOT;
-			}
-			return Tag.of("uri", path);
+		PathPattern pathPattern = exchange
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		if (pathPattern != null) {
+			return Tag.of("uri", pathPattern.getPatternString());
 		}
-		return URI_UNKNOWN;
+		HttpStatus status = exchange.getResponse().getStatusCode();
+		if (status != null && status.is3xxRedirection()) {
+			return URI_REDIRECTION;
+		}
+		if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
+			return URI_NOT_FOUND;
+		}
+		String path = exchange.getRequest().getPath().value();
+		if (path.isEmpty()) {
+			return URI_ROOT;
+		}
+		return Tag.of("uri", path);
 	}
 
 	/**
