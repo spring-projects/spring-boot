@@ -30,6 +30,7 @@ import org.springframework.web.util.pattern.PathPattern;
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
+ * @author Michael McFadyen
  * @since 2.0.0
  */
 public final class WebFluxTags {
@@ -41,6 +42,18 @@ public final class WebFluxTags {
 	private static final Tag URI_ROOT = Tag.of("uri", "root");
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
+
+	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
+
+	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
+
+	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
+
+	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
+
+	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
+
+	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
 
 	private WebFluxTags() {
 	}
@@ -110,6 +123,32 @@ public final class WebFluxTags {
 					: exception.getClass().getName());
 		}
 		return EXCEPTION_NONE;
+	}
+
+	/**
+	 * Creates a {@code outcome} tag based on the response status of the given
+	 * {@code exchange}.
+	 * @param exchange the exchange
+	 * @return the outcome tag derived from the response status
+	 */
+	public static Tag outcome(ServerWebExchange exchange) {
+		HttpStatus status = exchange.getResponse().getStatusCode();
+		if (status != null) {
+			if (status.is1xxInformational()) {
+				return OUTCOME_INFORMATIONAL;
+			}
+			if (status.is2xxSuccessful()) {
+				return OUTCOME_SUCCESS;
+			}
+			if (status.is3xxRedirection()) {
+				return OUTCOME_REDIRECTION;
+			}
+			if (status.is4xxClientError()) {
+				return OUTCOME_CLIENT_ERROR;
+			}
+			return OUTCOME_SERVER_ERROR;
+		}
+		return OUTCOME_UNKNOWN;
 	}
 
 }
