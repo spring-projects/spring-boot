@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.Test;
@@ -87,9 +88,10 @@ public class RestClientAutoConfigurationTests {
 					source.put("b", "bravo");
 					IndexRequest index = new IndexRequest("foo", "bar", "1")
 							.source(source);
-					client.index(index);
+					client.index(index, RequestOptions.DEFAULT);
 					GetRequest getRequest = new GetRequest("foo", "bar", "1");
-					assertThat(client.get(getRequest).isExists()).isTrue();
+					assertThat(client.get(getRequest, RequestOptions.DEFAULT).isExists())
+							.isTrue();
 				}));
 	}
 

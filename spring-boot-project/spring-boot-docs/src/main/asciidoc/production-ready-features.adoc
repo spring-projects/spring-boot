@@ -1723,12 +1723,28 @@ customized by setting the `management.metrics.web.server.requests-metric-name` p
 
 By default, Spring MVC-related metrics are tagged with the following information:
 
-* `method`, the request's method (for example, `GET` or `POST`).
-* `uri`,  the request's URI template prior to variable substitution, if possible (for
-example, `/api/person/{id}`).
-* `status`, the response's HTTP status code (for example, `200` or `500`).
-* `exception`, the simple class name of any exception that was thrown while handling the
-request.
+|===
+|Tag |Description
+
+|`exception`
+|Simple class name of any exception that was thrown while handling the request.
+
+|`method`
+|Request's method (for example, `GET` or `POST`)
+
+|`outcome`
+|Request's outcome based on the status code of the response. 1xx is
+`INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is
+`SERVER_ERROR`
+
+|`status`
+|Response's HTTP status code (for example, `200` or `500`)
+
+|`uri`
+|Request's URI template prior to variable substitution, if possible (for example,
+`/api/person/{id}`)
+
+|===
 
 To customize the tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
@@ -1744,12 +1760,28 @@ the name by setting the `management.metrics.web.server.requests-metric-name` pro
 
 By default, WebFlux-related metrics are tagged with the following information:
 
-* `method`, the request's method (for example, `GET` or `POST`).
-* `uri`,  the request's URI template prior to variable substitution, if possible (for
-example, `/api/person/{id}`).
-* `status`, the response's HTTP status code (for example, `200` or `500`).
-* `exception`, the simple class name of any exception that was thrown while handling the
-request.
+|===
+|Tag |Description
+
+|`exception`
+|Simple class name of any exception that was thrown while handling the request.
+
+|`method`
+|Request's method (for example, `GET` or `POST`)
+
+|`outcome`
+|Request's outcome based on the status code of the response. 1xx is
+`INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx `CLIENT_ERROR`, and 5xx is
+`SERVER_ERROR`
+
+|`status`
+|Response's HTTP status code (for example, `200` or `500`)
+
+|`uri`
+|Request's URI template prior to variable substitution, if possible (for example,
+`/api/person/{id}`)
+
+|===
 
 To customize the tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 

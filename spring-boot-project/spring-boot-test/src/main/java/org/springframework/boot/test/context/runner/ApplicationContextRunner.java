@@ -61,7 +61,7 @@ public class ApplicationContextRunner extends
 
 	private ApplicationContextRunner(
 			Supplier<ConfigurableApplicationContext> contextFactory,
-			List<ApplicationContextInitializer<ConfigurableApplicationContext>> initializers,
+			List<ApplicationContextInitializer<? super ConfigurableApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
@@ -72,7 +72,7 @@ public class ApplicationContextRunner extends
 	@Override
 	protected ApplicationContextRunner newInstance(
 			Supplier<ConfigurableApplicationContext> contextFactory,
-			List<ApplicationContextInitializer<ConfigurableApplicationContext>> initializers,
+			List<ApplicationContextInitializer<? super ConfigurableApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {

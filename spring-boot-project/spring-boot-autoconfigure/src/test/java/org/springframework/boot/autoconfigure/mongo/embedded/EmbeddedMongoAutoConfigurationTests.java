@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,20 +60,19 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void defaultVersion() {
-		assertVersionConfiguration(null, "3.6.5");
+		assertVersionConfiguration(null, "3.2.2");
 	}
 
 	@Test
 	public void customVersion() {
-		assertVersionConfiguration("3.6.3", "3.6.3");
+		assertVersionConfiguration("2.7.1", "2.7.1");
 	}
 
 	@Test
 	public void customFeatures() {
-		load("spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY, ONLY_WITH_SSL, NO_HTTP_INTERFACE_ARG");
+		load("spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY");
 		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures())
-				.containsExactly(Feature.TEXT_SEARCH, Feature.SYNC_DELAY,
-						Feature.ONLY_WITH_SSL, Feature.NO_HTTP_INTERFACE_ARG);
+				.contains(Feature.TEXT_SEARCH, Feature.SYNC_DELAY);
 	}
 
 	@Test

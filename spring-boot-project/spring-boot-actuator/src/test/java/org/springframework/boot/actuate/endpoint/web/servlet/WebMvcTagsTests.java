@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Brian Clozel
+ * @author Michael McFadyen
  */
 public class WebMvcTagsTests {
 
@@ -89,6 +90,47 @@ public class WebMvcTagsTests {
 	public void uriTagIsUnknownWhenRequestIsNull() {
 		Tag tag = WebMvcTags.uri(null, null);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
+
+	@Test
+	public void outcomeTagIsUnknownWhenResponseIsNull() {
+		Tag tag = WebMvcTags.outcome(null);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
+
+	@Test
+	public void outcomeTagIsInformationalWhenResponseIs1xx() {
+		this.response.setStatus(100);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("INFORMATIONAL");
+	}
+
+	@Test
+	public void outcomeTagIsSuccessWhenResponseIs2xx() {
+		this.response.setStatus(200);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("SUCCESS");
+	}
+
+	@Test
+	public void outcomeTagIsRedirectionWhenResponseIs3xx() {
+		this.response.setStatus(301);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
+	}
+
+	@Test
+	public void outcomeTagIsClientErrorWhenResponseIs4xx() {
+		this.response.setStatus(400);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
+	}
+
+	@Test
+	public void outcomeTagIsServerErrorWhenResponseIs5xx() {
+		this.response.setStatus(500);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
 	}
 
 }

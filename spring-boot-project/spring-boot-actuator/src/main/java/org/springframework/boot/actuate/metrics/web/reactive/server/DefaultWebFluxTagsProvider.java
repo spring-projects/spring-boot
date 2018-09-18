@@ -35,7 +35,8 @@ public class DefaultWebFluxTagsProvider implements WebFluxTagsProvider {
 	public Iterable<Tag> httpRequestTags(ServerWebExchange exchange,
 			Throwable exception) {
 		return Arrays.asList(WebFluxTags.method(exchange), WebFluxTags.uri(exchange),
-				WebFluxTags.exception(exception), WebFluxTags.status(exchange));
+				WebFluxTags.exception(exception), WebFluxTags.status(exchange),
+				WebFluxTags.outcome(exchange));
 	}
 
 }

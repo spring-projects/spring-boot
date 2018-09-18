@@ -65,7 +65,7 @@ public final class WebApplicationContextRunner extends
 
 	private WebApplicationContextRunner(
 			Supplier<ConfigurableWebApplicationContext> contextFactory,
-			List<ApplicationContextInitializer<ConfigurableWebApplicationContext>> initializers,
+			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {
@@ -76,7 +76,7 @@ public final class WebApplicationContextRunner extends
 	@Override
 	protected WebApplicationContextRunner newInstance(
 			Supplier<ConfigurableWebApplicationContext> contextFactory,
-			List<ApplicationContextInitializer<ConfigurableWebApplicationContext>> initializers,
+			List<ApplicationContextInitializer<? super ConfigurableWebApplicationContext>> initializers,
 			TestPropertyValues environmentProperties, TestPropertyValues systemProperties,
 			ClassLoader classLoader, ApplicationContext parent,
 			List<Configurations> configurations) {

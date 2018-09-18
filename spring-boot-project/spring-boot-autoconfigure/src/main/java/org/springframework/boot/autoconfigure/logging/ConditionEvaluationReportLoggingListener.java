@@ -31,6 +31,7 @@ import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
+import org.springframework.util.Assert;
 
 /**
  * {@link ApplicationContextInitializer} that writes the {@link ConditionEvaluationReport}
@@ -45,6 +46,7 @@ import org.springframework.core.ResolvableType;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 public class ConditionEvaluationReportLoggingListener
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -54,6 +56,26 @@ public class ConditionEvaluationReportLoggingListener
 	private ConfigurableApplicationContext applicationContext;
 
 	private ConditionEvaluationReport report;
+
+	private final LogLevel logLevelForReport;
+
+	public ConditionEvaluationReportLoggingListener() {
+		this(LogLevel.DEBUG);
+	}
+
+	public ConditionEvaluationReportLoggingListener(LogLevel logLevelForReport) {
+		Assert.isTrue(isInfoOrDebug(logLevelForReport), "LogLevel must be INFO or DEBUG");
+		this.logLevelForReport = logLevelForReport;
+	}
+
+	private boolean isInfoOrDebug(LogLevel logLevelForReport) {
+		return LogLevel.INFO.equals(logLevelForReport)
+				|| LogLevel.DEBUG.equals(logLevelForReport);
+	}
+
+	public LogLevel getLogLevelForReport() {
+		return this.logLevelForReport;
+	}
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -97,17 +119,31 @@ public class ConditionEvaluationReportLoggingListener
 					.get(this.applicationContext.getBeanFactory());
 		}
 		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
-			if (isCrashReport && this.logger.isInfoEnabled()
-					&& !this.logger.isDebugEnabled()) {
-				this.logger.info(String
-						.format("%n%nError starting ApplicationContext. To display the "
-								+ "conditions report re-run your application with "
-								+ "'debug' enabled."));
+			if (this.getLogLevelForReport().equals(LogLevel.INFO)) {
+				if (this.logger.isInfoEnabled()) {
+					this.logger.info(new ConditionEvaluationReportMessage(this.report));
+				}
+				else if (isCrashReport) {
+					logMessage("info");
+				}
 			}
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(new ConditionEvaluationReportMessage(this.report));
+			else {
+				if (isCrashReport && this.logger.isInfoEnabled()
+						&& !this.logger.isDebugEnabled()) {
+					logMessage("debug");
+				}
+				if (this.logger.isDebugEnabled()) {
+					this.logger.debug(new ConditionEvaluationReportMessage(this.report));
+				}
 			}
 		}
+	}
+
+	private void logMessage(String logLevel) {
+		this.logger.info(
+				String.format("%n%nError starting ApplicationContext. To display the "
+						+ "conditions report re-run your application with '" + logLevel
+						+ "' enabled."));
 	}
 
 	private class ConditionEvaluationReportListener
