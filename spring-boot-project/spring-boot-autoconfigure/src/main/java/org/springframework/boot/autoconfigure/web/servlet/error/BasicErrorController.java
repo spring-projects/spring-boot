@@ -82,7 +82,7 @@ public class BasicErrorController extends AbstractErrorController {
 		return this.errorProperties.getPath();
 	}
 
-	@RequestMapping(produces = "text/html")
+	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public ModelAndView errorHtml(HttpServletRequest request,
 			HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
