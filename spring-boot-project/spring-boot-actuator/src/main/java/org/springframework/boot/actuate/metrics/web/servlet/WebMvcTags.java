@@ -53,7 +53,11 @@ public final class WebMvcTags {
 
 	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
 
+	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
+
 	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
+
+	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
 
 	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
 
@@ -166,19 +170,21 @@ public final class WebMvcTags {
 	public static Tag outcome(HttpServletResponse response) {
 		if (response != null) {
 			int status = response.getStatus();
-			if (status < 400) {
+			if (status < 200) {
+				return OUTCOME_INFORMATIONAL;
+			}
+			if (status < 300) {
 				return OUTCOME_SUCCESS;
+			}
+			if (status < 400) {
+				return OUTCOME_REDIRECTION;
 			}
 			else if (status < 500) {
 				return OUTCOME_CLIENT_ERROR;
 			}
-			else {
-				return OUTCOME_SERVER_ERROR;
-			}
+			return OUTCOME_SERVER_ERROR;
 		}
-		else {
-			return OUTCOME_UNKNOWN;
-		}
+		return OUTCOME_UNKNOWN;
 	}
 
 }

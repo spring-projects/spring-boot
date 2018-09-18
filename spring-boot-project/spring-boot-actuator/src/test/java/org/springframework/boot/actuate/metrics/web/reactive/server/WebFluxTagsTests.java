@@ -90,12 +90,6 @@ public class WebFluxTagsTests {
 	}
 
 	@Test
-	public void outcomeTagIsUnknownWhenResponseIsNull() {
-		Tag tag = WebFluxTags.outcome(null);
-		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
-	}
-
-	@Test
 	public void outcomeTagIsUnknownWhenResponseStatusIsNull() {
 		this.exchange.getResponse().setStatusCode(null);
 		Tag tag = WebFluxTags.outcome(this.exchange);
@@ -103,21 +97,35 @@ public class WebFluxTagsTests {
 	}
 
 	@Test
-	public void outcomeTagIsSuccessWhenResponseIs2XX() {
+	public void outcomeTagIsInformationalWhenResponseIs1xx() {
+		this.exchange.getResponse().setStatusCode(HttpStatus.CONTINUE);
+		Tag tag = WebFluxTags.outcome(this.exchange);
+		assertThat(tag.getValue()).isEqualTo("INFORMATIONAL");
+	}
+
+	@Test
+	public void outcomeTagIsSuccessWhenResponseIs2xx() {
 		this.exchange.getResponse().setStatusCode(HttpStatus.OK);
 		Tag tag = WebFluxTags.outcome(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
 	}
 
 	@Test
-	public void outcomeTagIsClientErrorWhenResponseIs4XX() {
+	public void outcomeTagIsRedirectionWhenResponseIs3xx() {
+		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+		Tag tag = WebFluxTags.outcome(this.exchange);
+		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
+	}
+
+	@Test
+	public void outcomeTagIsClientErrorWhenResponseIs4xx() {
 		this.exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
 		Tag tag = WebFluxTags.outcome(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
-	public void outcomeTagIsServerErrorWhenResponseIs5XX() {
+	public void outcomeTagIsServerErrorWhenResponseIs5xx() {
 		this.exchange.getResponse().setStatusCode(HttpStatus.BAD_GATEWAY);
 		Tag tag = WebFluxTags.outcome(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");

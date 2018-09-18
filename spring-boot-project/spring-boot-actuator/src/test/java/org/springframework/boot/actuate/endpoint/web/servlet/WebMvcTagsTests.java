@@ -99,21 +99,35 @@ public class WebMvcTagsTests {
 	}
 
 	@Test
-	public void outcomeTagIsSuccessWhenResponseIs2XX() {
+	public void outcomeTagIsInformationalWhenResponseIs1xx() {
+		this.response.setStatus(100);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("INFORMATIONAL");
+	}
+
+	@Test
+	public void outcomeTagIsSuccessWhenResponseIs2xx() {
 		this.response.setStatus(200);
 		Tag tag = WebMvcTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
 	}
 
 	@Test
-	public void outcomeTagIsClientErrorWhenResponseIs4XX() {
+	public void outcomeTagIsRedirectionWhenResponseIs3xx() {
+		this.response.setStatus(301);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
+	}
+
+	@Test
+	public void outcomeTagIsClientErrorWhenResponseIs4xx() {
 		this.response.setStatus(400);
 		Tag tag = WebMvcTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
-	public void outcomeTagIsServerErrorWhenResponseIs5XX() {
+	public void outcomeTagIsServerErrorWhenResponseIs5xx() {
 		this.response.setStatus(500);
 		Tag tag = WebMvcTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
