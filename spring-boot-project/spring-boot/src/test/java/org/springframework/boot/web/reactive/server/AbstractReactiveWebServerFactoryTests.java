@@ -307,7 +307,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.getWebServer(new CharsHandler(3000, MediaType.TEXT_PLAIN));
 		this.webServer.start();
 
-		HttpClient client = HttpClient.create().wiretap().compress().tcpConfiguration(
+		HttpClient client = HttpClient.create().wiretap().compress(true).tcpConfiguration(
 				(tcpClient) -> tcpClient.doOnConnected((connection) -> connection
 						.channel().pipeline().addBefore(NettyPipeline.HttpDecompressor,
 								"CompressionTest", new CompressionDetectionHandler())));
