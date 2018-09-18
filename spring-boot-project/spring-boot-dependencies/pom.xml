@@ -615,7 +615,17 @@
 			</dependency>
 			<dependency>
 				<groupId>com.github.ben-manes.caffeine</groupId>
+				<artifactId>guava</artifactId>
+				<version>${caffeine.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.ben-manes.caffeine</groupId>
 				<artifactId>jcache</artifactId>
+				<version>${caffeine.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.ben-manes.caffeine</groupId>
+				<artifactId>simulator</artifactId>
 				<version>${caffeine.version}</version>
 			</dependency>
 			<dependency>
