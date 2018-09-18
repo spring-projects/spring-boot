@@ -83,7 +83,7 @@ public class MetricsEndpoint {
 			@Nullable List<String> tag) {
 		List<Tag> tags = parseTags(tag);
 		List<Meter> meters = new ArrayList<>();
-		if (!findFirstMatchingMeter(meters, this.registry, requiredMetricName, tags)) {
+		if (!findFirstMatchingMeters(meters, this.registry, requiredMetricName, tags)) {
 			return null;
 		}
 		Map<Statistic, Double> samples = getSamples(meters);
@@ -112,11 +112,11 @@ public class MetricsEndpoint {
 		return Tag.of(parts[0], parts[1]);
 	}
 
-	private boolean findFirstMatchingMeter(List<Meter> meters, MeterRegistry registry,
+	private boolean findFirstMatchingMeters(List<Meter> meters, MeterRegistry registry,
 			String name, Iterable<Tag> tags) {
 		if (registry instanceof CompositeMeterRegistry) {
 			return ((CompositeMeterRegistry) registry).getRegistries().stream()
-					.anyMatch((r) -> findFirstMatchingMeter(meters, r, name, tags));
+					.anyMatch((r) -> findFirstMatchingMeters(meters, r, name, tags));
 		}
 		else {
 			Collection<Meter> meterFound = registry.find(name).tags(tags).meters();

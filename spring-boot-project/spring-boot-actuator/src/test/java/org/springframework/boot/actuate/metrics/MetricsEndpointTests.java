@@ -96,7 +96,7 @@ public class MetricsEndpointTests {
 	}
 
 	@Test
-	public void findFirstMatchingMeterFromNestedRegistries() {
+	public void findFirstMatchingMetersFromNestedRegistries() {
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
 		SimpleMeterRegistry reg1 = new SimpleMeterRegistry();
 		CompositeMeterRegistry reg2 = new CompositeMeterRegistry();
@@ -125,6 +125,30 @@ public class MetricsEndpointTests {
 		response = endpoint.metric("cache", Collections.singletonList("result:hit"));
 		assertThat(availableTagKeys(response)).containsExactly("host");
 		assertThat(getCount(response)).hasValue(4.0);
+	}
+
+	@Test
+	public void findFirstMatchingMetersFromMultipleRegistries() {
+		CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		SimpleMeterRegistry reg1 = new SimpleMeterRegistry();
+		SimpleMeterRegistry reg2 = new SimpleMeterRegistry();
+
+		composite.add(reg1);
+		composite.add(reg2);
+
+		reg1.counter("cache", "result", "hit", "host", "1").increment(1);
+		reg1.counter("cache", "result", "hit", "host", "2").increment(2);
+
+		reg2.counter("cache", "result", "hit", "host", "1").increment(2);
+		reg2.counter("cache", "result", "hit", "host", "2").increment(2);
+
+		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
+
+		MetricsEndpoint.MetricResponse response = endpoint.metric("cache",
+				Collections.emptyList());
+		assertThat(response.getName()).isEqualTo("cache");
+		assertThat(availableTagKeys(response)).containsExactly("result", "host");
+		assertThat(getCount(response)).hasValue(3.0);
 	}
 
 	@Test
