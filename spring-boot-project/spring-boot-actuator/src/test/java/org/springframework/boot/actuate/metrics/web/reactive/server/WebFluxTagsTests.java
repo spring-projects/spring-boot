@@ -79,12 +79,6 @@ public class WebFluxTagsTests {
 	}
 
 	@Test
-	public void uriTagIsUnknownWhenRequestIsNull() {
-		Tag tag = WebFluxTags.uri(null);
-		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
-	}
-
-	@Test
 	public void methodTagToleratesNonStandardHttpMethods() {
 		ServerWebExchange exchange = mock(ServerWebExchange.class);
 		ServerHttpRequest request = mock(ServerHttpRequest.class);
