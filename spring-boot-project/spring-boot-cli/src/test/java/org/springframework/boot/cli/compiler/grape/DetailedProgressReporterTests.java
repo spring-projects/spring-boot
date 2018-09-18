@@ -39,8 +39,8 @@ public final class DetailedProgressReporterTests {
 
 	private static final String ARTIFACT = "org/alpha/bravo/charlie/1.2.3/charlie-1.2.3.jar";
 
-	private final TransferResource resource = new TransferResource(REPOSITORY, ARTIFACT,
-			null, null);
+	private final TransferResource resource = new TransferResource(null, REPOSITORY,
+			ARTIFACT, null, null);
 
 	private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
