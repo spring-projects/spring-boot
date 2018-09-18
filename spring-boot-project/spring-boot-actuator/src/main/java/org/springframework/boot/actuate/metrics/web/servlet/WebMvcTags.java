@@ -70,7 +70,7 @@ public final class WebMvcTags {
 	}
 
 	/**
-	 * Creates a {@code method} tag based on the status of the given {@code response}.
+	 * Creates a {@code status} tag based on the status of the given {@code response}.
 	 * @param response the HTTP response
 	 * @return the status tag derived from the status of the response
 	 */
