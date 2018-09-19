@@ -51,6 +51,11 @@ public enum DatabaseDriver {
 	 * H2.
 	 */
 	H2("H2", "org.h2.Driver", "org.h2.jdbcx.JdbcDataSource", "SELECT 1"),
+	
+	/**
+	 * HDB - SAP Hana Database.
+	 */
+	HDB("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP", "SELECT 1 FROM DUMMY"),
 
 	/**
 	 * HyperSQL DataBase.
