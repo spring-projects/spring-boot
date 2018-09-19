@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.CRC32;
@@ -162,6 +163,17 @@ public class JarFileArchiveTests {
 				.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));
 	}
 
+	@Test
+	public void getNestedArchiveFromCustomizedUnpackFolder() throws Exception {
+		this.rootJarFile = this.temporaryFolder.newFile();
+		this.rootJarFileUrl = this.rootJarFile.toURI().toString();
+		TestJarCreator.createTestJar(this.rootJarFile, true);
+		this.archive = new CustomizedUnpackFolderJarFileArchive(this.rootJarFile);
+		Entry entry = getEntriesMap(this.archive).get("nested.jar");
+		Archive nested = this.archive.getNestedArchive(entry);
+		assertThat(nested.getUrl().toString()).contains("-unique-folder-name-");
+	}
+
 	private byte[] writeZip64Jar() throws IOException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		JarOutputStream jarOutput = new JarOutputStream(bytes);
@@ -179,6 +191,20 @@ public class JarFileArchiveTests {
 			entries.put(entry.getName(), entry);
 		}
 		return entries;
+	}
+
+	private static final class CustomizedUnpackFolderJarFileArchive
+			extends JarFileArchive {
+
+		private CustomizedUnpackFolderJarFileArchive(File file) throws IOException {
+			super(file);
+		}
+
+		@Override
+		protected String getUniqueUnpackFolderFileName(String folderName) {
+			return folderName + "-unique-folder-name-" + UUID.randomUUID();
+		}
+
 	}
 
 }

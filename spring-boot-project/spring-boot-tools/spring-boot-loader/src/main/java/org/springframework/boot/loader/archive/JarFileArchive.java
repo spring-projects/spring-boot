@@ -134,7 +134,7 @@ public class JarFileArchive implements Archive {
 		while (attempts++ < 1000) {
 			String fileName = new File(this.jarFile.getName()).getName();
 			File unpackFolder = new File(parent,
-					fileName + "-spring-boot-libs-" + UUID.randomUUID());
+					getUniqueUnpackFolderFileName(fileName));
 			if (unpackFolder.mkdirs()) {
 				return unpackFolder;
 			}
@@ -153,6 +153,10 @@ public class JarFileArchive implements Archive {
 			}
 			outputStream.flush();
 		}
+	}
+
+	protected String getUniqueUnpackFolderFileName(String folderName) {
+		return folderName + "-spring-boot-libs-" + UUID.randomUUID();
 	}
 
 	@Override
