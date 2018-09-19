@@ -1491,6 +1491,7 @@ content into your application. Rather, pick only the properties that you need.
 	# ----------------------------------------
 
 	# DEVTOOLS ({sc-spring-boot-devtools}/autoconfigure/DevToolsProperties.{sc-ext}[DevToolsProperties])
+	spring.devtools.add-properties=true # Whether to enable development property defaults.
 	spring.devtools.livereload.enabled=true # Whether to enable a livereload.com-compatible server.
 	spring.devtools.livereload.port=35729 # Server port.
 	spring.devtools.restart.additional-exclude= # Additional patterns that should be excluded from triggering a full restart.
