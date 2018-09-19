@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
@@ -61,11 +62,11 @@ class ActiveMQConnectionFactoryConfiguration {
 
 		SimpleConnectionFactoryConfiguration(JmsProperties jmsProperties,
 				ActiveMQProperties properties,
-				ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> connectionFactoryCustomizers) {
+				ObjectProvider<ActiveMQConnectionFactoryCustomizer> connectionFactoryCustomizers) {
 			this.jmsProperties = jmsProperties;
 			this.properties = properties;
 			this.connectionFactoryCustomizers = connectionFactoryCustomizers
-					.getIfAvailable();
+					.orderedStream().collect(Collectors.toList());
 		}
 
 		@Bean
@@ -102,9 +103,10 @@ class ActiveMQConnectionFactoryConfiguration {
 		@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "true", matchIfMissing = false)
 		public JmsPoolConnectionFactory pooledJmsConnectionFactory(
 				ActiveMQProperties properties,
-				ObjectProvider<List<ActiveMQConnectionFactoryCustomizer>> factoryCustomizers) {
+				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-					properties, factoryCustomizers.getIfAvailable())
+					properties,
+					factoryCustomizers.orderedStream().collect(Collectors.toList()))
 							.createConnectionFactory(ActiveMQConnectionFactory.class);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
 					.createPooledConnectionFactory(connectionFactory);

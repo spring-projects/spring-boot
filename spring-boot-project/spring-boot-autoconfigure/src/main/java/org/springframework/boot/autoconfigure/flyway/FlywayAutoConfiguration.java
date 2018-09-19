@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -92,9 +93,8 @@ public class FlywayAutoConfiguration {
 
 	@Bean
 	public FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(
-			ObjectProvider<List<Flyway>> flyways) {
-		return new FlywaySchemaManagementProvider(
-				flyways.getIfAvailable(Collections::emptyList));
+			ObjectProvider<Flyway> flyways) {
+		return new FlywaySchemaManagementProvider(flyways);
 	}
 
 	@Configuration
@@ -123,16 +123,17 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<DataSource> dataSource,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy,
-				ObjectProvider<List<Callback>> callbacks,
-				ObjectProvider<List<FlywayCallback>> flywayCallbacks) {
+				ObjectProvider<Callback> callbacks,
+				ObjectProvider<FlywayCallback> flywayCallbacks) {
 			this.properties = properties;
 			this.dataSourceProperties = dataSourceProperties;
 			this.resourceLoader = resourceLoader;
 			this.dataSource = dataSource.getIfUnique();
 			this.flywayDataSource = flywayDataSource.getIfAvailable();
 			this.migrationStrategy = migrationStrategy.getIfAvailable();
-			this.callbacks = callbacks.getIfAvailable(Collections::emptyList);
-			this.flywayCallbacks = flywayCallbacks.getIfAvailable(Collections::emptyList);
+			this.callbacks = callbacks.orderedStream().collect(Collectors.toList());
+			this.flywayCallbacks = flywayCallbacks.orderedStream()
+					.collect(Collectors.toList());
 		}
 
 		@Bean

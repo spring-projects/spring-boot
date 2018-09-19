@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.jersey;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
@@ -60,7 +60,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
@@ -94,15 +93,15 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	private final ResourceConfig config;
 
-	private final List<ResourceConfigCustomizer> customizers;
+	private final Stream<ResourceConfigCustomizer> customizers;
 
 	private String path;
 
 	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
-			ObjectProvider<List<ResourceConfigCustomizer>> customizers) {
+			ObjectProvider<ResourceConfigCustomizer> customizers) {
 		this.jersey = jersey;
 		this.config = config;
-		this.customizers = customizers.getIfAvailable();
+		this.customizers = customizers.orderedStream();
 	}
 
 	@PostConstruct
@@ -122,12 +121,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	private void customize() {
-		if (this.customizers != null) {
-			AnnotationAwareOrderComparator.sort(this.customizers);
-			for (ResourceConfigCustomizer customizer : this.customizers) {
-				customizer.customize(this.config);
-			}
-		}
+		this.customizers.forEach((customizer) -> customizer.customize(this.config));
 	}
 
 	@Bean

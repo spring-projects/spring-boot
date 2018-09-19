@@ -18,12 +18,12 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -89,21 +89,20 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 			HibernateProperties hibernateProperties,
 			ObjectProvider<Collection<DataSourcePoolMetadataProvider>> metadataProviders,
-			ObjectProvider<List<SchemaManagementProvider>> providers,
+			ObjectProvider<SchemaManagementProvider> providers,
 			ObjectProvider<PhysicalNamingStrategy> physicalNamingStrategy,
 			ObjectProvider<ImplicitNamingStrategy> implicitNamingStrategy,
-			ObjectProvider<List<HibernatePropertiesCustomizer>> hibernatePropertiesCustomizers) {
+			ObjectProvider<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		super(dataSource, jpaProperties, jtaTransactionManager,
 				transactionManagerCustomizers);
 		this.hibernateProperties = hibernateProperties;
-		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(
-				providers.getIfAvailable(Collections::emptyList));
+		this.defaultDdlAutoProvider = new HibernateDefaultDdlAutoProvider(providers);
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(
 				metadataProviders.getIfAvailable());
 		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
 				physicalNamingStrategy.getIfAvailable(),
-				implicitNamingStrategy.getIfAvailable(),
-				hibernatePropertiesCustomizers.getIfAvailable(Collections::emptyList));
+				implicitNamingStrategy.getIfAvailable(), hibernatePropertiesCustomizers
+						.orderedStream().collect(Collectors.toList()));
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(

@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.stream.Stream;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PoolingOptions;
@@ -51,12 +51,12 @@ public class CassandraAutoConfiguration {
 
 	private final CassandraProperties properties;
 
-	private final List<ClusterBuilderCustomizer> builderCustomizers;
+	private final Stream<ClusterBuilderCustomizer> builderCustomizers;
 
 	public CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<List<ClusterBuilderCustomizer>> builderCustomizers) {
+			ObjectProvider<ClusterBuilderCustomizer> builderCustomizers) {
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers.getIfAvailable();
+		this.builderCustomizers = builderCustomizers.orderedStream();
 	}
 
 	@Bean
@@ -88,11 +88,7 @@ public class CassandraAutoConfiguration {
 	}
 
 	private void customize(Cluster.Builder builder) {
-		if (this.builderCustomizers != null) {
-			for (ClusterBuilderCustomizer customizer : this.builderCustomizers) {
-				customizer.customize(builder);
-			}
-		}
+		this.builderCustomizers.forEach((customizer) -> customizer.customize(builder));
 	}
 
 	private QueryOptions getQueryOptions() {

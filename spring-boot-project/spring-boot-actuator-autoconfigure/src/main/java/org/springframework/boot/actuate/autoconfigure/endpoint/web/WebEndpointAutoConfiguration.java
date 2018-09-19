@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -95,12 +96,12 @@ public class WebEndpointAutoConfiguration {
 	public WebEndpointDiscoverer webEndpointDiscoverer(
 			ParameterValueMapper parameterValueMapper,
 			EndpointMediaTypes endpointMediaTypes, PathMapper webEndpointPathMapper,
-			ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
-			ObjectProvider<Collection<EndpointFilter<ExposableWebEndpoint>>> filters) {
+			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
+			ObjectProvider<EndpointFilter<ExposableWebEndpoint>> filters) {
 		return new WebEndpointDiscoverer(this.applicationContext, parameterValueMapper,
 				endpointMediaTypes, webEndpointPathMapper,
-				invokerAdvisors.getIfAvailable(Collections::emptyList),
-				filters.getIfAvailable(Collections::emptyList));
+				invokerAdvisors.orderedStream().collect(Collectors.toList()),
+				filters.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean
@@ -144,10 +145,10 @@ public class WebEndpointAutoConfiguration {
 		@ConditionalOnMissingBean(ServletEndpointsSupplier.class)
 		public ServletEndpointDiscoverer servletEndpointDiscoverer(
 				ApplicationContext applicationContext, PathMapper webEndpointPathMapper,
-				ObjectProvider<Collection<EndpointFilter<ExposableServletEndpoint>>> filters) {
+				ObjectProvider<EndpointFilter<ExposableServletEndpoint>> filters) {
 			return new ServletEndpointDiscoverer(applicationContext,
 					webEndpointPathMapper,
-					filters.getIfAvailable(Collections::emptyList));
+					filters.orderedStream().collect(Collectors.toList()));
 		}
 
 	}

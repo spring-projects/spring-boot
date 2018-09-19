@@ -16,8 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 import javax.management.MBeanServer;
 
@@ -75,11 +74,11 @@ public class JmxEndpointAutoConfiguration {
 	@ConditionalOnMissingBean(JmxEndpointsSupplier.class)
 	public JmxEndpointDiscoverer jmxAnnotationEndpointDiscoverer(
 			ParameterValueMapper parameterValueMapper,
-			ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
-			ObjectProvider<Collection<EndpointFilter<ExposableJmxEndpoint>>> filters) {
+			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
+			ObjectProvider<EndpointFilter<ExposableJmxEndpoint>> filters) {
 		return new JmxEndpointDiscoverer(this.applicationContext, parameterValueMapper,
-				invokerAdvisors.getIfAvailable(Collections::emptyList),
-				filters.getIfAvailable(Collections::emptyList));
+				invokerAdvisors.orderedStream().collect(Collectors.toList()),
+				filters.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean

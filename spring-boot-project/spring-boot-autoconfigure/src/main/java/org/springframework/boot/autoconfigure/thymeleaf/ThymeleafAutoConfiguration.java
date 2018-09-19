@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -136,14 +136,14 @@ public class ThymeleafAutoConfiguration {
 
 		private final Collection<ITemplateResolver> templateResolvers;
 
-		private final Collection<IDialect> dialects;
+		private final Stream<IDialect> dialects;
 
 		public ThymeleafDefaultConfiguration(ThymeleafProperties properties,
 				Collection<ITemplateResolver> templateResolvers,
-				ObjectProvider<Collection<IDialect>> dialectsProvider) {
+				ObjectProvider<IDialect> dialectsProvider) {
 			this.properties = properties;
 			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider.getIfAvailable(Collections::emptyList);
+			this.dialects = dialectsProvider.orderedStream();
 		}
 
 		@Bean
@@ -224,14 +224,14 @@ public class ThymeleafAutoConfiguration {
 
 		private final Collection<ITemplateResolver> templateResolvers;
 
-		private final Collection<IDialect> dialects;
+		private final Stream<IDialect> dialects;
 
 		ThymeleafReactiveConfiguration(ThymeleafProperties properties,
 				Collection<ITemplateResolver> templateResolvers,
-				ObjectProvider<Collection<IDialect>> dialectsProvider) {
+				ObjectProvider<IDialect> dialectsProvider) {
 			this.properties = properties;
 			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider.getIfAvailable(Collections::emptyList);
+			this.dialects = dialectsProvider.orderedStream();
 		}
 
 		@Bean

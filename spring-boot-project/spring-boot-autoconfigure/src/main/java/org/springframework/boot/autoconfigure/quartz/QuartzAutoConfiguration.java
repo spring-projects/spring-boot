@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -61,7 +61,7 @@ public class QuartzAutoConfiguration {
 
 	private final QuartzProperties properties;
 
-	private final List<SchedulerFactoryBeanCustomizer> customizers;
+	private final Stream<SchedulerFactoryBeanCustomizer> customizers;
 
 	private final JobDetail[] jobDetails;
 
@@ -72,12 +72,12 @@ public class QuartzAutoConfiguration {
 	private final ApplicationContext applicationContext;
 
 	public QuartzAutoConfiguration(QuartzProperties properties,
-			ObjectProvider<List<SchedulerFactoryBeanCustomizer>> customizers,
+			ObjectProvider<SchedulerFactoryBeanCustomizer> customizers,
 			ObjectProvider<JobDetail[]> jobDetails,
 			ObjectProvider<Map<String, Calendar>> calendars,
 			ObjectProvider<Trigger[]> triggers, ApplicationContext applicationContext) {
 		this.properties = properties;
-		this.customizers = customizers.getIfAvailable();
+		this.customizers = customizers.orderedStream();
 		this.jobDetails = jobDetails.getIfAvailable();
 		this.calendars = calendars.getIfAvailable();
 		this.triggers = triggers.getIfAvailable();
@@ -124,11 +124,8 @@ public class QuartzAutoConfiguration {
 	}
 
 	private void customize(SchedulerFactoryBean schedulerFactoryBean) {
-		if (this.customizers != null) {
-			for (SchedulerFactoryBeanCustomizer customizer : this.customizers) {
-				customizer.customize(schedulerFactoryBean);
-			}
-		}
+		this.customizers
+				.forEach((customizer) -> customizer.customize(schedulerFactoryBean));
 	}
 
 	@Configuration

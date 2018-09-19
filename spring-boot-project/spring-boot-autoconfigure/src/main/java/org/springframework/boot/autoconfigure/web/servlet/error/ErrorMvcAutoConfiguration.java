@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
@@ -103,10 +104,11 @@ public class ErrorMvcAutoConfiguration {
 
 	public ErrorMvcAutoConfiguration(ServerProperties serverProperties,
 			DispatcherServletPath dispatcherServletPath,
-			ObjectProvider<List<ErrorViewResolver>> errorViewResolversProvider) {
+			ObjectProvider<ErrorViewResolver> errorViewResolvers) {
 		this.serverProperties = serverProperties;
 		this.dispatcherServletPath = dispatcherServletPath;
-		this.errorViewResolvers = errorViewResolversProvider.getIfAvailable();
+		this.errorViewResolvers = errorViewResolvers.orderedStream()
+				.collect(Collectors.toList());
 	}
 
 	@Bean

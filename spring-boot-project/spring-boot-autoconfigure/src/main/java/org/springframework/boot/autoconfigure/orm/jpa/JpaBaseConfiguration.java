@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -121,14 +120,12 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
-			ObjectProvider<List<EntityManagerFactoryBuilderCustomizer>> customizers) {
+			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
 				persistenceUnitManager.getIfAvailable());
-		for (EntityManagerFactoryBuilderCustomizer customizer : customizers
-				.getIfAvailable(Collections::emptyList)) {
-			customizer.customize(builder);
-		}
+		customizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 

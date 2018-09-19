@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +46,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
@@ -115,43 +114,39 @@ public class WebFluxAutoConfiguration {
 
 		private final ListableBeanFactory beanFactory;
 
-		private final List<HandlerMethodArgumentResolver> argumentResolvers;
+		private final Stream<HandlerMethodArgumentResolver> argumentResolvers;
 
-		private final List<CodecCustomizer> codecCustomizers;
+		private final Stream<CodecCustomizer> codecCustomizers;
 
 		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		private final List<ViewResolver> viewResolvers;
+		private final Stream<ViewResolver> viewResolvers;
 
 		public WebFluxConfig(ResourceProperties resourceProperties,
 				WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<List<HandlerMethodArgumentResolver>> resolvers,
-				ObjectProvider<List<CodecCustomizer>> codecCustomizers,
+				ObjectProvider<HandlerMethodArgumentResolver> resolvers,
+				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
-				ObjectProvider<List<ViewResolver>> viewResolvers) {
+				ObjectProvider<ViewResolver> viewResolvers) {
 			this.resourceProperties = resourceProperties;
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
-			this.argumentResolvers = resolvers.getIfAvailable();
-			this.codecCustomizers = codecCustomizers.getIfAvailable();
+			this.argumentResolvers = resolvers.orderedStream();
+			this.codecCustomizers = codecCustomizers.orderedStream();
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer
 					.getIfAvailable();
-			this.viewResolvers = viewResolvers.getIfAvailable();
+			this.viewResolvers = viewResolvers.orderedStream();
 		}
 
 		@Override
 		public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
-			if (this.argumentResolvers != null) {
-				this.argumentResolvers.forEach(configurer::addCustomResolver);
-			}
+			this.argumentResolvers.forEach(configurer::addCustomResolver);
 		}
 
 		@Override
 		public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
-			if (this.codecCustomizers != null) {
-				this.codecCustomizers
-						.forEach((customizer) -> customizer.customize(configurer));
-			}
+			this.codecCustomizers
+					.forEach((customizer) -> customizer.customize(configurer));
 		}
 
 		@Override
@@ -186,10 +181,7 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		public void configureViewResolvers(ViewResolverRegistry registry) {
-			if (this.viewResolvers != null) {
-				AnnotationAwareOrderComparator.sort(this.viewResolvers);
-				this.viewResolvers.forEach(registry::viewResolver);
-			}
+			this.viewResolvers.forEach(registry::viewResolver);
 		}
 
 		@Override

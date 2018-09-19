@@ -16,8 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.jersey;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -48,12 +47,11 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
 public class JerseyManagementChildContextConfiguration {
 
-	private final List<ResourceConfigCustomizer> resourceConfigCustomizers;
+	private final Stream<ResourceConfigCustomizer> resourceConfigCustomizers;
 
 	public JerseyManagementChildContextConfiguration(
-			ObjectProvider<List<ResourceConfigCustomizer>> resourceConfigCustomizers) {
-		this.resourceConfigCustomizers = resourceConfigCustomizers
-				.getIfAvailable(Collections::emptyList);
+			ObjectProvider<ResourceConfigCustomizer> resourceConfigCustomizers) {
+		this.resourceConfigCustomizers = resourceConfigCustomizers.orderedStream();
 	}
 
 	@Bean
@@ -65,9 +63,8 @@ public class JerseyManagementChildContextConfiguration {
 	@Bean
 	public ResourceConfig endpointResourceConfig() {
 		ResourceConfig resourceConfig = new ResourceConfig();
-		for (ResourceConfigCustomizer customizer : this.resourceConfigCustomizers) {
-			customizer.customize(resourceConfig);
-		}
+		this.resourceConfigCustomizers
+				.forEach((customizer) -> customizer.customize(resourceConfig));
 		return resourceConfig;
 	}
 

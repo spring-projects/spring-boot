@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import com.rabbitmq.client.Channel;
 
@@ -161,11 +161,11 @@ public class RabbitAutoConfiguration {
 
 		private final ObjectProvider<MessageConverter> messageConverter;
 
-		private final ObjectProvider<List<RabbitRetryTemplateCustomizer>> retryTemplateCustomizers;
+		private final ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
 		public RabbitTemplateConfiguration(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<List<RabbitRetryTemplateCustomizer>> retryTemplateCustomizers) {
+				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 			this.properties = properties;
 			this.messageConverter = messageConverter;
 			this.retryTemplateCustomizers = retryTemplateCustomizers;
@@ -185,8 +185,9 @@ public class RabbitAutoConfiguration {
 			RabbitProperties.Template properties = this.properties.getTemplate();
 			if (properties.getRetry().isEnabled()) {
 				template.setRetryTemplate(new RetryTemplateFactory(
-						this.retryTemplateCustomizers.getIfAvailable())
-								.createRetryTemplate(properties.getRetry(),
+						this.retryTemplateCustomizers.orderedStream()
+								.collect(Collectors.toList())).createRetryTemplate(
+										properties.getRetry(),
 										RabbitRetryTemplateCustomizer.Target.SENDER));
 			}
 			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)

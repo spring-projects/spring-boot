@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 
@@ -68,9 +68,10 @@ public class MongoReactiveAutoConfiguration {
 	@ConditionalOnMissingBean
 	public MongoClient reactiveStreamsMongoClient(MongoProperties properties,
 			Environment environment,
-			ObjectProvider<List<MongoClientSettingsBuilderCustomizer>> builderCustomizers) {
+			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
 		ReactiveMongoClientFactory factory = new ReactiveMongoClientFactory(properties,
-				environment, builderCustomizers.getIfAvailable());
+				environment,
+				builderCustomizers.orderedStream().collect(Collectors.toList()));
 		this.mongo = factory.createMongoClient(this.settings);
 		return this.mongo;
 	}

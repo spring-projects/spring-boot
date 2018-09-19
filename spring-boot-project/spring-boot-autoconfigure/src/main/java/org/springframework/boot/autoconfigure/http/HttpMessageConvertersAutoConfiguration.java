@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -61,15 +61,14 @@ public class HttpMessageConvertersAutoConfiguration {
 	private final List<HttpMessageConverter<?>> converters;
 
 	public HttpMessageConvertersAutoConfiguration(
-			ObjectProvider<List<HttpMessageConverter<?>>> convertersProvider) {
-		this.converters = convertersProvider.getIfAvailable();
+			ObjectProvider<HttpMessageConverter<?>> convertersProvider) {
+		this.converters = convertersProvider.orderedStream().collect(Collectors.toList());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public HttpMessageConverters messageConverters() {
-		return new HttpMessageConverters(
-				(this.converters != null) ? this.converters : Collections.emptyList());
+		return new HttpMessageConverters(this.converters);
 	}
 
 	@Configuration
