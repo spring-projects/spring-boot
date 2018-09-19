@@ -43,7 +43,7 @@ public class HttpProperties {
 	/**
 	 * HTTP encoding properties.
 	 */
-	private Encoding encoding = new Encoding();
+	private final Encoding encoding = new Encoding();
 
 	public boolean isLogRequestDetails() {
 		return this.logRequestDetails;
@@ -55,10 +55,6 @@ public class HttpProperties {
 
 	public Encoding getEncoding() {
 		return this.encoding;
-	}
-
-	public void setEncoding(Encoding encoding) {
-		this.encoding = encoding;
 	}
 
 	/**
