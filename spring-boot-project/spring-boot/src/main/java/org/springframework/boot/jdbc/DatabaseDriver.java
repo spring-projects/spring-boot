@@ -51,11 +51,6 @@ public enum DatabaseDriver {
 	 * H2.
 	 */
 	H2("H2", "org.h2.Driver", "org.h2.jdbcx.JdbcDataSource", "SELECT 1"),
-	
-	/**
-	 * HDB - SAP Hana Database.
-	 */
-	HDB("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP", "SELECT 1 FROM DUMMY"),
 
 	/**
 	 * HyperSQL DataBase.
@@ -103,6 +98,12 @@ public enum DatabaseDriver {
 	 */
 	POSTGRESQL("PostgreSQL", "org.postgresql.Driver", "org.postgresql.xa.PGXADataSource",
 			"SELECT 1"),
+
+	/**
+	 * SAP - SAP Hana Database - HDB.
+	 */
+	SAP("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
+			"SELECT 1 FROM DUMMY"),
 
 	/**
 	 * jTDS. As it can be used for several databases, there isn't a single product name we
