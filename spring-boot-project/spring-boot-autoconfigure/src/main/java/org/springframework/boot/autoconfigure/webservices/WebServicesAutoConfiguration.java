@@ -19,13 +19,14 @@ package org.springframework.boot.autoconfigure.webservices;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -118,8 +119,9 @@ public class WebServicesAutoConfiguration {
 					.orElse(Collections.emptyList());
 			for (String wsdlLocation : wsdlLocations) {
 				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class,
-						registry);
-				registerBeans(wsdlLocation, "*.xsd", SimpleXsdSchema.class, registry);
+						SimpleWsdl11Definition::new, registry);
+				registerBeans(wsdlLocation, "*.xsd", SimpleXsdSchema.class,
+						SimpleXsdSchema::new, registry);
 			}
 		}
 
@@ -128,13 +130,12 @@ public class WebServicesAutoConfiguration {
 				throws BeansException {
 		}
 
-		private void registerBeans(String location, String pattern, Class<?> type,
-				BeanDefinitionRegistry registry) {
+		private <T> void registerBeans(String location, String pattern, Class<T> type,
+				Function<Resource, T> beanSupplier, BeanDefinitionRegistry registry) {
 			for (Resource resource : getResources(location, pattern)) {
-				RootBeanDefinition beanDefinition = new RootBeanDefinition(type);
-				ConstructorArgumentValues constructorArguments = new ConstructorArgumentValues();
-				constructorArguments.addIndexedArgumentValue(0, resource);
-				beanDefinition.setConstructorArgumentValues(constructorArguments);
+				BeanDefinition beanDefinition = BeanDefinitionBuilder
+						.genericBeanDefinition(type, () -> beanSupplier.apply(resource))
+						.getBeanDefinition();
 				registry.registerBeanDefinition(
 						StringUtils.stripFilenameExtension(resource.getFilename()),
 						beanDefinition);
