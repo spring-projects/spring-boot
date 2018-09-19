@@ -59,7 +59,7 @@ import org.springframework.util.StringUtils;
  * environment contains a {@code logging.config} property it will be used to bootstrap the
  * logging system, otherwise a default configuration is used. Regardless, logging levels
  * will be customized if the environment contains {@code logging.level.*} entries and
- * logging groups can be defined with {@code logging.group} .
+ * logging groups can be defined with {@code logging.group}.
  * <p>
  * Debug and trace logging for Spring, Tomcat, Jetty and Hibernate will be enabled when
  * the environment contains {@code debug} or {@code trace} properties that aren't set to
@@ -150,7 +150,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class,
 			ApplicationContext.class };
 
-	private static AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
+	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -323,7 +323,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			return;
 		}
 		Binder binder = Binder.get(environment);
-		Map<String, String[]> groups = getGroups(binder);
+		Map<String, String[]> groups = getGroups();
+		binder.bind("logging.group", STRING_STRINGS_MAP.withExistingValue(groups));
 		Map<String, String> levels = binder.bind("logging.level", STRING_STRING_MAP)
 				.orElseGet(Collections::emptyMap);
 		levels.forEach((name, level) -> {
@@ -337,11 +338,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		});
 	}
 
-	private Map<String, String[]> getGroups(Binder binder) {
+	private Map<String, String[]> getGroups() {
 		Map<String, String[]> groups = new LinkedHashMap<>();
 		DEFAULT_GROUP_LOGGERS.forEach(
 				(name, loggers) -> groups.put(name, StringUtils.toStringArray(loggers)));
-		binder.bind("logging.group", STRING_STRINGS_MAP.withExistingValue(groups));
 		return groups;
 	}
 
@@ -405,7 +405,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * Sets if initialization arguments should be parsed for {@literal debug} and
 	 * {@literal trace} properties (usually defined from {@literal --debug} or
-	 * {@literal --trace} command line args. Defaults to {@code true}.
+	 * {@literal --trace} command line args). Defaults to {@code true}.
 	 * @param parseArgs if arguments should be parsed
 	 */
 	public void setParseArgs(boolean parseArgs) {

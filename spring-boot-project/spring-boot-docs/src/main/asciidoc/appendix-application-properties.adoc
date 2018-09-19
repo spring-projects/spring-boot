@@ -36,6 +36,7 @@ content into your application. Rather, pick only the properties that you need.
 	logging.file= # Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.
 	logging.file.max-history=0 # Maximum of archive log files to keep. Only supported with the default logback setup.
 	logging.file.max-size=10MB # Maximum log file size. Only supported with the default logback setup.
+	logging.group.*= # Log groups to quickly change multiple loggers at the same time. For instance, `logging.level.db=org.hibernate,org.springframework.jdbc`.
 	logging.level.*= # Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.
 	logging.path= # Location of the log file. For instance, `/var/log`.
 	logging.pattern.console= # Appender pattern for output to the console. Supported only with the default Logback setup.
@@ -147,10 +148,10 @@ content into your application. Rather, pick only the properties that you need.
 	spring.quartz.jdbc.initialize-schema=embedded # Database schema initialization mode.
 	spring.quartz.jdbc.schema=classpath:org/quartz/impl/jdbcjobstore/tables_@@platform@@.sql # Path to the SQL file to use to initialize the database schema.
 	spring.quartz.job-store-type=memory # Quartz job store type.
+	spring.quartz.overwrite-existing-jobs=false # Whether configured jobs should overwrite existing job definitions.
 	spring.quartz.properties.*= # Additional Quartz Scheduler properties.
 	spring.quartz.scheduler-name=quartzScheduler # Name of the scheduler.
 	spring.quartz.startup-delay=0s # Delay after which the scheduler is started once initialization completes.
-	spring.quartz.overwrite-existing-jobs=false # Whether configured jobs should overwrite existing job definitions.
 	spring.quartz.wait-for-jobs-to-complete-on-shutdown=false # Whether to wait for running jobs to complete on shutdown.
 
 	# REACTOR ({sc-spring-boot-autoconfigure}/reactor/core/ReactorCoreProperties.{sc-ext}[ReactorCoreProperties])

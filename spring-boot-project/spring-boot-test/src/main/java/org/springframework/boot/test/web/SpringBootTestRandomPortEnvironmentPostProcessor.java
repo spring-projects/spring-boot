@@ -45,10 +45,11 @@ public class SpringBootTestRandomPortEnvironmentPostProcessor
 				.get(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 		if (isTestServerPortRandom(source)) {
 			if (source.getProperty(MANAGEMENT_PORT_PROPERTY) == null) {
-				String managementPort = getPort(environment, MANAGEMENT_PORT_PROPERTY,
+				String managementPort = getProperty(environment, MANAGEMENT_PORT_PROPERTY,
 						null);
-				String serverPort = getPort(environment, SERVER_PORT_PROPERTY, "8080");
 				if (managementPort != null && !managementPort.equals("-1")) {
+					String serverPort = getProperty(environment, SERVER_PORT_PROPERTY,
+							"8080");
 					if (!managementPort.equals(serverPort)) {
 						source.getSource().put(MANAGEMENT_PORT_PROPERTY, "0");
 					}
@@ -65,7 +66,7 @@ public class SpringBootTestRandomPortEnvironmentPostProcessor
 		return (source != null && "0".equals(source.getProperty(SERVER_PORT_PROPERTY)));
 	}
 
-	private String getPort(ConfigurableEnvironment environment, String property,
+	private String getProperty(ConfigurableEnvironment environment, String property,
 			String defaultValue) {
 		return environment.getPropertySources().stream()
 				.filter((source) -> !source.getName().equals(

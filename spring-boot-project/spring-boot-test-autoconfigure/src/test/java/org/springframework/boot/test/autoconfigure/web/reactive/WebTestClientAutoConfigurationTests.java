@@ -116,7 +116,7 @@ public class WebTestClientAutoConfigurationTests {
 							.getField(builder, "httpHandlerBuilder");
 					List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils
 							.getField(httpHandlerBuilder, "filters");
-					assertThat(filters.size()).isEqualTo(0);
+					assertThat(filters).isEmpty();
 				});
 	}
 
