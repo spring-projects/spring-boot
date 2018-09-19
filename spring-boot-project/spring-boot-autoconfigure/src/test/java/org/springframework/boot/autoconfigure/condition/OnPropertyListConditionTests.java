@@ -54,7 +54,7 @@ public class OnPropertyListConditionTests {
 
 	@Test
 	public void propertyDefinedAsCommaSeparatedRelaxed() {
-		this.contextRunner.withPropertyValues("spring.test.my-list=value1")
+		this.contextRunner.withPropertyValues("spring.test.myList=value1")
 				.run((context) -> assertThat(context).hasBean("foo"));
 	}
 

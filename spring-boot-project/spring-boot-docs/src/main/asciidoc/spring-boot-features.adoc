@@ -5734,7 +5734,7 @@ container factory. Similarly, if a `RecordMessageConverter`, `ErrorHandler` or
 factory.
 
 TIP: A custom `ChainedKafkaTransactionManager` must be marked `@Primary` as it usually
-reference the auto-configured `KafkaTransactionManager` bean.
+references the auto-configured `KafkaTransactionManager` bean.
 
 
 
@@ -5912,7 +5912,7 @@ The following code shows a typical example:
 		}
 
 		public Mono<Details> someRestCall(String name) {
-			return this.webClient.get().url("/{name}/details", name)
+			return this.webClient.get().uri("/{name}/details", name)
 							.retrieve().bodyToMono(Details.class);
 		}
 

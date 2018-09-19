@@ -123,7 +123,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 			server = compressionCustomizer.apply(server);
 		}
 		server = server.protocol(listProtocols());
-		server = (this.useForwardHeaders ? server.forwarded() : server.noForwarded());
+		server = server.forwarded(this.useForwardHeaders);
 		return applyCustomizers(server);
 	}
 
