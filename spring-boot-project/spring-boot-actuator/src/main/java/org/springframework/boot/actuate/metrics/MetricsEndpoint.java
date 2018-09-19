@@ -82,8 +82,9 @@ public class MetricsEndpoint {
 	public MetricResponse metric(@Selector String requiredMetricName,
 			@Nullable List<String> tag) {
 		List<Tag> tags = parseTags(tag);
-		List<Meter> meters = new ArrayList<>();
-		if (!findFirstMatchingMeters(meters, this.registry, requiredMetricName, tags)) {
+		List<Meter> meters = findFirstMatchingMeters(this.registry, requiredMetricName,
+				tags);
+		if (meters.isEmpty()) {
 			return null;
 		}
 		Map<Statistic, Double> samples = getSamples(meters);
@@ -112,20 +113,22 @@ public class MetricsEndpoint {
 		return Tag.of(parts[0], parts[1]);
 	}
 
-	private boolean findFirstMatchingMeters(List<Meter> meters, MeterRegistry registry,
-			String name, Iterable<Tag> tags) {
+	private List<Meter> findFirstMatchingMeters(MeterRegistry registry, String name,
+			Iterable<Tag> tags) {
 		if (registry instanceof CompositeMeterRegistry) {
 			return ((CompositeMeterRegistry) registry).getRegistries().stream()
-					.anyMatch((r) -> findFirstMatchingMeters(meters, r, name, tags));
+					.map((r) -> findFirstMatchingMeters(r, name, tags))
+					.filter((match) -> !match.isEmpty()).findFirst()
+					.orElse(Collections.emptyList());
+
 		}
 		else {
-			Collection<Meter> meterFound = registry.find(name).tags(tags).meters();
-			if (meterFound != null && meterFound.size() > 0) {
-				meters.addAll(meterFound);
-				return true;
+			Collection<Meter> metersFound = registry.find(name).tags(tags).meters();
+			if (!metersFound.isEmpty()) {
+				return new ArrayList<>(metersFound);
 			}
 		}
-		return false;
+		return Collections.emptyList();
 	}
 
 	private Map<Statistic, Double> getSamples(List<Meter> meters) {
