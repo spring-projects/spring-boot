@@ -5734,7 +5734,7 @@ container factory. Similarly, if a `RecordMessageConverter`, `ErrorHandler` or
 factory.
 
 TIP: A custom `ChainedKafkaTransactionManager` must be marked `@Primary` as it usually
-reference the auto-configured `KafkaTransactionManager` bean.
+references the auto-configured `KafkaTransactionManager` bean.
 
 
 
