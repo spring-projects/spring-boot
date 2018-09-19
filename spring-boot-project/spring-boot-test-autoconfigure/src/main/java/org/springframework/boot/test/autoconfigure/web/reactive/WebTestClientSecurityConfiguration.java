@@ -33,7 +33,7 @@ import org.springframework.test.web.reactive.server.MockServerConfigurer;
 class WebTestClientSecurityConfiguration {
 
 	@Bean
-	public MockServerConfigurer get() {
+	public MockServerConfigurer mockServerConfigurer() {
 		return SecurityMockServerConfigurers.springSecurity();
 	}
 
