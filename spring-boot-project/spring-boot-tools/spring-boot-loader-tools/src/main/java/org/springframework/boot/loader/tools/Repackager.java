@@ -314,7 +314,11 @@ public class Repackager {
 		if (StringUtils.hasLength(lib)) {
 			manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE, lib);
 		}
+		customizeManifest(manifest);
 		return manifest;
+	}
+
+	protected void customizeManifest(Manifest manifest) {
 	}
 
 	private String findMainMethodWithTimeoutWarning(JarFile source) throws IOException {
