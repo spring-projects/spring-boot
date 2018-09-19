@@ -74,6 +74,7 @@ public class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("Apache Derby"))
 				.isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromProductName("H2")).isEqualTo(DatabaseDriver.H2);
+		assertThat(DatabaseDriver.fromProductName("HDB")).isEqualTo(DatabaseDriver.SAP);
 		assertThat(DatabaseDriver.fromProductName("HSQL Database Engine"))
 				.isEqualTo(DatabaseDriver.HSQLDB);
 		assertThat(DatabaseDriver.fromProductName("SQLite"))
@@ -113,6 +114,8 @@ public class DatabaseDriverTests {
 				.isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:h2:~/sample"))
 				.isEqualTo(DatabaseDriver.H2);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sap:localhost"))
+				.isEqualTo(DatabaseDriver.SAP);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:hsqldb:hsql://localhost"))
 				.isEqualTo(DatabaseDriver.HSQLDB);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sqlite:sample.db"))

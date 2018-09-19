@@ -100,6 +100,12 @@ public enum DatabaseDriver {
 			"SELECT 1"),
 
 	/**
+	 * SAP - SAP Hana Database - HDB.
+	 */
+	SAP("HDB", "com.sap.db.jdbc.Driver", "com.sap.db.jdbcext.XADataSourceSAP",
+			"SELECT 1 FROM DUMMY"),
+
+	/**
 	 * jTDS. As it can be used for several databases, there isn't a single product name we
 	 * could rely on.
 	 */
