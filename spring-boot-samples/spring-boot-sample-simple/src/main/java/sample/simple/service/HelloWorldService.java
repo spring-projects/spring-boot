@@ -34,8 +34,4 @@ public class HelloWorldService {
 		return "Hello " + this.name + " for " + this.duration.getSeconds() + " seconds";
 	}
 
-	public Duration getDuration() {
-		return this.duration;
-	}
-
 }

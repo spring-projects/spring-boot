@@ -50,7 +50,6 @@ public class SpringBootTestRandomPortEnvironmentPostProcessorTests {
 	@Test
 	public void postProcessWhenServerAndManagementPortIsZeroInTestPropertySource() {
 		addTestPropertySource("0", "0");
-		this.environment.setProperty("management.server.port", "0");
 		this.postProcessor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.getProperty("server.port")).isEqualTo("0");
 		assertThat(this.environment.getProperty("management.server.port")).isEqualTo("0");
@@ -81,8 +80,7 @@ public class SpringBootTestRandomPortEnvironmentPostProcessorTests {
 		addTestPropertySource("0", null);
 		this.postProcessor.postProcessEnvironment(this.environment, null);
 		assertThat(this.environment.getProperty("server.port")).isEqualTo("0");
-		assertThat(this.environment.getProperty("management.server.port"))
-				.isEqualTo(null);
+		assertThat(this.environment.getProperty("management.server.port")).isNull();
 	}
 
 	@Test
@@ -100,7 +98,8 @@ public class SpringBootTestRandomPortEnvironmentPostProcessorTests {
 
 	@Test
 	public void postProcessWhenTestServerPortIsZeroAndManagementPortIsNotNullAndDefaultSameInProduction() {
-		// mgmt port is 8080 which means its on the same port as main server since that is
+		// mgmt port is 8080 which means it's on the same port as main server since that
+		// is
 		// null in app properties
 		addTestPropertySource("0", null);
 		Map<String, Object> other = new HashMap<>();

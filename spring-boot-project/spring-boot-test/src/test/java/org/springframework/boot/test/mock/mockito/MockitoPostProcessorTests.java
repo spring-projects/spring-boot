@@ -190,7 +190,7 @@ public class MockitoPostProcessorTests {
 	@Configuration
 	static class MultipleQualifiedBeans {
 
-		@MockBean(ExampleService.class)
+		@MockBean
 		@Qualifier("test")
 		private ExampleService mock;
 
@@ -216,7 +216,7 @@ public class MockitoPostProcessorTests {
 	@Configuration
 	static class MockPrimaryBean {
 
-		@MockBean(ExampleService.class)
+		@MockBean
 		private ExampleService mock;
 
 		@Bean
@@ -236,7 +236,7 @@ public class MockitoPostProcessorTests {
 	@Configuration
 	static class MockQualifiedBean {
 
-		@MockBean(ExampleService.class)
+		@MockBean
 		@Qualifier("test")
 		private ExampleService mock;
 
@@ -257,7 +257,7 @@ public class MockitoPostProcessorTests {
 	@Configuration
 	static class SpyPrimaryBean {
 
-		@SpyBean(ExampleService.class)
+		@SpyBean
 		private ExampleService spy;
 
 		@Bean
@@ -277,7 +277,7 @@ public class MockitoPostProcessorTests {
 	@Configuration
 	static class SpyQualifiedBean {
 
-		@SpyBean(ExampleService.class)
+		@SpyBean
 		@Qualifier("test")
 		private ExampleService spy;
 
