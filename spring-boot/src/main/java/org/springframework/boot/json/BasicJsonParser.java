@@ -125,9 +125,16 @@ public class BasicJsonParser implements JsonParser {
 		int inObject = 0;
 		int inList = 0;
 		boolean inValue = false;
+		boolean inEscape = false;
 		StringBuilder build = new StringBuilder();
 		while (index < json.length()) {
 			char current = json.charAt(index);
+			if (inEscape) {
+				build.append(current);
+				index++;
+				inEscape = false;
+				continue;
+			}
 			if (current == '{') {
 				inObject++;
 			}
@@ -146,6 +153,9 @@ public class BasicJsonParser implements JsonParser {
 			if (current == ',' && inObject == 0 && inList == 0 && !inValue) {
 				list.add(build.toString());
 				build.setLength(0);
+			}
+			else if (current == '\\') {
+				inEscape = true;
 			}
 			else {
 				build.append(current);
