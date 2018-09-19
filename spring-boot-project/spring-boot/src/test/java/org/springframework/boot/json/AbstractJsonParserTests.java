@@ -170,4 +170,11 @@ public abstract class AbstractJsonParserTests {
 		this.parser.parseList("\n\t{}");
 	}
 
+	@Test
+	public void escapeQuote() {
+		String input = "{\"foo\": \"\\\"bar\\\"\"}";
+		Map<String, Object> map = this.parser.parseMap(input);
+		assertThat(map.get("foo")).isEqualTo("\"bar\"");
+	}
+
 }
