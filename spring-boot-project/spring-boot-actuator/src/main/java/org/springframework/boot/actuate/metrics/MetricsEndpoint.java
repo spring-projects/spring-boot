@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,15 +81,15 @@ public class MetricsEndpoint {
 	public MetricResponse metric(@Selector String requiredMetricName,
 			@Nullable List<String> tag) {
 		List<Tag> tags = parseTags(tag);
-		List<Meter> meters = findFirstMatchingMeters(this.registry, requiredMetricName,
-				tags);
+		Collection<Meter> meters = findFirstMatchingMeters(this.registry,
+				requiredMetricName, tags);
 		if (meters.isEmpty()) {
 			return null;
 		}
 		Map<Statistic, Double> samples = getSamples(meters);
 		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
-		Meter.Id meterId = meters.get(0).getId();
+		Meter.Id meterId = meters.iterator().next().getId();
 		return new MetricResponse(requiredMetricName, meterId.getDescription(),
 				meterId.getBaseUnit(), asList(samples, Sample::new),
 				asList(availableTags, AvailableTag::new));
@@ -113,7 +112,7 @@ public class MetricsEndpoint {
 		return Tag.of(parts[0], parts[1]);
 	}
 
-	private List<Meter> findFirstMatchingMeters(MeterRegistry registry, String name,
+	private Collection<Meter> findFirstMatchingMeters(MeterRegistry registry, String name,
 			Iterable<Tag> tags) {
 		if (registry instanceof CompositeMeterRegistry) {
 			return ((CompositeMeterRegistry) registry).getRegistries().stream()
@@ -125,13 +124,13 @@ public class MetricsEndpoint {
 		else {
 			Collection<Meter> metersFound = registry.find(name).tags(tags).meters();
 			if (!metersFound.isEmpty()) {
-				return new ArrayList<>(metersFound);
+				return metersFound;
 			}
 		}
 		return Collections.emptyList();
 	}
 
-	private Map<Statistic, Double> getSamples(List<Meter> meters) {
+	private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
 		Map<Statistic, Double> samples = new LinkedHashMap<>();
 		meters.forEach((meter) -> mergeMeasurements(samples, meter));
 		return samples;
@@ -146,7 +145,7 @@ public class MetricsEndpoint {
 		return Statistic.MAX.equals(statistic) ? Double::max : Double::sum;
 	}
 
-	private Map<String, Set<String>> getAvailableTags(List<Meter> meters) {
+	private Map<String, Set<String>> getAvailableTags(Collection<Meter> meters) {
 		Map<String, Set<String>> availableTags = new HashMap<>();
 		meters.forEach((meter) -> mergeAvailableTags(availableTags, meter));
 		return availableTags;
