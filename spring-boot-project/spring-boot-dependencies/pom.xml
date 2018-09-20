@@ -112,7 +112,7 @@
 		<joda-time.version>2.10</joda-time.version>
 		<jolokia.version>1.6.0</jolokia.version>
 		<johnzon-jsonb.version>1.1.10</johnzon-jsonb.version>
-		<jooq.version>3.11.4</jooq.version>
+		<jooq.version>3.11.5</jooq.version>
 		<jsonassert.version>1.5.0</jsonassert.version>
 		<json-path.version>2.4.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
