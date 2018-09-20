@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ public class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("Apache Derby"))
 				.isEqualTo(DatabaseDriver.DERBY);
 		assertThat(DatabaseDriver.fromProductName("H2")).isEqualTo(DatabaseDriver.H2);
+		assertThat(DatabaseDriver.fromProductName("HDB")).isEqualTo(DatabaseDriver.SAP);
 		assertThat(DatabaseDriver.fromProductName("HSQL Database Engine"))
 				.isEqualTo(DatabaseDriver.HSQLDB);
 		assertThat(DatabaseDriver.fromProductName("SQLite"))
@@ -126,6 +127,8 @@ public class DatabaseDriverTests {
 		assertThat(
 				DatabaseDriver.fromJdbcUrl("jdbc:jtds:sqlserver://127.0.0.1:1433/sample"))
 						.isEqualTo(DatabaseDriver.JTDS);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sap:localhost"))
+				.isEqualTo(DatabaseDriver.SAP);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sqlserver://127.0.0.1:1433"))
 				.isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:firebirdsql://localhost/sample"))
