@@ -1,0 +1,13 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+- name: release-notes-repo
+- name: version
+params:
+  GITHUB_ORGANIZATION:
+  GITHUB_REPO:
+  GITHUB_USERNAME:
+  GITHUB_PASSWORD:
+run:
+  path: git-repo/ci/scripts/publish-release-notes.sh

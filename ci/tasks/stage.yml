@@ -5,6 +5,7 @@ inputs:
 outputs:
 - name: stage-git-repo
 - name: distribution-repository
+- name: version
 params:
   RELEASE_TYPE:
 caches:
