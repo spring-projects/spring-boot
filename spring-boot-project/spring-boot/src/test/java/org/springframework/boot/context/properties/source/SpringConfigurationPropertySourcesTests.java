@@ -105,6 +105,19 @@ public class SpringConfigurationPropertySourcesTests {
 	}
 
 	@Test
+	public void shouldAdaptSystemEnvironmentPropertySourceWithUnderscoreValue() {
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addLast(new SystemEnvironmentPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+				Collections.singletonMap("_", "1234")));
+		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(
+				sources).iterator();
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("bar");
+		assertThat(iterator.next().getConfigurationProperty(name)).isNull();
+		assertThat(iterator.hasNext()).isFalse();
+	}
+
+	@Test
 	public void shouldAdaptMultiplePropertySources() {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addLast(new SystemEnvironmentPropertySource("system",
