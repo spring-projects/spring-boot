@@ -78,7 +78,7 @@
 		<httpclient.version>4.5.6</httpclient.version>
 		<httpcore.version>4.4.10</httpcore.version>
 		<infinispan.version>9.3.3.Final</infinispan.version>
-		<influxdb-java.version>2.12</influxdb-java.version>
+		<influxdb-java.version>2.13</influxdb-java.version>
 		<jackson.version>2.9.7</jackson.version>
 		<janino.version>3.0.10</janino.version>
 		<javax-activation.version>1.2.0</javax-activation.version>
