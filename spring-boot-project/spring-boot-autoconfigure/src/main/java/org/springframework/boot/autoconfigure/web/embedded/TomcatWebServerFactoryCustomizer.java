@@ -92,8 +92,8 @@ public class TomcatWebServerFactoryCustomizer implements
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull()
 				.asInt(DataSize::toBytes)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
-		propertyMapper.from(tomcatProperties::getMaxHttpPostSize)
-				.when((maxHttpPostSize) -> maxHttpPostSize != 0)
+		propertyMapper.from(tomcatProperties::getMaxHttpPostSize).whenNonNull()
+				.asInt(DataSize::toBytes)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
 		propertyMapper.from(tomcatProperties::getAccesslog)
@@ -118,9 +118,8 @@ public class TomcatWebServerFactoryCustomizer implements
 
 	@SuppressWarnings("deprecation")
 	private DataSize determineMaxHttpHeaderSize() {
-		return isPositive(this.serverProperties.getTomcat().getMaxHttpHeaderSize())
-				? DataSize
-						.ofBytes(this.serverProperties.getTomcat().getMaxHttpHeaderSize())
+		return (this.serverProperties.getTomcat().getMaxHttpHeaderSize().toBytes() > 0)
+				? this.serverProperties.getTomcat().getMaxHttpHeaderSize()
 				: this.serverProperties.getMaxHttpHeaderSize();
 	}
 
