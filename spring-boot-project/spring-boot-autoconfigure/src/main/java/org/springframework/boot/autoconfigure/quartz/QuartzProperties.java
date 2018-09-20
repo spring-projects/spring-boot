@@ -41,7 +41,7 @@ public class QuartzProperties {
 	/**
 	 * Name of the scheduler.
 	 */
-	private String schedulerName = "quartzScheduler";
+	private String schedulerName;
 
 	/**
 	 * Whether to automatically start the scheduler after initialization.

@@ -505,6 +505,11 @@
       }
     },
     {
+      "name": "spring.quartz.scheduler-name",
+      "type": "java.lang.String",
+      "defaultValue": "quartzScheduler"
+    },
+    {
       "name": "spring.quartz.jdbc.initialize-schema",
       "defaultValue": "embedded"
     },

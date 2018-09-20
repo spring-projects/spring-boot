@@ -250,17 +250,14 @@ public class QuartzAutoConfigurationTests {
 
 	@Test
 	public void withCustomConfiguration() {
-		this.contextRunner.withPropertyValues(
-				"spring.quartz.scheduler-name=testScheduler",
-				"spring.quartz.auto-startup=false", "spring.quartz.startup-delay=1m",
+		this.contextRunner.withPropertyValues("spring.quartz.auto-startup=false",
+				"spring.quartz.startup-delay=1m",
 				"spring.quartz.wait-for-jobs-to-complete-on-shutdown=true",
 				"spring.quartz.overwrite-existing-jobs=true").run((context) -> {
 					assertThat(context).hasSingleBean(SchedulerFactoryBean.class);
 					SchedulerFactoryBean schedulerFactory = context
 							.getBean(SchedulerFactoryBean.class);
 					DirectFieldAccessor dfa = new DirectFieldAccessor(schedulerFactory);
-					assertThat(dfa.getPropertyValue("schedulerName"))
-							.isEqualTo("testScheduler");
 					assertThat(schedulerFactory.isAutoStartup()).isFalse();
 					assertThat(dfa.getPropertyValue("startupDelay")).isEqualTo(60);
 					assertThat(dfa.getPropertyValue("waitForJobsToCompleteOnShutdown"))
@@ -268,6 +265,45 @@ public class QuartzAutoConfigurationTests {
 					assertThat(dfa.getPropertyValue("overwriteExistingJobs"))
 							.isEqualTo(true);
 				});
+	}
+
+	@Test
+	public void schedulerNameWithDedicatedProperty() {
+		this.contextRunner
+				.withPropertyValues("spring.quartz.scheduler-name=testScheduler")
+				.run(assertSchedulerName("testScheduler"));
+	}
+
+	@Test
+	public void schedulerNameWithQuartzProperty() {
+		this.contextRunner.withPropertyValues(
+				"spring.quartz.properties.org.quartz.scheduler.instanceName=testScheduler")
+				.run(assertSchedulerName("testScheduler"));
+	}
+
+	@Test
+	public void schedulerNameWithDedicatedPropertyTakesPrecedence() {
+		this.contextRunner.withPropertyValues(
+				"spring.quartz.scheduler-name=specificTestScheduler",
+				"spring.quartz.properties.org.quartz.scheduler.instanceName=testScheduler")
+				.run(assertSchedulerName("specificTestScheduler"));
+	}
+
+	@Test
+	public void schedulerNameUseBeanNameByDefault() {
+		this.contextRunner.withPropertyValues()
+				.run(assertSchedulerName("quartzScheduler"));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertSchedulerName(
+			String schedulerName) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(SchedulerFactoryBean.class);
+			SchedulerFactoryBean schedulerFactory = context
+					.getBean(SchedulerFactoryBean.class);
+			DirectFieldAccessor dfa = new DirectFieldAccessor(schedulerFactory);
+			assertThat(dfa.getPropertyValue("schedulerName")).isEqualTo(schedulerName);
+		};
 	}
 
 	@Import(ComponentThatUsesScheduler.class)
