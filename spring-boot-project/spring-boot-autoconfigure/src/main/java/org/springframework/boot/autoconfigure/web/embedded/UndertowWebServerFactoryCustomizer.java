@@ -65,8 +65,7 @@ public class UndertowWebServerFactoryCustomizer implements
 				.getAccesslog();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		propertyMapper.from(undertowProperties::getBufferSize).whenNonNull()
-				.asInt(DataSize::toBytes)
-				.to(factory::setBufferSize);
+				.asInt(DataSize::toBytes).to(factory::setBufferSize);
 		propertyMapper.from(undertowProperties::getIoThreads).to(factory::setIoThreads);
 		propertyMapper.from(undertowProperties::getWorkerThreads)
 				.to(factory::setWorkerThreads);

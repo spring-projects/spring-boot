@@ -226,7 +226,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void tomcatMaxHttpPostSizeMatchesConnectorDefault() throws Exception {
-		assertThat(this.properties.getTomcat().getMaxHttpPostSize())
+		assertThat(this.properties.getTomcat().getMaxHttpPostSize().toBytes())
 				.isEqualTo(getDefaultConnector().getMaxPostSize());
 	}
 
@@ -333,7 +333,7 @@ public class ServerPropertiesTests {
 			String message = failure.get().getCause().getMessage();
 			int defaultMaxPostSize = Integer
 					.valueOf(message.substring(message.lastIndexOf(' ')).trim());
-			assertThat(this.properties.getJetty().getMaxHttpPostSize())
+			assertThat(this.properties.getJetty().getMaxHttpPostSize().toBytes())
 					.isEqualTo(defaultMaxPostSize);
 		}
 		finally {
@@ -343,7 +343,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void undertowMaxHttpPostSizeMatchesDefault() {
-		assertThat(this.properties.getUndertow().getMaxHttpPostSize())
+		assertThat(this.properties.getUndertow().getMaxHttpPostSize().toBytes())
 				.isEqualTo(UndertowOptions.DEFAULT_MAX_ENTITY_SIZE);
 	}
 

@@ -118,7 +118,7 @@ public class TomcatWebServerFactoryCustomizer implements
 
 	@SuppressWarnings("deprecation")
 	private DataSize determineMaxHttpHeaderSize() {
-		return this.serverProperties.getTomcat().getMaxHttpHeaderSize() != null
+		return (this.serverProperties.getTomcat().getMaxHttpHeaderSize().toBytes() > 0)
 				? this.serverProperties.getTomcat().getMaxHttpHeaderSize()
 				: this.serverProperties.getMaxHttpHeaderSize();
 	}
