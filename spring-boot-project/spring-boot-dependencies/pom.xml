@@ -60,7 +60,7 @@
 		<embedded-mongo.version>2.1.1</embedded-mongo.version>
 		<flyway.version>5.1.4</flyway.version>
 		<freemarker.version>2.3.28</freemarker.version>
-		<elasticsearch.version>6.4.0</elasticsearch.version>
+		<elasticsearch.version>6.4.1</elasticsearch.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<glassfish-jaxb.version>2.3.0.1</glassfish-jaxb.version>
 		<groovy.version>2.5.2</groovy.version>
