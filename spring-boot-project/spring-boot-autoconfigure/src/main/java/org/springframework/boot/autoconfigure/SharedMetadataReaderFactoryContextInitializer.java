@@ -23,9 +23,9 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -85,8 +85,10 @@ class SharedMetadataReaderFactoryContextInitializer
 		}
 
 		private void register(BeanDefinitionRegistry registry) {
-			RootBeanDefinition definition = new RootBeanDefinition(
-					SharedMetadataReaderFactoryBean.class);
+			BeanDefinition definition = BeanDefinitionBuilder
+					.genericBeanDefinition(SharedMetadataReaderFactoryBean.class,
+							SharedMetadataReaderFactoryBean::new)
+					.getBeanDefinition();
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 
