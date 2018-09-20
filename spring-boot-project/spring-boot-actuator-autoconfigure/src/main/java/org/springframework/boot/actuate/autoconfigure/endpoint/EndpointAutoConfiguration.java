@@ -16,14 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 
 /**
@@ -31,15 +34,25 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Arstiom Yudovin
  * @since 2.0.0
  */
 @Configuration
 public class EndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ ParameterValueMapper.class, ConversionService.class })
 	public ParameterValueMapper endpointOperationParameterMapper() {
 		return new ConversionServiceParameterValueMapper();
+	}
+
+	@Bean
+	@ConditionalOnBean(ConversionService.class)
+	@ConditionalOnMissingBean
+	public ParameterValueMapper endpointOperationParameterMapperByConversionService(
+			ObjectProvider<ConversionService> conversionService) {
+		return new ConversionServiceParameterValueMapper(
+				conversionService.getIfAvailable());
 	}
 
 	@Bean
