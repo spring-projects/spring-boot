@@ -2435,6 +2435,11 @@
 				<version>${neo4j-ogm.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-embedded-driver</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
