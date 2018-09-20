@@ -1735,11 +1735,11 @@ The following example shows potential logging settings in `application.propertie
 === Log Groups
 It's often useful to be able to group related loggers together so that they can all be
 configured at the same time. For example, you might commonly change the logging levels for
-_all_ Tomcat related loggers, but you can't easily remember to top level packages.
+_all_ Tomcat related loggers, but you can't easily remember top level packages.
 
-To help with this, Spring Boot allows you do define logging groups in your Spring
+To help with this, Spring Boot allows you to define logging groups in your Spring
 `Environment`. For example, here's how you could define a "`tomcat`" group by adding
-it to your `appplication.properties`:
+it to your `application.properties`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----

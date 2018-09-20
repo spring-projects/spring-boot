@@ -88,15 +88,15 @@
       "defaultValue": 0
     },
     {
-      "name": "logging.level",
+      "name": "logging.group",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
-      "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
+      "description": "Log groups to quickly change multiple loggers at the same time. For instance, `logging.level.db=org.hibernate,org.springframework.jdbc`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
-      "name": "logging.group",
+      "name": "logging.level",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
-      "description": "Log groups to quickly change multipe loggers at the same time. For instance, `logging.level.db=org.hibernate,org.springframework.jdbc`.",
+      "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
