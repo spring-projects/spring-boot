@@ -659,6 +659,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.elasticsearch.properties.*= # Additional properties used to configure the client.
 	spring.data.elasticsearch.repositories.enabled=true # Whether to enable Elasticsearch repositories.
 
+	# DATA JDBC
+	spring.data.jdbc.repositories.enabled=true # Whether to enable JDBC repositories.
+
 	# DATA LDAP
 	spring.data.ldap.repositories.enabled=true # Whether to enable LDAP repositories.
 

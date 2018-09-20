@@ -35,6 +35,7 @@
 		<module>spring-boot-sample-data-cassandra</module>
 		<module>spring-boot-sample-data-couchbase</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
+		<module>spring-boot-sample-data-jdbc</module>
 		<module>spring-boot-sample-data-jpa</module>
 		<module>spring-boot-sample-data-ldap</module>
 		<module>spring-boot-sample-data-mongodb</module>

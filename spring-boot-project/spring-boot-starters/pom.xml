@@ -30,6 +30,7 @@
 		<module>spring-boot-starter-data-couchbase</module>
 		<module>spring-boot-starter-data-couchbase-reactive</module>
 		<module>spring-boot-starter-data-elasticsearch</module>
+		<module>spring-boot-starter-data-jdbc</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-ldap</module>
 		<module>spring-boot-starter-data-mongodb</module>
