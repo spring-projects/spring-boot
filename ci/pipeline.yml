@@ -27,6 +27,11 @@ resources:
     password: ((github-password))
     branch: ((branch))
     ignore_paths: ["ci/images/*"]
+- name: release-notes-repo
+  type: git
+  source:
+    uri: https://github.com/mbhave/release-notes-generator
+    branch: master
 - name: git-pull-request
   type: pull-request
   source:
@@ -370,6 +375,7 @@ jobs:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
+  - get: release-notes-repo
   - task: stage
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/stage.yml
@@ -382,6 +388,14 @@ jobs:
   - put: git-repo
     params:
       repository: stage-git-repo
+  - task: publish-release-notes
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/publish-release-notes.yml
+    params:
+      GITHUB_ORGANIZATION: spring-projects
+      GITHUB_REPO: spring-boot
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: stage-rc
   serial: true
   plan:
@@ -400,6 +414,14 @@ jobs:
   - put: git-repo
     params:
       repository: stage-git-repo
+  - task: publish-release-notes
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/publish-release-notes.yml
+    params:
+      GITHUB_ORGANIZATION: spring-projects
+      GITHUB_REPO: spring-boot
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: stage-release
   serial: true
   plan:
@@ -418,6 +440,14 @@ jobs:
   - put: git-repo
     params:
       repository: stage-git-repo
+  - task: publish-release-notes
+    image: spring-boot-ci-image
+    file: git-repo/ci/tasks/publish-release-notes.yml
+    params:
+      GITHUB_ORGANIZATION: spring-projects
+      GITHUB_REPO: spring-boot
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_PASSWORD: ((github-release-notes-access-token))
 - name: promote-milestone
   serial: true
   plan:
