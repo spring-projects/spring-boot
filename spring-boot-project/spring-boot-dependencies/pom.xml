@@ -129,7 +129,7 @@
 		<mariadb.version>2.3.0</mariadb.version>
 		<micrometer.version>1.0.6</micrometer.version>
 		<mockito.version>2.22.0</mockito.version>
-		<mongo-driver-reactivestreams.version>1.9.1</mongo-driver-reactivestreams.version>
+		<mongo-driver-reactivestreams.version>1.9.2</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.8.2</mongodb.version>
 		<mssql-jdbc.version>6.4.0.jre8</mssql-jdbc.version>
 		<mysql.version>8.0.12</mysql.version>
