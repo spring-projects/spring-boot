@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.web.reactive;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -114,13 +113,13 @@ public class WebFluxAutoConfiguration {
 
 		private final ListableBeanFactory beanFactory;
 
-		private final Stream<HandlerMethodArgumentResolver> argumentResolvers;
+		private final ObjectProvider<HandlerMethodArgumentResolver> argumentResolvers;
 
-		private final Stream<CodecCustomizer> codecCustomizers;
+		private final ObjectProvider<CodecCustomizer> codecCustomizers;
 
 		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		private final Stream<ViewResolver> viewResolvers;
+		private final ObjectProvider<ViewResolver> viewResolvers;
 
 		public WebFluxConfig(ResourceProperties resourceProperties,
 				WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
@@ -131,21 +130,21 @@ public class WebFluxAutoConfiguration {
 			this.resourceProperties = resourceProperties;
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
-			this.argumentResolvers = resolvers.orderedStream();
-			this.codecCustomizers = codecCustomizers.orderedStream();
+			this.argumentResolvers = resolvers;
+			this.codecCustomizers = codecCustomizers;
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer
 					.getIfAvailable();
-			this.viewResolvers = viewResolvers.orderedStream();
+			this.viewResolvers = viewResolvers;
 		}
 
 		@Override
 		public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
-			this.argumentResolvers.forEach(configurer::addCustomResolver);
+			this.argumentResolvers.orderedStream().forEach(configurer::addCustomResolver);
 		}
 
 		@Override
 		public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
-			this.codecCustomizers
+			this.codecCustomizers.orderedStream()
 					.forEach((customizer) -> customizer.customize(configurer));
 		}
 
@@ -181,7 +180,7 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		public void configureViewResolvers(ViewResolverRegistry registry) {
-			this.viewResolvers.forEach(registry::viewResolver);
+			this.viewResolvers.orderedStream().forEach(registry::viewResolver);
 		}
 
 		@Override

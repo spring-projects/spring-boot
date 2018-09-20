@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.activemq.artemis.jms.server.config.JMSConfiguration;
 import org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration;
@@ -50,7 +49,7 @@ class ArtemisEmbeddedServerConfiguration {
 
 	private final ArtemisProperties properties;
 
-	private final Stream<ArtemisConfigurationCustomizer> configurationCustomizers;
+	private final ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers;
 
 	private final List<JMSQueueConfiguration> queuesConfiguration;
 
@@ -61,7 +60,7 @@ class ArtemisEmbeddedServerConfiguration {
 			ObjectProvider<JMSQueueConfiguration> queuesConfiguration,
 			ObjectProvider<TopicConfiguration> topicsConfiguration) {
 		this.properties = properties;
-		this.configurationCustomizers = configurationCustomizers.orderedStream();
+		this.configurationCustomizers = configurationCustomizers;
 		this.queuesConfiguration = queuesConfiguration.orderedStream()
 				.collect(Collectors.toList());
 		this.topicsConfiguration = topicsConfiguration.orderedStream()
@@ -90,7 +89,7 @@ class ArtemisEmbeddedServerConfiguration {
 
 	private void customize(
 			org.apache.activemq.artemis.core.config.Configuration configuration) {
-		this.configurationCustomizers
+		this.configurationCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(configuration));
 	}
 

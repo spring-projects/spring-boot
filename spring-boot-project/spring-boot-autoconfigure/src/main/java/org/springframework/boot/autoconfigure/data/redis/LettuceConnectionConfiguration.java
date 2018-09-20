@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
-import java.util.stream.Stream;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.resource.ClientResources;
@@ -51,7 +50,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
-	private final Stream<LettuceClientConfigurationBuilderCustomizer> builderCustomizers;
+	private final ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers;
 
 	LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
@@ -59,7 +58,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers) {
 		super(properties, sentinelConfigurationProvider, clusterConfigurationProvider);
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers.orderedStream();
+		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -137,7 +136,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private void customize(
 			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		this.builderCustomizers.forEach((customizer) -> customizer.customize(builder));
+		this.builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 	}
 
 	/**

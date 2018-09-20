@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -136,14 +135,14 @@ public class ThymeleafAutoConfiguration {
 
 		private final Collection<ITemplateResolver> templateResolvers;
 
-		private final Stream<IDialect> dialects;
+		private final ObjectProvider<IDialect> dialects;
 
 		public ThymeleafDefaultConfiguration(ThymeleafProperties properties,
 				Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<IDialect> dialectsProvider) {
 			this.properties = properties;
 			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider.orderedStream();
+			this.dialects = dialectsProvider;
 		}
 
 		@Bean
@@ -152,7 +151,7 @@ public class ThymeleafAutoConfiguration {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
 			this.templateResolvers.forEach(engine::addTemplateResolver);
-			this.dialects.forEach(engine::addDialect);
+			this.dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
 		}
 
@@ -224,14 +223,14 @@ public class ThymeleafAutoConfiguration {
 
 		private final Collection<ITemplateResolver> templateResolvers;
 
-		private final Stream<IDialect> dialects;
+		private final ObjectProvider<IDialect> dialects;
 
 		ThymeleafReactiveConfiguration(ThymeleafProperties properties,
 				Collection<ITemplateResolver> templateResolvers,
 				ObjectProvider<IDialect> dialectsProvider) {
 			this.properties = properties;
 			this.templateResolvers = templateResolvers;
-			this.dialects = dialectsProvider.orderedStream();
+			this.dialects = dialectsProvider;
 		}
 
 		@Bean
@@ -240,7 +239,7 @@ public class ThymeleafAutoConfiguration {
 			SpringWebFluxTemplateEngine engine = new SpringWebFluxTemplateEngine();
 			engine.setEnableSpringELCompiler(this.properties.isEnableSpringElCompiler());
 			this.templateResolvers.forEach(engine::addTemplateResolver);
-			this.dialects.forEach(engine::addDialect);
+			this.dialects.orderedStream().forEach(engine::addDialect);
 			return engine;
 		}
 

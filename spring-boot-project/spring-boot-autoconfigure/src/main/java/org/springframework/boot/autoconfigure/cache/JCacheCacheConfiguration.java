@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Stream;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -70,9 +69,9 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
 	private final javax.cache.configuration.Configuration<?, ?> defaultCacheConfiguration;
 
-	private final Stream<JCacheManagerCustomizer> cacheManagerCustomizers;
+	private final ObjectProvider<JCacheManagerCustomizer> cacheManagerCustomizers;
 
-	private final Stream<JCachePropertiesCustomizer> cachePropertiesCustomizers;
+	private final ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers;
 
 	private ClassLoader beanClassLoader;
 
@@ -84,8 +83,8 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 		this.cacheProperties = cacheProperties;
 		this.customizers = customizers;
 		this.defaultCacheConfiguration = defaultCacheConfiguration.getIfAvailable();
-		this.cacheManagerCustomizers = cacheManagerCustomizers.orderedStream();
-		this.cachePropertiesCustomizers = cachePropertiesCustomizers.orderedStream();
+		this.cacheManagerCustomizers = cacheManagerCustomizers;
+		this.cachePropertiesCustomizers = cachePropertiesCustomizers;
 	}
 
 	@Override
@@ -135,7 +134,7 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
 	private Properties createCacheManagerProperties() {
 		Properties properties = new Properties();
-		this.cachePropertiesCustomizers.forEach(
+		this.cachePropertiesCustomizers.orderedStream().forEach(
 				(customizer) -> customizer.customize(this.cacheProperties, properties));
 		return properties;
 	}
@@ -148,7 +147,7 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	}
 
 	private void customize(CacheManager cacheManager) {
-		this.cacheManagerCustomizers
+		this.cacheManagerCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(cacheManager));
 	}
 

@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.elasticsearch.jest;
 
 import java.time.Duration;
-import java.util.stream.Stream;
 
 import com.google.gson.Gson;
 import io.searchbox.client.JestClient;
@@ -54,13 +53,13 @@ public class JestAutoConfiguration {
 
 	private final ObjectProvider<Gson> gsonProvider;
 
-	private final Stream<HttpClientConfigBuilderCustomizer> builderCustomizers;
+	private final ObjectProvider<HttpClientConfigBuilderCustomizer> builderCustomizers;
 
 	public JestAutoConfiguration(JestProperties properties, ObjectProvider<Gson> gson,
 			ObjectProvider<HttpClientConfigBuilderCustomizer> builderCustomizers) {
 		this.properties = properties;
 		this.gsonProvider = gson;
-		this.builderCustomizers = builderCustomizers.orderedStream();
+		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean(destroyMethod = "shutdownClient")
@@ -93,7 +92,8 @@ public class JestAutoConfiguration {
 	}
 
 	private void customize(HttpClientConfig.Builder builder) {
-		this.builderCustomizers.forEach((customizer) -> customizer.customize(builder));
+		this.builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 	}
 
 }

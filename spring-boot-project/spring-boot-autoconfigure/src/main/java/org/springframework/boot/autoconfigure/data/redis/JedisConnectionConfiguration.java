@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
 import java.time.Duration;
-import java.util.stream.Stream;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import redis.clients.jedis.Jedis;
@@ -50,7 +49,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
-	private final Stream<JedisClientConfigurationBuilderCustomizer> builderCustomizers;
+	private final ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers;
 
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
@@ -58,7 +57,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		super(properties, sentinelConfiguration, clusterConfiguration);
 		this.properties = properties;
-		this.builderCustomizers = builderCustomizers.orderedStream();
+		this.builderCustomizers = builderCustomizers;
 	}
 
 	@Bean
@@ -131,7 +130,8 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private void customize(
 			JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		this.builderCustomizers.forEach((customizer) -> customizer.customize(builder));
+		this.builderCustomizers.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 	}
 
 }
