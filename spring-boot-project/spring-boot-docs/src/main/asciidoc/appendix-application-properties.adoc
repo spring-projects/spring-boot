@@ -1138,7 +1138,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.direct.default-requeue-rejected= # Whether rejected deliveries are re-queued by default.
 	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published.
 	spring.rabbitmq.listener.direct.missing-queues-fatal=false # Whether to fail if the queues declared by the container are not available on the broker.
-	spring.rabbitmq.listener.direct.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
+	spring.rabbitmq.listener.direct.prefetch= # Maximum number of unacknowledged messages that can be outstanding at each consumer.
 	spring.rabbitmq.listener.direct.retry.enabled=false # Whether publishing retries are enabled.
 	spring.rabbitmq.listener.direct.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.direct.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
@@ -1159,7 +1159,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.simple.retry.max-interval=10000ms # Maximum duration between attempts.
 	spring.rabbitmq.listener.simple.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.listener.simple.retry.stateless=true # Whether retries are stateless or stateful.
-	spring.rabbitmq.listener.simple.transaction-size= # Number of messages to be processed in a transaction. That is, the number of messages between acks. For best results, it should be less than or equal to the prefetch count.
+	spring.rabbitmq.listener.simple.transaction-size= # Number of messages to be processed between acks when the acknowledge mode is AUTO. If larger than prefetch, prefetch will be increased to this value.
 	spring.rabbitmq.listener.type=simple # Listener container type.
 	spring.rabbitmq.password=guest # Login to authenticate against the broker.
 	spring.rabbitmq.port=5672 # RabbitMQ port.
