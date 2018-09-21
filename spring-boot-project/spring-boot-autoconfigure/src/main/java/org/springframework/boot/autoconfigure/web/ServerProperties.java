@@ -325,14 +325,14 @@ public class ServerProperties {
 		private int minSpareThreads = 10;
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post content.
+		 * Maximum size of the HTTP post content.
 		 */
-		private int maxHttpPostSize = 2097152;
+		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
 
 		/**
 		 * Maximum size, in bytes, of the HTTP message header.
 		 */
-		private int maxHttpHeaderSize = 0;
+		private DataSize maxHttpHeaderSize = DataSize.ofBytes(0);
 
 		/**
 		 * Maximum amount of request body to swallow.
@@ -397,11 +397,11 @@ public class ServerProperties {
 			this.minSpareThreads = minSpareThreads;
 		}
 
-		public int getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(int maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
@@ -499,12 +499,12 @@ public class ServerProperties {
 
 		@Deprecated
 		@DeprecatedConfigurationProperty(replacement = "server.max-http-header-size")
-		public int getMaxHttpHeaderSize() {
+		public DataSize getMaxHttpHeaderSize() {
 			return this.maxHttpHeaderSize;
 		}
 
 		@Deprecated
-		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+		public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
 			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
@@ -722,9 +722,9 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post or put content.
+		 * Maximum size of the HTTP post or put content.
 		 */
-		private int maxHttpPostSize = 200000; // bytes
+		private DataSize maxHttpPostSize = DataSize.ofBytes(200000);
 
 		/**
 		 * Number of acceptor threads to use. When the value is -1, the default, the
@@ -742,11 +742,11 @@ public class ServerProperties {
 			return this.accesslog;
 		}
 
-		public int getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(int maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
@@ -937,16 +937,16 @@ public class ServerProperties {
 	public static class Undertow {
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post content. When the value is -1, the
-		 * default, the size is unlimited.
+		 * Maximum size of the HTTP post content. When the value is -1, the default, the
+		 * size is unlimited.
 		 */
-		private long maxHttpPostSize = -1; // bytes
+		private DataSize maxHttpPostSize = DataSize.ofBytes(-1);
 
 		/**
-		 * Size of each buffer, in bytes. The default is derived from the maximum amount
-		 * of memory that is available to the JVM.
+		 * Size of each buffer. The default is derived from the maximum amount of memory
+		 * that is available to the JVM.
 		 */
-		private Integer bufferSize;
+		private DataSize bufferSize = DataSize.ofBytes(0);
 
 		/**
 		 * Number of I/O threads to create for the worker. The default is derived from the
@@ -972,19 +972,19 @@ public class ServerProperties {
 
 		private final Accesslog accesslog = new Accesslog();
 
-		public long getMaxHttpPostSize() {
+		public DataSize getMaxHttpPostSize() {
 			return this.maxHttpPostSize;
 		}
 
-		public void setMaxHttpPostSize(long maxHttpPostSize) {
+		public void setMaxHttpPostSize(DataSize maxHttpPostSize) {
 			this.maxHttpPostSize = maxHttpPostSize;
 		}
 
-		public Integer getBufferSize() {
+		public DataSize getBufferSize() {
 			return this.bufferSize;
 		}
 
-		public void setBufferSize(Integer bufferSize) {
+		public void setBufferSize(DataSize bufferSize) {
 			this.bufferSize = bufferSize;
 		}
 
