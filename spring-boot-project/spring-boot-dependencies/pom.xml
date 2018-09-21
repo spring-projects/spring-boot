@@ -2393,6 +2393,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j-ogm-embedded-driver</artifactId>
+				<version>${neo4j-ogm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.neo4j</groupId>
 				<artifactId>neo4j-ogm-http-driver</artifactId>
 				<version>${neo4j-ogm.version}</version>
 			</dependency>
