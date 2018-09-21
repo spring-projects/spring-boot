@@ -57,6 +57,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.util.MimeType;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
 /**
@@ -283,8 +284,8 @@ public class ThymeleafAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getMediaTypes).whenNonNull()
 					.to(resolver::setSupportedMediaTypes);
-			map.from(properties::getMaxChunkSize).when((size) -> size > 0)
-					.to(resolver::setResponseMaxChunkSizeBytes);
+			map.from(properties::getMaxChunkSize).asInt(DataSize::toBytes)
+					.when((size) -> size > 0).to(resolver::setResponseMaxChunkSizeBytes);
 			map.from(properties::getFullModeViewNames).to(resolver::setFullModeViewNames);
 			map.from(properties::getChunkedModeViewNames)
 					.to(resolver::setChunkedModeViewNames);

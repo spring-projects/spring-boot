@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server;
 
+import org.springframework.util.unit.DataSize;
+
 /**
  * Simple server-independent abstraction for compression configuration.
  *
@@ -45,7 +47,7 @@ public class Compression {
 	/**
 	 * Minimum "Content-Length" value that is required for compression to be performed.
 	 */
-	private int minResponseSize = 2048;
+	private DataSize minResponseSize = DataSize.ofKilobytes(2);
 
 	public boolean getEnabled() {
 		return this.enabled;
@@ -63,11 +65,11 @@ public class Compression {
 		this.mimeTypes = mimeTypes;
 	}
 
-	public int getMinResponseSize() {
+	public DataSize getMinResponseSize() {
 		return this.minResponseSize;
 	}
 
-	public void setMinResponseSize(int minSize) {
+	public void setMinResponseSize(DataSize minSize) {
 		this.minResponseSize = minSize;
 	}
 

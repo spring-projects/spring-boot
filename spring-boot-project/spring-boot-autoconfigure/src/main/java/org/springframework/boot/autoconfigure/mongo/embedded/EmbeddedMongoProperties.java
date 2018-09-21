@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ import java.util.Set;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DataSizeUnit;
+import org.springframework.util.unit.DataSize;
+import org.springframework.util.unit.DataUnit;
 
 /**
  * Configuration properties for Embedded Mongo.
@@ -70,9 +73,10 @@ public class EmbeddedMongoProperties {
 	public static class Storage {
 
 		/**
-		 * Maximum size of the oplog, in megabytes.
+		 * Maximum size of the oplog.
 		 */
-		private Integer oplogSize;
+		@DataSizeUnit(DataUnit.MEGABYTES)
+		private DataSize oplogSize;
 
 		/**
 		 * Name of the replica set.
@@ -84,11 +88,11 @@ public class EmbeddedMongoProperties {
 		 */
 		private String databaseDir;
 
-		public Integer getOplogSize() {
+		public DataSize getOplogSize() {
 			return this.oplogSize;
 		}
 
-		public void setOplogSize(Integer oplogSize) {
+		public void setOplogSize(DataSize oplogSize) {
 			this.oplogSize = oplogSize;
 		}
 

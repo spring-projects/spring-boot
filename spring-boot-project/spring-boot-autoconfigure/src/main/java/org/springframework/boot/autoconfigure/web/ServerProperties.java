@@ -946,7 +946,7 @@ public class ServerProperties {
 		 * Size of each buffer. The default is derived from the maximum amount of memory
 		 * that is available to the JVM.
 		 */
-		private DataSize bufferSize = DataSize.ofBytes(0);
+		private DataSize bufferSize;
 
 		/**
 		 * Number of I/O threads to create for the worker. The default is derived from the

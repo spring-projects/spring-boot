@@ -89,8 +89,8 @@ public class UndertowWebServerFactoryCustomizer implements
 				.asInt(DataSize::toBytes)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
-		propertyMapper.from(undertowProperties::getMaxHttpPostSize).whenNonNull()
-				.asInt(DataSize::toBytes)
+		propertyMapper.from(undertowProperties::getMaxHttpPostSize)
+				.asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
 		propertyMapper.from(properties::getConnectionTimeout)

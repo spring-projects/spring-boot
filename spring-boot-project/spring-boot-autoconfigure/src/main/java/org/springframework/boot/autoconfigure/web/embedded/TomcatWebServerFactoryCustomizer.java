@@ -92,8 +92,8 @@ public class TomcatWebServerFactoryCustomizer implements
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull()
 				.asInt(DataSize::toBytes)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
-		propertyMapper.from(tomcatProperties::getMaxHttpPostSize).whenNonNull()
-				.asInt(DataSize::toBytes)
+		propertyMapper.from(tomcatProperties::getMaxHttpPostSize).asInt(DataSize::toBytes)
+				.when((maxHttpPostSize) -> maxHttpPostSize != 0)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
 		propertyMapper.from(tomcatProperties::getAccesslog)
