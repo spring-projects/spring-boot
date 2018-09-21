@@ -2000,6 +2000,66 @@ for more details.
 
 
 
+[[howto-configure-hibernate-second-level-caching]]
+=== Configure Hibernate Second-Level Caching
+Hibernate second-level caching can be used to avoid reading the same data multiple times.
+The second-level cache is a session independent cache as opposed to the first-level cache which is bound to the current session.
+Caching of entities can be activated by adding the `javax.persistence.Cacheable` or `org.hibernate.annotations.Cache` annotation to a entity.
+
+Second-level caching can be enabled or disabled by setting the `spring.jpa.hibernate.cache.use_second_level_cache` property.
+Although Hibernate enables second-level caching by default, without any further configuration Hibernate uses a `NoCachingRegionFactory`.
+To declare a pluggable caching provider the `spring.jpa.hibernate.cache.region.factory_class` property needs to be set. For example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.jpa.hibernate.cache.region.factory_class=jcache
+----
+
+When using the JSR-107 JCache provider additional `javax.cache` properties can be set if needed:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.jpa.hibernate.javax.cache.provider=org.ehcache.jsr107.EhcacheCachingProvider
+	spring.jpa.hibernate.javax.cache.uri=classpath:ehcache3.xml
+----
+
+Consult the Hibernate documentation for more details.
+
+Note that the `org.hibernate:hibernate-jcache` dependency needs to be added to your project together with the actual cache implementation.
+
+One important caveat to mention is that above setup will create a `javax.cache.CacheManager` using a different classloader than Spring
+Boot's classloader. This is not necessary a problem unless you want to integrate this cache manager (and its caches) with the Actuator
+metrics to e.g. view cache hits, misses etc. In that case it is better to explicitly pass the application's cache manager to Hibernate.
+
+This can be done by configuring a `HibernatePropertiesCustomizer` bean:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Configuration
+	public class HibernateConfig {
+
+	    @Autowired
+	    private CacheManager cacheManager;
+
+	    @Bean
+	    public HibernatePropertiesCustomizer hibernatePropertiesCustomizer() {
+	        return hibernateProperties -> hibernateProperties.put(ConfigSettings.CACHE_MANAGER, cacheManager);
+	    }
+	}
+----
+
+And setting the following application properties:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+    spring.cache.type=jcache
+    spring.cache.jcache.provider=org.ehcache.jsr107.EhcacheCachingProvider
+    spring.cache.jcache.config=classpath:ehcache3.xml
+    spring.jpa.hibernate.cache.region.factory_class=jcache
+----
+
+
+
 [[howto-use-custom-entity-manager]]
 === Use a Custom EntityManagerFactory
 To take full control of the configuration of the `EntityManagerFactory`, you need to add
