@@ -33,12 +33,14 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Configuration properties for Spring for Apache Kafka.
@@ -247,14 +249,14 @@ public class KafkaProperties {
 		/**
 		 * Maximum amount of time the server blocks before answering the fetch request if
 		 * there isn't sufficient data to immediately satisfy the requirement given by
-		 * "fetch.min.bytes".
+		 * "fetch-min-size".
 		 */
 		private Duration fetchMaxWait;
 
 		/**
-		 * Minimum amount of data, in bytes, the server should return for a fetch request.
+		 * Minimum amount of data the server should return for a fetch request.
 		 */
-		private Integer fetchMinSize;
+		private DataSize fetchMinSize;
 
 		/**
 		 * Unique string that identifies the consumer group to which this consumer
@@ -339,11 +341,11 @@ public class KafkaProperties {
 			this.fetchMaxWait = fetchMaxWait;
 		}
 
-		public Integer getFetchMinSize() {
+		public DataSize getFetchMinSize() {
 			return this.fetchMinSize;
 		}
 
-		public void setFetchMinSize(Integer fetchMinSize) {
+		public void setFetchMinSize(DataSize fetchMinSize) {
 			this.fetchMinSize = fetchMinSize;
 		}
 
@@ -406,7 +408,7 @@ public class KafkaProperties {
 					.to(properties.in(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG));
 			map.from(this::getFetchMaxWait).asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG));
-			map.from(this::getFetchMinSize)
+			map.from(this::getFetchMinSize).asInt(DataSize::toBytes)
 					.to(properties.in(ConsumerConfig.FETCH_MIN_BYTES_CONFIG));
 			map.from(this::getGroupId).to(properties.in(ConsumerConfig.GROUP_ID_CONFIG));
 			map.from(this::getHeartbeatInterval).asInt(Duration::toMillis)
@@ -433,10 +435,10 @@ public class KafkaProperties {
 		private String acks;
 
 		/**
-		 * Default batch size in bytes. A small batch size will make batching less common
-		 * and may reduce throughput (a batch size of zero disables batching entirely).
+		 * Default batch size. A small batch size will make batching less common and may
+		 * reduce throughput (a batch size of zero disables batching entirely).
 		 */
-		private Integer batchSize;
+		private DataSize batchSize;
 
 		/**
 		 * Comma-delimited list of host:port pairs to use for establishing the initial
@@ -445,10 +447,10 @@ public class KafkaProperties {
 		private List<String> bootstrapServers;
 
 		/**
-		 * Total bytes of memory the producer can use to buffer records waiting to be sent
-		 * to the server.
+		 * Total memory size the producer can use to buffer records waiting to be sent to
+		 * the server.
 		 */
-		private Long bufferMemory;
+		private DataSize bufferMemory;
 
 		/**
 		 * ID to pass to the server when making requests. Used for server-side logging.
@@ -497,11 +499,11 @@ public class KafkaProperties {
 			this.acks = acks;
 		}
 
-		public Integer getBatchSize() {
+		public DataSize getBatchSize() {
 			return this.batchSize;
 		}
 
-		public void setBatchSize(Integer batchSize) {
+		public void setBatchSize(DataSize batchSize) {
 			this.batchSize = batchSize;
 		}
 
@@ -513,11 +515,11 @@ public class KafkaProperties {
 			this.bootstrapServers = bootstrapServers;
 		}
 
-		public Long getBufferMemory() {
+		public DataSize getBufferMemory() {
 			return this.bufferMemory;
 		}
 
-		public void setBufferMemory(Long bufferMemory) {
+		public void setBufferMemory(DataSize bufferMemory) {
 			this.bufferMemory = bufferMemory;
 		}
 
@@ -577,11 +579,11 @@ public class KafkaProperties {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
-			map.from(this::getBatchSize)
+			map.from(this::getBatchSize).asInt(DataSize::toBytes)
 					.to(properties.in(ProducerConfig.BATCH_SIZE_CONFIG));
 			map.from(this::getBootstrapServers)
 					.to(properties.in(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
-			map.from(this::getBufferMemory)
+			map.from(this::getBufferMemory).as(DataSize::toBytes)
 					.to(properties.in(ProducerConfig.BUFFER_MEMORY_CONFIG));
 			map.from(this::getClientId)
 					.to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
@@ -674,9 +676,9 @@ public class KafkaProperties {
 		private List<String> bootstrapServers;
 
 		/**
-		 * Maximum number of memory bytes to be used for buffering across all threads.
+		 * Maximum memory size to be used for buffering across all threads.
 		 */
-		private Integer cacheMaxBytesBuffering;
+		private DataSize cacheMaxSizeBuffering;
 
 		/**
 		 * ID to pass to the server when making requests. Used for server-side logging.
@@ -727,12 +729,26 @@ public class KafkaProperties {
 			this.bootstrapServers = bootstrapServers;
 		}
 
+		@DeprecatedConfigurationProperty(replacement = "spring.kafka.streams.cache-max-size-buffering")
+		@Deprecated
 		public Integer getCacheMaxBytesBuffering() {
-			return this.cacheMaxBytesBuffering;
+			return (this.cacheMaxSizeBuffering != null)
+					? (int) this.cacheMaxSizeBuffering.toBytes() : null;
 		}
 
+		@Deprecated
 		public void setCacheMaxBytesBuffering(Integer cacheMaxBytesBuffering) {
-			this.cacheMaxBytesBuffering = cacheMaxBytesBuffering;
+			DataSize cacheMaxSizeBuffering = (cacheMaxBytesBuffering != null)
+					? DataSize.ofBytes(cacheMaxBytesBuffering) : null;
+			setCacheMaxSizeBuffering(cacheMaxSizeBuffering);
+		}
+
+		public DataSize getCacheMaxSizeBuffering() {
+			return this.cacheMaxSizeBuffering;
+		}
+
+		public void setCacheMaxSizeBuffering(DataSize cacheMaxSizeBuffering) {
+			this.cacheMaxSizeBuffering = cacheMaxSizeBuffering;
 		}
 
 		public String getClientId() {
@@ -769,7 +785,7 @@ public class KafkaProperties {
 			map.from(this::getApplicationId).to(properties.in("application.id"));
 			map.from(this::getBootstrapServers)
 					.to(properties.in(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
-			map.from(this::getCacheMaxBytesBuffering)
+			map.from(this::getCacheMaxSizeBuffering).asInt(DataSize::toBytes)
 					.to(properties.in("cache.max.bytes.buffering"));
 			map.from(this::getClientId)
 					.to(properties.in(CommonClientConfigs.CLIENT_ID_CONFIG));

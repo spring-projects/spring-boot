@@ -183,7 +183,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.compression.enabled=false # Whether response compression is enabled.
 	server.compression.excluded-user-agents= # List of user-agents to exclude from compression.
 	server.compression.mime-types=text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml # Comma-separated list of MIME types that should be compressed.
-	server.compression.min-response-size=2048 # Minimum "Content-Length" value that is required for compression to be performed.
+	server.compression.min-response-size=2KB # Minimum "Content-Length" value that is required for compression to be performed.
 	server.connection-timeout= # Time that connectors wait for another HTTP request before closing the connection. When not set, the connector's container-specific default is used. Use a value of -1 to indicate no (that is, an infinite) timeout.
 	server.error.include-exception=false # Include the "exception" attribute.
 	server.error.include-stacktrace=never # When to include a "stacktrace" attribute.
@@ -203,7 +203,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.jetty.accesslog.log-server=false # Enable logging of the request hostname.
 	server.jetty.accesslog.retention-period=31 # Number of days before rotated log files are deleted.
 	server.jetty.accesslog.time-zone=GMT # Timezone of the request log.
-	server.jetty.max-http-post-size=200000 # Maximum size, in bytes, of the HTTP post or put content.
+	server.jetty.max-http-post-size=200000B # Maximum size of the HTTP post or put content.
 	server.jetty.selectors=-1 # Number of selector threads to use. When the value is -1, the default, the number of selectors is derived from the operating environment.
 	server.max-http-header-size=8KB # Maximum size of the HTTP message header.
 	server.port=8080 # Server HTTP port.
@@ -263,7 +263,7 @@ content into your application. Rather, pick only the properties that you need.
 			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # Regular expression matching trusted IP addresses.
 	server.tomcat.max-connections=10000 # Maximum number of connections that the server will accept and process at any given time.
-	server.tomcat.max-http-post-size=2097152 # Maximum size in bytes of the HTTP post content.
+	server.tomcat.max-http-post-size=2MB # Maximum size of the HTTP post content.
 	server.tomcat.max-swallow-size=2MB # Maximum amount of request body to swallow.
 	server.tomcat.max-threads=200 # Maximum amount of worker threads.
 	server.tomcat.min-spare-threads=10 # Minimum amount of worker threads.
@@ -282,11 +282,11 @@ content into your application. Rather, pick only the properties that you need.
 	server.undertow.accesslog.prefix=access_log. # Log file name prefix.
 	server.undertow.accesslog.rotate=true # Whether to enable access log rotation.
 	server.undertow.accesslog.suffix=log # Log file name suffix.
-	server.undertow.buffer-size= # Size of each buffer, in bytes.
+	server.undertow.buffer-size= # Size of each buffer.
 	server.undertow.direct-buffers= # Allocate buffers outside the Java heap. The default is derived from the maximum amount of memory that is available to the JVM.
 	server.undertow.eager-filter-init=true # Whether servlet filters should be initialized on startup.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker. The default is derived from the number of available processors.
-	server.undertow.max-http-post-size=-1 # Maximum size in bytes of the HTTP post content. When the value is -1, the default, the size is unlimited.
+	server.undertow.max-http-post-size=-1B # Maximum size of the HTTP post content. When the value is -1, the default, the size is unlimited.
 	server.undertow.worker-threads= # Number of worker threads. The default is 8 times the number of I/O threads.
 
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerProperties.{sc-ext}[FreeMarkerProperties])
@@ -501,7 +501,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.thymeleaf.prefix=classpath:/templates/ # Prefix that gets prepended to view names when building a URL.
 	spring.thymeleaf.reactive.chunked-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be the only ones executed in CHUNKED mode when a max chunk size is set.
 	spring.thymeleaf.reactive.full-mode-view-names= # Comma-separated list of view names (patterns allowed) that should be executed in FULL mode even if a max chunk size is set.
-	spring.thymeleaf.reactive.max-chunk-size=0 # Maximum size of data buffers used for writing to the response, in bytes.
+	spring.thymeleaf.reactive.max-chunk-size=0B # Maximum size of data buffers used for writing to the response.
 	spring.thymeleaf.reactive.media-types= # Media types supported by the view technology.
 	spring.thymeleaf.servlet.content-type=text/html # Content-Type value written to HTTP responses.
 	spring.thymeleaf.suffix=.html # Suffix that gets appended to view names when building a URL.
@@ -920,7 +920,7 @@ content into your application. Rather, pick only the properties that you need.
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
 	spring.mongodb.embedded.features=sync_delay # Comma-separated list of features to enable.
 	spring.mongodb.embedded.storage.database-dir= # Directory used for data storage.
-	spring.mongodb.embedded.storage.oplog-size= # Maximum size of the oplog, in megabytes.
+	spring.mongodb.embedded.storage.oplog-size= # Maximum size of the oplog.
 	spring.mongodb.embedded.storage.repl-set-name= # Name of the replica set.
 	spring.mongodb.embedded.version=3.2.2 # Version of Mongo to use.
 
@@ -1046,8 +1046,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.consumer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for consumers.
 	spring.kafka.consumer.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.consumer.enable-auto-commit= # Whether the consumer's offset is periodically committed in the background.
-	spring.kafka.consumer.fetch-max-wait= # Maximum amount of time the server blocks before answering the fetch request if there isn't sufficient data to immediately satisfy the requirement given by "fetch.min.bytes".
-	spring.kafka.consumer.fetch-min-size= # Minimum amount of data, in bytes, the server should return for a fetch request.
+	spring.kafka.consumer.fetch-max-wait= # Maximum amount of time the server blocks before answering the fetch request if there isn't sufficient data to immediately satisfy the requirement given by "fetch-min-size".
+	spring.kafka.consumer.fetch-min-size= # Minimum amount of data the server should return for a fetch request.
 	spring.kafka.consumer.group-id= # Unique string that identifies the consumer group to which this consumer belongs.
 	spring.kafka.consumer.heartbeat-interval= # Expected time between heartbeats to the consumer coordinator.
 	spring.kafka.consumer.key-deserializer= # Deserializer class for keys.
@@ -1078,9 +1078,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.listener.poll-timeout= # Timeout to use when polling the consumer.
 	spring.kafka.listener.type=single # Listener type.
 	spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.
-	spring.kafka.producer.batch-size= # Default batch size in bytes.
+	spring.kafka.producer.batch-size= # Default batch size.
 	spring.kafka.producer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for producers.
-	spring.kafka.producer.buffer-memory= # Total bytes of memory the producer can use to buffer records waiting to be sent to the server.
+	spring.kafka.producer.buffer-memory= # Total memory size the producer can use to buffer records waiting to be sent to the server.
 	spring.kafka.producer.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.producer.compression-type= # Compression type for all data generated by the producer.
 	spring.kafka.producer.key-serializer= # Serializer class for keys.
@@ -1108,7 +1108,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.streams.application-id= # Kafka streams application.id property; default spring.application.name.
 	spring.kafka.streams.auto-startup=true # Whether or not to auto-start the streams factory bean.
 	spring.kafka.streams.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for streams.
-	spring.kafka.streams.cache-max-bytes-buffering= # Maximum number of memory bytes to be used for buffering across all threads.
+	spring.kafka.streams.cache-max-size-buffering= # Maximum number of memory size to be used for buffering across all threads.
 	spring.kafka.streams.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.streams.properties.*= # Additional Kafka properties used to configure the streams.
 	spring.kafka.streams.replication-factor= # The replication factor for change log topics and repartition topics created by the stream processing application.
@@ -1347,7 +1347,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.health.defaults.enabled=true # Whether to enable default health indicators.
 	management.health.diskspace.enabled=true # Whether to enable disk space health check.
 	management.health.diskspace.path= # Path used to compute the available disk space.
-	management.health.diskspace.threshold=0 # Minimum disk space, in bytes, that should be available.
+	management.health.diskspace.threshold=10MB # Minimum disk space that should be available.
 	management.health.elasticsearch.enabled=true # Whether to enable Elasticsearch health check.
 	management.health.elasticsearch.indices= # Comma-separated index names.
 	management.health.elasticsearch.response-timeout=100ms # Time to wait for a response from the cluster.

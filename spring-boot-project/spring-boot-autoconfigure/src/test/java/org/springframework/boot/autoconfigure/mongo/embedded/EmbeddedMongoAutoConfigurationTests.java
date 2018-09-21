@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,6 +139,13 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void customOpLogSizeIsAppliedToConfiguration() {
+		load("spring.mongodb.embedded.storage.oplogSize=1024KB");
+		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize())
+				.isEqualTo(1);
+	}
+
+	@Test
+	public void customOpLogSizeUsesMegabytesPerDefault() {
 		load("spring.mongodb.embedded.storage.oplogSize=10");
 		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize())
 				.isEqualTo(10);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
+import org.springframework.util.unit.DataSize;
 
 /**
  * Properties for Thymeleaf.
@@ -233,10 +234,10 @@ public class ThymeleafProperties {
 	public static class Reactive {
 
 		/**
-		 * Maximum size of data buffers used for writing to the response, in bytes.
-		 * Templates will execute in CHUNKED mode by default if this is set.
+		 * Maximum size of data buffers used for writing to the response. Templates will
+		 * execute in CHUNKED mode by default if this is set.
 		 */
-		private int maxChunkSize;
+		private DataSize maxChunkSize = DataSize.ofBytes(0);
 
 		/**
 		 * Media types supported by the view technology.
@@ -263,11 +264,11 @@ public class ThymeleafProperties {
 			this.mediaTypes = mediaTypes;
 		}
 
-		public int getMaxChunkSize() {
+		public DataSize getMaxChunkSize() {
 			return this.maxChunkSize;
 		}
 
-		public void setMaxChunkSize(int maxChunkSize) {
+		public void setMaxChunkSize(DataSize maxChunkSize) {
 			this.maxChunkSize = maxChunkSize;
 		}
 

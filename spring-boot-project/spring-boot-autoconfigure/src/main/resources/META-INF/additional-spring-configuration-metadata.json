@@ -30,6 +30,12 @@
       }
     },
     {
+      "name": "server.compression.min-response-size",
+      "description": "Minimum \"Content-Length\" value that is required for compression to be performed.",
+      "type": "org.springframework.util.unit.DataSize",
+      "defaultValue": "2KB"
+    },
+    {
       "name": "server.error.include-stacktrace",
       "defaultValue": "never"
     },
