@@ -93,7 +93,7 @@ public class Handler extends URLStreamHandler {
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
 		if (this.jarFile != null
-				&& url.toString().startsWith(this.jarFile.getUrl().toString())) {
+				&& url.getPath().startsWith(this.jarFile.getUrl().getPath())) {
 			return JarURLConnection.get(url, this.jarFile);
 		}
 		try {
