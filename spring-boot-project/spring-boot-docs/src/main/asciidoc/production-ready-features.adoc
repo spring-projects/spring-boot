@@ -1336,6 +1336,7 @@ monitoring systems, including:
 
 - <<production-ready-metrics-export-atlas,Atlas>>
 - <<production-ready-metrics-export-datadog,Datadog>>
+- <<production-ready-metrics-export-dynatrace,Dynatrace>>
 - <<production-ready-metrics-export-ganglia,Ganglia>>
 - <<production-ready-metrics-export-graphite,Graphite>>
 - <<production-ready-metrics-export-influx,Influx>>
@@ -1448,6 +1449,28 @@ You can also change the interval at which metrics are sent to Datadog:
 [source,properties,indent=0]
 ----
 	management.metrics.export.datadog.step=30s
+----
+
+
+
+[[production-ready-metrics-export-dynatrace]]
+==== Datadog
+Dynatrace registry pushes metrics to the configured UIR periodically. To export metrics to
+{micrometer-registry-documentation}/dynatrace[Dynatrace], your API token, device ID, and
+URI must be provided:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.dynatrace.api-token=YOUR_TOKEN
+	management.metrics.export.dynatrace.device-id=YOUR_DEVICE_ID
+	management.metrics.export.dynatrace.uri=YOUR_URI
+----
+
+You can also change the interval at which metrics are sent to Dynatrace:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.dynatrace.step=30s
 ----
 
 

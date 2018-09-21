@@ -1400,6 +1400,16 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.datadog.read-timeout=10s # Read timeout for requests to this backend.
 	management.metrics.export.datadog.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.datadog.uri=https://app.datadoghq.com # URI to ship metrics to. If you need to publish metrics to an internal proxy en-route to Datadog, you can define the location of the proxy with this.
+	management.metrics.export.dynatrace.api-token= # Dynatrace API token.
+	management.metrics.export.dynatrace.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
+	management.metrics.export.dynatrace.connect-timeout=1s # Connection timeout for requests to this backend.
+	management.metrics.export.dynatrace.deviceId= # ID of the custom device that is exporting metrics to Dynatrace.
+	management.metrics.export.dynatrace.enabled=true # Whether exporting of metrics to this backend is enabled.
+	management.metrics.export.dynatrace.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
+	management.metrics.export.dynatrace.read-timeout=10s # Read timeout for requests to this backend.
+	management.metrics.export.dynatrace.step=1m # Step size (i.e. reporting frequency) to use.
+	management.metrics.export.dynatrace.technology-type=java # Technology type for exported metrics. Used to group metrics under a logical technology name in the Dynatrace UI.
+	management.metrics.export.dynatrace.uri= # URI to ship metrics to. If you need to publish metrics to an internal proxy en-route to Dynatrace, you can define the location of the proxy with this.
 	management.metrics.export.ganglia.addressing-mode=multicast # UDP addressing mode, either unicast or multicast.
 	management.metrics.export.ganglia.duration-units=milliseconds # Base time unit used to report durations.
 	management.metrics.export.ganglia.enabled=true # Whether exporting of metrics to Ganglia is enabled.
