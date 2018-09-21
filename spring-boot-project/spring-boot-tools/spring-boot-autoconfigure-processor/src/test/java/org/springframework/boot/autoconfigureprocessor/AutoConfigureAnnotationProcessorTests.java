@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,18 +50,38 @@ public class AutoConfigureAnnotationProcessorTests {
 	@Test
 	public void annotatedClass() throws Exception {
 		Properties properties = compile(TestClassConfiguration.class);
-		assertThat(properties).hasSize(3);
+		assertThat(properties).hasSize(5);
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration.ConditionalOnClass",
 				"java.io.InputStream,org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration$Nested");
-		assertThat(properties).containsKey(
-				"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration");
-		assertThat(properties).containsKey(
-				"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration.Configuration");
-		assertThat(properties).doesNotContainKey(
-				"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration$Nested");
+		assertThat(properties)
+				.containsKey("org.springframework.boot.autoconfigureprocessor."
+						+ "TestClassConfiguration");
+		assertThat(properties)
+				.containsKey("org.springframework.boot.autoconfigureprocessor."
+						+ "TestClassConfiguration.Configuration");
+		assertThat(properties)
+				.doesNotContainKey("org.springframework.boot.autoconfigureprocessor."
+						+ "TestClassConfiguration$Nested");
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor."
+						+ "TestClassConfiguration.ConditionalOnBean",
+				"java.io.OutputStream");
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor."
+						+ "TestClassConfiguration.ConditionalOnSingleCandidate",
+				"java.io.OutputStream");
+	}
+
+	@Test
+	public void annoatedClassWithOnBeanThatHasName() throws Exception {
+		Properties properties = compile(TestOnBeanWithNameClassConfiguration.class);
+		assertThat(properties).hasSize(3);
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor.TestOnBeanWithNameClassConfiguration.ConditionalOnBean",
+				"");
 	}
 
 	@Test
