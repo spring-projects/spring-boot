@@ -4045,17 +4045,19 @@ the Mongo instance's configuration and logging routing.
 [[boot-features-neo4j]]
 === Neo4j
 http://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data
-model of nodes connected by first class relationships, which is better suited for connected
-big data than traditional RDBMS approaches. Spring Boot offers several conveniences for
-working with Neo4j, including the `spring-boot-starter-data-neo4j` "`Starter`".
+model of nodes connected by first class relationships, which is better suited for
+connected big data than traditional RDBMS approaches. Spring Boot offers several
+conveniences for working with Neo4j, including the `spring-boot-starter-data-neo4j`
+"`Starter`".
 
 
 
 [[boot-features-connecting-to-neo4j]]
 ==== Connecting to a Neo4j Database
-To access a Neo4j server, you can inject an auto-configured `org.neo4j.ogm.session.Session`. 
-By default, the instance tries to connect to a Neo4j server at `localhost:7687` via the Bolt 
-protocol. The following example shows how to inject a Neo4j session:
+To access a Neo4j server, you can inject an auto-configured
+`org.neo4j.ogm.session.Session`. By default, the instance tries to connect to a Neo4j
+server at `localhost:7687` using the Bolt protocol. The following example shows how to
+inject a Neo4j `Session`:
 
 [source,java,indent=0]
 ----
@@ -4084,15 +4086,14 @@ properties, as shown in the following example:
 	spring.data.neo4j.password=secret
 ----
 
-You can take full control over the session creation by adding a 
-`org.neo4j.ogm.config.Configuration` `@Bean`. To completely disable the auto-configuration
-provided by the "`Starter`" , add a `@Bean` of type `org.neo4j.ogm.session.SessionFactory`.
+You can take full control over the session creation by adding a
+`org.neo4j.ogm.config.Configuration` `@Bean`. Also, adding a `@Bean` of type
+`SessionFactory` disables the auto-configuration and gives you full control.
 
 
 
 [[boot-features-connecting-to-neo4j-embedded]]
 ==== Using the Embedded Mode
-
 If you add `org.neo4j:neo4j-ogm-embedded-driver` to the dependencies of your application,
 Spring Boot automatically configures an in-process embedded instance of Neo4j that does
 not persist any data when your application shuts down. 
@@ -4102,7 +4103,7 @@ not persist any data when your application shuts down.
 As the embedded Neo4j OGM  driver  does not provide the Neo4j kernel itself, you have 
 to declare `org.neo4j:neo4j` as dependency yourself. Refer to 
 https://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the
-Neo4j OGM documentation] for list of compatible versions.
+Neo4j OGM documentation] for a list of compatible versions.
 ====
 
 The embedded driver takes precedence over the other drivers when there are multiple
@@ -4116,14 +4117,13 @@ kernel are on the classpath as described above.
 [NOTE]
 ====
 You can enable persistence for the embedded mode by providing a path to a database file 
-in your configuration like this: `spring.data.neo4j.uri=file://var/tmp/graph.db`.
+in your configuration, e.g. `spring.data.neo4j.uri=file://var/tmp/graph.db`.
 ====
 
 
 
 [[boot-features-neo4j-ogm-session]]
 ==== Neo4jSession
-
 By default, if you are running a web application, the session is bound to the thread for
 the entire processing of the request (that is, it uses the "Open Session in View"
 pattern). If you do not want this behavior, add the following line to your
@@ -4166,8 +4166,8 @@ entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a
 `@Configuration`-bean.
 
 TIP: For complete details of Spring Data Neo4j, including its object mapping
-technologies, refer to the https://projects.spring.io/spring-data-neo4j/[project page] and
-the reference documentation.
+technologies, refer to the https://projects.spring.io/spring-data-neo4j/[reference
+documentation].
 
 
 
