@@ -92,8 +92,7 @@ public class Handler extends URLStreamHandler {
 
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
-		if (this.jarFile != null
-				&& url.toString().startsWith(this.jarFile.getUrl().toString())) {
+		if (this.jarFile != null && isUrlInJarFile(url, this.jarFile)) {
 			return JarURLConnection.get(url, this.jarFile);
 		}
 		try {
@@ -102,6 +101,13 @@ public class Handler extends URLStreamHandler {
 		catch (Exception ex) {
 			return openFallbackConnection(url, ex);
 		}
+	}
+
+	private boolean isUrlInJarFile(URL url, JarFile jarFile)
+			throws MalformedURLException {
+		// Try the path first to save building a new url string each time
+		return url.getPath().startsWith(jarFile.getUrl().getPath())
+				&& url.toString().startsWith(jarFile.getUrlString());
 	}
 
 	private URLConnection openFallbackConnection(URL url, Exception reason)
