@@ -142,7 +142,9 @@ public class DeferredLog implements Log {
 			if (this.destination != null) {
 				logTo(this.destination, level, message, t);
 			}
-			this.lines.add(new Line(level, message, t));
+			else {
+				this.lines.add(new Line(level, message, t));
+			}
 		}
 	}
 
