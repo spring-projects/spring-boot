@@ -164,7 +164,7 @@
 		<spring-data-releasetrain.version>Lovelace-RELEASE</spring-data-releasetrain.version>
 		<spring-framework.version>${spring.version}</spring-framework.version>
 		<spring-hateoas.version>0.25.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.1.0.M2</spring-integration.version>
+		<spring-integration.version>5.1.0.RC1</spring-integration.version>
 		<spring-kafka.version>2.2.0.RC1</spring-kafka.version>
 		<spring-ldap.version>2.3.2.RELEASE</spring-ldap.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
