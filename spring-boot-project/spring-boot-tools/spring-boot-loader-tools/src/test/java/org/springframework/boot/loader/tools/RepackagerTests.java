@@ -664,6 +664,23 @@ public class RepackagerTests {
 		repackager.repackage(dest, NO_LIBRARIES);
 	}
 
+	@Test
+	public void customizedManifest() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new ManifestCustomizingRepackager(file);
+		repackager.setMainClass("a.b.C");
+		repackager.repackage(NO_LIBRARIES);
+		Manifest actualManifest = getManifest(file);
+		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
+				.isEqualTo("org.springframework.boot.loader.JarLauncher");
+		assertThat(actualManifest.getMainAttributes().getValue("Start-Class"))
+				.isEqualTo("a.b.C");
+		assertThat(actualManifest.getMainAttributes().getValue("Test-Value"))
+				.isEqualTo("xyz");
+		assertThat(hasLauncherClasses(file)).isTrue();
+	}
+
 	private File createLibrary() throws IOException {
 		TestJarFile library = new TestJarFile(this.temporaryFolder);
 		library.addClass("com/example/library/Library.class",
@@ -732,6 +749,19 @@ public class RepackagerTests {
 		@Override
 		public void writeLoadedClasses(LoaderClassesWriter writer) throws IOException {
 			writer.writeEntry("test", new ByteArrayInputStream("test".getBytes()));
+		}
+
+	}
+
+	private static final class ManifestCustomizingRepackager extends Repackager {
+
+		private ManifestCustomizingRepackager(File source) {
+			super(source);
+		}
+
+		@Override
+		protected void customizeManifest(Manifest manifest) {
+			manifest.getMainAttributes().putValue("Test-Value", "xyz");
 		}
 
 	}
