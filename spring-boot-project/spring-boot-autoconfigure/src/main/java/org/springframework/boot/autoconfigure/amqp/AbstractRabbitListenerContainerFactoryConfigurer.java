@@ -119,7 +119,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		factory.setMissingQueuesFatal(configuration.isMissingQueuesFatal());
 		ListenerRetry retryConfig = configuration.getRetry();
 		if (retryConfig.isEnabled()) {
-			RetryInterceptorBuilder<?> builder = (retryConfig.isStateless())
+			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless())
 					? RetryInterceptorBuilder.stateless()
 					: RetryInterceptorBuilder.stateful();
 			RetryTemplate retryTemplate = new RetryTemplateFactory(
