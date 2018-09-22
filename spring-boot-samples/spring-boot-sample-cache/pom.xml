@@ -46,15 +46,6 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>jcache</id>
-			<dependencies>
-				<dependency>
-					<groupId>javax.cache</groupId>
-					<artifactId>cache-api</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
 			<id>caffeine</id>
 			<dependencies>
 				<dependency>

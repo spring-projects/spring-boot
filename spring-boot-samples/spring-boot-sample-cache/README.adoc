@@ -46,10 +46,13 @@ compliant implementation and the JSR-107 api. You first need to add
 * `Hazelcast`: add `com.hazelcast:hazelcast`
 * `Infinispan`: add `org.infinispan:infinispan-jcache`
 
-TIP: Certain cache providers do not create a default cache on-the-fly if it does not
-exist so you might need to update the sample to create the caches on startup or
-specify the location to the provider-specific file via the
-`spring.cache.jcache.config` property.
+TIP: Run sample cache application using JCache and EhCache3 by uncommenting the
+`spring.cache.jcache.config` property and `$mvn spring-boot:run -Pehcache`.
+
+TIP: Refer to the documentation of the JSR-107 implementation you want to use: certain
+cache providers do not create a default cache on-the-fly if it does not exist so you might
+need to update the sample to create the caches on startup or specify the location to the
+provider-specific file via the `spring.cache.jcache.config` property.
 
 NOTE: Any other JSR-107 compliant provider is also supported but Spring Boot may not
 offer a dependency management entry for it. You will have to add it with the version
