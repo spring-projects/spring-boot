@@ -14,30 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.docs;
+package org.springframework.boot.gradle.docs.groovy;
 
-import org.junit.Rule;
-import org.junit.Test;
-
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.gradle.docs.AbstractManagingDependenciesDocumentationTests;
 
 /**
- * Tests for the getting started documentation.
+ * Tests for the managing dependencies documentation.
  *
- * @author Andy Wilkinson
+ * @author Jean-Baptiste Nizet
  */
-public class GettingStartedDocumentationTests {
+public class ManagingDependenciesDocumentationTests
+		extends AbstractManagingDependenciesDocumentationTests {
 
-	@Rule
-	public GradleBuild gradleBuild = new GradleBuild();
-
-	// NOTE: We can't run any `apply-plugin` tests because during a release the
-	// jar won't be there
-
-	@Test
-	public void typicalPluginsAppliesExceptedPlugins() {
-		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins.gradle")
-				.build("verify");
+	public ManagingDependenciesDocumentationTests() {
+		super(DSL.GROOVY);
 	}
 
 }

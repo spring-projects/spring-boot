@@ -14,43 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.docs;
+package org.springframework.boot.gradle.docs.kotlin;
 
-import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.gradle.docs.AbstractManagingDependenciesDocumentationTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the managing dependencies documentation.
  *
- * @author Andy Wilkinson
+ * @author Jean-Baptiste Nizet
  */
-public class ManagingDependenciesDocumentationTests {
+public class ManagingDependenciesDocumentationTests
+		extends AbstractManagingDependenciesDocumentationTests {
 
-	@Rule
-	public GradleBuild gradleBuild = new GradleBuild();
-
-	@Test
-	public void dependenciesExampleEvaluatesSuccessfully() {
-		this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/dependencies.gradle")
-				.build();
+	public ManagingDependenciesDocumentationTests() {
+		super(DSL.KOTLIN);
 	}
 
 	@Test
-	public void customManagedVersions() {
+	public void dependencyManagementInIsolationWithPluginsBlock() {
 		assertThat(this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/custom-version.gradle")
-				.build("slf4jVersion").getOutput()).contains("1.7.20");
-	}
-
-	@Test
-	public void dependencyManagementInIsolation() {
-		assertThat(this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/configure-bom.gradle")
+				.script("src/main/gradle/managing-dependencies/configure-bom-with-plugins"
+						+ extension)
 				.build("dependencyManagement").getOutput())
 						.contains("org.springframework.boot:spring-boot-starter ");
 	}
