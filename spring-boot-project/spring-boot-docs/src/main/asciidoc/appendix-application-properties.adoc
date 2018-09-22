@@ -1412,7 +1412,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.dynatrace.read-timeout=10s # Read timeout for requests to this backend.
 	management.metrics.export.dynatrace.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.dynatrace.technology-type=java # Technology type for exported metrics. Used to group metrics under a logical technology name in the Dynatrace UI.
-	management.metrics.export.dynatrace.uri= # URI to ship metrics to. If you need to publish metrics to an internal proxy en-route to Dynatrace, you can define the location of the proxy with this.
+	management.metrics.export.dynatrace.uri= # URI to ship metrics to. Should be used for SaaS, self managed instances or to en-route through an internal proxy.
 	management.metrics.export.ganglia.addressing-mode=multicast # UDP addressing mode, either unicast or multicast.
 	management.metrics.export.ganglia.duration-units=milliseconds # Base time unit used to report durations.
 	management.metrics.export.ganglia.enabled=true # Whether exporting of metrics to Ganglia is enabled.

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
 import java.util.Map;
+import java.util.function.Function;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.dynatrace.DynatraceConfig;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link DynatraceMetricsExportAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class DynatraceMetricsExportAutoConfigurationTests {
 
@@ -61,8 +63,7 @@ public class DynatraceMetricsExportAutoConfigurationTests {
 	@Test
 	public void autoConfiguresConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues(
-						"management.metrics.export.dynatrace.uri=https://dynatrace.example.com")
+				.with(mandatoryProperties())
 				.run((context) -> assertThat(context)
 						.hasSingleBean(DynatraceMeterRegistry.class)
 						.hasSingleBean(DynatraceConfig.class));
@@ -88,8 +89,7 @@ public class DynatraceMetricsExportAutoConfigurationTests {
 	@Test
 	public void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-				.withPropertyValues(
-						"management.metrics.export.dynatrace.uri=https://dynatrace.example.com")
+				.with(mandatoryProperties())
 				.run((context) -> assertThat(context)
 						.hasSingleBean(DynatraceMeterRegistry.class)
 						.hasBean("customRegistry").hasSingleBean(DynatraceConfig.class));
@@ -98,15 +98,19 @@ public class DynatraceMetricsExportAutoConfigurationTests {
 	@Test
 	public void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.dynatrace.api-token=abcde",
-						"management.metrics.export.dynatrace.uri=https://dynatrace.example.com",
-						"management.metrics.export.dynatrace.deviceId=test")
-				.run((context) -> {
+				.with(mandatoryProperties()).run((context) -> {
 					DynatraceMeterRegistry registry = spyOnDisposableBean(
 							DynatraceMeterRegistry.class, context);
 					context.close();
 					verify(registry).stop();
 				});
+	}
+
+	private Function<ApplicationContextRunner, ApplicationContextRunner> mandatoryProperties() {
+		return (runner) -> runner.withPropertyValues(
+				"management.metrics.export.dynatrace.uri=https://dynatrace.example.com",
+				"management.metrics.export.dynatrace.api-token=abcde",
+				"management.metrics.export.dynatrace.device-id=test");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -139,16 +143,17 @@ public class DynatraceMetricsExportAutoConfigurationTests {
 
 		@Bean
 		public DynatraceConfig customConfig() {
-			return new DynatraceConfig() {
-
-				@Override
-				public String get(String k) {
-					if ("dynatrace.uri".equals(k)) {
-						return "https://dynatrace.example.com";
-					}
-					return null;
+			return (k) -> {
+				if ("dynatrace.uri".equals(k)) {
+					return "https://dynatrace.example.com";
 				}
-
+				if ("dynatrace.apiToken".equals(k)) {
+					return "abcde";
+				}
+				if ("dynatrace.deviceId".equals(k)) {
+					return "test";
+				}
+				return null;
 			};
 		}
 

@@ -45,8 +45,8 @@ public class DynatraceProperties extends StepRegistryProperties {
 	private String technologyType = "java";
 
 	/**
-	 * URI to ship metrics to. If you need to publish metrics to an internal proxy
-	 * en-route to Dynatrace, you can define the location of the proxy with this.
+	 * URI to ship metrics to. Should be used for SaaS, self managed instances or to
+	 * en-route through an internal proxy.
 	 */
 	private String uri;
 
