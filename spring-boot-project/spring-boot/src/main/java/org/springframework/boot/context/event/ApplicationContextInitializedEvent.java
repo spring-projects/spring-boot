@@ -26,6 +26,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * called but before any bean definitions are loaded.
  *
  * @author Artsiom Yudovin
+ * @since 2.1.0
  */
 @SuppressWarnings("serial")
 public class ApplicationContextInitializedEvent extends SpringApplicationEvent {
