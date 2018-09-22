@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Configuration;
  * installs the Tomcat WebSocket initializer.
  *
  * @author Brian Clozel
+ * @author Artsiom Yudovin
  * @since 2.0.0
  */
 @Configuration

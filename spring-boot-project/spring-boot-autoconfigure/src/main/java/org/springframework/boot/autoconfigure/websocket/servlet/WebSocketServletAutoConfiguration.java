@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Artsiom Yudovin
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, ServerContainer.class })
