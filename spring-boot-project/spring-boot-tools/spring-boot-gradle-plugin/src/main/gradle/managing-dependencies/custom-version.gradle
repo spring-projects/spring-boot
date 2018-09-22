@@ -8,7 +8,7 @@ dependencyManagement {
 	resolutionStrategy {
 		eachDependency {
 			if (it.requested.group == 'org.springframework.boot') {
-				it.useVersion project.bootVersion
+				it.useVersion '{version}'
 			}
 		}
 	}

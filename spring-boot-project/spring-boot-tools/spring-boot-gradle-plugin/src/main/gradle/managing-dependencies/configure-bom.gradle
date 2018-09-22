@@ -3,22 +3,6 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-apply plugin: 'io.spring.dependency-management'
-
-dependencyManagement {
-	resolutionStrategy {
-		eachDependency {
-			if (it.requested.group == 'org.springframework.boot') {
-				it.useVersion project.bootVersion
-			}
-		}
-	}
-}
-
-repositories {
-	mavenLocal()
-}
-
 // tag::configure-bom[]
 apply plugin: 'io.spring.dependency-management'
 
@@ -28,3 +12,17 @@ dependencyManagement {
 	}
 }
 // end::configure-bom[]
+
+dependencyManagement {
+	resolutionStrategy {
+		eachDependency {
+			if (it.requested.group == 'org.springframework.boot') {
+				it.useVersion '{version}'
+			}
+		}
+	}
+}
+
+repositories {
+	mavenLocal()
+}

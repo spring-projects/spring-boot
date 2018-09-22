@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -43,6 +44,9 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import org.springframework.asm.ClassVisitor;
@@ -162,12 +166,19 @@ public class GradleBuild implements TestRule {
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
 		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
-				.replace("{version}", getBootVersion());
+				.replace("{version}", getBootVersion())
+				.replace("{dependency-management-plugin-version}",
+						getDependencyManagementPluginVersion());
+		boolean isKotlin = this.script.endsWith(".kts");
+		String extension = isKotlin ? ".kts" : "";
 		FileCopyUtils.copy(scriptContent,
-				new FileWriter(new File(this.projectDir, "build.gradle")));
+				new FileWriter(new File(this.projectDir, "build.gradle" + extension)));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.withDebug(true).withPluginClasspath(pluginClasspath());
-
+				.withPluginClasspath(pluginClasspath());
+		if (!isKotlin) {
+			// see https://github.com/gradle/gradle/issues/6862
+			gradleRunner.withDebug(true);
+		}
 		if (this.gradleVersion != null) {
 			gradleRunner.withGradleVersion(this.gradleVersion);
 		}
@@ -191,6 +202,11 @@ public class GradleBuild implements TestRule {
 		return this;
 	}
 
+	public GradleBuild withMinimalGradleVersionForKotlinDSL() {
+		this.gradleVersion = "4.10.2";
+		return this;
+	}
+
 	public String getGradleVersion() {
 		return this.gradleVersion;
 	}
@@ -201,13 +217,34 @@ public class GradleBuild implements TestRule {
 						+ "/text()");
 	}
 
+	private static String getDependencyManagementPluginVersion() {
+		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
+			Document pom = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+					.parse(new InputSource(pomReader));
+			NodeList dependencyElements = pom.getElementsByTagName("dependency");
+			for (int i = 0; i < dependencyElements.getLength(); i++) {
+				Element dependency = (Element) dependencyElements.item(i);
+				if (dependency.getElementsByTagName("artifactId").item(0).getTextContent()
+						.equals("dependency-management-plugin")) {
+					return dependency.getElementsByTagName("version").item(0)
+							.getTextContent();
+				}
+			}
+			throw new IllegalStateException(
+					"dependency management plugin version not found");
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Failed to find dependency management plugin version", ex);
+		}
+	}
+
 	private static String evaluateExpression(String expression) {
-		try {
+		try (FileReader pomReader = new FileReader(".flattened-pom.xml")) {
 			XPathFactory xPathFactory = XPathFactory.newInstance();
 			XPath xpath = xPathFactory.newXPath();
 			XPathExpression expr = xpath.compile(expression);
-			String version = expr
-					.evaluate(new InputSource(new FileReader(".flattened-pom.xml")));
+			String version = expr.evaluate(new InputSource(pomReader));
 			return version;
 		}
 		catch (Exception ex) {

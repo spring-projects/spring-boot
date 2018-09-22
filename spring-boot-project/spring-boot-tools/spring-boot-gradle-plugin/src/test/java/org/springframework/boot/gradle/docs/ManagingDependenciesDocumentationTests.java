@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.docs;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
@@ -27,32 +28,49 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for the managing dependencies documentation.
  *
  * @author Andy Wilkinson
+ * @author Jean-Baptiste Nizet
  */
+@RunWith(GradleMultiDslSuite.class)
 public class ManagingDependenciesDocumentationTests {
 
 	@Rule
-	public GradleBuild gradleBuild = new GradleBuild();
+	public GradleBuild gradleBuild;
+
+	public DSL dsl;
 
 	@Test
 	public void dependenciesExampleEvaluatesSuccessfully() {
-		this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/dependencies.gradle")
-				.build();
+		this.gradleBuild.script("src/main/gradle/managing-dependencies/dependencies"
+				+ this.dsl.getExtension()).build();
 	}
 
 	@Test
 	public void customManagedVersions() {
-		assertThat(this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/custom-version.gradle")
-				.build("slf4jVersion").getOutput()).contains("1.7.20");
+		assertThat(
+				this.gradleBuild
+						.script("src/main/gradle/managing-dependencies/custom-version"
+								+ this.dsl.getExtension())
+						.build("slf4jVersion").getOutput()).contains("1.7.20");
 	}
 
 	@Test
 	public void dependencyManagementInIsolation() {
 		assertThat(this.gradleBuild
-				.script("src/main/gradle/managing-dependencies/configure-bom.gradle")
+				.script("src/main/gradle/managing-dependencies/configure-bom"
+						+ this.dsl.getExtension())
 				.build("dependencyManagement").getOutput())
 						.contains("org.springframework.boot:spring-boot-starter ");
+	}
+
+	@Test
+	public void dependencyManagementInIsolationWithPluginsBlock() {
+		if (this.dsl == DSL.KOTLIN) {
+			assertThat(this.gradleBuild.script(
+					"src/main/gradle/managing-dependencies/configure-bom-with-plugins"
+							+ this.dsl.getExtension())
+					.build("dependencyManagement").getOutput())
+							.contains("org.springframework.boot:spring-boot-starter ");
+		}
 	}
 
 }
