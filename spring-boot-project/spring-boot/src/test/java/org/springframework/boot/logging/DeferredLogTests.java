@@ -16,8 +16,12 @@
 
 package org.springframework.boot.logging;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.junit.Test;
+
+import org.springframework.beans.DirectFieldAccessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -169,9 +173,21 @@ public class DeferredLogTests {
 
 	@Test
 	public void switchTo() {
+		DirectFieldAccessor deferredLogFieldAccessor = new DirectFieldAccessor(
+				this.deferredLog);
+		List<String> lines = (List<String>) deferredLogFieldAccessor
+				.getPropertyValue("lines");
+		assertThat(lines).isEmpty();
+
 		this.deferredLog.error(this.message, this.throwable);
+		assertThat(lines).hasSize(1);
+
 		this.deferredLog.switchTo(this.log);
+		assertThat(lines).isEmpty();
+
 		this.deferredLog.info("Message2");
+		assertThat(lines).isEmpty();
+
 		verify(this.log).error(this.message, this.throwable);
 		verify(this.log).info("Message2", null);
 	}
