@@ -53,6 +53,7 @@ import javax.tools.StandardLocation;
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate",
+		"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigure.AutoConfigureBefore",
 		"org.springframework.boot.autoconfigure.AutoConfigureAfter",
 		"org.springframework.boot.autoconfigure.AutoConfigureOrder" })
@@ -85,6 +86,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 				"org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
 		annotations.put("ConditionalOnSingleCandidate",
 				"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate");
+		annotations.put("ConditionalOnWebApplication",
+				"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication");
 		annotations.put("AutoConfigureBefore",
 				"org.springframework.boot.autoconfigure.AutoConfigureBefore");
 		annotations.put("AutoConfigureAfter",
@@ -99,6 +102,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		attributes.put("ConditionalOnBean", new OnBeanConditionValueExtractor());
 		attributes.put("ConditionalOnSingleCandidate",
 				new OnBeanConditionValueExtractor());
+		attributes.put("ConditionalOnWebApplication", ValueExtractor.allFrom("type"));
 		attributes.put("AutoConfigureBefore", ValueExtractor.allFrom("value", "name"));
 		attributes.put("AutoConfigureAfter", ValueExtractor.allFrom("value", "name"));
 		attributes.put("AutoConfigureOrder", ValueExtractor.allFrom("value"));

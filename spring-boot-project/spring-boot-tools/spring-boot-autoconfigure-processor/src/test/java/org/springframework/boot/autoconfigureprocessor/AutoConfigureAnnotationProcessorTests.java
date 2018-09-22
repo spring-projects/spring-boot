@@ -50,7 +50,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	@Test
 	public void annotatedClass() throws Exception {
 		Properties properties = compile(TestClassConfiguration.class);
-		assertThat(properties).hasSize(5);
+		assertThat(properties).hasSize(6);
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration.ConditionalOnClass",
@@ -73,6 +73,10 @@ public class AutoConfigureAnnotationProcessorTests {
 				"org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration.ConditionalOnSingleCandidate",
 				"java.io.OutputStream");
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor."
+						+ "TestClassConfiguration.ConditionalOnWebApplication",
+				"SERVLET");
 	}
 
 	@Test
@@ -124,7 +128,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	}
 
 	private Properties compile(Class<?>... types) throws IOException {
-		TestConditionMetadataAnnotationProcessor processor = new TestConditionMetadataAnnotationProcessor(
+		TestAutoConfigureAnnotationProcessor processor = new TestAutoConfigureAnnotationProcessor(
 				this.compiler.getOutputLocation());
 		this.compiler.getTask(types).call(processor);
 		return processor.getWrittenProperties();

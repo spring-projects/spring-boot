@@ -34,15 +34,16 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnClass",
 		"org.springframework.boot.autoconfigure.condition.TestConditionalOnBean",
 		"org.springframework.boot.autoconfigure.condition.TestConditionalOnSingleCandidate",
+		"org.springframework.boot.autoconfigure.condition.TestConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureBefore",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureAfter",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder" })
-public class TestConditionMetadataAnnotationProcessor
+public class TestAutoConfigureAnnotationProcessor
 		extends AutoConfigureAnnotationProcessor {
 
 	private final File outputLocation;
 
-	public TestConditionMetadataAnnotationProcessor(File outputLocation) {
+	public TestAutoConfigureAnnotationProcessor(File outputLocation) {
 		this.outputLocation = outputLocation;
 	}
 
@@ -53,6 +54,8 @@ public class TestConditionMetadataAnnotationProcessor
 		put(annotations, "ConditionalOnBean", TestConditionalOnBean.class);
 		put(annotations, "ConditionalOnSingleCandidate",
 				TestConditionalOnSingleCandidate.class);
+		put(annotations, "ConditionalOnWebApplication",
+				TestConditionalOnWebApplication.class);
 		put(annotations, "AutoConfigureBefore", TestAutoConfigureBefore.class);
 		put(annotations, "AutoConfigureAfter", TestAutoConfigureAfter.class);
 		put(annotations, "AutoConfigureOrder", TestAutoConfigureOrder.class);
