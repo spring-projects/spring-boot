@@ -1337,6 +1337,7 @@ monitoring systems, including:
 - <<production-ready-metrics-export-atlas,Atlas>>
 - <<production-ready-metrics-export-datadog,Datadog>>
 - <<production-ready-metrics-export-dynatrace,Dynatrace>>
+- <<production-ready-metrics-export-dynatrace,Elastic>>
 - <<production-ready-metrics-export-ganglia,Ganglia>>
 - <<production-ready-metrics-export-graphite,Graphite>>
 - <<production-ready-metrics-export-influx,Influx>>
@@ -1471,6 +1472,19 @@ You can also change the interval at which metrics are sent to Dynatrace:
 [source,properties,indent=0]
 ----
 	management.metrics.export.dynatrace.step=30s
+----
+
+
+
+[[production-ready-metrics-export-elastic]]
+==== Elastic
+By default, metrics are exported to {micrometer-registry-documentation}/elastic[Elastic]
+running on your local machine. The location of the Elastic server to use can be provided
+using the following property:
+
+[source,properties,indent=0]
+----
+	management.metrics.export.elastic.hosts=http://elastic.example.com:8086
 ----
 
 
