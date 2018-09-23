@@ -16,13 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
-import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.dynatrace.DynatraceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 
 /**
- * Adapter to convert {@link DynatraceProperties} to a {@link DatadogConfig}.
+ * Adapter to convert {@link DynatraceProperties} to a {@link DynatraceConfig}.
  *
  * @author Andy Wilkinson *
  */

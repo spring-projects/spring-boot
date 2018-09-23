@@ -1455,8 +1455,8 @@ You can also change the interval at which metrics are sent to Datadog:
 
 
 [[production-ready-metrics-export-dynatrace]]
-==== Datadog
-Dynatrace registry pushes metrics to the configured UIR periodically. To export metrics to
+==== Dynatrace
+Dynatrace registry pushes metrics to the configured URI periodically. To export metrics to
 {micrometer-registry-documentation}/dynatrace[Dynatrace], your API token, device ID, and
 URI must be provided:
 
