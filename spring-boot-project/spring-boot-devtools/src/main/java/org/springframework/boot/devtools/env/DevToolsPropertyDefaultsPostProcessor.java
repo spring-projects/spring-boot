@@ -31,6 +31,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnvironmentPostProcessor} to add properties that make sense when working at
@@ -49,6 +50,12 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	private static final String ENABLED = "spring.devtools.add-properties";
 
+	private static final String WEB_LOGGING = "logging.level.web";
+
+	private static final String[] WEB_ENVIRONMENT_CLASSES = {
+			"org.springframework.web.context.ConfigurableWebEnvironment",
+			"org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment" };
+
 	private static final Map<String, Object> PROPERTIES;
 
 	static {
@@ -66,18 +73,24 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		properties.put("server.error.include-stacktrace", "ALWAYS");
 		properties.put("server.servlet.jsp.init-parameters.development", "true");
 		properties.put("spring.reactor.stacktrace-mode.enabled", "true");
-		properties.put("logging.level.web", "debug");
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment,
 			SpringApplication application) {
-		if (isLocalApplication(environment) && canAddProperties(environment)) {
-			logger.info("Devtools property and logging defaults active! Set '" + ENABLED
-					+ "' to 'false' to disable");
-			environment.getPropertySources()
-					.addLast(new MapPropertySource("devtools", PROPERTIES));
+		if (isLocalApplication(environment)) {
+			if (canAddProperties(environment)) {
+				logger.info("Devtools property defaults active! Set '" + ENABLED
+						+ "' to 'false' to disable");
+				environment.getPropertySources()
+						.addLast(new MapPropertySource("devtools", PROPERTIES));
+			}
+			if (isWebApplication(environment)
+					&& !environment.containsProperty(WEB_LOGGING)) {
+				logger.info("For additional web related logging consider "
+						+ "setting the '" + WEB_LOGGING + "' property to 'DEBUG'");
+			}
 		}
 	}
 
@@ -104,6 +117,17 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	private boolean isRemoteRestartEnabled(Environment environment) {
 		return environment.containsProperty("spring.devtools.remote.secret");
+	}
+
+	private boolean isWebApplication(Environment environment) {
+		for (String candidate : WEB_ENVIRONMENT_CLASSES) {
+			Class<?> environmentClass = ClassUtils.resolveClassName(candidate,
+					environment.getClass().getClassLoader());
+			if (environmentClass != null && environmentClass.isInstance(environment)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
