@@ -74,7 +74,7 @@ content into your application. Rather, pick only the properties that you need.
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
 	spring.cache.cache-names= # Comma-separated list of cache names to create if supported by the underlying cache manager.
 	spring.cache.caffeine.spec= # The spec to use to create caches. See CaffeineSpec for more details on the spec format.
-	spring.cache.couchbase.expiration=0ms # Entry expiration. By default the entries never expire. Note that this value is ultimately converted to seconds.
+	spring.cache.couchbase.expiration= # Entry expiration. By default the entries never expire. Note that this value is ultimately converted to seconds.
 	spring.cache.ehcache.config= # The location of the configuration file to use to initialize EhCache.
 	spring.cache.infinispan.config= # The location of the configuration file to use to initialize Infinispan.
 	spring.cache.jcache.config= # The location of the configuration file to use to initialize the cache manager.
@@ -253,7 +253,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.tomcat.accesslog.rotate=true # Whether to enable access log rotation.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
 	server.tomcat.additional-tld-skip-patterns= # Comma-separated list of additional patterns that match jars to ignore for TLD scanning.
-	server.tomcat.background-processor-delay=10 # Delay in seconds between the invocation of backgroundProcess methods.
+	server.tomcat.background-processor-delay=10s # Delay between the invocation of backgroundProcess methods. If a duration suffix is not specified, seconds will be used.
 	server.tomcat.basedir= # Tomcat base directory. If not specified, a temporary directory is used.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
@@ -261,8 +261,10 @@ content into your application. Rather, pick only the properties that you need.
 			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
-			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # Regular expression matching trusted IP addresses.
-	server.tomcat.max-connections=10000 # Maximum number of connections that the server will accept and process at any given time.
+			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}\\
+			0:0:0:0:0:0:0:1\\
+			::1 # Regular expression that matches proxies that are to be trusted.
+	server.tomcat.max-connections=10000 # Maximum number of connections that the server accepts and processes at any given time
 	server.tomcat.max-http-post-size=2MB # Maximum size of the HTTP post content.
 	server.tomcat.max-swallow-size=2MB # Maximum amount of request body to swallow.
 	server.tomcat.max-threads=200 # Maximum amount of worker threads.
@@ -283,7 +285,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.undertow.accesslog.rotate=true # Whether to enable access log rotation.
 	server.undertow.accesslog.suffix=log # Log file name suffix.
 	server.undertow.buffer-size= # Size of each buffer.
-	server.undertow.direct-buffers= # Allocate buffers outside the Java heap. The default is derived from the maximum amount of memory that is available to the JVM.
+	server.undertow.direct-buffers= # Whether to allocate buffers outside the Java heap. The default is derived from the maximum amount of memory that is available to the JVM.
 	server.undertow.eager-filter-init=true # Whether servlet filters should be initialized on startup.
 	server.undertow.io-threads= # Number of I/O threads to create for the worker. The default is derived from the number of available processors.
 	server.undertow.max-http-post-size=-1B # Maximum size of the HTTP post content. When the value is -1, the default, the size is unlimited.

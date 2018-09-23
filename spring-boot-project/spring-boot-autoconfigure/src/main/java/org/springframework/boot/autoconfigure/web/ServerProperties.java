@@ -315,12 +315,12 @@ public class ServerProperties {
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(10);
 
 		/**
-		 * Maximum number of worker threads.
+		 * Maximum amount of worker threads.
 		 */
 		private int maxThreads = 200;
 
 		/**
-		 * Minimum number of worker threads.
+		 * Minimum amount of worker threads.
 		 */
 		private int minSpareThreads = 10;
 
@@ -330,7 +330,7 @@ public class ServerProperties {
 		private DataSize maxHttpPostSize = DataSize.ofMegabytes(2);
 
 		/**
-		 * Maximum size, in bytes, of the HTTP message header.
+		 * Maximum size in bytes of the HTTP message header.
 		 */
 		private DataSize maxHttpHeaderSize = DataSize.ofBytes(0);
 
