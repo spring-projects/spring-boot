@@ -83,7 +83,7 @@ public class ServerProperties {
 	private String serverHeader;
 
 	/**
-	 * Maximum size, in bytes, of the HTTP message header.
+	 * Maximum size in bytes of the HTTP message header.
 	 */
 	private int maxHttpHeaderSize = 0; // bytes
 
@@ -417,22 +417,22 @@ public class ServerProperties {
 		private Duration backgroundProcessorDelay = Duration.ofSeconds(10);
 
 		/**
-		 * Maximum number of worker threads.
+		 * Maximum amount of worker threads.
 		 */
 		private int maxThreads = 200;
 
 		/**
-		 * Minimum number of worker threads.
+		 * Minimum amount of worker threads.
 		 */
 		private int minSpareThreads = 10;
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post content.
+		 * Maximum size in bytes of the HTTP post content.
 		 */
 		private int maxHttpPostSize = 2097152;
 
 		/**
-		 * Maximum size, in bytes, of the HTTP message header.
+		 * Maximum size in bytes of the HTTP message header.
 		 */
 		private int maxHttpHeaderSize = 0;
 
@@ -795,7 +795,7 @@ public class ServerProperties {
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post or put content.
+		 * Maximum size in bytes of the HTTP post or put content.
 		 */
 		private int maxHttpPostSize = 200000; // bytes
 
@@ -1010,7 +1010,7 @@ public class ServerProperties {
 	public static class Undertow {
 
 		/**
-		 * Maximum size, in bytes, of the HTTP post content. When the value is -1, the
+		 * Maximum size in bytes of the HTTP post content. When the value is -1, the
 		 * default, the size is unlimited.
 		 */
 		private long maxHttpPostSize = -1; // bytes
