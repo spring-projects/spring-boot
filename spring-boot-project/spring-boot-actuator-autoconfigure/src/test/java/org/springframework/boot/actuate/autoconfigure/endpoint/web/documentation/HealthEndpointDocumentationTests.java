@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.util.unit.DataSize;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -105,7 +106,7 @@ public class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentati
 
 		@Bean
 		public DiskSpaceHealthIndicator diskSpaceHealthIndicator() {
-			return new DiskSpaceHealthIndicator(new File("."), 1024 * 1024 * 10);
+			return new DiskSpaceHealthIndicator(new File("."), DataSize.ofMegabytes(10));
 		}
 
 		@Bean
