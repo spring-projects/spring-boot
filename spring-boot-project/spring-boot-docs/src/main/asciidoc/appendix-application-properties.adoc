@@ -531,11 +531,12 @@ content into your application. Rather, pick only the properties that you need.
 
 	# SECURITY OAUTH2 CLIENT ({sc-spring-boot-autoconfigure}/security/oauth2/client/OAuth2ClientProperties.{sc-ext}[OAuth2ClientProperties])
 	spring.security.oauth2.client.provider.*= # OAuth provider details.
-	spring.security.oauth2.client.registration.*= # OAuth client registrations.
+	spring.security.oauth2.client.registration.authorization-code.*= # OAuth2 authorization_code client registrations.
+    spring.security.oauth2.client.registration.login.*= # OpenID Connect client registrations.
 
 	# SECURITY OAUTH2 RESOURCE SERVER ({sc-spring-boot-autoconfigure}/security/oauth2/resource/OAuth2ResourceServerProperties.{sc-ext}[OAuth2ResourceServerProperties])
 	spring.security.oauth2.resourceserver.jwt.jwk-set-uri= # JSON Web Key URI to use to verify the JWT token.
-    spring.security.oauth2.resource.jwt.issuer-uri= # URI that an OpenID Connect Provider asserts as its Issuer Identifier.
+    spring.security.oauth2.resourceserver.jwt.issuer-uri= # URI that an OpenID Connect Provider asserts as its Issuer Identifier.
 
 	# ----------------------------------------
 	# DATA PROPERTIES
@@ -1403,10 +1404,10 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.export.datadog.read-timeout=10s # Read timeout for requests to this backend.
 	management.metrics.export.datadog.step=1m # Step size (i.e. reporting frequency) to use.
 	management.metrics.export.datadog.uri=https://app.datadoghq.com # URI to ship metrics to. If you need to publish metrics to an internal proxy en-route to Datadog, you can define the location of the proxy with this.
-	management.metrics.export.dynatrace.api-token= # Dynatrace API token.
+	management.metrics.export.dynatrace.api-token= # Dynatrace authentication token.
 	management.metrics.export.dynatrace.batch-size=10000 # Number of measurements per request to use for this backend. If more measurements are found, then multiple requests will be made.
 	management.metrics.export.dynatrace.connect-timeout=1s # Connection timeout for requests to this backend.
-	management.metrics.export.dynatrace.deviceId= # ID of the custom device that is exporting metrics to Dynatrace.
+	management.metrics.export.dynatrace.device-id= # ID of the custom device that is exporting metrics to Dynatrace.
 	management.metrics.export.dynatrace.enabled=true # Whether exporting of metrics to this backend is enabled.
 	management.metrics.export.dynatrace.num-threads=2 # Number of threads to use with the metrics publishing scheduler.
 	management.metrics.export.dynatrace.read-timeout=10s # Read timeout for requests to this backend.
