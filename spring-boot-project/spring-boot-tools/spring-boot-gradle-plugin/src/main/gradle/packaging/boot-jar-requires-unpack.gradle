@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-	runtime 'org.jruby:jruby-complete:1.7.25'
+	runtimeOnly 'org.jruby:jruby-complete:1.7.25'
 }
 
 bootJar {
