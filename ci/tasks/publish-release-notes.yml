@@ -9,5 +9,6 @@ params:
   GITHUB_REPO:
   GITHUB_USERNAME:
   GITHUB_PASSWORD:
+  RELEASE_TYPE:
 run:
   path: git-repo/ci/scripts/publish-release-notes.sh

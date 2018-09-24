@@ -392,6 +392,7 @@ jobs:
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/publish-release-notes.yml
     params:
+      RELEASE_TYPE: M
       GITHUB_ORGANIZATION: spring-projects
       GITHUB_REPO: spring-boot
       GITHUB_USERNAME: ((github-username))
@@ -402,6 +403,7 @@ jobs:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
+  - get: release-notes-repo
   - task: stage
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/stage.yml
@@ -418,6 +420,7 @@ jobs:
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/publish-release-notes.yml
     params:
+      RELEASE_TYPE: RC
       GITHUB_ORGANIZATION: spring-projects
       GITHUB_REPO: spring-boot
       GITHUB_USERNAME: ((github-username))
@@ -428,6 +431,7 @@ jobs:
   - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
+  - get: release-notes-repo
   - task: stage
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/stage.yml
@@ -444,6 +448,7 @@ jobs:
     image: spring-boot-ci-image
     file: git-repo/ci/tasks/publish-release-notes.yml
     params:
+      RELEASE_TYPE: RELEASE
       GITHUB_ORGANIZATION: spring-projects
       GITHUB_REPO: spring-boot
       GITHUB_USERNAME: ((github-username))

@@ -3,10 +3,10 @@ set -e
 
 source $(dirname $0)/common.sh
 
-latest=$( curl -s "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/releases/latest" -u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} )
-id=$( echo $latest | jq -r '.id' )
-
 milestone=$( cat version/stageVersion )
+if [[ $RELEASE_TYPE = "RELEASE" ]]; then
+	milestone=${milestone%.RELEASE}
+fi
 milestone_number=$( curl -s "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/milestones" -u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} | jq -r --arg MILESTONE "${milestone}" '.[]  | select(.title == $MILESTONE) | .number')
 
 pushd release-notes-repo > /dev/null
@@ -21,7 +21,7 @@ curl \
 	-s \
 	-u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} \
 	-H "Content-type:application/json" \
-	-d "{\"body\": \"${body}\"}"  \
+	-d "{\"tag_name\":\"v{$milestone}\",\"name\":\"v{$milestone}\",\"body\": \"${body}\"}"  \
 	-f \
 	-X \
-	PATCH "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/releases/${id}" > /dev/null || { echo "Failed to publish" >&2; exit 1; }
+	POST "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/releases" > /dev/null || { echo "Failed to publish" >&2; exit 1; }
