@@ -17,6 +17,7 @@ org.springframework.boot.autoconfigure.condition.ConditionEvaluationReportAutoCo
 
 # Auto Configuration Import Filters
 org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
+org.springframework.boot.autoconfigure.condition.OnBeanCondition,\
 org.springframework.boot.autoconfigure.condition.OnClassCondition
 
 # Auto Configure
