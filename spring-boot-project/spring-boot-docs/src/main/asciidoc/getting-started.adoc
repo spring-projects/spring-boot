@@ -47,7 +47,7 @@ Explicit build support is provided for the following build tools:
 |Build Tool |Version
 
 |Maven
-|3.2+
+|3.3+
 
 |Gradle
 |4.4+
@@ -108,7 +108,7 @@ tool that supports dependency management (such as Maven or Gradle).
 
 [[getting-started-maven-installation]]
 ==== Maven Installation
-Spring Boot is compatible with Apache Maven 3.2 or above. If you do not already have
+Spring Boot is compatible with Apache Maven 3.3 or above. If you do not already have
 Maven installed, you can follow the instructions at https://maven.apache.org.
 
 TIP: On many operating systems, Maven can be installed with a package manager. If you use
@@ -522,7 +522,7 @@ valid versions of Java and Maven installed:
 [indent=0]
 ----
 	$ mvn -v
-	Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T16:41:47+00:00)
+	Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
 	Maven home: /usr/local/Cellar/maven/3.3.9/libexec
 	Java version: 1.8.0_102, vendor: Oracle Corporation
 ----
