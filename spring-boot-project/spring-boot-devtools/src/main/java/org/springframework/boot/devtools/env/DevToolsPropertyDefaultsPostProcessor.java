@@ -121,13 +121,22 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 
 	private boolean isWebApplication(Environment environment) {
 		for (String candidate : WEB_ENVIRONMENT_CLASSES) {
-			Class<?> environmentClass = ClassUtils.resolveClassName(candidate,
+			Class<?> environmentClass = resolveClassName(candidate,
 					environment.getClass().getClassLoader());
 			if (environmentClass != null && environmentClass.isInstance(environment)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
+		try {
+			return ClassUtils.resolveClassName(candidate, classLoader);
+		}
+		catch (IllegalArgumentException ex) {
+			return null;
+		}
 	}
 
 }
