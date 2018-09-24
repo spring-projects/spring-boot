@@ -16,23 +16,13 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
-import org.springframework.boot.autoconfigureprocessor.TestConditionalOnWebApplication.Type;
-
 /**
  * Test configuration with an annotated class.
  *
- * @author Madhura Bhave
+ * @author Phillip Webb
  */
 @TestConfiguration
-@TestConditionalOnClass(name = "java.io.InputStream", value = TestClassConfiguration.Nested.class)
-@TestConditionalOnBean(type = "java.io.OutputStream")
-@TestConditionalOnSingleCandidate(type = "java.io.OutputStream")
-@TestConditionalOnWebApplication(type = Type.SERVLET)
-public class TestClassConfiguration {
-
-	@TestAutoConfigureOrder
-	public static class Nested {
-
-	}
+@TestConditionalOnBean(name = "test", type = "java.io.OutputStream")
+public class TestOnBeanWithNameClassConfiguration {
 
 }

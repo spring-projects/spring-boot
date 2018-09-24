@@ -16,22 +16,28 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
-import org.springframework.boot.autoconfigureprocessor.TestConditionalOnWebApplication.Type;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Test configuration with an annotated class.
+ * Alternative to Spring Boot's {@code @ConditionalOnWebApplication} for testing (removes
+ * the need for a dependency on the real annotation).
  *
- * @author Madhura Bhave
+ * @author Phillip Webb
  */
-@TestConfiguration
-@TestConditionalOnClass(name = "java.io.InputStream", value = TestClassConfiguration.Nested.class)
-@TestConditionalOnBean(type = "java.io.OutputStream")
-@TestConditionalOnSingleCandidate(type = "java.io.OutputStream")
-@TestConditionalOnWebApplication(type = Type.SERVLET)
-public class TestClassConfiguration {
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface TestConditionalOnWebApplication {
 
-	@TestAutoConfigureOrder
-	public static class Nested {
+	Type type() default Type.ANY;
+
+	enum Type {
+
+		ANY, SERVLET, REACTIVE
 
 	}
 

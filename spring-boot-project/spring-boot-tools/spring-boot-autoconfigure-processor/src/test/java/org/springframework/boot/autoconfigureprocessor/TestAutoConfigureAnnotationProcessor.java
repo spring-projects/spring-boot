@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,18 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 @SupportedAnnotationTypes({
 		"org.springframework.boot.autoconfigureprocessor.TestConfiguration",
 		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnClass",
+		"org.springframework.boot.autoconfigure.condition.TestConditionalOnBean",
+		"org.springframework.boot.autoconfigure.condition.TestConditionalOnSingleCandidate",
+		"org.springframework.boot.autoconfigure.condition.TestConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureBefore",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureAfter",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder" })
-public class TestConditionMetadataAnnotationProcessor
+public class TestAutoConfigureAnnotationProcessor
 		extends AutoConfigureAnnotationProcessor {
 
 	private final File outputLocation;
 
-	public TestConditionMetadataAnnotationProcessor(File outputLocation) {
+	public TestAutoConfigureAnnotationProcessor(File outputLocation) {
 		this.outputLocation = outputLocation;
 	}
 
@@ -48,6 +51,11 @@ public class TestConditionMetadataAnnotationProcessor
 	protected void addAnnotations(Map<String, String> annotations) {
 		put(annotations, "Configuration", TestConfiguration.class);
 		put(annotations, "ConditionalOnClass", TestConditionalOnClass.class);
+		put(annotations, "ConditionalOnBean", TestConditionalOnBean.class);
+		put(annotations, "ConditionalOnSingleCandidate",
+				TestConditionalOnSingleCandidate.class);
+		put(annotations, "ConditionalOnWebApplication",
+				TestConditionalOnWebApplication.class);
 		put(annotations, "AutoConfigureBefore", TestAutoConfigureBefore.class);
 		put(annotations, "AutoConfigureAfter", TestAutoConfigureAfter.class);
 		put(annotations, "AutoConfigureOrder", TestAutoConfigureOrder.class);
