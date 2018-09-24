@@ -127,7 +127,7 @@
 		<logback.version>1.2.3</logback.version>
 		<lombok.version>1.18.2</lombok.version>
 		<mariadb.version>2.3.0</mariadb.version>
-		<micrometer.version>1.1.0-SNAPSHOT</micrometer.version>
+		<micrometer.version>1.1.0-m.1</micrometer.version>
 		<mockito.version>2.22.0</mockito.version>
 		<mongo-driver-reactivestreams.version>1.9.2</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.8.2</mongodb.version>
