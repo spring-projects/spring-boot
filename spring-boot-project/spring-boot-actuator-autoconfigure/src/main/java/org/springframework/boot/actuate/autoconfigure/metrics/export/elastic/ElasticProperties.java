@@ -55,12 +55,12 @@ public class ElasticProperties extends StepRegistryProperties {
 	private boolean autoCreateIndex = true;
 
 	/**
-	 * Username for basic authentication.
+	 * Login user of the Elastic server.
 	 */
 	private String userName = "";
 
 	/**
-	 * Password for basic authentication.
+	 * Login password of the Elastic server.
 	 */
 	private String password = "";
 
