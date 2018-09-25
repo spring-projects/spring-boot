@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link ElasticPropertiesConfigAdapter}.
  *
- * @author Andy Wilkiknson
+ * @author Andy Wilkinson
  */
 public class ElasticPropertiesConfigAdapterTests {
 

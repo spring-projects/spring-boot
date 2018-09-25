@@ -80,7 +80,7 @@ public class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test
-	public void annoatedClassWithOnBeanThatHasName() throws Exception {
+	public void annotatedClassWithOnBeanThatHasName() throws Exception {
 		Properties properties = compile(TestOnBeanWithNameClassConfiguration.class);
 		assertThat(properties).hasSize(3);
 		assertThat(properties).containsEntry(
