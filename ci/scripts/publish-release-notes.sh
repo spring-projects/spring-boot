@@ -21,7 +21,7 @@ curl \
 	-s \
 	-u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} \
 	-H "Content-type:application/json" \
-	-d "{\"tag_name\":\"v{$milestone}\",\"name\":\"v{$milestone}\",\"body\": \"${body}\"}"  \
+	-d "{\"tag_name\":\"v${milestone}\",\"name\":\"v${milestone}\",\"body\": \"${body}\"}"  \
 	-f \
 	-X \
 	POST "https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/releases" > /dev/null || { echo "Failed to publish" >&2; exit 1; }
