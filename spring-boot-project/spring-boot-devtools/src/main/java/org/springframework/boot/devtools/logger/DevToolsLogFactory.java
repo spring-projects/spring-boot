@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.context.ApplicationListener;
-import org.springframework.data.domain.AbstractPageRequest;
 
 /**
  * Devtools deferred logging support.
@@ -41,8 +40,8 @@ public final class DevToolsLogFactory {
 
 	/**
 	 * Get a {@link Log} instance for the specified source that will be automatically
-	 * {@link DeferredLog#switchTo(Class) switched} then the {@link AbstractPageRequest
-	 * context is prepared}.
+	 * {@link DeferredLog#switchTo(Class) switched} when the
+	 * {@link ApplicationPreparedEvent context is prepared}.
 	 * @param source the source for logging
 	 * @return a {@link DeferredLog} instance
 	 */

@@ -56,11 +56,11 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationShouldBackOffForServletEnvironments() {
-		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations
-						.of(ReactiveOAuth2ClientAutoConfiguration.class));
-		contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
+						.of(ReactiveOAuth2ClientAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
 	}
 
 	@Test
