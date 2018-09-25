@@ -60,12 +60,12 @@ public class EmbeddedMongoAutoConfigurationTests {
 
 	@Test
 	public void defaultVersion() {
-		assertVersionConfiguration(null, "3.6.5");
+		assertVersionConfiguration(null, "3.5.5");
 	}
 
 	@Test
 	public void customVersion() {
-		assertVersionConfiguration("3.6.3", "3.6.3");
+		assertVersionConfiguration("3.4.15", "3.4.15");
 	}
 
 	@Test

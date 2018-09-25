@@ -38,7 +38,7 @@ public class EmbeddedMongoProperties {
 	/**
 	 * Version of Mongo to use.
 	 */
-	private String version = "3.6.5";
+	private String version = "3.5.5";
 
 	private final Storage storage = new Storage();
 
