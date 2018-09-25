@@ -42,8 +42,8 @@ include::{snippets}caches/named/http-response.adoc[]
 
 
 
-[[caches-named-request-structure]]
-=== Request Structure
+[[caches-named-query-parameters]]
+=== Query Parameters
 If the requested name is specific enough to identify a single cache, no extra parameter is
 required. Otherwise, the `cacheManager` must be specified. The following table shows the
 supported query parameters:
