@@ -76,4 +76,34 @@ public class OAuth2ClientPropertiesTests {
 		this.properties.validate();
 	}
 
+	@Test
+	public void duplicationRegistrationIdsThrowsException() {
+		AuthorizationCodeClientRegistration authorizationCode = new AuthorizationCodeClientRegistration();
+		authorizationCode.setClientId("foo");
+		authorizationCode.setProvider("google");
+		LoginClientRegistration login = new LoginClientRegistration();
+		login.setClientId("foo");
+		login.setProvider("google");
+		this.properties.getRegistration().getAuthorizationCode().put("foo",
+				authorizationCode);
+		this.properties.getRegistration().getLogin().put("foo", login);
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Duplicate key while constructing a mapping: [foo]");
+		this.properties.validate();
+	}
+
+	@Test
+	public void notDuplicationRegistrationIds() {
+		AuthorizationCodeClientRegistration authorizationCode = new AuthorizationCodeClientRegistration();
+		authorizationCode.setClientId("foo");
+		authorizationCode.setProvider("google");
+		LoginClientRegistration login = new LoginClientRegistration();
+		login.setClientId("foo");
+		login.setProvider("google");
+		this.properties.getRegistration().getAuthorizationCode().put("foo1",
+				authorizationCode);
+		this.properties.getRegistration().getLogin().put("foo2", login);
+		this.properties.validate();
+	}
+
 }

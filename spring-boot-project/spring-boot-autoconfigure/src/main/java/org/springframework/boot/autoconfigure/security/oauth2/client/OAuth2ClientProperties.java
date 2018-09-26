@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,14 +57,29 @@ public class OAuth2ClientProperties {
 
 	@PostConstruct
 	public void validate() {
-		this.getRegistration().getLogin().values().forEach(this::validateRegistration);
-		this.getRegistration().getAuthorizationCode().values()
-				.forEach(this::validateRegistration);
+		Map<String, OAuth2ClientProperties.LoginClientRegistration> login = this
+				.getRegistration().getLogin();
+		Map<String, OAuth2ClientProperties.AuthorizationCodeClientRegistration> authorizationCode = this
+				.getRegistration().getAuthorizationCode();
+		login.values().forEach(this::validateRegistration);
+		authorizationCode.values().forEach(this::validateRegistration);
+		this.validateRegistrationId(login.keySet(), authorizationCode.keySet());
+
 	}
 
 	private void validateRegistration(BaseClientRegistration registration) {
 		if (!StringUtils.hasText(registration.getClientId())) {
 			throw new IllegalStateException("Client id must not be empty.");
+		}
+	}
+
+	private void validateRegistrationId(Set<String> loginIds,
+			Set<String> authorizationCodeIds) {
+		Set<String> intersection = new HashSet<>(loginIds);
+		intersection.retainAll(authorizationCodeIds);
+		if (!intersection.isEmpty()) {
+			throw new IllegalStateException(
+					"Duplicate key while constructing a mapping: " + intersection);
 		}
 	}
 
