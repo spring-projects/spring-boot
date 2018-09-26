@@ -558,6 +558,10 @@ public class ConfigurationPropertyNameTests {
 		ConfigurationPropertyName n09 = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName n10 = ConfigurationPropertyName.of("fo");
 		ConfigurationPropertyName n11 = ConfigurationPropertyName.adapt("foo.BaR", '.');
+		ConfigurationPropertyName n12 = ConfigurationPropertyName.of("f-o-o[b-a-r]");
+		ConfigurationPropertyName n13 = ConfigurationPropertyName.of("f-o-o[b-a-r--]");
+		ConfigurationPropertyName n14 = ConfigurationPropertyName.of("[1]");
+		ConfigurationPropertyName n15 = ConfigurationPropertyName.of("[-1]");
 		assertThat(n01.hashCode()).isEqualTo(n02.hashCode());
 		assertThat(n01.hashCode()).isEqualTo(n02.hashCode());
 		assertThat(n01.hashCode()).isEqualTo(n03.hashCode());
@@ -574,6 +578,8 @@ public class ConfigurationPropertyNameTests {
 		assertThat((Object) n07).isNotEqualTo(n08);
 		assertThat((Object) n09).isNotEqualTo(n10);
 		assertThat((Object) n10).isNotEqualTo(n09);
+		assertThat((Object) n12).isNotEqualTo(n13);
+		assertThat((Object) n14).isNotEqualTo(n15);
 	}
 
 	@Test

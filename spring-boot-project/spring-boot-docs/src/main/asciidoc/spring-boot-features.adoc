@@ -2000,7 +2000,7 @@ converters. You can also override default converters in the same way.
 ==== Custom JSON Serializers and Deserializers
 If you use Jackson to serialize and deserialize JSON data, you might want to write your
 own `JsonSerializer` and `JsonDeserializer` classes. Custom serializers are usually
-http://wiki.fasterxml.com/JacksonHowToCustomDeserializers[registered with Jackson through
+https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through
 a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes
 it easier to directly register Spring Beans.
 
@@ -3554,7 +3554,7 @@ considered. A typical entity class resembles the following example:
 
 		public City(String name, String state) {
 			this.name = name;
-			this.country = country;
+			this.state = state;
 		}
 
 		public String getName() {
@@ -3606,7 +3606,7 @@ The following example shows a typical Spring Data repository interface definitio
 
 		Page<City> findAll(Pageable pageable);
 
-		City findByNameAndCountryAllIgnoringCase(String name, String country);
+		City findByNameAndStateAllIgnoringCase(String name, String state);
 
 	}
 ----
@@ -4006,7 +4006,7 @@ in the following example:
 
 		Page<City> findAll(Pageable pageable);
 
-		City findByNameAndCountryAllIgnoringCase(String name, String country);
+		City findByNameAndStateAllIgnoringCase(String name, String state);
 
 	}
 ----
@@ -4045,29 +4045,30 @@ the Mongo instance's configuration and logging routing.
 [[boot-features-neo4j]]
 === Neo4j
 http://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data
-model of nodes related by first class relationships, which is better suited for connected
-big data than traditional rdbms approaches. Spring Boot offers several conveniences for
-working with Neo4j, including the `spring-boot-starter-data-neo4j` "`Starter`".
+model of nodes connected by first class relationships, which is better suited for
+connected big data than traditional RDBMS approaches. Spring Boot offers several
+conveniences for working with Neo4j, including the `spring-boot-starter-data-neo4j`
+"`Starter`".
 
 
 
 [[boot-features-connecting-to-neo4j]]
 ==== Connecting to a Neo4j Database
-You can inject an auto-configured `Neo4jSession`, `Session`, or `Neo4jOperations`
-instance as you would any other Spring Bean. By default, the instance tries to connect to
-a Neo4j server at `localhost:7474`. The following example shows how to inject a Neo4j
-bean:
+To access a Neo4j server, you can inject an auto-configured
+`org.neo4j.ogm.session.Session`. By default, the instance tries to connect to a Neo4j
+server at `localhost:7687` using the Bolt protocol. The following example shows how to
+inject a Neo4j `Session`:
 
 [source,java,indent=0]
 ----
 	@Component
 	public class MyBean {
 
-		private final Neo4jTemplate neo4jTemplate;
+		private final Session session;
 
 		@Autowired
-		public MyBean(Neo4jTemplate neo4jTemplate) {
-			this.neo4jTemplate = neo4jTemplate;
+		public MyBean(Session session) {
+			this.session = session;
 		}
 
 		// ...
@@ -4075,48 +4076,54 @@ bean:
 	}
 ----
 
-You can take full control of the configuration by adding a
-`org.neo4j.ogm.config.Configuration` `@Bean` of your own. Also, adding a `@Bean` of type
-`Neo4jOperations` disables the auto-configuration.
-
-You can configure the user and credentials to use by setting the `spring.data.neo4j.*`
+You can configure the uri and credentials to use by setting the `spring.data.neo4j.*`
 properties, as shown in the following example:
 
 [source,properties,indent=0]
 ----
-	spring.data.neo4j.uri=http://my-server:7474
+	spring.data.neo4j.uri=bolt://my-server:7687
 	spring.data.neo4j.username=neo4j
 	spring.data.neo4j.password=secret
 ----
+
+You can take full control over the session creation by adding a
+`org.neo4j.ogm.config.Configuration` `@Bean`. Also, adding a `@Bean` of type
+`SessionFactory` disables the auto-configuration and gives you full control.
 
 
 
 [[boot-features-connecting-to-neo4j-embedded]]
 ==== Using the Embedded Mode
-
 If you add `org.neo4j:neo4j-ogm-embedded-driver` to the dependencies of your application,
 Spring Boot automatically configures an in-process embedded instance of Neo4j that does
-not persist any data when your application shuts down. You can explicitly disable that
-mode by setting `spring.data.neo4j.embedded.enabled=false`. You can also enable
-persistence for the embedded mode by providing a path to a database file, as shown in the
-following example:
-
-----
-	spring.data.neo4j.uri=file://var/tmp/graph.db
-----
+not persist any data when your application shuts down. 
 
 [NOTE]
 ====
-The Neo4j OGM embedded driver does not provide the Neo4j kernel. Users are expected to
-provide this dependency manually. See
-http://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the
-documentation] for more details.
+As the embedded Neo4j OGM  driver  does not provide the Neo4j kernel itself, you have 
+to declare `org.neo4j:neo4j` as dependency yourself. Refer to 
+https://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the
+Neo4j OGM documentation] for a list of compatible versions.
 ====
+
+The embedded driver takes precedence over the other drivers when there are multiple
+drivers on the classpath. You can explicitly disable the embedded mode by setting 
+`spring.data.neo4j.embedded.enabled=false`. 
+
+<<boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test,Data Neo4j Tests>>
+automatically make use of an embedded Neo4j instance if the embedded driver and Neo4j
+kernel are on the classpath as described above.
+
+[NOTE]
+====
+You can enable persistence for the embedded mode by providing a path to a database file 
+in your configuration, e.g. `spring.data.neo4j.uri=file://var/tmp/graph.db`.
+====
+
 
 
 [[boot-features-neo4j-ogm-session]]
 ==== Neo4jSession
-
 By default, if you are running a web application, the session is bound to the thread for
 the entire processing of the request (that is, it uses the "Open Session in View"
 pattern). If you do not want this behavior, add the following line to your
@@ -4133,42 +4140,32 @@ pattern). If you do not want this behavior, add the following line to your
 ==== Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
 
-In fact, both Spring Data JPA and Spring Data Neo4j share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `City` is now a Neo4j OGM
-`@NodeEntity` rather than a JPA `@Entity`, it works in the same way.
-
-TIP: You can customize entity scanning locations by using the `@EntityScan` annotation.
-
-To enable repository support (and optionally support for `@Transactional`), add the
-following two annotations to your Spring configuration:
-
-[source,java,indent=0]
-----
-	@EnableNeo4jRepositories(basePackages = "com.example.myapp.repository")
-	@EnableTransactionManagement
-----
-
-==== Repository Example
-
-The following example shows an interface definition for a Neo4j repository:
+Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other
+Spring Data modules do. You could take the JPA example from earlier and define
+`City` as Neo4j OGM `@NodeEntity` rather than JPA `@Entity` and the repository
+abstraction works in the same way, as shown in the following example:
 
 [source,java,indent=0]
 ----
 	package com.example.myapp.domain;
 
-	import org.springframework.data.domain.*;
-	import org.springframework.data.repository.*;
+	import java.util.Optional;
 
-	public interface CityRepository extends GraphRepository<City> {
+	import org.springframework.data.neo4j.repository.*;
 
-		Page<City> findAll(Pageable pageable);
+	public interface CityRepository extends Neo4jRepository<City, Long> {
 
-		City findByNameAndCountry(String name, String country);
+		Optional<City> findOneByNameAndState(String name, String state);
 
 	}
 ----
 
-TIP: For complete details of Spring Data Neo4j, including its rich object mapping
+The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well 
+as transaction management. You can customize the locations to look for repositories and
+entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a 
+`@Configuration`-bean.
+
+TIP: For complete details of Spring Data Neo4j, including its object mapping
 technologies, refer to the https://projects.spring.io/spring-data-neo4j/[reference
 documentation].
 
@@ -5446,8 +5443,9 @@ public class MyBean {
 }
 ----
 
-NOTE: If a `RecordMessageConverter` bean is defined, it is automatically associated to
-the auto-configured `KafkaTemplate`.
+NOTE: If the property `spring.kafka.producer.transaction-id-prefix` is defined, a
+`KafkaTransactionManager` is automatically configured. Also, if a `RecordMessageConverter`
+bean is defined, it is automatically associated to the auto-configured `KafkaTemplate`.
 
 
 [[boot-features-kafka-receiving-a-message]]
@@ -5615,7 +5613,7 @@ The following code shows a typical example:
 		}
 
 		public Mono<Details> someRestCall(String name) {
-			return this.webClient.get().url("/{name}/details", name)
+			return this.webClient.get().uri("/{name}/details", name)
 							.retrieve().bodyToMono(Details.class);
 		}
 
@@ -6411,9 +6409,10 @@ providing a `@...Test` annotation that loads the `ApplicationContext` and one or
 more `@AutoConfigure...` annotations that can be used to customize auto-configuration
 settings.
 
-NOTE: Each slice loads a very restricted set of auto-configuration classes. If you need
-to exclude one of them, most `@...Test` annotations provide an `excludeAutoConfiguration`
-attribute. Alternatively, you can use `@ImportAutoConfiguration#exclude`.
+NOTE: Each slice restricts component scan to appropriate components and loads a very
+restricted set of auto-configuration classes. If you need to exclude one of them,
+most `@...Test` annotations provide an `excludeAutoConfiguration` attribute.
+Alternatively, you can use `@ImportAutoConfiguration#exclude`.
 
 TIP: It is also possible to use the `@AutoConfigure...` annotations with the standard
 `@SpringBootTest` annotation. You can use this combination if you are not interested in
@@ -6431,10 +6430,13 @@ mapper, which can be one of the following libraries:
 * `Gson`
 * `Jsonb`
 
+TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
 If you need to configure elements of the auto-configuration, you can use the
 `@AutoConfigureJsonTesters` annotation.
 
-Spring Boot includes AssertJ-based helpers that work with the JSONassert and JsonPath
+Spring Boot includes AssertJ-based helpers that work with the JSONAssert and JsonPath
 libraries to check that JSON appears as expected. The `JacksonTester`, `GsonTester`,
 `JsonbTester`, and `BasicJsonTester` classes can be used for Jackson, Gson, Jsonb, and
 Strings respectively. Any helper fields on the test class can be `@Autowired` when using
@@ -6485,9 +6487,6 @@ NOTE: JSON helper classes can also be used directly in standard unit tests. To d
 call the `initFields` method of the helper in your `@Before` method if you do not use
 `@JsonTest`.
 
-A list of the auto-configuration that is enabled by `@JsonTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests]]
@@ -6497,6 +6496,9 @@ annotation. `@WebMvcTest` auto-configures the Spring MVC infrastructure and limi
 scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`,
 `GenericConverter`, `Filter`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`.
 Regular `@Component` beans are not scanned when using this annotation.
+
+TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as the Jackson `Module`, you can
 import additional configuration classes by using `@Import` on your test.
@@ -6591,12 +6593,10 @@ that the driver exits after each test and that a new instance is injected. If yo
 not want this behavior, you can add `@Scope("singleton")` to your `WebDriver` `@Bean`
 definition.
 
-A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run
 <<boot-features-testing-spring-boot-applications-testing-with-running-server,
 full end-to-end tests with an actual server>>.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-webflux-tests]]
@@ -6607,6 +6607,9 @@ auto-configures the Spring WebFlux infrastructure and limits scanned beans to
 `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, and
 `WebFluxConfigurer`. Regular `@Component` beans are not scanned when the `@WebFluxTest`
 annotation is used.
+
+TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as Jackson `Module`, you can import
 additional configuration classes using `@Import` on your test.
@@ -6660,9 +6663,6 @@ example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 TIP: This setup is only supported by WebFlux applications as using `WebTestClient` in a
 mocked web application only works with WebFlux at the moment.
 
-A list of the auto-configuration that is enabled by `@WebFluxTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 NOTE: `@WebFluxTest` cannot detect routes registered via the functional web framework. For
 testing `RouterFunction` beans in the context, consider importing your `RouterFunction`
 yourself via `@Import` or using `@SpringBootTest`.
@@ -6672,12 +6672,16 @@ TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help 
 full end-to-end tests with an actual server>>.
 
 
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
 ==== Auto-configured Data JPA Tests
 You can use the `@DataJpaTest` annotation to test JPA applications. By default, it
 configures an in-memory embedded database, scans for `@Entity` classes, and configures
 Spring Data JPA repositories. Regular `@Component` beans are not loaded into the
 `ApplicationContext`.
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 By default, data JPA tests are transactional and roll back at the end of each test. See
 the {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section]
@@ -6756,16 +6760,16 @@ following example:
 	}
 ----
 
-A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jdbc-test]]
 ==== Auto-configured JDBC Tests
-`@JdbcTest` is similar to `@DataJpaTest` but is for pure JDBC-related tests. By default,
-it also configures an in-memory embedded database and a `JdbcTemplate`. Regular
-`@Component` beans are not loaded into the `ApplicationContext`.
+`@JdbcTest` is similar to `@DataJpaTest` but is for tests that only require a
+`DataSource`. By default, it configures an in-memory embedded database and a
+`JdbcTemplate`. Regular `@Component` beans are not loaded into the `ApplicationContext`.
+
+TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 By default, JDBC tests are transactional and roll back at the end of each test. See the
 {spring-reference}testing.html#testcontext-tx-enabling-transactions[relevant section] in
@@ -6794,9 +6798,6 @@ If you prefer your test to run against a real database, you can use the
 `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`. (See
 "<<boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test>>".)
 
-A list of the auto-configuration that is enabled by `@JdbcTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jooq-test]]
@@ -6805,7 +6806,11 @@ You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema,
 the existing `DataSource` is used. If you want to replace it with an in-memory database,
 you can use `@AutoConfigureTestDatabase` to override those settings. (For more about using
-jOOQ with Spring Boot, see "<<boot-features-jooq>>", earlier in this chapter.)
+jOOQ with Spring Boot, see "<<boot-features-jooq>>", earlier in this chapter.) Regular
+`@Component` beans are not loaded into the `ApplicationContext`.
+
+TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 `@JooqTest` configures a `DSLContext`. Regular `@Component` beans are not loaded into the
 `ApplicationContext`. The following example shows the `@JooqTest` annotation in use:
@@ -6833,8 +6838,6 @@ test class as
 <<boot-features-testing-spring-boot-applications-testing-autoconfigured-jdbc-test,shown
 in the JDBC example>>.
 
-A list of the auto-configuration that is enabled by `@JooqTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
 
@@ -6845,6 +6848,9 @@ in-memory embedded MongoDB (if available), configures a `MongoTemplate`, scans f
 `@Document` classes, and configures Spring Data MongoDB repositories. Regular
 `@Component` beans are not loaded into the `ApplicationContext`. (For more about using
 MongoDB with Spring Boot, see "<<boot-features-mongodb>>", earlier in this chapter.)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 The following class shows the `@DataMongoTest` annotation in use:
 
@@ -6886,8 +6892,6 @@ the following example:
 	}
 ----
 
-A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 
 
@@ -6898,6 +6902,9 @@ embedded Neo4j (if the embedded driver is available), scans for `@NodeEntity` cl
 configures Spring Data Neo4j repositories. Regular `@Component` beans are not loaded into
 the `ApplicationContext`. (For more about using Neo4J with Spring Boot, see
 "<<boot-features-neo4j>>", earlier in this chapter.)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
@@ -6943,9 +6950,6 @@ as follows:
 ----
 
 
-A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-redis-test]]
@@ -6954,6 +6958,9 @@ You can use `@DataRedisTest` to test Redis applications. By default, it scans fo
 `@RedisHash` classes and configures Spring Data Redis repositories. Regular `@Component`
 beans are not loaded into the `ApplicationContext`. (For more about using Redis with
 Spring Boot, see "<<boot-features-redis>>", earlier in this chapter.)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@DataRedisTest` annotation in use:
 
@@ -6975,9 +6982,6 @@ The following example shows the `@DataRedisTest` annotation in use:
 	}
 ----
 
-A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-ldap-test]]
@@ -6987,6 +6991,9 @@ in-memory embedded LDAP (if available), configures an `LdapTemplate`, scans for 
 classes, and configures Spring Data LDAP repositories. Regular `@Component` beans are not
 loaded into the `ApplicationContext`. (For more about using LDAP with
 Spring Boot, see "<<boot-features-ldap>>", earlier in this chapter.)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be
+<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@DataLdapTest` annotation in use:
 
@@ -7028,19 +7035,20 @@ following example:
 	}
 ----
 
-A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-client]]
 ==== Auto-configured REST Clients
 You can use the `@RestClientTest` annotation to test REST clients. By default, it
 auto-configures Jackson, GSON, and Jsonb support, configures a `RestTemplateBuilder`, and
-adds support for `MockRestServiceServer`. The specific beans that you want to test should
-be specified by using the `value` or `components` attribute of `@RestClientTest`, as
-shown in the following example:
+adds support for `MockRestServiceServer`. Regular `@Component` beans are not loaded into
+the `ApplicationContext`.
 
+TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can
+be <<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
+
+The specific beans that you want to test should be specified by using the `value` or
+`components` attribute of `@RestClientTest`, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -7066,9 +7074,6 @@ shown in the following example:
 	}
 ----
 
-A list of the auto-configuration settings that are enabled by `@RestClientTest` can be
-<<appendix-test-auto-configuration#test-auto-configuration,found in the appendix>>.
-
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs]]
@@ -7082,9 +7087,10 @@ in Spring REST Docs.
 are using Gradle). It can also be used to configure the host, scheme, and port that
 appears in any documented URIs.
 
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-mock-mvc]]
 ===== Auto-configured Spring REST Docs Tests with Mock MVC
-
 `@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs. You can
 inject it by using `@Autowired` and use it in your tests as you normally would when using
 Mock MVC and Spring REST Docs, as shown in the following example:
@@ -7163,7 +7169,6 @@ generate the default snippets. The following example shows a
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-rest-assured]]
 ===== Auto-configured Spring REST Docs Tests with REST Assured
-
 `@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring
 REST Docs, available to your tests. You can inject it by using `@Autowired` and use it in
 your tests as you normally would when using REST Assured and Spring REST Docs, as shown
@@ -7182,6 +7187,28 @@ bean can be used, as shown in the following example:
 ----
 include::{code-examples}/test/autoconfigure/restdocs/restassured/AdvancedConfigurationExample.java[tag=configuration]
 ----
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-auto-configured-additional-auto-config]]
+==== Additional Auto-configuration and Slicing
+Each slice provides one or more `@AutoConfigure...` annotations that namely defines the
+auto-configurations that should be included as part of a slice. Additional
+auto-configurations can be added by creating a custom `@AutoConfigure...` annotation or
+simply by adding `@ImportAutoConfiguration` to the test as shown in the following example:
+
+[source,java,indent=0]
+----
+	@RunWith(SpringRunner.class)
+	@JdbcTest
+	@ImportAutoConfiguration(IntegrationAutoConfiguration.class)
+	public class ExampleJdbcTests {
+
+	}
+----
+
+NOTE: Make sure to not use the regular `@Import` annotation to import auto-configurations
+as they are handled in a specific way by Spring Boot.
 
 
 
@@ -7627,6 +7654,23 @@ example:
 [source,java,indent=0]
 ----
 include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=test-env]
+----
+
+The runner can also be used to display the `ConditionEvaluationReport`. The report can be printed
+at `INFO` or `DEBUG` level. The following example shows how to use the `ConditionEvaluationReportLoggingListener`
+to print the report in auto-configuration tests.
+
+[source,java,indent=0]
+----
+	@Test
+	public void autoConfigTest {
+		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
+					LogLevel.INFO);
+			ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+					.withInitializer(initializer).run((context -> {
+							// Do something...
+					}));
+	}
 ----
 
 

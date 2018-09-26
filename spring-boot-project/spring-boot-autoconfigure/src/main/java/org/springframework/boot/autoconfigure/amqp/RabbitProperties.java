@@ -349,6 +349,17 @@ public class RabbitProperties {
 		 */
 		private String algorithm;
 
+		/**
+		 * Whether to enable server side certificate validation.
+		 */
+		private boolean validateServerCertificate = true;
+
+		/**
+		 * Whether to enable hostname verification. Requires AMQP client 4.8 or above and
+		 * defaults to true when a suitable client version is used.
+		 */
+		private Boolean verifyHostname;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -411,6 +422,22 @@ public class RabbitProperties {
 
 		public void setAlgorithm(String sslAlgorithm) {
 			this.algorithm = sslAlgorithm;
+		}
+
+		public boolean isValidateServerCertificate() {
+			return this.validateServerCertificate;
+		}
+
+		public void setValidateServerCertificate(boolean validateServerCertificate) {
+			this.validateServerCertificate = validateServerCertificate;
+		}
+
+		public Boolean getVerifyHostname() {
+			return this.verifyHostname;
+		}
+
+		public void setVerifyHostname(Boolean verifyHostname) {
+			this.verifyHostname = verifyHostname;
 		}
 
 	}
@@ -550,8 +577,8 @@ public class RabbitProperties {
 		private AcknowledgeMode acknowledgeMode;
 
 		/**
-		 * Number of messages to be handled in a single request. It should be greater than
-		 * or equal to the transaction size (if used).
+		 * Maximum number of unacknowledged messages that can be outstanding at each
+		 * consumer.
 		 */
 		private Integer prefetch;
 
@@ -632,9 +659,8 @@ public class RabbitProperties {
 		private Integer maxConcurrency;
 
 		/**
-		 * Number of messages to be processed in a transaction. That is, the number of
-		 * messages between acks. For best results, it should be less than or equal to the
-		 * prefetch count.
+		 * Number of messages to be processed between acks when the acknowledge mode is
+		 * AUTO. If larger than prefetch, prefetch will be increased to this value.
 		 */
 		private Integer transactionSize;
 

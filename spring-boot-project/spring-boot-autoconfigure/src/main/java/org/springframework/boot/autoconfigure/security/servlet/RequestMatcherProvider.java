@@ -27,6 +27,11 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @FunctionalInterface
 public interface RequestMatcherProvider {
 
+	/**
+	 * Return the {@link RequestMatcher} to be used for the specified pattern.
+	 * @param pattern the request pattern
+	 * @return a request matcher
+	 */
 	RequestMatcher getRequestMatcher(String pattern);
 
 }

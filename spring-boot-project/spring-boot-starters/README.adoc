@@ -118,8 +118,14 @@ do as they were designed before this was clarified.
 | http://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
+| https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
+| https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
+
 | http://resteasy.jboss.org/[RESTEasy]
 | https://github.com/resteasy/resteasy-spring-boot
+
+| https://github.com/rollbar/rollbar-java/[Rollbar]
+| https://github.com/olmero/rollbar-spring-boot-starter
 
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web

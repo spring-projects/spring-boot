@@ -73,14 +73,14 @@ content into your application. Rather, pick only the properties that you need.
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
 	spring.cache.cache-names= # Comma-separated list of cache names to create if supported by the underlying cache manager.
 	spring.cache.caffeine.spec= # The spec to use to create caches. See CaffeineSpec for more details on the spec format.
-	spring.cache.couchbase.expiration=0ms # Entry expiration. By default the entries never expire. Note that this value is ultimately converted to seconds.
+	spring.cache.couchbase.expiration= # Entry expiration. By default the entries never expire. Note that this value is ultimately converted to seconds.
 	spring.cache.ehcache.config= # The location of the configuration file to use to initialize EhCache.
 	spring.cache.infinispan.config= # The location of the configuration file to use to initialize Infinispan.
 	spring.cache.jcache.config= # The location of the configuration file to use to initialize the cache manager.
 	spring.cache.jcache.provider= # Fully qualified name of the CachingProvider implementation to use to retrieve the JSR-107 compliant cache manager. Needed only if more than one JSR-107 implementation is available on the classpath.
 	spring.cache.redis.cache-null-values=true # Allow caching null values.
 	spring.cache.redis.key-prefix= # Key prefix.
-	spring.cache.redis.time-to-live=0ms # Entry expiration. By default the entries never expire.
+	spring.cache.redis.time-to-live= # Entry expiration. By default the entries never expire.
 	spring.cache.redis.use-key-prefix=true # Whether to use the key prefix when writing to Redis.
 	spring.cache.type= # Cache type. By default, auto-detected according to the environment.
 
@@ -171,7 +171,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.error.path=/error # Path of the error controller.
 	server.error.whitelabel.enabled=true # Whether to enable the default error page displayed in browsers in case of a server error.
 	server.http2.enabled=false # Whether to enable HTTP/2 support, if the current environment supports it.
-	server.jetty.acceptors= # Number of acceptor threads to use.
+	server.jetty.acceptors=-1 # Number of acceptor threads to use. When the value is -1, the default, the number of acceptors is derived from the operating environment.
 	server.jetty.accesslog.append=false # Append to log.
 	server.jetty.accesslog.date-format=dd/MMM/yyyy:HH:mm:ss Z # Timestamp format of the request log.
 	server.jetty.accesslog.enabled=false # Enable access log.
@@ -184,8 +184,8 @@ content into your application. Rather, pick only the properties that you need.
 	server.jetty.accesslog.log-server=false # Enable logging of the request hostname.
 	server.jetty.accesslog.retention-period=31 # Number of days before rotated log files are deleted.
 	server.jetty.accesslog.time-zone=GMT # Timezone of the request log.
-	server.jetty.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post or put content.
-	server.jetty.selectors= # Number of selector threads to use.
+	server.jetty.max-http-post-size=200000 # Maximum size in bytes of the HTTP post or put content.
+	server.jetty.selectors=-1 # Number of selector threads to use. When the value is -1, the default, the number of selectors is derived from the operating environment.
 	server.max-http-header-size=0 # Maximum size, in bytes, of the HTTP message header.
 	server.port=8080 # Server HTTP port.
 	server.server-header= # Value to use for the Server response header (if empty, no header is sent).
@@ -223,7 +223,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.ssl.trust-store-password= # Password used to access the trust store.
 	server.ssl.trust-store-provider= # Provider for the trust store.
 	server.ssl.trust-store-type= # Type of the trust store.
-	server.tomcat.accept-count=0 # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+	server.tomcat.accept-count=100 # Maximum queue length for incoming connection requests when all possible request processing threads are in use.
 	server.tomcat.accesslog.buffered=true # Whether to buffer output such that it is flushed only periodically.
 	server.tomcat.accesslog.directory=logs # Directory in which log files are created. Can be absolute or relative to the Tomcat base dir.
 	server.tomcat.accesslog.enabled=false # Enable access log.
@@ -235,7 +235,7 @@ content into your application. Rather, pick only the properties that you need.
 	server.tomcat.accesslog.rotate=true # Whether to enable access log rotation.
 	server.tomcat.accesslog.suffix=.log # Log file name suffix.
 	server.tomcat.additional-tld-skip-patterns= # Comma-separated list of additional patterns that match jars to ignore for TLD scanning.
-	server.tomcat.background-processor-delay=30s # Delay between the invocation of backgroundProcess methods. If a duration suffix is not specified, seconds will be used.
+	server.tomcat.background-processor-delay=10s # Delay between the invocation of backgroundProcess methods. If a duration suffix is not specified, seconds will be used.
 	server.tomcat.basedir= # Tomcat base directory. If not specified, a temporary directory is used.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
@@ -243,16 +243,18 @@ content into your application. Rather, pick only the properties that you need.
 			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
 			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
-			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # Regular expression matching trusted IP addresses.
-	server.tomcat.max-connections=0 # Maximum number of connections that the server accepts and processes at any given time.
-	server.tomcat.max-http-header-size=0 # Maximum size, in bytes, of the HTTP message header.
-	server.tomcat.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post content.
-	server.tomcat.max-threads=0 # Maximum number of worker threads.
-	server.tomcat.min-spare-threads=0 # Minimum number of worker threads.
+			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}\\
+			0:0:0:0:0:0:0:1\\
+			::1 # Regular expression that matches proxies that are to be trusted.
+	server.tomcat.max-connections=10000 # Maximum number of connections that the server accepts and processes at any given time
+	server.tomcat.max-http-header-size=0 # Maximum size in bytes of the HTTP message header.
+	server.tomcat.max-http-post-size=2097152 # Maximum size in bytes of the HTTP post content.
+	server.tomcat.max-threads=200 # Maximum amount of worker threads.
+	server.tomcat.min-spare-threads=10 # Minimum amount of worker threads.
 	server.tomcat.port-header=X-Forwarded-Port # Name of the HTTP header used to override the original port value.
 	server.tomcat.protocol-header= # Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 	server.tomcat.protocol-header-https-value=https # Value of the protocol header indicating whether the incoming request uses SSL.
-	server.tomcat.redirect-context-root= # Whether requests to the context root should be redirected by appending a / to the path.
+	server.tomcat.redirect-context-root=true # Whether requests to the context root should be redirected by appending a / to the path.
 	server.tomcat.remote-ip-header= # Name of the HTTP header from which the remote IP is extracted. For instance, `X-FORWARDED-FOR`.
 	server.tomcat.resource.cache-ttl= # Time-to-live of the static resource cache.
 	server.tomcat.uri-encoding=UTF-8 # Character encoding to use to decode the URI.
@@ -264,11 +266,11 @@ content into your application. Rather, pick only the properties that you need.
 	server.undertow.accesslog.rotate=true # Whether to enable access log rotation.
 	server.undertow.accesslog.suffix=log # Log file name suffix.
 	server.undertow.buffer-size= # Size of each buffer, in bytes.
-	server.undertow.direct-buffers= # Whether to allocate buffers outside the Java heap.
-	server.undertow.io-threads= # Number of I/O threads to create for the worker.
+	server.undertow.direct-buffers= # Whether to allocate buffers outside the Java heap. The default is derived from the maximum amount of memory that is available to the JVM.
 	server.undertow.eager-filter-init=true # Whether servlet filters should be initialized on startup.
-	server.undertow.max-http-post-size=0 # Maximum size, in bytes, of the HTTP post content.
-	server.undertow.worker-threads= # Number of worker threads.
+	server.undertow.io-threads= # Number of I/O threads to create for the worker. The default is derived from the number of available processors.
+	server.undertow.max-http-post-size=-1 # Maximum size in bytes of the HTTP post content. When the value is -1, the default, the size is unlimited.
+	server.undertow.worker-threads= # Number of worker threads. The default is 8 times the number of I/O threads.
 
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerProperties.{sc-ext}[FreeMarkerProperties])
 	spring.freemarker.allow-request-override=false # Whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
@@ -599,7 +601,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.cassandra.contact-points=localhost # Cluster node addresses.
 	spring.data.cassandra.fetch-size= # Queries default fetch size.
 	spring.data.cassandra.keyspace-name= # Keyspace name to use.
-	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy.
+	spring.data.cassandra.load-balancing-policy= # Class name of the load balancing policy. The class must have a default constructor.
 	spring.data.cassandra.port= # Port of the Cassandra server.
 	spring.data.cassandra.password= # Login password of the server.
 	spring.data.cassandra.pool.heartbeat-interval=30s # Heartbeat interval after which a message is sent on an idle connection to make sure it's still alive. If a duration suffix is not specified, seconds will be used.
@@ -607,9 +609,9 @@ content into your application. Rather, pick only the properties that you need.
 	spring.data.cassandra.pool.max-queue-size=256 # Maximum number of requests that get queued if no connection is available.
 	spring.data.cassandra.pool.pool-timeout=5000ms # Pool timeout when trying to acquire a connection from a host's pool.
 	spring.data.cassandra.read-timeout= # Socket option: read time out.
-	spring.data.cassandra.reconnection-policy= # Reconnection policy class.
+	spring.data.cassandra.reconnection-policy= # Class name of the reconnection policy. The class must have a default constructor.
 	spring.data.cassandra.repositories.type=auto # Type of Cassandra repositories to enable.
-	spring.data.cassandra.retry-policy= # Class name of the retry policy.
+	spring.data.cassandra.retry-policy= # Class name of the retry policy. The class must have a default constructor.
 	spring.data.cassandra.serial-consistency-level= # Queries serial consistency level.
 	spring.data.cassandra.schema-action=none # Schema action to take at startup.
 	spring.data.cassandra.ssl=false # Enable SSL support.
@@ -1000,11 +1002,11 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.admin.ssl.truststore-location= # Location of the trust store file.
 	spring.kafka.admin.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.admin.ssl.truststore-type= # Type of the trust store.
-	spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
+	spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Applies to all components unless overridden.
 	spring.kafka.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.consumer.auto-commit-interval= # Frequency with which the consumer offsets are auto-committed to Kafka if 'enable.auto.commit' is set to true.
 	spring.kafka.consumer.auto-offset-reset= # What to do when there is no initial offset in Kafka or if the current offset no longer exists on the server.
-	spring.kafka.consumer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
+	spring.kafka.consumer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for consumers.
 	spring.kafka.consumer.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.consumer.enable-auto-commit= # Whether the consumer's offset is periodically committed in the background.
 	spring.kafka.consumer.fetch-max-wait= # Maximum amount of time the server blocks before answering the fetch request if there isn't sufficient data to immediately satisfy the requirement given by "fetch.min.bytes".
@@ -1040,7 +1042,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.listener.type=single # Listener type.
 	spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.
 	spring.kafka.producer.batch-size= # Default batch size in bytes.
-	spring.kafka.producer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
+	spring.kafka.producer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for producers.
 	spring.kafka.producer.buffer-memory= # Total bytes of memory the producer can use to buffer records waiting to be sent to the server.
 	spring.kafka.producer.client-id= # ID to pass to the server when making requests. Used for server-side logging.
 	spring.kafka.producer.compression-type= # Compression type for all data generated by the producer.
@@ -1082,7 +1084,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.direct.consumers-per-queue= # Number of consumers per queue.
 	spring.rabbitmq.listener.direct.default-requeue-rejected= # Whether rejected deliveries are re-queued by default.
 	spring.rabbitmq.listener.direct.idle-event-interval= # How often idle container events should be published.
-	spring.rabbitmq.listener.direct.prefetch= # Number of messages to be handled in a single request. It should be greater than or equal to the transaction size (if used).
+	spring.rabbitmq.listener.direct.prefetch= # Maximum number of unacknowledged messages that can be outstanding at each consumer.
 	spring.rabbitmq.listener.direct.retry.enabled=false # Whether publishing retries are enabled.
 	spring.rabbitmq.listener.direct.retry.initial-interval=1000ms # Duration between the first and second attempt to deliver a message.
 	spring.rabbitmq.listener.direct.retry.max-attempts=3 # Maximum number of attempts to deliver a message.
@@ -1102,13 +1104,14 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.listener.simple.retry.max-interval=10000ms # Maximum duration between attempts.
 	spring.rabbitmq.listener.simple.retry.multiplier=1 # Multiplier to apply to the previous retry interval.
 	spring.rabbitmq.listener.simple.retry.stateless=true # Whether retries are stateless or stateful.
-	spring.rabbitmq.listener.simple.transaction-size= # Number of messages to be processed in a transaction. That is, the number of messages between acks. For best results, it should be less than or equal to the prefetch count.
+	spring.rabbitmq.listener.simple.transaction-size= # Number of messages to be processed between acks when the acknowledge mode is AUTO. If larger than prefetch, prefetch will be increased to this value.
 	spring.rabbitmq.listener.type=simple # Listener container type.
 	spring.rabbitmq.password=guest # Login to authenticate against the broker.
 	spring.rabbitmq.port=5672 # RabbitMQ port.
 	spring.rabbitmq.publisher-confirms=false # Whether to enable publisher confirms.
 	spring.rabbitmq.publisher-returns=false # Whether to enable publisher returns.
 	spring.rabbitmq.requested-heartbeat= # Requested heartbeat timeout; zero for none. If a duration suffix is not specified, seconds will be used.
+	spring.rabbitmq.ssl.algorithm= # SSL algorithm to use. By default, configured by the Rabbit client library.
 	spring.rabbitmq.ssl.enabled=false # Whether to enable SSL support.
 	spring.rabbitmq.ssl.key-store= # Path to the key store that holds the SSL certificate.
 	spring.rabbitmq.ssl.key-store-password= # Password used to access the key store.
@@ -1116,7 +1119,8 @@ content into your application. Rather, pick only the properties that you need.
 	spring.rabbitmq.ssl.trust-store= # Trust store that holds SSL certificates.
 	spring.rabbitmq.ssl.trust-store-password= # Password used to access the trust store.
 	spring.rabbitmq.ssl.trust-store-type=JKS # Trust store type.
-	spring.rabbitmq.ssl.algorithm= # SSL algorithm to use. By default, configured by the Rabbit client library.
+	spring.rabbitmq.ssl.validate-server-certificate=true # Whether to enable server side certificate validation.
+	spring.rabbitmq.ssl.verify-hostname= # Whether to enable hostname verification. Requires AMQP client 4.8 or above and defaults to true when a suitable client version is used.
 	spring.rabbitmq.template.exchange= # Name of the default exchange to use for send operations.
 	spring.rabbitmq.template.mandatory= # Whether to enable mandatory messages.
 	spring.rabbitmq.template.receive-timeout= # Timeout for `receive()` operations.
@@ -1309,7 +1313,6 @@ content into your application. Rather, pick only the properties that you need.
 
 	# METRICS
 	management.metrics.binders.files.enabled=true # Whether to enable files metrics.
-	management.metrics.binders.integration.enabled=true # Whether to enable Spring Integration metrics.
 	management.metrics.binders.jvm.enabled=true # Whether to enable JVM metrics.
 	management.metrics.binders.logback.enabled=true # Whether to enable Logback metrics.
 	management.metrics.binders.processor.enabled=true # Whether to enable processor metrics.
@@ -1424,6 +1427,7 @@ content into your application. Rather, pick only the properties that you need.
 	management.metrics.web.client.max-uri-tags=100 # Maximum number of unique URI tag values allowed. After the max number of tag values is reached, metrics with additional tag values are denied by filter.
 	management.metrics.web.client.requests-metric-name=http.client.requests # Name of the metric for sent requests.
 	management.metrics.web.server.auto-time-requests=true # Whether requests handled by Spring MVC or WebFlux should be automatically timed.
+	management.metrics.web.server.max-uri-tags=100 # Maximum number of unique URI tag values allowed. After the max number of tag values is reached, metrics with additional tag values are denied by filter.
 	management.metrics.web.server.requests-metric-name=http.server.requests # Name of the metric for received requests.
 
 

@@ -330,10 +330,10 @@ public final class ConfigurationPropertyName
 			}
 			char ch1 = indexed1 ? e1.charAt(i1) : Character.toLowerCase(e1.charAt(i1));
 			char ch2 = indexed2 ? e2.charAt(i2) : Character.toLowerCase(e2.charAt(i2));
-			if (ch1 == '-' || ch1 == '_') {
+			if (!indexed1 && (ch1 == '-' || ch1 == '_')) {
 				i1++;
 			}
-			else if (ch2 == '-' || ch2 == '_') {
+			else if (!indexed2 && (ch2 == '-' || ch2 == '_')) {
 				i2++;
 			}
 			else if (ch1 != ch2) {
@@ -346,7 +346,7 @@ public final class ConfigurationPropertyName
 		}
 		while (i2 < l2 - offset2) {
 			char ch = e2.charAt(i2++);
-			if (ch != '-' && ch != '_') {
+			if (indexed2 || (ch != '-' && ch != '_')) {
 				return false;
 			}
 		}

@@ -317,11 +317,11 @@ public final class EndpointRequest {
 
 		public RequestMatcher antPath(RequestMatcherProvider matcherProvider,
 				String... parts) {
-			String pattern = this.prefix;
+			StringBuilder pattern = new StringBuilder(this.prefix);
 			for (String part : parts) {
-				pattern += part;
+				pattern.append(part);
 			}
-			return matcherProvider.getRequestMatcher(pattern);
+			return matcherProvider.getRequestMatcher(pattern.toString());
 		}
 
 	}

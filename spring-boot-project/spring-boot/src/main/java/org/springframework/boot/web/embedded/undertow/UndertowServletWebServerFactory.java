@@ -319,8 +319,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	private AccessLogHandler createAccessLogHandler(HttpHandler handler,
 			AccessLogReceiver accessLogReceiver) {
 		createAccessLogDirectoryIfNecessary();
-		String formatString = ((this.accessLogPattern != null) ? this.accessLogPattern
-				: "common");
+		String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
+				: "common";
 		return new AccessLogHandler(handler, accessLogReceiver, formatString,
 				Undertow.class.getClassLoader());
 	}

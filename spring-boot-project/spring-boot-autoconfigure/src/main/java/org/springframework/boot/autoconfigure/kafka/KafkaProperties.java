@@ -57,7 +57,7 @@ public class KafkaProperties {
 
 	/**
 	 * Comma-delimited list of host:port pairs to use for establishing the initial
-	 * connection to the Kafka cluster.
+	 * connections to the Kafka cluster. Applies to all components unless overridden.
 	 */
 	private List<String> bootstrapServers = new ArrayList<>(
 			Collections.singletonList("localhost:9092"));
@@ -211,7 +211,7 @@ public class KafkaProperties {
 
 		/**
 		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connection to the Kafka cluster.
+		 * connections to the Kafka cluster. Overrides the global property, for consumers.
 		 */
 		private List<String> bootstrapServers;
 
@@ -421,7 +421,7 @@ public class KafkaProperties {
 
 		/**
 		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connection to the Kafka cluster.
+		 * connections to the Kafka cluster. Overrides the global property, for producers.
 		 */
 		private List<String> bootstrapServers;
 
