@@ -73,6 +73,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Quinten De Swaef
  * @author Venil Noronha
+ * @author Marvin S. Addison
  */
 public class ServerPropertiesTests {
 
@@ -339,6 +340,13 @@ public class ServerPropertiesTests {
 		finally {
 			jetty.stop();
 		}
+	}
+
+	@Test
+	public void jettyPreferProxiedForAddress() {
+		bind("server.jetty.accesslog.prefer-proxied-for-address", "true");
+		assertThat(this.properties.getJetty().getAccesslog().isPreferProxiedForAddress())
+				.isEqualTo(true);
 	}
 
 	@Test

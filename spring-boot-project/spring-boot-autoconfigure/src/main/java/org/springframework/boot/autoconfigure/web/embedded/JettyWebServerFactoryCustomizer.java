@@ -43,6 +43,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author Marvin S. Addison
  * @since 2.0.0
  */
 public class JettyWebServerFactoryCustomizer implements
@@ -195,6 +196,7 @@ public class JettyWebServerFactoryCustomizer implements
 			log.setLogCookies(properties.isLogCookies());
 			log.setLogServer(properties.isLogServer());
 			log.setLogLatency(properties.isLogLatency());
+			log.setPreferProxiedForAddress(properties.isPreferProxiedForAddress());
 			server.setRequestLog(log);
 		});
 	}

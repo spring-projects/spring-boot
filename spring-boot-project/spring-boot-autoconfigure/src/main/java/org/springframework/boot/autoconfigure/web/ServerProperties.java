@@ -56,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Brian Clozel
  * @author Olivier Lamy
  * @author Chentao Qu
+ * @author Marvin S. Addison
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties {
@@ -831,6 +832,11 @@ public class ServerProperties {
 			 */
 			private boolean logLatency;
 
+			/**
+			 * Prefer IP address specified in X-Forwarded-For header.
+			 */
+			private boolean preferProxiedForAddress;
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -925,6 +931,14 @@ public class ServerProperties {
 
 			public void setLogLatency(boolean logLatency) {
 				this.logLatency = logLatency;
+			}
+
+			public boolean isPreferProxiedForAddress() {
+				return this.preferProxiedForAddress;
+			}
+
+			public void setPreferProxiedForAddress(boolean preferProxiedForAddress) {
+				this.preferProxiedForAddress = preferProxiedForAddress;
 			}
 
 		}

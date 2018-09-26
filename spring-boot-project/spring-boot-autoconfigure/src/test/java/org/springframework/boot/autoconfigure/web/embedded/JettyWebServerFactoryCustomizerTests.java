@@ -48,6 +48,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author Marvin S. Addison
  */
 public class JettyWebServerFactoryCustomizerTests {
 
@@ -99,7 +100,8 @@ public class JettyWebServerFactoryCustomizerTests {
 				"server.jetty.accesslog.time-zone=" + timezone,
 				"server.jetty.accesslog.log-cookies=true",
 				"server.jetty.accesslog.log-server=true",
-				"server.jetty.accesslog.log-latency=true");
+				"server.jetty.accesslog.log-latency=true",
+				"server.jetty.accesslog.prefer-proxied-for-address=true");
 		JettyWebServer server = customizeAndGetServer();
 		NCSARequestLog requestLog = getNCSARequestLog(server);
 		assertThat(requestLog.getFilename()).isEqualTo(logFile.getAbsolutePath());
@@ -113,6 +115,7 @@ public class JettyWebServerFactoryCustomizerTests {
 		assertThat(requestLog.getLogCookies()).isTrue();
 		assertThat(requestLog.getLogServer()).isTrue();
 		assertThat(requestLog.getLogLatency()).isTrue();
+		assertThat(requestLog.getPreferProxiedForAddress()).isTrue();
 	}
 
 	@Test
