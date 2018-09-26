@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link DynatracePropertiesConfigAdapter}.
  *
- * @author Andy Wilkiknson
+ * @author Andy Wilkinson
  */
 public class DynatracePropertiesConfigAdapterTests {
 
