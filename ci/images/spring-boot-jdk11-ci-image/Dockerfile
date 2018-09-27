@@ -1,4 +1,4 @@
-FROM openjdk:11-ea-24-jdk
+FROM openjdk:11-ea-28-jdk
 
 RUN apt-get update && \
     apt-get install -y git && \
