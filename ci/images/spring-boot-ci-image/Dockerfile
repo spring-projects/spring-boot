@@ -1,4 +1,4 @@
-FROM openjdk:8u141-jdk
+FROM openjdk:8u181-jdk
 
 RUN apt-get update && \
     apt-get install -y git && \
