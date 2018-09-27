@@ -47,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Thiago Hirata
+ * @author Artsiom Yudovin
  */
 public class OAuth2ClientPropertiesRegistrationAdapterTests {
 
@@ -263,6 +264,39 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
 		assertThat(adapted.getRedirectUriTemplate())
 				.isEqualTo("http://my-redirect-uri.com");
+		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(
+				org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC);
+		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(
+				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
+		assertThat(adapted.getScopes()).containsExactly("openid", "profile", "email");
+		assertThat(adapted.getClientName()).isEqualTo("Google");
+	}
+
+	@Test
+	public void getClientRegistrationsWhenCredentialsClientShouldAdapt() {
+		OAuth2ClientProperties properties = new OAuth2ClientProperties();
+		OAuth2ClientProperties.CredentialsClientRegistration registration = new OAuth2ClientProperties.CredentialsClientRegistration();
+		registration.setClientId("clientId");
+		registration.setClientSecret("clientSecret");
+		properties.getRegistration().getClientCredentials().put("google", registration);
+		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
+				.getClientRegistrations(properties);
+		ClientRegistration adapted = registrations.get("google");
+		ProviderDetails adaptedProvider = adapted.getProviderDetails();
+		assertThat(adaptedProvider.getAuthorizationUri())
+				.isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
+		assertThat(adaptedProvider.getTokenUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v4/token");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v3/userinfo");
+		assertThat(adaptedProvider.getUserInfoEndpoint().getAuthenticationMethod())
+				.isEqualTo(
+						org.springframework.security.oauth2.core.AuthenticationMethod.HEADER);
+		assertThat(adaptedProvider.getJwkSetUri())
+				.isEqualTo("https://www.googleapis.com/oauth2/v3/certs");
+		assertThat(adapted.getRegistrationId()).isEqualTo("google");
+		assertThat(adapted.getClientId()).isEqualTo("clientId");
+		assertThat(adapted.getClientSecret()).isEqualTo("clientSecret");
 		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(
 				org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC);
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(

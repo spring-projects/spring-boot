@@ -59,6 +59,8 @@ public class OAuth2ClientProperties {
 		this.getRegistration().getLogin().values().forEach(this::validateRegistration);
 		this.getRegistration().getAuthorizationCode().values()
 				.forEach(this::validateRegistration);
+		this.getRegistration().getClientCredentials().values()
+				.forEach(this::validateRegistration);
 	}
 
 	private void validateRegistration(BaseClientRegistration registration) {
@@ -79,6 +81,11 @@ public class OAuth2ClientProperties {
 		 */
 		private Map<String, AuthorizationCodeClientRegistration> authorizationCode = new HashMap<>();
 
+		/**
+		 * Client credentials registrations.
+		 */
+		private Map<String, CredentialsClientRegistration> clientCredentials = new HashMap<>();
+
 		public Map<String, LoginClientRegistration> getLogin() {
 			return this.login;
 		}
@@ -94,6 +101,15 @@ public class OAuth2ClientProperties {
 		public void setAuthorizationCode(
 				Map<String, AuthorizationCodeClientRegistration> authorizationCode) {
 			this.authorizationCode = authorizationCode;
+		}
+
+		public Map<String, CredentialsClientRegistration> getClientCredentials() {
+			return this.clientCredentials;
+		}
+
+		public void setClientCredentials(
+				Map<String, CredentialsClientRegistration> clientCredentials) {
+			this.clientCredentials = clientCredentials;
 		}
 
 	}
@@ -146,6 +162,13 @@ public class OAuth2ClientProperties {
 		public void setRedirectUri(String redirectUri) {
 			this.redirectUri = redirectUri;
 		}
+
+	}
+
+	/**
+	 * A single client registration for client_credentials flow.
+	 */
+	public static class CredentialsClientRegistration extends BaseClientRegistration {
 
 	}
 

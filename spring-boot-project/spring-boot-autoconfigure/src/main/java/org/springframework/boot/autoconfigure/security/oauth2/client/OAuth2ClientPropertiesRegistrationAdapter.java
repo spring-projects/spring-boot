@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Thiago Hirata
  * @author Madhura Bhave
  * @author MyeongHyeon Lee
+ * @author Artsiom Yudovin
  * @since 2.1.0
  */
 public final class OAuth2ClientPropertiesRegistrationAdapter {
@@ -57,6 +58,10 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		properties.getRegistration().getAuthorizationCode()
 				.forEach((key, value) -> clientRegistrations.put(key,
 						getAuthorizationCodeClientRegistration(key, value,
+								properties.getProvider())));
+		properties.getRegistration().getClientCredentials()
+				.forEach((key, value) -> clientRegistrations.put(key,
+						getCredentialsClientRegistration(key, value,
 								properties.getProvider())));
 		return clientRegistrations;
 	}
@@ -98,6 +103,15 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Builder builder = getBuilder(map, registrationId, properties, providers);
 		map.from(properties::getRedirectUri).to(builder::redirectUriTemplate);
+		return builder.build();
+	}
+
+	private static ClientRegistration getCredentialsClientRegistration(
+			String registrationId,
+			OAuth2ClientProperties.CredentialsClientRegistration properties,
+			Map<String, Provider> providers) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Builder builder = getBuilder(map, registrationId, properties, providers);
 		return builder.build();
 	}
 
