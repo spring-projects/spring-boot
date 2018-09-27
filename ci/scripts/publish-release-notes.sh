@@ -15,7 +15,7 @@ java -jar -Dreleasenotes.github.organization=${GITHUB_ORGANIZATION} -Dreleasenot
 popd > /dev/null
 
 
-body=$( sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' release-notes-repo/release-notes.md )
+body=$( while read line; do echo -n "$line\\n"; done < release-notes-repo/release-notes.md )
 
 curl \
 	-s \
