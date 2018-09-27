@@ -517,17 +517,16 @@
       }
     },
     {
-      "name": "spring.quartz.scheduler-name",
-      "type": "java.lang.String",
-      "defaultValue": "quartzScheduler"
-    },
-    {
       "name": "spring.quartz.jdbc.initialize-schema",
       "defaultValue": "embedded"
     },
     {
       "name": "spring.quartz.job-store-type",
       "defaultValue": "memory"
+    },
+    {
+      "name": "spring.quartz.scheduler-name",
+      "defaultValue": "quartzScheduler"
     },
     {
       "name": "spring.rabbitmq.cache.connection.mode",
