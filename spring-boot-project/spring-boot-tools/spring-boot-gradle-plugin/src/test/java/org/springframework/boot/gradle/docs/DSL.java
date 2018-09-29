@@ -13,21 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.springframework.boot.gradle.docs.groovy;
-
-import org.springframework.boot.gradle.docs.AbstractManagingDependenciesDocumentationTests;
+package org.springframework.boot.gradle.docs;
 
 /**
- * Tests for the managing dependencies documentation.
- *
- * @author Jean-Baptiste Nizet
+ * The DSLs supported by Gradle and demonstrated in the documentation samples
  */
-public class ManagingDependenciesDocumentationTests
-		extends AbstractManagingDependenciesDocumentationTests {
+public enum DSL {
 
-	public ManagingDependenciesDocumentationTests() {
-		super(DSL.GROOVY);
+	GROOVY("Groovy", ".gradle"), KOTLIN("Kotlin", ".gradle.kts");
+
+	private final String name;
+
+	private final String extension;
+
+	DSL(String name, String extension) {
+		this.name = name;
+		this.extension = extension;
+	}
+
+	/**
+	 * Gets the user-friendly name of the DSL
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * Gets the file extension of build scripts (starting with a dot)
+	 */
+	public String getExtension() {
+		return this.extension;
 	}
 
 }

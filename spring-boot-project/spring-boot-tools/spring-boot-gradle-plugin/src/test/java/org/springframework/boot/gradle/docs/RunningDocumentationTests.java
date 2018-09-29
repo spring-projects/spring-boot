@@ -19,7 +19,11 @@ package org.springframework.boot.gradle.docs;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,33 +33,36 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
  */
-public abstract class AbstractRunningDocumentationTests
-		extends AbstractDocumentationTests {
+@RunWith(GradleMultiDslSuite.class)
+public class RunningDocumentationTests {
 
-	protected AbstractRunningDocumentationTests(DSL dsl) {
-		super(dsl);
-	}
+	@Rule
+	public GradleBuild gradleBuild;
+
+	public DSL dsl;
 
 	@Test
 	public void bootRunMain() throws IOException {
 		assertThat(this.gradleBuild
-				.script("src/main/gradle/running/boot-run-main" + extension)
+				.script("src/main/gradle/running/boot-run-main" + this.dsl.getExtension())
 				.build("configuredMainClass").getOutput())
 						.contains("com.example.ExampleApplication");
 	}
 
 	@Test
-	public void applicationPluginMainClassName() throws IOException {
-		assertThat(this.gradleBuild.script(
-				"src/main/gradle/running/application-plugin-main-class-name" + extension)
+	public void applicationPluginMainClassName() {
+		assertThat(this.gradleBuild
+				.script("src/main/gradle/running/application-plugin-main-class-name"
+						+ this.dsl.getExtension())
 				.build("configuredMainClass").getOutput())
 						.contains("com.example.ExampleApplication");
 	}
 
 	@Test
 	public void springBootDslMainClassName() throws IOException {
-		assertThat(this.gradleBuild.script(
-				"src/main/gradle/running/spring-boot-dsl-main-class-name" + extension)
+		assertThat(this.gradleBuild
+				.script("src/main/gradle/running/spring-boot-dsl-main-class-name"
+						+ this.dsl.getExtension())
 				.build("configuredMainClass").getOutput())
 						.contains("com.example.ExampleApplication");
 	}
@@ -63,7 +70,8 @@ public abstract class AbstractRunningDocumentationTests
 	@Test
 	public void bootRunSourceResources() throws IOException {
 		assertThat(this.gradleBuild
-				.script("src/main/gradle/running/boot-run-source-resources" + extension)
+				.script("src/main/gradle/running/boot-run-source-resources"
+						+ this.dsl.getExtension())
 				.build("configuredClasspath").getOutput())
 						.contains(new File("src/main/resources").getPath());
 	}

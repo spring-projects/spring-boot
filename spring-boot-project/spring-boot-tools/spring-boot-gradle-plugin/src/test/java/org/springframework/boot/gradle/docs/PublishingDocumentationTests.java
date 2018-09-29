@@ -18,7 +18,11 @@ package org.springframework.boot.gradle.docs;
 
 import java.io.IOException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,16 +32,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
  */
-public abstract class AbstractPublishingDocumentationTests
-		extends AbstractDocumentationTests {
+@RunWith(GradleMultiDslSuite.class)
+public class PublishingDocumentationTests {
 
-	protected AbstractPublishingDocumentationTests(DSL dsl) {
-		super(dsl);
-	}
+	@Rule
+	public GradleBuild gradleBuild;
+
+	public DSL dsl;
 
 	@Test
 	public void mavenUpload() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven" + extension)
+		assertThat(this.gradleBuild
+				.script("src/main/gradle/publishing/maven" + this.dsl.getExtension())
 				.build("deployerRepository").getOutput())
 						.contains("https://repo.example.com");
 	}
@@ -45,7 +51,8 @@ public abstract class AbstractPublishingDocumentationTests
 	@Test
 	public void mavenPublish() throws IOException {
 		assertThat(this.gradleBuild
-				.script("src/main/gradle/publishing/maven-publish" + extension)
+				.script("src/main/gradle/publishing/maven-publish"
+						+ this.dsl.getExtension())
 				.build("publishingConfiguration").getOutput())
 						.contains("MavenPublication")
 						.contains("https://repo.example.com");

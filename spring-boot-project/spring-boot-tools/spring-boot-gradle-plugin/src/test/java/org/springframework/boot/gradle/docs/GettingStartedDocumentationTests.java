@@ -16,42 +16,33 @@
 
 package org.springframework.boot.gradle.docs;
 
-import java.util.function.Supplier;
-
 import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 /**
- * Base class for documentation tests.
+ * Tests for the getting started documentation.
  *
+ * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
  */
-public class AbstractDocumentationTests {
+@RunWith(GradleMultiDslSuite.class)
+public class GettingStartedDocumentationTests {
 
 	@Rule
-	public final GradleBuild gradleBuild;
+	public GradleBuild gradleBuild;
 
-	protected final String extension;
+	public DSL dsl;
 
-	protected AbstractDocumentationTests(DSL dsl) {
-		this.gradleBuild = dsl.gradleBuildSupplier.get();
-		this.extension = dsl.extension;
-	}
+	// NOTE: We can't run any `apply-plugin` tests because during a release the
+	// jar won't be there
 
-	protected enum DSL {
-
-		GROOVY(".gradle", GradleBuild::new), KOTLIN(".gradle.kts",
-				() -> new GradleBuild().withMinimalGradleVersionForKotlinDSL());
-		private final String extension;
-
-		private final Supplier<GradleBuild> gradleBuildSupplier;
-
-		DSL(String extension, Supplier<GradleBuild> gradleBuildSupplier) {
-			this.extension = extension;
-			this.gradleBuildSupplier = gradleBuildSupplier;
-		}
-
+	@Test
+	public void typicalPluginsAppliesExceptedPlugins() {
+		this.gradleBuild.script("src/main/gradle/getting-started/typical-plugins"
+				+ this.dsl.getExtension()).build("verify");
 	}
 
 }

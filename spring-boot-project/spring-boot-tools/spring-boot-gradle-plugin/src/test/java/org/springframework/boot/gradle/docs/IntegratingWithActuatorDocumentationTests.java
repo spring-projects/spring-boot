@@ -21,7 +21,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,17 +35,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
  */
-public abstract class AbstractIntegratingWithActuatorDocumentationTests
-		extends AbstractDocumentationTests {
+@RunWith(GradleMultiDslSuite.class)
+public class IntegratingWithActuatorDocumentationTests {
 
-	protected AbstractIntegratingWithActuatorDocumentationTests(DSL dsl) {
-		super(dsl);
-	}
+	@Rule
+	public GradleBuild gradleBuild;
+
+	public DSL dsl;
 
 	@Test
 	public void basicBuildInfo() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/integrating-with-actuator/build-info-basic" + extension)
+		this.gradleBuild
+				.script("src/main/gradle/integrating-with-actuator/build-info-basic"
+						+ this.dsl.getExtension())
 				.build("bootBuildInfo");
 		assertThat(new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties")).isFile();
@@ -51,7 +57,7 @@ public abstract class AbstractIntegratingWithActuatorDocumentationTests
 	public void buildInfoCustomValues() throws IOException {
 		this.gradleBuild.script(
 				"src/main/gradle/integrating-with-actuator/build-info-custom-values"
-						+ extension)
+						+ this.dsl.getExtension())
 				.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties");
@@ -67,7 +73,7 @@ public abstract class AbstractIntegratingWithActuatorDocumentationTests
 	public void buildInfoAdditional() throws IOException {
 		this.gradleBuild
 				.script("src/main/gradle/integrating-with-actuator/build-info-additional"
-						+ extension)
+						+ this.dsl.getExtension())
 				.build("bootBuildInfo");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/resources/main/META-INF/build-info.properties");

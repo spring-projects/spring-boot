@@ -23,8 +23,11 @@ import java.io.IOException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,24 +38,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
  */
-public abstract class AbstractPackagingDocumentationTests
-		extends AbstractDocumentationTests {
+@RunWith(GradleMultiDslSuite.class)
+public class PackagingDocumentationTests {
 
-	public AbstractPackagingDocumentationTests(DSL dsl) {
-		super(dsl);
-	}
+	@Rule
+	public GradleBuild gradleBuild;
+
+	public DSL dsl;
 
 	@Test
 	public void warContainerDependencyEvaluatesSuccessfully() {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/war-container-dependency" + extension)
-				.build();
+		this.gradleBuild.script("src/main/gradle/packaging/war-container-dependency"
+				+ this.dsl.getExtension()).build();
 	}
 
 	@Test
 	public void bootJarMainClass() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-jar-main-class" + extension)
+		this.gradleBuild.script(
+				"src/main/gradle/packaging/boot-jar-main-class" + this.dsl.getExtension())
 				.build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
@@ -65,9 +68,8 @@ public abstract class AbstractPackagingDocumentationTests
 
 	@Test
 	public void bootJarManifestMainClass() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/packaging/boot-jar-manifest-main-class" + extension)
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-manifest-main-class"
+				+ this.dsl.getExtension()).build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -79,9 +81,8 @@ public abstract class AbstractPackagingDocumentationTests
 
 	@Test
 	public void applicationPluginMainClass() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/packaging/application-plugin-main-class" + extension)
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/application-plugin-main-class"
+				+ this.dsl.getExtension()).build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -93,9 +94,8 @@ public abstract class AbstractPackagingDocumentationTests
 
 	@Test
 	public void springBootDslMainClass() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/packaging/spring-boot-dsl-main-class" + extension)
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/spring-boot-dsl-main-class"
+				+ this.dsl.getExtension()).build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -109,9 +109,8 @@ public abstract class AbstractPackagingDocumentationTests
 	public void bootWarIncludeDevtools() throws IOException {
 		new File(this.gradleBuild.getProjectDir(),
 				"spring-boot-devtools-1.2.3.RELEASE.jar").createNewFile();
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-war-include-devtools" + extension)
-				.build("bootWar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-war-include-devtools"
+				+ this.dsl.getExtension()).build("bootWar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".war");
 		assertThat(file).isFile();
@@ -123,9 +122,8 @@ public abstract class AbstractPackagingDocumentationTests
 
 	@Test
 	public void bootJarRequiresUnpack() throws IOException {
-		this.gradleBuild
-				.script("src/main/gradle/packaging/boot-jar-requires-unpack" + extension)
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-requires-unpack"
+				+ this.dsl.getExtension()).build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -138,9 +136,8 @@ public abstract class AbstractPackagingDocumentationTests
 
 	@Test
 	public void bootJarIncludeLaunchScript() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/packaging/boot-jar-include-launch-script" + extension)
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-include-launch-script"
+				+ this.dsl.getExtension()).build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -150,8 +147,9 @@ public abstract class AbstractPackagingDocumentationTests
 
 	@Test
 	public void bootJarLaunchScriptProperties() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/packaging/boot-jar-launch-script-properties" + extension)
+		this.gradleBuild
+				.script("src/main/gradle/packaging/boot-jar-launch-script-properties"
+						+ this.dsl.getExtension())
 				.build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
@@ -166,9 +164,8 @@ public abstract class AbstractPackagingDocumentationTests
 				"src/custom.script");
 		customScriptFile.getParentFile().mkdirs();
 		FileCopyUtils.copy("custom", new FileWriter(customScriptFile));
-		this.gradleBuild.script(
-				"src/main/gradle/packaging/boot-jar-custom-launch-script" + extension)
-				.build("bootJar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-custom-launch-script"
+				+ this.dsl.getExtension()).build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
@@ -177,9 +174,8 @@ public abstract class AbstractPackagingDocumentationTests
 
 	@Test
 	public void bootWarPropertiesLauncher() throws IOException {
-		this.gradleBuild.script(
-				"src/main/gradle/packaging/boot-war-properties-launcher" + extension)
-				.build("bootWar");
+		this.gradleBuild.script("src/main/gradle/packaging/boot-war-properties-launcher"
+				+ this.dsl.getExtension()).build("bootWar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".war");
 		assertThat(file).isFile();
@@ -190,8 +186,9 @@ public abstract class AbstractPackagingDocumentationTests
 	}
 
 	@Test
-	public void bootJarAndJar() throws IOException {
-		this.gradleBuild.script("src/main/gradle/packaging/boot-jar-and-jar" + extension)
+	public void bootJarAndJar() {
+		this.gradleBuild.script(
+				"src/main/gradle/packaging/boot-jar-and-jar" + this.dsl.getExtension())
 				.build("assemble");
 		File jar = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
